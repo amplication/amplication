@@ -1,44 +1,49 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
-  ResourceService,
-  INITIAL_COMMIT_MESSAGE,
   DEFAULT_RESOURCE_COLOR,
   DEFAULT_RESOURCE_DATA,
-  INVALID_RESOURCE_ID
+  INITIAL_COMMIT_MESSAGE,
+  INVALID_RESOURCE_ID,
+  ResourceService
 } from './resource.service';
 
-import { PrismaService, GitRepository, Project } from '@amplication/prisma-db';
-import { EntityService } from '../entity/entity.service';
+import { GitService } from '@amplication/git-service';
 import {
-  EnvironmentService,
-  DEFAULT_ENVIRONMENT_NAME
-} from '../environment/environment.service';
-import { Environment } from '../environment/dto/Environment';
+  EnumResourceType,
+  GitRepository,
+  PrismaService,
+  Project
+} from '@amplication/prisma-db';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumDataType } from 'src/enums/EnumDataType';
+import { QueryMode } from 'src/enums/QueryMode';
+import { BlockVersion, Commit, EntityVersion } from 'src/models';
+import { Block } from 'src/models/Block';
+import { Entity } from 'src/models/Entity';
+import { EntityField } from 'src/models/EntityField';
 import { Resource } from 'src/models/Resource';
 import { User } from 'src/models/User';
-import { Entity } from 'src/models/Entity';
-import { Block } from 'src/models/Block';
-import { EntityField } from 'src/models/EntityField';
-import { PendingChange } from './dto/PendingChange';
-import { EntityVersion, Commit, BlockVersion } from 'src/models';
+import { prepareDeletedItemName } from '../../util/softDelete';
+import { BlockService } from '../block/block.service';
+import { BuildService } from '../build/build.service';
+import { Build } from '../build/dto/Build';
+import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
+import { EntityService } from '../entity/entity.service';
+import { Environment } from '../environment/dto/Environment';
+import {
+  DEFAULT_ENVIRONMENT_NAME,
+  EnvironmentService
+} from '../environment/environment.service';
 import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
+import { PendingChange } from './dto/PendingChange';
+import { InvalidColorError } from './InvalidColorError';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
 import {
   createSampleResourceEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_RESOURCE_DATA
+  SAMPLE_SERVICE_DATA
 } from './sampleResource';
-import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
-import { InvalidColorError } from './InvalidColorError';
-import { BuildService } from '../build/build.service';
-import { Build } from '../build/dto/Build';
-import { BlockService } from '../block/block.service';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { ReservedEntityNameError } from './ReservedEntityNameError';
-import { QueryMode } from 'src/enums/QueryMode';
-import { prepareDeletedItemName } from '../../util/softDelete';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { GitService } from '@amplication/git-service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
@@ -61,6 +66,7 @@ const EXAMPLE_PROJECT: Project = {
 const EXAMPLE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
   id: EXAMPLE_RESOURCE_ID,
+  type: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
@@ -373,7 +379,8 @@ describe('ResourceService', () => {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
-          color: DEFAULT_RESOURCE_COLOR
+          color: DEFAULT_RESOURCE_COLOR,
+          type: EnumResourceType.Service
         }
       },
       user: EXAMPLE_USER
@@ -498,18 +505,19 @@ describe('ResourceService', () => {
   });
 
   it('should fail to create resource for invalid color', async () => {
-    const createResourceArgs = {
+    const createServiceArgs = {
       args: {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
-          color: INVALID_COLOR
+          color: INVALID_COLOR,
+          type: EnumResourceType.Service
         }
       },
       user: EXAMPLE_USER
     };
     await expect(
-      service.createResource(createResourceArgs.args, createResourceArgs.user)
+      service.createResource(createServiceArgs.args, createServiceArgs.user)
     ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
   });
 
@@ -517,7 +525,7 @@ describe('ResourceService', () => {
     const prismaResourceCreateResourceArgs = {
       data: {
         ...DEFAULT_RESOURCE_DATA,
-        ...SAMPLE_RESOURCE_DATA,
+        ...SAMPLE_SERVICE_DATA,
         workspace: {
           connect: {
             id: EXAMPLE_USER.workspace?.id
@@ -528,7 +536,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${SAMPLE_RESOURCE_DATA.name}`,
+            name: `project-${SAMPLE_SERVICE_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -662,7 +670,7 @@ describe('ResourceService', () => {
     await expect(
       service.createResourceWithEntities(
         {
-          resource: SAMPLE_RESOURCE_DATA,
+          resource: SAMPLE_SERVICE_DATA,
           commitMessage: 'commitMessage',
           entities: [
             {
@@ -685,7 +693,7 @@ describe('ResourceService', () => {
     const prismaResourceCreateResourceArgs = {
       data: {
         ...DEFAULT_RESOURCE_DATA,
-        ...SAMPLE_RESOURCE_DATA,
+        ...SAMPLE_SERVICE_DATA,
         workspace: {
           connect: {
             id: EXAMPLE_USER.workspace?.id
@@ -696,7 +704,7 @@ describe('ResourceService', () => {
         },
         project: {
           create: {
-            name: `project-${SAMPLE_RESOURCE_DATA.name}`,
+            name: `project-${SAMPLE_SERVICE_DATA.name}`,
             workspaceId: EXAMPLE_USER.workspace?.id
           }
         }
@@ -790,7 +798,7 @@ describe('ResourceService', () => {
     await expect(
       service.createResourceWithEntities(
         {
-          resource: SAMPLE_RESOURCE_DATA,
+          resource: SAMPLE_SERVICE_DATA,
           commitMessage: commitMessage,
           entities: [
             {
@@ -820,7 +828,7 @@ describe('ResourceService', () => {
             deletedAt: null,
             name: {
               mode: QueryMode.Insensitive,
-              startsWith: SAMPLE_RESOURCE_DATA.name
+              startsWith: SAMPLE_SERVICE_DATA.name
             },
             workspaceId: EXAMPLE_WORKSPACE_ID
           },

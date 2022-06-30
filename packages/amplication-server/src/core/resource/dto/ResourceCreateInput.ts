@@ -1,3 +1,4 @@
+import { EnumResourceType } from '@amplication/prisma-db';
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
@@ -18,6 +19,9 @@ export class ResourceCreateInput {
     nullable: true
   })
   color?: string;
+
+  @Field(() => EnumResourceType, { nullable: false })
+  type!: keyof typeof EnumResourceType;
 
   workspace?: {
     connect: {

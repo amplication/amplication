@@ -36,7 +36,7 @@ import { ReservedEntityNameError } from './ReservedEntityNameError';
 import {
   createSampleResourceEntities,
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_RESOURCE_DATA
+  SAMPLE_SERVICE_DATA
 } from './sampleResource';
 
 const USER_RESOURCE_ROLE = {
@@ -135,7 +135,7 @@ export class ResourceService {
   async createSampleResource(user: User): Promise<Resource> {
     const resource = await this.createResource(
       {
-        data: SAMPLE_RESOURCE_DATA
+        data: SAMPLE_SERVICE_DATA
       },
       user
     );

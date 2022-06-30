@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
-import { PrismaService, Prisma } from '@amplication/prisma-db';
+import {
+  PrismaService,
+  Prisma,
+  EnumResourceType
+} from '@amplication/prisma-db';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DiffModule } from 'src/services/diff.module';
 import {
@@ -22,6 +26,7 @@ const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 
 const EXAMPLE_RESOURCE: Resource = {
   id: 'ExampleResource',
+  type: EnumResourceType.Service,
   createdAt: NOW,
   updatedAt: NOW,
   name: 'Example Resource',

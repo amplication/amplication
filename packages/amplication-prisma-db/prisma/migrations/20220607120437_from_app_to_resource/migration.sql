@@ -58,3 +58,11 @@ ALTER TABLE "EntityPermissionRole"
 RENAME "appRoleId" TO "resourceRoleId";
 ALTER TABLE "EntityPermissionRole" RENAME CONSTRAINT "EntityPermissionRole_appRoleId_fkey" TO "EntityPermissionRole_resourceRoleId_fkey";
 ALTER INDEX "EntityPermissionRole.entityVersionId_action_appRoleId_unique" RENAME TO "EntityPermissionRole.entityVersionId_action_resourceRoleId_uniq"; -- This map is cut in the end because a 63 bytes limit
+
+-- CreateEnum
+CREATE TYPE "EnumResourceType" AS ENUM ('Service');
+
+-- Add value to current resources
+ALTER TABLE "Resource" ADD COLUMN     "type" "EnumResourceType" NULL;
+UPDATE "Resource" SET type = 'Service';
+ALTER TABLE "Resource" ALTER COLUMN "type" SET NOT NULL;

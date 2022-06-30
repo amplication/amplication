@@ -90,6 +90,7 @@ type Resource {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   githubLastMessage: String
   githubLastSync: DateTime
+  type: EnumResourceType!
   workspace: Workspace!
 }
 
@@ -651,6 +652,10 @@ input EntityOrderByInput {
   description: SortOrder
 }
 
+enum EnumResourceType {
+  Service
+}
+
 type Subscription {
   id: String!
   createdAt: DateTime!
@@ -1113,6 +1118,7 @@ input ResourceCreateInput {
   name: String!
   description: String!
   color: String
+  type: EnumResourceType!
 }
 
 input ResourceCreateWithEntitiesInput {

@@ -151,6 +151,7 @@ export function CreateResourceFromExcel() {
       resource: {
         name: fileNameWithoutExtension || "",
         description: fileNameWithoutExtension || "",
+        type: models.EnumResourceType.Service,
       },
       commitMessage: `Import schema from ${fileName}`,
       entities: [

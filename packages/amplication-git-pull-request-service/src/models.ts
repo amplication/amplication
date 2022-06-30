@@ -988,6 +988,10 @@ export enum EnumPendingChangeResourceType {
   Entity = 'Entity',
 }
 
+export enum EnumResourceType {
+  Service = 'Service',
+}
+
 export enum EnumSubscriptionPlan {
   Business = 'Business',
   Enterprise = 'Enterprise',
@@ -1682,6 +1686,7 @@ export type ResourceCreateInput = {
   color?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   name: Scalars['String'];
+  type: EnumResourceType;
 };
 
 export type ResourceCreateWithEntitiesEntityInput = {

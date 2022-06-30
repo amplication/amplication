@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '@amplication/prisma-db';
+import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { BuildService } from '../build/build.service';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
@@ -89,6 +89,7 @@ const EXAMPLE_ENTITY: Entity = {
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
+  type: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
@@ -121,6 +122,7 @@ const FIND_ONE_RESOURCE_QUERY = gql`
       updatedAt
       name
       description
+      type
       entities {
         id
         createdAt
@@ -199,13 +201,14 @@ const FIND_MANY_ENVIRONMENTS_QUERY = gql`
 `;
 
 const CREATE_RESOURCE_MUTATION = gql`
-  mutation($name: String!, $description: String!) {
-    createResource(data: { name: $name, description: $description }) {
+  mutation($data: ResourceCreateInput!) {
+    createResource(data: $data) {
       id
       createdAt
       updatedAt
       name
       description
+      type
       entities {
         id
         createdAt
@@ -243,6 +246,7 @@ const DELETE_RESOURCE_MUTATION = gql`
       updatedAt
       name
       description
+      type
       entities {
         id
         createdAt
@@ -280,6 +284,7 @@ const UPDATE_RESOURCE_MUTATION = gql`
       updatedAt
       name
       description
+      type
       entities {
         id
         createdAt
@@ -469,6 +474,8 @@ describe('ResourceResolver', () => {
     expect(res.data).toEqual({
       resource: {
         ...EXAMPLE_RESOURCE,
+        type: EnumResourceType.Service,
+
         createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
         updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
         entities: [
@@ -577,14 +584,18 @@ describe('ResourceResolver', () => {
     const res = await apolloClient.query({
       query: CREATE_RESOURCE_MUTATION,
       variables: {
-        name: EXAMPLE_NAME,
-        description: EXAMPLE_DESCRIPTION
+        data: {
+          name: EXAMPLE_NAME,
+          description: EXAMPLE_DESCRIPTION,
+          type: EnumResourceType.Service
+        }
       }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       createResource: {
         ...EXAMPLE_RESOURCE,
+        type: EnumResourceType.Service,
         createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
         updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
         entities: [
@@ -614,7 +625,8 @@ describe('ResourceResolver', () => {
       {
         data: {
           name: EXAMPLE_NAME,
-          description: EXAMPLE_DESCRIPTION
+          description: EXAMPLE_DESCRIPTION,
+          type: EnumResourceType.Service
         }
       },
       EXAMPLE_USER
