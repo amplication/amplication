@@ -90,31 +90,6 @@ export const GET_LAST_BUILD = gql`
       }
       status
       archiveURI
-      deployments(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        buildId
-        createdAt
-        status
-        actionId
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-          }
-        }
-        message
-        environment {
-          id
-          name
-          address
-        }
-      }
     }
   }
 `;
