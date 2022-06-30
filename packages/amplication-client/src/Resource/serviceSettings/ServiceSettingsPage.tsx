@@ -15,7 +15,7 @@ type Props = {
 
 const NAVIGATION_KEY = "APP_SETTINGS";
 
-function AppSettingsPage({ match }: Props) {
+function ServiceSettingsPage({ match }: Props) {
   const { resource } = match.params;
 
   useNavigationTabs(resource, NAVIGATION_KEY, match.url, `Resource settings`);
@@ -26,7 +26,7 @@ function AppSettingsPage({ match }: Props) {
         <div>
           <div>
             <InnerTabLink
-              to={`/${resource}/appSettings/update`}
+              to={`/${resource}/serviceSettings/update`}
               icon="settings"
             >
               General
@@ -34,7 +34,7 @@ function AppSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${resource}/appSettings/db/update`}
+              to={`/${resource}/serviceSettings/db/update`}
               icon="settings"
             >
               Database
@@ -42,14 +42,17 @@ function AppSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${resource}/appSettings/auth/update`}
+              to={`/${resource}/serviceSettings/auth/update`}
               icon="settings"
             >
               Authentication
             </InnerTabLink>
           </div>
           <div>
-            <InnerTabLink to={`/${resource}/appSettings/api-tokens`} icon="id">
+            <InnerTabLink
+              to={`/${resource}/serviceSettings/api-tokens`}
+              icon="id"
+            >
               API Tokens
             </InnerTabLink>
           </div>
@@ -58,19 +61,19 @@ function AppSettingsPage({ match }: Props) {
     >
       <Switch>
         <RouteWithAnalytics
-          path="/:resource/appSettings/api-tokens"
+          path="/:resource/serviceSettings/api-tokens"
           component={ApiTokenList}
         />
         <RouteWithAnalytics
-          path="/:resource/appSettings/update"
+          path="/:resource/serviceSettings/update"
           component={ResourceForm}
         />
         <RouteWithAnalytics
-          path="/:resource/appSettings/db/update"
+          path="/:resource/serviceSettings/db/update"
           component={ApplicationDatabaseSettingsForms}
         />
         <RouteWithAnalytics
-          path="/:resource/appSettings/auth/update"
+          path="/:resource/serviceSettings/auth/update"
           component={ApplicationAuthSettingForm}
         />
       </Switch>
@@ -79,4 +82,4 @@ function AppSettingsPage({ match }: Props) {
   );
 }
 
-export default AppSettingsPage;
+export default ServiceSettingsPage;

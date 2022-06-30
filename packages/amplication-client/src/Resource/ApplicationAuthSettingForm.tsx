@@ -16,7 +16,7 @@ type Props = {
   match: match<{ resource: string }>;
 };
 type TData = {
-  updateAppSettings: models.AppSettings;
+  updateServiceSettings: models.ServiceSettings;
 };
 
 const FORM_SCHEMA = {
@@ -35,7 +35,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
   const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
-    appSettings: models.AppSettings;
+    serviceSettings: models.ServiceSettings;
   }>(GET_APP_SETTINGS, {
     variables: {
       id: resourceId,
@@ -46,22 +46,22 @@ function ApplicationAuthSettingForm({ match }: Props) {
 
   const { trackEvent } = useTracking();
 
-  const [updateAppSettings, { error: updateError }] = useMutation<TData>(
+  const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
     UPDATE_RESOURCE_SETTINGS,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addBlock(data.updateAppSettings.id);
+        pendingChangesContext.addBlock(data.updateServiceSettings.id);
       },
     }
   );
 
   const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
+    (data: models.ServiceSettings) => {
       const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
       trackEvent({
-        eventName: "updateAppSettings",
+        eventName: "updateServiceSettings",
       });
-      updateAppSettings({
+      updateServiceSettings({
         variables: {
           data: {
             dbHost,
@@ -75,17 +75,17 @@ function ApplicationAuthSettingForm({ match }: Props) {
         },
       }).catch(console.error);
     },
-    [updateAppSettings, resourceId, trackEvent]
+    [updateServiceSettings, resourceId, trackEvent]
   );
 
   const errorMessage = formatError(error || updateError);
 
   return (
     <div className={CLASS_NAME}>
-      {data?.appSettings && (
+      {data?.serviceSettings && (
         <Formik
-          initialValues={data.appSettings}
-          validate={(values: models.AppSettings) =>
+          initialValues={data.serviceSettings}
+          validate={(values: models.ServiceSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
