@@ -101,16 +101,14 @@ for changed_folder in changed_folders:
                 service_build_list.append(changed_folder)
         else:
             dependet_services(changed_folder, service_build_list)
-        if get_package_name(changed_folder) not in package_build_list and get_package_name(changed_folder) in all_packages:
+        if get_package_name(changed_folder) not in package_build_list:
             package_build_list.append(get_package_name(changed_folder))
-        else:
-            print(f"This folder is not exist {changed_folder}")
+print(f"Will be build packages: {package_build_list}")
 
 for service in all_services:
     dependecies_dict[service] = [service]
     get_dependent_packages(service)
 
-print(f"Will build the follwoing pcakges: {package_build_list}")
 with open(packages_output_file, 'w', encoding='utf-8') as outfile:
     package_build_list_fixed = json.dumps(package_build_list)
     json.dump(package_build_list_fixed, outfile, ensure_ascii=False, indent=4)
