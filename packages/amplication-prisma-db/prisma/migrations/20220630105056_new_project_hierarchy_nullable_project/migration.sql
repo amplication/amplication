@@ -12,9 +12,6 @@ CREATE TABLE "Project" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Project_name_key" ON "Project"("name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Project_workspaceId_name_key" ON "Project"("workspaceId", "name");
 
 -- AddForeignKey
@@ -26,5 +23,5 @@ ALTER TABLE "App" ADD CONSTRAINT "App_projectId_fkey" FOREIGN KEY ("projectId") 
 INSERT INTO "Project"("id", "workspaceId", "name") 
 SELECT "id", "workspaceId", CONCAT('project-', "name") FROM "App";
 
-UPDATE public."App"
+UPDATE "App"
 SET "projectId" = id;
