@@ -2,6 +2,14 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
+  ".env": "# The variables in this file are only used by docker-compose for local docker deployment
+POSTGRESQL_USER=testUsername
+POSTGRESQL_PASSWORD=1234
+POSTGRESQL_PORT=5433
+SERVER_PORT=3000
+BCRYPT_SALT=10
+JWT_SECRET_KEY=Change_ME!!!
+JWT_EXPIRATION=2d",
   "admin-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL =http://localhost:3000",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
@@ -2563,7 +2571,6 @@ services:
     environment:
       POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
       BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
-      ports: 5432:5432
     depends_on:
       db:
         condition: service_healthy
@@ -2572,6 +2579,7 @@ services:
     environment:
       POSTGRES_USER: \${POSTGRESQL_USER}
       POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+      ports: 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
