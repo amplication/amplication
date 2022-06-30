@@ -3,8 +3,15 @@
 exports[`createDataService creates app as expected 1`] = `
 Object {
   "admin-ui/.env": "PORT=3001
-SKIP_PREFLIGHT_CHECK=true
-REACT_APP_SERVER_URL =http://localhost:3000",
+REACT_APP_SERVER_URL =http://localhost:3000
+POSTGRESQL_USER=testUsername
+POSTGRESQL_PASSWORD=1234
+POSTGRESQL_PORT=5433
+POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
+BCRYPT_SALT=10
+COMPOSE_PROJECT_NAME=amp_\${appId}
+JWT_SECRET_KEY=Change_ME!!!
+JWT_EXPIRATION=2d",
   "admin-ui/docker-compose.yml": "version: \\"3\\"
 services:
   app:
@@ -16,6 +23,50 @@ services:
         NPM_LOG_LEVEL: notice
     ports:
       - \\"\${PORT}:3001\\"
+    environment:
+      POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5433\\"
+      BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
+      JWT_SECRET_KEY: \\"\${JWT_SECRET_KEY}\\"
+      JWT_EXPIRATION: \\"\${JWT_EXPIRATION}\\"
+    depends_on:
+      - migrate
+  migrate:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    command: npm run db:init
+    working_dir: /app/server
+    environment:
+      POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
+      BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
+      ports: 5432:5432
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: \${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          \\"CMD\\",
+          \\"pg_isready\\",
+          \\"-q\\",
+          \\"-d\\",
+          \\"\${POSTGRESQL_DB_NAME}\\",
+          \\"-U\\",
+          \\"\${POSTGRESQL_USER}\\",
+        ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~
 ",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
