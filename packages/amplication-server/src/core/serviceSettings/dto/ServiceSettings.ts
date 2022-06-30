@@ -7,7 +7,7 @@ import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
   isAbstract: true,
   description: undefined
 })
-export class AppSettings extends IBlock {
+export class ServiceSettings extends IBlock {
   @Field(() => String, {
     nullable: false
   })

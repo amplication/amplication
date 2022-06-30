@@ -1,14 +1,14 @@
-import { AppSettings } from './dto';
+import { ServiceSettings } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
-export type AppSettingsValues = Omit<
-  AppSettingsValuesExtended,
+export type ServiceSettingsValues = Omit<
+  ServiceSettingsValuesExtended,
   'blockType' | 'description' | 'displayName'
 > & { resourceId: string };
 
-export type AppSettingsValuesExtended = Omit<
-  AppSettings,
+export type ServiceSettingsValuesExtended = Omit<
+  ServiceSettings,
   | 'createdAt'
   | 'updatedAt'
   | 'id'
@@ -21,10 +21,10 @@ export type AppSettingsValuesExtended = Omit<
   | 'resourceId'
 >;
 
-export const DEFAULT_RESOURCE_SETTINGS: AppSettingsValuesExtended = {
-  blockType: EnumBlockType.AppSettings,
-  description: 'Default resource settings',
-  displayName: 'Resource Settings',
+export const DEFAULT_SERVICE_SETTINGS: ServiceSettingsValuesExtended = {
+  blockType: EnumBlockType.ServiceSettings,
+  description: 'Default service settings',
+  displayName: 'Service Settings',
   dbHost: 'localhost',
   dbName: '',
   dbUser: 'admin',

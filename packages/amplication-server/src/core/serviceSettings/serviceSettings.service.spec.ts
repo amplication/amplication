@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlockService } from 'src/core/block/block.service';
-import { AppSettingsService } from './appSettings.service';
-import { AppSettings } from './dto';
+import { ServiceSettingsService } from './serviceSettings.service';
+import { ServiceSettings } from './dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { DEFAULT_RESOURCE_SETTINGS } from './constants';
+import { DEFAULT_SERVICE_SETTINGS } from './constants';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
@@ -28,11 +28,11 @@ const EXAMPLE_USER: User = {
   isOwner: true
 };
 
-const EXAMPLE_APP_SETTINGS: AppSettings = {
-  id: 'ExampleAppSettings',
+const EXAMPLE_SERVICE_SETTINGS: ServiceSettings = {
+  id: 'ExampleServiceSettings',
   updatedAt: new Date(),
   createdAt: new Date(),
-  blockType: EnumBlockType.AppSettings,
+  blockType: EnumBlockType.ServiceSettings,
   description: null,
   inputParameters: EXAMPLE_INPUT_PARAMETERS,
   outputParameters: EXAMPLE_OUTPUT_PARAMETERS,
@@ -48,14 +48,14 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
 };
 
 const createMock = jest.fn(() => {
-  return { ...EXAMPLE_APP_SETTINGS, ...DEFAULT_RESOURCE_SETTINGS };
+  return { ...EXAMPLE_SERVICE_SETTINGS, ...DEFAULT_SERVICE_SETTINGS };
 });
-const findOneMock = jest.fn(() => EXAMPLE_APP_SETTINGS);
-const findManyByBlockTypeMock = jest.fn(() => [EXAMPLE_APP_SETTINGS]);
-const updateMock = jest.fn(() => EXAMPLE_APP_SETTINGS);
+const findOneMock = jest.fn(() => EXAMPLE_SERVICE_SETTINGS);
+const findManyByBlockTypeMock = jest.fn(() => [EXAMPLE_SERVICE_SETTINGS]);
+const updateMock = jest.fn(() => EXAMPLE_SERVICE_SETTINGS);
 
-describe('AppSettingsService', () => {
-  let service: AppSettingsService;
+describe('ServiceSettingsService', () => {
+  let service: ServiceSettingsService;
 
   beforeEach(async () => {
     createMock.mockClear();
@@ -73,12 +73,12 @@ describe('AppSettingsService', () => {
             update: updateMock
           }))
         },
-        AppSettingsService
+        ServiceSettingsService
       ],
       imports: []
     }).compile();
 
-    service = module.get<AppSettingsService>(AppSettingsService);
+    service = module.get<ServiceSettingsService>(ServiceSettingsService);
   });
 
   it('should be defined', () => {
@@ -87,32 +87,35 @@ describe('AppSettingsService', () => {
 
   it('should find one', async () => {
     expect(
-      await service.getAppSettingsBlock(
+      await service.getServiceSettingsBlock(
         {
           where: { id: EXAMPLE_RESOURCE_ID }
         },
         EXAMPLE_USER
       )
-    ).toEqual(EXAMPLE_APP_SETTINGS);
+    ).toEqual(EXAMPLE_SERVICE_SETTINGS);
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 
   it('should create default', async () => {
     expect(
-      await service.createDefaultAppSettings(EXAMPLE_RESOURCE_ID, EXAMPLE_USER)
+      await service.createDefaultServiceSettings(
+        EXAMPLE_RESOURCE_ID,
+        EXAMPLE_USER
+      )
     ).toEqual({
-      ...EXAMPLE_APP_SETTINGS,
-      ...DEFAULT_RESOURCE_SETTINGS
+      ...EXAMPLE_SERVICE_SETTINGS,
+      ...DEFAULT_SERVICE_SETTINGS
     });
     expect(createMock).toBeCalledTimes(1);
   });
 
   it('should update', async () => {
     expect(
-      await service.updateAppSettings(
+      await service.updateServiceSettings(
         {
           data: {
-            ...EXAMPLE_APP_SETTINGS
+            ...EXAMPLE_SERVICE_SETTINGS
           },
           where: {
             id: EXAMPLE_RESOURCE_ID
@@ -120,7 +123,7 @@ describe('AppSettingsService', () => {
         },
         EXAMPLE_USER
       )
-    ).toEqual(EXAMPLE_APP_SETTINGS);
+    ).toEqual(EXAMPLE_SERVICE_SETTINGS);
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
     expect(updateMock).toBeCalledTimes(1);
   });

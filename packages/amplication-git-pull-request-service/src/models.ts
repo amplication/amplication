@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -75,39 +73,6 @@ export type ApiToken = {
 
 export type ApiTokenCreateInput = {
   name: Scalars['String'];
-};
-
-export type AppSettings = IBlock & {
-  __typename?: 'AppSettings';
-  authProvider: EnumAuthProviderType;
-  blockType: EnumBlockType;
-  createdAt: Scalars['DateTime'];
-  dbHost: Scalars['String'];
-  dbName: Scalars['String'];
-  dbPassword: Scalars['String'];
-  dbPort: Scalars['Int'];
-  dbUser: Scalars['String'];
-  description: Scalars['String'];
-  displayName: Scalars['String'];
-  id: Scalars['String'];
-  inputParameters: Array<BlockInputOutput>;
-  lockedAt?: Maybe<Scalars['DateTime']>;
-  lockedByUserId?: Maybe<Scalars['String']>;
-  outputParameters: Array<BlockInputOutput>;
-  parentBlock?: Maybe<Block>;
-  updatedAt: Scalars['DateTime'];
-  versionNumber: Scalars['Float'];
-};
-
-export type AppSettingsUpdateInput = {
-  authProvider: EnumAuthProviderType;
-  dbHost: Scalars['String'];
-  dbName: Scalars['String'];
-  dbPassword: Scalars['String'];
-  dbPort: Scalars['Int'];
-  dbUser: Scalars['String'];
-  description?: InputMaybe<Scalars['String']>;
-  displayName?: InputMaybe<Scalars['String']>;
 };
 
 export type Auth = {
@@ -402,11 +367,15 @@ export type ConnectorRestApiCreateInput = {
   authenticationType: EnumConnectorRestApiAuthenticationType;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  httpBasicAuthenticationSettings?: InputMaybe<HttpBasicAuthenticationSettingsInput>;
+  httpBasicAuthenticationSettings?: InputMaybe<
+    HttpBasicAuthenticationSettingsInput
+  >;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  privateKeyAuthenticationSettings?: InputMaybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: InputMaybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
   resource: WhereParentIdInput;
 };
 
@@ -868,7 +837,6 @@ export enum EnumAuthProviderType {
 }
 
 export enum EnumBlockType {
-  AppSettings = 'AppSettings',
   CanvasPage = 'CanvasPage',
   ConnectorFile = 'ConnectorFile',
   ConnectorRestApi = 'ConnectorRestApi',
@@ -881,6 +849,7 @@ export enum EnumBlockType {
   Flow = 'Flow',
   FlowApi = 'FlowApi',
   Layout = 'Layout',
+  ServiceSettings = 'ServiceSettings',
 }
 
 export type EnumBlockTypeFilter = {
@@ -1161,7 +1130,6 @@ export type Mutation = {
   setCurrentWorkspace: Auth;
   signup: Auth;
   updateAccount: Account;
-  updateAppSettings?: Maybe<AppSettings>;
   updateConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApiCall: ConnectorRestApiCall;
   updateEntity?: Maybe<Entity>;
@@ -1172,6 +1140,7 @@ export type Mutation = {
   updateEntityPermissionRoles: EntityPermission;
   updateResource?: Maybe<Resource>;
   updateResourceRole?: Maybe<ResourceRole>;
+  updateServiceSettings?: Maybe<ServiceSettings>;
   updateWorkspace?: Maybe<Workspace>;
 };
 
@@ -1344,11 +1313,6 @@ export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
 };
 
-export type MutationUpdateAppSettingsArgs = {
-  data: AppSettingsUpdateInput;
-  where: WhereUniqueInput;
-};
-
 export type MutationUpdateConnectorRestApiArgs = {
   data: BlockUpdateInput;
   where: WhereUniqueInput;
@@ -1396,6 +1360,11 @@ export type MutationUpdateResourceArgs = {
 
 export type MutationUpdateResourceRoleArgs = {
   data: ResourceRoleUpdateInput;
+  where: WhereUniqueInput;
+};
+
+export type MutationUpdateServiceSettingsArgs = {
+  data: ServiceSettingsUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -1451,7 +1420,6 @@ export type Query = {
   __typename?: 'Query';
   account: Account;
   action: Action;
-  appSettings: AppSettings;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -1479,6 +1447,7 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   resourceValidateBeforeCommit: ResourceValidationResult;
+  serviceSettings: ServiceSettings;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
@@ -1486,10 +1455,6 @@ export type Query = {
 };
 
 export type QueryActionArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryAppSettingsArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1627,6 +1592,10 @@ export type QueryResourceValidateBeforeCommitArgs = {
   where: WhereUniqueInput;
 };
 
+export type QueryServiceSettingsArgs = {
+  where: WhereUniqueInput;
+};
+
 export type QueryWorkspaceArgs = {
   where: WhereUniqueInput;
 };
@@ -1664,6 +1633,7 @@ export type Resource = {
   gitRepositoryId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
+  type: EnumResourceType;
   updatedAt: Scalars['DateTime'];
   workspace: Workspace;
 };
@@ -1789,6 +1759,39 @@ export enum Role {
   ProjectAdmin = 'ProjectAdmin',
   User = 'User',
 }
+
+export type ServiceSettings = IBlock & {
+  __typename?: 'ServiceSettings';
+  authProvider: EnumAuthProviderType;
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime'];
+  dbHost: Scalars['String'];
+  dbName: Scalars['String'];
+  dbPassword: Scalars['String'];
+  dbPort: Scalars['Int'];
+  dbUser: Scalars['String'];
+  description: Scalars['String'];
+  displayName: Scalars['String'];
+  id: Scalars['String'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  updatedAt: Scalars['DateTime'];
+  versionNumber: Scalars['Float'];
+};
+
+export type ServiceSettingsUpdateInput = {
+  authProvider: EnumAuthProviderType;
+  dbHost: Scalars['String'];
+  dbName: Scalars['String'];
+  dbPassword: Scalars['String'];
+  dbPort: Scalars['Int'];
+  dbUser: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  displayName?: InputMaybe<Scalars['String']>;
+};
 
 export type SignupInput = {
   email: Scalars['String'];

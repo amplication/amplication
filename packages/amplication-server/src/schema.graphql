@@ -33,7 +33,7 @@ type Query {
   deployment(where: WhereUniqueInput!): Deployment!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
-  appSettings(where: WhereUniqueInput!): AppSettings!
+  serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   block(where: WhereUniqueInput!): Block!
   me: User!
@@ -413,7 +413,7 @@ type Block {
 }
 
 enum EnumBlockType {
-  AppSettings
+  ServiceSettings
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -775,7 +775,7 @@ input CommitOrderByInput {
   message: SortOrder
 }
 
-type AppSettings implements IBlock {
+type ServiceSettings implements IBlock {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -1075,7 +1075,7 @@ type Mutation {
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   createDeployment(data: DeploymentCreateInput!): Deployment!
-  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
+  updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1258,7 +1258,7 @@ input DeploymentCreateInput {
   message: String
 }
 
-input AppSettingsUpdateInput {
+input ServiceSettingsUpdateInput {
   displayName: String
   description: String
   dbHost: String!
