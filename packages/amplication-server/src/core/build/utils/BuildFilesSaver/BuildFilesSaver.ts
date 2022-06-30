@@ -22,8 +22,7 @@ export class BuildFilesSaver {
   }
   async saveFiles(relativePath: string, modules: Module[]): Promise<void> {
     this.logger.info(
-      `Got a request for saving ${modules.length} files in ${relativePath} path`,
-      { modules }
+      `Got a request for saving ${modules.length} files in ${relativePath} path`
     );
     try {
       const filesPromises = modules.map(async (module, i) => {

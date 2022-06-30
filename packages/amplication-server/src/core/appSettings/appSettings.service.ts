@@ -4,9 +4,11 @@ import { FindOneArgs } from 'src/dto';
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
-import { isEmpty } from 'lodash';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+
+export const isStringBool = (val: any) =>
+  typeof val === 'boolean' || typeof val === 'string';
 
 @Injectable()
 export class AppSettingsService {
@@ -23,7 +25,9 @@ export class AppSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      authProvider
+      authProvider,
+      serverSettings,
+      adminUISettings
     } = await this.getAppSettingsBlock(args, user);
 
     return {
@@ -33,7 +37,9 @@ export class AppSettingsService {
       dbPort,
       dbUser,
       appId: args.where.id,
-      authProvider
+      authProvider,
+      serverSettings,
+      adminUISettings
     };
   }
 
@@ -53,13 +59,33 @@ export class AppSettingsService {
       },
       EnumBlockType.AppSettings
     );
-    if (isEmpty(appSettings)) {
-      return this.createDefaultAppSettings(args.where.id, user);
-    }
 
     return {
       ...appSettings,
-      authProvider: appSettings.authProvider || EnumAuthProviderType.Http
+      authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt,
+      ...(!appSettings.hasOwnProperty('serverSettings') ||
+      !appSettings.hasOwnProperty('adminUISettings')
+        ? this.updateAppSettings(
+            {
+              data: {
+                ...appSettings,
+                serverSettings: {
+                  generateGraphQL: true,
+                  generateRestApi: true,
+                  serverPath: ''
+                },
+                adminUISettings: {
+                  generateAdminUI: true,
+                  adminUIPath: ''
+                }
+              },
+              where: {
+                id: args.where.id
+              }
+            },
+            user
+          )
+        : {})
     };
   }
 
@@ -79,7 +105,49 @@ export class AppSettingsService {
         where: {
           id: appSettingsBlock.id
         },
-        data: args.data
+        data: {
+          ...appSettingsBlock,
+          ...args.data,
+          adminUISettings: {
+            adminUIPath: isStringBool(args.data?.adminUISettings?.adminUIPath)
+              ? args.data?.adminUISettings?.adminUIPath
+              : appSettingsBlock.adminUISettings.adminUIPath,
+            generateAdminUI: isStringBool(
+              args.data?.adminUISettings?.generateAdminUI
+            )
+              ? args.data?.adminUISettings?.generateAdminUI
+              : appSettingsBlock.adminUISettings.generateAdminUI
+          },
+          ...{
+            serverSettings: {
+              generateGraphQL: isStringBool(
+                args.data?.serverSettings?.generateGraphQL
+              )
+                ? args.data?.serverSettings?.generateGraphQL
+                : appSettingsBlock.serverSettings.generateGraphQL,
+              generateRestApi: isStringBool(
+                args.data?.serverSettings?.generateRestApi
+              )
+                ? args.data?.serverSettings?.generateRestApi
+                : appSettingsBlock.serverSettings.generateRestApi,
+              serverPath: isStringBool(args.data?.serverSettings?.serverPath)
+                ? args.data?.serverSettings?.serverPath
+                : appSettingsBlock.serverSettings.serverPath
+            }
+          },
+          ...(!args.data.serverSettings.generateGraphQL
+            ? {
+                adminUISettings: {
+                  adminUIPath: isStringBool(
+                    args.data?.adminUISettings?.adminUIPath
+                  )
+                    ? args.data?.adminUISettings?.adminUIPath
+                    : appSettingsBlock.adminUISettings.adminUIPath,
+                  generateAdminUI: false
+                }
+              }
+            : {})
+        }
       },
       user
     );

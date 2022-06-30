@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { Icon } from "../Icon/Icon";
 import { Button } from "../Button/Button";
 import "./TextInput.scss";
-import { Label } from "../Label/Label";
+import { Label, LabelTypes } from "../Label/Label";
 
 export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
   helpText?: string;
@@ -15,6 +15,7 @@ export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
   hideLabel?: boolean;
   hasError?: boolean;
   textarea?: boolean;
+  labelType?: LabelTypes;
 };
 
 const CLASS_NAME = "text-input";
@@ -28,6 +29,7 @@ export function TextInput({
   inputRef,
   hasError,
   textarea,
+  labelType,
   ...rest
 }: Props) {
   return (
@@ -62,6 +64,9 @@ export function TextInput({
           </Button>
         )}
       </div>
+      {helpText && labelType && labelType === "normal" && (
+        <Label text={helpText} type={labelType} />
+      )}
       {hasError && helpText && <Label text={helpText} type="error" />}
     </div>
   );
