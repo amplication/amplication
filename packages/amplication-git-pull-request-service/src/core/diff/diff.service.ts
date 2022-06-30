@@ -3,7 +3,7 @@ import assert from 'assert';
 import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { join, normalize } from 'path';
 import { Logger } from 'winston';
 import { BuildPathFactory } from './utils/BuildPathFactory';
