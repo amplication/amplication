@@ -1,4 +1,3 @@
-import path from "path";
 import normalize from "normalize-path";
 import winston from "winston";
 import { createDTOs } from "./server/resource/create-dtos";
@@ -17,11 +16,6 @@ import { createServerModules } from "./server/create-server";
 import { types } from "@amplication/data";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
-import { createRootModules } from "./create-root-modules";
-import { readStaticModules } from "./read-static-modules";
-
-const STATIC_DIRECTORY = path.resolve(__dirname, "static");
-const BASE_DIRECTORY = "";
 
 export async function createDataServiceImpl(
   entities: Entity[],
@@ -50,7 +44,6 @@ export async function createDataServiceImpl(
 
   const modules = (
     await Promise.all([
-      readStaticModules(STATIC_DIRECTORY, BASE_DIRECTORY),
       createServerModules(
         normalizedEntities,
         roles,
@@ -60,7 +53,6 @@ export async function createDataServiceImpl(
         logger
       ),
       createAdminModules(normalizedEntities, roles, appInfo, dtos, logger),
-      createRootModules(appInfo, logger),
     ])
   ).flat();
 
