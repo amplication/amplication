@@ -47,15 +47,17 @@ def get_packages_folder(service_name) -> str:
 
 def dependet_services(package_name, service_list) -> List[str]:
     npm_package_name = package_name.replace("-", "/", 1)
+    all_packages = os.listdir(packages_folder) + os.listdir(ee_packages_folder)
     for service in all_services:
-        package_json = f"{get_packages_folder(service)}/{service}/package.json"
-        with open(package_json, 'r') as file:
-            depencies = file.read().replace('\n', '')
-        if f"\"@{npm_package_name}\":" in depencies:
-            print(
-                f"The service {service} depends on package {npm_package_name}, will build")
-            if service not in service_list:
-                service_list.append(service)
+        if service in all_packages:
+            package_json = f"{get_packages_folder(service)}/{service}/package.json"
+            with open(package_json, 'r') as file:
+                depencies = file.read().replace('\n', '')
+            if f"\"@{npm_package_name}\":" in depencies:
+                print(
+                    f"The service {service} depends on package {npm_package_name}, will build")
+                if service not in service_list:
+                    service_list.append(service)
 
 
 def get_changed_folders():
@@ -83,21 +85,26 @@ def get_dependent_packages(service_name):
     dependent_services = []
     for package in all_packages:
         dependet_services(package, dependent_services)
-        if service_name in dependent_services:
-            fixed_package = package.replace('-', '/')
-            if f'@{fixed_package}' in package_build_list:
-                dependecies_dict[service_name].append(package)
+        if dependet_services in all_packages:
+            if service_name in dependent_services:
+                fixed_package = package.replace('-', '/')
+                if f'@{fixed_package}' in package_build_list:
+                    dependecies_dict[service_name].append(package)
 
 changed_folders = get_changed_folders()
 all_services = os.listdir(helm_services_folder)
 for changed_folder in changed_folders:
-    if is_service(all_services, changed_folder):
-        if changed_folder not in service_build_list:
-            service_build_list.append(changed_folder)
+    all_packages = os.listdir(packages_folder) + os.listdir(ee_packages_folder)
+    if changed_folder in all_packages:
+        if is_service(all_services, changed_folder):
+            if changed_folder not in service_build_list:
+                service_build_list.append(changed_folder)
+        else:
+            dependet_services(changed_folder, service_build_list)
+        if get_package_name(changed_folder) not in package_build_list:
+            package_build_list.append(get_package_name(changed_folder))
     else:
-        dependet_services(changed_folder, service_build_list)
-    if get_package_name(changed_folder) not in package_build_list:
-        package_build_list.append(get_package_name(changed_folder))
+        print(f"This folder is not exist {changed_folder}")
 
 for service in all_services:
     dependecies_dict[service] = [service]
