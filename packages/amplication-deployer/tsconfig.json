@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "module": "commonjs",
+    "declaration": true,
+    "downlevelIteration": true,
+    "incremental": true
+  },
+  "include": ["src"]
+}
