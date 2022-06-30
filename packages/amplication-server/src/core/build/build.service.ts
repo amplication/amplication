@@ -38,6 +38,7 @@ import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 
 export const HOST_VAR = 'HOST';
+export const CLIENT_HOST_VAR = 'CLIENT_HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
 export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
@@ -442,8 +443,8 @@ export class BuildService {
         `${commit.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
 
-    const host = this.configService.get(HOST_VAR);
-    const url = `${host}/${build.appId}/builds/${build.id}`;
+    const clientHost = this.configService.get(CLIENT_HOST_VAR);
+    const url = `${clientHost}/${build.appId}/builds/${build.id}`;
 
     if (appRepository) {
       return this.actionService.run(

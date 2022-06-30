@@ -3,7 +3,9 @@
 # ------------------------------------------------------
 
 type Auth {
-  """JWT Bearer token"""
+  """
+  JWT Bearer token
+  """
   token: String!
 }
 
@@ -13,7 +15,9 @@ type AdminUISettings {
 }
 
 type AuthorizeAppWithGitResult {
-  """"""
+  """
+
+  """
   url: String!
 }
 
@@ -24,31 +28,83 @@ type Query {
   currentWorkspace: Workspace
   workspaceMembers: [WorkspaceMember!]
   app(where: WhereUniqueInput!): App
-  apps(where: AppWhereInput, orderBy: AppOrderByInput, skip: Int, take: Int): [App!]!
+  apps(
+    where: AppWhereInput
+    orderBy: AppOrderByInput
+    skip: Int
+    take: Int
+  ): [App!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   entity(where: WhereUniqueInput!): Entity
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  entities(
+    where: EntityWhereInput
+    orderBy: EntityOrderByInput
+    skip: Int
+    take: Int
+  ): [Entity!]!
   appSettings(where: WhereUniqueInput!): AppSettings!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  blocks(
+    where: BlockWhereInput
+    orderBy: BlockOrderByInput
+    skip: Int
+    take: Int
+  ): [Block!]!
   block(where: WhereUniqueInput!): Block!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  builds(
+    where: BuildWhereInput
+    orderBy: BuildOrderByInput
+    take: Int
+    skip: Int
+  ): [Build!]!
   build(where: WhereUniqueInput!): Build!
   appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(where: AppRoleWhereInput, orderBy: AppRoleOrderByInput, skip: Int, take: Int): [AppRole!]!
+  appRoles(
+    where: AppRoleWhereInput
+    orderBy: AppRoleOrderByInput
+    skip: Int
+    take: Int
+  ): [AppRole!]!
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
-  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  commits(
+    where: CommitWhereInput
+    orderBy: CommitOrderByInput
+    cursor: CommitWhereUniqueInput
+    take: Int
+    skip: Int
+  ): [Commit!]
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
-  ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
+  ConnectorRestApis(
+    where: ConnectorRestApiWhereInput
+    orderBy: ConnectorRestApiOrderByInput
+    skip: Int
+    take: Int
+  ): [ConnectorRestApi!]!
   ConnectorRestApiCall(where: WhereUniqueInput!): ConnectorRestApiCall
-  ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
+  ConnectorRestApiCalls(
+    where: ConnectorRestApiCallWhereInput
+    orderBy: ConnectorRestApiCallOrderByInput
+    skip: Int
+    take: Int
+  ): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
-  EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
+  EntityPages(
+    where: EntityPageWhereInput
+    orderBy: EntityPageOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
-  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  remoteGitRepositories(
+    where: RemoteGitRepositoriesWhereUniqueInput!
+  ): [RemoteGitRepository!]!
+  gitOrganizations(
+    where: GitOrganizationWhereInput
+    skip: Float
+    take: Float
+  ): [GitOrganization!]!
 }
 
 type Account {
@@ -87,9 +143,19 @@ type App {
   name: String!
   description: String!
   color: String!
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  entities(
+    where: EntityWhereInput
+    orderBy: EntityOrderByInput
+    skip: Int
+    take: Int
+  ): [Entity!]!
   environments: [Environment!]!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  builds(
+    where: BuildWhereInput
+    orderBy: BuildOrderByInput
+    take: Int
+    skip: Int
+  ): [Build!]!
   githubLastMessage: String
   githubLastSync: DateTime
   workspace: Workspace!
@@ -133,8 +199,18 @@ type Entity {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  versions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
-  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
+  versions(
+    where: EntityVersionWhereInput
+    orderBy: EntityVersionOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityVersion!]
+  fields(
+    where: EntityFieldWhereInput
+    orderBy: EntityFieldOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityField!]
   permissions: [EntityPermission!]
   lockedByUserId: String
   lockedByUser: User
@@ -153,7 +229,12 @@ type EntityVersion {
   pluralDisplayName: String!
   description: String
   commit: Commit
-  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  fields(
+    where: EntityFieldWhereInput
+    orderBy: EntityFieldOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityField!]!
   permissions: [EntityPermission!]
 }
 
@@ -163,7 +244,12 @@ type Commit {
   userId: String!
   user: User
   message: String!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
+  builds(
+    where: BuildWhereInput
+    orderBy: BuildOrderByInput
+    take: Int
+    skip: Int
+  ): [Build!]
   changes: [PendingChange!]
 }
 
@@ -249,7 +335,10 @@ type ActionLog {
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
-scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+scalar JSONObject
+  @specifiedBy(
+    url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf"
+  )
 
 enum EnumActionLogLevel {
   Error
@@ -350,7 +439,12 @@ type Block {
   versionNumber: Float
   lockedByUserId: String
   lockedAt: DateTime
-  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]
+  versions(
+    where: BlockVersionWhereInput
+    orderBy: BlockVersionOrderByInput
+    skip: Int
+    take: Int
+  ): [BlockVersion!]
   lockedByUser: [User!]!
 }
 
@@ -989,7 +1083,10 @@ input GitOrganizationWhereInput {
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
-  updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  updateWorkspace(
+    data: WorkspaceUpdateInput!
+    where: WhereUniqueInput!
+  ): Workspace
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   inviteUser(data: InviteUserInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
@@ -1005,17 +1102,46 @@ type Mutation {
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
-  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
-  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
-  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
-  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
-  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
+  updateEntityPermission(
+    data: EntityUpdatePermissionInput!
+    where: WhereUniqueInput!
+  ): EntityPermission!
+  updateEntityPermissionRoles(
+    data: EntityUpdatePermissionRolesInput!
+  ): EntityPermission!
+  addEntityPermissionField(
+    data: EntityAddPermissionFieldInput!
+  ): EntityPermissionField!
+  deleteEntityPermissionField(
+    where: EntityPermissionFieldWhereUniqueInput!
+  ): EntityPermissionField!
+  updateEntityPermissionFieldRoles(
+    data: EntityUpdatePermissionFieldRolesInput!
+  ): EntityPermissionField!
+  createEntityField(
+    data: EntityFieldCreateInput!
+    relatedFieldName: String
+    relatedFieldDisplayName: String
+  ): EntityField!
+  createEntityFieldByDisplayName(
+    data: EntityFieldCreateByDisplayNameInput!
+  ): EntityField!
   deleteEntityField(where: WhereUniqueInput!): EntityField!
-  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
+  updateEntityField(
+    data: EntityFieldUpdateInput!
+    where: WhereUniqueInput!
+    relatedFieldName: String
+    relatedFieldDisplayName: String
+  ): EntityField!
+  createDefaultRelatedField(
+    where: WhereUniqueInput!
+    relatedFieldName: String
+    relatedFieldDisplayName: String
+  ): EntityField!
+  updateAppSettings(
+    data: AppSettingsUpdateInput!
+    where: WhereUniqueInput!
+  ): AppSettings
   createBuild(data: BuildCreateInput!): Build!
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
@@ -1029,17 +1155,33 @@ type Mutation {
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   completeInvitation(data: CompleteInvitationInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
-  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
-  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
-  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
+  updateConnectorRestApi(
+    data: BlockUpdateInput!
+    where: WhereUniqueInput!
+  ): ConnectorRestApi!
+  createConnectorRestApiCall(
+    data: ConnectorRestApiCallCreateInput!
+  ): ConnectorRestApiCall!
+  updateConnectorRestApiCall(
+    data: BlockUpdateInput!
+    where: WhereUniqueInput!
+  ): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
-  updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
+  updateEntityPage(
+    data: EntityPageUpdateInput!
+    where: WhereUniqueInput!
+  ): EntityPage!
   createGitRepository(data: CreateGitRepositoryInput!): App!
   connectAppGitRepository(data: ConnectGitRepositoryInput!): App!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): App!
-  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
-  getGitAppInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeAppWithGitResult!
+  deleteGitOrganization(
+    gitOrganizationId: String!
+    gitProvider: EnumGitProvider!
+  ): Boolean!
+  getGitAppInstallationUrl(
+    data: GitGetInstallationUrlInput!
+  ): AuthorizeAppWithGitResult!
 }
 
 input UpdateAccountInput {
