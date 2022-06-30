@@ -1146,7 +1146,7 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  createDeployment(data: DeploymentCreateInput!): Deployment!
+  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1362,10 +1362,15 @@ input AppRoleUpdateInput {
   displayName: String!
 }
 
-input DeploymentCreateInput {
-  build: WhereParentIdInput!
-  environment: WhereParentIdInput!
-  message: String
+input AppSettingsUpdateInput {
+  displayName: String
+  description: String
+  dbHost: String!
+  dbName: String!
+  dbUser: String!
+  dbPassword: String!
+  dbPort: Int!
+  authProvider: EnumAuthProviderType!
 }
 
 input SignupInput {
