@@ -39,6 +39,9 @@ import { QueryMode } from 'src/enums/QueryMode';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { GitService } from '@amplication/git-service';
+import { AppSettings } from '../appSettings/dto';
+import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { AppSettingsService } from '../appSettings/appSettings.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -216,6 +219,31 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   updatedAt: new Date()
 };
 
+const EXAMPLE_APP_SETTINGS: AppSettings = {
+  dbHost: 'exampleDbHost',
+  dbName: 'exampleDbName',
+  dbUser: 'exampleDbUser',
+  dbPassword: 'exampleDbPassword',
+  dbPort: 5532,
+  authProvider: EnumAuthProviderType.Http,
+  adminUISettings: undefined,
+  serverSettings: undefined,
+  id: 'exampleId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  parentBlock: new Block(),
+  displayName: 'exampleDisplayName',
+  description: 'exampleDescription',
+  blockType: 'AppSettings',
+  versionNumber: 0,
+  inputParameters: [],
+  outputParameters: []
+};
+
+const appSettingsCreateMock = jest.fn(() => {
+  return EXAMPLE_APP_SETTINGS;
+});
+
 const prismaAppCreateMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
@@ -354,6 +382,13 @@ describe('AppService', () => {
           provide: EnvironmentService,
           useClass: jest.fn().mockImplementation(() => ({
             createDefaultEnvironment: environmentServiceCreateDefaultEnvironmentMock
+          }))
+        },
+        {
+          provide: AppSettingsService,
+          useClass: jest.fn(() => ({
+            create: appSettingsCreateMock,
+            createDefaultAppSettings: appSettingsCreateMock
           }))
         }
       ]
