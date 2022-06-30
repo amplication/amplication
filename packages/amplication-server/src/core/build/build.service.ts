@@ -3,19 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { subSeconds } from 'date-fns';
 import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
-import { groupBy, omit, orderBy } from 'lodash';
+import { omit, orderBy } from 'lodash';
 import path, { join } from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { ContainerBuilderService } from '@amplication/container-builder/dist/nestjs';
-import {
-  BuildResult,
-  EnumBuildStatus as ContainerBuildStatus
-} from '@amplication/container-builder/dist/';
 import { AppRole, User } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
@@ -27,8 +21,7 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { EnumActionLogLevel } from '../action/dto/EnumActionLogLevel';
+import { EnumActionStepStatus, EnumActionLogLevel } from '../action/dto';
 import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
 import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
@@ -38,9 +31,6 @@ import { ActionStep } from '../action/dto';
 import { createZipFileFromModules } from './zip';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
-import { Deployment } from '../deployment/dto/Deployment';
-import { DeploymentService } from '../deployment/deployment.service';
-import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
 import { previousBuild, BuildFilesSaver } from './utils';
@@ -144,9 +134,6 @@ export function createInitialStepData(
     }
   };
 }
-
-const CONTAINER_STATUS_UPDATE_INTERVAL_SEC = 10;
-
 @Injectable()
 export class BuildService {
   constructor(
@@ -156,9 +143,7 @@ export class BuildService {
     private readonly entityService: EntityService,
     private readonly appRoleService: AppRoleService,
     private readonly actionService: ActionService,
-    private readonly containerBuilderService: ContainerBuilderService,
     private readonly localDiskService: LocalDiskService,
-    private readonly deploymentService: DeploymentService,
     @Inject(forwardRef(() => AppService))
     private readonly appService: AppService,
     private readonly appSettingsService: AppSettingsService,
@@ -231,10 +216,7 @@ export class BuildService {
     });
 
     logger.info(JOB_STARTED_LOG);
-    const tarballURL = await this.generate(build, user, oldBuild?.id);
-    if (!skipPublish) {
-      await this.buildDockerImage(build, tarballURL);
-    }
+    await this.generate(build, user, oldBuild?.id);
     logger.info(JOB_DONE_LOG);
 
     return build;
@@ -246,72 +228,6 @@ export class BuildService {
 
   async findOne(args: FindOneBuildArgs): Promise<Build | null> {
     return this.prisma.build.findUnique(args);
-  }
-
-  /**
-   * Gets the updated status of running "build container" tasks from
-   * containerBuilderService, and updates the step status. This function should
-   * be called periodically from an external scheduler
-   */
-  async updateRunningBuildsStatus(): Promise<void> {
-    const lastUpdateThreshold = subSeconds(
-      new Date(),
-      CONTAINER_STATUS_UPDATE_INTERVAL_SEC
-    );
-
-    // find all builds that have a running "build docker" step
-    const builds = await this.prisma.build.findMany({
-      where: {
-        containerStatusUpdatedAt: {
-          lt: lastUpdateThreshold
-        },
-        action: {
-          steps: {
-            some: {
-              status: {
-                equals: EnumActionStepStatus.Running
-              },
-              name: {
-                equals: BUILD_DOCKER_IMAGE_STEP_NAME
-              }
-            }
-          }
-        }
-      },
-      orderBy: {
-        createdAt: Prisma.SortOrder.asc
-      },
-      include: ACTION_INCLUDE
-    });
-
-    const groups = groupBy(builds, build => build.appId);
-
-    //In case we have multiple builds for the same app run them one after the other based on creation time
-    await Promise.all(
-      Object.entries(groups).map(async ([appId, groupBuilds]) => {
-        for (const build of groupBuilds) {
-          const stepBuildDocker = build.action.steps.find(
-            step => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
-          );
-          try {
-            const result = await this.containerBuilderService.getStatus(
-              build.containerStatusQuery
-            );
-            await this.handleContainerBuilderResult(
-              build,
-              stepBuildDocker,
-              result
-            );
-          } catch (error) {
-            await this.actionService.logInfo(stepBuildDocker, error);
-            await this.actionService.complete(
-              stepBuildDocker,
-              EnumActionStepStatus.Failed
-            );
-          }
-        }
-      })
-    );
   }
 
   private async getGenerateCodeStepStatus(
@@ -387,6 +303,8 @@ export class BuildService {
    * Generates code for given build and saves it to storage
    * @DSG The connection between the server and the DSG (Data Service Generator)
    * @param build the build object to generate code for
+   * @param user
+   * @param oldBuildId
    */
   private async generate(
     build: Build,
@@ -450,101 +368,6 @@ export class BuildService {
         return tarballURL;
       }
     );
-  }
-
-  /**
-   * Builds Docker image for given build
-   * Assuming build code was generated
-   * @param build build to build docker image for
-   */
-  private async buildDockerImage(
-    build: Build,
-    tarballURL: string
-  ): Promise<void> {
-    return this.actionService.run(
-      build.actionId,
-      BUILD_DOCKER_IMAGE_STEP_NAME,
-      BUILD_DOCKER_IMAGE_STEP_MESSAGE,
-      async step => {
-        await this.actionService.logInfo(
-          step,
-          BUILD_DOCKER_IMAGE_STEP_START_LOG
-        );
-        const tag = `${build.appId}:${build.id}`;
-        const latestTag = `${build.appId}:latest`;
-        const latestImageId = await this.containerBuilderService.createImageId(
-          latestTag
-        );
-        const result = await this.containerBuilderService.build({
-          tags: [tag, latestTag],
-          cacheFrom: [latestImageId],
-          url: tarballURL
-        });
-        await this.handleContainerBuilderResult(build, step, result);
-      },
-      true
-    );
-  }
-
-  async handleContainerBuilderResult(
-    build: Build,
-    step: ActionStep,
-    result: BuildResult
-  ) {
-    switch (result.status) {
-      case ContainerBuildStatus.Completed:
-        await this.actionService.logInfo(
-          step,
-          BUILD_DOCKER_IMAGE_STEP_FINISH_LOG,
-          {
-            images: result.images
-          }
-        );
-        await this.actionService.complete(step, EnumActionStepStatus.Success);
-
-        await this.prisma.build.update({
-          where: { id: build.id },
-          data: {
-            images: {
-              set: result.images
-            }
-          }
-        });
-        if (this.deploymentService.canDeploy) {
-          await this.deploymentService.autoDeployToSandbox(build);
-        }
-        break;
-      case ContainerBuildStatus.Failed:
-        await this.actionService.logInfo(
-          step,
-          BUILD_DOCKER_IMAGE_STEP_FAILED_LOG
-        );
-        await this.actionService.complete(step, EnumActionStepStatus.Failed);
-        break;
-      default:
-        await this.actionService.logInfo(
-          step,
-          BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG
-        );
-        await this.prisma.build.update({
-          where: { id: build.id },
-          data: {
-            containerStatusQuery: result.statusQuery,
-            containerStatusUpdatedAt: new Date()
-          }
-        });
-        break;
-    }
-  }
-
-  async getDeployments(
-    buildId: string,
-    args: FindManyDeploymentArgs
-  ): Promise<Deployment[]> {
-    return this.deploymentService.findMany({
-      ...args,
-      where: { ...args?.where, build: { id: buildId } }
-    });
   }
 
   private async getAppRoles(build: Build): Promise<AppRole[]> {
@@ -621,7 +444,6 @@ export class BuildService {
       `Amplication build ${truncateBuildId}`;
 
     const clientHost = this.configService.get(CLIENT_HOST_VAR);
-
     const url = `${clientHost}/${build.appId}/builds/${build.id}`;
 
     if (appRepository) {
@@ -644,12 +466,12 @@ export class BuildService {
                 commit: {
                   base: 'main',
                   head: `amplication-build-${build.id}`,
+                  title: commitMessage,
                   body: `Amplication build # ${build.id}.
                 Commit message: ${commit.message}
                 
                 ${url}
-                `,
-                  title: commitMessage
+                `
                 }
               }
             );

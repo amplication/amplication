@@ -24,10 +24,8 @@
     "migrate:up": "cd ../amplication-prisma-db && npm run migrate:up"
   },
   "dependencies": {
-    "@amplication/container-builder": "^0.13.1",
     "@amplication/data": "^0.13.1",
     "@amplication/data-service-generator": "^0.13.1",
-    "@amplication/deployer": "^0.13.1",
     "@amplication/git-service": "^0.13.1",
     "@amplication/logger": "^1.0.0",
     "@amplication/kafka": "^0.13.1",
@@ -105,7 +103,7 @@
     "@types/graphql-type-json": "0.3.2",
     "@types/jest": "25.2.3",
     "@types/lodash": "4.14.182",
-    "@types/node": "13.7.4",
+    "@types/node": "16.3.0",
     "@types/node-fetch": "2.6.1",
     "@types/passport": "1.0.7",
     "@types/passport-github": "1.1.7",

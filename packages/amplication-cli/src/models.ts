@@ -369,19 +369,11 @@ export type Build = {
   commitId: Scalars['String'];
   createdAt: Scalars['DateTime'];
   createdBy: User;
-  deployments?: Maybe<Array<Deployment>>;
   id: Scalars['String'];
   message: Scalars['String'];
   status?: Maybe<EnumBuildStatus>;
   userId: Scalars['String'];
   version: Scalars['String'];
-};
-
-export type BuildDeploymentsArgs = {
-  orderBy?: InputMaybe<DeploymentOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<DeploymentWhereInput>;
 };
 
 export type BuildCreateInput = {
@@ -583,46 +575,6 @@ export type DateTimeFilter = {
   lte?: InputMaybe<Scalars['DateTime']>;
   not?: InputMaybe<Scalars['DateTime']>;
   notIn?: InputMaybe<Array<Scalars['DateTime']>>;
-};
-
-export type Deployment = {
-  __typename?: 'Deployment';
-  action?: Maybe<Action>;
-  actionId: Scalars['String'];
-  build: Build;
-  buildId: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  createdBy: User;
-  environment: Environment;
-  environmentId: Scalars['String'];
-  id: Scalars['String'];
-  message: Scalars['String'];
-  status: EnumDeploymentStatus;
-  userId: Scalars['String'];
-};
-
-export type DeploymentCreateInput = {
-  build: WhereParentIdInput;
-  environment: WhereParentIdInput;
-  message?: InputMaybe<Scalars['String']>;
-};
-
-export type DeploymentOrderByInput = {
-  createdAt?: InputMaybe<SortOrder>;
-  id?: InputMaybe<SortOrder>;
-  message?: InputMaybe<SortOrder>;
-  status?: InputMaybe<SortOrder>;
-  userId?: InputMaybe<SortOrder>;
-};
-
-export type DeploymentWhereInput = {
-  build: WhereUniqueInput;
-  createdAt?: InputMaybe<DateTimeFilter>;
-  createdBy?: InputMaybe<WhereUniqueInput>;
-  environment: WhereUniqueInput;
-  id?: InputMaybe<StringFilter>;
-  message?: InputMaybe<StringFilter>;
-  status?: InputMaybe<EnumDeploymentStatusFilter>;
 };
 
 export type Entity = {
@@ -1069,20 +1021,6 @@ export type EnumDataTypeFilter = {
   notIn?: InputMaybe<Array<EnumDataType>>;
 };
 
-export enum EnumDeploymentStatus {
-  Completed = 'Completed',
-  Failed = 'Failed',
-  Removed = 'Removed',
-  Waiting = 'Waiting',
-}
-
-export type EnumDeploymentStatusFilter = {
-  equals?: InputMaybe<EnumDeploymentStatus>;
-  in?: InputMaybe<Array<EnumDeploymentStatus>>;
-  not?: InputMaybe<EnumDeploymentStatus>;
-  notIn?: InputMaybe<Array<EnumDeploymentStatus>>;
-};
-
 export enum EnumEntityAction {
   Create = 'Create',
   Delete = 'Delete',
@@ -1265,7 +1203,6 @@ export type Mutation = {
   createConnectorRestApi: ConnectorRestApi;
   createConnectorRestApiCall: ConnectorRestApiCall;
   createDefaultRelatedField: EntityField;
-  createDeployment: Deployment;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createEntityPage: EntityPage;
@@ -1359,10 +1296,6 @@ export type MutationCreateDefaultRelatedFieldArgs = {
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
   where: WhereUniqueInput;
-};
-
-export type MutationCreateDeploymentArgs = {
-  data: DeploymentCreateInput;
 };
 
 export type MutationCreateEntityFieldArgs = {
@@ -1599,8 +1532,6 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   ConnectorRestApis: Array<ConnectorRestApi>;
   currentWorkspace?: Maybe<Workspace>;
-  deployment: Deployment;
-  deployments: Array<Deployment>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
   EntityPage?: Maybe<EntityPage>;
@@ -1701,17 +1632,6 @@ export type QueryConnectorRestApisArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<ConnectorRestApiWhereInput>;
-};
-
-export type QueryDeploymentArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryDeploymentsArgs = {
-  orderBy?: InputMaybe<DeploymentOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<DeploymentWhereInput>;
 };
 
 export type QueryEntitiesArgs = {

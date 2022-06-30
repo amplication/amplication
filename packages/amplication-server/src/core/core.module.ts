@@ -13,10 +13,8 @@ import { EntityPageModule } from './entityPage/entityPage.module';
 import { AppRoleModule } from './appRole/appRole.module';
 import { BuildModule } from './build/build.module';
 import { ActionModule } from './action/action.module';
-import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
-import { SystemModule } from './system/system.module';
 import { MailModule } from './mail/mail.module';
 import { AppSettingsModule } from './appSettings/appSettings.module';
 import { SubscriptionModule } from './subscription/subscription.module';
@@ -40,10 +38,8 @@ import { HealthModule } from './health/health.module';
     AppRoleModule,
     BuildModule,
     ActionModule,
-    DeploymentModule,
     EnvironmentModule,
     CommitModule,
-    SystemModule,
     AppSettingsModule,
     GitModule,
     GitProviderModule,
@@ -66,7 +62,6 @@ import { HealthModule } from './health/health.module';
     AppRoleModule,
     BuildModule,
     ActionModule,
-    DeploymentModule,
     EnvironmentModule,
     CommitModule,
     AppSettingsModule,
