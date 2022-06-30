@@ -3,7 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import assert from 'assert';
 import { outputFile, remove } from 'fs-extra';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_PROVIDER } from '@amplication/logger';
 import { join, normalize } from 'path';
 import { BASE_BUILDS_FOLDER } from 'src/constants';
 import { AmplicationError } from 'src/errors/AmplicationError';
