@@ -101,10 +101,10 @@ for changed_folder in changed_folders:
                 service_build_list.append(changed_folder)
         else:
             dependet_services(changed_folder, service_build_list)
-        if get_package_name(changed_folder) not in package_build_list:
+        if get_package_name(changed_folder) not in package_build_list and get_package_name(changed_folder) in all_packages:
             package_build_list.append(get_package_name(changed_folder))
-    else:
-        print(f"This folder is not exist {changed_folder}")
+        else:
+            print(f"This folder is not exist {changed_folder}")
 
 for service in all_services:
     dependecies_dict[service] = [service]
