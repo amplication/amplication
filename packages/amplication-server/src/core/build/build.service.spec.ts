@@ -2,11 +2,10 @@ import { Readable } from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService, Prisma } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { orderBy } from 'lodash';
-import { Prisma } from '@prisma/client';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -39,6 +38,7 @@ import {
   BuildResult,
   EnumBuildStatus as ContainerBuildStatus
 } from '@amplication/container-builder/dist/';
+import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { App, Commit, Entity } from 'src/models';
 import {
@@ -53,6 +53,7 @@ import { AppSettingsService } from '../appSettings/appSettings.service';
 
 import { AppSettingsValues } from '../appSettings/constants';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
 
 jest.mock('winston');
@@ -99,7 +100,16 @@ const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
   dbPort: 5432,
   dbUser: 'admin',
   appId: EXAMPLE_APP_ID,
-  authProvider: EnumAuthProviderType.Http
+  authProvider: EnumAuthProviderType.Http,
+  serverSettings: {
+    generateGraphQL: true,
+    generateRestApi: true,
+    serverPath: ''
+  },
+  adminUISettings: {
+    generateAdminUI: true,
+    adminUIPath: ''
+  }
 };
 
 const EXAMPLE_COMMIT: Commit = {
@@ -392,6 +402,10 @@ const loggerErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
 });
+const loggerInfoMock = jest.fn(error => {
+  // Write the error to console so it will be visible for who runs the test
+  console.log(error);
+});
 const loggerChildInfoMock = jest.fn();
 const loggerChildErrorMock = jest.fn(error => {
   // Write the error to console so it will be visible for who runs the test
@@ -529,7 +543,18 @@ describe('BuildService', () => {
           useValue: {
             error: loggerErrorMock,
             child: loggerChildMock,
+            info: loggerInfoMock,
             format: EXAMPLE_LOGGER_FORMAT
+          }
+        },
+        {
+          provide: BuildFilesSaver,
+          useClass: BuildFilesSaver
+        },
+        {
+          provide: QueueService,
+          useValue: {
+            emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
           }
         }
       ]

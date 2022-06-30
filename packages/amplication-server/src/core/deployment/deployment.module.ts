@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@amplication/prisma-db';
 import { ConfigModule } from '@nestjs/config';
 import { DockerModule } from '../docker/docker.module';
 import { PermissionsModule } from '../permissions/permissions.module';
@@ -9,6 +9,7 @@ import { DeploymentService } from './deployment.service';
 import { DeploymentResolver } from './deployment.resolver';
 import { UserModule } from '../user/user.module';
 import { EnvironmentModule } from '../environment/environment.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { EnvironmentModule } from '../environment/environment.module';
     PermissionsModule,
     ActionModule,
     UserModule,
-    EnvironmentModule
+    EnvironmentModule,
+    MailModule
   ],
   providers: [DeploymentService, DeploymentResolver],
   exports: [DeploymentService, DeploymentResolver]

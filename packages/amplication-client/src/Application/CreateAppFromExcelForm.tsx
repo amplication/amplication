@@ -68,7 +68,7 @@ export const CreateAppFromExcelForm = ({
           <div className={`${CLASS_NAME}__layout__body__content`}>
             <div className={`${CLASS_NAME}__layout__body__content__toolbar`}>
               <Button
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 disabled={loading}
                 type="button"
                 onClick={onClearForm}

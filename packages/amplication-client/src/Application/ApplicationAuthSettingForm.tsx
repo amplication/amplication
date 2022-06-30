@@ -10,6 +10,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./ApplicationAuthSettingForm.scss";
+import { GET_APP_SETTINGS } from "./appSettings/GenerationSettingsForm";
 
 type Props = {
   match: match<{ application: string }>;
@@ -94,9 +95,10 @@ function ApplicationAuthSettingForm({ match }: Props) {
             return (
               <Form>
                 <FormikAutoSave debounceMS={2000} />
-                <h3>Authentication Providers</h3>
-
-                <p>
+                <div className={`${CLASS_NAME}__header`}>
+                  <h3>Authentication Providers</h3>
+                </div>
+                <p className={`${CLASS_NAME}__description`}>
                   Select the authentication method to be used in the generated
                   app.
                 </p>
@@ -139,16 +141,3 @@ const UPDATE_APP_SETTINGS = gql`
   }
 `;
 
-const GET_APP_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;

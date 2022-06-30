@@ -4,15 +4,13 @@ import {
   ConflictException
 } from '@nestjs/common';
 import { JsonObject } from 'type-fest';
-import head from 'lodash.head';
-import last from 'lodash.last';
-import { pick } from 'lodash';
+import { pick, head, last } from 'lodash';
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
-  Prisma
-} from '@prisma/client';
-import { PrismaService } from 'nestjs-prisma';
+  Prisma,
+  PrismaService
+} from '@amplication/prisma-db';
 import { DiffService } from 'src/services/diff.service';
 import {
   Block,

@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { PrismaService } from 'nestjs-prisma';
-import { Build } from '@prisma/client';
+import { PrismaService, Build } from '@amplication/prisma-db';
 import { DeployerService } from '@amplication/deployer/dist/nestjs';
 import { DeployerProvider } from '../deployer/deployerOptions.service';
 import { ActionService } from '../action/action.service';
@@ -43,6 +42,8 @@ import {
   DeployResult,
   EnumDeployStatus
 } from '@amplication/deployer/dist/types';
+import { SendDeploymentArgs } from '../mail/dto/SendDeploymentArgs';
+import { MailService } from '../mail/mail.service';
 
 jest.mock('winston');
 
@@ -96,6 +97,7 @@ const EXAMPLE_DEPLOYMENT: Deployment = {
   build: EXAMPLE_BUILD,
   environment: EXAMPLE_ENVIRONMENT
 };
+const EXAMPLE_EMAIL = 'example@example.com';
 
 const EXAMPLE_IMAGE_ID = 'EXAMPLE_IMAGE_ID';
 
@@ -155,10 +157,21 @@ const prismaDeploymentFindManyMock = jest.fn(() => {
   return [EXAMPLE_DEPLOYMENT];
 });
 
+const prismaGetEmailFromAccountByUserIdMock = {
+  account: function() {
+    return { email: EXAMPLE_EMAIL };
+  }
+};
+
+const prismaUserFindUserAccountEmailMock = jest.fn(
+  () => prismaGetEmailFromAccountByUserIdMock
+);
+
 const actionServiceRunMock = jest.fn(
   (actionId, name, message, actionFunction) =>
     actionFunction(EXAMPLE_ACTION_STEP)
 );
+
 const actionServiceLogInfoMock = jest.fn();
 
 const EXAMPLE_GCP_APPS_PROJECT_ID = 'EXAMPLE_GCP_APPS_PROJECT_ID';
@@ -186,6 +199,24 @@ const EXAMPLE_RUNNING_DEPLOY_RESULT: DeployResult = {
 const EXAMPLE_COMPLETED_NO_URL_DEPLOY_RESULT: DeployResult = {
   statusQuery: {},
   status: EnumDeployStatus.Completed
+};
+
+const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_SUCCESS: SendDeploymentArgs = {
+  to: EXAMPLE_EMAIL,
+  success: true,
+  url: EXAMPLE_URL
+};
+
+const EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL: SendDeploymentArgs = {
+  to: EXAMPLE_EMAIL,
+  success: false,
+  url: EXAMPLE_URL
+};
+
+const EXAMPLE_DEPLOYMENT_EXAMPLE_ARGS_FAIL_URL: SendDeploymentArgs = {
+  to: EXAMPLE_EMAIL,
+  success: false,
+  url: undefined
 };
 
 const configServiceGetMock = jest.fn(name => {
@@ -218,6 +249,8 @@ const deployerServiceGetStatusMock = jest.fn(
 );
 const environmentServiceUpdateMock = jest.fn(() => ({}));
 
+const mailServiceMock = jest.fn();
+
 const loggerInfoMock = jest.fn(() => ({}));
 
 describe('DeploymentService', () => {
@@ -240,6 +273,9 @@ describe('DeploymentService', () => {
             },
             environment: {
               update: environmentServiceUpdateMock
+            },
+            user: {
+              findUnique: prismaUserFindUserAccountEmailMock
             }
           }
         },
@@ -281,6 +317,12 @@ describe('DeploymentService', () => {
               default: 'EXAMPLE_DEFAULT_PROVIDER'
             },
             getStatus: deployerServiceGetStatusMock
+          }
+        },
+        {
+          provide: MailService,
+          useValue: {
+            sendDeploymentNotification: mailServiceMock
           }
         },
         DeploymentService
@@ -508,6 +550,11 @@ describe('DeploymentService', () => {
       where: { id: EXAMPLE_DEPLOYMENT_ID },
       data: { status: EnumDeploymentStatus.Completed }
     });
+
+    expect(mailServiceMock).toBeCalledTimes(1);
+    expect(mailServiceMock).toBeCalledWith(
+      EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_SUCCESS
+    );
   });
 
   it('should try to update running deployment status but catch an error', async () => {
@@ -647,6 +694,8 @@ describe('DeploymentService', () => {
       where: { id: EXAMPLE_DEPLOYMENT_ID },
       data: { status: EnumDeploymentStatus.Failed }
     });
+    expect(mailServiceMock).toBeCalledTimes(1);
+    expect(mailServiceMock).toBeCalledWith(EXAMPLE_DEPLOMENT_EXAMPLE_ARGS_FAIL);
   });
 
   it('should try to deploy but the Result Status is Running', async () => {
@@ -781,6 +830,11 @@ describe('DeploymentService', () => {
     expect(actionServiceCompleteMock).toBeCalledWith(
       EXAMPLE_ACTION_STEP,
       EnumActionStepStatus.Success
+    );
+
+    expect(mailServiceMock).toBeCalledTimes(1);
+    expect(mailServiceMock).toBeCalledWith(
+      EXAMPLE_DEPLOYMENT_EXAMPLE_ARGS_FAIL_URL
     );
   });
 

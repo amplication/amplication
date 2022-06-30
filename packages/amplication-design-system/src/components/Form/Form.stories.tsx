@@ -73,7 +73,7 @@ export const WithHeader = (props: any) => {
         <Form
           formHeaderContent={
             <FormHeader title="Form Title">
-              <Button buttonStyle={EnumButtonStyle.Secondary}>Cancel</Button>
+              <Button buttonStyle={EnumButtonStyle.Clear}>Cancel</Button>
               <Button type="submit">Save</Button>
             </FormHeader>
           }

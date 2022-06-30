@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FindSubscriptionsArgs } from './dto/FindSubscriptionsArgs';
 import { Subscription } from './dto/Subscription';
-import { PrismaService } from 'nestjs-prisma';
 import { SubscriptionData } from './dto';
 import { CreateSubscriptionInput } from './dto/CreateSubscriptionInput';
 import {
   EnumSubscriptionStatus,
   Prisma,
+  PrismaService,
   Subscription as PrismaSubscription
-} from '@prisma/client';
+} from '@amplication/prisma-db';
 import { UpdateSubscriptionInput } from './dto/UpdateSubscriptionInput';
 
 @Injectable()

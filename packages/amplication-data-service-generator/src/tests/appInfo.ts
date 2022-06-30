@@ -1,7 +1,15 @@
 import { EnumAuthProviderType } from "../models";
 import { AppInfo } from "../types";
 
-const appInfo: AppInfo = {
+export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
+  ".ts",
+  ".tsx",
+  ".prisma",
+  ".env",
+  ".yml",
+];
+
+export const appInfo: AppInfo = {
   name: "Sample Application",
   description: "Sample application for testing",
   version: "0.1.3",
@@ -14,7 +22,14 @@ const appInfo: AppInfo = {
     dbPassword: "1234",
     dbUser: "testUsername",
     authProvider: EnumAuthProviderType.Http,
+    serverSettings: {
+      generateGraphQL: true,
+      generateRestApi: true,
+      serverPath: "",
+    },
+    adminUISettings: {
+      generateAdminUI: true,
+      adminUIPath: "",
+    },
   },
 };
-
-export default appInfo;

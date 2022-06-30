@@ -8,7 +8,7 @@ import {
   INVALID_APP_ID
 } from './app.service';
 
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService, GitRepository, Project } from '@amplication/prisma-db';
 import { EntityService } from '../entity/entity.service';
 import {
   EnvironmentService,
@@ -38,8 +38,10 @@ import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { QueryMode } from 'src/enums/QueryMode';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { GitRepository } from '@prisma/client';
 import { GitService } from '@amplication/git-service';
+import { AppSettings } from '../appSettings/dto';
+import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
+import { AppSettingsService } from '../appSettings/appSettings.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_APP_ID = 'exampleAppId';
@@ -52,6 +54,13 @@ const EXAMPLE_CUID = 'EXAMPLE_CUID';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
+const EXAMPLE_PROJECT: Project = {
+  id: EXAMPLE_APP_ID,
+  name: EXAMPLE_APP_NAME,
+  deletedAt: null,
+  workspaceId: 'exampleWorkspaceId'
+};
+
 const EXAMPLE_APP: App = {
   ...DEFAULT_APP_DATA,
   id: EXAMPLE_APP_ID,
@@ -60,6 +69,11 @@ const EXAMPLE_APP: App = {
   name: EXAMPLE_APP_NAME,
   description: EXAMPLE_APP_DESCRIPTION,
   deletedAt: null
+};
+
+const APP_WITH_PROJECT = {
+  ...EXAMPLE_APP,
+  project: () => EXAMPLE_PROJECT
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -206,14 +220,39 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   updatedAt: new Date()
 };
 
+const EXAMPLE_APP_SETTINGS: AppSettings = {
+  dbHost: 'exampleDbHost',
+  dbName: 'exampleDbName',
+  dbUser: 'exampleDbUser',
+  dbPassword: 'exampleDbPassword',
+  dbPort: 5532,
+  authProvider: EnumAuthProviderType.Http,
+  adminUISettings: undefined,
+  serverSettings: undefined,
+  id: 'exampleId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  parentBlock: new Block(),
+  displayName: 'exampleDisplayName',
+  description: 'exampleDescription',
+  blockType: 'AppSettings',
+  versionNumber: 0,
+  inputParameters: [],
+  outputParameters: []
+};
+
+const appSettingsCreateMock = jest.fn(() => {
+  return EXAMPLE_APP_SETTINGS;
+});
+
 const prismaAppCreateMock = jest.fn(() => {
   return EXAMPLE_APP;
 });
 const prismaAppFindOneMock = jest.fn(() => {
-  return EXAMPLE_APP;
+  return APP_WITH_PROJECT;
 });
 const prismaAppFindManyMock = jest.fn(() => {
-  return [EXAMPLE_APP];
+  return [APP_WITH_PROJECT];
 });
 const prismaAppDeleteMock = jest.fn(() => {
   return EXAMPLE_APP;
@@ -308,6 +347,9 @@ describe('AppService', () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock
+            },
+            project: {
+              update: jest.fn()
             }
           }))
         },
@@ -342,6 +384,13 @@ describe('AppService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             createDefaultEnvironment: environmentServiceCreateDefaultEnvironmentMock
           }))
+        },
+        {
+          provide: AppSettingsService,
+          useClass: jest.fn(() => ({
+            create: appSettingsCreateMock,
+            createDefaultAppSettings: appSettingsCreateMock
+          }))
         }
       ]
     }).compile();
@@ -374,6 +423,12 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${EXAMPLE_APP_NAME}`,
+            workspaceId: EXAMPLE_USER.workspace?.id
+          }
         }
       }
     };
@@ -500,6 +555,12 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${SAMPLE_APP_DATA.name}`,
+            workspaceId: EXAMPLE_USER.workspace?.id
+          }
         }
       }
     };
@@ -660,6 +721,12 @@ describe('AppService', () => {
         },
         roles: {
           create: EXAMPLE_USER_APP_ROLE
+        },
+        project: {
+          create: {
+            name: `project-${SAMPLE_APP_DATA.name}`,
+            workspaceId: EXAMPLE_USER.workspace?.id
+          }
         }
       }
     };
@@ -848,7 +915,7 @@ describe('AppService', () => {
         id: EXAMPLE_APP_ID
       }
     };
-    expect(await service.app(args)).toEqual(EXAMPLE_APP);
+    expect(await service.app(args)).toEqual(APP_WITH_PROJECT);
     expect(prismaAppFindOneMock).toBeCalledTimes(1);
     expect(prismaAppFindOneMock).toBeCalledWith(args);
   });
@@ -860,7 +927,7 @@ describe('AppService', () => {
         id: EXAMPLE_APP_ID
       }
     };
-    expect(await service.apps(args)).toEqual([EXAMPLE_APP]);
+    expect(await service.apps(args)).toEqual([APP_WITH_PROJECT]);
     expect(prismaAppFindManyMock).toBeCalledTimes(1);
     expect(prismaAppFindManyMock).toBeCalledWith(args);
   });

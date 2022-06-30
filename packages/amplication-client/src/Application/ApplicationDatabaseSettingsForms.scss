@@ -1,5 +1,27 @@
 @import "../style/index.scss";
 
 .application-database-settings-form {
-  padding: var(--double-spacing);
+  padding: var(--default-spacing-small);
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+    h3 {
+      margin: 0;
+      @include title-18();
+    }
+  }
+  &__description {
+    @include regular-14();
+  }
+
+  &__formWrapper {
+    width: 70%;
+    display: inline-flex;
+    flex-wrap: wrap;
+  }
+  &__formWrapper_field {
+    width: 280px;
+    margin-right: 24px;
+    margin-bottom: 24px;
+  }
 }
