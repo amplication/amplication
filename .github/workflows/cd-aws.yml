@@ -55,8 +55,7 @@ jobs:
       #     sudo apt-get install -y curl awscli && curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
       - name: set branch-name
         run: |
-          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
-          echo "SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH_NAME | sed "s/\//-/g")" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
         env:
           SOURCE_BRANCH_NAME: ${{ github.event.inputs.source-branch }}
       - name: calculate docker tags
