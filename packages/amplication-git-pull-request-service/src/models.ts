@@ -1664,6 +1664,7 @@ export type Resource = {
   gitRepositoryId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
+  type: EnumResourceType;
   updatedAt: Scalars['DateTime'];
   workspace: Workspace;
 };
