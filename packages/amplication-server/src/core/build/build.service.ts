@@ -21,13 +21,13 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { EnumActionStepStatus, EnumActionLogLevel } from '../action/dto';
+import { EnumActionStepStatus, EnumActionLogLevel , ActionStep } from '../action/dto';
 import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
 import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
 import { AppSettingsService } from '../appSettings/appSettings.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
-import { ActionStep } from '../action/dto';
+
 import { createZipFileFromModules } from './zip';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
