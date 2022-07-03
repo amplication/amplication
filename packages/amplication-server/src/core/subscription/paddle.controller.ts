@@ -2,7 +2,7 @@ import { Post, Controller, Body, UseInterceptors, Res } from '@nestjs/common';
 import { MorganInterceptor } from 'nest-morgan';
 import { PaddleService } from './paddle.service';
 import { PaddleEvent } from './dto/PaddleEvent';
-import { Response } from 'express';
+import { Response } from 'express'; // eslint-disable-line import/no-unresolved
 
 @Controller('paddle')
 export class PaddleController {

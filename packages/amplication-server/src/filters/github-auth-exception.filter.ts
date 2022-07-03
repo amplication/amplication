@@ -1,5 +1,5 @@
 import { ExceptionFilter, Catch, ArgumentsHost, Inject } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request, Response } from 'express'; // eslint-disable-line import/no-unresolved
 import { Logger } from 'winston';
 
 import { ConfigService } from '@nestjs/config';

@@ -12,7 +12,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { Prisma } from '@amplication/prisma-db';
 import { ApolloError } from 'apollo-server-express';
-import { Request } from 'express';
+import { Request } from 'express'; // eslint-disable-line import/no-unresolved
 import { AmplicationError } from '../errors/AmplicationError';
 
 export type RequestData = {
