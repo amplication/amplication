@@ -7,7 +7,7 @@ import {
   NotFoundException,
   BadRequestException
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response } from 'express'; // eslint-disable-line import/no-unresolved
 import { MorganInterceptor } from 'nest-morgan';
 import { BuildService } from './build.service';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';

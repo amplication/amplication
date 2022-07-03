@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { MorganInterceptor } from 'nest-morgan';
 import { AuthGuard } from '@nestjs/passport';
-import { Request, Response } from 'express';
+import { Request, Response } from 'express'; // eslint-disable-line import/no-unresolved
 import { AuthService, AuthUser } from './auth.service';
 import { GithubAuthExceptionFilter } from 'src/filters/github-auth-exception.filter';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
