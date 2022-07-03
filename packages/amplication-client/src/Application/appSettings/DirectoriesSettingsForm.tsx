@@ -6,7 +6,7 @@ import {
 } from "@amplication/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -15,7 +15,7 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
 import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
-import FORM_SCHEMA from "./formSchema";
+import useSettingsHook from "../useSettingsHook";
 import { GET_APP_SETTINGS, UPDATE_APP_SETTINGS } from "./GenerationSettingsForm";
 
 type Props = {
@@ -52,49 +52,11 @@ function GenerationSettingsForm({ match }: Props) {
     }
   );
 
-    
-
-  const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
-      const {
-        dbHost,
-        dbName,
-        dbPassword,
-        dbPort,
-        dbUser,
-        authProvider,
-        adminUISettings: { generateAdminUI, adminUIPath },
-        serverSettings: { generateRestApi, generateGraphQL, serverPath },
-      } = data;
-
-      trackEvent({
-        eventName: "updateAppSettings",
-      });
-      updateAppSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-            adminUISettings: {
-              generateAdminUI,
-              adminUIPath: adminUIPath || ""
-            },
-            serverSettings: {
-              generateRestApi,
-              generateGraphQL,
-              serverPath: serverPath || ""
-            },
-          },
-          appId: applicationId,
-        },
-      }).catch(console.error);
-    },
-    [updateAppSettings, applicationId, trackEvent]
-  );
+  const {handleSubmit, FORM_SCHEMA} = useSettingsHook({
+    trackEvent,
+    updateAppSettings,
+    applicationId
+  });
 
   return (
     <div className={CLASS_NAME}>
@@ -125,7 +87,7 @@ function GenerationSettingsForm({ match }: Props) {
                   <TextField
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="serverSettings[serverPath]"
-                    placeholder="./packages/[SERVICE-NAME]"
+                    placeholder="packages/[SERVICE-NAME]"
                     label="Server base URL"
                     value={data?.appSettings.serverSettings.serverPath || ""}
                     helpText={data?.appSettings.serverSettings.serverPath}
@@ -138,7 +100,7 @@ function GenerationSettingsForm({ match }: Props) {
                   <TextField
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="adminUISettings[adminUIPath]"
-                    placeholder="./packages/[SERVICE-NAME]"
+                    placeholder="packages/[SERVICE-NAME]"
                     label="Admin UI base URL"
                     disabled={!data?.appSettings.serverSettings.generateGraphQL}
                     value={data?.appSettings.adminUISettings.adminUIPath || ""}
