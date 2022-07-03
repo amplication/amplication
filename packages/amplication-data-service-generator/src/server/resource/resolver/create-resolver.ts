@@ -27,7 +27,6 @@ import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../util/field";
-import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
@@ -51,7 +50,8 @@ export async function createResolverModules(
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
-  dtos: DTOs
+  dtos: DTOs,
+  srcDirectory: string
 ): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
@@ -117,7 +117,8 @@ export async function createResolverModules(
       createMutationId,
       updateMutationId,
       mapping,
-      false
+      false,
+      srcDirectory
     ),
     await createResolverModule(
       templateBasePath,
@@ -134,7 +135,8 @@ export async function createResolverModules(
       createMutationId,
       updateMutationId,
       mapping,
-      true
+      true,
+      srcDirectory
     ),
   ];
 }
@@ -154,10 +156,11 @@ async function createResolverModule(
   createMutationId: namedTypes.Identifier,
   updateMutationId: namedTypes.Identifier,
   mapping: { [key: string]: ASTNode | undefined },
-  isBaseClass: boolean
+  isBaseClass: boolean,
+  srcDirectory: string
 ): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.resolver.ts`;
-  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.resolver.base.ts`;
+  const modulePath = `${srcDirectory}/${entityName}/${entityName}.resolver.ts`;
+  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
   const file = await readFile(templateFilePath);
 
   interpolate(file, mapping);
@@ -252,7 +255,7 @@ async function createResolverModule(
     ]);
   }
 
-  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)

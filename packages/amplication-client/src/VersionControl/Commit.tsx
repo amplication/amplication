@@ -9,7 +9,6 @@ import { GET_LAST_COMMIT } from "./LastCommit";
 import { TextField, Snackbar } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import CommitValidation from "./CommitValidation";
 import "./Commit.scss";
 import {
   CREATED_AT_FIELD,
@@ -92,7 +91,6 @@ const Commit = ({ resourceId, noChanges }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <CommitValidation resourceId={resourceId} />
       <Formik
         initialValues={INITIAL_VALUES}
         onSubmit={handleSubmit}

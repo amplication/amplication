@@ -7,6 +7,11 @@ type Auth {
   token: String!
 }
 
+type AdminUISettings {
+  generateAdminUI: Boolean!
+  adminUIPath: String!
+}
+
 type AuthorizeResourceWithGitResult {
   """"""
   url: String!
@@ -21,21 +26,18 @@ type Query {
   resource(where: WhereUniqueInput!): Resource
   resources(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, take: Int): [Resource!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
-  resourceValidateBeforeCommit(where: WhereUniqueInput!): ResourceValidationResult!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  appSettings(where: WhereUniqueInput!): AppSettings!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  block(where: WhereUniqueInput!): Block!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
   resourceRoles(where: ResourceRoleWhereInput, orderBy: ResourceRoleOrderByInput, skip: Int, take: Int): [ResourceRole!]!
   action(where: WhereUniqueInput!): Action!
-  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]!
-  deployment(where: WhereUniqueInput!): Deployment!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
-  appSettings(where: WhereUniqueInput!): AppSettings!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
-  block(where: WhereUniqueInput!): Block!
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -203,7 +205,6 @@ type Build {
   message: String!
   actionId: String!
   action: Action
-  deployments(where: DeploymentWhereInput, orderBy: DeploymentOrderByInput, take: Int, skip: Int): [Deployment!]
   commit: Commit!
   commitId: String!
 }
@@ -258,47 +259,14 @@ enum EnumActionLogLevel {
   Debug
 }
 
-type Deployment {
-  id: String!
-  createdAt: DateTime!
-  createdBy: User!
-  userId: String!
-  build: Build!
-  buildId: String!
-  environment: Environment!
-  environmentId: String!
-  status: EnumDeploymentStatus!
-  message: String!
-  actionId: String!
-  action: Action
-}
-
-type Environment {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  resource: Resource!
-  resourceId: String!
-  name: String!
-  description: String
-  address: String!
-}
-
-enum EnumDeploymentStatus {
-  Waiting
-  Completed
-  Failed
-  Removed
-}
-
-input DeploymentWhereInput {
+input BuildWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
-  build: WhereUniqueInput!
-  environment: WhereUniqueInput!
-  status: EnumDeploymentStatusFilter
+  resource: WhereUniqueInput!
   createdBy: WhereUniqueInput
+  version: StringFilter
   message: StringFilter
+  commit: WhereUniqueInput
 }
 
 input StringFilter {
@@ -336,36 +304,6 @@ input WhereUniqueInput {
   id: String!
 }
 
-input EnumDeploymentStatusFilter {
-  equals: EnumDeploymentStatus
-  not: EnumDeploymentStatus
-  in: [EnumDeploymentStatus!]
-  notIn: [EnumDeploymentStatus!]
-}
-
-input DeploymentOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  userId: SortOrder
-  status: SortOrder
-  message: SortOrder
-}
-
-enum SortOrder {
-  Asc
-  Desc
-}
-
-input BuildWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  resource: WhereUniqueInput!
-  createdBy: WhereUniqueInput
-  version: StringFilter
-  message: StringFilter
-  commit: WhereUniqueInput
-}
-
 input BuildOrderByInput {
   id: SortOrder
   createdAt: SortOrder
@@ -373,6 +311,11 @@ input BuildOrderByInput {
   status: SortOrder
   version: SortOrder
   message: SortOrder
+}
+
+enum SortOrder {
+  Asc
+  Desc
 }
 
 type PendingChange {
@@ -652,6 +595,17 @@ input EntityOrderByInput {
   description: SortOrder
 }
 
+type Environment {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  resource: Resource!
+  resourceId: String!
+  name: String!
+  description: String
+  address: String!
+}
+
 enum EnumResourceType {
   Service
 }
@@ -726,55 +680,6 @@ input PendingChangesFindInput {
   resource: WhereUniqueInput!
 }
 
-type ResourceValidationResult {
-  isValid: Boolean!
-  messages: [ResourceValidationErrorTypes!]!
-}
-
-enum ResourceValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges
-  CannotMergeCodeToGitHubInvalidResourceId
-  DataServiceGeneratorVersionMissing
-  DataServiceGeneratorVersionInvalid
-}
-
-input ResourceRoleWhereInput {
-  id: String
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  displayName: StringFilter
-  description: StringFilter
-  resource: WhereUniqueInput
-}
-
-input ResourceRoleOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
-input CommitWhereUniqueInput {
-  id: String
-}
-
-input CommitWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  resource: WhereUniqueInput!
-  user: WhereUniqueInput
-  message: StringFilter
-}
-
-input CommitOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  message: SortOrder
-}
-
 type AppSettings implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -794,6 +699,8 @@ type AppSettings implements IBlock {
   dbPassword: String!
   dbPort: Int!
   authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettings!
+  serverSettings: ServerSettings!
 }
 
 interface IBlock {
@@ -831,6 +738,12 @@ enum EnumAuthProviderType {
   Jwt
 }
 
+type ServerSettings {
+  generateGraphQL: Boolean!
+  generateRestApi: Boolean!
+  serverPath: String!
+}
+
 input BlockWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
@@ -856,6 +769,43 @@ input BlockOrderByInput {
   blockType: SortOrder
   displayName: SortOrder
   description: SortOrder
+}
+
+input ResourceRoleWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  description: StringFilter
+  resource: WhereUniqueInput
+}
+
+input ResourceRoleOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+input CommitWhereUniqueInput {
+  id: String
+}
+
+input CommitWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  resource: WhereUniqueInput!
+  user: WhereUniqueInput
+  message: StringFilter
+}
+
+input CommitOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  message: SortOrder
 }
 
 type ApiToken {
@@ -1070,12 +1020,11 @@ type Mutation {
   deleteEntityField(where: WhereUniqueInput!): EntityField!
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   createBuild(data: BuildCreateInput!): Build!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
-  createDeployment(data: DeploymentCreateInput!): Deployment!
-  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1233,6 +1182,30 @@ input EntityFieldUpdateInput {
   position: Int
 }
 
+input AppSettingsUpdateInput {
+  displayName: String
+  description: String
+  dbHost: String!
+  dbName: String!
+  dbUser: String!
+  dbPassword: String!
+  dbPort: Int!
+  authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettingsUpdateInput!
+  serverSettings: ServerSettingsUpdateInput!
+}
+
+input AdminUISettingsUpdateInput {
+  generateAdminUI: Boolean
+  adminUIPath: String
+}
+
+input ServerSettingsUpdateInput {
+  generateGraphQL: Boolean
+  generateRestApi: Boolean
+  serverPath: String
+}
+
 input BuildCreateInput {
   resource: WhereParentIdInput!
   message: String!
@@ -1250,23 +1223,6 @@ input ResourceRoleUpdateInput {
   name: String
   description: String
   displayName: String!
-}
-
-input DeploymentCreateInput {
-  build: WhereParentIdInput!
-  environment: WhereParentIdInput!
-  message: String
-}
-
-input AppSettingsUpdateInput {
-  displayName: String
-  description: String
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
-  authProvider: EnumAuthProviderType!
 }
 
 input SignupInput {

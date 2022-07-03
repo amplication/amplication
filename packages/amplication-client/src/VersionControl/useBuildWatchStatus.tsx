@@ -47,21 +47,7 @@ const useBuildWatchStatus = (
 export default useBuildWatchStatus;
 
 function shouldReload(build: models.Build | undefined): boolean {
-  return (
-    (build &&
-      (build.status === models.EnumBuildStatus.Running ||
-        build.deployments?.some(
-          (deployment) =>
-            deployment.status === models.EnumDeploymentStatus.Waiting
-        ) ||
-        (build.deployments?.length &&
-          build.deployments[0].action?.steps?.some(
-            (step) =>
-              step.status === models.EnumActionStepStatus.Running ||
-              step.status === models.EnumActionStepStatus.Waiting
-          )))) ||
-    false
-  );
+  return (build && build.status === models.EnumBuildStatus.Running) || false;
 }
 
 export const GET_BUILD = gql`
@@ -103,38 +89,6 @@ export const GET_BUILD = gql`
       }
       status
       archiveURI
-      deployments(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        buildId
-        createdAt
-        status
-        actionId
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
-        message
-        environment {
-          id
-          name
-          address
-        }
-      }
     }
   }
 `;

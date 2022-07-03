@@ -2,7 +2,7 @@ import assert from "assert";
 import { EnumEntityAction, EnumEntityPermissionType } from "../models";
 import { namedTypes } from "ast-types";
 import { Entity } from "../types";
-import { removeDecoratorByName, getClassMethodById } from "./ast";
+import { getClassMethodById, removeDecoratorByName } from "./ast";
 import { createPublicDecorator } from "./create-public-decorator";
 import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-generation";
 
