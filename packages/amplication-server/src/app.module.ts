@@ -5,7 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MorganModule } from 'nest-morgan';
-import { Request } from 'express'; // eslint-disable import/no-unresolved
+import { Request } from 'express'; // eslint-disable-line import/no-unresolved
 import { CoreModule } from './core/core.module';
 import { InjectContextInterceptor } from './interceptors/inject-context.interceptor';
 import { RootWinstonModule } from './services/root-winston.module';
