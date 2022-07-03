@@ -20,10 +20,10 @@ export class Project {
   name!: string;
 
   @Field(() => Workspace, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  workspace!: Workspace;
+  workspace?: Workspace;
 
   @Field(() => String, {
     nullable: false,
@@ -32,13 +32,13 @@ export class Project {
   workspaceId!: string;
 
   @Field(() => [Resource], {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
-  resources!: Resource[];
+  resources?: Resource[];
 
   @Field(() => Date, {
-    nullable: false,
+    nullable: true,
     description: undefined
   })
   deletedAt?: Date;
