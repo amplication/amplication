@@ -90,7 +90,7 @@ const useSettingsHook = ({
           data: {
             adminUISettings: {
               generateAdminUI,
-              adminUIPath,
+              adminUIPath: adminUIPath || "",
             },
             dbHost,
             dbName,
@@ -101,7 +101,7 @@ const useSettingsHook = ({
             serverSettings: {
               generateRestApi,
               generateGraphQL,
-              serverPath,
+              serverPath: serverPath || "",
             },
           },
           appId: applicationId,
