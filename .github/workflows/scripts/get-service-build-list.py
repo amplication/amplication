@@ -34,6 +34,8 @@ print(f"packages_folder: {packages_folder}")
 print(f"ee_packages_folder: {ee_packages_folder}")
 print(f"changed_files: {changed_files}")
 
+all_packages = os.listdir(packages_folder) + os.listdir(ee_packages_folder)
+
 
 def is_service(service_list, service_name) -> bool:
     return service_name in service_list
@@ -48,14 +50,15 @@ def get_packages_folder(service_name) -> str:
 def dependet_services(package_name, service_list) -> List[str]:
     npm_package_name = package_name.replace("-", "/", 1)
     for service in all_services:
-        package_json = f"{get_packages_folder(service)}/{service}/package.json"
-        with open(package_json, 'r') as file:
-            depencies = file.read().replace('\n', '')
-        if f"\"@{npm_package_name}\":" in depencies:
-            print(
-                f"The service {service} depends on package {npm_package_name}, will build")
-            if service not in service_list:
-                service_list.append(service)
+        if service in all_packages:
+            package_json = f"{get_packages_folder(service)}/{service}/package.json"
+            with open(package_json, 'r') as file:
+                depencies = file.read().replace('\n', '')
+            if f"\"@{npm_package_name}\":" in depencies:
+                print(
+                    f"The service {service} depends on package {npm_package_name}, will build")
+                if service not in service_list:
+                    service_list.append(service)
 
 
 def get_changed_folders():
@@ -79,7 +82,6 @@ def get_package_name(raw_package) -> str:
 
 
 def get_dependent_packages(service_name):
-    all_packages = os.listdir(packages_folder) + os.listdir(ee_packages_folder)
     dependent_services = []
     for package in all_packages:
         dependet_services(package, dependent_services)
@@ -91,19 +93,20 @@ def get_dependent_packages(service_name):
 changed_folders = get_changed_folders()
 all_services = os.listdir(helm_services_folder)
 for changed_folder in changed_folders:
-    if is_service(all_services, changed_folder):
-        if changed_folder not in service_build_list:
-            service_build_list.append(changed_folder)
-    else:
-        dependet_services(changed_folder, service_build_list)
-    if get_package_name(changed_folder) not in package_build_list:
-        package_build_list.append(get_package_name(changed_folder))
+    if changed_folder in all_packages:
+        if is_service(all_services, changed_folder):
+            if changed_folder not in service_build_list:
+                service_build_list.append(changed_folder)
+        else:
+            dependet_services(changed_folder, service_build_list)
+        if get_package_name(changed_folder) not in package_build_list:
+            package_build_list.append(get_package_name(changed_folder))
+print(f"Will be build packages: {package_build_list}")
 
 for service in all_services:
     dependecies_dict[service] = [service]
     get_dependent_packages(service)
 
-print(f"Will build the follwoing pcakges: {package_build_list}")
 with open(packages_output_file, 'w', encoding='utf-8') as outfile:
     package_build_list_fixed = json.dumps(package_build_list)
     json.dump(package_build_list_fixed, outfile, ensure_ascii=False, indent=4)
