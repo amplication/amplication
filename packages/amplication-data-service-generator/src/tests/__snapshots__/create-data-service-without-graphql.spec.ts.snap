@@ -2563,7 +2563,6 @@ services:
     environment:
       POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
       BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
-      ports: 5432:5432
     depends_on:
       db:
         condition: service_healthy
@@ -2572,6 +2571,7 @@ services:
     environment:
       POSTGRES_USER: \${POSTGRESQL_USER}
       POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+      ports: 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
