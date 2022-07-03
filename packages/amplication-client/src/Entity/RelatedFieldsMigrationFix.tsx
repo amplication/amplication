@@ -34,12 +34,12 @@ const NAVIGATION_KEY = "FIX_RELATED_ENTITIES";
 export const RelatedFieldsMigrationFix = ({ match }: Props) => {
   const applicationId = match.params.application;
   const pendingChangesContext = useContext(PendingChangesContext);
-
+  const pageTitle = "Fix Entity Relations";
   useNavigationTabs(
     applicationId,
     NAVIGATION_KEY,
     match.url,
-    "Fix Entity Relations"
+    pageTitle
   );
 
   const { data, loading, error, refetch } = useQuery<TData>(GET_LOOKUP_FIELDS, {
@@ -100,7 +100,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
     (error && formatError(error)) || (createError && formatError(createError));
 
   return (
-    <PageContent className={CLASS_NAME}>
+    <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
       <h2>New Release Updates</h2>
       <div className={`${CLASS_NAME}__message`}>
         Version 0.3.2 includes big improvements in how we manage related
