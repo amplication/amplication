@@ -48,10 +48,17 @@ export class PullRequestController {
       });
       return { value: pullRequest };
     } catch (error) {
+      this.logger.error(error);
       this.logger.error(
         'Got an exception in pull request service and return error to kafka'
       );
-      return { value: { value: null, status: StatusEnum.GeneralFail, error } };
+      return {
+        value: {
+          value: null,
+          status: StatusEnum.GeneralFail,
+          error: error.message,
+        },
+      };
     }
   }
 }
