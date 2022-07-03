@@ -48,6 +48,8 @@ Make sure you have Node.js 14, npm, and Docker installed.
 
 ```
 
+```
+
 npm install
 
 ```
@@ -95,4 +97,4 @@ npm start
 ## Learn more
 
 You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
-```
+
