@@ -15,15 +15,15 @@ const CLASS_NAME = "amp-page-content";
 function PageContent({ children, sideContent, className, pageTitle }: Props) {
   return (
     <>
-    <Helmet>
-      <title>{pageTitle || "Amplication"}</title>
-    </Helmet>
-    <div className={classNames(CLASS_NAME, className)}>
-      {sideContent && (
-        <div className={`${CLASS_NAME}__tabs`}>{sideContent}</div>
-      )}
-      <main className={`${CLASS_NAME}__main`}>{children}</main>
-    </div>
+      <Helmet>
+        <title>{`Amplication${pageTitle ? `-${pageTitle}` : ""}`}</title>
+      </Helmet>
+      <div className={classNames(CLASS_NAME, className)}>
+        {sideContent && (
+          <div className={`${CLASS_NAME}__tabs`}>{sideContent}</div>
+        )}
+        <main className={`${CLASS_NAME}__main`}>{children}</main>
+      </div>
     </>
   );
 }
