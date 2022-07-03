@@ -2,9 +2,9 @@ import * as models from "../models";
 import { useCallback } from "react";
 
 interface SettingsHookParams {
-  trackEvent:  (event: { eventName: string; [key:string]: any }) => void
-  applicationId: string
-  updateAppSettings: any
+  trackEvent: (event: { eventName: string; [key: string]: any }) => void;
+  applicationId: string;
+  updateAppSettings: any;
 }
 
 const FORM_SCHEMA = {
@@ -65,15 +65,23 @@ const FORM_SCHEMA = {
   ],
 };
 
-
 const useSettingsHook = ({
-  trackEvent, 
+  trackEvent,
   applicationId,
   updateAppSettings,
 }: SettingsHookParams) => {
   const handleSubmit = useCallback(
     (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider, adminUISettings: { generateAdminUI, adminUIPath}, serverSettings: { generateRestApi, generateGraphQL, serverPath} } = data;
+      const {
+        dbHost,
+        dbName,
+        dbPassword,
+        dbPort,
+        dbUser,
+        authProvider,
+        adminUISettings: { generateAdminUI, adminUIPath },
+        serverSettings: { generateRestApi, generateGraphQL, serverPath },
+      } = data;
       trackEvent({
         eventName: "updateAppSettings",
       });
@@ -94,7 +102,7 @@ const useSettingsHook = ({
               generateRestApi,
               generateGraphQL,
               serverPath,
-            }
+            },
           },
           appId: applicationId,
         },
@@ -105,8 +113,8 @@ const useSettingsHook = ({
 
   return {
     handleSubmit,
-    FORM_SCHEMA
-  }
-}
+    FORM_SCHEMA,
+  };
+};
 
 export default useSettingsHook;
