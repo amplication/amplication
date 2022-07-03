@@ -22,9 +22,9 @@ import { EntityService } from '..';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import {
+  ActionStep,
   EnumActionStepStatus,
-  EnumActionLogLevel,
-  ActionStep
+  EnumActionLogLevel
 } from '../action/dto';
 import { AppRoleService } from '../appRole/appRole.service';
 import { AppService } from '../app/app.service'; // eslint-disable-line import/no-cycle
