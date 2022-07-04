@@ -2,98 +2,74 @@
 
 ## Available Scripts
 
-In the project directory you can run:
+In the `server` subdirectory, you can run:
 
 ### `npm start`
 
-Runs the app in the development mode.
+Runs the app in development mode.
 By default, it is accessible at http://localhost:3000
 
 ### `npm test`
 
-Launches the test runner.
+Runs tests.
 
 ### `npm run build`
 
-Builds the app for production to the `dist` folder.
+Builds the app for production in the `dist` folder.
 
-The build is minified and the filenames include the hashes.
 Your app is ready to be deployed!
-
-## Set up development environment
-
-Make sure you have Node.js 14, npm, and Docker installed.
 
 ## Environment Variables:
 
 | Environment          | Description                            | Value                                                       |
 | -------------------- | -------------------------------------- | ----------------------------------------------------------- |
-| DEBUG_MODE           | debug level                            | 1                                                           |
-| POSTGRESQL_URL       | connection url to the database         | postgresql://admin:admin@localhost:5432/\${SERVICE_DB_NAME} |
-| POSTGRESQL_PORT      | the port that the db is running on     | 5432                                                        |
-| COMPOSE_PROJECT_NAME | the project name create in the docker  | amp\_{applicationId}                                        |
-| POSTGRESQL_USER      | username for the local database        | admin                                                       |
-| POSTGRESQL_PASSWORD  | password for the local database        | admin                                                       |
-| SERVER_PORT          | the port that the server is running on | 3000                                                        |
+| DEBUG_MODE           | Debug level                            | 1                                                           |
+| POSTGRESQL_URL       | Local database connection URL         | postgresql://admin:admin@localhost:5432/\${SERVICE_DB_NAME} |
+| POSTGRESQL_PORT      | Local database port     | 5432                                                        |
+| POSTGRESQL_USER      | Local database username        | admin                                                       |
+| POSTGRESQL_PASSWORD  | Local database password        | admin                                                       |
+| COMPOSE_PROJECT_NAME | Docker Compose project name  | amp\_{applicationId}                                        |
+| SERVER_PORT          | The port that the server is listening to | 3000                                                        |
 | JWT_SECRET_KEY       | JWT secret                             | XAFzBpM3es                                                  |
-| JWT_SECRET_KEY       | JWT secret                             | XAFzBpM3es                                                  |
-| JWT_EXPIRATION       | JWT expiration by days                 | 2d                                                          |
+| JWT_EXPIRATION       | JWT expiration in days                 | 2d                                                          |
 
-- Install dependencies
-- Move to server directory
+## Getting Started - Local Development
 
-```
+### Prerequisites
 
-  cd server
+Make sure you have Node.js 16.x, npm, and Docker installed.
+### Install dependencies
+In the `server` subdirectory, run:
 
-```
-
-```
-
+```console
+cd server
 npm install
-
 ```
-
-- Generate Prisma client
-
-```
-
+### Generate Prisma client
+```console
 npm run prisma:generate
-
 ```
 
-- Start database in Docker
+### Start database using Docker
 
-```
-
+```console
 npm run docker:db
-
 ```
 
-- Initiate the database
-
-```
-
+### Initialize the database
+```console
 npm run db:init
-
 ```
 
-- Start the server
-
-```
-
+### Start the server
+```console
 npm start
-
 ```
 
-## Run server deployment (docker-compose)
-
-- run docker with server
-
-```
-
+## Getting Started - Docker Compose
+In the `server` subdirectory, run:
+```console
 npm run compose:up
-
 ```
 
 ## Learn more
