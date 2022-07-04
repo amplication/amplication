@@ -4,18 +4,9 @@ on:
     inputs:
       namespace:
         type: string
-        description: Which namespace you wnat to delete
+        description: Which namespace you want to delete
         default: shimi
         required: true
-      cluster-env:
-          type: choice
-          description: To which cluster environment
-          default: staging-os
-          required: true
-          options:
-            - staging-os
-            - staging
-            - prod
 
 jobs:
   check-ns-name:
@@ -51,7 +42,7 @@ jobs:
       - name: set cluster name
         id: set-cluster-name
         run: |
-          CLUSTER_NAME="useast1-$CLUSTER-ENV"
+          CLUSTER_NAME="useast1-staging-os"
           echo "Will run to $CLUSTER_NAME eks cluster"
           echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
         env:
@@ -62,32 +53,36 @@ jobs:
           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
         env:
           AWS_REGION: us-east-1
+      - name: install argocd
+        id: install-argocd
+        run: |
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
       - name: check if namespace exist
         id: ns-exist
         env: 
           NAMESPACE: ${{ github.event.inputs.namespace }}
         run: |
-          cmd=$(kubectl get ns $NAMESPACE)
           set +e
-          if [[ if -z "$cmd" ]]
+          Get_app="$(argocd app list)"
+          if [[ -z "$Get_app" ]]
           then
             echo "namespace doesn't exist"
-            echo "::set-output name=namespace_exist::false"
+            echo "::set-output name=app_exist::false"
           else
             echo "namespace exists"
-            echo "::set-output name=namespace_exist::true"
+            echo "::set-output name=app_exist::true"
           fi
       - name: delete ns
-        if: ${{ steps.ns-exist.outputs.namespace_exist == "true" }}
+        if: ${{ steps.ns-exist.outputs.app_exist == "true" }}
         env:
           NAMESPACE: ${{ github.event.inputs.namespace }}
+          ARGO_CD_PASSWORD: ${{ secrets.AWS_STAGING_OS_ARGOCD }}
         run: |
-          kubectl delete all --all -n $NAMESPACE
-          kubectl delete ns $NAMESPACE
-          kubectl proxy &
-          kubectl get namespace $NAMESPACE -o json |jq '.spec = {"finalizers":[]}' >temp.json
-          curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json 127.0.0.1:8001/api/v1/namespaces/$NAMESPACE/finalize
-          kubectl get ns
+          ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
+          APPNAME="amplication-$NAMESPACE"
+          argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web
+          argocd app delete $APPNAME
 
 
 
