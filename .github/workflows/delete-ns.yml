@@ -32,7 +32,6 @@ jobs:
     needs: [check-ns-name]
     if: ${{ needs.check-ns-name.outputs.namespace_valid == "true" }}
     steps:
-      - uses: actions/checkout@v2
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
