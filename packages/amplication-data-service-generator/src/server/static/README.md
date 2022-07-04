@@ -86,7 +86,7 @@ npm start
 
 ```
 
-## Run server deployment (docker-compose) 
+## Run server deployment (docker-compose)
 
 - run docker with server
 
