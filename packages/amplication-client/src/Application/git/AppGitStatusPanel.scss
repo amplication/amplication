@@ -15,9 +15,9 @@
     color: var(--black90);
   }
 
-  .amp-button {
-    width: 100%;
-  }
+  // .amp-button {
+  //   width: 100%;
+  // }
 
   &__last-sync {
     @include flexFullRow;
@@ -31,12 +31,5 @@
     i {
       padding-right: calc(var(--default-spacing-small) / 2);
     }
-  }
-
-  hr {
-    border: none;
-    border-top: $border-black10;
-    margin-top: var(--double-spacing);
-    margin-bottom: var(--double-spacing);
   }
 }

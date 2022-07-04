@@ -193,6 +193,8 @@ amplication-storage-gateway:
     hostname: server.staging.amplication-dev.com
   config:
     env:
+      PORT: "3002"
+      CORS_ENABLE: "1"
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group

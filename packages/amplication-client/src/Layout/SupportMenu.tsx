@@ -50,7 +50,7 @@ const SupportMenu = () => {
         Community
       </a>
       <a
-        href="https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title="
+        href="https://github.com/amplication/amplication/issues/new/choose"
         target="githubissue"
         rel="noopener"
         onClick={handleIssueClick}
@@ -58,7 +58,7 @@ const SupportMenu = () => {
         Report an issue
       </a>
       <a
-        href="https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title="
+        href="https://github.com/amplication/amplication/issues/new/choose"
         target="githubfeature"
         rel="noopener"
         onClick={handleFeatureRequestClick}

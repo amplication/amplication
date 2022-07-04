@@ -108,7 +108,9 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
           {(formik) => {
             return (
               <Form>
-                <h3>DB Settings</h3>
+                <div className={`${CLASS_NAME}__header`}>
+                  <h3>Database Settings</h3>
+                </div>
                 <p>
                   All the below settings will appear in clear text in the
                   generated app. <br />
@@ -116,24 +118,39 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
                   variables and should not include sensitive data.
                 </p>
                 <FormikAutoSave debounceMS={2000} />
-                <TextField name="dbHost" autoComplete="off" label="Host" />
-                <TextField
-                  name="dbName"
-                  autoComplete="off"
-                  label="Database Name"
-                />
-                <TextField
-                  name="dbPort"
-                  type="number"
-                  autoComplete="off"
-                  label="Port"
-                />
-                <TextField name="dbUser" autoComplete="off" label="User" />
-                <TextField
-                  name="dbPassword"
-                  autoComplete="off"
-                  label="Password"
-                />
+                <div className={`${CLASS_NAME}__formWrapper`}>
+                  <TextField
+                    className={`${CLASS_NAME}__formWrapper_field`}
+                    name="dbHost"
+                    autoComplete="off"
+                    label="Host"
+                  />
+                  <TextField
+                    className={`${CLASS_NAME}__formWrapper_field`}
+                    name="dbName"
+                    autoComplete="off"
+                    label="Database Name"
+                  />
+                  <TextField
+                    className={`${CLASS_NAME}__formWrapper_field`}
+                    name="dbPort"
+                    type="number"
+                    autoComplete="off"
+                    label="Port"
+                  />
+                  <TextField
+                    className={`${CLASS_NAME}__formWrapper_field`}
+                    name="dbUser"
+                    autoComplete="off"
+                    label="User"
+                  />
+                  <TextField
+                    className={`${CLASS_NAME}__formWrapper_field`}
+                    name="dbPassword"
+                    autoComplete="off"
+                    label="Password"
+                  />
+                </div>
               </Form>
             );
           }}

@@ -1,6 +1,11 @@
 import React from "react";
 import { Button, EnumButtonStyle } from "../../Components/Button";
-import { Icon, Label, Tooltip } from "@amplication/design-system";
+import {
+  EnumIconPosition,
+  Icon,
+  Label,
+  Tooltip,
+} from "@amplication/design-system";
 import { Link } from "react-router-dom";
 import * as models from "../../models";
 import { isEmpty } from "lodash";
@@ -9,12 +14,13 @@ import { format } from "date-fns";
 
 type Props = {
   app: models.App;
+  showDisconnectedMessage: boolean;
 };
 
 const CLASS_NAME = "app-git-status-panel";
 const DATE_FORMAT = "PP p";
 
-const AppGitStatusPanel = ({ app }: Props) => {
+const AppGitStatusPanel = ({ app, showDisconnectedMessage }: Props) => {
   const gitRepositoryFullName = `${app.gitRepository?.gitOrganization.name}/${app.gitRepository?.name}`;
   const repoUrl = `https://github.com/${gitRepositoryFullName}`;
 
@@ -24,12 +30,17 @@ const AppGitStatusPanel = ({ app }: Props) => {
     <div className={CLASS_NAME}>
       {isEmpty(app.gitRepository) ? (
         <>
-          <div className={`${CLASS_NAME}__message`}>
-            Connect to GitHub to create a Pull Request in your GitHub repository
-            with the generated code
-          </div>
+          {showDisconnectedMessage && (
+            <div className={`${CLASS_NAME}__message`}>
+              Connect to GitHub to create a Pull Request with the generated code
+            </div>
+          )}
           <Link title={"Connect to GitHub"} to={`/${app.id}/github`}>
-            <Button buttonStyle={EnumButtonStyle.Secondary} icon="github">
+            <Button
+              buttonStyle={EnumButtonStyle.Secondary}
+              icon="github"
+              iconPosition={EnumIconPosition.Left}
+            >
               Connect to GitHub
             </Button>
           </Link>
@@ -62,8 +73,6 @@ const AppGitStatusPanel = ({ app }: Props) => {
           )}
         </div>
       )}
-
-      <hr />
     </div>
   );
 };

@@ -16,13 +16,10 @@ on:
       - "renovate.json"
       - ".all-contributorsrc"
 
-jobs:       
+jobs:  
   changes:
     runs-on: ubuntu-18.04
     outputs:
-      services: ${{ steps.build_list.outputs.service_build_list }}
-      hashes: ${{ steps.build_list.outputs.hashes }}
-      service_retag_list: ${{ steps.build_list.outputs.service_retag_list }}
       packages: ${{ steps.build_list.outputs.package_build_list }}
     steps:
       - uses: actions/checkout@v2
@@ -57,7 +54,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8 #install the python needed
-      - name: create service build list
+      - name: create package list
         id: build_list
         env:
           CHANGED_FILES_PR: ${{ steps.changed-files-pr.outputs.all_changed_files }}
@@ -66,29 +63,131 @@ jobs:
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           pip install checksumdir
           python .github/workflows/scripts/get-service-build-list.py
-          service_build_list=$(cat $GITHUB_WORKSPACE/service_build_list.json | jq -r .)
-          echo "service_build_list: $service_build_list"
-          echo "::set-output name=service_build_list::$service_build_list"
-
-          service_retag_list=$(cat $GITHUB_WORKSPACE/service_retag_list.json | jq -r .)
-          echo "service_retag_list: $service_retag_list"
-          echo "::set-output name=service_retag_list::$service_retag_list"
-
           package_build_list=$(cat $GITHUB_WORKSPACE/package_build_list.json | jq -r .)
           echo "package_build_list: $package_build_list"
           echo "::set-output name=package_build_list::$package_build_list"
 
-          GITHUB_HASH=$(cat $GITHUB_WORKSPACE/hashes.json | base64 --decode)
-          echo "hashes: $GITHUB_HASH"
-          GITHUB_HASH=$(cat $GITHUB_WORKSPACE/hashes.json)
-          echo "::set-output name=hashes::$GITHUB_HASH"
+  hashes:
+    runs-on: ubuntu-18.04
+    outputs:
+      hashes: ${{ steps.service-hashes.outputs.service_hashes }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: get services hash
+        id: service-hashes
+        uses: ./.github/actions/get-services-hash
+
+      - name: Get the output time
+        run: echo "The step output ${{ steps.service-hashes.outputs.service_hashes }}"
 
       - name: Discord notification
         if: failure()
         uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!"}]'
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
+  
+  docker-build:
+    runs-on: ubuntu-20.04
+    needs: [hashes]
+    if: ${{ needs.hashes.outputs.hashes != '[]' && needs.hashes.outputs.hashes != '' }}
+    timeout-minutes: 45
+    strategy:
+      matrix:
+        service-hash-data: ${{ fromJson(needs.hashes.outputs.hashes) }}
+    env:
+      REPOSITORY_NAME: ${{ matrix.service-hash-data.folder }}
+      IMAGE_HASH: ${{ matrix.service-hash-data.hash }}
+      PACKAGE_NAME: ${{ matrix.service-hash-data.pkg }}
+      SERVICE_FOLDER:  ${{ matrix.service-hash-data.name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get the output time
+        run: echo "The step output ${{ toJson(matrix.service-hash-data) }}"
+
+      - name: Get the output time
+        run: echo "The step output ${{ matrix.service-hash-data.folder }}"
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Check if repo exist
+        run: aws ecr describe-repositories --repository-names $REPOSITORY_NAME || aws ecr create-repository --repository-name $REPOSITORY_NAME
+
+      - name: set branch-name
+        run: echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
+
+      - name: Check if image hash tag is already exist in ECR image repository
+        id: hash-tag-exist
+        run: |
+          set +e
+          cmd="$(aws ecr describe-images --repository-name=$REPOSITORY_NAME --image-ids=imageTag=$IMAGE_HASH)"
+          if [[ ! -z "$cmd" ]]
+          then
+            echo "tag already exist"
+            echo "::set-output name=tag_exist::true"
+          else
+             echo "tag doesn't exist"
+             echo "::set-output name=tag_exist::false"
+           fi
+
+      - name: Build, tag, and push image to Amazon ECR
+        if: ${{ steps.hash-tag-exist.outputs.tag_exist == 'false' }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAG_LIST: "${{ github.run_id }},${{ github.sha }},${{ env.BRANCH_NAME }}"
+        run: |
+          echo "Will work from: $SERVICE_FOLDER"
+          Docker_image=$ECR_REGISTRY/$REPOSITORY_NAME:$IMAGE_HASH
+          echo "Docker_image: $Docker_image"
+          command="docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image"
+          echo "$command"
+          $command
+          docker push $Docker_image
+
+      - name: Retag
+        env:
+          HASH_TAG_EXIST: ${{ steps.hash-tag-exist.outputs.tag_exist }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          TAG_LIST_SHORT: "${{ env.BRANCH_NAME }}"
+          TAG_LIST_FULL: "${{ env.BRANCH_NAME }},${{ github.run_id }}"
+          ECR_REPOSITORY: "${{ env.REPOSITORY_NAME }}"
+        run: |
+          if [[ "$HASH_TAG_EXIST" == 'true' ]]
+          then
+            echo "tag already exist"
+            export TAG_LIST=$TAG_LIST_SHORT
+          else
+            echo "tag doesn't exist"
+            export TAG_LIST=$TAG_LIST_FULL
+          fi
+          echo $TAG_LIST
+          export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
+          echo "MANIFEST: $MANIFEST"
+          sh .github/workflows/scripts/ecr_retag.sh
+
+      - name: Discord notification
+        if: failure()
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
+  
   tests:
     runs-on: ubuntu-20.04
     needs: [changes]
@@ -149,209 +248,4 @@ jobs:
         uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'
-  docker-build:
-    name: docker-build
-    needs: [changes]
-    if: ${{ needs.changes.outputs.services != '[]' && needs.changes.outputs.services != '' }}
-    runs-on: ubuntu-18.04
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.changes.outputs.services) }} 
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-            
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-          aws-region: us-east-1
-          
-      - run: |
-          if [ -d "$GITHUB_WORKSPACE/packages/${{ matrix.service }}" ] 
-          then
-              echo "Directory packages/${{ matrix.service }} exists." 
-              SERVICE_FOLDER=$GITHUB_WORKSPACE/packages/${{ matrix.service }}
-          elif [ -d "$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}" ] 
-          then
-              echo "Directory ee/packages/${{ matrix.service }} exists."
-              SERVICE_FOLDER=$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}
-          else
-            echo "Unable to locate service folder: ${{ matrix.service }}"
-            exit 1
-          fi
-          echo "SERVICE_FOLDER=${SERVICE_FOLDER}" >> $GITHUB_ENV
-        name: Set services folder
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Set ecr repository
-        run: |
-          sh .github/workflows/scripts/get_ecr_repository.sh
-        env:
-          SERVICE_NAME: ${{ matrix.service }}
-      - name: Set hash
-        env:
-          working-directory: packages/${{ matrix.service }}
-          hashes: ${{ needs.changes.outputs.hashes }}
-        run: |
-          echo "hashes: $hashes"
-          echo "$hashes" | base64 --decode > hashes.json
-          echo "matrix.service: ${{ matrix.service }}"
-          echo "----------------------"
-          cat hashes.json
-          echo "----------------------"
-          GITHUB_HASH=$(cat hashes.json | jq -r '."${{ matrix.service }}"')
-          echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
-          echo $GITHUB_HASH
-      - name: Check if repo exist
-        run: |
-          aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
-      - name: set branch-name
-        run: |
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
-      - name: Check if tag already exist
-        id: tag-exist
-        run: |
-          set +e
-          cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$GITHUB_HASH)"
-          if [[ ! -z "$cmd" ]]
-          then  
-            echo "tag already exist"
-            echo "::set-output name=tag_exist::true"
-            cmd="$(aws ecr describe-images --repository-name=$ECR_REPOSITORY --image-ids=imageTag=$BRANCH_NAME)"
-            if [[ ! -z "$cmd" ]]
-            then  
-              echo "tag already exist (branch)"
-            else
-              echo "tag doesn't exist (branch)"
-              export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-              sh .github/workflows/scripts/ecr_retag.sh
-            fi
-          else
-            echo "tag doesn't exist"
-            echo "::set-output name=tag_exist::false"
-          fi
-        env:
-          TAG_LIST: "${{ env.BRANCH_NAME }}" 
-      - name: Build, tag, and push image to Amazon ECR
-        if: ${{ steps.tag-exist.outputs.tag_exist == 'false' }}
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG_LIST: "${{ github.run_id }},${{ github.sha }},${{ env.BRANCH_NAME }}"
-        run: |
-          echo "Will work from: $SERVICE_FOLDER"
-          Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
-          echo "Docker_image: $Docker_image"
-          command="docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image"
-          echo "$command"
-          $command
-          docker push $Docker_image
-          export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-          echo "MANIFEST: $MANIFEST"
-          sh .github/workflows/scripts/ecr_retag.sh
-      - name: Discord notification
-        if: failure()
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
-  docker-retag:
-    name: docker-retag
-    needs: [changes]
-    if: ${{ needs.changes.outputs.service_retag_list != '[]' && needs.changes.outputs.service_retag_list != '' && github.ref != 'refs/heads/master' }}
-    runs-on: ubuntu-18.04
-    strategy:
-      matrix:
-        node-version: [16.x]
-        service: ${{ fromJSON(needs.changes.outputs.service_retag_list) }} 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-          aws-region: us-east-1
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-      - name: Set ecr repository
-        run: |
-          sh .github/workflows/scripts/get_ecr_repository.sh
-        env:
-          SERVICE_NAME: ${{ matrix.service }}
-      - run: |
-          if [ -d "$GITHUB_WORKSPACE/packages/${{ matrix.service }}" ] 
-          then
-              echo "Directory packages/${{ matrix.service }} exists." 
-              SERVICE_FOLDER=$GITHUB_WORKSPACE/packages/${{ matrix.service }}
-          elif [ -d "$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}" ] 
-          then
-              echo "Directory ee/packages/${{ matrix.service }} exists."
-              SERVICE_FOLDER=$GITHUB_WORKSPACE/ee/packages/${{ matrix.service }}
-          else
-            echo "Unable to locate service folder: ${{ matrix.service }}"
-            exit 1
-          fi
-          echo "SERVICE_FOLDER=${SERVICE_FOLDER}" >> $GITHUB_ENV
-        name: Set services folder
-      - name: Set hash
-        env:
-          hashes: ${{ needs.changes.outputs.hashes }}
-        run: |
-          echo "hashes: $hashes"
-          echo "$hashes" | base64 --decode > hashes.json
-          echo "matrix.service: ${{ matrix.service }}"
-          echo "----------------------"
-          cat hashes.json
-          echo "----------------------"
-          GITHUB_HASH=$(cat hashes.json | jq -r '."${{ matrix.service }}"')
-          echo "GITHUB_HASH=${GITHUB_HASH}" >> $GITHUB_ENV
-          echo $GITHUB_HASH  
-      - name: set branch-name
-        run: |
-          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
-      - name: Check if repo exist
-        run: |
-          aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
-      - name: Retag images
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          TAG_LIST_SHORT: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }}"
-          TAG_LIST_FULL: "${{ env.GITHUB_HASH }},${{ env.BRANCH_NAME }},${{ github.run_id }}"
-        run: |
-          echo "Dockerfile path: $SERVICE_FOLDER/Dockerfile"
-          echo "GITHUB_HASH: $GITHUB_HASH"
-          echo "ECR_REPOSITORY: $ECR_REPOSITORY"
-          export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-          if [ "$MANIFEST" = "null" ]
-          then
-            Docker_image=$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_HASH
-            docker build -f $SERVICE_FOLDER/Dockerfile . -t $Docker_image
-            docker push $Docker_image
-            export MANIFEST=$(aws ecr batch-get-image --repository-name $ECR_REPOSITORY --image-ids imageTag=$GITHUB_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
-            export TAG_LIST=$TAG_LIST_FULL
-            echo "FIXED MANIFEST: $MANIFEST"
-          else
-            export TAG_LIST=$TAG_LIST_SHORT
-          fi
-          echo "TAG_LIST: $TAG_LIST"
-          sh .github/workflows/scripts/ecr_retag.sh
-      - name: Discord notification
-        if: failure()
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{ matrix.package }}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
+          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{matrix.package}}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'
