@@ -20,7 +20,7 @@ Builds the app for production to the `dist` folder.
 The build is minified and the filenames include the hashes.
 Your app is ready to be deployed!
 
-## Development
+## Set up development environment
 
 Make sure you have Node.js 14, npm, and Docker installed.
 
@@ -70,14 +70,6 @@ npm run docker:db
 
 ```
 
-- Or, instead running db only, run docker with server
-
-```
-
-npm run docker
-
-```
-
 - Initiate the database
 
 ```
@@ -91,6 +83,16 @@ npm run db:init
 ```
 
 npm start
+
+```
+
+## Run server deployment (docker-compose) 
+
+- run docker with server
+
+```
+
+npm run compose:up
 
 ```
 
