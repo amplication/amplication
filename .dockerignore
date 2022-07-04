@@ -16,8 +16,8 @@ packages/amplication-data-service-generator/generated
 
 
 **/node_modules
-*.md
-**/*.md
+# *.md
+# **/*.md
 *.yaml
 **/*.yaml
 
@@ -28,4 +28,4 @@ packages/**/lib
 **/*.spec.ts
 **/*.mock.ts
 
-!packages/amplication-data-service-generator/dist/**/static
+# !packages/amplication-data-service-generator/dist/**/static
