@@ -7,6 +7,8 @@ export interface Event {
 }
 
 const MISSING_EVENT_NAME = "MISSING_EVENT_NAME";
+//@ts-ignore
+const _hsq = (window._hsq = window._hsq || []);
 
 export const track: reactTracking.Track<Event> = reactTracking.track;
 
@@ -18,9 +20,12 @@ export const useTracking: () => Omit<
 } = reactTracking.useTracking;
 
 export function dispatch(event: Partial<Event>) {
+  const { eventName, ...rest } = event;
+  _hsq.push([
+    "trackCustomBehavioralEvent",
+    { name: eventName, properties: rest },
+  ]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
-    const { eventName, ...rest } = event;
-
     //@ts-ignore
     const analytics = window.analytics;
     analytics.track(eventName || MISSING_EVENT_NAME, rest);
@@ -43,6 +48,7 @@ type EventProps = {
 };
 
 export function identity(userId: string, props: EventProps) {
+  _hsq.push(["identify"], { user: userId, ...props });
   if (REACT_APP_AMPLITUDE_API_KEY) {
     //@ts-ignore
     const analytics = window.analytics;
@@ -51,6 +57,7 @@ export function identity(userId: string, props: EventProps) {
 }
 
 export function page(name?: string, props?: EventProps) {
+  _hsq.push(["trackPageView"]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
     //@ts-ignore
     const analytics = window.analytics;
