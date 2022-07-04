@@ -17,7 +17,13 @@ const Routes = [
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
-    routes: []
+  },
+  {
+    pathNames: ["/github-auth-app/callback"],
+    component: AuthAppWithGitCallback,
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: true,
   },
   {
     pathNames: ["/signup"],
@@ -25,7 +31,6 @@ const Routes = [
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
-    routes: []
   },
   {
     pathNames: ["/user"],
