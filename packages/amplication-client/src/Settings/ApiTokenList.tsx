@@ -113,7 +113,7 @@ export const ApiTokenList = React.memo(() => {
       {data?.userApiTokens.map((token) => (
         <ApiTokenListItem
           key={token.id}
-          applicationId={"data?.entity.appId"}
+          resourceId={"data?.entity.resourceId"}
           apiToken={token}
           onError={setError}
         />

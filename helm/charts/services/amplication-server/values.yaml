@@ -40,11 +40,11 @@ minCPU: 1
 
 
 # Postgresql Server
-postgres:
+postgresql:
   install: false
-  postgresqlUsername: postgres
-  postgresPassword: postgres
-  db: amplication
+  postgresqlPassword: postgres
+  postgresqlPostgresPassword: postgres
+  postgresqlDatabase: amplication
   fullnameOverride: postgresql
   postgresql:
     image: groundnuty/k8s-wait-for:v1.3

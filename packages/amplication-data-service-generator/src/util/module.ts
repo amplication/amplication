@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import memoize from "lodash.memoize";
+import { memoize } from "lodash";
 import * as prettier from "prettier";
 import { namedTypes } from "ast-types";
 import normalize from "normalize-path";
@@ -25,10 +25,6 @@ export { readFile };
 
 export const formatCode = (code: string): string => {
   return prettier.format(code, { parser: "typescript" });
-};
-
-export const formatJson = (code: string): string => {
-  return prettier.format(code, { parser: "json" });
 };
 
 /**

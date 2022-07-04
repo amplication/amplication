@@ -11,10 +11,10 @@ const CLASS_NAME = "commit-header";
 
 type Props = {
   commit: models.Commit;
-  applicationId: string;
+  resourceId: string;
   clickableId?: boolean;
 };
-const CommitHeader = ({ applicationId, commit, clickableId }: Props) => {
+const CommitHeader = ({ resourceId, commit, clickableId }: Props) => {
   const account = commit.user?.account;
 
   return (
@@ -23,7 +23,7 @@ const CommitHeader = ({ applicationId, commit, clickableId }: Props) => {
         Commit{" "}
         {clickableId ? (
           <ClickableId
-            to={`/${applicationId}/commits/${commit.id}`}
+            to={`/${resourceId}/commits/${commit.id}`}
             id={commit.id}
             eventData={{
               eventName: "commitHeaderIdClick",

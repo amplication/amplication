@@ -10,15 +10,6 @@ spec:
       serviceAccountName: default
       containers:
         - name: '{{ .Values.name }}'
-          {{- if hasKey .Values.secrets "GCP" }}
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - /bin/sh
-                  - -c
-                  - cp /var/secrets/gcp-secret /var/gcp-secret 
-          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           resources:

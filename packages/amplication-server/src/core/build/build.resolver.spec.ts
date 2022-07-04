@@ -15,20 +15,16 @@ import { ActionService } from '../action/action.service';
 import { UserService } from '../user/user.service';
 import { Build } from './dto/Build';
 import { Commit, User } from 'src/models/';
-import { Action } from '../action/dto/Action';
+import { Action } from '../action/dto';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { Deployment } from '../deployment/dto/Deployment';
-import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { CommitService } from '../commit/commit.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_VERSION = 'exampleVersion';
 const EXAMPLE_ACTION_ID = 'exampleActionId';
-const EXAMPLE_DEPLOYMENT_ID = 'exampleDeploymentId';
-const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_USER: User = {
@@ -50,19 +46,9 @@ const EXAMPLE_COMMIT: Commit = {
   message: EXAMPLE_MESSAGE
 };
 
-const EXAMPLE_DEPLOYMENT: Deployment = {
-  id: EXAMPLE_DEPLOYMENT_ID,
-  environmentId: EXAMPLE_ENVIRONMENT_ID,
-  userId: EXAMPLE_USER_ID,
-  buildId: EXAMPLE_BUILD_ID,
-  status: EnumDeploymentStatus.Completed,
-  actionId: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
-};
-
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   userId: EXAMPLE_USER_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
@@ -74,7 +60,7 @@ const FIND_MANY_BUILDS_QUERY = gql`
   query {
     builds {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -88,7 +74,7 @@ const FIND_ONE_BUILD_QUERY = gql`
   query($id: String!) {
     build(where: { id: $id }) {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -138,33 +124,17 @@ const BUILD_STATUS_QUERY = gql`
   }
 `;
 
-const GET_DEPLOYMENTS_QUERY = gql`
-  query($buildId: String!) {
-    build(where: { id: $buildId }) {
-      deployments {
-        id
-        environmentId
-        userId
-        buildId
-        status
-        actionId
-        createdAt
-      }
-    }
-  }
-`;
-
 const CREATE_BUILD_MUTATION = gql`
-  mutation($appId: String!, $commitId: String!, $message: String!) {
+  mutation($resourceId: String!, $commitId: String!, $message: String!) {
     createBuild(
       data: {
-        app: { connect: { id: $appId } }
+        resource: { connect: { id: $resourceId } }
         commit: { connect: { id: $commitId } }
         message: $message
       }
     ) {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -184,7 +154,6 @@ const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
 const buildServiceCalcBuildStatusMock = jest.fn(() => {
   return EnumBuildStatus.Completed;
 });
-const buildServiceGetDeploymentsMock = jest.fn(() => [EXAMPLE_DEPLOYMENT]);
 
 const mockCanActivate = jest.fn(() => true);
 
@@ -203,7 +172,6 @@ describe('BuildResolver', () => {
             findMany: buildServiceFindManyMock,
             findOne: buildServiceFindOneMock,
             calcBuildStatus: buildServiceCalcBuildStatusMock,
-            getDeployments: buildServiceGetDeploymentsMock,
             create: buildServiceCreateMock
           }))
         },
@@ -356,30 +324,10 @@ describe('BuildResolver', () => {
     expect(buildServiceCalcBuildStatusMock).toBeCalledWith(EXAMPLE_BUILD_ID);
   });
 
-  it('should get a builds deployments', async () => {
-    const res = await apolloClient.query({
-      query: GET_DEPLOYMENTS_QUERY,
-      variables: { buildId: EXAMPLE_BUILD_ID }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      build: {
-        deployments: [
-          {
-            ...EXAMPLE_DEPLOYMENT,
-            createdAt: EXAMPLE_DEPLOYMENT.createdAt.toISOString()
-          }
-        ]
-      }
-    });
-    expect(buildServiceGetDeploymentsMock).toBeCalledTimes(1);
-    expect(buildServiceGetDeploymentsMock).toBeCalledWith(EXAMPLE_BUILD_ID, {});
-  });
-
   it('should create a build', async () => {
     const args = {
       data: {
-        app: { connect: { id: EXAMPLE_APP_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         commit: { connect: { id: EXAMPLE_COMMIT_ID } },
         message: EXAMPLE_MESSAGE
       }
@@ -387,7 +335,7 @@ describe('BuildResolver', () => {
     const res = await apolloClient.mutate({
       mutation: CREATE_BUILD_MUTATION,
       variables: {
-        appId: EXAMPLE_APP_ID,
+        resourceId: EXAMPLE_RESOURCE_ID,
         commitId: EXAMPLE_COMMIT_ID,
         message: EXAMPLE_MESSAGE
       }

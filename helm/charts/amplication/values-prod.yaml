@@ -38,7 +38,6 @@ amplication-server:
       DISABLE_EVENT_TRACKING: "1"
 
       #KAFKA
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
@@ -121,7 +120,6 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data

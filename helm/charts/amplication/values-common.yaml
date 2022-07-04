@@ -8,7 +8,7 @@ amplication-client:
     tag: "release-0-13-1" # Need to change for dev.
   service:
     hostname: app-dev.staging.amplication-dev.com
-    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
   config:
     env:
       REACT_APP_DATA_SOURCE: "https://server.staging.amplication-dev.com/graphql"
@@ -26,10 +26,10 @@ amplication-server:
     hostname: server.staging.amplication-dev.com
   config:
     env:
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
       GITHUB_SCOPE: "user:email"
-      GOOGLE_APPLICATION_CREDENTIALS: "/var/gcp-secret"
+      GOOGLE_APPLICATION_CREDENTIALS: "/var/secrets/gcp-account-service"
       PORT: "3000"
       NODE_ENV: "production"
       GRAPHQL_DEBUG: "0"
@@ -71,6 +71,7 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server.staging.amplication-dev.com/github/callback"
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
+
 
 amplication-git-push-webhook-service:
   image:
@@ -123,7 +124,7 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 

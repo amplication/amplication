@@ -19,12 +19,12 @@ export class EnvironmentService {
     return this.prisma.environment.create(args);
   }
 
-  async createDefaultEnvironment(appId: string): Promise<Environment> {
+  async createDefaultEnvironment(resourceId: string): Promise<Environment> {
     return this.createEnvironment({
       data: {
-        app: {
+        resource: {
           connect: {
-            id: appId
+            id: resourceId
           }
         },
         address: cuid(),
@@ -32,11 +32,11 @@ export class EnvironmentService {
       }
     });
   }
-  async getDefaultEnvironment(appId: string): Promise<Environment | null> {
+  async getDefaultEnvironment(resourceId: string): Promise<Environment | null> {
     const environments = await this.findMany({
       where: {
-        app: {
-          id: appId
+        resource: {
+          id: resourceId
         },
         name: {
           equals: DEFAULT_ENVIRONMENT_NAME

@@ -10,14 +10,14 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./DiscardChanges.scss";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   onComplete: () => void;
   onCancel: () => void;
 };
 
 const CLASS_NAME = "discard-changes";
 
-const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
+const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
@@ -54,7 +54,7 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
       {
         query: GET_PENDING_CHANGES,
         variables: {
-          applicationId: applicationId,
+          resourceId: resourceId,
         },
       },
     ],
@@ -63,10 +63,10 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
   const handleConfirm = useCallback(() => {
     discardChanges({
       variables: {
-        appId: applicationId,
+        resourceId: resourceId,
       },
     }).catch(console.error);
-  }, [applicationId, discardChanges]);
+  }, [resourceId, discardChanges]);
 
   const errorMessage = formatError(error);
 
@@ -107,7 +107,7 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
 export default DiscardChanges;
 
 const DISCARD_CHANGES = gql`
-  mutation discardChanges($appId: String!) {
-    discardPendingChanges(data: { app: { connect: { id: $appId } } })
+  mutation discardChanges($resourceId: String!) {
+    discardPendingChanges(data: { resource: { connect: { id: $resourceId } } })
   }
 `;

@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { Switch } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 
-import ApplicationLayout from "./Application/ApplicationLayout";
+import ApplicationLayout from "./Resource/ApplicationLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import WorkspaceLayout from "./Workspaces/WorkspaceLayout";
-import { CreateAppFromExcel } from "./Application/CreateAppFromExcel";
+import { CreateResourceFromExcel } from "./Resource/CreateResourceFromExcel";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
@@ -14,7 +14,7 @@ import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import { init as initPaddle } from "./util/paddle";
 import RouteWithAnalytics from "./Layout/RouteWithAnalytics";
-import AuthAppWithGitCallback from "./Application/git/AuthAppWithGitCallback";
+import AuthResourceWithGitCallback from "./Resource/git/AuthResourceWithGitCallback";
 
 const context = {
   source: "amplication-client",
@@ -57,17 +57,17 @@ function App() {
           <PrivateRoute
             exact
             path="/github-auth-app/callback"
-            component={AuthAppWithGitCallback}
+            component={AuthResourceWithGitCallback}
           />
           <PrivateRoute exact path="/" component={WorkspaceLayout} />
           <PrivateRoute path="/workspace" component={WorkspaceLayout} />
           <PrivateRoute path="/user/profile" component={WorkspaceLayout} />
           <PrivateRoute
             exact
-            path="/create-app"
-            component={CreateAppFromExcel}
+            path="/create-resource"
+            component={CreateResourceFromExcel}
           />
-          <PrivateRoute path="/:application" component={ApplicationLayout} />
+          <PrivateRoute path="/:resource" component={ApplicationLayout} />
         </Switch>
       </NavigationTabsProvider>
     </ThemeProvider>

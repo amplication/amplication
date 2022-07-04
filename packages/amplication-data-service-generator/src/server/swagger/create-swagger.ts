@@ -8,15 +8,16 @@ import {
   removeTSVariableDeclares,
 } from "../../util/ast";
 import { readFile } from "../../util/module";
-import { SRC_DIRECTORY } from "../constants";
-
-const MODULE_PATH = `${SRC_DIRECTORY}/swagger.ts`;
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
-export async function createSwagger(appInfo: AppInfo): Promise<Module> {
+export async function createSwagger(
+  appInfo: AppInfo,
+  srcDirectory: string
+): Promise<Module> {
+  const MODULE_PATH = `${srcDirectory}/swagger.ts`;
   const { settings } = appInfo;
   const { authProvider } = settings;
   const file = await readFile(swaggerTemplatePath);
@@ -60,12 +61,12 @@ function getInstructionsAuthentication(
 }
 
 export function getInstructions(authProvider: EnumAuthProviderType): string {
-  return `## Congratulations! Your application is ready.
+  return `## Congratulations! Your service resource is ready.
   
 Please note that all endpoints are secured with ${getInstructionsAuthentication(
     authProvider
   )} authentication.
-By default, your app comes with one user with the username "admin" and password "admin".
+By default, your service resource comes with one user with the username "admin" and password "admin".
 Learn more in [our docs](https://docs.amplication.com)`;
 }
 

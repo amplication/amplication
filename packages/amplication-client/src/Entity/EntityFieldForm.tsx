@@ -30,7 +30,7 @@ type Props = {
   onSubmit: (values: Values) => void;
   isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
-  applicationId: string;
+  resourceId: string;
   entityDisplayName: string;
 };
 
@@ -66,7 +66,7 @@ const EntityFieldForm = ({
   onSubmit,
   defaultValues = {},
   isDisabled,
-  applicationId,
+  resourceId,
   entityDisplayName,
 }: Props) => {
   const initialValues = useMemo(() => {
@@ -159,7 +159,7 @@ const EntityFieldForm = ({
             <SchemaFields
               schema={schema}
               isDisabled={isDisabled}
-              applicationId={applicationId}
+              resourceId={resourceId}
               entityDisplayName={entityDisplayName}
             />
           </Form>

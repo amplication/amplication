@@ -23,9 +23,9 @@ export const EMPTY_STEP: models.ActionStep = {
   message: "",
 };
 
-export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const GENERATE_STEP_NAME = "GENERATE_RESOURCE";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
 export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
@@ -48,27 +48,6 @@ const BuildSteps = ({ build, onError }: Props) => {
       data.build.action.steps.find(
         (step) => step.name === GENERATE_STEP_NAME
       ) || EMPTY_STEP
-    );
-  }, [data.build.action]);
-
-  const stepBuildDocker = useMemo(() => {
-    if (!data.build.action?.steps?.length) {
-      return EMPTY_STEP;
-    }
-    return (
-      data.build.action.steps.find(
-        (step) => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
-      ) || EMPTY_STEP
-    );
-  }, [data.build.action]);
-
-  const stepDeploy = useMemo(() => {
-    if (!data.build.action?.steps?.length) {
-      return EMPTY_STEP;
-    }
-    return (
-      data.build.action.steps.find((step) => step.name === DEPLOY_STEP_NAME) ||
-      EMPTY_STEP
     );
   }, [data.build.action]);
 
@@ -97,11 +76,6 @@ const BuildSteps = ({ build, onError }: Props) => {
 
     return log?.meta?.githubUrl || null;
   }, [data.build.action]);
-
-  const deployment =
-    data.build.deployments &&
-    data.build.deployments.length > 0 &&
-    data.build.deployments[0];
 
   return (
     <div>
@@ -152,52 +126,6 @@ const BuildSteps = ({ build, onError }: Props) => {
           )}
         </Panel>
       )}
-
-      <Panel
-        className={`${CLASS_NAME}__step`}
-        panelStyle={EnumPanelStyle.Bordered}
-      >
-        <Icon icon="docker" />
-        <span>Build Container</span>
-        <BuildStepsStatus status={stepBuildDocker.status} />
-        <span className="spacer" />
-
-        {/*@todo: add missing endpoint to download container and remove className */}
-        <Button
-          className="hidden"
-          buttonStyle={EnumButtonStyle.Text}
-          icon="download1"
-          disabled={data.build.status !== models.EnumBuildStatus.Completed}
-          onClick={handleDownloadClick}
-          eventData={{
-            eventName: "downloadBuild",
-            versionNumber: data.build.version,
-          }}
-        />
-      </Panel>
-      <Panel
-        className={`${CLASS_NAME}__step`}
-        panelStyle={EnumPanelStyle.Bordered}
-      >
-        <Icon icon="publish" />
-        <span>Publish App to Sandbox</span>
-        <BuildStepsStatus status={stepDeploy.status} />
-        <span className="spacer" />
-
-        {deployment &&
-          stepDeploy.status === models.EnumActionStepStatus.Success && (
-            <a href={deployment.environment.address} target="app">
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="link_2"
-                eventData={{
-                  eventName: "openPreviewApp",
-                  versionNumber: data.build.version,
-                }}
-              />
-            </a>
-          )}
-      </Panel>
     </div>
   );
 };

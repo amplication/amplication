@@ -6,7 +6,6 @@ import {
   EnumEntityAction,
   Module,
 } from "../types";
-import { SRC_DIRECTORY } from "./constants";
 
 type Action =
   | "create:any"
@@ -41,15 +40,18 @@ export const READ_ANY: Action = "read:any";
 export const UPDATE_ANY: Action = "update:any";
 export const READ_OWN: Action = "read:own";
 
-export const MODULE_PATH = `${SRC_DIRECTORY}/grants.json`;
-
 /**
  * Creates a grants module from given entities and roles.
  * @param entities entities to create grants according to
  * @param roles all the existing roles
  * @returns grants JSON module
  */
-export function createGrantsModule(entities: Entity[], roles: Role[]): Module {
+export function createGrantsModule(
+  entities: Entity[],
+  roles: Role[],
+  srcDirectory: string
+): Module {
+  const MODULE_PATH = `${srcDirectory}/grants.json`;
   return {
     path: MODULE_PATH,
     code: JSON.stringify(createGrants(entities, roles), null, 2),
@@ -71,7 +73,7 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
           fieldsWithRoles.add(field.name);
           const roles = permissionField.permissionRoles || [];
           for (const permissionFieldRole of roles) {
-            const role = permissionFieldRole.appRole.name;
+            const role = permissionFieldRole.resourceRole.name;
             if (!(role in roleToFields)) {
               roleToFields[role] = new Set();
             }
@@ -101,8 +103,8 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
               "For granular permissions, permissionRoles must be defined"
             );
           }
-          for (const { appRole } of permission.permissionRoles) {
-            const fields = roleToFields[appRole.name] || new Set();
+          for (const { resourceRole } of permission.permissionRoles) {
+            const fields = roleToFields[resourceRole.name] || new Set();
             /** Set of fields allowed other roles */
             const forbiddenFields = difference(fieldsWithRoles, fields);
             const attributes = createAttributes([
@@ -112,7 +114,7 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
               ),
             ]);
             grants.push({
-              role: appRole.name,
+              role: resourceRole.name,
               resource: entity.name,
               action: actionToACLAction[permission.action],
               attributes,

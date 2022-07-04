@@ -28,7 +28,6 @@ import {
 } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
-import { SRC_DIRECTORY } from "../../constants";
 import { DTOs } from "../create-dtos";
 
 const MIXIN_ID = builders.identifier("Mixin");
@@ -36,12 +35,10 @@ const ARGS_ID = builders.identifier("args");
 const DATA_ID = builders.identifier("data");
 const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
 const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
-const PASSWORD_SERVICE_MODULE_PATH = `${SRC_DIRECTORY}/auth/password.service.ts`;
 const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
 const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
   "transformStringFieldUpdateInput"
 );
-const PRISMA_UTIL_MODULE_PATH = `${SRC_DIRECTORY}/prisma.util.ts`;
 const serviceTemplatePath = require.resolve("./service.template.ts");
 const serviceBaseTemplatePath = require.resolve("./service.base.template.ts");
 const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
@@ -52,7 +49,8 @@ export async function createServiceModules(
   entityName: string,
   entityType: string,
   entity: Entity,
-  dtos: DTOs
+  dtos: DTOs,
+  srcDirectory: string
 ): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
   const serviceBaseId = createServiceBaseId(entityType);
@@ -100,7 +98,8 @@ export async function createServiceModules(
       mapping,
       passwordFields,
       serviceId,
-      serviceBaseId
+      serviceBaseId,
+      srcDirectory
     ),
     await createServiceBaseModule(
       entityName,
@@ -111,7 +110,8 @@ export async function createServiceModules(
       serviceId,
       serviceBaseId,
       dtos,
-      delegateId
+      delegateId,
+      srcDirectory
     ),
   ];
 }
@@ -121,10 +121,11 @@ async function createServiceModule(
   mapping: { [key: string]: ASTNode | undefined },
   passwordFields: EntityField[],
   serviceId: namedTypes.Identifier,
-  serviceBaseId: namedTypes.Identifier
+  serviceBaseId: namedTypes.Identifier,
+  srcDirectory: string
 ): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.service.ts`;
-  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.service.base.ts`;
+  const modulePath = `${srcDirectory}/${entityName}/${entityName}.service.ts`;
+  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
   const file = await readFile(serviceTemplatePath);
 
   interpolate(file, mapping);
@@ -164,7 +165,10 @@ async function createServiceModule(
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
-        relativeImportPath(modulePath, PASSWORD_SERVICE_MODULE_PATH)
+        relativeImportPath(
+          modulePath,
+          `${srcDirectory}/auth/password.service.ts`
+        )
       ),
     ]);
   }
@@ -189,9 +193,10 @@ async function createServiceBaseModule(
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
   dtos: DTOs,
-  delegateId: namedTypes.Identifier
+  delegateId: namedTypes.Identifier,
+  srcDirectory: string
 ): Promise<Module> {
-  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.service.base.ts`;
+  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
   const file = await readFile(serviceBaseTemplatePath);
 
   interpolate(file, mapping);
@@ -278,14 +283,17 @@ async function createServiceBaseModule(
     addImports(file, [
       importNames(
         [PASSWORD_SERVICE_ID],
-        relativeImportPath(moduleBasePath, PASSWORD_SERVICE_MODULE_PATH)
+        relativeImportPath(
+          moduleBasePath,
+          `${srcDirectory}/auth/password.service.ts`
+        )
       ),
     ]);
 
     addImports(file, [
       importNames(
         [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
-        relativeImportPath(moduleBasePath, PRISMA_UTIL_MODULE_PATH)
+        relativeImportPath(moduleBasePath, `${srcDirectory}/prisma.util.ts`)
       ),
     ]);
   }

@@ -6,12 +6,12 @@
  */
 export enum AuthorizableResourceParameter {
   WorkspaceId,
-  AppId,
+  ResourceId,
   EntityId,
   EntityFieldId,
   EntityPermissionFieldId,
   BlockId,
-  AppRoleId,
+  ResourceRoleId,
   BuildId,
   ActionId,
   EnvironmentId,

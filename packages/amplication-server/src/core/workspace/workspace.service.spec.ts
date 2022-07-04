@@ -5,7 +5,7 @@ import { PrismaService } from '@amplication/prisma-db';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';
-import { AppService } from '../app/app.service';
+import { ResourceService } from '../resource/resource.service';
 import { MailService } from '../mail/mail.service';
 import { Workspace, Account, User } from 'src/models';
 import { Role } from 'src/enums/Role';
@@ -95,7 +95,7 @@ const passwordServiceHashPasswordMock = jest.fn(() => {
   return EXAMPLE_NEW_PASSWORD;
 });
 
-const appCreateSampleAppMock = jest.fn();
+const resourceCreateSampleResourceMock = jest.fn();
 
 describe('WorkspaceService', () => {
   let service: WorkspaceService;
@@ -130,9 +130,9 @@ describe('WorkspaceService', () => {
           }))
         },
         {
-          provide: AppService,
+          provide: ResourceService,
           useClass: jest.fn().mockImplementation(() => ({
-            createSampleApp: appCreateSampleAppMock
+            createSampleResource: resourceCreateSampleResourceMock
           }))
         },
         {
