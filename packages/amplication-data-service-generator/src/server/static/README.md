@@ -70,14 +70,6 @@ npm run docker:db
 
 ```
 
-- Or, instead running db only, run docker with server
-
-```
-
-npm run docker
-
-```
-
 - Initiate the database
 
 ```
@@ -91,6 +83,16 @@ npm run db:init
 ```
 
 npm start
+
+```
+
+## Run the server in docker container 
+
+- run docker with server (this command replace command: npm start)
+
+```
+
+npm run compose:up
 
 ```
 
