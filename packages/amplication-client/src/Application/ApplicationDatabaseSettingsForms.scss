@@ -7,7 +7,11 @@
     margin-bottom: var(--large-spacing);
     h3 {
       margin: 0;
+      @include title-18();
     }
+  }
+  &__description {
+    @include regular-14();
   }
 
   &__formWrapper {

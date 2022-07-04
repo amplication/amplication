@@ -5,4 +5,10 @@
   &__error {
     color: var(--negative);
   }
+  &__normal {
+    color: #53dbee;
+    font-size: 8px;
+    font-weight: 400;
+    line-height: 12px;
+  }
 }

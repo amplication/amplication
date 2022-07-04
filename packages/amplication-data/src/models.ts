@@ -59,6 +59,17 @@ export type ActionStep = {
   status: EnumActionStepStatus;
 };
 
+export type AdminUiSettings = {
+  __typename?: "AdminUISettings";
+  adminUIPath: Scalars["String"];
+  generateAdminUI: Scalars["Boolean"];
+};
+
+export type AdminUiSettingsUpdateInput = {
+  adminUIPath?: InputMaybe<Scalars["String"]>;
+  generateAdminUI?: InputMaybe<Scalars["Boolean"]>;
+};
+
 export type ApiToken = {
   __typename?: "ApiToken";
   createdAt: Scalars["DateTime"];
@@ -182,6 +193,7 @@ export type AppRoleWhereInput = {
 
 export type AppSettings = IBlock & {
   __typename?: "AppSettings";
+  adminUISettings: AdminUiSettings;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars["DateTime"];
@@ -198,11 +210,13 @@ export type AppSettings = IBlock & {
   lockedByUserId?: Maybe<Scalars["String"]>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  serverSettings: ServerSettings;
   updatedAt: Scalars["DateTime"];
   versionNumber: Scalars["Float"];
 };
 
 export type AppSettingsUpdateInput = {
+  adminUISettings: AdminUiSettingsUpdateInput;
   authProvider: EnumAuthProviderType;
   dbHost: Scalars["String"];
   dbName: Scalars["String"];
@@ -211,25 +225,13 @@ export type AppSettingsUpdateInput = {
   dbUser: Scalars["String"];
   description?: InputMaybe<Scalars["String"]>;
   displayName?: InputMaybe<Scalars["String"]>;
+  serverSettings: ServerSettingsUpdateInput;
 };
 
 export type AppUpdateInput = {
   color?: InputMaybe<Scalars["String"]>;
   description?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<Scalars["String"]>;
-};
-
-export enum AppValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges = "CannotMergeCodeToGitHubBreakingChanges",
-  CannotMergeCodeToGitHubInvalidAppId = "CannotMergeCodeToGitHubInvalidAppId",
-  DataServiceGeneratorVersionInvalid = "DataServiceGeneratorVersionInvalid",
-  DataServiceGeneratorVersionMissing = "DataServiceGeneratorVersionMissing",
-}
-
-export type AppValidationResult = {
-  __typename?: "AppValidationResult";
-  isValid: Scalars["Boolean"];
-  messages: Array<AppValidationErrorTypes>;
 };
 
 export type AppWhereInput = {
@@ -367,19 +369,11 @@ export type Build = {
   commitId: Scalars["String"];
   createdAt: Scalars["DateTime"];
   createdBy: User;
-  deployments?: Maybe<Array<Deployment>>;
   id: Scalars["String"];
   message: Scalars["String"];
   status?: Maybe<EnumBuildStatus>;
   userId: Scalars["String"];
   version: Scalars["String"];
-};
-
-export type BuildDeploymentsArgs = {
-  orderBy?: InputMaybe<DeploymentOrderByInput>;
-  skip?: InputMaybe<Scalars["Int"]>;
-  take?: InputMaybe<Scalars["Int"]>;
-  where?: InputMaybe<DeploymentWhereInput>;
 };
 
 export type BuildCreateInput = {
@@ -581,46 +575,6 @@ export type DateTimeFilter = {
   lte?: InputMaybe<Scalars["DateTime"]>;
   not?: InputMaybe<Scalars["DateTime"]>;
   notIn?: InputMaybe<Array<Scalars["DateTime"]>>;
-};
-
-export type Deployment = {
-  __typename?: "Deployment";
-  action?: Maybe<Action>;
-  actionId: Scalars["String"];
-  build: Build;
-  buildId: Scalars["String"];
-  createdAt: Scalars["DateTime"];
-  createdBy: User;
-  environment: Environment;
-  environmentId: Scalars["String"];
-  id: Scalars["String"];
-  message: Scalars["String"];
-  status: EnumDeploymentStatus;
-  userId: Scalars["String"];
-};
-
-export type DeploymentCreateInput = {
-  build: WhereParentIdInput;
-  environment: WhereParentIdInput;
-  message?: InputMaybe<Scalars["String"]>;
-};
-
-export type DeploymentOrderByInput = {
-  createdAt?: InputMaybe<SortOrder>;
-  id?: InputMaybe<SortOrder>;
-  message?: InputMaybe<SortOrder>;
-  status?: InputMaybe<SortOrder>;
-  userId?: InputMaybe<SortOrder>;
-};
-
-export type DeploymentWhereInput = {
-  build: WhereUniqueInput;
-  createdAt?: InputMaybe<DateTimeFilter>;
-  createdBy?: InputMaybe<WhereUniqueInput>;
-  environment: WhereUniqueInput;
-  id?: InputMaybe<StringFilter>;
-  message?: InputMaybe<StringFilter>;
-  status?: InputMaybe<EnumDeploymentStatusFilter>;
 };
 
 export type Entity = {
@@ -1067,20 +1021,6 @@ export type EnumDataTypeFilter = {
   notIn?: InputMaybe<Array<EnumDataType>>;
 };
 
-export enum EnumDeploymentStatus {
-  Completed = "Completed",
-  Failed = "Failed",
-  Removed = "Removed",
-  Waiting = "Waiting",
-}
-
-export type EnumDeploymentStatusFilter = {
-  equals?: InputMaybe<EnumDeploymentStatus>;
-  in?: InputMaybe<Array<EnumDeploymentStatus>>;
-  not?: InputMaybe<EnumDeploymentStatus>;
-  notIn?: InputMaybe<Array<EnumDeploymentStatus>>;
-};
-
 export enum EnumEntityAction {
   Create = "Create",
   Delete = "Delete",
@@ -1263,7 +1203,6 @@ export type Mutation = {
   createConnectorRestApi: ConnectorRestApi;
   createConnectorRestApiCall: ConnectorRestApiCall;
   createDefaultRelatedField: EntityField;
-  createDeployment: Deployment;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createEntityPage: EntityPage;
@@ -1357,10 +1296,6 @@ export type MutationCreateDefaultRelatedFieldArgs = {
   relatedFieldDisplayName?: InputMaybe<Scalars["String"]>;
   relatedFieldName?: InputMaybe<Scalars["String"]>;
   where: WhereUniqueInput;
-};
-
-export type MutationCreateDeploymentArgs = {
-  data: DeploymentCreateInput;
 };
 
 export type MutationCreateEntityFieldArgs = {
@@ -1586,7 +1521,6 @@ export type Query = {
   appRoles: Array<AppRole>;
   apps: Array<App>;
   appSettings: AppSettings;
-  appValidateBeforeCommit: AppValidationResult;
   block: Block;
   blocks: Array<Block>;
   build: Build;
@@ -1598,8 +1532,6 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   ConnectorRestApis: Array<ConnectorRestApi>;
   currentWorkspace?: Maybe<Workspace>;
-  deployment: Deployment;
-  deployments: Array<Deployment>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
   EntityPage?: Maybe<EntityPage>;
@@ -1643,10 +1575,6 @@ export type QueryAppsArgs = {
 };
 
 export type QueryAppSettingsArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryAppValidateBeforeCommitArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1704,17 +1632,6 @@ export type QueryConnectorRestApisArgs = {
   skip?: InputMaybe<Scalars["Int"]>;
   take?: InputMaybe<Scalars["Int"]>;
   where?: InputMaybe<ConnectorRestApiWhereInput>;
-};
-
-export type QueryDeploymentArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryDeploymentsArgs = {
-  orderBy?: InputMaybe<DeploymentOrderByInput>;
-  skip?: InputMaybe<Scalars["Int"]>;
-  take?: InputMaybe<Scalars["Int"]>;
-  where?: InputMaybe<DeploymentWhereInput>;
 };
 
 export type QueryEntitiesArgs = {
@@ -1786,6 +1703,19 @@ export enum Role {
   ProjectAdmin = "ProjectAdmin",
   User = "User",
 }
+
+export type ServerSettings = {
+  __typename?: "ServerSettings";
+  generateGraphQL: Scalars["Boolean"];
+  generateRestApi: Scalars["Boolean"];
+  serverPath: Scalars["String"];
+};
+
+export type ServerSettingsUpdateInput = {
+  generateGraphQL?: InputMaybe<Scalars["Boolean"]>;
+  generateRestApi?: InputMaybe<Scalars["Boolean"]>;
+  serverPath?: InputMaybe<Scalars["String"]>;
+};
 
 export type SignupInput = {
   email: Scalars["String"];

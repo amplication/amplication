@@ -1,10 +1,11 @@
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
+import { gql } from "@apollo/client/core";
 import { AuthProvider } from "react-admin";
 import {
   CREDENTIALS_LOCAL_STORAGE_ITEM,
   USER_DATA_LOCAL_STORAGE_ITEM,
 } from "../constants";
 import { Credentials, LoginMutateResult } from "../types";
+import { apolloClient } from "../data-provider/graphqlDataProvider";
 
 const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
@@ -17,11 +18,6 @@ const LOGIN = gql`
 
 export const jwtAuthProvider: AuthProvider = {
   login: async (credentials: Credentials) => {
-    const apolloClient = new ApolloClient({
-      uri: "/graphql",
-      cache: new InMemoryCache(),
-    });
-
     const userData = await apolloClient.mutate<LoginMutateResult>({
       mutation: LOGIN,
       variables: {
