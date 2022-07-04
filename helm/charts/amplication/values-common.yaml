@@ -2,64 +2,6 @@ global:
   pvc:
     name: common-efs-claim
 
-cp-helm-charts:
-  enabled: true
-  cp-kafka:
-    enabled: true
-    image: confluentinc/cp-enterprise-kafka
-    imageTag: 6.1.0
-    prometheus:
-      jmx:
-        enabled: true
-    podAnnotations:
-      cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
-    configurationOverrides:
-      default.replication.factor: "1"
-      min.insync.replicas: "1"
-      auto.create.topics.enable: "true"
-      num.io.threads: "8"
-      num.network.threads: "5"
-      num.partitions: "5"
-      num.replica.fetchers: "2"
-      replica.lag.time.max.ms: "30000"
-      socket.receive.buffer.bytes: "102400"
-      socket.request.max.bytes: "104857600"
-      socket.send.buffer.bytes: "102400"
-      unclean.leader.election.enable: "true"
-      zookeeper.session.timeout.ms: "18000"
-      log.retention.hours: "72"
-    resources: {}
-    heapOptions: "-Xms512M -Xmx512M"
-    tolerations:
-      - key: "kafka"
-        operator: "Equal"
-        value: "true"
-    brokers: 1
-    persistence:
-      enabled: true
-      size: 5Gi
-  cp-zookeeper:
-    enabled: true
-    servers: 1
-    image: confluentinc/cp-zookeeper
-    imageTag: 6.1.0
-    heapOptions: "-Xms512M -Xmx512M"
-    persistence:
-      enabled: true
-  cp-schema-registry:
-    enabled: false
-  cp-kafka-rest:
-    enabled: false
-  cp-kafka-connect:
-    enabled: false
-  cp-control-center:
-    enabled: false
-  cp-ksql-server:
-    enabled: false
-
-postgres:
-  install: false
-
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
@@ -203,3 +145,11 @@ amplication-storage-gateway:
 infra:
   pvc:
     name: common-efs-claim
+  cp-helm-charts:
+    enabled: true
+    cp-kafka:
+      enabled: true
+    cp-zookeeper:
+      enabled: true
+  postgres:
+    install: true

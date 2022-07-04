@@ -2,16 +2,6 @@ global:
   pvc:
     name: prod-efs-claim
 
-cp-helm-charts:
-  enabled: false
-  cp-kafka:
-    enabled: false
-  cp-zookeeper:
-    enabled: false
-
-postgres:
-  install: false
-
 amplication-client:
   service:
     hostname: app.prod.amplication-dev.com
@@ -156,3 +146,11 @@ amplication-storage-gateway:
 infra:
   pvc:
     name: prod-efs-claim
+  cp-helm-charts:
+    enabled: false
+    cp-kafka:
+      enabled: false
+    cp-zookeeper:
+      enabled: false
+  postgres:
+    install: false
