@@ -10,7 +10,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./ApplicationAuthSettingForm.scss";
-import { GET_RESOURCE_SETTINGS } from "./appSettings/GenerationSettingsForm";
+import { GET_RESOURCE_SETTINGS } from "./serviceSettings/GenerationSettingsForm";
 
 type Props = {
   match: match<{ resource: string }>;
