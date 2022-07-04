@@ -1,5 +1,5 @@
 import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
-import { Response } from 'express'; // eslint-disable-line import/no-unresolved
+import { Response } from 'express';
 
 @Controller('_health')
 export class HealthController {
