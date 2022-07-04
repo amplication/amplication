@@ -47,6 +47,7 @@ type Query {
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  project(where: WhereUniqueInput!): Project
 }
 
 type Account {
@@ -1039,6 +1040,15 @@ input RemoteGitRepositoriesWhereUniqueInput {
 
 input GitOrganizationWhereInput {
   id: String
+}
+
+type Project {
+  id: String!
+  name: String!
+  workspace: Workspace
+  workspaceId: String!
+  resources: [Resource!]
+  deletedAt: DateTime
 }
 
 type Mutation {
