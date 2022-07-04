@@ -16,7 +16,7 @@ function PageContent({ children, sideContent, className, pageTitle }: Props) {
   return (
     <>
       <Helmet>
-        <title>{`Amplication${pageTitle ? `-${pageTitle}` : ""}`}</title>
+        <title>{`Amplication${pageTitle ? ` | ${pageTitle}` : ""}`}</title>
       </Helmet>
       <div className={classNames(CLASS_NAME, className)}>
         {sideContent && (
