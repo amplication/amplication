@@ -1146,7 +1146,6 @@ type Mutation {
   createAppRole(data: AppRoleCreateInput!): AppRole!
   deleteAppRole(where: WhereUniqueInput!): AppRole
   updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
-  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1360,17 +1359,6 @@ input AppRoleUpdateInput {
   name: String
   description: String
   displayName: String!
-}
-
-input AppSettingsUpdateInput {
-  displayName: String
-  description: String
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
-  authProvider: EnumAuthProviderType!
 }
 
 input SignupInput {
