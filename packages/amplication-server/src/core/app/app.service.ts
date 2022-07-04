@@ -402,7 +402,7 @@ export class AppService {
     await this.prisma.project.update({
       where: { id: project.id },
       data: {
-        name: prepareDeletedItemName(`project-${app.name}`, project.id)
+        name: `project-${app.name}`
       }
     });
 
