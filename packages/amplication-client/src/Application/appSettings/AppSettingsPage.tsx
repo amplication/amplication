@@ -19,11 +19,13 @@ const NAVIGATION_KEY = "APP_SETTINGS";
 
 function AppSettingsPage({ match }: Props) {
   const { application } = match.params;
+  const pageTitle = "App settings";
 
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, `App settings`);
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, pageTitle);
 
   return (
     <PageContent
+      pageTitle={pageTitle}
       sideContent={
         <div>
           <div>

@@ -21,6 +21,7 @@ type TData = {
 
 type Props = {
   match: match<{ application: string }>;
+  pageTitle?: string;
 };
 
 const CREATED_AT_FIELD = "createdAt";
@@ -28,9 +29,8 @@ const CREATED_AT_FIELD = "createdAt";
 const POLL_INTERVAL = 10000;
 const CLASS_NAME = "commit-list";
 
-export const CommitList = ({ match }: Props) => {
+export const CommitList = ({ match, pageTitle }: Props) => {
   const { application } = match.params;
-
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const handleSearchChange = useCallback(
@@ -67,7 +67,7 @@ export const CommitList = ({ match }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME}>
+    <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
       <div className={`${CLASS_NAME}__header`}>
         <SearchField
           label="search"

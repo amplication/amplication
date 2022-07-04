@@ -77,7 +77,7 @@ const BuildPage = ({ match }: Props) => {
 
   return (
     <>
-      <PageContent className={CLASS_NAME}>
+      <PageContent className={CLASS_NAME} pageTitle={`Build ${truncatedId}`}>
         {!data ? (
           "loading..."
         ) : (

@@ -51,11 +51,12 @@ function SyncWithGithubPage({ match }: Props) {
       },
     }
   );
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, `GitHub`);
+  const pageTitle="GitHub";
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, pageTitle);
   const errorMessage = formatError(error);
 
   return (
-    <PageContent>
+    <PageContent pageTitle={pageTitle}>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__header`}>
           <Icon icon="github" size="xlarge" />
