@@ -76,9 +76,7 @@ function GenerationSettingsForm({ match }: Props) {
                   <h3>Base directories</h3>
                 </div>
                 <p className={`${CLASS_NAME}__description`}>
-                  Amplication gives you the choice of which components to
-                  generate. Use the settings to include or exclude GraphQL API,
-                  REST API, and Admin UI.
+                  Enter the Server and Admin-UI directories, if required. This will override the default directories.
                 </p>
                 <hr />
                 <FormikAutoSave debounceMS={1000} />
