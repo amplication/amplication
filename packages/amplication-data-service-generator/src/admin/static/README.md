@@ -7,10 +7,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Environment Variables
 
-| Environment          | Description                            | Value                 |
-| -------------------- | -------------------------------------- | --------------------- |
-| PORT                 | The port that the client UI is listening to           |
-| REACT_APP_SERVER_URL | Amplication Server URL           | http://localhost:3000 |
+| Environment          | Description                                 | Value                 |
+| -------------------- | ------------------------------------------- | --------------------- |
+| PORT                 | The port that the client UI is listening to |
+| REACT_APP_SERVER_URL | Amplication Server URL                      | http://localhost:3000 |
 
 ## Available Scripts
 
