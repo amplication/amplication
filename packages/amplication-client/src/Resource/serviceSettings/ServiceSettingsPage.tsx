@@ -8,6 +8,8 @@ import { ApiTokenList } from "../../Settings/ApiTokenList";
 import ApplicationAuthSettingForm from "../ApplicationAuthSettingForm";
 import ApplicationDatabaseSettingsForms from "../ApplicationDatabaseSettingsForms";
 import ResourceForm from "../ResourceForm";
+import GenerationSettingsForm from "./GenerationSettingsForm";
+import DirectoriesSettingsForm from "./DirectoriesSettingsForm";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -30,6 +32,22 @@ function ServiceSettingsPage({ match }: Props) {
               icon="settings"
             >
               General
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink
+              to={`/${resource}/serviceSettings/generationSettings/update`}
+              icon="settings"
+            >
+              APIs & Admin UI
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink
+              to={`/${resource}/serviceSettings/directories/update`}
+              icon="settings"
+            >
+              Base Directories
             </InnerTabLink>
           </div>
           <div>
@@ -75,6 +93,14 @@ function ServiceSettingsPage({ match }: Props) {
         <RouteWithAnalytics
           path="/:resource/serviceSettings/auth/update"
           component={ApplicationAuthSettingForm}
+        />
+        <RouteWithAnalytics
+          path="/:application/serviceSettings/generationSettings/update"
+          component={GenerationSettingsForm}
+        />
+        <RouteWithAnalytics
+          path="/:application/serviceSettings/directories/update"
+          component={DirectoriesSettingsForm}
         />
       </Switch>
       {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}

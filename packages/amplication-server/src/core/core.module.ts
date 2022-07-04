@@ -13,15 +13,15 @@ import { EntityPageModule } from './entityPage/entityPage.module';
 import { ResourceRoleModule } from './resourceRole/resourceRole.module';
 import { BuildModule } from './build/build.module';
 import { ActionModule } from './action/action.module';
-import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
-import { SystemModule } from './system/system.module';
 import { MailModule } from './mail/mail.module';
 import { ServiceSettingsModule } from './serviceSettings/serviceSettings.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
+import { HealthModule } from './health/health.module';
+
 @Module({
   imports: [
     AccountModule,
@@ -38,16 +38,15 @@ import { GitProviderModule } from './git/git.provider.module';
     ResourceRoleModule,
     BuildModule,
     ActionModule,
-    DeploymentModule,
     EnvironmentModule,
     CommitModule,
-    SystemModule,
     ServiceSettingsModule,
     GitModule,
     GitProviderModule,
     CommitModule,
     MailModule,
-    SubscriptionModule
+    SubscriptionModule,
+    HealthModule
   ],
   exports: [
     AccountModule,
@@ -63,7 +62,6 @@ import { GitProviderModule } from './git/git.provider.module';
     ResourceRoleModule,
     BuildModule,
     ActionModule,
-    DeploymentModule,
     EnvironmentModule,
     CommitModule,
     ServiceSettingsModule,

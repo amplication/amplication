@@ -10,6 +10,7 @@ import { ResourceService } from './resource.service';
 import { ResourceResolver } from './resource.resolver';
 import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
 import { GitModule } from '@amplication/git-service';
+import { ServiceSettingsModule } from '../serviceSettings/serviceSettings.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { GitModule } from '@amplication/git-service';
     PermissionsModule,
     UserModule,
     EntityModule,
+    ServiceSettingsModule,
     forwardRef(() => BuildModule),
     EnvironmentModule,
     CommitModule,

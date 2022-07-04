@@ -1,24 +1,20 @@
-import { ResourceGenerationConfig } from '@amplication/data-service-generator';
-import { GitService } from '@amplication/git-service';
 import { GitRepository, PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
-import * as semver from 'semver';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { AmplicationError } from 'src/errors/AmplicationError';
 import { Commit, Resource, User, Workspace } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { BlockService } from '../block/block.service';
 import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
-import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import {
   CreateCommitArgs,
   CreateOneResourceArgs,
@@ -27,8 +23,6 @@ import {
   FindPendingChangesArgs,
   PendingChange,
   ResourceCreateWithEntitiesInput,
-  ResourceValidationErrorTypes,
-  ResourceValidationResult,
   UpdateOneResourceArgs
 } from './dto';
 import { InvalidColorError } from './InvalidColorError';
@@ -54,8 +48,6 @@ export const DEFAULT_RESOURCE_DATA = {
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 
-const RESOURCE_CONFIG_FILE_PATH = 'ampconfig.json';
-
 @Injectable()
 export class ResourceService {
   constructor(
@@ -64,7 +56,7 @@ export class ResourceService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private readonly gitService: GitService
+    private serviceSettingsService: ServiceSettingsService
   ) {}
 
   /**
@@ -103,6 +95,11 @@ export class ResourceService {
     await this.entityService.createDefaultEntities(resource.id, user);
 
     await this.environmentService.createDefaultEnvironment(resource.id);
+
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      resource.id,
+      user
+    );
 
     try {
       await this.commit(
@@ -608,141 +605,6 @@ export class ResourceService {
     //await this.prisma.$transaction(allPromises);
 
     return true;
-  }
-
-  /**
-   * Runs validations on the resource and returns a list of warnings.
-   * When the validation fails, a commit can still be executed and it is up to the user/client to decide how to handle the warnings.
-   * @todo: Add mechanism to run validation on the server before commit and prevent commit with errors
-   *
-   */
-  async validateBeforeCommit(
-    args: FindOneArgs
-  ): Promise<ResourceValidationResult> {
-    const messages = [];
-    let isValid = true;
-
-    const resource = await this.prisma.resource.findUnique({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    const resourceRepo = await this.prisma.gitRepository.findUnique({
-      where: {
-        resourceId: resource.id
-      }
-    });
-
-    if (isEmpty(resource)) {
-      throw new Error(INVALID_RESOURCE_ID);
-    }
-
-    if (!resourceRepo) return { isValid, messages };
-    if (!resource.githubLastSync) return { isValid, messages }; //if the repo was never synced before, skip the below validation as they are all related to GitHub sync
-
-    const config = await this.getResourceGenerationConfigFromGitHub(args);
-
-    if (!config) {
-      isValid = false;
-      messages.push(
-        ResourceValidationErrorTypes.DataServiceGeneratorVersionMissing
-      );
-      //since the config is empty, return immediately
-      return { isValid, messages };
-    }
-
-    if (!config.dataServiceGeneratorVersion) {
-      isValid = false;
-      messages.push(
-        ResourceValidationErrorTypes.DataServiceGeneratorVersionMissing
-      );
-    }
-
-    if (
-      config.dataServiceGeneratorVersion &&
-      !semver.valid(config.dataServiceGeneratorVersion)
-    ) {
-      isValid = false;
-      messages.push(
-        ResourceValidationErrorTypes.DataServiceGeneratorVersionInvalid
-      );
-    }
-
-    if (
-      semver.valid(config.dataServiceGeneratorVersion) &&
-      semver.lt(config.dataServiceGeneratorVersion, '0.4.0')
-    ) {
-      isValid = false;
-      messages.push(
-        ResourceValidationErrorTypes.CannotMergeCodeToGitHubBreakingChanges
-      );
-    }
-
-    if (config?.appInfo?.id != resource.id) {
-      isValid = false;
-      messages.push(
-        ResourceValidationErrorTypes.CannotMergeCodeToGitHubInvalidResourceId
-      );
-    }
-
-    return {
-      isValid,
-      messages
-    };
-  }
-
-  async getResourceGenerationConfigFromGitHub(
-    args: FindOneArgs
-  ): Promise<ResourceGenerationConfig | null> {
-    const resource = await this.resource({
-      where: {
-        id: args.where.id
-      }
-    });
-
-    const resourceRepository = await this.prisma.gitRepository.findFirst({
-      where: {
-        resourceId: resource.id
-      },
-      include: {
-        gitOrganization: true
-      }
-    });
-
-    if (isEmpty(resource)) {
-      throw new Error(INVALID_RESOURCE_ID);
-    }
-
-    if (isEmpty(resource.gitRepository)) {
-      throw new Error(`This resource is not authorized with any GitHub repo`);
-    }
-    let configFile;
-
-    try {
-      configFile = await this.gitService.getFile(
-        EnumGitProvider[resourceRepository.gitOrganization.provider],
-        resourceRepository.gitOrganization.name,
-        resourceRepository.name,
-        RESOURCE_CONFIG_FILE_PATH,
-        null,
-        resourceRepository.gitOrganization.installationId
-      );
-    } catch (error) {
-      //in case the file was not found on GitHub, return null
-      return null;
-    }
-
-    let config;
-    try {
-      config = JSON.parse(configFile.content);
-    } catch (error) {
-      throw new AmplicationError(
-        `Unexpected config file format in the linked GitHub repo. The file must be a valid JSON object`
-      );
-    }
-
-    return config;
   }
 
   async reportSyncMessage(

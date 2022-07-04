@@ -10,7 +10,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { match } from "react-router-dom";
 import "./ApplicationDatabaseSettingsForms.scss";
-import { GET_APP_SETTINGS } from "./constants";
+import { GET_RESOURCE_SETTINGS } from "./serviceSettings/GenerationSettingsForm";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -52,7 +52,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
   const resourceId = match.params.resource;
   const { data, error } = useQuery<{
     serviceSettings: models.ServiceSettings;
-  }>(GET_APP_SETTINGS, {
+  }>(GET_RESOURCE_SETTINGS, {
     variables: {
       id: resourceId,
     },
@@ -111,7 +111,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
                 <div className={`${CLASS_NAME}__header`}>
                   <h3>Database Settings</h3>
                 </div>
-                <p>
+                <p className={`${CLASS_NAME}__description`}>
                   All the below settings will appear in clear text in the
                   generated resource. <br />
                   It should only be used for the development environment

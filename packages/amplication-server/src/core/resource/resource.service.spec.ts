@@ -44,6 +44,8 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_SERVICE_DATA
 } from './sampleResource';
+import { ServiceSettings } from '../serviceSettings/dto';
+import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
@@ -210,7 +212,6 @@ const EXAMPLE_BUILD: Build = {
   version: '1.0.0',
   message: 'new build',
   actionId: 'ExampleActionId',
-  images: [],
   commitId: EXAMPLE_COMMIT_ID
 };
 
@@ -223,9 +224,31 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   updatedAt: new Date()
 };
 
-const prismaResourceCreateMock = jest.fn(() => {
-  return EXAMPLE_RESOURCE;
+const EXAMPLE_APP_SETTINGS: ServiceSettings = {
+  dbHost: 'exampleDbHost',
+  dbName: 'exampleDbName',
+  dbUser: 'exampleDbUser',
+  dbPassword: 'exampleDbPassword',
+  dbPort: 5532,
+  authProvider: EnumAuthProviderType.Http,
+  adminUISettings: undefined,
+  serverSettings: undefined,
+  id: 'exampleId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  parentBlock: new Block(),
+  displayName: 'exampleDisplayName',
+  description: 'exampleDescription',
+  blockType: EnumBlockType.ServiceSettings,
+  versionNumber: 0,
+  inputParameters: [],
+  outputParameters: []
+};
+
+const serviceSettingsCreateMock = jest.fn(() => {
+  return EXAMPLE_APP_SETTINGS;
 });
+
 const prismaResourceFindOneMock = jest.fn(() => {
   return RESOURCE_WITH_PROJECT;
 });
@@ -361,6 +384,13 @@ describe('ResourceService', () => {
           provide: EnvironmentService,
           useClass: jest.fn().mockImplementation(() => ({
             createDefaultEnvironment: environmentServiceCreateDefaultEnvironmentMock
+          }))
+        },
+        {
+          provide: ServiceSettingsService,
+          useClass: jest.fn(() => ({
+            create: serviceSettingsCreateMock,
+            createDefaultServiceSettings: serviceSettingsCreateMock
           }))
         }
       ]

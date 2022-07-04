@@ -11,7 +11,7 @@ postgres:
 amplication-client:
   service:
     hostname: app.staging-os.amplication-dev.com
-    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
   config:
     env:
       REACT_APP_SERVER_URI: "https://server.staging-os.amplication-dev.com"

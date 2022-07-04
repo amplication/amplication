@@ -2,8 +2,8 @@ import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
-import { GET_APP_SETTINGS as GET_RESOURCE_SETTINGS } from "../constants";
 import { ServiceSettings, EnumAuthProviderType } from "../../models";
+import { GET_RESOURCE_SETTINGS } from "../serviceSettings/GenerationSettingsForm";
 
 type Props = {
   resourceId: string;
@@ -81,7 +81,12 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
             <div className={`${CLASS_NAME}__content__item__text`}>
               Authentication
               <span className={`${CLASS_NAME}__content__item__text--blue`}>
-                {AuthProviderLabels[data?.serviceSettings.authProvider]}
+                {
+                  AuthProviderLabels[
+                    data?.serviceSettings.authProvider ||
+                      EnumAuthProviderType.Jwt
+                  ]
+                }
               </span>
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>Jest</div>

@@ -4,9 +4,11 @@ import { FindOneArgs } from 'src/dto';
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from './constants';
-import { isEmpty } from 'lodash';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+
+export const isStringBool = (val: any) =>
+  typeof val === 'boolean' || typeof val === 'string';
 
 @Injectable()
 export class ServiceSettingsService {
@@ -23,7 +25,9 @@ export class ServiceSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      authProvider
+      authProvider,
+      serverSettings,
+      adminUISettings
     } = await this.getServiceSettingsBlock(args, user);
 
     return {
@@ -33,7 +37,9 @@ export class ServiceSettingsService {
       dbPort,
       dbUser,
       resourceId: args.where.id,
-      authProvider
+      authProvider,
+      serverSettings,
+      adminUISettings
     };
   }
 
@@ -53,13 +59,33 @@ export class ServiceSettingsService {
       },
       EnumBlockType.ServiceSettings
     );
-    if (isEmpty(serviceSettings)) {
-      return this.createDefaultServiceSettings(args.where.id, user);
-    }
 
     return {
       ...serviceSettings,
-      authProvider: serviceSettings.authProvider || EnumAuthProviderType.Http
+      authProvider: serviceSettings.authProvider || EnumAuthProviderType.Jwt,
+      ...(!serviceSettings.hasOwnProperty('serverSettings') ||
+      !serviceSettings.hasOwnProperty('adminUISettings')
+        ? this.updateServiceSettings(
+            {
+              data: {
+                ...serviceSettings,
+                serverSettings: {
+                  generateGraphQL: true,
+                  generateRestApi: true,
+                  serverPath: ''
+                },
+                adminUISettings: {
+                  generateAdminUI: true,
+                  adminUIPath: ''
+                }
+              },
+              where: {
+                id: args.where.id
+              }
+            },
+            user
+          )
+        : {})
     };
   }
 
@@ -79,7 +105,49 @@ export class ServiceSettingsService {
         where: {
           id: serviceSettingsBlock.id
         },
-        data: args.data
+        data: {
+          ...serviceSettingsBlock,
+          ...args.data,
+          adminUISettings: {
+            adminUIPath: isStringBool(args.data?.adminUISettings?.adminUIPath)
+              ? args.data?.adminUISettings?.adminUIPath
+              : serviceSettingsBlock.adminUISettings.adminUIPath,
+            generateAdminUI: isStringBool(
+              args.data?.adminUISettings?.generateAdminUI
+            )
+              ? args.data?.adminUISettings?.generateAdminUI
+              : serviceSettingsBlock.adminUISettings.generateAdminUI
+          },
+          ...{
+            serverSettings: {
+              generateGraphQL: isStringBool(
+                args.data?.serverSettings?.generateGraphQL
+              )
+                ? args.data?.serverSettings?.generateGraphQL
+                : serviceSettingsBlock.serverSettings.generateGraphQL,
+              generateRestApi: isStringBool(
+                args.data?.serverSettings?.generateRestApi
+              )
+                ? args.data?.serverSettings?.generateRestApi
+                : serviceSettingsBlock.serverSettings.generateRestApi,
+              serverPath: isStringBool(args.data?.serverSettings?.serverPath)
+                ? args.data?.serverSettings?.serverPath
+                : serviceSettingsBlock.serverSettings.serverPath
+            }
+          },
+          ...(!args.data.serverSettings.generateGraphQL
+            ? {
+                adminUISettings: {
+                  adminUIPath: isStringBool(
+                    args.data?.adminUISettings?.adminUIPath
+                  )
+                    ? args.data?.adminUISettings?.adminUIPath
+                    : serviceSettingsBlock.adminUISettings.adminUIPath,
+                  generateAdminUI: false
+                }
+              }
+            : {})
+        }
       },
       user
     );

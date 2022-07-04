@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -59,6 +57,17 @@ export type ActionStep = {
   message: Scalars['String'];
   name: Scalars['String'];
   status: EnumActionStepStatus;
+};
+
+export type AdminUiSettings = {
+  __typename?: 'AdminUISettings';
+  adminUIPath: Scalars['String'];
+  generateAdminUI: Scalars['Boolean'];
+};
+
+export type AdminUiSettingsUpdateInput = {
+  adminUIPath?: InputMaybe<Scalars['String']>;
+  generateAdminUI?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type ApiToken = {
@@ -202,7 +211,6 @@ export type Build = {
   commitId: Scalars['String'];
   createdAt: Scalars['DateTime'];
   createdBy: User;
-  deployments?: Maybe<Array<Deployment>>;
   id: Scalars['String'];
   message: Scalars['String'];
   resource: Resource;
@@ -210,13 +218,6 @@ export type Build = {
   status?: Maybe<EnumBuildStatus>;
   userId: Scalars['String'];
   version: Scalars['String'];
-};
-
-export type BuildDeploymentsArgs = {
-  orderBy?: InputMaybe<DeploymentOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<DeploymentWhereInput>;
 };
 
 export type BuildCreateInput = {
@@ -369,11 +370,15 @@ export type ConnectorRestApiCreateInput = {
   authenticationType: EnumConnectorRestApiAuthenticationType;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  httpBasicAuthenticationSettings?: InputMaybe<HttpBasicAuthenticationSettingsInput>;
+  httpBasicAuthenticationSettings?: InputMaybe<
+    HttpBasicAuthenticationSettingsInput
+  >;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  privateKeyAuthenticationSettings?: InputMaybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: InputMaybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
   resource: WhereParentIdInput;
 };
 
@@ -414,46 +419,6 @@ export type DateTimeFilter = {
   lte?: InputMaybe<Scalars['DateTime']>;
   not?: InputMaybe<Scalars['DateTime']>;
   notIn?: InputMaybe<Array<Scalars['DateTime']>>;
-};
-
-export type Deployment = {
-  __typename?: 'Deployment';
-  action?: Maybe<Action>;
-  actionId: Scalars['String'];
-  build: Build;
-  buildId: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  createdBy: User;
-  environment: Environment;
-  environmentId: Scalars['String'];
-  id: Scalars['String'];
-  message: Scalars['String'];
-  status: EnumDeploymentStatus;
-  userId: Scalars['String'];
-};
-
-export type DeploymentCreateInput = {
-  build: WhereParentIdInput;
-  environment: WhereParentIdInput;
-  message?: InputMaybe<Scalars['String']>;
-};
-
-export type DeploymentOrderByInput = {
-  createdAt?: InputMaybe<SortOrder>;
-  id?: InputMaybe<SortOrder>;
-  message?: InputMaybe<SortOrder>;
-  status?: InputMaybe<SortOrder>;
-  userId?: InputMaybe<SortOrder>;
-};
-
-export type DeploymentWhereInput = {
-  build: WhereUniqueInput;
-  createdAt?: InputMaybe<DateTimeFilter>;
-  createdBy?: InputMaybe<WhereUniqueInput>;
-  environment: WhereUniqueInput;
-  id?: InputMaybe<StringFilter>;
-  message?: InputMaybe<StringFilter>;
-  status?: InputMaybe<EnumDeploymentStatusFilter>;
 };
 
 export type Entity = {
@@ -900,20 +865,6 @@ export type EnumDataTypeFilter = {
   notIn?: InputMaybe<Array<EnumDataType>>;
 };
 
-export enum EnumDeploymentStatus {
-  Completed = 'Completed',
-  Failed = 'Failed',
-  Removed = 'Removed',
-  Waiting = 'Waiting',
-}
-
-export type EnumDeploymentStatusFilter = {
-  equals?: InputMaybe<EnumDeploymentStatus>;
-  in?: InputMaybe<Array<EnumDeploymentStatus>>;
-  not?: InputMaybe<EnumDeploymentStatus>;
-  notIn?: InputMaybe<Array<EnumDeploymentStatus>>;
-};
-
 export enum EnumEntityAction {
   Create = 'Create',
   Delete = 'Delete',
@@ -1097,7 +1048,6 @@ export type Mutation = {
   createConnectorRestApi: ConnectorRestApi;
   createConnectorRestApiCall: ConnectorRestApiCall;
   createDefaultRelatedField: EntityField;
-  createDeployment: Deployment;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createEntityPage: EntityPage;
@@ -1182,10 +1132,6 @@ export type MutationCreateDefaultRelatedFieldArgs = {
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
   where: WhereUniqueInput;
-};
-
-export type MutationCreateDeploymentArgs = {
-  data: DeploymentCreateInput;
 };
 
 export type MutationCreateEntityFieldArgs = {
@@ -1429,8 +1375,6 @@ export type Query = {
   ConnectorRestApiCalls: Array<ConnectorRestApiCall>;
   ConnectorRestApis: Array<ConnectorRestApi>;
   currentWorkspace?: Maybe<Workspace>;
-  deployment: Deployment;
-  deployments: Array<Deployment>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
   EntityPage?: Maybe<EntityPage>;
@@ -1444,7 +1388,6 @@ export type Query = {
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
-  resourceValidateBeforeCommit: ResourceValidationResult;
   serviceSettings: ServiceSettings;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
@@ -1512,17 +1455,6 @@ export type QueryConnectorRestApisArgs = {
   where?: InputMaybe<ConnectorRestApiWhereInput>;
 };
 
-export type QueryDeploymentArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryDeploymentsArgs = {
-  orderBy?: InputMaybe<DeploymentOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<DeploymentWhereInput>;
-};
-
 export type QueryEntitiesArgs = {
   orderBy?: InputMaybe<EntityOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
@@ -1584,10 +1516,6 @@ export type QueryResourcesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<ResourceWhereInput>;
-};
-
-export type QueryResourceValidateBeforeCommitArgs = {
-  where: WhereUniqueInput;
 };
 
 export type QueryServiceSettingsArgs = {
@@ -1730,19 +1658,6 @@ export type ResourceUpdateInput = {
   name?: InputMaybe<Scalars['String']>;
 };
 
-export enum ResourceValidationErrorTypes {
-  CannotMergeCodeToGitHubBreakingChanges = 'CannotMergeCodeToGitHubBreakingChanges',
-  CannotMergeCodeToGitHubInvalidResourceId = 'CannotMergeCodeToGitHubInvalidResourceId',
-  DataServiceGeneratorVersionInvalid = 'DataServiceGeneratorVersionInvalid',
-  DataServiceGeneratorVersionMissing = 'DataServiceGeneratorVersionMissing',
-}
-
-export type ResourceValidationResult = {
-  __typename?: 'ResourceValidationResult';
-  isValid: Scalars['Boolean'];
-  messages: Array<ResourceValidationErrorTypes>;
-};
-
 export type ResourceWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
@@ -1758,8 +1673,22 @@ export enum Role {
   User = 'User',
 }
 
+export type ServerSettings = {
+  __typename?: 'ServerSettings';
+  generateGraphQL: Scalars['Boolean'];
+  generateRestApi: Scalars['Boolean'];
+  serverPath: Scalars['String'];
+};
+
+export type ServerSettingsUpdateInput = {
+  generateGraphQL?: InputMaybe<Scalars['Boolean']>;
+  generateRestApi?: InputMaybe<Scalars['Boolean']>;
+  serverPath?: InputMaybe<Scalars['String']>;
+};
+
 export type ServiceSettings = IBlock & {
   __typename?: 'ServiceSettings';
+  adminUISettings: AdminUiSettings;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
@@ -1776,11 +1705,13 @@ export type ServiceSettings = IBlock & {
   lockedByUserId?: Maybe<Scalars['String']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  serverSettings: ServerSettings;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
 
 export type ServiceSettingsUpdateInput = {
+  adminUISettings: AdminUiSettingsUpdateInput;
   authProvider: EnumAuthProviderType;
   dbHost: Scalars['String'];
   dbName: Scalars['String'];
@@ -1789,6 +1720,7 @@ export type ServiceSettingsUpdateInput = {
   dbUser: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
+  serverSettings: ServerSettingsUpdateInput;
 };
 
 export type SignupInput = {
