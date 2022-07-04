@@ -4,7 +4,7 @@ import { FindOneArgs } from 'src/dto';
 import { Project } from 'src/models';
 import { CreateProjectArgs } from './dto/create-project.args';
 import { ProjectFindManyArgs } from './dto/project-find-many.args';
-import { UpdateProjectArgs } from './dto/update-project.args';
+// import { UpdateProjectArgs } from './dto/update-project.args';
 
 @Injectable()
 export class ProjectService {
