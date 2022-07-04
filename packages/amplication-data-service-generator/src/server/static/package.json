@@ -16,8 +16,8 @@
     "prisma:generate": "prisma generate",
     "docker:db": "docker-compose -f docker-compose.db.yml up -d",
     "docker:build": "docker build .",
-    "docker": "docker-compose up -d",
-    "docker:down": "docker-compose down --volumes"
+    "compose:up": "docker-compose up -d",
+    "compose:down": "docker-compose down --volumes"
   },
   "dependencies": {
     "@nestjs/common": "8.2.3",
