@@ -26,7 +26,6 @@ import { FindManyEntityArgs } from '../entity/dto';
 import { Environment } from '../environment/dto/Environment';
 import { EnvironmentService } from '../environment/environment.service';
 import {
-  ResourceValidationResult,
   CreateResourceWithEntitiesArgs,
   CreateCommitArgs,
   CreateOneResourceArgs,
