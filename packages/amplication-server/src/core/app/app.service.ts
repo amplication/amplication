@@ -391,6 +391,21 @@ export class AppService {
       throw new Error(INVALID_APP_ID);
     }
 
+    const project = await this.prisma.app
+      .findUnique({
+        where: {
+          id: args.where.id
+        }
+      })
+      .project();
+
+    await this.prisma.project.update({
+      where: { id: project.id },
+      data: {
+        name: `project-${args.data.name}`
+      }
+    });
+
     return this.prisma.app.update(args);
   }
 
