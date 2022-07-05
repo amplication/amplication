@@ -32,31 +32,17 @@ jobs:
     needs: [check-ns-name]
     if: ${{ needs.check-ns-name.outputs.namespace_valid == "true" }}
     steps:
-      - name: configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: set cluster name
-        id: set-cluster-name
-        run: |
-          CLUSTER_NAME="useast1-staging-os"
-          echo "Will run to $CLUSTER_NAME eks cluster"
-          echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
-        env:
-          CLUSTER-ENV: ${{ github.event.inputs.cluster-env }}
-      - name: connect to cluster
-        id: connect-cluster
-        run: |
-          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-        env:
-          AWS_REGION: us-east-1
       - name: install argocd
         id: install-argocd
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
+      - name: argocd login
+        env: 
+          ARGO_CD_PASSWORD: ${{ secrets.AWS_STAGING_OS_ARGOCD }}
+        run: |
+          ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
+          argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web
       - name: check if namespace exist
         id: ns-exist
         env: 
@@ -76,14 +62,9 @@ jobs:
         if: ${{ steps.ns-exist.outputs.app_exist == "true" }}
         env:
           NAMESPACE: ${{ github.event.inputs.namespace }}
-          ARGO_CD_PASSWORD: ${{ secrets.AWS_STAGING_OS_ARGOCD }}
         run: |
-          ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
           APPNAME="amplication-$NAMESPACE"
-          argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web
           argocd app delete $APPNAME
-
-
 
 
 
