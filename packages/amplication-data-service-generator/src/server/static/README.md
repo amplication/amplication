@@ -30,7 +30,7 @@ Your app is ready to be deployed!
 | POSTGRESQL_PASSWORD  | Local database password                  | admin                                                       |
 | COMPOSE_PROJECT_NAME | Docker Compose project name              | amp\_{applicationId}                                        |
 | SERVER_PORT          | The port that the server is listening to | 3000                                                        |
-| JWT_SECRET_KEY       | JWT secret                               | XAFzBpM3es                                                  |
+| JWT_SECRET_KEY       | JWT secret                               | Change_ME!!!                                                |
 | JWT_EXPIRATION       | JWT expiration in days                   | 2d                                                          |
 
 ## Getting Started - Local Development
