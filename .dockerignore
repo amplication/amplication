@@ -28,4 +28,4 @@ packages/**/lib
 **/*.spec.ts
 **/*.mock.ts
 
-!packages/amplication-data-service-generator/**/**/static
+!packages/amplication-data-service-generator/**/static
