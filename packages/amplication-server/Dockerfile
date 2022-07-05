@@ -37,7 +37,7 @@ RUN npm run clean -- --yes
 # Rebuild production node_modules
 RUN npm run bootstrap -- -- --production --scope @amplication/server --include-dependencies
 
-FROM base as server 
+FROM base as server
 WORKDIR /app/packages/amplication-server
 # Copy all distributions and node_modules for amplication/server and its dependencies
 COPY --from=build /app/packages/amplication-server/package.json /app/packages/amplication-server/package.json
