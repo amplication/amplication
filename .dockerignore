@@ -28,5 +28,5 @@ packages/**/lib
 **/*.spec.ts
 **/*.mock.ts
 
-!packages/amplication-data-service-generator/src/server/static/README.md
-!packages/amplication-data-service-generator/src/admin/static
+!packages/amplication-data-service-generator/src/server/static/**.md
+!packages/amplication-data-service-generator/src/admin/static/**.md
