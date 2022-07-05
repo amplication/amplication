@@ -14,7 +14,7 @@ COPY lerna.json /app
 COPY package*.json /app/
 RUN npm ci --production
 
-FROM base AS build 
+FROM base AS build
 WORKDIR /app
 # Copy amplication/server and the its dependent packages
 COPY packages/amplication-server packages/amplication-server
