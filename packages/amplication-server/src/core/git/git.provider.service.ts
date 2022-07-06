@@ -135,7 +135,12 @@ export class GitProviderService {
           provider: gitProvider,
           installationId: installationId,
           name: gitRemoteOrganization.name,
-          type: gitRemoteOrganization.type
+          type: gitRemoteOrganization.type,
+          workspace: {
+            connect: {
+              id: args.data.workspaceId
+            }
+          }
         }
       });
     }
