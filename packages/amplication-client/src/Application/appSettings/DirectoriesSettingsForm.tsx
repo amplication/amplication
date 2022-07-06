@@ -86,7 +86,7 @@ function GenerationSettingsForm({ match }: Props) {
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="serverSettings[serverPath]"
                     placeholder="packages/[SERVICE-NAME]"
-                    label="Server base URL"
+                    label="Server base directory"
                     value={data?.appSettings.serverSettings.serverPath || ""}
                     helpText={data?.appSettings.serverSettings.serverPath}
                     labelType="normal"
@@ -98,7 +98,7 @@ function GenerationSettingsForm({ match }: Props) {
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="adminUISettings[adminUIPath]"
                     placeholder="packages/[SERVICE-NAME]"
-                    label="Admin UI base URL"
+                    label="Admin UI base directory"
                     disabled={!data?.appSettings.serverSettings.generateGraphQL}
                     value={data?.appSettings.adminUISettings.adminUIPath || ""}
                     helpText={data?.appSettings.adminUISettings.adminUIPath}
