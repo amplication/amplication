@@ -397,6 +397,21 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
+    const project = await this.prisma.resource
+      .findUnique({
+        where: {
+          id: args.where.id
+        }
+      })
+      .project();
+
+    await this.prisma.project.update({
+      where: { id: project.id },
+      data: {
+        name: `project-${args.data.name}`
+      }
+    });
+
     return this.prisma.resource.update(args);
   }
 

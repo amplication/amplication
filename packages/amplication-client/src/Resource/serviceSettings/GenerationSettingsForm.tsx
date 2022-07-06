@@ -1,7 +1,7 @@
 import { Snackbar, ToggleField } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -10,23 +10,23 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
 import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
-import FORM_SCHEMA from "./formSchema";
+import useSettingsHook from "../useSettingsHook";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 type TData = {
-  updateAppSettings: models.AppSettings;
+  updateServiceSettings: models.ServiceSettings;
 };
 
 const CLASS_NAME = "generation-settings-form";
 
 function GenerationSettingsForm({ match }: Props) {
-  const applicationId = match.params.application;
+  const applicationId = match.params.resource;
 
   const { data, error } = useQuery<{
-    appSettings: models.AppSettings;
+    serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
       id: applicationId,
@@ -37,63 +37,27 @@ function GenerationSettingsForm({ match }: Props) {
 
   const { trackEvent } = useTracking();
 
-  const [updateAppSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_APP_SETTINGS,
+  const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
+    UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addBlock(data.updateAppSettings.id);
+        pendingChangesContext.addBlock(data.updateServiceSettings.id);
       },
     }
   );
 
-  const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
-      const {
-        dbHost,
-        dbName,
-        dbPassword,
-        dbPort,
-        dbUser,
-        authProvider,
-        adminUISettings: { generateAdminUI, adminUIPath },
-        serverSettings: { generateRestApi, generateGraphQL, serverPath },
-      } = data;
-
-      trackEvent({
-        eventName: "updateAppSettings",
-      });
-      updateAppSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-            adminUISettings: {
-              generateAdminUI,
-              adminUIPath,
-            },
-            serverSettings: {
-              generateRestApi,
-              generateGraphQL,
-              serverPath,
-            },
-          },
-          appId: applicationId,
-        },
-      }).catch(console.error);
-    },
-    [updateAppSettings, applicationId, trackEvent]
-  );
+  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+    trackEvent,
+    updateServiceSettings: updateServiceSettings,
+    resourceId: applicationId,
+  });
 
   return (
     <div className={CLASS_NAME}>
-      {data?.appSettings && (
+      {data?.serviceSettings && (
         <Formik
-          initialValues={data.appSettings}
-          validate={(values: models.AppSettings) =>
+          initialValues={data.serviceSettings}
+          validate={(values: models.ServiceSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
@@ -122,7 +86,9 @@ function GenerationSettingsForm({ match }: Props) {
                     label="REST API & Swagger UI"
                   />
                   <ToggleField
-                    disabled={!data?.appSettings.serverSettings.generateGraphQL}
+                    disabled={
+                      !data?.serviceSettings.serverSettings.generateGraphQL
+                    }
                     name="adminUISettings[generateAdminUI]"
                     label="Admin UI"
                   />
@@ -142,9 +108,12 @@ function GenerationSettingsForm({ match }: Props) {
 
 export default GenerationSettingsForm;
 
-export const UPDATE_APP_SETTINGS = gql`
-  mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
-    updateAppSettings(data: $data, where: { id: $appId }) {
+export const UPDATE_SERVICE_SETTINGS = gql`
+  mutation updateServiceSettings(
+    $data: ServiceSettingsUpdateInput!
+    $resourceId: String!
+  ) {
+    updateServiceSettings(data: $data, where: { id: $resourceId }) {
       id
       dbHost
       dbName
@@ -166,8 +135,8 @@ export const UPDATE_APP_SETTINGS = gql`
 `;
 
 export const GET_RESOURCE_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
+  query serviceSettings($id: String!) {
+    serviceSettings(where: { id: $id }) {
       id
       dbHost
       dbName

@@ -6,7 +6,7 @@ import {
 } from "@amplication/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -15,30 +15,30 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
 import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
-import FORM_SCHEMA from "./formSchema";
+import useSettingsHook from "../useSettingsHook";
 import {
   GET_RESOURCE_SETTINGS,
-  UPDATE_APP_SETTINGS,
+  UPDATE_SERVICE_SETTINGS,
 } from "./GenerationSettingsForm";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 type TData = {
-  updateAppSettings: models.AppSettings;
+  updateServiceSettings: models.ServiceSettings;
 };
 
 const CLASS_NAME = "generation-settings-form";
 
 function GenerationSettingsForm({ match }: Props) {
-  const applicationId = match.params.application;
+  const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
-    appSettings: models.AppSettings;
+    serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
 
@@ -46,63 +46,27 @@ function GenerationSettingsForm({ match }: Props) {
 
   const { trackEvent } = useTracking();
 
-  const [updateAppSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_APP_SETTINGS,
+  const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
+    UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addBlock(data.updateAppSettings.id);
+        pendingChangesContext.addBlock(data.updateServiceSettings.id);
       },
     }
   );
 
-  const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
-      const {
-        dbHost,
-        dbName,
-        dbPassword,
-        dbPort,
-        dbUser,
-        authProvider,
-        adminUISettings: { generateAdminUI, adminUIPath },
-        serverSettings: { generateRestApi, generateGraphQL, serverPath },
-      } = data;
-
-      trackEvent({
-        eventName: "updateAppSettings",
-      });
-      updateAppSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-            adminUISettings: {
-              generateAdminUI,
-              adminUIPath: adminUIPath || "",
-            },
-            serverSettings: {
-              generateRestApi,
-              generateGraphQL,
-              serverPath: serverPath || "",
-            },
-          },
-          appId: applicationId,
-        },
-      }).catch(console.error);
-    },
-    [updateAppSettings, applicationId, trackEvent]
-  );
+  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+    trackEvent,
+    updateServiceSettings: updateServiceSettings,
+    resourceId: resourceId,
+  });
 
   return (
     <div className={CLASS_NAME}>
-      {data?.appSettings && (
+      {data?.serviceSettings && (
         <Formik
-          initialValues={data.appSettings}
-          validate={(values: models.AppSettings) =>
+          initialValues={data.serviceSettings}
+          validate={(values: models.ServiceSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
@@ -115,9 +79,8 @@ function GenerationSettingsForm({ match }: Props) {
                   <h3>Base directories</h3>
                 </div>
                 <p className={`${CLASS_NAME}__description`}>
-                  Amplication gives you the choice of which components to
-                  generate. Use the settings to include or exclude GraphQL API,
-                  REST API, and Admin UI.
+                  Enter the Server and Admin-UI directories, if required. This
+                  will override the default directories.
                 </p>
                 <hr />
                 <FormikAutoSave debounceMS={1000} />
@@ -126,10 +89,12 @@ function GenerationSettingsForm({ match }: Props) {
                   <TextField
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="serverSettings[serverPath]"
-                    placeholder="./packages/[SERVICE-NAME]"
+                    placeholder="packages/[SERVICE-NAME]"
                     label="Server base URL"
-                    value={data?.appSettings.serverSettings.serverPath || ""}
-                    helpText={data?.appSettings.serverSettings.serverPath}
+                    value={
+                      data?.serviceSettings.serverSettings.serverPath || ""
+                    }
+                    helpText={data?.serviceSettings.serverSettings.serverPath}
                     labelType="normal"
                   />
                 </Panel>
@@ -139,11 +104,15 @@ function GenerationSettingsForm({ match }: Props) {
                   <TextField
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="adminUISettings[adminUIPath]"
-                    placeholder="./packages/[SERVICE-NAME]"
+                    placeholder="packages/[SERVICE-NAME]"
                     label="Admin UI base URL"
-                    disabled={!data?.appSettings.serverSettings.generateGraphQL}
-                    value={data?.appSettings.adminUISettings.adminUIPath || ""}
-                    helpText={data?.appSettings.adminUISettings.adminUIPath}
+                    disabled={
+                      !data?.serviceSettings.serverSettings.generateGraphQL
+                    }
+                    value={
+                      data?.serviceSettings.adminUISettings.adminUIPath || ""
+                    }
+                    helpText={data?.serviceSettings.adminUISettings.adminUIPath}
                     labelType="normal"
                   />
                 </Panel>

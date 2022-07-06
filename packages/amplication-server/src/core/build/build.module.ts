@@ -17,7 +17,7 @@ import { ActionModule } from '../action/action.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
 import { BuildFilesSaver } from './utils';
 import { QueueModule } from '../queue/queue.module';
-import { CommitModule } from '../commit/commit.module';
+import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
 
 @Module({
   imports: [

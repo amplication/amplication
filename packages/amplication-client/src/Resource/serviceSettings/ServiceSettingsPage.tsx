@@ -19,11 +19,13 @@ const NAVIGATION_KEY = "APP_SETTINGS";
 
 function ServiceSettingsPage({ match }: Props) {
   const { resource } = match.params;
+  const pageTitle = "App settings";
 
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, `Resource settings`);
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
 
   return (
     <PageContent
+      pageTitle={pageTitle}
       sideContent={
         <div>
           <div>
@@ -95,11 +97,11 @@ function ServiceSettingsPage({ match }: Props) {
           component={ApplicationAuthSettingForm}
         />
         <RouteWithAnalytics
-          path="/:application/serviceSettings/generationSettings/update"
+          path="/:resource/serviceSettings/generationSettings/update"
           component={GenerationSettingsForm}
         />
         <RouteWithAnalytics
-          path="/:application/serviceSettings/directories/update"
+          path="/:resource/serviceSettings/directories/update"
           component={DirectoriesSettingsForm}
         />
       </Switch>

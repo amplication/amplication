@@ -1,7 +1,7 @@
 import { TextField, Snackbar } from "@amplication/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
@@ -10,7 +10,11 @@ import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { match } from "react-router-dom";
 import "./ApplicationDatabaseSettingsForms.scss";
-import { GET_RESOURCE_SETTINGS } from "./serviceSettings/GenerationSettingsForm";
+import {
+  GET_RESOURCE_SETTINGS,
+  UPDATE_SERVICE_SETTINGS,
+} from "./serviceSettings/GenerationSettingsForm";
+import useSettingsHook from "./useSettingsHook";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -18,32 +22,6 @@ type Props = {
 
 type TData = {
   updateServiceSettings: models.ServiceSettings;
-};
-
-const FORM_SCHEMA = {
-  required: ["dbHost", "dbUser", "dbPassword", "dbPort"],
-  properties: {
-    dbHost: {
-      type: "string",
-      minLength: 2,
-    },
-    dbUser: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPassword: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPort: {
-      type: "integer",
-      minLength: 4,
-      maxLength: 5,
-    },
-    dbName: {
-      type: "string",
-    },
-  },
 };
 
 const CLASS_NAME = "application-database-settings-form";
@@ -62,7 +40,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
   const { trackEvent } = useTracking();
 
   const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_APP_SETTINGS,
+    UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
         pendingChangesContext.addBlock(data.updateServiceSettings.id);
@@ -70,28 +48,11 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
     }
   );
 
-  const handleSubmit = useCallback(
-    (data: models.ServiceSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
-      trackEvent({
-        eventName: "updateServiceSettings",
-      });
-      updateServiceSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-          },
-          resourceId: resourceId,
-        },
-      }).catch(console.error);
-    },
-    [updateServiceSettings, resourceId, trackEvent]
-  );
+  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+    trackEvent,
+    resourceId,
+    updateServiceSettings,
+  });
 
   const errorMessage = formatError(error || updateError);
   return (
@@ -162,20 +123,3 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 }
 
 export default ApplicationDatabaseSettingsForms;
-
-const UPDATE_APP_SETTINGS = gql`
-  mutation updateServiceSettings(
-    $data: ServiceSettingsUpdateInput!
-    $resourceId: String!
-  ) {
-    updateServiceSettings(data: $data, where: { id: $resourceId }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
