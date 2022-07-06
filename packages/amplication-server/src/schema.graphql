@@ -998,6 +998,7 @@ type Project {
   name: String!
   workspace: Workspace
   workspaceId: String!
+  resources: [Resource!]
   deletedAt: DateTime
 }
 
