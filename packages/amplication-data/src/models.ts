@@ -1438,6 +1438,16 @@ export type PrivateKeyAuthenticationSettingsInput = {
   type: Scalars["String"];
 };
 
+export type Project = {
+  __typename?: "Project";
+  deletedAt?: Maybe<Scalars["DateTime"]>;
+  id: Scalars["String"];
+  name: Scalars["String"];
+  resources?: Maybe<Array<Resource>>;
+  workspace?: Maybe<Workspace>;
+  workspaceId: Scalars["String"];
+};
+
 export type PropertySelector = {
   __typename?: "PropertySelector";
   include: Scalars["Boolean"];
@@ -1475,6 +1485,7 @@ export type Query = {
   gitOrganizations: Array<GitOrganization>;
   me: User;
   pendingChanges: Array<PendingChange>;
+  project?: Maybe<Project>;
   remoteGitRepositories: Array<RemoteGitRepository>;
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
@@ -1596,6 +1607,10 @@ export type QueryGitOrganizationsArgs = {
 
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
+};
+
+export type QueryProjectArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryRemoteGitRepositoriesArgs = {
