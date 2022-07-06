@@ -48,9 +48,9 @@ amplication-git-pull-service:
     env:
     #GitHub App
     GITHUB_APP_APP_ID: "217654"
-      GITHUB_APP_CLIENT_ID: "Iv1.6aca4dc2d00fbedf"
-      
-      KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
+    GITHUB_APP_CLIENT_ID: "Iv1.6aca4dc2d00fbedf"
+
+    KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
 
 
 amplication-git-pull-request-service:
@@ -59,7 +59,7 @@ amplication-git-pull-request-service:
   config:
     env:
       KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
-    GITHUB_APP_APP_ID: "217654"
+      GITHUB_APP_APP_ID: "217654"
 
 
 amplication-storage-gateway:
@@ -70,7 +70,7 @@ amplication-storage-gateway:
   config:
     env:
       KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
-    GITHUB_APP_APP_ID: "217654"
+      GITHUB_APP_APP_ID: "217654"
 
 
 cp-helm-charts:
