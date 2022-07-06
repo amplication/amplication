@@ -31,11 +31,11 @@ export class Project {
   })
   workspaceId!: string;
 
-  // @Field(() => [Resource], {
-  //   nullable: true,
-  //   description: undefined
-  // })
-  // resources?: Resource[];
+  @Field(() => [Resource], {
+    nullable: true,
+    description: undefined
+  })
+  resources?: Resource[];
 
   @Field(() => Date, {
     nullable: true,
