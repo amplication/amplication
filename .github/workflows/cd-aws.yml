@@ -7,72 +7,42 @@ on:
         description: To which environment to deploy
         default: staging-os
         required: true
-        options:
-          - dev
-          - staging-os
-          - staging
-          - prod
-      source-branch:
-        type: string
-        description: Which branch to use for deployment
-        default: main
-        required: true
+        options: 
+        - staging-os
+        - staging
+        - prod
+        - custom
+        - shimi
+        - mor
+        - amit
 jobs:
   prepare:
     runs-on: ubuntu-18.04
     outputs:
       ARGOCD: ${{ steps.create-secret-names.outputs.ARGOCD }}
-      GCP: ${{ steps.create-secret-names.outputs.GCP }}
-      GITHUB_APP_CLIENT_SECRET: ${{ steps.create-secret-names.outputs.GITHUB_APP_CLIENT_SECRET }}
-      GITHUB_APP_PRIVATE_KEY: ${{ steps.create-secret-names.outputs.GITHUB_APP_PRIVATE_KEY }}
-      GITHUB_CLIENT_SECRET: ${{ steps.create-secret-names.outputs.GITHUB_CLIENT_SECRET }}
-      POSTGRESQL_PASSWORD: ${{ steps.create-secret-names.outputs.POSTGRESQL_PASSWORD }}
-      POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.POSTGRESQL_URL }}
-      PULL_POSTGRESQL_URL: ${{ steps.create-secret-names.outputs.PULL_POSTGRESQL_URL }}
-      PULL_POSTGRESQL_PASSWORD: ${{ steps.create-secret-names.outputs.PULL_POSTGRESQL_PASSWORD }}
-      JWT_SECRET: ${{ steps.create-secret-names.outputs.JWT_SECRET }}
-      SERVICE_JWT_SECRET: ${{ steps.create-secret-names.outputs.SERVICE_JWT_SECRET }}
-      WEBHOOKS_SECRET_KEY: ${{ steps.create-secret-names.outputs.WEBHOOKS_SECRET_KEY }}
     steps:
-      - name: create secret names
-        id: create-secret-names
-        run: |
-          export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
-          echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
-
-          echo "::set-output name=ARGOCD::AWS_${TARGET_ENV_SECRET}_ARGOCD"
-          echo "::set-output name=GCP::AWS_${TARGET_ENV_SECRET}_GCP"
-          echo "::set-output name=GITHUB_APP_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_CLIENT_SECRET"
-          echo "::set-output name=GITHUB_APP_PRIVATE_KEY::AWS_${TARGET_ENV_SECRET}_GITHUB_APP_PRIVATE_KEY"
-          echo "::set-output name=GITHUB_CLIENT_SECRET::AWS_${TARGET_ENV_SECRET}_GITHUB_CLIENT_SECRET"
-          echo "::set-output name=POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_PASSWORD"
-          echo "::set-output name=POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_POSTGRESQL_URL"
-          echo "::set-output name=PULL_POSTGRESQL_URL::AWS_${TARGET_ENV_SECRET}_PULL_POSTGRESQL_URL"
-          echo "::set-output name=PULL_POSTGRESQL_PASSWORD::AWS_${TARGET_ENV_SECRET}_PULL_POSTGRESQL_PASSWORD"
-          echo "::set-output name=JWT_SECRET::AWS_${TARGET_ENV_SECRET}_JWT_SECRET"
-          echo "::set-output name=SERVICE_JWT_SECRET::AWS_${TARGET_ENV_SECRET}_SERVICE_JWT_SECRET"
-          echo "::set-output name=WEBHOOKS_SECRET_KEY::AWS_${TARGET_ENV_SECRET}_WEBHOOKS_SECRET_KEY"
-
-        env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
+    - name: create secret names
+      id: create-secret-names
+      run: |
+        export TARGET_ENV=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
+        if [ "$TARGET_ENV" = "PROD" ] || [ "$TARGET_ENV" = "STAGING" ]; then
+          echo "::set-output name=ARGOCD::AWS_${TARGET_ENV}_ARGOCD"
+        else
+          echo "::set-output name=ARGOCD::AWS_STAGING_OS_ARGOCD"
+        fi
+      env:
+        TARGET_ENV: ${{ github.event.inputs.target-env }}  
   deploy:
     runs-on: ubuntu-18.04
     needs:
       - prepare
     env:
       ARGOCD: ${{ needs.prepare.outputs.ARGOCD }}
-      GCP: ${{ needs.prepare.outputs.GCP }}
-      GITHUB_APP_CLIENT_SECRET: ${{ needs.prepare.outputs.GITHUB_APP_CLIENT_SECRET }}
-      GITHUB_APP_PRIVATE_KEY: ${{ needs.prepare.outputs.GITHUB_APP_PRIVATE_KEY }}
-      GITHUB_CLIENT_SECRET: ${{ needs.prepare.outputs.GITHUB_CLIENT_SECRET }}
-      POSTGRESQL_PASSWORD: ${{ needs.prepare.outputs.POSTGRESQL_PASSWORD }}
-      POSTGRESQL_URL: ${{ needs.prepare.outputs.POSTGRESQL_URL }}
-      PULL_POSTGRESQL_URL: ${{ needs.prepare.outputs.PULL_POSTGRESQL_URL }}
-      PULL_POSTGRESQL_PASSWORD: ${{ needs.prepare.outputs.PULL_POSTGRESQL_PASSWORD }}
-      JWT_SECRET: ${{ needs.prepare.outputs.JWT_SECRET }}
-      SERVICE_JWT_SECRET: ${{ needs.prepare.outputs.SERVICE_JWT_SECRET }}
-      WEBHOOKS_SECRET_KEY: ${{ needs.prepare.outputs.WEBHOOKS_SECRET_KEY }}
     steps:
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8 #install the python needed
       - uses: actions/checkout@v2
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -86,7 +56,6 @@ jobs:
       - name: set branch-name
         run: |
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
-          echo "SOURCE_BRANCH_NAME=$(echo $SOURCE_BRANCH_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
         env:
           SOURCE_BRANCH_NAME: ${{ github.event.inputs.source-branch }}
       - name: calculate docker tags
@@ -99,9 +68,6 @@ jobs:
         id: set-namespace
         run: |
           NAMESPACE=$TARGET_ENV
-          if [ "$TARGET_ENV" = "dev" ]; then
-            NAMESPACE+="-$SOURCE_BRANCH_NAME"
-          fi
           echo "Will deploy to $NAMESPACE"
           echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
         env:
@@ -109,9 +75,9 @@ jobs:
       - name: set cluster name
         id: set-cluster-name
         run: |
-          CLUSTER_NAME="useast1-$TARGET_ENV"
-          if [ "$TARGET_ENV" = "dev" ]; then
-            CLUSTER_NAME="useast1-staging-os"
+          CLUSTER_NAME="useast1-staging-os"
+          if [ "$TARGET_ENV" = "prod" ] || [ "$TARGET_ENV" = "staging" ]; then
+            CLUSTER_NAME="useast1-$TARGET_ENV"
           fi
           echo "Will deploy to $CLUSTER_NAME eks cluster"
           echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
@@ -137,13 +103,26 @@ jobs:
           cat namespace.yaml
           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
           kubectl apply -f namespace.yaml
-        env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
       - name: install argocd
         id: install-argocd
         run: |
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
+      - name: create secrets
+        id: create-secrets
+        run: |
+          #download secret from AWS
+          SECRETS="secret-$TARGET_ENV.yaml"
+          secret_arn=$(aws secretsmanager list-secrets --query "SecretList[?Tags[?Key=='deployment' && Value=='$TARGET_ENV']]" | jq -r '.[0].ARN')
+          echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > $SECRETS_FILE_PATH
+          python .github/workflows/scripts/argocd-secrets-creator.py
+          cd secrets
+          ls
+          kubectl apply -f . -n $TARGET_ENV
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          SECRETS_FILE_PATH: helm/charts/amplication/values-secrets-raw.json
+          SECRETS_TEMPLATE_FILE_PATH: .github/workflows/scripts/secret_template.yaml
       - name: delete unused job
         id: delete-job
         run: |
@@ -152,62 +131,34 @@ jobs:
       - name: deploy app
         id: deploy-app
         run: |
+          #set argocd URL
+          ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
+          if [ "$TARGET_ENV" = "prod" ] || [ "$TARGET_ENV" = "staging" ]; then
+            ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
+          fi
+          echo "ARGO_CD_URL: $ARGO_CD_URL"
+
+          #create values files
           COMMONM_VALUES_FILE="values-common.yaml"
           ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
-          ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
-          export TARGET_ENV_SECRET=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
-          echo "TARGET_ENV_SECRET: $TARGET_ENV_SECRET"
+
+          #argocd login
           COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
           echo "$COMMAND"
           $COMMAND
-          SECRETS="-p amplication-server.secrets.GCP=$GCP"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
-          SECRETS+=" -p amplication-server.secrets.GITHUB_CLIENT_SECRET=$GITHUB_CLIENT_SECRET"
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
-          SECRETS+=" -p amplication-server.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
-          SECRETS+=" -p amplication-server.secrets.JWT_SECRET=$JWT_SECRET"
-          SECRETS+=" -p amplication-server.secrets.SERVICE_JWT_SECRET=$SERVICE_JWT_SECRET"
+          
+          #argocd create app
+          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS --upsert --sync-option Prune=true"
+          COMMAND=$(echo $COMMAND|tr -d '\n')
+          echo "$COMMAND"
+          $COMMAND
 
-          SECRETS+=" -p amplication-git-push-webhook-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
-          SECRETS+=" -p amplication-git-push-webhook-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
-          SECRETS+=" -p amplication-git-push-webhook-service.secrets.POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD"
-          SECRETS+=" -p amplication-git-push-webhook-service.secrets.POSTGRESQL_URL=$POSTGRESQL_URL"
-          SECRETS+=" -p amplication-git-push-webhook-service.secrets.WEBHOOKS_SECRET_KEY=$WEBHOOKS_SECRET_KEY"
-
-          SECRETS+=" -p amplication-git-pull-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
-          SECRETS+=" -p amplication-git-pull-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
-          SECRETS+=" -p amplication-git-pull-service.secrets.POSTGRESQL_PASSWORD=$PULL_POSTGRESQL_PASSWORD"
-          SECRETS+=" -p amplication-git-pull-service.secrets.POSTGRESQL_URL=$PULL_POSTGRESQL_URL"
-
-          SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_CLIENT_SECRET=$GITHUB_APP_CLIENT_SECRET"
-          SECRETS+=" -p amplication-git-pull-request-service.secrets.GITHUB_APP_PRIVATE_KEY=$GITHUB_APP_PRIVATE_KEY"
-
-          SECRETS+=" -p amplication-storage-gateway.secrets.JWT_SECRET_KEY=$JWT_SECRET"
-
-          set +e
-          Get_app="$(argocd app list)"
-          if [[ ! -z "$Get_app" ]]
-          then
-            COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS $SECRETS --upsert"
-            COMMAND=$(echo $COMMAND|tr -d '\n')
-            echo "$COMMAND"
-            $COMMAND
-          fi
+          #argocd sync app
           COMMAND="argocd app sync $APP_NAME"
           echo "$COMMAND"
           $COMMAND
+
         env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
           ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
-          GCP: ${{ secrets[env.GCP] }}
-          GITHUB_APP_CLIENT_SECRET: ${{ secrets[env.GITHUB_APP_CLIENT_SECRET] }}
-          GITHUB_APP_PRIVATE_KEY: ${{ secrets[env.GITHUB_APP_PRIVATE_KEY] }}
-          GITHUB_CLIENT_SECRET: ${{ secrets[env.GITHUB_CLIENT_SECRET] }}
-          POSTGRESQL_PASSWORD: ${{ secrets[env.POSTGRESQL_PASSWORD] }}
-          POSTGRESQL_URL: ${{ secrets[env.POSTGRESQL_URL] }}
-          PULL_POSTGRESQL_URL: ${{ secrets[env.PULL_POSTGRESQL_URL] }}
-          PULL_POSTGRESQL_PASSWORD: ${{ secrets[env.PULL_POSTGRESQL_PASSWORD] }}
-          JWT_SECRET: ${{ secrets[env.JWT_SECRET] }}
-          SERVICE_JWT_SECRET: ${{ secrets[env.SERVICE_JWT_SECRET] }}
-          WEBHOOKS_SECRET_KEY: ${{ secrets[env.WEBHOOKS_SECRET_KEY] }}
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
+      

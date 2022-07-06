@@ -15,10 +15,8 @@ import { ActionService } from '../action/action.service';
 import { UserService } from '../user/user.service';
 import { Build } from './dto/Build';
 import { Commit, User } from 'src/models/';
-import { Action } from '../action/dto/Action';
+import { Action } from '../action/dto';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { Deployment } from '../deployment/dto/Deployment';
-import { EnumDeploymentStatus } from '../deployment/dto/EnumDeploymentStatus';
 import { CommitService } from '../commit/commit.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
@@ -27,8 +25,6 @@ const EXAMPLE_APP_ID = 'exampleAppId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_VERSION = 'exampleVersion';
 const EXAMPLE_ACTION_ID = 'exampleActionId';
-const EXAMPLE_DEPLOYMENT_ID = 'exampleDeploymentId';
-const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_USER: User = {
@@ -48,16 +44,6 @@ const EXAMPLE_COMMIT: Commit = {
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   message: EXAMPLE_MESSAGE
-};
-
-const EXAMPLE_DEPLOYMENT: Deployment = {
-  id: EXAMPLE_DEPLOYMENT_ID,
-  environmentId: EXAMPLE_ENVIRONMENT_ID,
-  userId: EXAMPLE_USER_ID,
-  buildId: EXAMPLE_BUILD_ID,
-  status: EnumDeploymentStatus.Completed,
-  actionId: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
 };
 
 const EXAMPLE_BUILD: Build = {
@@ -138,22 +124,6 @@ const BUILD_STATUS_QUERY = gql`
   }
 `;
 
-const GET_DEPLOYMENTS_QUERY = gql`
-  query($buildId: String!) {
-    build(where: { id: $buildId }) {
-      deployments {
-        id
-        environmentId
-        userId
-        buildId
-        status
-        actionId
-        createdAt
-      }
-    }
-  }
-`;
-
 const CREATE_BUILD_MUTATION = gql`
   mutation($appId: String!, $commitId: String!, $message: String!) {
     createBuild(
@@ -184,7 +154,6 @@ const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
 const buildServiceCalcBuildStatusMock = jest.fn(() => {
   return EnumBuildStatus.Completed;
 });
-const buildServiceGetDeploymentsMock = jest.fn(() => [EXAMPLE_DEPLOYMENT]);
 
 const mockCanActivate = jest.fn(() => true);
 
@@ -203,7 +172,6 @@ describe('BuildResolver', () => {
             findMany: buildServiceFindManyMock,
             findOne: buildServiceFindOneMock,
             calcBuildStatus: buildServiceCalcBuildStatusMock,
-            getDeployments: buildServiceGetDeploymentsMock,
             create: buildServiceCreateMock
           }))
         },
@@ -354,26 +322,6 @@ describe('BuildResolver', () => {
     });
     expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(1);
     expect(buildServiceCalcBuildStatusMock).toBeCalledWith(EXAMPLE_BUILD_ID);
-  });
-
-  it('should get a builds deployments', async () => {
-    const res = await apolloClient.query({
-      query: GET_DEPLOYMENTS_QUERY,
-      variables: { buildId: EXAMPLE_BUILD_ID }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      build: {
-        deployments: [
-          {
-            ...EXAMPLE_DEPLOYMENT,
-            createdAt: EXAMPLE_DEPLOYMENT.createdAt.toISOString()
-          }
-        ]
-      }
-    });
-    expect(buildServiceGetDeploymentsMock).toBeCalledTimes(1);
-    expect(buildServiceGetDeploymentsMock).toBeCalledWith(EXAMPLE_BUILD_ID, {});
   });
 
   it('should create a build', async () => {

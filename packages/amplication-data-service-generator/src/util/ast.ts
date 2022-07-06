@@ -3,9 +3,7 @@ import { ParserOptions } from "@babel/parser";
 import { ASTNode, namedTypes, builders } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
-import groupBy from "lodash.groupby";
-import mapValues from "lodash.mapvalues";
-import uniqBy from "lodash.uniqby";
+import { groupBy, mapValues, uniqBy } from "lodash";
 import * as parser from "./parser";
 import * as partialParser from "./partial-parser";
 
@@ -821,4 +819,51 @@ export function removeDecoratorByName(
   }
 
   return true;
+}
+
+/**
+ * Returns the first decorator with a specific name from the given AST
+ * @param ast the AST to return the decorator from
+ */
+export function findFirstDecoratorByName(
+  node: ASTNode,
+  decoratorName: string
+): namedTypes.Decorator {
+  let decorator: namedTypes.ClassDeclaration | null = null;
+  recast.visit(node, {
+    visitDecorator(path) {
+      const callee = path.get("expression", "callee");
+      if (callee.value && callee.value.name === decoratorName) {
+        decorator = path.value;
+        return false;
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class decorators
+    // This method fixes it
+    visitClassDeclaration(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      return this.traverse(path);
+    },
+    // Recast has a bug of traversing class property decorators
+    // This method fixes it
+    visitClassProperty(path) {
+      const childPath = path.get("decorators");
+      if (childPath.value) {
+        this.traverse(childPath);
+      }
+      this.traverse(path);
+    },
+  });
+
+  if (!decorator) {
+    throw new Error(
+      `Could not find class decorator with the name ${decoratorName} in provided AST node`
+    );
+  }
+
+  return decorator;
 }
