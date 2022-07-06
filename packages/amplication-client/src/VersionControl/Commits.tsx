@@ -14,14 +14,15 @@ const NAVIGATION_KEY = "ENTITIES";
 
 function Entities({ match }: Props) {
   const { resource } = match.params;
-
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, "Commits");
+  const pageTitle = "Commits";
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
 
   return (
     <Switch>
       <RouteWithAnalytics
         exact
         path="/:resource/commits/"
+        pageTitle={pageTitle}
         component={CommitList}
       />
       <RouteWithAnalytics

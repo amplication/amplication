@@ -1,6 +1,6 @@
 {
   "name": "admin-template",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "private": true,
   "dependencies": {
     "@apollo/client": "3.3.18",
@@ -23,7 +23,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "docker:build": "docker build ."
   },
   "eslintConfig": {
     "extends": [

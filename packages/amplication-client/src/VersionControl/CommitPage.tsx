@@ -72,7 +72,7 @@ const CommitPage = ({ match }: Props) => {
   const errorMessage = formatError(error);
   return (
     <>
-      <PageContent className={CLASS_NAME}>
+      <PageContent className={CLASS_NAME} pageTitle={`Commit ${truncatedId}`}>
         {!data ? (
           "loading..."
         ) : (

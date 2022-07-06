@@ -35,8 +35,8 @@ const OPTIONS = [
 const PendingChangesPage = ({ match }: Props) => {
   const { resource } = match.params;
   const [splitView, setSplitView] = useState<boolean>(false);
-
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, "Pending Changes");
+  const pageTitle = "Pending Changes";
+  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -54,7 +54,7 @@ const PendingChangesPage = ({ match }: Props) => {
 
   return (
     <>
-      <PageContent className={CLASS_NAME}>
+      <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
         {!data ? (
           "loading..."
         ) : (

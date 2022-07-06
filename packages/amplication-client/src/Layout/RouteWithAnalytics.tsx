@@ -2,10 +2,10 @@ import React from "react";
 import { Route, RouteProps, useLocation } from "react-router-dom";
 import usePageTracking from "../util/usePageTracking";
 
-type Props = Omit<RouteProps, "render">;
+type Props = Omit<RouteProps & { pageTitle?: string }, "render">;
 
 function RouteWithAnalytics(props: Props) {
-  const { children, component, ...rest } = props;
+  const { children, component, pageTitle, ...rest } = props;
   const location = useLocation();
   //we use the entire url as a key to force re-render of the content
   //component when switching between different routes on the same page
@@ -19,7 +19,7 @@ function RouteWithAnalytics(props: Props) {
       render={(props) => {
         return (
           <RouteWithAnalyticsContent>
-            {component ? React.createElement(component, props) : children}
+            {component ? React.createElement(component, { ...props, pageTitle }) : children}
           </RouteWithAnalyticsContent>
         );
       }}
