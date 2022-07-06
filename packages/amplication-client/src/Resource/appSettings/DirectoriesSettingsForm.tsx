@@ -58,7 +58,7 @@ function GenerationSettingsForm({ match }: Props) {
   const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
     trackEvent,
     updateAppSettings,
-    resourceId: resourceId,
+    resourceId,
   });
 
   return (
@@ -78,11 +78,6 @@ function GenerationSettingsForm({ match }: Props) {
                 <div className={`${CLASS_NAME}__header`}>
                   <h3>Base directories</h3>
                 </div>
-                <p className={`${CLASS_NAME}__description`}>
-                  Enter the Server and Admin-UI directories, if required. This
-                  will override the default directories.
-                </p>
-                <hr />
                 <FormikAutoSave debounceMS={1000} />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Server</h2>
@@ -90,20 +85,19 @@ function GenerationSettingsForm({ match }: Props) {
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="serverSettings[serverPath]"
                     placeholder="packages/[SERVICE-NAME]"
-                    label="Server base URL"
+                    label="Server base directory"
                     value={data?.appSettings.serverSettings.serverPath || ""}
                     helpText={data?.appSettings.serverSettings.serverPath}
                     labelType="normal"
                   />
                 </Panel>
-                <hr />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Admin UI</h2>
                   <TextField
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="adminUISettings[adminUIPath]"
                     placeholder="packages/[SERVICE-NAME]"
-                    label="Admin UI base URL"
+                    label="Admin UI base directory"
                     disabled={!data?.appSettings.serverSettings.generateGraphQL}
                     value={data?.appSettings.adminUISettings.adminUIPath || ""}
                     helpText={data?.appSettings.adminUISettings.adminUIPath}
