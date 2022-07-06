@@ -15,6 +15,7 @@ on:
         - shimi
         - mor
         - amit
+        - alex
 jobs:
   prepare:
     runs-on: ubuntu-18.04
