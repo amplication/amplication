@@ -1,12 +1,10 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Commit, Resource } from 'src/models'; // eslint-disable-line import/no-cycle
 import { BlockVersion } from 'src/models/BlockVersion'; // eslint-disable-line import/no-cycle
 import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line import/no-cycle
 import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
-import { EnumBuildStatus } from './EnumBuildStatus';
-import { Resource, Commit } from 'src/models'; // eslint-disable-line import/no-cycle
 import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
-import { Deployment } from '../../deployment/dto/Deployment'; // eslint-disable-line import/no-cycle
-import { JsonValue } from 'type-fest';
+import { EnumBuildStatus } from './EnumBuildStatus';
 
 @ObjectType({
   isAbstract: true,
@@ -68,15 +66,6 @@ export class Build {
     nullable: true
   })
   action?: Action;
-
-  @Field(() => [Deployment], {
-    nullable: true
-  })
-  deployments?: Deployment[];
-
-  containerStatusQuery?: JsonValue;
-  containerStatusUpdatedAt?: Date;
-  images?: string[];
 
   @Field(() => Commit)
   commit?: Commit;

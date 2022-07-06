@@ -218,19 +218,6 @@ const CREATE_BUILD = gql`
       }
       status
       archiveURI
-      deployments(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        buildId
-        createdAt
-        actionId
-        status
-        message
-        environment {
-          id
-          name
-          address
-        }
-      }
     }
   }
 `;

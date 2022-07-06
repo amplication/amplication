@@ -10,7 +10,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./ApplicationAuthSettingForm.scss";
-import { GET_APP_SETTINGS } from "./constants";
+import { GET_RESOURCE_SETTINGS } from "./appSettings/GenerationSettingsForm";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -36,7 +36,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
 
   const { data, error } = useQuery<{
     appSettings: models.AppSettings;
-  }>(GET_APP_SETTINGS, {
+  }>(GET_RESOURCE_SETTINGS, {
     variables: {
       id: resourceId,
     },
@@ -98,7 +98,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
                 <div className={`${CLASS_NAME}__header`}>
                   <h3>Authentication Providers</h3>
                 </div>
-                <p>
+                <p className={`${CLASS_NAME}__description`}>
                   Select the authentication method to be used in the generated
                   resource.
                 </p>

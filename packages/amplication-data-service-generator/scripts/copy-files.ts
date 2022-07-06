@@ -20,7 +20,6 @@ const SERVER_SRC_DIRECTORY_GLOB = normalize(SERVER_SRC_DIRECTORY);
 const ADMIN_SRC_DIRECTORY_GLOB = normalize(ADMIN_SRC_DIRECTORY);
 /** The globs to copy from to DIST_DIRECTORY */
 const GLOB_SOURCES: string[] = [
-  `${SRC_DIRECTORY_GLOB}/static/**`,
   `${SRC_DIRECTORY_GLOB}/**/*.template.env`,
   `${SERVER_SRC_DIRECTORY_GLOB}/**/*.template.(ts|env)`,
   `${SERVER_SRC_DIRECTORY_GLOB}/static/**`,

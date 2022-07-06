@@ -26,7 +26,6 @@ import { FindManyEntityArgs } from '../entity/dto';
 import { Environment } from '../environment/dto/Environment';
 import { EnvironmentService } from '../environment/environment.service';
 import {
-  ResourceValidationResult,
   CreateResourceWithEntitiesArgs,
   CreateCommitArgs,
   CreateOneResourceArgs,
@@ -189,16 +188,6 @@ export class ResourceResolver {
     @UserEntity() user: User
   ): Promise<PendingChange[]> {
     return this.resourceService.getPendingChanges(args, user);
-  }
-
-  @Query(() => ResourceValidationResult, {
-    nullable: false
-  })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
-  async resourceValidateBeforeCommit(
-    @Args() args: FindOneArgs
-  ): Promise<ResourceValidationResult> {
-    return this.resourceService.validateBeforeCommit(args);
   }
 
   @ResolveField(() => GitRepository, { nullable: true })

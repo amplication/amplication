@@ -36,7 +36,7 @@ model Workspace {
 
 model Project {
   id          String     @id @default(cuid())
-  name        String     @unique
+  name        String
   workspaceId String
   workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
   resources   Resource[]
