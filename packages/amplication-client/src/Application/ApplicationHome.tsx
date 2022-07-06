@@ -47,7 +47,7 @@ function ApplicationHome({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME} sideContent="">
+    <PageContent className={CLASS_NAME} sideContent="" pageTitle={data?.app.name}>
       <Switch>
         <Route
           path="/:application/"

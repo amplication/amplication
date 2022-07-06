@@ -36,8 +36,8 @@ const POLL_INTERVAL = 2000;
 export const EntityList = ({ match }: Props) => {
   const { application } = match.params;
   const [error, setError] = useState<Error>();
-
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, "Entities");
+  const pageTitle = "Entities";
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, pageTitle);
 
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
@@ -86,7 +86,7 @@ export const EntityList = ({ match }: Props) => {
     formatError(errorLoading) || (error && formatError(error));
 
   return (
-    <PageContent className={CLASS_NAME}>
+    <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
       <Dialog
         className="new-entity-dialog"
         isOpen={newEntity}
