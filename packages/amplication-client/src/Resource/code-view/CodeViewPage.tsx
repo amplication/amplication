@@ -31,7 +31,8 @@ export type FileDetails = {
 function CodeViewPage({ match }: Props) {
   const resourceId = match.params.resource;
   const [fileDetails, setFileDetails] = useState<FileDetails | null>(null);
-  useNavigationTabs(resourceId, NAVIGATION_KEY, match.url, "Code View");
+  const pageTitle = "Code View"
+  useNavigationTabs(resourceId, NAVIGATION_KEY, match.url, pageTitle);
 
   const { data } = useQuery<{ resource: Resource }>(
     GET_RESOURCE_GIT_REPOSITORY,
@@ -46,6 +47,7 @@ function CodeViewPage({ match }: Props) {
   }
   return (
     <PageContent
+      pageTitle={pageTitle}
       sideContent={
         <CodeViewBar resource={data.resource} onFileSelected={setFileDetails} />
       }

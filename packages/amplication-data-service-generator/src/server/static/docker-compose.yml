@@ -32,7 +32,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      ports: 5432:5432
+      ports: ${POSTGRESQL_PORT}:5432
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:

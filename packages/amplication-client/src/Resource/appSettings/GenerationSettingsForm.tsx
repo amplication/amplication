@@ -1,7 +1,7 @@
 import { Snackbar, ToggleField } from "@amplication/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -10,10 +10,10 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
 import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
-import FORM_SCHEMA from "./formSchema";
+import useSettingsHook from "../useSettingsHook";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 type TData = {
@@ -23,7 +23,7 @@ type TData = {
 const CLASS_NAME = "generation-settings-form";
 
 function GenerationSettingsForm({ match }: Props) {
-  const applicationId = match.params.application;
+  const applicationId = match.params.resource;
 
   const { data, error } = useQuery<{
     appSettings: models.AppSettings;
@@ -46,47 +46,11 @@ function GenerationSettingsForm({ match }: Props) {
     }
   );
 
-  const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
-      const {
-        dbHost,
-        dbName,
-        dbPassword,
-        dbPort,
-        dbUser,
-        authProvider,
-        adminUISettings: { generateAdminUI, adminUIPath },
-        serverSettings: { generateRestApi, generateGraphQL, serverPath },
-      } = data;
-
-      trackEvent({
-        eventName: "updateAppSettings",
-      });
-      updateAppSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-            adminUISettings: {
-              generateAdminUI,
-              adminUIPath,
-            },
-            serverSettings: {
-              generateRestApi,
-              generateGraphQL,
-              serverPath,
-            },
-          },
-          appId: applicationId,
-        },
-      }).catch(console.error);
-    },
-    [updateAppSettings, applicationId, trackEvent]
-  );
+  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+    trackEvent,
+    updateAppSettings,
+    resourceId: applicationId,
+  });
 
   return (
     <div className={CLASS_NAME}>

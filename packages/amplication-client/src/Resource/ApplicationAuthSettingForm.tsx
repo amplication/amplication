@@ -1,7 +1,7 @@
 import { SelectField, Snackbar } from "@amplication/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import * as models from "../models";
@@ -10,23 +10,17 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./ApplicationAuthSettingForm.scss";
-import { GET_RESOURCE_SETTINGS } from "./appSettings/GenerationSettingsForm";
+import {
+  GET_RESOURCE_SETTINGS,
+  UPDATE_APP_SETTINGS,
+} from "./appSettings/GenerationSettingsForm";
+import useSettingsHook from "./useSettingsHook";
 
 type Props = {
   match: match<{ resource: string }>;
 };
 type TData = {
   updateAppSettings: models.AppSettings;
-};
-
-const FORM_SCHEMA = {
-  required: ["authProvider"],
-  properties: {
-    authProvider: {
-      type: "string",
-      minLength: 2,
-    },
-  },
 };
 
 const CLASS_NAME = "application-auth-settings-form";
@@ -47,7 +41,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
   const { trackEvent } = useTracking();
 
   const [updateAppSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_RESOURCE_SETTINGS,
+    UPDATE_APP_SETTINGS,
     {
       onCompleted: (data) => {
         pendingChangesContext.addBlock(data.updateAppSettings.id);
@@ -55,28 +49,11 @@ function ApplicationAuthSettingForm({ match }: Props) {
     }
   );
 
-  const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
-      trackEvent({
-        eventName: "updateAppSettings",
-      });
-      updateAppSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-          },
-          resourceId: resourceId,
-        },
-      }).catch(console.error);
-    },
-    [updateAppSettings, resourceId, trackEvent]
-  );
+  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+    trackEvent,
+    updateAppSettings,
+    resourceId,
+  });
 
   const errorMessage = formatError(error || updateError);
 
@@ -126,20 +103,3 @@ function ApplicationAuthSettingForm({ match }: Props) {
 }
 
 export default ApplicationAuthSettingForm;
-
-const UPDATE_RESOURCE_SETTINGS = gql`
-  mutation updateResourceSettings(
-    $data: ResourceSettingsUpdateInput!
-    $resourceId: String!
-  ) {
-    updateResourceSettings(data: $data, where: { id: $resourceId }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
