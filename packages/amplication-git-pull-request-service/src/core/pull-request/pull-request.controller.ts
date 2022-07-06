@@ -34,8 +34,8 @@ export class PullRequestController {
       offset: message.offset,
       class: this.constructor.name,
     });
+    const validArgs = plainToClass(SendPullRequestArgs, message.value);
     try {
-      const validArgs = plainToClass(SendPullRequestArgs, message.value);
       const pullRequest = await this.pullRequestService.createPullRequest(
         validArgs
       );
@@ -48,10 +48,11 @@ export class PullRequestController {
       });
       return { value: pullRequest };
     } catch (error) {
-      this.logger.error(error);
-      this.logger.error(
-        'Got an exception in pull request service and return error to kafka'
-      );
+      this.logger.error(error, {
+        class: this.constructor.name,
+        offset: message.offset,
+        buildId: validArgs.newBuildId,
+      });
       return {
         value: {
           value: null,
