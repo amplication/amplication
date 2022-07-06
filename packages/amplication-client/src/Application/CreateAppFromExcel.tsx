@@ -52,7 +52,7 @@ enum Steps {
 export const CLASS_NAME = "create-app-from-excel";
 const MAX_SAMPLE_DATA = 3;
 
-export function CreateAppFromExcel() {
+function CreateAppFromExcel() {
   const [importList, setImportList] = useState<ImportField[]>([]);
   const [step, setStep] = useState<Steps>(Steps.startScreen);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -517,3 +517,5 @@ const CREATE_APP_WITH_ENTITIES = gql`
     }
   }
 `;
+
+export default CreateAppFromExcel
