@@ -4,6 +4,8 @@ import { Project } from 'src/models';
 import { CreateProjectArgs } from './dto/create-project.args';
 import { ProjectFindManyArgs } from './dto/project-find-many.args';
 import { ProjectService } from './project.service';
+import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
+import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 
 @Resolver(() => Project)
 export class ProjectResolver {
@@ -23,8 +25,11 @@ export class ProjectResolver {
     nullable: true,
     description: undefined
   })
+  @InjectContextValue(
+    InjectableResourceParameter.WorkspaceId,
+    'data.workspaceId'
+  )
   async createWorkspace(
-    // @UserEntity() currentUser: User,
     @Args() args: CreateProjectArgs
   ): Promise<Project | null> {
     return this.projectService.createProject(args);
