@@ -8,6 +8,8 @@ import { ApiTokenList } from "../../Settings/ApiTokenList";
 import ApplicationAuthSettingForm from "../ApplicationAuthSettingForm";
 import ApplicationDatabaseSettingsForms from "../ApplicationDatabaseSettingsForms";
 import ApplicationForm from "../ApplicationForm";
+import GenerationSettingsForm from "./GenerationSettingsForm";
+import DirectoriesSettingsForm from "./DirectoriesSettingsForm";
 
 type Props = {
   match: match<{ application: string }>;
@@ -17,11 +19,13 @@ const NAVIGATION_KEY = "APP_SETTINGS";
 
 function AppSettingsPage({ match }: Props) {
   const { application } = match.params;
+  const pageTitle = "App settings";
 
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, `App settings`);
+  useNavigationTabs(application, NAVIGATION_KEY, match.url, pageTitle);
 
   return (
     <PageContent
+      pageTitle={pageTitle}
       sideContent={
         <div>
           <div>
@@ -30,6 +34,22 @@ function AppSettingsPage({ match }: Props) {
               icon="settings"
             >
               General
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink
+              to={`/${application}/appSettings/generationSettings/update`}
+              icon="settings"
+            >
+              APIs & Admin UI
+            </InnerTabLink>
+          </div>
+          <div>
+            <InnerTabLink
+              to={`/${application}/appSettings/directories/update`}
+              icon="settings"
+            >
+             Base Directories
             </InnerTabLink>
           </div>
           <div>
@@ -75,6 +95,14 @@ function AppSettingsPage({ match }: Props) {
         <RouteWithAnalytics
           path="/:application/appSettings/auth/update"
           component={ApplicationAuthSettingForm}
+        />
+        <RouteWithAnalytics
+          path="/:application/appSettings/generationSettings/update"
+          component={GenerationSettingsForm}
+        />
+        <RouteWithAnalytics
+          path="/:application/appSettings/directories/update"
+          component={DirectoriesSettingsForm}
         />
       </Switch>
       {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}

@@ -11,7 +11,7 @@ export async function createAuthModules(
   const authTestsDir = `${srcDir}/tests/auth`;
   const { settings } = appInfo;
   const { authProvider } = settings;
-  const defaultGuardFile = await createDefaultGuard(authProvider);
+  const defaultGuardFile = await createDefaultGuard(authProvider, authDir);
   return Promise.all([
     defaultGuardFile,
     createTokenService(authDir, authProvider),

@@ -143,8 +143,3 @@ export type Module = {
   path: string;
   code: string;
 };
-
-export type AppGenerationConfig = {
-  dataServiceGeneratorVersion: string;
-  appInfo: AppInfo;
-};
