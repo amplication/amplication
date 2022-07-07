@@ -35,10 +35,3 @@ ingress:
   enabled: true
   hostname: server.amplication.com
   path: /storage
-
-infra:
-  enabled: false
-
-global:
-  pvc:
-    name: efs-claim

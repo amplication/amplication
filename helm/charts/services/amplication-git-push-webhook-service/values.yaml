@@ -44,5 +44,3 @@ postgres:
     primary:
       podLabels: { name: "postgres" }
 
-infra:
-  enabled: false
