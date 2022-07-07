@@ -44,10 +44,6 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_SERVICE_DATA
 } from './sampleResource';
-import { QueryMode } from 'src/enums/QueryMode';
-import { prepareDeletedItemName } from '../../util/softDelete';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { GitService } from '@amplication/git-service';
 import { AppSettings } from '../appSettings/dto';
 import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
 import { AppSettingsService } from '../appSettings/appSettings.service';
@@ -254,6 +250,9 @@ const appSettingsCreateMock = jest.fn(() => {
   return EXAMPLE_APP_SETTINGS;
 });
 
+const prismaResourceCreateMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
+});
 const prismaResourceFindOneMock = jest.fn(() => {
   return RESOURCE_WITH_PROJECT;
 });
