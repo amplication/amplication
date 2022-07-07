@@ -38,7 +38,8 @@ describe('GitService', () => {
           EnumGitProvider.Github,
           EnumGitOrganizationType.Organization,
           'gitOrganizationName',
-          '123456'
+          '123456',
+          true
         );
         expect(repository).toEqual(TEST_GIT_REPO);
       });
