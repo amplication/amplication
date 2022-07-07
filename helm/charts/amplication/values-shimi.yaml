@@ -2,16 +2,6 @@ global:
   pvc:
     name: shimi-efs-claim
 
-infra:
-  cp-helm-charts:
-    enabled: true
-    cp-kafka:
-      enabled: true
-    cp-zookeeper:
-      enabled: true
-  postgres:
-    install: true
-
 amplication-client:
   service:
     hostname: app-shimi.amplication-dev.com

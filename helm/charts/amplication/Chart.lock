@@ -23,5 +23,11 @@ dependencies:
 - name: infra
   repository: file://../infra
   version: 0.1.0
-digest: sha256:3f584f2b520d91039c7bdc9924514b0bf0d1904496f72d30a1096f8ed95362f0
-generated: "2022-07-04T16:32:16.818607+03:00"
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 10.16.2
+- name: cp-helm-charts
+  repository: https://confluentinc.github.io/cp-helm-charts/
+  version: 0.6.1
+digest: sha256:015b5ac36c36a25d1d40b78e952745b22de4293489bcad9d084f640fbffba48b
+generated: "2022-07-07T14:34:52.210625+03:00"
