@@ -23,13 +23,13 @@ type TData = {
 const CLASS_NAME = "generation-settings-form";
 
 function GenerationSettingsForm({ match }: Props) {
-  const applicationId = match.params.resource;
+  const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
     serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
 
@@ -48,8 +48,8 @@ function GenerationSettingsForm({ match }: Props) {
 
   const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
     trackEvent,
-    updateServiceSettings: updateServiceSettings,
-    resourceId: applicationId,
+    updateServiceSettings,
+    resourceId,
   });
 
   return (

@@ -68,7 +68,7 @@ const FORM_SCHEMA = {
 const useSettingsHook = ({
   trackEvent,
   resourceId,
-  updateServiceSettings: updateServiceSettings,
+  updateServiceSettings,
 }: SettingsHookParams) => {
   const handleSubmit = useCallback(
     (data: models.ServiceSettings) => {
@@ -104,7 +104,7 @@ const useSettingsHook = ({
               serverPath: serverPath || "",
             },
           },
-          resourceId: resourceId,
+          resourceId,
         },
       }).catch(console.error);
     },

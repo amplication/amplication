@@ -249,6 +249,9 @@ const serviceSettingsCreateMock = jest.fn(() => {
   return EXAMPLE_APP_SETTINGS;
 });
 
+const prismaResourceCreateMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
+});
 const prismaResourceFindOneMock = jest.fn(() => {
   return RESOURCE_WITH_PROJECT;
 });
