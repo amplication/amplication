@@ -25,7 +25,7 @@ on:
 jobs:          
   prepare:
     runs-on: ubuntu-18.04
-    if: ${{ github.event.inputs.target-env }} == ${{ github.event.inputs.confirm-env }}
+    if: github.event.inputs.target-env == github.event.inputs.confirm-env
     outputs:
       ARGOCD: ${{ steps.create-secret-names.outputs.ARGOCD }}
     steps:
