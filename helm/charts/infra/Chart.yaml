@@ -11,12 +11,10 @@ dependencies:
   alias: postgres
   version: "10.16.2"
   repository: "https://charts.bitnami.com/bitnami"
-  condition: postgres.install
 
 - name: cp-helm-charts
   version: "0.6.1"
   repository: "https://confluentinc.github.io/cp-helm-charts/"
-  condition: cp-helm-charts.enabled
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
