@@ -67,7 +67,7 @@ const FORM_SCHEMA = {
 
 const useSettingsHook = ({
   trackEvent,
-  resourceId: resourceId,
+  resourceId,
   updateAppSettings,
 }: SettingsHookParams) => {
   const handleSubmit = useCallback(
@@ -104,7 +104,7 @@ const useSettingsHook = ({
               serverPath: serverPath || "",
             },
           },
-          appId: resourceId,
+          resourceId,
         },
       }).catch(console.error);
     },
