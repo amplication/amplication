@@ -1,6 +1,8 @@
 global:
   pvc:
     name: common-efs-claim
+
+infra:
   cp-helm-charts:
     enabled: true
     cp-kafka:
