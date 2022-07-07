@@ -6,7 +6,7 @@ import {
 } from "@amplication/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -15,14 +15,14 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
 import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
-import FORM_SCHEMA from "./formSchema";
+import useSettingsHook from "../useSettingsHook";
 import {
   GET_RESOURCE_SETTINGS,
   UPDATE_APP_SETTINGS,
 } from "./GenerationSettingsForm";
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 type TData = {
@@ -32,13 +32,13 @@ type TData = {
 const CLASS_NAME = "generation-settings-form";
 
 function GenerationSettingsForm({ match }: Props) {
-  const applicationId = match.params.application;
+  const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
     appSettings: models.AppSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
-      id: applicationId,
+      id: resourceId,
     },
   });
 
@@ -55,47 +55,11 @@ function GenerationSettingsForm({ match }: Props) {
     }
   );
 
-  const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
-      const {
-        dbHost,
-        dbName,
-        dbPassword,
-        dbPort,
-        dbUser,
-        authProvider,
-        adminUISettings: { generateAdminUI, adminUIPath },
-        serverSettings: { generateRestApi, generateGraphQL, serverPath },
-      } = data;
-
-      trackEvent({
-        eventName: "updateAppSettings",
-      });
-      updateAppSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-            adminUISettings: {
-              generateAdminUI,
-              adminUIPath: adminUIPath || "",
-            },
-            serverSettings: {
-              generateRestApi,
-              generateGraphQL,
-              serverPath: serverPath || "",
-            },
-          },
-          appId: applicationId,
-        },
-      }).catch(console.error);
-    },
-    [updateAppSettings, applicationId, trackEvent]
-  );
+  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+    trackEvent,
+    updateAppSettings,
+    resourceId,
+  });
 
   return (
     <div className={CLASS_NAME}>
@@ -114,33 +78,26 @@ function GenerationSettingsForm({ match }: Props) {
                 <div className={`${CLASS_NAME}__header`}>
                   <h3>Base directories</h3>
                 </div>
-                <p className={`${CLASS_NAME}__description`}>
-                  Amplication gives you the choice of which components to
-                  generate. Use the settings to include or exclude GraphQL API,
-                  REST API, and Admin UI.
-                </p>
-                <hr />
                 <FormikAutoSave debounceMS={1000} />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Server</h2>
                   <TextField
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="serverSettings[serverPath]"
-                    placeholder="./packages/[SERVICE-NAME]"
-                    label="Server base URL"
+                    placeholder="packages/[SERVICE-NAME]"
+                    label="Server base directory"
                     value={data?.appSettings.serverSettings.serverPath || ""}
                     helpText={data?.appSettings.serverSettings.serverPath}
                     labelType="normal"
                   />
                 </Panel>
-                <hr />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
                   <h2>Admin UI</h2>
                   <TextField
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="adminUISettings[adminUIPath]"
-                    placeholder="./packages/[SERVICE-NAME]"
-                    label="Admin UI base URL"
+                    placeholder="packages/[SERVICE-NAME]"
+                    label="Admin UI base directory"
                     disabled={!data?.appSettings.serverSettings.generateGraphQL}
                     value={data?.appSettings.adminUISettings.adminUIPath || ""}
                     helpText={data?.appSettings.adminUISettings.adminUIPath}
