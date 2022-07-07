@@ -3,34 +3,18 @@ on:
   workflow_dispatch:
     inputs:
       namespace:
-        type: string
+        type: choice
         description: Which namespace you want to delete
         default: shimi
         required: true
+        options: 
+        - shimi
+        - mor
+        - amit
 
 jobs:
-  check-ns-name:
-    runs-on: ubuntu-18.04
-    outputs:
-      namespace_valid: ${{ steps.check-ns.outputs.namespace_valid }}
-    steps:
-      - name: check namespace
-        id: check-ns
-        env: 
-          NAMESPACE: ${{ github.event.inputs.namespace }}
-        run: |
-          NAMESPACE=$NAMESPACE
-          echo "namespce: $NAMESPACE"
-          if [[ "$NAMESPACE" == "staging" || "$NAMESPACE" == "staging-os" || "$NAMESPACE" == "prod" ]]; then
-            echo "This is not a dynamic namespace."
-            echo "::set-output name=namespace_valid::false"
-          else
-            echo "::set-output name=namespace_valid::true"
-          fi
   delete-ns:
     runs-on: ubuntu-18.04
-    needs: [check-ns-name]
-    if: ${{ needs.check-ns-name.outputs.namespace_valid == "true" }}
     steps:
       - name: install argocd
         id: install-argocd
@@ -43,29 +27,13 @@ jobs:
         run: |
           ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
           argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web
-      - name: check if namespace exist
-        id: ns-exist
-        env: 
-          NAMESPACE: ${{ github.event.inputs.namespace }}
-        run: |
-          set +e
-          Get_app="$(argocd app list)"
-          if [[ -z "$Get_app" ]]
-          then
-            echo "namespace doesn't exist"
-            echo "::set-output name=app_exist::false"
-          else
-            echo "namespace exists"
-            echo "::set-output name=app_exist::true"
-          fi
       - name: delete ns
-        if: ${{ steps.ns-exist.outputs.app_exist == "true" }}
         env:
           NAMESPACE: ${{ github.event.inputs.namespace }}
         run: |
           APPNAME="amplication-$NAMESPACE"
+          set +e
           argocd app delete $APPNAME
-
 
 
 
