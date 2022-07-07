@@ -1,4 +1,4 @@
-global: 
+global:
   pvc:
     name: prod-efs-claim
 
@@ -142,8 +142,6 @@ amplication-storage-gateway:
       GITHUB_APP_APP_ID: "176701"
 
 infra:
-  pvc:
-    name: prod-efs-claim
   cp-helm-charts:
     enabled: false
     cp-kafka:

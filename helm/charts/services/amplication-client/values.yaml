@@ -39,7 +39,3 @@ config:
 
 infra:
   enabled: false
-
-global:
-  pvc:
-    name: efs-claim

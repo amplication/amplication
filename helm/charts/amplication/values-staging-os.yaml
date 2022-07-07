@@ -2,6 +2,16 @@ global:
   pvc:
     name: staging-os-efs-claim
 
+infra:
+  cp-helm-charts:
+    enabled: false
+    cp-kafka:
+      enabled: false
+    cp-zookeeper:
+      enabled: false
+  postgres:
+    install: false
+
 amplication-client:
   service:
     hostname: app.staging-os.amplication-dev.com
@@ -114,14 +124,3 @@ amplication-storage-gateway:
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 
-infra:
-  pvc:
-    name: staging-os-efs-claim
-  cp-helm-charts:
-    enabled: false
-    cp-kafka:
-      enabled: false
-    cp-zookeeper:
-      enabled: false
-  postgres:
-    install: false
