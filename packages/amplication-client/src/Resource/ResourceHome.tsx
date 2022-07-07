@@ -47,7 +47,11 @@ function ResourceHome({ match }: Props) {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME} sideContent="" pageTitle={data?.app.name}>
+    <PageContent
+      className={CLASS_NAME}
+      sideContent=""
+      pageTitle={data?.resource.name}
+    >
       <Switch>
         <Route
           path="/:resource/"
