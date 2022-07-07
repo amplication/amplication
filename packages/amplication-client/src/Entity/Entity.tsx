@@ -94,6 +94,7 @@ const Entity = ({ match }: Props) => {
 
   return (
     <PageContent
+      pageTitle={data?.entity.displayName}
       className="entity"
       sideContent={
         data && (

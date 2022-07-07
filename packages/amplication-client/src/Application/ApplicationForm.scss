@@ -6,6 +6,7 @@
     margin-bottom: var(--large-spacing);
     h3 {
       margin: 0;
+      @include title-18();
     }
   }
   h1 {
