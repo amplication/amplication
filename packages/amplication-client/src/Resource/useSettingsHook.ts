@@ -4,7 +4,7 @@ import { useCallback } from "react";
 interface SettingsHookParams {
   trackEvent: (event: { eventName: string; [key: string]: any }) => void;
   resourceId: string;
-  updateAppSettings: any;
+  updateServiceSettings: any;
 }
 
 const FORM_SCHEMA = {
@@ -68,10 +68,10 @@ const FORM_SCHEMA = {
 const useSettingsHook = ({
   trackEvent,
   resourceId,
-  updateAppSettings,
+  updateServiceSettings,
 }: SettingsHookParams) => {
   const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
+    (data: models.ServiceSettings) => {
       const {
         dbHost,
         dbName,
@@ -83,9 +83,9 @@ const useSettingsHook = ({
         serverSettings: { generateRestApi, generateGraphQL, serverPath },
       } = data;
       trackEvent({
-        eventName: "updateAppSettings",
+        eventName: "updateServiceSettings",
       });
-      updateAppSettings({
+      updateServiceSettings({
         variables: {
           data: {
             adminUISettings: {
@@ -108,7 +108,7 @@ const useSettingsHook = ({
         },
       }).catch(console.error);
     },
-    [updateAppSettings, resourceId, trackEvent]
+    [updateServiceSettings, resourceId, trackEvent]
   );
 
   return {

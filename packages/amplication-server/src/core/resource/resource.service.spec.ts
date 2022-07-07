@@ -44,9 +44,9 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_SERVICE_DATA
 } from './sampleResource';
-import { AppSettings } from '../appSettings/dto';
-import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
-import { AppSettingsService } from '../appSettings/appSettings.service';
+import { ServiceSettings } from '../serviceSettings/dto';
+import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
@@ -126,7 +126,7 @@ const EXAMPLE_BLOCK: Block = {
   updatedAt: new Date(),
   resourceId: EXAMPLE_RESOURCE_ID,
   displayName: EXAMPLE_BLOCK_DISPLAY_NAME,
-  blockType: EnumBlockType.AppSettings,
+  blockType: EnumBlockType.ServiceSettings,
   parentBlock: null,
   versionNumber: CURRENT_VERSION_NUMBER,
   description: 'example block description'
@@ -225,7 +225,7 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   updatedAt: new Date()
 };
 
-const EXAMPLE_APP_SETTINGS: AppSettings = {
+const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   dbHost: 'exampleDbHost',
   dbName: 'exampleDbName',
   dbUser: 'exampleDbUser',
@@ -240,13 +240,13 @@ const EXAMPLE_APP_SETTINGS: AppSettings = {
   parentBlock: new Block(),
   displayName: 'exampleDisplayName',
   description: 'exampleDescription',
-  blockType: 'AppSettings',
+  blockType: EnumBlockType.ServiceSettings,
   versionNumber: 0,
   inputParameters: [],
   outputParameters: []
 };
 
-const appSettingsCreateMock = jest.fn(() => {
+const serviceSettingsCreateMock = jest.fn(() => {
   return EXAMPLE_APP_SETTINGS;
 });
 
@@ -391,10 +391,10 @@ describe('ResourceService', () => {
           }))
         },
         {
-          provide: AppSettingsService,
+          provide: ServiceSettingsService,
           useClass: jest.fn(() => ({
-            create: appSettingsCreateMock,
-            createDefaultAppSettings: appSettingsCreateMock
+            create: serviceSettingsCreateMock,
+            createDefaultServiceSettings: serviceSettingsCreateMock
           }))
         }
       ]

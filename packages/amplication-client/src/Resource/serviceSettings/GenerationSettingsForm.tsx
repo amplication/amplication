@@ -17,7 +17,7 @@ type Props = {
 };
 
 type TData = {
-  updateAppSettings: models.AppSettings;
+  updateServiceSettings: models.ServiceSettings;
 };
 
 const CLASS_NAME = "generation-settings-form";
@@ -26,7 +26,7 @@ function GenerationSettingsForm({ match }: Props) {
   const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
-    appSettings: models.AppSettings;
+    serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
       id: resourceId,
@@ -37,27 +37,27 @@ function GenerationSettingsForm({ match }: Props) {
 
   const { trackEvent } = useTracking();
 
-  const [updateAppSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_APP_SETTINGS,
+  const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
+    UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addBlock(data.updateAppSettings.id);
+        pendingChangesContext.addBlock(data.updateServiceSettings.id);
       },
     }
   );
 
   const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
     trackEvent,
-    updateAppSettings,
-    resourceId: resourceId,
+    updateServiceSettings,
+    resourceId,
   });
 
   return (
     <div className={CLASS_NAME}>
-      {data?.appSettings && (
+      {data?.serviceSettings && (
         <Formik
-          initialValues={data.appSettings}
-          validate={(values: models.AppSettings) =>
+          initialValues={data.serviceSettings}
+          validate={(values: models.ServiceSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
@@ -86,7 +86,9 @@ function GenerationSettingsForm({ match }: Props) {
                     label="REST API & Swagger UI"
                   />
                   <ToggleField
-                    disabled={!data?.appSettings.serverSettings.generateGraphQL}
+                    disabled={
+                      !data?.serviceSettings.serverSettings.generateGraphQL
+                    }
                     name="adminUISettings[generateAdminUI]"
                     label="Admin UI"
                   />
@@ -106,12 +108,12 @@ function GenerationSettingsForm({ match }: Props) {
 
 export default GenerationSettingsForm;
 
-export const UPDATE_APP_SETTINGS = gql`
-  mutation updateAppSettings(
-    $data: AppSettingsUpdateInput!
+export const UPDATE_SERVICE_SETTINGS = gql`
+  mutation updateServiceSettings(
+    $data: ServiceSettingsUpdateInput!
     $resourceId: String!
   ) {
-    updateAppSettings(data: $data, where: { id: $resourceId }) {
+    updateServiceSettings(data: $data, where: { id: $resourceId }) {
       id
       dbHost
       dbName
@@ -133,8 +135,8 @@ export const UPDATE_APP_SETTINGS = gql`
 `;
 
 export const GET_RESOURCE_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
+  query serviceSettings($id: String!) {
+    serviceSettings(where: { id: $id }) {
       id
       dbHost
       dbName

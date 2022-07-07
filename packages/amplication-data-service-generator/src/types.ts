@@ -20,8 +20,8 @@ export type WorkerParam = {
   appInfo: AppInfo;
 };
 
-export type AppSettings = Omit<
-  models.AppSettings,
+export type ServiceSettings = Omit<
+  models.ServiceSettings,
   | "__typename"
   | "id"
   | "createdAt"
@@ -43,7 +43,7 @@ export type AppInfo = {
   version: string;
   id: string;
   url: string;
-  settings: AppSettings;
+  settings: ServiceSettings;
 };
 
 export type Role = Omit<
