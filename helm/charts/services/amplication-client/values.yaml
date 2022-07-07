@@ -36,3 +36,6 @@ config:
     REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: https://server.amplication-dev.com/github
     REACT_APP_GITHUB_CLIENT_ID: a4e9055e5f21448d6de7
     REACT_APP_AMPLITUDE_API_KEY: P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO
+
+infra:
+  enabled: false

@@ -6,13 +6,17 @@ dependencies:
 
 - name: postgresql
   alias: postgres
-  version: "10.5.2"
+  version: "10.16.2"
   repository: "https://charts.bitnami.com/bitnami"
   condition: postgres.install
 
 - name: base
   version: "0.1.0"
   repository: "file://../../base"
+- name: infra
+  version: "0.1.0"
+  repository: "file://../../infra" 
+  condition: infra.enabled 
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives

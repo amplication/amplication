@@ -34,11 +34,6 @@ service:
 ingress:
   enabled: false
 
-pvc:
-  storageRequest: 1Gi
-  name: efs-claim
-  storageName: efs-sc
-
 # Postgresql Server
 postgres:
   install: false
@@ -51,3 +46,10 @@ postgres:
     imagePullPolicy: Always
     primary:
       podLabels: { name: "postgres" }
+
+infra:
+  enabled: false
+
+global:
+  pvc:
+    name: efs-claim

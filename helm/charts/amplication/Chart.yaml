@@ -3,11 +3,6 @@ name: amplication
 description: A Helm chart for Amplication.
 
 dependencies:
-- name: postgresql
-  alias: postgres
-  version: "10.16.2"
-  repository: "https://charts.bitnami.com/bitnami"
-  condition: postgres.install
 - name: amplication-client
   version: "0.1.0"
   repository: "file://../services/amplication-client"
@@ -17,10 +12,6 @@ dependencies:
 - name: amplication-server
   version: "0.1.0"
   repository: "file://../services/amplication-server"
-- name: cp-helm-charts
-  version: "0.6.1"
-  repository: "https://confluentinc.github.io/cp-helm-charts/"
-  condition: cp-helm-charts.enabled
 - name: amplication-git-pull-request-service
   version: "0.1.0"
   repository: "file://../services/amplication-git-pull-request-service"
@@ -33,6 +24,9 @@ dependencies:
 - name: amplication-storage-gateway
   version: "0.1.0"
   repository: "file://../services/amplication-storage-gateway"
+- name: infra
+  version: "0.1.0"
+  repository: "file://../infra"  
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives

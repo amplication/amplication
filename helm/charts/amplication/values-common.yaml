@@ -1,56 +1,21 @@
-cp-helm-charts:
-  enabled: true
-  cp-kafka:
-    enabled: true
-    image: confluentinc/cp-enterprise-kafka
-    imageTag: 6.1.0
-    prometheus:
-      jmx:
-        enabled: true
-    podAnnotations:
-      cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
-    configurationOverrides:
-      "default.replication.factor": "1"
-      "min.insync.replicas": "1"
-      "auto.create.topics.enable": "true"
-      "offsets.topic.replication.factor": "1"
-      "confluent.metrics.reporter.topic.replicas": "1"
-    resources: {}
-    heapOptions: "-Xms512M -Xmx512M"
-    tolerations:
-      - key: "kafka"
-        operator: "Equal"
-        value: "true"
-    brokers: 1
-    persistence:
-      enabled: true
-      size: 5Gi
-  cp-zookeeper:
-    enabled: true
-    servers: 1
-    image: confluentinc/cp-zookeeper
-    imageTag: 6.1.0
-    heapOptions: "-Xms512M -Xmx512M"
-    persistence:
-      enabled: true
-  cp-schema-registry:
-    enabled: false
-  cp-kafka-rest:
-    enabled: false
-  cp-kafka-connect:
-    enabled: false
-  cp-control-center:
-    enabled: false
-  cp-ksql-server:
-    enabled: false
+global:
+  pvc:
+    name: common-efs-claim
 
-postgres:
-  install: false
+infra:
+  cp-helm-charts:
+    enabled: true
+    cp-kafka:
+      enabled: true
+    cp-zookeeper:
+      enabled: true
+  postgres:
+    install: true
 
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
-    tag: "release-0-13-0" # Need to change for dev.
+    tag: "release-0-13-1" # Need to change for dev.
   service:
     hostname: app-dev.staging.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
@@ -63,17 +28,15 @@ amplication-client:
 amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-    tag: "release-0-13-0"
+    tag: "release-0-13-1"
   postgres:
     install: false
   ingress:
     enabled: true
     hostname: server.staging.amplication-dev.com
-  pvc:
-    name: common-efs-claim
   config:
     env:
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
       GITHUB_SCOPE: "user:email"
       GOOGLE_APPLICATION_CREDENTIALS: "/var/secrets/gcp-account-service"
@@ -123,7 +86,7 @@ amplication-server:
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
-    tag: "release-0-13-0"
+    tag: "release-0-13-1"
   postgres:
     install: false
   ingress:
@@ -140,11 +103,9 @@ amplication-git-push-webhook-service:
 amplication-git-pull-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
-    tag: "release-0-13-0"
+    tag: "release-0-13-1"
   postgres:
     install: false
-  pvc:
-    name: common-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -167,22 +128,22 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
-    tag: "release-0-13-0"
-  pvc:
-    name: common-efs-claim
+    tag: "release-0-13-1"
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 
 amplication-storage-gateway:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
-    tag: "feature-add-services"
+    tag: "release-0-13-1"
+  ingress:
+    hostname: server.staging.amplication-dev.com
   config:
     env:
       PORT: "3002"
@@ -191,3 +152,4 @@ amplication-storage-gateway:
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
+

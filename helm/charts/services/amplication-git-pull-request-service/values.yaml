@@ -35,7 +35,9 @@ service:
 ingress:
   enabled: false
 
-pvc:
-  storageRequest: 1Gi
-  storageName: efs-sc
-  name: efs-claim
+infra:
+  enabled: false
+
+global:
+  pvc:
+    name: efs-claim
