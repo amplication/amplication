@@ -141,12 +141,11 @@ amplication-storage-gateway:
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
 
-infra:
-  cp-helm-charts:
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
     enabled: false
-    cp-kafka:
-      enabled: false
-    cp-zookeeper:
-      enabled: false
-  postgres:
-    install: false
+  cp-zookeeper:
+    enabled: false
+postgres:
+  install: false

@@ -124,12 +124,11 @@ amplication-storage-gateway:
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 
-infra:
-  cp-helm-charts:
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
     enabled: false
-    cp-kafka:
-      enabled: false
-    cp-zookeeper:
-      enabled: false
-  postgres:
-    install: false
+  cp-zookeeper:
+    enabled: false
+postgres:
+  install: false

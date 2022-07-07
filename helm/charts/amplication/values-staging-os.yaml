@@ -2,15 +2,14 @@ global:
   pvc:
     name: staging-os-efs-claim
 
-infra:
-  cp-helm-charts:
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
     enabled: false
-    cp-kafka:
-      enabled: false
-    cp-zookeeper:
-      enabled: false
-  postgres:
-    install: false
+  cp-zookeeper:
+    enabled: false
+postgres:
+  install: false
 
 amplication-client:
   service:
