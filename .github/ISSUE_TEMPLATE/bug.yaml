@@ -61,7 +61,7 @@ body:
         Node version: [node -v] \n
         NPM version: [npm -v] \n
         Docker version: [docker -v] \n
-        Cloud Provider: [AWS, GCP, Azure, Herokue, ...] \n
+        Cloud Provider: [AWS, GCP, Azure, Heroku, ...] \n
         OS Details (Linux): [cat /etc/os-release && uname -a]\n
         OS Details (Windows): [wmic os get Caption, Version, BuildNumber, OSArchitecture]
         "

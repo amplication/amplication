@@ -49,8 +49,8 @@ export function UserAndTime({ loading, account, time }: Props) {
           className={classNames(`${CLASS_NAME}__initials`)}
           onMouseOver={(e) => changeTooltipDirection(e.pageY)}
         >
-          {!loading && firstName && firstName.substr(0, 1).toUpperCase()}
-          {!loading && lastName && lastName.substr(0, 1).toUpperCase()}
+          {!loading && firstName && firstName.slice(0, 1).toUpperCase()}
+          {!loading && lastName && lastName.slice(0, 1).toUpperCase()}
         </span>
       </Tooltip>
       {!loading && formattedTime}

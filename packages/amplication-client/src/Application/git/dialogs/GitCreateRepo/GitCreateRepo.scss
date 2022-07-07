@@ -17,9 +17,14 @@
     .input-label {
       margin-bottom: 0;
     }
+
+    ~ .amplication-label {
+      display: block;
+    }
   }
+
   &__progress {
-    color: #ffffff !important;
+    color: var(--white) !important;
   }
 }
 th {

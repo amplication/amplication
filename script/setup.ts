@@ -1,15 +1,39 @@
 import { exec } from "child_process";
 import { satisfies } from "semver";
 import { createLogger, format, Logger, transports } from "winston";
+import * as ora from "ora";
+
 const { combine, colorize, simple } = format;
+
+const spinner = ora();
+spinner.color = "green";
+
+const logo = `  
+            ...   :..              
+        .~?Y5P!  .PP5Y7^.          
+      ~YPPPPPP!  .5PPPPP5?:        
+    :YPPPPPPPP!  .5PPPPPPPP?.      
+   ~PPPPPPPPPP!  .5PPPPPPPPPY.     
+  :PPPPPPPPPPP!  .5PPPPPPPPPPJ     
+  ?PPPPPPPPPPP!  .5PPPPPPPPPPP:    
+  JPPPPPPPPPPP!  .5PPPPPPPPPPP^    
+  !PPPPPPPPPPP!  .5PPPPPPPPPPP:    
+  .YPPPPPPPPPP!  .5PPPPPPPPPPP:    
+   .YPPPPPPPPP!  .5PPPPPPPPPPP:    
+     !5PPPPPPP!  .5PPPPPPPPPPP:    
+      .~YPPPPP!  .PPPPPPPPPPPP:    
+         .^!?Y~  .YYYYYYYYYYY5:    
+ `;
 
 class Task {
   constructor(public command: string, public label: string) {}
 }
+
 const logger = createLogger({
   transports: [new transports.Console()],
   format: combine(colorize(), simple()),
 });
+
 function preValidate() {
   const { engines } = require("../package.json");
   const { node: nodeRange, npm } = engines;
@@ -17,7 +41,7 @@ function preValidate() {
   const currentNpmVersionArray = npm_config_user_agent?.match(
     /npm\/[\^*\~*]*[\d\.]+/
   );
-  const currentNpmVersion = currentNpmVersionArray[0]?.substr(4);
+  const currentNpmVersion = currentNpmVersionArray[0]?.slice(4);
   if (!currentNpmVersionArray || !currentNpmVersion) {
     logger.error(
       "Mmmmm... it seems like you don't have permission to run the script. Try to run it as an administrator."
@@ -38,88 +62,96 @@ function preValidate() {
     process.exit(1);
   }
 }
-async function runFunction(task: Task, logger: Logger): Promise<string> {
-  logger.info(`Starting ${task.label}`);
+
+async function runFunction(task: Task): Promise<string> {
+  spinner.start(`${task.label}` + "\n");
   return new Promise((resolve, reject) => {
     exec(task.command, (error, stdout, stderr) => {
       error && reject(error);
       if (stdout) {
-        logger.info(`Finish ${task.label}`);
+        spinner.succeed(`Finished ${task.label}`);
         stdout && resolve(task.label);
       }
     });
   });
 }
+
+const clean: Task[] = [
+  {
+    command: "npm run clean",
+    label: "clean up 🧼",
+  },
+];
 const bootstrap: Task[] = [
   {
     command: "npm run bootstrap",
-    label: "Bootstrap",
+    label: "bootstrapping 🚀",
   },
 ];
-const clientStep: Task[] = [
+const buildStep: Task[] = [
   {
-    command:
-      "npm run build -- --scope @amplication/client --include-dependencies",
-    label: "Client build",
+    command: "npm run build",
+    label: "build packages 📦",
   },
 ];
-const serverBuild: Task[] = [
+const dockerCompose: Task[] = [
+  {
+    command: "npm run docker:dev",
+    label: "docker compose 🐳",
+  },
+];
+const prismaGeneration: Task[] = [
   {
     command: "npm run prisma:generate",
-    label: "prisma generation",
-  },
-  {
-    command:
-      "npm run build -- --scope @amplication/server --include-dependencies",
-    label: "server build",
+    label: "generate prisma 🧬",
   },
 ];
 const graphqlGeneration: Task[] = [
   {
     command: "npm run generate",
-    label: "generation graphql schema",
+    label: "generate graphql schema 🧬",
   },
 ];
-const docker: Task[] = [
+const prismaMigration: Task[] = [
   {
-    command: "cd packages/amplication-server && npm run docker",
-    label: "running docker compose up",
+    command: "npm run migrate:up",
+    label: "prisma migration 🏗 ",
   },
 ];
 
-const dockerInit: Task[] = [
-  {
-    command: "cd packages/amplication-server && npm run start:db",
-    label: "db seeding",
-  },
-];
 const tasks: Task[][] = [
+  clean,
   bootstrap,
-  clientStep,
-  serverBuild,
+  buildStep,
+  dockerCompose,
+  prismaGeneration,
   graphqlGeneration,
-  docker,
-  dockerInit,
+  prismaMigration,
 ];
+
 if (require.main === module) {
   (async () => {
-    preValidate();
-    logger.info(`Welcome to Amplication installer!`);
-    logger.info(
-      "This script will help you easily set up a running amplication server"
-    );
-    console.log("");
-
-    for (let i = 0; i < tasks.length; i++) {
-      const step = tasks[i];
-
-      logger.info(`Starting step ${i + 1}/${tasks.length}`);
-      const tasksPromises = step.map((task) => {
-        return runFunction(task, logger);
-      });
-      await Promise.all(tasksPromises);
+    try {
+      preValidate();
+      logger.info(`Welcome to Amplication installer!`);
+      console.log(logo);
       console.log("");
+
+      for (let i = 0; i < tasks.length; i++) {
+        const step = tasks[i];
+
+        logger.info(`Starting step ${i + 1}/${tasks.length}`);
+        const tasksPromises = step.map((task) => {
+          return runFunction(task);
+        });
+        await Promise.all(tasksPromises);
+        console.log("");
+      }
+      logger.info("Finish all the process for the setup, have fun hacking 👾");
+      logger.info("✋ To run a specific service, go to its README file and make sure you set all necessary environment variables❗️");
+      logger.info("Link to our docs: 'https://docs.amplication.com/docs/' 📜");
+    } catch (error) {
+      spinner.fail(error.message);
     }
-    logger.info("Finish all the process for the setup, have fun hacking");
   })();
 }

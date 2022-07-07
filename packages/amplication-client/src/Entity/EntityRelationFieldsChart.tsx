@@ -66,7 +66,7 @@ export const EntityRelationFieldsChart = ({
           </div>
           <div className={`${CLASS_NAME}__field`}>
             <Link
-              to={`/${applicationId}/entities/${entityId}/fields/${field.id}`}
+              to={`/${applicationId}/entities/${entityId}`}
             >
               {field.displayName}
             </Link>
@@ -126,7 +126,7 @@ export const EntityRelationFieldsChart = ({
           {fixInPlace && (
             <Button
               className={`${CLASS_NAME}__fix`}
-              buttonStyle={EnumButtonStyle.Secondary}
+              buttonStyle={EnumButtonStyle.Clear}
               type="submit"
               eventData={{
                 eventName: "fixRelatedEntity",

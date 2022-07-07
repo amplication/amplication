@@ -498,6 +498,42 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "MichaelSolati",
+      "name": "Michael Solati",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11811422?v=4",
+      "profile": "https://michaelsolati.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "muhsinkamil",
+      "name": "Mohamed Muhsin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62111075?v=4",
+      "profile": "https://github.com/muhsinkamil",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "0xsapphir3",
+      "name": "0xsapphir3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/82395440?v=4",
+      "profile": "https://asiancat54.ml",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "jnfrati",
+      "name": "Nicolas Frati",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23369263?v=4",
+      "profile": "http://jnfrati.github.io",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

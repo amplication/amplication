@@ -8,6 +8,7 @@ $panel-tag-width: 64px;
   display: flex;
   flex-direction: row;
   padding: 0;
+  overflow-x: auto;
 
   &--expired {
     .api-token-list-item {

@@ -1,8 +1,10 @@
+import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import { Entity, EntityLookupField, Module } from "../../../types";
 import { readFile, relativeImportPath } from "../../../util/module";
+import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import {
   interpolate,
   importNames,
@@ -19,12 +21,12 @@ import {
   getMethods,
   deleteClassMemberByKey,
   memberExpression,
+  removeTSIgnoreComments,
 } from "../../../util/ast";
 import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../util/field";
-import { SRC_DIRECTORY } from "../../constants";
 import { DTOs, getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
@@ -33,6 +35,8 @@ import {
   createFieldFindOneFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
+import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
+import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -46,7 +50,8 @@ export async function createResolverModules(
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
-  dtos: DTOs
+  dtos: DTOs,
+  srcDirectory: string
 ): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
@@ -112,7 +117,8 @@ export async function createResolverModules(
       createMutationId,
       updateMutationId,
       mapping,
-      false
+      false,
+      srcDirectory
     ),
     await createResolverModule(
       templateBasePath,
@@ -129,7 +135,8 @@ export async function createResolverModules(
       createMutationId,
       updateMutationId,
       mapping,
-      true
+      true,
+      srcDirectory
     ),
   ];
 }
@@ -149,10 +156,11 @@ async function createResolverModule(
   createMutationId: namedTypes.Identifier,
   updateMutationId: namedTypes.Identifier,
   mapping: { [key: string]: ASTNode | undefined },
-  isBaseClass: boolean
+  isBaseClass: boolean,
+  srcDirectory: string
 ): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.resolver.ts`;
-  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.resolver.base.ts`;
+  const modulePath = `${srcDirectory}/${entityName}/${entityName}.resolver.ts`;
+  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
   const file = await readFile(templateFilePath);
 
   interpolate(file, mapping);
@@ -188,6 +196,43 @@ async function createResolverModule(
       )
     ).flat();
 
+    const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+      {
+        methodId: mapping["CREATE_MUTATION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Create,
+        entity: entity,
+      },
+      {
+        methodId: mapping["ENTITIES_QUERY"] as namedTypes.Identifier,
+        action: EnumEntityAction.Search,
+        entity: entity,
+      },
+      {
+        methodId: mapping["META_QUERY"] as namedTypes.Identifier,
+        action: EnumEntityAction.Search,
+        entity: entity,
+      },
+      {
+        methodId: mapping["ENTITY_QUERY"] as namedTypes.Identifier,
+        action: EnumEntityAction.View,
+        entity: entity,
+      },
+      {
+        methodId: mapping["UPDATE_MUTATION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Update,
+        entity: entity,
+      },
+      {
+        methodId: mapping["DELETE_MUTATION"] as namedTypes.Identifier,
+        action: EnumEntityAction.Delete,
+        entity: entity,
+      },
+    ];
+
+    methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+      setEndpointPermissions(classDeclaration, methodId, action, entity);
+    });
+
     classDeclaration.body.body.push(
       ...toManyRelationMethods,
       ...toOneRelationMethods
@@ -210,12 +255,16 @@ async function createResolverModule(
     ]);
   }
 
-  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)
   );
-  addImports(file, [...dtoImports]);
+  const identifiersImports = importContainedIdentifiers(
+    file,
+    IMPORTABLE_IDENTIFIERS_NAMES
+  );
+  addImports(file, [...identifiersImports, ...dtoImports]);
 
   const serviceImport = importNames(
     [serviceId],
@@ -226,6 +275,7 @@ async function createResolverModule(
   );
 
   addImports(file, [serviceImport]);
+  removeTSIgnoreComments(file);
   removeImportsTSIgnoreComments(file);
   removeESLintComments(file);
   removeTSVariableDeclares(file);
@@ -261,7 +311,7 @@ async function createToOneRelationMethods(
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
-  interpolate(toOneFile, {
+  const toOneMapping = {
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
@@ -270,9 +320,20 @@ async function createToOneRelationMethods(
     GET_PROPERTY: createFieldFindOneFunctionId(field.name),
     FIND_ONE: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findOneArgs.id,
-  });
+  };
 
-  return getMethods(getClassDeclarationById(toOneFile, MIXIN_ID));
+  interpolate(toOneFile, toOneMapping);
+
+  const classDeclaration = getClassDeclarationById(toOneFile, MIXIN_ID);
+
+  setEndpointPermissions(
+    classDeclaration,
+    toOneMapping["FIND_ONE"] as namedTypes.Identifier,
+    EnumEntityAction.View,
+    relatedEntity
+  );
+
+  return getMethods(classDeclaration);
 }
 
 async function createToManyRelationMethods(
@@ -286,7 +347,7 @@ async function createToManyRelationMethods(
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
-  interpolate(toManyFile, {
+  const toManyMapping = {
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
@@ -295,7 +356,18 @@ async function createToManyRelationMethods(
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     FIND_MANY: builders.identifier(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
-  });
+  };
 
-  return getMethods(getClassDeclarationById(toManyFile, MIXIN_ID));
+  interpolate(toManyFile, toManyMapping);
+
+  const classDeclaration = getClassDeclarationById(toManyFile, MIXIN_ID);
+
+  setEndpointPermissions(
+    classDeclaration,
+    toManyMapping["FIND_MANY"] as namedTypes.Identifier,
+    EnumEntityAction.Search,
+    relatedEntity
+  );
+
+  return getMethods(classDeclaration);
 }

@@ -1,0 +1,158 @@
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
+    enabled: false
+  cp-zookeeper:
+    enabled: false
+
+postgres:
+  install: false
+
+amplication-client:
+  service:
+    hostname: app.prod.amplication-dev.com
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/7cf536df-6c61-4f76-bf3c-fd8f4e021721
+  config:
+    env:
+      REACT_APP_SERVER_URI: "https://server.amplication.com"
+      REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.amplication.com/github"
+      REACT_APP_PADDLE_VENDOR_ID: "131992"
+      REACT_APP_FEATURE_FLAGS: '{"SHOW_DEPLOYER":true}'
+      REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
+
+amplication-server:
+  resources:
+    limits:
+      cpu: 3
+      memory: 6Gi
+    requests:
+      cpu: 3
+      memory: 6Gi
+  pvc:
+    name: prod-efs-claim
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: server.prod.amplication-dev.com
+    hostname_production: server.amplication.com
+  config:
+    env:
+      HOST: "https://server.amplication.com"
+      CLIENT_HOST: "https://app.amplication.com"
+
+      ENABLE_SHUTDOWN_HOOKS: "1"
+      DISABLE_EVENT_TRACKING: "1"
+
+      #KAFKA
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_CLIENT_ID: amplication-server
+      KAFKA_GROUP_ID: amplication-server-group
+
+      #EFS
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      #GCP - APPS Builder
+      GCS_BUCKET: amplication-production-artifacts
+
+      GCP_APPS_PROJECT_ID: amplication-production-apps
+      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-production-apps-state-bucket
+      GCP_APPS_DOMAIN: amplication.app
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "176701"
+      GITHUB_APP_CLIENT_ID: "Iv1.3f1573355389c9e5"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplication/installations/new?state={state}"
+
+      #GitHub OAuth App
+      GITHUB_CLIENT_ID: "cc622ae6020e92fa1442"
+      GITHUB_REDIRECT_URI: "https://server.amplication.com/github/callback"
+
+      #SENDGRID
+      SENDGRID_FROM_ADDRESS: team@amplication.com
+      SENDGRID_API_KEY_SECRET_NAME: projects/948093699220/secrets/sendgrid_api_key_secret/versions/1
+      SENDGRID_INVITATION_TEMPLATE_ID: d-aaae46e4127c4d2399d242610e6c496a
+
+      #PADDLE
+      PADDLE_BASE_64_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUF1YXVpYVNuMGE2TUppZWcwV0ZiNAo1Y004SjhlS1hUZjdGdFo0VW83YnE5a3Jab1VaY2xQY0RvK0V6MTl6NjZ0d0s1eXpDdnRpUzRiZXB6UjVlSkZqCllNaUZlYUJXS3JFTm50Q3JMNTltM2FtRGVXTDhIeE1JQkRxK3VHbTYxdEwwTnNyUVF6eis2SXRwcHYvQUpmQUcKZW01M2U4SGUvS1A1TVloUGtFUXJQS3lPbXhBUHVzdjY5cHo4VXBxRm9mZE9QOTNON2tBWjNyZ2lvUmhzUmp6ZQp4dE1BM0g3UXhyVEQxdFBjRWRvQ0JkNWhtRXJ3dTk4L1Y4U2hmalFKWlIvNUxDakMxdDNGYzVVQ3pHdmdlbjRwCjM4TnlvbGd3TVM1MWN5dE1mcEtqYWhWNlFOc3ZPSzliQ0VLZFB0azZHbkV1bWoyak9rRi9YY1dGZGpyZmRseFMKMXBWU1lUMTNPUlZTQUx2MXB6MkFjdFRlVmFkd1V3V3gva0dBaXpndm80di9aT1UxRWRqc213czRkRnhhSmJKRQpMT3FEbUpDblFQUkZPS0FSejhZU0N0UWU0Z282VVJhSmZZdi9vWXFISEpJUkFvRkdIbys4ZWhJSkZzazFwOXVpCi83OXA0aWE1LzhieEl2MHlCV1Q4S0pZekVzbmFzRzNKaEhyOVJHUk4wN25QT2swek90Q0d6UzNBUW9POG81cFEKRS9vako5eml4MlI1aExWWWhDR2hHNXFNd2k3MGlEYTRnNXl0Q1M0T2tJdmt6YVN0L3locTdoTDRDb3JUOVVpUApFSVdnQWhFUEpsZEVVU0hMRkFjRWc1SVAyajN4b3pjRWN5RjlsRHBVNGx3MkZ2U2NGOXUyWTN2TFNjd3REejVICmNUVUQ3S05jZWNnUmFRMW0xdFJBd1Y4Q0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ==
+
+      #AMPLITUDE
+      AMPLITUDE_API_KEY: P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO
+
+      #SEGMENT
+      SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
+
+amplication-git-push-webhook-service:
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: webhooks.amplication.com
+  config:
+    env:
+      #KAFKA
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
+      KAFKA_CLIENT_ID: git-push-webhook-service
+      KAFKA_GROUP_ID: amplication-git-push-webhook-service
+
+amplication-git-pull-service:
+  pvc:
+    name: prod-efs-claim
+  postgres:
+    install: false
+  config:
+    env:
+      NODE_ENV: "production"
+
+      #EFS
+      STORAGE_PATH: /amplication-data/git-data
+      MAX_SNAPSHOTS: "100"
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "176701"
+      GITHUB_APP_CLIENT_ID: "Iv1.3f1573355389c9e5"
+      GIT_DEFAULT_ORIGIN_NAME: origin
+      GITHUB_APP_PRIVATE_KEY: ""
+
+      #KAFKA
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_CLIENT_ID: git-pull-service
+      KAFKA_GROUP_ID: git-pull-service-group
+
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
+
+amplication-git-pull-request-service:
+  pvc:
+    name: prod-efs-claim
+  config:
+    env:
+      #KAFKA
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_CLIENT_ID: git-pull-request-service
+      KAFKA_GROUP_ID: git-pull-request-service-group
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+
+      #EFS
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "176701"
+
+amplication-storage-gateway:
+  ingress:
+    hostname: server.amplication.com
+  pvc:
+    name: prod-efs-claim
+  config:
+    env:
+      #KAFKA
+      KAFKA_BROKERS: '["b-1.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplication-useast1-p.w0qvj0.c22.kafka.us-east-1.amazonaws.com:9092"]'
+
+      #EFS
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "176701"

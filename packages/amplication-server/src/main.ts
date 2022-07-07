@@ -1,8 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { sendServerLoadEvent } from './util/sendServerLoadEvent';
+import { createNestjsKafkaConfig } from '@amplication/kafka';
+import { MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
+  /**
+   * Send server load notification:
+   * sending runtime environment details.
+   *
+   * To disable event tracking set DISABLE_EVENT_TRACKING to 1
+   *
+   * To find more information regarding this feature visit https://docs.amplication.com/
+   */
+  if (
+    !process.env.DISABLE_EVENT_TRACKING ||
+    process.env.DISABLE_EVENT_TRACKING == '0'
+  ) {
+    sendServerLoadEvent();
+  }
+
   /**
    * Cloud Tracing @see https://cloud.google.com/trace/docs
    */
@@ -13,6 +31,9 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule, {});
+  app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
+
+  await app.startAllMicroservices();
 
   if (process.env.ENABLE_SHUTDOWN_HOOKS) {
     // Remove listeners created by Prisma

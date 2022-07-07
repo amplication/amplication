@@ -1,12 +1,11 @@
 import { Entity, Module } from "../../types";
-import { BASE_DIRECTORY } from "../constants";
 import { createPrismaSchema } from "./create-prisma-schema";
 
-const MODULE_PATH = `${BASE_DIRECTORY}/prisma/schema.prisma`;
-
 export async function createPrismaSchemaModule(
-  entities: Entity[]
+  entities: Entity[],
+  baseDirectory: string
 ): Promise<Module> {
+  const MODULE_PATH = `${baseDirectory}/prisma/schema.prisma`;
   return {
     path: MODULE_PATH,
     code: await createPrismaSchema(entities),

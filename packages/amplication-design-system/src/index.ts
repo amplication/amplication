@@ -4,6 +4,7 @@ import "./style/icon.scss";
 export {
   Button,
   EnumButtonStyle,
+  EnumIconPosition,
   Props as ButtonProps,
 } from "./components/Button/Button";
 
@@ -135,7 +136,6 @@ export {
 } from "./components/RadioButton/RadioButtonField";
 
 export { Label, Props as LabelProps } from "./components/Label/Label";
-
 export {
   CircularProgress,
   Props as CircularProgressProps,
@@ -145,3 +145,13 @@ export { Icon, Props as IconProps } from "./components/Icon/Icon";
 
 export { Tooltip, Props as TooltipProps } from "./components/Tooltip/Tooltip";
 export { SkeletonWrapper } from "./components/SkeletonWrapper/SkeletonWrapper";
+
+// exports from installed design packages
+export { CSSTransition, SwitchTransition } from "react-transition-group";
+
+export {
+  TreeView,
+  TreeItem,
+  TreeViewProps,
+  TreeItemProps,
+} from "./components/TreeView/TreeView";

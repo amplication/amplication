@@ -29,8 +29,12 @@ function WorkspaceSelectorListItem({
       onClick={handleClick}
     >
       <CircleBadge name={workspace.name} color={COLOR} />
-
-      <span className={`${CLASS_NAME}__name`}>{workspace.name}</span>
+      <div className={`${CLASS_NAME}__details`}>
+        <span className={`${CLASS_NAME}__name`}>{workspace.name}</span>
+        <span className={`${CLASS_NAME}__plan`}>
+          {workspace.subscription?.subscriptionPlan || "Community"} Plan
+        </span>
+      </div>
     </div>
   );
 }

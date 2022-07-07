@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from "react";
 
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { Icon, Tooltip, CircularProgress } from "@amplication/design-system";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
@@ -10,12 +9,12 @@ import { EnumButtonStyle, Button } from "../Components/Button";
 import { downloadArchive } from "./BuildSteps";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
-import { BuildStepsStatus } from "./BuildStepsStatus";
 import { HelpPopover } from "../Components/HelpPopover";
 import { GET_APPLICATION } from "../Application/ApplicationHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
+import { CircularProgress, Icon, Tooltip } from "@amplication/design-system";
 
 const CLASS_NAME = "build-summary";
 
@@ -39,7 +38,6 @@ type Props = {
 };
 
 const LOCAL_STORAGE_KEY_SHOW_GITHUB_HELP = "ShowGitHubContextHelp";
-const LOCAL_STORAGE_KEY_SHOW_SANDBOX_HELP = "ShowGSandboxContextHelp";
 
 const BuildSummary = ({ generating, build, onError }: Props) => {
   const { data } = useBuildWatchStatus(build);
@@ -47,11 +45,6 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
   const [showGitHelp, setShowGitHubHelp] = useLocalStorage(
     LOCAL_STORAGE_KEY_SHOW_GITHUB_HELP,
     "true"
-  );
-
-  const [showSandboxHelp, setShowSandboxHelp] = useLocalStorage(
-    LOCAL_STORAGE_KEY_SHOW_SANDBOX_HELP,
-    "false"
   );
 
   const { data: appData } = useQuery<{
@@ -68,12 +61,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
 
   const handleDismissHelpGitHub = useCallback(() => {
     setShowGitHubHelp("false");
-    setShowSandboxHelp("true");
-  }, [setShowGitHubHelp, setShowSandboxHelp]);
-
-  const handleDismissHelpSandbox = useCallback(() => {
-    setShowSandboxHelp("false");
-  }, [setShowSandboxHelp]);
+  }, [setShowGitHubHelp]);
 
   const stepGenerateCode = useMemo(() => {
     if (!data.build.action?.steps?.length) {
@@ -83,27 +71,6 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
       data.build.action.steps.find(
         (step) => step.name === GENERATE_STEP_NAME
       ) || EMPTY_STEP
-    );
-  }, [data.build.action]);
-
-  const stepBuildDocker = useMemo(() => {
-    if (!data.build.action?.steps?.length) {
-      return EMPTY_STEP;
-    }
-    return (
-      data.build.action.steps.find(
-        (step) => step.name === BUILD_DOCKER_IMAGE_STEP_NAME
-      ) || EMPTY_STEP
-    );
-  }, [data.build.action]);
-
-  const stepDeploy = useMemo(() => {
-    if (!data.build.action?.steps?.length) {
-      return EMPTY_STEP;
-    }
-    return (
-      data.build.action.steps.find((step) => step.name === DEPLOY_STEP_NAME) ||
-      null
     );
   }, [data.build.action]);
 
@@ -121,11 +88,6 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
 
     return log?.meta?.githubUrl || null;
   }, [data.build.action]);
-
-  const deployment =
-    data.build.deployments &&
-    data.build.deployments.length &&
-    data.build.deployments[0];
 
   return (
     <div className={`${CLASS_NAME}`}>
@@ -161,18 +123,18 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             placement="top-start"
           >
             <Link
-              to={`/${build.appId}/github`}
-              className={`${CLASS_NAME}__open-github`}
+              to={`/${build.appId}/code-view`}
+              className={`${CLASS_NAME}__view-code`}
             >
               <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                icon="github"
+                buttonStyle={EnumButtonStyle.Secondary}
+                icon="code"
                 disabled={generating}
                 eventData={{
-                  eventName: "buildConnectToGithub",
+                  eventName: "FooterViewCode",
                 }}
               >
-                Push Code to GitHub
+                View Code
               </Button>
             </Link>
           </HelpPopover>
@@ -188,7 +150,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         )}
         <Tooltip aria-label={"Download Code"} direction="nw">
           <Button
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             disabled={
               stepGenerateCode.status !== models.EnumActionStepStatus.Success ||
               generating
@@ -204,79 +166,11 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
         </Tooltip>
       </div>
 
-      {generating ? (
+      {generating && (
         <div className={`${CLASS_NAME}__generating`}>
           <CircularProgress />
           Generating new build...
         </div>
-      ) : (
-        <HelpPopover
-          onDismiss={handleDismissHelpSandbox}
-          content={
-            <div>
-              All your committed changes are continuously deployed to a sandbox
-              environment on the Amplication cloud so you can easily access your
-              application for testing and development purposes.
-            </div>
-          }
-          open={showSandboxHelp === "false" ? false : true}
-          placement="top-start"
-        >
-          {stepBuildDocker.status === models.EnumActionStepStatus.Running ||
-          stepDeploy?.status === models.EnumActionStepStatus.Running ? (
-            <Link to={`/${build.appId}/builds/${build.id}`}>
-              <Button
-                buttonStyle={EnumButtonStyle.Secondary}
-                eventData={{
-                  eventName: "BuildSandboxViewDetailsClick",
-                }}
-              >
-                <BuildStepsStatus
-                  status={models.EnumActionStepStatus.Running}
-                />
-                Preparing sandbox environment...
-              </Button>
-            </Link>
-          ) : deployment &&
-            stepDeploy?.status === models.EnumActionStepStatus.Success ? (
-            <a href={deployment.environment.address} target="app">
-              <Button
-                buttonStyle={EnumButtonStyle.Secondary}
-                icon="link_2"
-                eventData={{
-                  eventName: "openPreviewApp",
-                  versionNumber: data.build.version,
-                }}
-              >
-                Open Sandbox environment
-              </Button>
-            </a>
-          ) : (
-            <div className={`${CLASS_NAME}__sandbox`}>
-              {stepDeploy ? (
-                <Link to={`/${build.appId}/builds/${build.id}`}>
-                  <Button
-                    buttonStyle={EnumButtonStyle.Secondary}
-                    eventData={{
-                      eventName: "buildFailedViewDetails",
-                    }}
-                  >
-                    <BuildStepsStatus
-                      status={models.EnumActionStepStatus.Failed}
-                    />
-                    Deployment to sandbox failed
-                  </Button>
-                </Link>
-              ) : (
-                <>
-                  <Icon size="small" icon="info_circle" />
-
-                  <span>Commit changes to start deployment to sandbox. </span>
-                </>
-              )}
-            </div>
-          )}
-        </HelpPopover>
       )}
     </div>
   );

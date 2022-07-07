@@ -1,7 +1,7 @@
 <p align="center">
 
   <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/assets/amplication-logo-purple.svg"/>
+    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/images/amplication-logo-purple.svg"/>
   </a>
 </p>
 <p align="center">
@@ -24,7 +24,7 @@
 <div align="center">
  
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-52-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-56-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
@@ -65,17 +65,42 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
 ## Development Environment (Local)
 
+### System Requirements
+
+:bulb: Before you begin, make sure you have all the below installed:
+
+- [Node.js v14 or above](https://nodejs.org/en/download/)
+- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
+- [Docker](https://docs.docker.com/desktop/)
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
+
+
 ### Initializing all the packages
 
-Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, including running a docker image for the DB and seeding the DB, execute the following commands in the project root folder:
+Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, including running a docker image for the DB and seeding the DB.
 
+1. Execute the following commands in the project root folder:
 
 ```jsx
 npm install
 npm run setup:dev
+npm run start
+```
+This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
+
+2. Go to `.../packages/amplication-server` and execute the following command:
+
+```jsx
+npm run start
 ```
 
-This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
+3. Go to `.../packages/amplication-client` and execute the following command:
+
+```jsx
+npm run start
+```
+
+
 
 
 ### Setting Up Amplication Manually
@@ -104,7 +129,7 @@ How does it affect you? Well... mostly it doesn't. Every app generated using Amp
 
 You can ask questions, and participate in discussions about Amplication-related topics in the Amplication Discord channel.
 
-<a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/assets/images/discord_banner_purple.svg" /></a>
+<a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
 ## Create a bug report
 
@@ -200,6 +225,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/kwinyyyc"><img src="https://avatars.githubusercontent.com/u/8462684?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Kwinten Li</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=kwinyyyc" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/EdroViegas"><img src="https://avatars.githubusercontent.com/u/21107004?v=4?s=100" width="100px;" alt=""/><br /><sub><b>EdroViegas</b></sub></a><br /><a href="https://github.com/amplication/amplication/issues?q=author%3AEdroViegas" title="Bug reports">🐛</a></td>
     <td align="center"><a href="https://github.com/hmiiro"><img src="https://avatars.githubusercontent.com/u/35217089?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Hassan Miiro</b></sub></a><br /><a href="#ideas-hmiiro" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://michaelsolati.com"><img src="https://avatars.githubusercontent.com/u/11811422?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Michael Solati</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=MichaelSolati" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/muhsinkamil"><img src="https://avatars.githubusercontent.com/u/62111075?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mohamed Muhsin</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=muhsinkamil" title="Code">💻</a></td>
+    <td align="center"><a href="https://asiancat54.ml"><img src="https://avatars.githubusercontent.com/u/82395440?v=4?s=100" width="100px;" alt=""/><br /><sub><b>0xsapphir3</b></sub></a><br /><a href="https://github.com/amplication/amplication/issues?q=author%3A0xsapphir3" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="http://jnfrati.github.io"><img src="https://avatars.githubusercontent.com/u/23369263?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nicolas Frati</b></sub></a><br /><a href="#ideas-jnfrati" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 

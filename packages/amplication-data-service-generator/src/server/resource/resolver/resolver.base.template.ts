@@ -7,10 +7,6 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 // @ts-ignore
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 // @ts-ignore
-import * as gqlUserRoles from "../../auth/gqlUserRoles.decorator";
-// @ts-ignore
-import * as abacUtil from "../../auth/abac.util";
-// @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
@@ -85,6 +81,8 @@ export class RESOLVER_BASE {
     };
   }
 
+  // @ts-ignore
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [ENTITY])
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -92,19 +90,13 @@ export class RESOLVER_BASE {
     possession: "any",
   })
   async ENTITIES_QUERY(
-    @graphql.Args() args: FIND_MANY_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<ENTITY[]> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const results = await this.service.findMany(args);
-    return results.map((result) => permission.filter(result));
+    return this.service.findMany(args);
   }
 
+  // @ts-ignore
+  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => ENTITY, { nullable: true })
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -112,53 +104,24 @@ export class RESOLVER_BASE {
     possession: "own",
   })
   async ENTITY_QUERY(
-    @graphql.Args() args: FIND_ONE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: FIND_ONE_ARGS
   ): Promise<ENTITY | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "read",
-      possession: "own",
-      resource: ENTITY_NAME,
-    });
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
     }
-    return permission.filter(result);
+    return result;
   }
 
+  // @ts-ignore
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
     action: "create",
     possession: "any",
   })
-  async CREATE_MUTATION(
-    @graphql.Args() args: CREATE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
-  ): Promise<ENTITY> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "create",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(", ");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new apollo.ApolloError(
-        `providing the properties: ${properties} on ${ENTITY_NAME} creation is forbidden for roles: ${roles}`
-      );
-    }
+  async CREATE_MUTATION(@graphql.Args() args: CREATE_ARGS): Promise<ENTITY> {
     // @ts-ignore
     return await this.service.create({
       ...args,
@@ -166,6 +129,8 @@ export class RESOLVER_BASE {
     });
   }
 
+  // @ts-ignore
+  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ENTITY)
   @nestAccessControl.UseRoles({
     resource: ENTITY_NAME,
@@ -173,30 +138,8 @@ export class RESOLVER_BASE {
     possession: "any",
   })
   async UPDATE_MUTATION(
-    @graphql.Args() args: UPDATE_ARGS,
-    @gqlUserRoles.UserRoles() userRoles: string[]
+    @graphql.Args() args: UPDATE_ARGS
   ): Promise<ENTITY | null> {
-    const permission = this.rolesBuilder.permission({
-      role: userRoles,
-      action: "update",
-      possession: "any",
-      resource: ENTITY_NAME,
-    });
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      args.data
-    );
-    if (invalidAttributes.length) {
-      const properties = invalidAttributes
-        .map((attribute: string) => JSON.stringify(attribute))
-        .join(", ");
-      const roles = userRoles
-        .map((role: string) => JSON.stringify(role))
-        .join(",");
-      throw new apollo.ApolloError(
-        `providing the properties: ${properties} on ${ENTITY_NAME} update is forbidden for roles: ${roles}`
-      );
-    }
     try {
       // @ts-ignore
       return await this.service.update({

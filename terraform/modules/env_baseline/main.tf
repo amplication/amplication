@@ -112,8 +112,27 @@ data "google_secret_manager_secret_version" "github_client_secret" {
   secret = var.github_client_secret_id
 }
 
+data "google_secret_manager_secret_version" "segment_write_key_secret" {
+  secret = var.segment_write_key_secret_id
+}
+
+data "google_secret_manager_secret_version" "sendgrid_api_key_secret" {
+  secret = var.sendgrid_api_key_secret_id
+}
+
 resource "google_secret_manager_secret_iam_member" "compute_default_service_account" {
   secret_id = var.github_client_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+resource "google_secret_manager_secret_iam_member" "compute_default_service_account_segment" {
+  secret_id = var.segment_write_key_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "compute_default_service_account_sendgrid" {
+  secret_id = var.sendgrid_api_key_secret_id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${data.google_compute_default_service_account.default.email}"
 }
@@ -125,12 +144,12 @@ resource "google_storage_bucket" "artifacts" {
   location      = var.bucket_location
   force_destroy = true
   lifecycle_rule {
-      action {
-          type = "Delete"
-      }
-      condition {
-        age = 30 
-      }
+    action {
+      type = "Delete"
+    }
+    condition {
+      age = 30
+    }
   }
 
 }
@@ -201,9 +220,18 @@ resource "google_cloud_run_service" "default" {
           name  = "GITHUB_SECRET_SECRET_NAME"
           value = data.google_secret_manager_secret_version.github_client_secret.name
         }
+
         env {
           name  = "AMPLITUDE_API_KEY"
           value = var.amplitude_api_key
+        }
+        env {
+          name  = "SENDGRID_FROM_ADDRESS"
+          value = var.sendgrid_from_address
+        }
+        env {
+          name  = "SENDGRID_INVITATION_TEMPLATE_ID"
+          value = var.sendgrid_invitation_template_id
         }
         env {
           name  = "GITHUB_CLIENT_ID"
@@ -277,6 +305,23 @@ resource "google_cloud_run_service" "default" {
           name  = "HOST"
           value = var.host
         }
+        env {
+          name  = "SEGMENT_WRITE_KEY_SECRET_NAME"
+          value = data.google_secret_manager_secret_version.segment_write_key_secret.name
+        }
+        env {
+          name  = "SENDGRID_API_KEY_SECRET_NAME"
+          value = data.google_secret_manager_secret_version.sendgrid_api_key_secret.name
+        }
+        env {
+          name  = "REACT_APP_PADDLE_VENDOR_ID"
+          value = var.paddle_vendor_id
+        }
+        env {
+          name  = "PADDLE_BASE_64_PUBLIC_KEY"
+          value = var.paddle_base_64_public_key
+        }
+
 
         # GitHub App
 
@@ -305,7 +350,23 @@ resource "google_cloud_run_service" "default" {
           value = var.github_app_installation_url
         }
 
+        env {
+          name  = "DISABLE_EVENT_TRACKING"
+          value = 1
+        }
 
+         env {
+          name = "KAFKA_BROKER_IP_ENV_KEY"
+          value = var.kafka_broker_ip
+        }
+         env {
+          name = "WEBHOOKS_SECRET_KEY"
+          value = var.webhooks_secret_key
+        }
+        env {
+          name = "KAFKA_REPOSITORY_PUSH_QUEUE"
+          value = var.kafka_repository_push_queue
+        }
 
         resources {
           limits = {
@@ -314,7 +375,7 @@ resource "google_cloud_run_service" "default" {
           }
         }
       }
-      container_concurrency = 8
+      container_concurrency = 10
       # 2 minutes
       timeout_seconds = 120
     }

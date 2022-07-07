@@ -47,6 +47,25 @@ $split-icon-font-size: 20px;
     }
   }
 
+  &.amp-button--danger {
+    background-color: var(--negative);
+    color: var(--static-white);
+    border: 1px solid var(--negative);
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--negative-dark);
+      border-color: var(--negative-dark);
+    }
+
+    &[disabled] {
+      background-color: var(--black20);
+      color: var(--white);
+      border: none;
+    }
+  }
+
   &.amp-button--call-to-action {
     background-color: var(--black90);
     color: var(--white);
@@ -70,7 +89,7 @@ $split-icon-font-size: 20px;
   &.amp-button--secondary {
     background-color: transparent;
     color: var(--black100);
-    border: none;
+    border: $border-black20;
 
     &:hover,
     &:active,
@@ -88,6 +107,26 @@ $split-icon-font-size: 20px;
   }
 
   &.amp-button--clear {
+    background-color: transparent;
+    color: var(--black100);
+    border: none;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--black10);
+      border-color: none !important;
+      color: var(--black100);
+    }
+
+    &[disabled] {
+      color: var(--black20);
+      background-color: transparent;
+      border: none;
+    }
+  }
+
+  &.amp-button--text {
     background-color: transparent;
     color: var(--black100);
     border: none;
@@ -140,6 +179,29 @@ $split-icon-font-size: 20px;
       .split-icon {
         font-size: $split-icon-font-size;
       }
+    }
+  }
+
+  &.amp-button--outline {
+    background-color: transparent;
+    color: var(--black100);
+    border: 1px solid var(--black100);
+    border-radius: 20px !important; //overwrite the amp-button radius
+    padding: 4px 12px;
+    transition: all 0.5s;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--dark-purple);
+      border-color: var(--dark-purple);
+      color: var(--static-white);
+    }
+
+    &[disabled] {
+      background-color: var(--black20);
+      color: var(--white);
+      border: none;
     }
   }
 }

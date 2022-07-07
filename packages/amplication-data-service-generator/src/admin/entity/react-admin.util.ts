@@ -20,6 +20,7 @@ export const REACT_ADMIN_COMPONENTS_ID = [
   builders.identifier("ReferenceField"),
   builders.identifier("BooleanField"),
   builders.identifier("ReferenceManyField"),
+  builders.identifier("ReferenceArrayInput"),
 
   builders.identifier("Datagrid"),
 ];

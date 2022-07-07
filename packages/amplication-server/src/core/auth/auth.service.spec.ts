@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Workspace, User, UserRole } from '@prisma/client';
+import {
+  Account,
+  Workspace,
+  User,
+  UserRole,
+  PrismaService
+} from '@amplication/prisma-db';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'nestjs-prisma';
 import { Role } from 'src/enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
@@ -35,7 +40,8 @@ const EXAMPLE_USER: User = {
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
   workspaceId: EXAMPLE_WORKSPACE_ID,
-  isOwner: true
+  isOwner: true,
+  deletedAt: null
 };
 
 const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
@@ -67,7 +73,8 @@ const EXAMPLE_OTHER_USER: User = {
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
   workspaceId: EXAMPLE_WORKSPACE.id,
-  isOwner: true
+  isOwner: true,
+  deletedAt: null
 };
 
 const EXAMPLE_OTHER_USER_ROLE: UserRole = {

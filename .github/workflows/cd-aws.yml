@@ -1,0 +1,164 @@
+name: CD-AWS
+on:
+  workflow_dispatch:
+    inputs:
+      target-env:
+        type: choice
+        description: To which environment to deploy
+        default: staging-os
+        required: true
+        options: 
+        - staging-os
+        - staging
+        - prod
+        - custom
+        - shimi
+        - mor
+        - amit
+jobs:
+  prepare:
+    runs-on: ubuntu-18.04
+    outputs:
+      ARGOCD: ${{ steps.create-secret-names.outputs.ARGOCD }}
+    steps:
+    - name: create secret names
+      id: create-secret-names
+      run: |
+        export TARGET_ENV=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
+        if [ "$TARGET_ENV" = "PROD" ] || [ "$TARGET_ENV" = "STAGING" ]; then
+          echo "::set-output name=ARGOCD::AWS_${TARGET_ENV}_ARGOCD"
+        else
+          echo "::set-output name=ARGOCD::AWS_STAGING_OS_ARGOCD"
+        fi
+      env:
+        TARGET_ENV: ${{ github.event.inputs.target-env }}  
+  deploy:
+    runs-on: ubuntu-18.04
+    needs:
+      - prepare
+    env:
+      ARGOCD: ${{ needs.prepare.outputs.ARGOCD }}
+    steps:
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8 #install the python needed
+      - uses: actions/checkout@v2
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      # - name: install kubectl
+      #   run: |
+      #     sudo apt-get install -y curl awscli && curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      - name: set branch-name
+        run: |
+          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
+        env:
+          SOURCE_BRANCH_NAME: ${{ github.event.inputs.source-branch }}
+      - name: calculate docker tags
+        id: calculate-docker-tags
+        run: |
+          bash ./.github/workflows/scripts/build-values-command.sh
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
+      - name: set namespace
+        id: set-namespace
+        run: |
+          NAMESPACE=$TARGET_ENV
+          echo "Will deploy to $NAMESPACE"
+          echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
+      - name: set cluster name
+        id: set-cluster-name
+        run: |
+          CLUSTER_NAME="useast1-staging-os"
+          if [ "$TARGET_ENV" = "prod" ] || [ "$TARGET_ENV" = "staging" ]; then
+            CLUSTER_NAME="useast1-$TARGET_ENV"
+          fi
+          echo "Will deploy to $CLUSTER_NAME eks cluster"
+          echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
+      - name: set repo url
+        id: set-repo-url
+        run: |
+          REPO_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+          echo "REPO_URL = $REPO_URL"
+          echo "REPO_URL=$REPO_URL" >> $GITHUB_ENV
+      - name: set app name
+        id: set-app-name
+        run: |
+          APP_NAME="amplication-$NAMESPACE"
+          echo "APP_NAME = $APP_NAME"
+          echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
+      - name: create app yaml
+        id: create-namespace-yaml
+        run: |
+          cp $GITHUB_WORKSPACE/.github/workflows/argocd/namespace.yaml namespace.yaml
+          sed -i "s|NAMESPACE_PLACEHOLDER|$NAMESPACE|g" namespace.yaml
+          cat namespace.yaml
+          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+          kubectl apply -f namespace.yaml
+      - name: install argocd
+        id: install-argocd
+        run: |
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
+      - name: create secrets
+        id: create-secrets
+        run: |
+          #download secret from AWS
+          SECRETS="secret-$TARGET_ENV.yaml"
+          secret_arn=$(aws secretsmanager list-secrets --query "SecretList[?Tags[?Key=='deployment' && Value=='$TARGET_ENV']]" | jq -r '.[0].ARN')
+          echo $(aws secretsmanager get-secret-value --secret-id $secret_arn | jq -r '.SecretString') > $SECRETS_FILE_PATH
+          python .github/workflows/scripts/argocd-secrets-creator.py
+          cd secrets
+          ls
+          kubectl apply -f . -n $TARGET_ENV
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          SECRETS_FILE_PATH: helm/charts/amplication/values-secrets-raw.json
+          SECRETS_TEMPLATE_FILE_PATH: .github/workflows/scripts/secret_template.yaml
+      - name: delete unused job
+        id: delete-job
+        run: |
+          kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
+          kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
+      - name: deploy app
+        id: deploy-app
+        run: |
+          #set argocd URL
+          ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
+          if [ "$TARGET_ENV" = "prod" ] || [ "$TARGET_ENV" = "staging" ]; then
+            ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
+          fi
+          echo "ARGO_CD_URL: $ARGO_CD_URL"
+
+          #create values files
+          COMMONM_VALUES_FILE="values-common.yaml"
+          ENV_VALUES_FILE="values-$TARGET_ENV.yaml"
+
+          #argocd login
+          COMMAND="argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web"
+          echo "$COMMAND"
+          $COMMAND
+          
+          #argocd create app
+          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS --upsert --sync-option Prune=true"
+          COMMAND=$(echo $COMMAND|tr -d '\n')
+          echo "$COMMAND"
+          $COMMAND
+
+          #argocd sync app
+          COMMAND="argocd app sync $APP_NAME"
+          echo "$COMMAND"
+          $COMMAND
+
+        env:
+          ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
+      

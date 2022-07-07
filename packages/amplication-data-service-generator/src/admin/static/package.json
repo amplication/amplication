@@ -1,19 +1,18 @@
 {
   "name": "admin-template",
-  "version": "0.12.1",
+  "version": "0.14.1",
   "private": true,
   "dependencies": {
     "@apollo/client": "3.3.18",
     "@material-ui/core": "4.12.1",
     "gql": "1.1.2",
-    "graphql": "14.7.0",
+    "graphql": "15.6.1",
     "graphql-tag": "2.12.4",
     "lodash": "4.17.21",
     "pluralize": "8.0.0",
-    "ra-data-graphql-amplication": "0.0.8",
+    "ra-data-graphql-amplication": "0.0.13",
     "react": "16.14.0",
     "react-admin": "3.17.0",
-    "react-apollo": "3.1.5",
     "react-dom": "16.14.0",
     "react-scripts": "4.0.3",
     "sass": "^1.39.0",
@@ -24,7 +23,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "docker:build": "docker build ."
   },
   "eslintConfig": {
     "extends": [
@@ -44,7 +44,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3000",
   "devDependencies": {
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "11.2.7",

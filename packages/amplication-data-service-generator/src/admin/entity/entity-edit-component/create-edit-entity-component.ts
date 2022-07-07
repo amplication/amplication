@@ -24,7 +24,6 @@ import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
-import { isToManyRelationField } from "../../../util/field";
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
   [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
@@ -44,9 +43,9 @@ export async function createEditEntityComponent(
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])
   );
-  const fields = dtoProperties
-    .map((property) => fieldsByName[property.key.name])
-    .filter((field) => !isToManyRelationField(field));
+  const fields = dtoProperties.map(
+    (property) => fieldsByName[property.key.name]
+  );
 
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup

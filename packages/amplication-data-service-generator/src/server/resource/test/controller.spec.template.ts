@@ -118,9 +118,9 @@ describe(TEST_NAME, () => {
   test(`GET ${FIND_ONE_PATHNAME} non existing`, async () => {
     await request(app.getHttpServer())
       .get(`${RESOURCE}/${NON_EXISTING_PARAM_ID}`)
-      .expect(404)
+      .expect(HttpStatus.NOT_FOUND)
       .expect({
-        statusCode: 404,
+        statusCode: HttpStatus.NOT_FOUND,
         message: `No resource was found for {"${FIND_ONE_PARAM_NAME}":"${NON_EXISTING_PARAM_ID}"}`,
         error: "Not Found",
       });

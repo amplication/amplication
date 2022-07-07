@@ -5,8 +5,9 @@
 $max-width: 700px;
 $dropzone-height: 250px;
 $options-max-width: 1000px;
-$header-image-size: 100px;
+$import-image-size: 40px;
 $option-image-size: 70px;
+$divider-or-font-size: 14px;
 
 .create-app-from-excel {
   height: 100%;
@@ -15,15 +16,37 @@ $option-image-size: 70px;
   justify-content: stretch;
   align-items: stretch;
 
+  // Transition screen
+  // enter
+  &__options_screen_fade-enter {
+    opacity: 0;
+  }
+  &__options_screen_fade-enter-active {
+    opacity: 1;
+    transition: all 500ms ease-in;
+  }
+  // exit
+  &__options_screen_fade-exit {
+    opacity: 1;
+  }
+  &__options_screen_fade-exit-active {
+    opacity: 0;
+    transition: all 500ms ease-in;
+  }
+
   &__header {
     margin: var(--double-spacing);
     display: flex;
     flex-direction: column;
     align-items: center;
     .svg-theme-image {
-      height: $header-image-size;
+      height: $import-image-size;
       background-position: center;
     }
+  }
+
+  &__excel_option {
+    cursor: pointer;
   }
 
   &__message {
@@ -36,11 +59,17 @@ $option-image-size: 70px;
     margin: var(--default-spacing);
   }
 
-  &__select-file {
+  &__option_container {
     padding: var(--double-spacing);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  &__option_content {
+    width: 100%;
+    margin: auto;
   }
   &__divider {
-    @include body2;
     max-width: $options-max-width;
     width: 100%;
     margin: var(--default-spacing) auto;
@@ -58,10 +87,27 @@ $option-image-size: 70px;
     }
 
     &:after {
-      right: aut;
+      right: auto;
       left: 0;
     }
+    span {
+      font-size: $divider-or-font-size;
+    }
   }
+
+  &__start_text {
+    @include headline1;
+    text-align: center;
+  }
+  &__welcome_text {
+    @include sectionTitle;
+    text-align: center;
+  }
+  &__excel_start_title {
+    @include pageTitle;
+    font-weight: 700;
+  }
+
   &__other-options {
     max-width: $options-max-width;
     width: 100%;
@@ -69,23 +115,61 @@ $option-image-size: 70px;
     display: flex;
     flex-direction: row;
     justify-content: stretch;
+    padding: 51px 0 43px 0;
 
-    &__option {
+    %__option {
       @include optionCard;
       @include body1;
-      height: auto;
+      min-height: 170px;
       flex: 1;
+      position: relative;
+      justify-content: center;
+      cursor: pointer;
 
-      .svg-theme-image {
-        height: $option-image-size;
-
-        margin-bottom: var(--default-spacing);
-        background-position: center;
+      &:hover::before {
+        content: "";
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        border-radius: var(--default-border-radius);
+        background-size: cover;
+        opacity: 0.3;
       }
+    }
+
+    &__scratch_option {
+      @extend %__option;
+
+      &:hover::before {
+        background-image: url("../assets/gifs/start-scratch.gif");
+      }
+    }
+
+    &__sample_option {
+      @extend %__option;
+
+      &:hover::before {
+        background-image: url("../assets/gifs/start-sample-app.gif");
+      }
+    }
+
+    &__option_text {
+      @include sectionTitle;
+      position: relative;
+      font-weight: 700;
+    }
+
+    &__option_code_text {
+      @include pageTitle;
+      position: relative;
+      font-weight: 500;
+      color: var(--secondary);
     }
   }
   &__dropzone {
-    @include body1;
+    @include body2;
     margin: var(--double-spacing) auto;
     height: $dropzone-height;
     max-width: $options-max-width;
@@ -103,12 +187,29 @@ $option-image-size: 70px;
     color: var(--black80);
     outline: none;
     transition: border 0.1s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
     cursor: pointer;
 
     &:hover,
     &--active {
-      border-color: var(--primary);
+      border-color: var(--black100);
+      color: var(--black100);
       background-color: var(--black5);
+    }
+
+    .svg-theme-image {
+      height: $import-image-size;
+      background-position: center;
+    }
+
+    &__active_content {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+
+      .svg-theme-image {
+        width: 50px;
+      }
     }
   }
 
@@ -165,7 +266,7 @@ $option-image-size: 70px;
     height: 100%;
     width: 100%;
     align-items: stretch;
-    justify-content: stretch;
+    justify-content: center;
     background: var(--black2);
     overflow: auto;
 
@@ -226,6 +327,7 @@ $option-image-size: 70px;
 
   &__back {
     display: flex;
+    cursor: pointer;
     .amp-icon {
       padding-right: var(--default-spacing-small);
     }

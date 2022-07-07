@@ -44,7 +44,6 @@ import {
   EnumScalarFiltersTypes,
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
-import { SRC_DIRECTORY } from "../../constants";
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 
@@ -135,7 +134,8 @@ export function getImportableDTOs(
 
 export function createDTOModulePath(
   entityDirectory: string,
-  dtoName: string
+  dtoName: string,
+  srcDirectory: string
 ): string {
-  return `${SRC_DIRECTORY}/${entityDirectory}/base/${dtoName}.ts`;
+  return `${srcDirectory}/${entityDirectory}/base/${dtoName}.ts`;
 }

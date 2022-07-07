@@ -1,6 +1,6 @@
 export function replacePlaceholdersInCode(
   code: string,
-  mapping: { [key: string]: string | number }
+  mapping: { [key: string]: string | number | boolean | { [key: string]: any } }
 ): string {
   const regexStr = Object.keys(mapping)
     .map((key) => `\\$\{${key}}`)
@@ -9,7 +9,7 @@ export function replacePlaceholdersInCode(
   const regex = new RegExp(regexStr, "gi");
 
   return code.replace(regex, (matched) => {
-    const key = matched.substr(2, matched.length - 3);
+    const key = matched.slice(2, -1);
     if (mapping.hasOwnProperty(key)) {
       return mapping[key]?.toString() || "";
     } else {

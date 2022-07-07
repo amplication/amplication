@@ -1,0 +1,3 @@
+{{ include "base.role" (list . "amplication-git-pull-service.role") -}}
+{{- define "amplication-git-pull-service.role" -}}
+{{- end }}

@@ -32,6 +32,7 @@
     right: 8px;
     bottom: 10px;
   }
+
   label {
     @include label;
     position: relative;
@@ -43,9 +44,9 @@
     max-width: var(--form-field-long);
     display: block;
 
-    &:active,
-    &:hover,
-    &:focus {
+    &:active:not(:disabled),
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
       @include textField--active;
     }
 

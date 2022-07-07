@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import { useLogin, useNotify, Notification, defaultTheme } from "react-admin";
 import { ThemeProvider } from "@material-ui/styles";
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
 import "./login.scss";
 
@@ -21,7 +21,7 @@ const Login = ({ theme }: { theme?: object }) => {
   };
 
   return (
-    <ThemeProvider theme={createMuiTheme(defaultTheme)}>
+    <ThemeProvider theme={createTheme(defaultTheme)}>
       <div className={`${CLASS_NAME}`}>
         <div className={`${CLASS_NAME}__wrapper`}>
           <div className={`${CLASS_NAME}__box`}>

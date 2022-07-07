@@ -3,7 +3,7 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 import { EntityField, Entity } from 'src/models';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 import { EnumEntityPermissionType } from 'src/enums/EnumEntityPermissionType';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@amplication/prisma-db';
 
 export const CURRENT_VERSION_NUMBER = 0;
 
