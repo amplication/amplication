@@ -1,44 +1,44 @@
-import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { GitService } from '@amplication/git-service/';
+import { Readable } from 'stream';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+import * as winston from 'winston';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { orderBy } from 'lodash';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { Commit, Entity, Resource } from 'src/models';
-import { Readable } from 'stream';
-import * as winston from 'winston';
+import { orderBy } from 'lodash';
+import {
+  ACTION_JOB_DONE_LOG,
+  GENERATE_STEP_MESSAGE,
+  GENERATE_STEP_NAME,
+  ACTION_ZIP_LOG,
+  BuildService,
+  ENTITIES_INCLUDE,
+  ACTION_INCLUDE
+} from './build.service';
+import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { EntityService } from '..';
+import { ResourceRoleService } from '../resourceRole/resourceRole.service';
+import { ResourceService } from '../resource/resource.service';
 import { ActionService } from '../action/action.service';
+import { LocalDiskService } from '../storage/local.disk.service';
+import { Build } from './dto/Build';
+import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { BuildNotFoundError } from './errors/BuildNotFoundError';
+import { UserService } from '../user/user.service';
+import { QueueService } from '../queue/queue.service';
+import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
+import { Resource, Commit, Entity } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,
   EnumActionStepStatus
 } from '../action/dto';
-import { QueueService } from '../queue/queue.service';
-import { ResourceService } from '../resource/resource.service';
-import { ResourceRoleService } from '../resourceRole/resourceRole.service';
-import { ServiceSettingsValues } from '../serviceSettings/constants';
-import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
-import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
-import { LocalDiskService } from '../storage/local.disk.service';
-import { UserService } from '../user/user.service';
-import {
-  ACTION_INCLUDE,
-  ACTION_JOB_DONE_LOG,
-  ACTION_ZIP_LOG,
-  BuildService,
-  ENTITIES_INCLUDE,
-  GENERATE_STEP_MESSAGE,
-  GENERATE_STEP_NAME
-} from './build.service';
-import { Build } from './dto/Build';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
+import { GitService } from '@amplication/git-service/';
+import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
+import { ServiceSettingsValues } from '../serviceSettings/constants';
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
