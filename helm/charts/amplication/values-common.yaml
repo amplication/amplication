@@ -1,14 +1,22 @@
 global:
   pvc:
     name: common-efs-claim
-
-infra:
   cp-helm-charts:
     enabled: true
     cp-kafka:
       enabled: true
     cp-zookeeper:
       enabled: true
+    cp-schema-registry:
+    enabled: false
+    cp-kafka-rest:
+      enabled: false
+    cp-kafka-connect:
+      enabled: false
+    cp-control-center:
+      enabled: false
+    cp-ksql-server:
+      enabled: false
   postgres:
     install: true
 
