@@ -16,7 +16,7 @@ import { ActionModule } from './action/action.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
 import { MailModule } from './mail/mail.module';
-import { AppSettingsModule } from './appSettings/appSettings.module';
+import { ServiceSettingsModule } from './serviceSettings/serviceSettings.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
@@ -40,7 +40,7 @@ import { HealthModule } from './health/health.module';
     ActionModule,
     EnvironmentModule,
     CommitModule,
-    AppSettingsModule,
+    ServiceSettingsModule,
     GitModule,
     GitProviderModule,
     CommitModule,
@@ -64,7 +64,7 @@ import { HealthModule } from './health/health.module';
     ActionModule,
     EnvironmentModule,
     CommitModule,
-    AppSettingsModule,
+    ServiceSettingsModule,
     GitProviderModule,
     GitModule,
     CommitModule,

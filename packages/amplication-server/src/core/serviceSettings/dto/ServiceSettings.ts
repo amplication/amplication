@@ -9,7 +9,7 @@ import { ServerSettings } from './ServerSettings';
   implements: IBlock,
   isAbstract: true
 })
-export class AppSettings extends IBlock {
+export class ServiceSettings extends IBlock {
   @Field(() => String, {
     nullable: false
   })

@@ -2,8 +2,8 @@ import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
-import { AppSettings, EnumAuthProviderType } from "../../models";
-import { GET_RESOURCE_SETTINGS } from "../appSettings/GenerationSettingsForm";
+import { ServiceSettings, EnumAuthProviderType } from "../../models";
+import { GET_RESOURCE_SETTINGS } from "../serviceSettings/GenerationSettingsForm";
 
 type Props = {
   resourceId: string;
@@ -18,7 +18,7 @@ const CLASS_NAME = "overview-tile";
 
 const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
   const { data } = useQuery<{
-    appSettings: AppSettings;
+    serviceSettings: ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
       id: resourceId,
@@ -83,7 +83,8 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
               <span className={`${CLASS_NAME}__content__item__text--blue`}>
                 {
                   AuthProviderLabels[
-                    data?.appSettings.authProvider || EnumAuthProviderType.Jwt
+                    data?.serviceSettings.authProvider ||
+                      EnumAuthProviderType.Jwt
                   ]
                 }
               </span>

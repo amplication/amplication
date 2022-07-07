@@ -451,7 +451,7 @@ enum EnumDataType {
 }
 
 enum EnumBlockType {
-  AppSettings
+  ServiceSettings
   Flow
   ConnectorRestApi
   ConnectorRestApiCall

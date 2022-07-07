@@ -74,7 +74,7 @@ export class BlockService {
       EnumBlockType.ConnectorRestApi
     ]),
     [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.Flow, null]),
-    [EnumBlockType.AppSettings]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.ServiceSettings]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Flow]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorSoapApi]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorFile]: ALLOW_NO_PARENT_ONLY,
