@@ -20,7 +20,8 @@ type TData = {
 };
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
+  pageTitle?: string;
 };
 
 const CREATED_AT_FIELD = "createdAt";
@@ -28,9 +29,8 @@ const CREATED_AT_FIELD = "createdAt";
 const POLL_INTERVAL = 10000;
 const CLASS_NAME = "commit-list";
 
-export const CommitList = ({ match }: Props) => {
-  const { application } = match.params;
-
+export const CommitList = ({ match, pageTitle }: Props) => {
+  const { resource } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const handleSearchChange = useCallback(
@@ -44,7 +44,7 @@ export const CommitList = ({ match }: Props) => {
     TData
   >(GET_COMMITS, {
     variables: {
-      appId: application,
+      resourceId: resource,
       orderBy: {
         [CREATED_AT_FIELD]: models.SortOrder.Desc,
       },
@@ -67,7 +67,7 @@ export const CommitList = ({ match }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME}>
+    <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
       <div className={`${CLASS_NAME}__header`}>
         <SearchField
           label="search"
@@ -80,11 +80,7 @@ export const CommitList = ({ match }: Props) => {
       </div>
       {loading && <CircularProgress />}
       {data?.commits.map((commit) => (
-        <CommitListItem
-          key={commit.id}
-          commit={commit}
-          applicationId={application}
-        />
+        <CommitListItem key={commit.id} commit={commit} resourceId={resource} />
       ))}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
@@ -94,12 +90,12 @@ export const CommitList = ({ match }: Props) => {
 /**@todo: expand search on other field  */
 export const GET_COMMITS = gql`
   query commits(
-    $appId: String!
+    $resourceId: String!
     $orderBy: CommitOrderByInput
     $whereMessage: StringFilter
   ) {
     commits(
-      where: { app: { id: $appId }, message: $whereMessage }
+      where: { resource: { id: $resourceId }, message: $whereMessage }
       orderBy: $orderBy
     ) {
       id
@@ -115,7 +111,7 @@ export const GET_COMMITS = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

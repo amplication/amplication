@@ -2,7 +2,7 @@ import cli, { Table } from 'cli-ux';
 
 import { ConfiguredCommand } from '../../configured-command';
 import { getEntities } from '../../api';
-import { app } from '../../flags/app-flag';
+import { resource } from '../../flags/resource-flag';
 import { format } from '../../flags/format-flag';
 
 export const ENTITY_COLUMNS: Table.table.Columns<any> = {
@@ -21,33 +21,33 @@ export const ENTITY_COLUMNS: Table.table.Columns<any> = {
 };
 
 export default class EntitiesIndex extends ConfiguredCommand {
-  static description = 'list entities for an app';
+  static description = 'list entities for an resource';
 
   static examples = [
     'amp entities',
-    'amp entities -a ckm1w4vy857869go3nsw4mk2ay',
+    'amp entities -r ckm1w4vy857869go3nsw4mk2ay',
     'amp entities --format=table',
   ];
 
   static flags = {
     ...cli.table.flags(),
     format: format(),
-    app: app(),
+    resource: resource(),
   };
 
   async command() {
     const { flags } = this.parse(EntitiesIndex);
 
-    const appIdFlag = flags.app;
-    let appId = '';
+    const resourceIdFlag = flags.resource;
+    let resourceId = '';
 
-    if (!appIdFlag) {
-      appId = await cli.prompt('app', { required: true });
+    if (!resourceIdFlag) {
+      resourceId = await cli.prompt('resource', { required: true });
     }
 
     const data = await getEntities(
       this.client,
-      appIdFlag || appId,
+      resourceIdFlag || resourceId,
       undefined,
       undefined
     );

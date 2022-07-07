@@ -16,10 +16,10 @@ function Entities({ match }: Props) {
     <Switch>
       <RouteWithAnalytics
         exact
-        path="/:application/entities/"
+        path="/:resource/entities/"
         component={EntityList}
       />
-      <Route path="/:application/entities/:entityId" component={Entity} />
+      <Route path="/:resource/entities/:entityId" component={Entity} />
     </Switch>
   );
 }

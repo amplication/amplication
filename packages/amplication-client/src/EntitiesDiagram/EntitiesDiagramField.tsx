@@ -10,7 +10,7 @@ import * as models from "../models";
 import { FieldIdentifier, CLASS_NAME, keyMap } from "./EntitiesDiagram";
 
 type Props = {
-  field: models.AppCreateWithEntitiesFieldInput;
+  field: models.ResourceCreateWithEntitiesFieldInput;
   entityIndex: number;
   fieldIndex: number;
   editedFieldIdentifier: FieldIdentifier | null;

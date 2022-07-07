@@ -5,7 +5,7 @@ import * as models from "../models";
 import { ActionRole } from "./ActionRole";
 
 type Props = {
-  availableRoles: models.AppRole[];
+  availableRoles: models.ResourceRole[];
   selectedRoleIds: Set<string>;
   onChange: (selectedRoleIds: Set<string>) => void;
   debounceMS: number;
@@ -28,7 +28,7 @@ export const ActionRoleList = ({
   }, debounceMS);
 
   const handleRoleSelect = useCallback(
-    ({ id }: models.AppRole, checked: boolean) => {
+    ({ id }: models.ResourceRole, checked: boolean) => {
       const newSet = new Set(selectedRoleList);
       if (checked) {
         newSet.add(id);

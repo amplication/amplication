@@ -26,7 +26,7 @@ export abstract class BlockCreateInput implements JsonObject {
     nullable: false,
     description: undefined
   })
-  app!: WhereParentIdInput & JsonValue;
+  resource!: WhereParentIdInput & JsonValue;
 
   @Field(() => WhereParentIdInput, {
     nullable: true,

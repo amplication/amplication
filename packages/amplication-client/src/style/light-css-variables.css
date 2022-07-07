@@ -34,11 +34,11 @@
   --image-sync-github: url("../assets/images/mono/sync-github.svg");
   --image-commit: url("../assets/images/mono/commit.svg");
   --image-no-changes: url("../assets/images/mono/no-changes.svg");
-  --image-add-app: url("../assets/images/mono/add-app.svg");
+  --image-add-resource: url("../assets/images/mono/add-resource.svg");
   --image-relations: url("../assets/images/mono/relations.svg");
   --image-import-excel: url("../assets/images/mono/import-excel.svg");
   --image-drop-excel: url("../assets/images/mono/drop-excel-dark.svg");
-  --image-my-apps: url("../assets/images/mono/my-apps.svg");
+  --image-my-resources: url("../assets/images/mono/my-resources.svg");
   --image-generating: url("../assets/images/mono/generating.svg");
 
   --diffViewerBackground: var(--white);

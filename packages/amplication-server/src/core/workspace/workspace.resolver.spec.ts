@@ -12,17 +12,18 @@ import { ConfigService } from '@nestjs/config';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { WorkspaceService } from './workspace.service';
 import { WorkspaceResolver } from './workspace.resolver';
-import { App, Workspace, User } from 'src/models';
+import { Resource, Workspace, User } from 'src/models';
 import { Invitation } from './dto/Invitation';
-import { AppService } from '../app/app.service';
+import { ResourceService } from '../resource/resource.service';
+import { EnumResourceType } from '@amplication/prisma-db';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
 
-const EXAMPLE_APP_ID = 'exampleAppId';
-const EXAMPLE_APP_NAME = 'exampleAppName';
-const EXAMPLE_APP_DESCRIPTION = 'exampleAppDescription';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
+const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceDescription';
 
 const EXAMPLE_EMAIL = 'exampleEmail';
 const timeNow = new Date();
@@ -42,16 +43,17 @@ const EXAMPLE_WORKSPACE: Workspace = {
 };
 
 const EXAMPLE_INVITATION: Invitation = {
-  id: EXAMPLE_APP_ID,
+  id: EXAMPLE_RESOURCE_ID,
   email: 'example@email.com',
   createdAt: timeNow,
   updatedAt: timeNow
 };
 
-const EXAMPLE_APP: App = {
-  id: EXAMPLE_APP_ID,
-  name: EXAMPLE_APP_NAME,
-  description: EXAMPLE_APP_DESCRIPTION,
+const EXAMPLE_RESOURCE: Resource = {
+  id: EXAMPLE_RESOURCE_ID,
+  type: EnumResourceType.Service,
+  name: EXAMPLE_RESOURCE_NAME,
+  description: EXAMPLE_RESOURCE_DESCRIPTION,
   createdAt: timeNow,
   updatedAt: timeNow
 };
@@ -67,12 +69,13 @@ const GET_WORKSPACE_QUERY = gql`
   }
 `;
 
-const GET_APPS_QUERY = gql`
+const GET_RESOURCES_QUERY = gql`
   query($id: String!) {
     workspace(where: { id: $id }) {
-      apps {
+      resources {
         id
         name
+        type
         description
         createdAt
         updatedAt
@@ -118,7 +121,7 @@ const workspaceServiceGetWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceDeleteWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceUpdateWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceInviteUserMock = jest.fn(() => EXAMPLE_INVITATION);
-const appServiceAppsMock = jest.fn(() => [EXAMPLE_APP]);
+const resourceServiceResourcesMock = jest.fn(() => [EXAMPLE_RESOURCE]);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
@@ -141,9 +144,9 @@ describe('WorkspaceResolver', () => {
           }))
         },
         {
-          provide: AppService,
+          provide: ResourceService,
           useClass: jest.fn(() => ({
-            apps: appServiceAppsMock
+            resources: resourceServiceResourcesMock
           }))
         },
         {
@@ -177,38 +180,33 @@ describe('WorkspaceResolver', () => {
       variables: { id: EXAMPLE_WORKSPACE_ID }
     });
     expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      workspace: {
-        ...EXAMPLE_WORKSPACE,
-        createdAt: EXAMPLE_WORKSPACE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_WORKSPACE.updatedAt.toISOString()
-      }
-    });
+    expect(res.data.workspace.id).toEqual(EXAMPLE_WORKSPACE.id);
+    expect(res.data.workspace.name).toEqual(EXAMPLE_WORKSPACE.name);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledTimes(1);
     expect(workspaceServiceGetWorkspaceMock).toBeCalledWith({
       where: { id: EXAMPLE_WORKSPACE_ID }
     });
   });
 
-  it('should get an workspace apps', async () => {
+  it('should get an workspace resources', async () => {
     const res = await apolloClient.query({
-      query: GET_APPS_QUERY,
+      query: GET_RESOURCES_QUERY,
       variables: { id: EXAMPLE_WORKSPACE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       workspace: {
-        apps: [
+        resources: [
           {
-            ...EXAMPLE_APP,
-            createdAt: EXAMPLE_APP.createdAt.toISOString(),
-            updatedAt: EXAMPLE_APP.updatedAt.toISOString()
+            ...EXAMPLE_RESOURCE,
+            createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
+            updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString()
           }
         ]
       }
     });
-    expect(appServiceAppsMock).toBeCalledTimes(1);
-    expect(appServiceAppsMock).toBeCalledWith({
+    expect(resourceServiceResourcesMock).toBeCalledTimes(1);
+    expect(resourceServiceResourcesMock).toBeCalledWith({
       where: { workspace: { id: EXAMPLE_WORKSPACE_ID } }
     });
   });

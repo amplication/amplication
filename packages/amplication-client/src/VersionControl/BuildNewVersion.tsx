@@ -45,7 +45,7 @@ const OPTIONS = [
 ];
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   lastBuildVersion?: string;
   suggestedCommitMessage?: string;
   onComplete: () => void;
@@ -66,7 +66,7 @@ const keyMap = {
 };
 
 const BuildNewVersion = ({
-  applicationId,
+  resourceId,
   lastBuildVersion,
   suggestedCommitMessage = "",
   onComplete,
@@ -81,14 +81,14 @@ const BuildNewVersion = ({
     createBuild: models.Build;
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
-      const url = `/${applicationId}/builds/${data.createBuild.id}`;
+      const url = `/${resourceId}/builds/${data.createBuild.id}`;
       history.push(url);
 
       onComplete();
     },
 
     variables: {
-      appId: applicationId,
+      resourceId: resourceId,
     },
   });
 
@@ -98,11 +98,11 @@ const BuildNewVersion = ({
         variables: {
           message: data.message,
           version: version,
-          appId: applicationId,
+          resourceId: resourceId,
         },
       }).catch(console.error);
     },
-    [createBuild, applicationId, version]
+    [createBuild, resourceId, version]
   );
   const errorMessage = error && formatError(error);
 
@@ -167,7 +167,7 @@ const BuildNewVersion = ({
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
-                  eventName: "buildApp",
+                  eventName: "buildResource",
                 }}
               >
                 Build New Version
@@ -184,17 +184,17 @@ const BuildNewVersion = ({
 export default BuildNewVersion;
 
 const CREATE_BUILD = gql`
-  mutation($appId: String!, $version: String!, $message: String!) {
+  mutation($resourceId: String!, $version: String!, $message: String!) {
     createBuild(
       data: {
-        app: { connect: { id: $appId } }
+        resource: { connect: { id: $resourceId } }
         version: $version
         message: $message
       }
     ) {
       id
       createdAt
-      appId
+      resourceId
       version
       message
       createdAt
@@ -218,19 +218,6 @@ const CREATE_BUILD = gql`
       }
       status
       archiveURI
-      deployments(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        buildId
-        createdAt
-        actionId
-        status
-        message
-        environment {
-          id
-          name
-          address
-        }
-      }
     }
   }
 `;

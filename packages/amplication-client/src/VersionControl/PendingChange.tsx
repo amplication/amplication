@@ -11,7 +11,7 @@ const TOOLTIP_DIRECTION = "ne";
 
 type Props = {
   change: models.PendingChange;
-  applicationId: string;
+  resourceId: string;
   linkToResource?: boolean;
 };
 
@@ -25,14 +25,14 @@ const ACTION_TO_LABEL: {
 
 const PendingChange = ({
   change,
-  applicationId,
+  resourceId,
   linkToResource = false,
 }: Props) => {
   /**@todo: update the url for other types of blocks  */
   const url =
     change.resourceType === models.EnumPendingChangeResourceType.Entity
-      ? `/${applicationId}/entities/${change.resourceId}`
-      : `/${applicationId}/update`;
+      ? `/${resourceId}/entities/${change.resourceId}`
+      : `/${resourceId}/update`;
 
   const isDeletedEntity =
     change.action === models.EnumPendingChangeAction.Delete;

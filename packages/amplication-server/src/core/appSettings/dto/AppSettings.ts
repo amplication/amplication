@@ -1,11 +1,13 @@
 import { Field, ObjectType, Int } from '@nestjs/graphql';
 import { IBlock } from 'src/models';
+import { JsonValue } from 'type-fest/source/basic';
+import { AdminUISettings } from './AdminUISettings';
 import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
+import { ServerSettings } from './ServerSettings';
 
 @ObjectType({
   implements: IBlock,
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class AppSettings extends IBlock {
   @Field(() => String, {
@@ -37,4 +39,14 @@ export class AppSettings extends IBlock {
     nullable: false
   })
   authProvider!: EnumAuthProviderType;
+
+  @Field(() => AdminUISettings, {
+    nullable: false
+  })
+  adminUISettings: AdminUISettings & JsonValue;
+
+  @Field(() => ServerSettings, {
+    nullable: false
+  })
+  serverSettings: ServerSettings & JsonValue;
 }

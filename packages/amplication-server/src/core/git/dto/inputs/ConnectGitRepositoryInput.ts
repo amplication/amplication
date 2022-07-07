@@ -9,7 +9,7 @@ export class ConnectGitRepositoryInput {
   name!: string;
 
   @Field(() => String, { nullable: false })
-  appId!: string;
+  resourceId!: string;
 
   @Field(() => String, { nullable: false })
   gitOrganizationId!: string;

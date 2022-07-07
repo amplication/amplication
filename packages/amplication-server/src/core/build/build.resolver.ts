@@ -20,11 +20,9 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
-import { Action } from '../action/dto/Action';
-import { Deployment } from '../deployment/dto/Deployment';
+import { Action } from '../action/dto';
 import { ActionService } from '../action/action.service';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
 import { CommitService } from '../commit/commit.service';
 
 @Resolver(() => Build)
@@ -39,7 +37,10 @@ export class BuildResolver {
   ) {}
 
   @Query(() => [Build])
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'where.resource.id'
+  )
   async builds(@Args() args: FindManyBuildArgs): Promise<Build[]> {
     return this.service.findMany(args);
   }
@@ -75,20 +76,15 @@ export class BuildResolver {
     return this.service.calcBuildStatus(build.id);
   }
 
-  @ResolveField(() => [Deployment])
-  deployments(
-    @Parent() build: Build,
-    @Args() args: FindManyDeploymentArgs
-  ): Promise<Deployment[]> {
-    return this.service.getDeployments(build.id, args);
-  }
-
   @Mutation(() => Build)
   @InjectContextValue(
     InjectableResourceParameter.UserId,
     'data.createdBy.connect.id'
   )
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'data.resource.connect.id'
+  )
   async createBuild(@Args() args: CreateBuildArgs): Promise<Build> {
     return this.service.create(args);
   }

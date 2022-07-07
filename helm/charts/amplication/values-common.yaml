@@ -10,20 +10,11 @@ cp-helm-charts:
     podAnnotations:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     configurationOverrides:
-      default.replication.factor: "1"
-      min.insync.replicas: "1"
-      auto.create.topics.enable: "true"
-      num.io.threads: "8"
-      num.network.threads: "5"
-      num.partitions: "5"
-      num.replica.fetchers: "2"
-      replica.lag.time.max.ms: "30000"
-      socket.receive.buffer.bytes: "102400"
-      socket.request.max.bytes: "104857600"
-      socket.send.buffer.bytes: "102400"
-      unclean.leader.election.enable: "true"
-      zookeeper.session.timeout.ms: "18000"
-      log.retention.hours: "72"
+      "default.replication.factor": "1"
+      "min.insync.replicas": "1"
+      "auto.create.topics.enable": "true"
+      "offsets.topic.replication.factor": "1"
+      "confluent.metrics.reporter.topic.replicas": "1"
     resources: {}
     heapOptions: "-Xms512M -Xmx512M"
     tolerations:
@@ -62,7 +53,7 @@ amplication-client:
     tag: "release-0-13-0" # Need to change for dev.
   service:
     hostname: app-dev.staging.amplication-dev.com
-    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
+    certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
   config:
     env:
       REACT_APP_DATA_SOURCE: "https://server.staging.amplication-dev.com/graphql"
@@ -82,10 +73,10 @@ amplication-server:
     name: common-efs-claim
   config:
     env:
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
       GITHUB_SCOPE: "user:email"
-      GOOGLE_APPLICATION_CREDENTIALS: "/var/gcp-secret"
+      GOOGLE_APPLICATION_CREDENTIALS: "/var/secrets/gcp-account-service"
       PORT: "3000"
       NODE_ENV: "production"
       GRAPHQL_DEBUG: "0"
@@ -127,6 +118,7 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server.staging.amplication-dev.com/github/callback"
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
+
 
 amplication-git-push-webhook-service:
   image:
@@ -183,7 +175,7 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 

@@ -12,7 +12,7 @@ import Dashboard from "./pages/Dashboard";
 
 declare const AUTH_PROVIDER_NAME: any;
 declare const RESOURCES: React.ReactElement[];
-declare const APP_NAME = "my app name";
+declare const RESOURCE_NAME = "my resource name";
 
 const App = (): React.ReactElement => {
   const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
@@ -31,7 +31,7 @@ const App = (): React.ReactElement => {
   return (
     <div className="App">
       <Admin
-        title={APP_NAME}
+        title={RESOURCE_NAME}
         dataProvider={dataProvider}
         authProvider={AUTH_PROVIDER_NAME}
         theme={theme}

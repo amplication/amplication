@@ -59,5 +59,5 @@ export class EntityWhereInput {
     nullable: true,
     description: undefined
   })
-  app?: WhereUniqueInput | null;
+  resource?: WhereUniqueInput | null;
 }
