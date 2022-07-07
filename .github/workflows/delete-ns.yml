@@ -34,8 +34,3 @@ jobs:
           APPNAME="amplication-$NAMESPACE"
           set +e
           argocd app delete $APPNAME
-
-
-
-
-
