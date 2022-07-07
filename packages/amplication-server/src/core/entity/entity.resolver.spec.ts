@@ -48,7 +48,7 @@ const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  appId: 'exampleAppId',
+  resourceId: 'exampleResourceId',
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
@@ -130,7 +130,7 @@ const FIND_ONE_QUERY = gql`
       id
       createdAt
       updatedAt
-      appId
+      resourceId
       name
       displayName
       pluralDisplayName
@@ -145,7 +145,7 @@ const FIND_MANY_QUERY = gql`
       id
       createdAt
       updatedAt
-      appId
+      resourceId
       name
       displayName
       pluralDisplayName
@@ -166,13 +166,13 @@ const CREATE_ONE_QUERY = gql`
         name: $name
         displayName: $displayName
         pluralDisplayName: $pluralDisplayName
-        app: { connect: { id: $id } }
+        resource: { connect: { id: $id } }
       }
     ) {
       id
       createdAt
       updatedAt
-      appId
+      resourceId
       name
       displayName
       pluralDisplayName
@@ -233,7 +233,7 @@ const LOCK_ENTITY_MUTATION = gql`
       id
       createdAt
       updatedAt
-      appId
+      resourceId
       name
       displayName
       pluralDisplayName
@@ -248,7 +248,7 @@ const UPDATE_ENTITY_MUTATION = gql`
       id
       createdAt
       updatedAt
-      appId
+      resourceId
       name
       displayName
       pluralDisplayName
@@ -263,7 +263,7 @@ const DELETE_ENTITY_MUTATION = gql`
       id
       createdAt
       updatedAt
-      appId
+      resourceId
       name
       displayName
       pluralDisplayName
@@ -740,7 +740,7 @@ describe('EntityResolver', () => {
           name: EXAMPLE_ENTITY.name,
           displayName: EXAMPLE_ENTITY.displayName,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
-          app: { connect: { id: EXAMPLE_ID } }
+          resource: { connect: { id: EXAMPLE_ID } }
         }
       },
       EXAMPLE_USER

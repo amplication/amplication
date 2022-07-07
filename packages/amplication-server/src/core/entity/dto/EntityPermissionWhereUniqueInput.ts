@@ -14,5 +14,5 @@ export class EntityPermissionWhereUniqueInput {
   @Field(() => String, {
     nullable: false
   })
-  appRoleId!: string;
+  resourceRoleId!: string;
 }

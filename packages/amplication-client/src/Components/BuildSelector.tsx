@@ -7,7 +7,7 @@ import {
   Label,
 } from "@amplication/design-system";
 import React from "react";
-import { App, Build } from "../models";
+import { Resource, Build } from "../models";
 import { BuildSelectorItem } from "./BuildSelectorItem";
 import "./BuildSelector.scss";
 
@@ -16,13 +16,13 @@ const CLASS_NAME = "build-selector";
 type Props = {
   builds: Build[];
   selectedBuild: Build | null;
-  app: App;
+  resource: Resource;
   onSelectBuild: (commit: Build) => void;
 };
 
 const BuildSelector = ({
   builds,
-  app,
+  resource,
   onSelectBuild,
   selectedBuild,
 }: Props) => {
@@ -38,7 +38,7 @@ const BuildSelector = ({
                   ? selectedBuild?.message
                   : selectedBuild?.createdAt
               }
-              app={app}
+              resource={resource}
             />
           }
           buttonStyle={EnumButtonStyle.Secondary}
@@ -59,7 +59,7 @@ const BuildSelector = ({
                   >
                     <BuildSelectorItem
                       title={build.message ? build.message : build.createdAt}
-                      app={app}
+                      resource={resource}
                       type="list"
                     />
                   </SelectMenuItem>

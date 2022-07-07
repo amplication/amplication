@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/no-cycle
 import { EntityField } from './EntityField'; // eslint-disable-line import/no-cycle
 import { User } from './User'; // eslint-disable-line import/no-cycle
-import { App } from './App'; // eslint-disable-line import/no-cycle
+import { Resource } from './Resource'; // eslint-disable-line import/no-cycle
 import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
@@ -28,17 +28,17 @@ export class Entity {
   })
   updatedAt!: Date;
 
-  @Field(() => App, {
+  @Field(() => Resource, {
     nullable: true,
     description: undefined
   })
-  app?: App;
+  resource?: Resource;
 
   @Field(() => String, {
     nullable: false,
     description: undefined
   })
-  appId: string;
+  resourceId: string;
 
   @Field(() => String, {
     nullable: false,

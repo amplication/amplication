@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export type NavigationTabItem = {
-  applicationId: string;
+  resourceId: string;
   name: string;
   key: string;
   url: string;

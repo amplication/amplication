@@ -34,5 +34,5 @@ export class EntityCreateInput {
     nullable: false,
     description: undefined
   })
-  app!: WhereParentIdInput;
+  resource!: WhereParentIdInput;
 }

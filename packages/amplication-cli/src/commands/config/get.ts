@@ -5,7 +5,7 @@ export default class ConfigGet extends ConfiguredCommand {
   static description = 'get a property value';
 
   static examples = [
-    'amp config:get AMP_CURRENT_APP',
+    'amp config:get AMP_CURRENT_RESOURCE',
     'amp config:get AMP_SERVER_URL',
     'amp config:get AMP_OUTPUT_FORMAT',
   ];

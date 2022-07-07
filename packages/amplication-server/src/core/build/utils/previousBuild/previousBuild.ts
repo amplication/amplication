@@ -2,7 +2,7 @@ import { Build, PrismaService } from '@amplication/prisma-db';
 
 export const previousBuild = async (
   prisma: PrismaService,
-  appId: string,
+  resourceId: string,
   newBuildId: string,
   buildDate: Date
 ): Promise<Build | null> => {
@@ -11,7 +11,7 @@ export const previousBuild = async (
       take: 1,
       skip: 0,
       where: {
-        appId: appId,
+        resourceId,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         NOT: { id: newBuildId },
         createdAt: { lt: buildDate }

@@ -29,7 +29,7 @@ export class BlockWhereInput {
     nullable: true,
     description: undefined
   })
-  app?: WhereUniqueInput | null;
+  resource?: WhereUniqueInput | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true,
@@ -60,6 +60,4 @@ export class BlockWhereInput {
   // OR?: BlockWhereInput[] | null;
 
   // NOT?: BlockWhereInput[] | null;
-
-  //app?: WhereUniqueInput | null;
 }

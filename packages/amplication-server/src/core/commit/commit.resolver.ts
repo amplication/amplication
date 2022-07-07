@@ -12,7 +12,7 @@ import { CommitService } from './commit.service';
 import { Build } from '../build/dto/Build';
 import { BuildService } from '../build/build.service';
 import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
-import { PendingChange } from '../app/dto/PendingChange';
+import { PendingChange } from '../resource/dto/PendingChange';
 
 @Resolver(() => Commit)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -46,7 +46,10 @@ export class CommitResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ResourceId,
+    'where.resource.id'
+  )
   async commits(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
     return this.commitService.findMany(args);
   }

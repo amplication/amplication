@@ -1,5 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { App } from 'src/models'; // eslint-disable-line import/no-cycle
+import { Resource } from 'src/models'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -24,11 +24,11 @@ export class Environment {
   })
   updatedAt!: Date;
 
-  @Field(() => App)
-  app?: App;
+  @Field(() => Resource)
+  resource?: Resource;
 
   @Field(() => String)
-  appId!: string;
+  resourceId!: string;
 
   @Field(() => String, {
     nullable: false

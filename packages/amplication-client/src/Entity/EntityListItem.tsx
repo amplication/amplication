@@ -22,7 +22,7 @@ type DType = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   entity: models.Entity;
   onDelete?: () => void;
   onError: (error: Error) => void;
@@ -32,7 +32,7 @@ const CLASS_NAME = "entity-list-item";
 
 export const EntityListItem = ({
   entity,
-  applicationId,
+  resourceId,
   onDelete,
   onError,
 }: Props) => {
@@ -88,8 +88,8 @@ export const EntityListItem = ({
   }, [entity, deleteEntity, onError]);
 
   const handleRowClick = useCallback(() => {
-    history.push(`/${applicationId}/entities/${entity.id}`);
-  }, [history, applicationId, entity]);
+    history.push(`/${resourceId}/entities/${entity.id}`);
+  }, [history, resourceId, entity]);
 
   const [latestVersion] = entity.versions;
 
@@ -114,7 +114,7 @@ export const EntityListItem = ({
           <Link
             className={`${CLASS_NAME}__title`}
             title={entity.displayName}
-            to={`/${applicationId}/entities/${entity.id}`}
+            to={`/${resourceId}/entities/${entity.id}`}
           >
             {entity.displayName}
           </Link>

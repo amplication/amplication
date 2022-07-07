@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-push-webhook-service",
-  "version": "0.13.1",
+  "version": "0.14.1",
   "description": "",
   "author": "",
   "private": true,
@@ -19,9 +19,9 @@
   },
   "dependencies": {
     "@amplication/logger": "^1.0.0",
-    "@amplication/kafka": "^0.13.1",
-    "@amplication/prisma-db": "^0.13.1",
-    "@nestjs/common": "8.4.3",
+    "@amplication/kafka": "^0.14.1",
+    "@amplication/prisma-db": "^0.14.1",
+    "@nestjs/common": "8.2.3",
     "@nestjs/config": "2.0.0",
     "@nestjs/core": "8.4.4",
     "@nestjs/microservices": "8.4.4",

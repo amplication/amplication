@@ -27,10 +27,10 @@ import { prepareDeletedItemName } from 'src/util/softDelete';
 import {
   EnumPendingChangeAction,
   EnumPendingChangeResourceType
-} from '../app/dto';
+} from '../resource/dto';
 import { DiffService } from 'src/services/diff.service';
 import { isReservedName } from './reservedNames';
-import { ReservedNameError } from '../app/ReservedNameError';
+import { ReservedNameError } from '../resource/ReservedNameError';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 const EXAMPLE_CURRENT_ENTITY_VERSION_ID = 'currentEntityVersionId';
@@ -57,7 +57,7 @@ const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  appId: 'exampleApp',
+  resourceId: 'exampleResource',
   name: 'exampleEntity',
   displayName: 'example entity',
   pluralDisplayName: 'exampleEntities',
@@ -403,7 +403,7 @@ describe('EntityService', () => {
           displayName: EXAMPLE_ENTITY.displayName,
           description: EXAMPLE_ENTITY.description,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
-          app: { connect: { id: EXAMPLE_ENTITY.appId } }
+          resource: { connect: { id: EXAMPLE_ENTITY.resourceId } }
         }
       },
       user: EXAMPLE_USER
@@ -831,21 +831,21 @@ describe('EntityService', () => {
     expect(prismaEntityVersionFindManyMock).toBeCalledWith(args);
   });
 
-  it('should validate that entity ID exists in the current app and is persistent', async () => {
+  it('should validate that entity ID exists in the current resource and is persistent', async () => {
     const args = {
       entityId: EXAMPLE_ENTITY_ID,
-      appId: EXAMPLE_ENTITY.appId
+      resourceId: EXAMPLE_ENTITY.resourceId
     };
     const findManyArgs = {
       where: {
         id: args.entityId,
-        app: { id: args.appId },
+        resource: { id: args.resourceId },
         deletedAt: null
       }
     };
-    expect(await service.isEntityInSameApp(args.entityId, args.appId)).toEqual(
-      true
-    );
+    expect(
+      await service.isEntityInSameResource(args.entityId, args.resourceId)
+    ).toEqual(true);
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith(findManyArgs);
   });
@@ -1169,7 +1169,7 @@ describe('EntityService', () => {
     expect(prismaEntityFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityFindManyMock).toBeCalledWith({
       where: {
-        ...createEntityNamesWhereInput(name, EXAMPLE_ENTITY.appId),
+        ...createEntityNamesWhereInput(name, EXAMPLE_ENTITY.resourceId),
         deletedAt: null
       },
       take: 1
@@ -1219,7 +1219,10 @@ describe('EntityService', () => {
       }
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_ENTITY.resourceId,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_CREATE]);
   });
   it('pending changed entities "update"', async () => {
@@ -1233,7 +1236,10 @@ describe('EntityService', () => {
       }
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_ENTITY.resourceId,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE]);
   });
   it('pending changed entities "delete"', async () => {
@@ -1241,7 +1247,10 @@ describe('EntityService', () => {
       EXAMPLE_DELETED_ENTITY
     ]);
     expect(
-      await service.getChangedEntities(EXAMPLE_ENTITY.appId, EXAMPLE_USER_ID)
+      await service.getChangedEntities(
+        EXAMPLE_ENTITY.resourceId,
+        EXAMPLE_USER_ID
+      )
     ).toEqual([EXAMPLE_ENTITY_PENDING_CHANGE_DELETE]);
   });
   it('should have no pending changes when the current and last entity versions are the same', async () => {
@@ -1316,7 +1325,7 @@ describe('EntityService', () => {
           displayName: EXAMPLE_ENTITY.displayName,
           description: EXAMPLE_ENTITY.description,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
-          app: { connect: { id: EXAMPLE_ENTITY.appId } }
+          resource: { connect: { id: EXAMPLE_ENTITY.resourceId } }
         }
       },
       user: EXAMPLE_USER

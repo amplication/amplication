@@ -18,7 +18,7 @@ export class AppSettingsResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
   async updateAppSettings(
     @Args() args: UpdateAppSettingsArgs,
     @UserEntity() user: User
@@ -29,7 +29,7 @@ export class AppSettingsResolver {
   @Query(() => AppSettings, {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
   async appSettings(
     @Args() args: FindOneArgs,
     @UserEntity() user: User

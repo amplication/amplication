@@ -10,13 +10,13 @@ import "./CommitListItem.scss";
 import { BuildStatusIcons } from "./BuildStatusIcons";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   commit: models.Commit;
 };
 
 export const CLASS_NAME = "commit-list-item";
 
-export const CommitListItem = ({ commit, applicationId }: Props) => {
+export const CommitListItem = ({ commit, resourceId }: Props) => {
   const [build] = commit.builds;
   const history = useHistory();
 
@@ -25,8 +25,8 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
   }, []);
 
   const handleRowClick = useCallback(() => {
-    history.push(`/${applicationId}/commits/${commit.id}`);
-  }, [history, applicationId, commit]);
+    history.push(`/${resourceId}/commits/${commit.id}`);
+  }, [history, resourceId, commit]);
 
   const account = commit.user?.account;
 
@@ -42,7 +42,7 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
           className={`${CLASS_NAME}__title`}
           id={commit.id}
           label=""
-          to={`/${applicationId}/commit/${commit.id}`}
+          to={`/${resourceId}/commit/${commit.id}`}
           eventData={{
             eventName: "commitListCommitIdClick",
           }}
@@ -52,7 +52,7 @@ export const CommitListItem = ({ commit, applicationId }: Props) => {
           <ClickableId
             className={`${CLASS_NAME}__build`}
             label="Build ID"
-            to={`/${applicationId}/builds/${build.id}`}
+            to={`/${resourceId}/builds/${build.id}`}
             id={build.id}
             onClick={handleBuildLinkClick}
             eventData={{

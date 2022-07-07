@@ -3,7 +3,7 @@ import { AppSettings, UpdateAppSettingsArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { DEFAULT_APP_SETTINGS, AppSettingsValues } from './constants';
+import { DEFAULT_RESOURCE_SETTINGS, AppSettingsValues } from './constants';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
@@ -36,7 +36,7 @@ export class AppSettingsService {
       dbPassword,
       dbPort,
       dbUser,
-      appId: args.where.id,
+      resourceId: args.where.id,
       authProvider,
       serverSettings,
       adminUISettings
@@ -52,7 +52,7 @@ export class AppSettingsService {
     >(
       {
         where: {
-          app: {
+          resource: {
             id: args.where.id
           }
         }
@@ -154,18 +154,18 @@ export class AppSettingsService {
   }
 
   async createDefaultAppSettings(
-    appId: string,
+    resourceId: string,
     user: User
   ): Promise<AppSettings> {
     return this.blockService.create<AppSettings>(
       {
         data: {
-          app: {
+          resource: {
             connect: {
-              id: appId
+              id: resourceId
             }
           },
-          ...DEFAULT_APP_SETTINGS,
+          ...DEFAULT_RESOURCE_SETTINGS,
           blockType: EnumBlockType.AppSettings
         }
       },
