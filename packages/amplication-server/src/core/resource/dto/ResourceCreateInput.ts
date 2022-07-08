@@ -23,6 +23,10 @@ export class ResourceCreateInput {
   @Field(() => EnumResourceType, { nullable: false })
   type!: keyof typeof EnumResourceType;
 
+  /**
+   * @todo: change it to project?
+   * */
+
   workspace?: {
     connect: {
       id: string;

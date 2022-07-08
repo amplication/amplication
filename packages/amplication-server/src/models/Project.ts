@@ -19,17 +19,9 @@ export class Project {
   })
   name!: string;
 
-  @Field(() => Workspace, {
-    nullable: true,
-    description: undefined
-  })
   workspace?: Workspace;
 
-  @Field(() => String, {
-    nullable: false,
-    description: undefined
-  })
-  workspaceId!: string;
+  workspaceId?: string;
 
   @Field(() => [Resource], {
     nullable: true,
@@ -37,9 +29,5 @@ export class Project {
   })
   resources?: Resource[];
 
-  @Field(() => Date, {
-    nullable: true,
-    description: undefined
-  })
   deletedAt?: Date;
 }

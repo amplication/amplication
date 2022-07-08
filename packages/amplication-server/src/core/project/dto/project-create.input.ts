@@ -5,5 +5,9 @@ export class ProjectCreateInput {
   @Field(() => String, { nullable: false })
   name!: string;
 
-  workspaceId!: string;
+  workspace?: {
+    connect: {
+      id: string;
+    };
+  };
 }

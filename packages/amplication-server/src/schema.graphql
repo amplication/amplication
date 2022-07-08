@@ -49,7 +49,7 @@ type Query {
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
-  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): Project
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]
   project(where: WhereUniqueInput!): Project
 }
 
@@ -996,10 +996,7 @@ input GitOrganizationWhereInput {
 type Project {
   id: String!
   name: String!
-  workspace: Workspace
-  workspaceId: String!
   resources: [Resource!]
-  deletedAt: DateTime
 }
 
 input ProjectWhereInput {
@@ -1018,7 +1015,7 @@ type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
   updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
-  createWorkspace(data: ProjectCreateInput!): Project
+  createWorkspace(data: WorkspaceCreateInput!): Workspace
   inviteUser(data: InviteUserInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   resendInvitation(where: WhereUniqueInput!): Invitation
@@ -1067,6 +1064,7 @@ type Mutation {
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  createProject(data: ProjectCreateInput!): Project
 }
 
 input UpdateAccountInput {
@@ -1078,7 +1076,7 @@ input WorkspaceUpdateInput {
   name: String
 }
 
-input ProjectCreateInput {
+input WorkspaceCreateInput {
   name: String!
 }
 
@@ -1388,4 +1386,8 @@ input GitOrganizationCreateInput {
 
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
+}
+
+input ProjectCreateInput {
+  name: String!
 }
