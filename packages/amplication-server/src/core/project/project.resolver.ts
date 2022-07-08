@@ -28,7 +28,7 @@ export class ProjectResolver {
   })
   @InjectContextValue(
     InjectableResourceParameter.WorkspaceId,
-    'data.workspaceId'
+    'data.workspace.connect.id'
   )
   async createProject(
     @Args() args: CreateProjectArgs,
