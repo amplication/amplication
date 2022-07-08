@@ -152,8 +152,8 @@ export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitie
 };
 
 export const GET_APP_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
+  query serviceSettings($id: String!) {
+    serviceSettings(where: { id: $id }) {
       id
       dbHost
       dbName

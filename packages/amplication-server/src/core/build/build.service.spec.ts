@@ -34,12 +34,11 @@ import {
   EnumActionLogLevel,
   EnumActionStepStatus
 } from '../action/dto';
-import { AppSettingsService } from '../appSettings/appSettings.service';
-
-import { AppSettingsValues } from '../appSettings/constants';
-import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
+import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
+import { ServiceSettingsValues } from '../serviceSettings/constants';
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -71,7 +70,7 @@ const JOB_DONE_LOG = 'Build job done';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
-const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
+const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
   dbHost: 'localhost',
   dbName: 'myDb',
   dbPassword: '1234',
@@ -325,7 +324,7 @@ const actionServiceCompleteMock = jest.fn(() => ({}));
 
 const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 
-const getAppSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
+const getServiceSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
 
 describe('BuildService', () => {
   let service: BuildService;
@@ -411,9 +410,9 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: AppSettingsService,
+          provide: ServiceSettingsService,
           useValue: {
-            getAppSettingsValues: getAppSettingsValuesMock
+            getServiceSettingsValues: getServiceSettingsValuesMock
           }
         },
         {

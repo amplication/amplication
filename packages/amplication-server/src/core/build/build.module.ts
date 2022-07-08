@@ -8,7 +8,7 @@ import { PermissionsModule } from 'src/core/permissions/permissions.module';
 import { UserModule } from 'src/core/user/user.module';
 import { ResourceRoleModule } from 'src/core/resourceRole/resourceRole.module';
 import { ResourceModule } from 'src/core/resource/resource.module'; // eslint-disable-line import/no-cycle
-import { AppSettingsModule } from 'src/core/appSettings/appSettings.module'; // eslint-disable-line import/no-cycle
+import { ServiceSettingsModule } from 'src/core/serviceSettings/serviceSettings.module'; // eslint-disable-line import/no-cycle
 import { BuildService } from './build.service';
 import { BuildResolver } from './build.resolver';
 import { BuildController } from './build.controller';
@@ -33,7 +33,7 @@ import { CommitModule } from '../commit/commit.module'; // eslint-disable-line i
     ActionModule,
     StorageOptionsModule,
     forwardRef(() => ResourceModule),
-    AppSettingsModule,
+    ServiceSettingsModule,
     QueueModule,
     forwardRef(() => CommitModule)
   ],

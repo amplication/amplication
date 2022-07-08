@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { AppSettingsService } from './appSettings.service';
-import { AppSettings, UpdateAppSettingsArgs } from './dto';
+import { ServiceSettingsService } from './serviceSettings.service';
+import { ServiceSettings, UpdateServiceSettingsArgs } from './dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { FindOneArgs } from 'src/dto';
@@ -9,31 +9,31 @@ import { User } from 'src/models';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 
-@Resolver(() => AppSettings)
+@Resolver(() => ServiceSettings)
 @UseGuards(GqlAuthGuard)
-export class AppSettingsResolver {
-  constructor(private readonly service: AppSettingsService) {}
+export class ServiceSettingsResolver {
+  constructor(private readonly service: ServiceSettingsService) {}
 
-  @Mutation(() => AppSettings, {
+  @Mutation(() => ServiceSettings, {
     nullable: true,
     description: undefined
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
-  async updateAppSettings(
-    @Args() args: UpdateAppSettingsArgs,
+  async updateServiceSettings(
+    @Args() args: UpdateServiceSettingsArgs,
     @UserEntity() user: User
-  ): Promise<AppSettings> {
-    return this.service.updateAppSettings(args, user);
+  ): Promise<ServiceSettings> {
+    return this.service.updateServiceSettings(args, user);
   }
 
-  @Query(() => AppSettings, {
+  @Query(() => ServiceSettings, {
     nullable: false
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
-  async appSettings(
+  async serviceSettings(
     @Args() args: FindOneArgs,
     @UserEntity() user: User
-  ): Promise<AppSettings> {
-    return this.service.getAppSettingsBlock(args, user);
+  ): Promise<ServiceSettings> {
+    return this.service.getServiceSettingsBlock(args, user);
   }
 }

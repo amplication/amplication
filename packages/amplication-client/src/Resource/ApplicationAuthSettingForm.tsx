@@ -12,15 +12,15 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./ApplicationAuthSettingForm.scss";
 import {
   GET_RESOURCE_SETTINGS,
-  UPDATE_APP_SETTINGS,
-} from "./appSettings/GenerationSettingsForm";
+  UPDATE_SERVICE_SETTINGS,
+} from "./serviceSettings/GenerationSettingsForm";
 import useSettingsHook from "./useSettingsHook";
 
 type Props = {
   match: match<{ resource: string }>;
 };
 type TData = {
-  updateAppSettings: models.AppSettings;
+  updateServiceSettings: models.ServiceSettings;
 };
 
 const CLASS_NAME = "application-auth-settings-form";
@@ -29,7 +29,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
   const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
-    appSettings: models.AppSettings;
+    serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
       id: resourceId,
@@ -40,29 +40,29 @@ function ApplicationAuthSettingForm({ match }: Props) {
 
   const { trackEvent } = useTracking();
 
-  const [updateAppSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_APP_SETTINGS,
+  const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
+    UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addBlock(data.updateAppSettings.id);
+        pendingChangesContext.addBlock(data.updateServiceSettings.id);
       },
     }
   );
 
   const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
     trackEvent,
-    updateAppSettings,
     resourceId,
+    updateServiceSettings,
   });
 
   const errorMessage = formatError(error || updateError);
 
   return (
     <div className={CLASS_NAME}>
-      {data?.appSettings && (
+      {data?.serviceSettings && (
         <Formik
-          initialValues={data.appSettings}
-          validate={(values: models.AppSettings) =>
+          initialValues={data.serviceSettings}
+          validate={(values: models.ServiceSettings) =>
             validate(values, FORM_SCHEMA)
           }
           enableReinitialize
