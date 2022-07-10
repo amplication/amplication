@@ -13,7 +13,7 @@ postgres:
   fullnameOverride: postgresql
   service:
     ports:
-      postgresql: "5432"
+      postgresql: "80"
   primary:
     service:
       type: LoadBalancer
