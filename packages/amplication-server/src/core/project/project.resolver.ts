@@ -34,6 +34,6 @@ export class ProjectResolver {
     @Args() args: CreateProjectArgs,
     @UserEntity() user: User
   ): Promise<Project | null> {
-    return this.projectService.createProject(args, user);
+    return this.projectService.createProject(args);
   }
 }
