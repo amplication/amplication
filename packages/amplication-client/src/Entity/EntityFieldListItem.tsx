@@ -8,7 +8,7 @@ import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityFieldListItem.scss";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   entity: models.Entity;
   entityField: models.EntityField;
   entityIdToName: Record<string, string> | null;
@@ -21,7 +21,7 @@ const CLASS_NAME = "entity-field-list-item";
 export const EntityFieldListItem = ({
   entityField,
   entity,
-  applicationId,
+  resourceId,
   entityIdToName,
   onDelete,
   onError,
@@ -34,19 +34,19 @@ export const EntityFieldListItem = ({
       event.preventDefault();
 
       history.push(
-        `/${applicationId}/entities/${entityField.properties.relatedEntityId}`
+        `/${resourceId}/entities/${entityField.properties.relatedEntityId}`
       );
     },
-    [history, applicationId, entityField]
+    [history, resourceId, entityField]
   );
 
   const handleRowClick = useCallback(() => {
     history.push(
-      `/${applicationId}/entities/${entity.id}/fields/${entityField.id}`
+      `/${resourceId}/entities/${entity.id}/fields/${entityField.id}`
     );
-  }, [history, applicationId, entityField, entity]);
+  }, [history, resourceId, entityField, entity]);
 
-  const fieldUrl = `/${applicationId}/entities/${entity.id}/fields/${entityField.id}`;
+  const fieldUrl = `/${resourceId}/entities/${entity.id}/fields/${entityField.id}`;
 
   return (
     <Panel
@@ -90,7 +90,7 @@ export const EntityFieldListItem = ({
           entityIdToName ? (
             <Link
               title={DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label}
-              to={`/${applicationId}/entities/${entityField.properties.relatedEntityId}`}
+              to={`/${resourceId}/entities/${entityField.properties.relatedEntityId}`}
               onClick={handleNavigateToRelatedEntity}
             >
               {entityIdToName[entityField.properties.relatedEntityId]}{" "}

@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from './User'; // eslint-disable-line import/no-cycle
-import { App } from './App'; // eslint-disable-line import/no-cycle
+import { Resource } from './Resource'; // eslint-disable-line import/no-cycle
 import { GitOrganization } from './GitOrganization';
 
 @ObjectType({
@@ -32,8 +32,8 @@ export class Workspace {
   })
   name!: string;
 
-  @Field(() => [App])
-  apps?: App[];
+  @Field(() => [Resource])
+  resources?: Resource[];
 
   @Field(() => [GitOrganization], { nullable: true })
   gitOrganizations?: GitOrganization[];

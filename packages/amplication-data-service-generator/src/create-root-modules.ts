@@ -1,6 +1,6 @@
 import winston from "winston";
-import { Module, AppInfo } from "./types";
 import { createDotEnvModule } from "./create-dotenv";
+import { AppInfo, Module } from "./types";
 
 export async function createRootModules(
   appInfo: AppInfo,

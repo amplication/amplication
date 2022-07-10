@@ -75,7 +75,7 @@ export const GET_ENTITY_PERMISSIONS = gql`
         type
         permissionRoles {
           id
-          appRoleId
+          resourceRoleId
         }
       }
     }

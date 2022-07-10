@@ -1,5 +1,13 @@
 import React, { useEffect } from "react";
 import * as reactHotkeys from "react-hotkeys";
+
+import ResourceLayout from "./Resource/ResourceLayout";
+import Login from "./User/Login";
+import Signup from "./User/Signup";
+import WorkspaceLayout from "./Workspaces/WorkspaceLayout";
+import CreateResourceFromExcel from "./Resource/CreateResourceFromExcel";
+
+import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
@@ -46,7 +54,34 @@ function App() {
 
   return (
     <ThemeProvider>
+<<<<<<< HEAD
       <NavigationTabsProvider>{GeneratedRoutes}</NavigationTabsProvider>
+=======
+      <NavigationTabsProvider>
+        <Switch>
+          <RouteWithAnalytics path="/login">
+            <Login />
+          </RouteWithAnalytics>
+          <RouteWithAnalytics path="/signup">
+            <Signup />
+          </RouteWithAnalytics>
+          <PrivateRoute
+            exact
+            path="/github-auth-app/callback"
+            component={AuthResourceWithGitCallback}
+          />
+          <PrivateRoute exact path="/" component={WorkspaceLayout} />
+          <PrivateRoute path="/workspace" component={WorkspaceLayout} />
+          <PrivateRoute path="/user/profile" component={WorkspaceLayout} />
+          <PrivateRoute
+            exact
+            path="/create-resource"
+            component={CreateResourceFromExcel}
+          />
+          <PrivateRoute path="/:resource" component={ResourceLayout} />
+        </Switch>
+      </NavigationTabsProvider>
+>>>>>>> origin/release/0.15.0
     </ThemeProvider>
   );
 }

@@ -21,7 +21,7 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 const CLASS_NAME = "entity-permissions-action";
 type TData = {
-  appRoles: models.AppRole[];
+  resourceRoles: models.ResourceRole[];
 };
 
 const OPTIONS = [
@@ -35,7 +35,7 @@ type Props = {
   permission: models.EntityPermission;
   permissionAction: permissionTypes.PermissionAction;
   entityDisplayName: string;
-  applicationId: string;
+  resourceId: string;
 };
 
 export const EntityPermissionAction = ({
@@ -43,12 +43,14 @@ export const EntityPermissionAction = ({
   permission,
   permissionAction: { action: actionName, actionDisplayName, canSetFields },
   entityDisplayName,
-  applicationId,
+  resourceId,
 }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
 
   const selectedRoleIds = useMemo((): Set<string> => {
-    return new Set(permission.permissionRoles?.map((role) => role.appRoleId));
+    return new Set(
+      permission.permissionRoles?.map((role) => role.resourceRoleId)
+    );
   }, [permission.permissionRoles]);
 
   /**@todo: handle  errors */
@@ -120,7 +122,7 @@ export const EntityPermissionAction = ({
   /**@todo: handle loading state and errors */
   const { data } = useQuery<TData>(GET_ROLES, {
     variables: {
-      id: applicationId,
+      id: resourceId,
       orderBy: undefined,
       whereName: undefined,
     },
@@ -259,7 +261,7 @@ export const EntityPermissionAction = ({
       <ul className="panel-list">
         <li>
           <ActionRoleList
-            availableRoles={data?.appRoles || []}
+            availableRoles={data?.resourceRoles || []}
             selectedRoleIds={selectedRoleIds}
             debounceMS={1000}
             onChange={handleRoleSelectionChange}
@@ -314,8 +316,8 @@ const UPDATE_ROLES = gql`
       type
       permissionRoles {
         id
-        appRoleId
-        appRole {
+        resourceRoleId
+        resourceRole {
           id
           displayName
         }
