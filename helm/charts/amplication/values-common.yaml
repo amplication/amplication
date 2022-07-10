@@ -12,8 +12,7 @@ postgres:
   postgresqlDatabase: amplication
   fullnameOverride: postgresql
   service:
-    ports:
-      postgresql: "80"
+    port: 80
   primary:
     service:
       type: LoadBalancer
