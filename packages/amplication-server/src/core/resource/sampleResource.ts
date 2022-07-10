@@ -16,7 +16,7 @@ import { ResourceCreateInput } from './dto';
 export const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   description: 'Sample Service for task management',
   name: 'My sample service',
-  type: EnumResourceType.Service
+  resourceType: EnumResourceType.Service
 };
 
 export const CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE = 'Create sample entities';

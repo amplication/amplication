@@ -169,7 +169,7 @@ const EXAMPLE_APP_ROLES = [];
 
 const EXAMPLE_SERVICE_RESOURCE: Resource = {
   id: 'exampleResourceId',
-  type: EnumResourceType.Service,
+  resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: 'exampleResourceName',
