@@ -1,6 +1,8 @@
 global:
   pvc:
     name: mor-efs-claim
+  pv:
+    name: efs-pv-mor
 
 amplication-client:
   service:

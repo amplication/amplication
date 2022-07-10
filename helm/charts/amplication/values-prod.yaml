@@ -1,6 +1,9 @@
 global:
   pvc:
     name: prod-efs-claim
+  pv:
+    name: efs-pv-prod
+    handle: fs-0d4fb7d4e763c5fd0::fsap-07aa4780aac8b22d3
 
 amplication-client:
   service:

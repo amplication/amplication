@@ -1,6 +1,9 @@
 global:
   pvc:
     name: common-efs-claim
+  pv:
+    name: efs-pv-common
+    handle: fs-056391171586c1bac::fsap-059c0718ada039a49
 
 postgres:
   install: true

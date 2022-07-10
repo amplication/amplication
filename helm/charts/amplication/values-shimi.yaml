@@ -1,6 +1,8 @@
 global:
   pvc:
     name: shimi-efs-claim
+  pv:
+    name: efs-pv-shimi
 
 amplication-client:
   service:

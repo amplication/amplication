@@ -1,6 +1,9 @@
 global:
   pvc:
     name: staging-os-efs-claim
+  pv:
+    name: efs-pv-staging-os
+    handle: fs-056391171586c1bac::fsap-0ac55924de65d8e1b
 
 cp-helm-charts:
   enabled: false

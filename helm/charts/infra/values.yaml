@@ -2,3 +2,7 @@ pvc:
   name: efs-claim
   storageRequest: 1Gi
   storageName: efs-sc
+
+pv:
+  name: efs-pv-custom
+  handle: fs-056391171586c1bac::fsap-059c0718ada039a49

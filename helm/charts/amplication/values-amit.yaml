@@ -1,6 +1,8 @@
 global:
   pvc:
     name: amit-efs-claim
+  pv:
+    name: efs-pv-amit
 
 amplication-client:
   service:
