@@ -1,12 +1,9 @@
-cp-helm-charts:
-  enabled: false
-  cp-kafka:
-    enabled: false
-  cp-zookeeper:
-    enabled: false
-
-postgres:
-  install: false
+global:
+  pvc:
+    name: prod-efs-claim
+  pv:
+    name: efs-pv-prod
+    handle: fs-0d4fb7d4e763c5fd0::fsap-07aa4780aac8b22d3
 
 amplication-client:
   service:
@@ -29,8 +26,6 @@ amplication-server:
     requests:
       cpu: 3
       memory: 6Gi
-  pvc:
-    name: prod-efs-claim
   postgres:
     install: false
   ingress:
@@ -98,8 +93,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  pvc:
-    name: prod-efs-claim
   postgres:
     install: false
   config:
@@ -124,8 +117,6 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
-  pvc:
-    name: prod-efs-claim
   config:
     env:
       #KAFKA
@@ -142,8 +133,6 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   ingress:
     hostname: server.amplication.com
-  pvc:
-    name: prod-efs-claim
   config:
     env:
       #KAFKA
@@ -154,3 +143,12 @@ amplication-storage-gateway:
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
+
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
+    enabled: false
+  cp-zookeeper:
+    enabled: false
+postgres:
+  install: false

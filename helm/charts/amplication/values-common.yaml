@@ -1,3 +1,17 @@
+global:
+  pvc:
+    name: common-efs-claim
+  pv:
+    name: efs-pv-common
+    handle: fs-056391171586c1bac::fsap-059c0718ada039a49
+
+postgres:
+  install: true
+  postgresqlPassword: postgres
+  postgresqlPostgresPassword: postgres
+  postgresqlDatabase: amplication
+  fullnameOverride: postgresql
+
 cp-helm-charts:
   enabled: true
   cp-kafka:
@@ -44,13 +58,10 @@ cp-helm-charts:
   cp-ksql-server:
     enabled: false
 
-postgres:
-  install: false
-
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
-    tag: "release-0-13-0" # Need to change for dev.
+    tag: "release-0-13-1" # Need to change for dev.
   service:
     hostname: app-dev.staging.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
@@ -63,14 +74,12 @@ amplication-client:
 amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-    tag: "release-0-13-0"
+    tag: "release-0-13-1"
   postgres:
     install: false
   ingress:
     enabled: true
     hostname: server.staging.amplication-dev.com
-  pvc:
-    name: common-efs-claim
   config:
     env:
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
@@ -123,7 +132,7 @@ amplication-server:
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
-    tag: "release-0-13-0"
+    tag: "release-0-13-1"
   postgres:
     install: false
   ingress:
@@ -140,11 +149,9 @@ amplication-git-push-webhook-service:
 amplication-git-pull-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
-    tag: "release-0-13-0"
+    tag: "release-0-13-1"
   postgres:
     install: false
-  pvc:
-    name: common-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -167,9 +174,7 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
-    tag: "release-0-13-0"
-  pvc:
-    name: common-efs-claim
+    tag: "release-0-13-1"
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
@@ -182,7 +187,9 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
-    tag: "feature-add-services"
+    tag: "release-0-13-1"
+  ingress:
+    hostname: server.staging.amplication-dev.com
   config:
     env:
       PORT: "3002"
@@ -191,3 +198,4 @@ amplication-storage-gateway:
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
+

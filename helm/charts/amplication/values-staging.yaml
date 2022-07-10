@@ -1,12 +1,9 @@
-cp-helm-charts:
-  enabled: false
-  cp-kafka:
-    enabled: false
-  cp-zookeeper:
-    enabled: false
-
-postgres:
-  install: false
+global:
+  pvc:
+    name: staging-efs-claim
+  pv:
+    name: efs-pv-staging
+    handle: fs-0a87872138ddc7f6d::fsap-0369ff368700f58c3
 
 amplication-client:
   service:
@@ -129,3 +126,12 @@ amplication-storage-gateway:
       KAFKA_BROKERS: '["b-1.amplicationuseast1sta.2590lk.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1sta.2590lk.c22.kafka.us-east-1.amazonaws.com:9092"]'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
+
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
+    enabled: false
+  cp-zookeeper:
+    enabled: false
+postgres:
+  install: false

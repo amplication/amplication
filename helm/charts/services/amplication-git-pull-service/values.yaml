@@ -34,11 +34,6 @@ service:
 ingress:
   enabled: false
 
-pvc:
-  storageRequest: 1Gi
-  name: efs-claim
-  storageName: efs-sc
-
 # Postgresql Server
 postgres:
   install: false

@@ -1,17 +1,11 @@
 apiVersion: v2
-name: amplication-git-push-webhook-service
-description: A Helm chart for the amplication-git-push-webhook-service component of Amplication.
+name: infra
+description: A Helm chart for common shared infrastructure resources.
 
 dependencies:
-- name: postgresql
-  alias: postgres
-  version: "10.16.2"
-  repository: "https://charts.bitnami.com/bitnami"
-  condition: postgres.install
-
 - name: base
   version: "0.1.0"
-  repository: "file://../../base"
+  repository: "file://../base"
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives

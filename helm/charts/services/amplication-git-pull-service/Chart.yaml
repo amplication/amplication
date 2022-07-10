@@ -6,7 +6,7 @@ dependencies:
 
 - name: postgresql
   alias: postgres
-  version: "10.5.2"
+  version: "10.16.2"
   repository: "https://charts.bitnami.com/bitnami"
   condition: postgres.install
 

@@ -43,3 +43,4 @@ postgres:
     imagePullPolicy: Always
     primary:
       podLabels: { name: "postgres" }
+

@@ -1,27 +1,38 @@
+global:
+  pvc:
+    name: mor-efs-claim
+  pv:
+    name: efs-pv-mor
+
 amplication-client:
-  image:
-    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
-    hostname: app-custom.amplication-dev.com
+    hostname: app-mor.amplication-dev.com
   config:
     env:
-      REACT_APP_DATA_SOURCE: "https://server-custom.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-custom.amplication-dev.com/github"
-      REACT_APP_GITHUB_CLIENT_ID: value
+      REACT_APP_SERVER_URI: "https://server-mor.amplication-dev.com"
+      REACT_APP_DATA_SOURCE: "https://server-mor.amplication-dev.com/graphql"
+      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-mor.amplication-dev.com/github"
+      REACT_APP_STORAGE_GATEWAY_URL: https://server-mor.amplication-dev.com
 
 amplication-server:
-  image:
-      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   postgres:
     install: false
   ingress:
     enabled: true
-    hostname: server-custom.amplication-dev.com
+    hostname: server-mor.amplication-dev.com
   config:
     env:
+      HOST: "https://server-mor.amplication-dev.com"
+      CLIENT_HOST: "https://app-mor.amplication-dev.com"
 
-      HOST: "https://server-custom.amplication-dev.com"
-      CLIENT_HOST: 'https://app-custom.amplication-dev.com'
+      #KAFKA
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      KAFKA_BROKERS: '["amplication-mor-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: amplication-server
+      KAFKA_GROUP_ID: amplication-server-group
+
+      #EFS
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
 
       #GCP - APPS Builder
 
@@ -42,11 +53,64 @@ amplication-server:
       DOCKER_HOST: tcp://docker:2375
 
       #GitHub App
-      GITHUB_APP_APP_ID: "195638"
-      GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
-      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-server-staging-os/installations/new?state={state}"
+      GITHUB_APP_APP_ID: "215215"
+      GITHUB_APP_CLIENT_ID: "Iv1.a8ac08d4d3788314"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/mor-app/installations/new?state={state}"
 
       #GitHub OAuth App
-      GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
-      GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
-      GITHUB_REDIRECT_URI: "https://server-custom.amplication-dev.com/github/callback"
+      GITHUB_CLIENT_ID: "e37477c7b7acc2663fea"
+      GITHUB_REDIRECT_URI: "https://server-mor.amplication-dev.com/github/callback"
+
+amplication-git-push-webhook-service:
+  postgres:
+    install: false
+  ingress:
+    enabled: true
+    hostname: webhook-mor.amplication-dev.com
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-mor-cp-kafka-headless:9092"]'
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
+      KAFKA_CLIENT_ID: git-push-webhook-service
+      KAFKA_GROUP_ID: amplication-git-push-webhook-service
+
+amplication-git-pull-service:
+  postgres:
+    install: false
+  config:
+    env:
+      NODE_ENV: "production"
+
+      #EFS
+      STORAGE_PATH: /amplication-data/git-data
+      MAX_SNAPSHOTS: "100"
+
+      #GitHub App
+      GITHUB_APP_APP_ID: "215215"
+      GITHUB_APP_CLIENT_ID: "Iv1.a8ac08d4d3788314"
+      GIT_DEFAULT_ORIGIN_NAME: origin
+
+      KAFKA_BROKERS: '["amplication-mor-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: git-pull-service
+      KAFKA_GROUP_ID: git-pull-service-group
+
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
+
+amplication-git-pull-request-service:
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-mor-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: git-pull-request-service
+      KAFKA_GROUP_ID: git-pull-request-service-group
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      GITHUB_APP_APP_ID: "215215"
+
+amplication-storage-gateway:
+  ingress:
+    hostname: server-mor.amplication-dev.com
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-mor-cp-kafka-headless:9092"]'
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      GITHUB_APP_APP_ID: "215215"
