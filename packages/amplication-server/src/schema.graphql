@@ -28,7 +28,7 @@ type Query {
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  appSettings(where: WhereUniqueInput!): AppSettings!
+  serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   block(where: WhereUniqueInput!): Block!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
@@ -358,7 +358,7 @@ type Block {
 }
 
 enum EnumBlockType {
-  AppSettings
+  ServiceSettings
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -682,7 +682,7 @@ input PendingChangesFindInput {
   resource: WhereUniqueInput!
 }
 
-type AppSettings implements IBlock {
+type ServiceSettings implements IBlock {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -1040,7 +1040,7 @@ type Mutation {
   deleteEntityField(where: WhereUniqueInput!): EntityField!
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  updateAppSettings(data: AppSettingsUpdateInput!, where: WhereUniqueInput!): AppSettings
+  updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   createBuild(data: BuildCreateInput!): Build!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
@@ -1203,7 +1203,7 @@ input EntityFieldUpdateInput {
   position: Int
 }
 
-input AppSettingsUpdateInput {
+input ServiceSettingsUpdateInput {
   displayName: String
   description: String
   dbHost: String!
