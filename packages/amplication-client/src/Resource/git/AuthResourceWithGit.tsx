@@ -17,7 +17,7 @@ import {
 } from "./SyncWithGithubPage";
 
 type DType = {
-  getGitAppInstallationUrl: AuthorizeResourceWithGitResult;
+  getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
 };
 
 // eslint-disable-next-line
@@ -55,7 +55,10 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
-        openSignInWindow(data.getGitAppInstallationUrl.url, "auth with git");
+        openSignInWindow(
+          data.getGitResourceInstallationUrl.url,
+          "auth with git"
+        );
       },
     }
   );
@@ -139,8 +142,8 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
 export default AuthResourceWithGit;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGitAppInstallationUrl($gitProvider: EnumGitProvider!) {
-    getGitAppInstallationUrl(data: { gitProvider: $gitProvider }) {
+  mutation getGitResourceInstallationUrl($gitProvider: EnumGitProvider!) {
+    getGitResourceInstallationUrl(data: { gitProvider: $gitProvider }) {
       url
     }
   }
