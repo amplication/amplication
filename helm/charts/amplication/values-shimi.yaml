@@ -8,7 +8,7 @@ postgres:
   primary:
     service:
       annotations:
-        external-dns.alpha.kubernetes.io/hostname: postgres-shimi.staging-os.amplication-dev.com
+        external-dns.alpha.kubernetes.io/hostname: postgres-shimi.amplication-dev.com
 
 amplication-client:
   service:
