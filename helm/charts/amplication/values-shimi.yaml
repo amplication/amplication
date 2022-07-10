@@ -5,9 +5,10 @@ global:
     name: efs-pv-shimi
 
 postgres:
-  service:
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: postgres-shimi.amplication-dev.com
+  primary:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: postgres-shimi.amplication-dev.com
 
 amplication-client:
   service:
