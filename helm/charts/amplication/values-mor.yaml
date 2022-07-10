@@ -4,6 +4,12 @@ global:
   pv:
     name: efs-pv-mor
 
+postgres:
+  primary:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: postgres-mor.amplication-dev.com
+
 amplication-client:
   service:
     hostname: app-mor.amplication-dev.com
