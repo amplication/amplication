@@ -9,7 +9,7 @@ import { QueryMode } from 'src/enums/QueryMode';
 import { Commit, Resource, User, Workspace } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
-import { AppSettingsService } from '../appSettings/appSettings.service';
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { BlockService } from '../block/block.service';
 import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
 import { USER_ENTITY_NAME } from '../entity/constants';
@@ -56,7 +56,7 @@ export class ResourceService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private appSettingsService: AppSettingsService
+    private serviceSettingsService: ServiceSettingsService
   ) {}
 
   /**
@@ -96,7 +96,10 @@ export class ResourceService {
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 
-    await this.appSettingsService.createDefaultAppSettings(resource.id, user);
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      resource.id,
+      user
+    );
 
     try {
       await this.commit(

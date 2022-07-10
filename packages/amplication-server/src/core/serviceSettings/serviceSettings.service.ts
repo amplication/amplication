@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { AppSettings, UpdateAppSettingsArgs } from './dto';
+import { ServiceSettings, UpdateServiceSettingsArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { DEFAULT_RESOURCE_SETTINGS, AppSettingsValues } from './constants';
+import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from './constants';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
@@ -11,14 +11,14 @@ export const isStringBool = (val: any) =>
   typeof val === 'boolean' || typeof val === 'string';
 
 @Injectable()
-export class AppSettingsService {
+export class ServiceSettingsService {
   @Inject()
   private readonly blockService: BlockService;
 
-  async getAppSettingsValues(
+  async getServiceSettingsValues(
     args: FindOneArgs,
     user: User
-  ): Promise<AppSettingsValues> {
+  ): Promise<ServiceSettingsValues> {
     const {
       dbHost,
       dbName,
@@ -28,7 +28,7 @@ export class AppSettingsService {
       authProvider,
       serverSettings,
       adminUISettings
-    } = await this.getAppSettingsBlock(args, user);
+    } = await this.getServiceSettingsBlock(args, user);
 
     return {
       dbHost,
@@ -43,12 +43,12 @@ export class AppSettingsService {
     };
   }
 
-  async getAppSettingsBlock(
+  async getServiceSettingsBlock(
     args: FindOneArgs,
     user: User
-  ): Promise<AppSettings> {
-    const [appSettings] = await this.blockService.findManyByBlockType<
-      AppSettings
+  ): Promise<ServiceSettings> {
+    const [serviceSettings] = await this.blockService.findManyByBlockType<
+      ServiceSettings
     >(
       {
         where: {
@@ -57,18 +57,18 @@ export class AppSettingsService {
           }
         }
       },
-      EnumBlockType.AppSettings
+      EnumBlockType.ServiceSettings
     );
 
     return {
-      ...appSettings,
-      authProvider: appSettings.authProvider || EnumAuthProviderType.Jwt,
-      ...(!appSettings.hasOwnProperty('serverSettings') ||
-      !appSettings.hasOwnProperty('adminUISettings')
-        ? this.updateAppSettings(
+      ...serviceSettings,
+      authProvider: serviceSettings.authProvider || EnumAuthProviderType.Jwt,
+      ...(!serviceSettings.hasOwnProperty('serverSettings') ||
+      !serviceSettings.hasOwnProperty('adminUISettings')
+        ? this.updateServiceSettings(
             {
               data: {
-                ...appSettings,
+                ...serviceSettings,
                 serverSettings: {
                   generateGraphQL: true,
                   generateRestApi: true,
@@ -89,34 +89,34 @@ export class AppSettingsService {
     };
   }
 
-  async updateAppSettings(
-    args: UpdateAppSettingsArgs,
+  async updateServiceSettings(
+    args: UpdateServiceSettingsArgs,
     user: User
-  ): Promise<AppSettings> {
-    const appSettingsBlock = await this.getAppSettingsBlock(
+  ): Promise<ServiceSettings> {
+    const serviceSettingsBlock = await this.getServiceSettingsBlock(
       {
         where: { id: args.where.id }
       },
       user
     );
 
-    return this.blockService.update<AppSettings>(
+    return this.blockService.update<ServiceSettings>(
       {
         where: {
-          id: appSettingsBlock.id
+          id: serviceSettingsBlock.id
         },
         data: {
-          ...appSettingsBlock,
+          ...serviceSettingsBlock,
           ...args.data,
           adminUISettings: {
             adminUIPath: isStringBool(args.data?.adminUISettings?.adminUIPath)
               ? args.data?.adminUISettings?.adminUIPath
-              : appSettingsBlock.adminUISettings.adminUIPath,
+              : serviceSettingsBlock.adminUISettings.adminUIPath,
             generateAdminUI: isStringBool(
               args.data?.adminUISettings?.generateAdminUI
             )
               ? args.data?.adminUISettings?.generateAdminUI
-              : appSettingsBlock.adminUISettings.generateAdminUI
+              : serviceSettingsBlock.adminUISettings.generateAdminUI
           },
           ...{
             serverSettings: {
@@ -124,15 +124,15 @@ export class AppSettingsService {
                 args.data?.serverSettings?.generateGraphQL
               )
                 ? args.data?.serverSettings?.generateGraphQL
-                : appSettingsBlock.serverSettings.generateGraphQL,
+                : serviceSettingsBlock.serverSettings.generateGraphQL,
               generateRestApi: isStringBool(
                 args.data?.serverSettings?.generateRestApi
               )
                 ? args.data?.serverSettings?.generateRestApi
-                : appSettingsBlock.serverSettings.generateRestApi,
+                : serviceSettingsBlock.serverSettings.generateRestApi,
               serverPath: isStringBool(args.data?.serverSettings?.serverPath)
                 ? args.data?.serverSettings?.serverPath
-                : appSettingsBlock.serverSettings.serverPath
+                : serviceSettingsBlock.serverSettings.serverPath
             }
           },
           ...(!args.data.serverSettings.generateGraphQL
@@ -142,7 +142,7 @@ export class AppSettingsService {
                     args.data?.adminUISettings?.adminUIPath
                   )
                     ? args.data?.adminUISettings?.adminUIPath
-                    : appSettingsBlock.adminUISettings.adminUIPath,
+                    : serviceSettingsBlock.adminUISettings.adminUIPath,
                   generateAdminUI: false
                 }
               }
@@ -153,11 +153,11 @@ export class AppSettingsService {
     );
   }
 
-  async createDefaultAppSettings(
+  async createDefaultServiceSettings(
     resourceId: string,
     user: User
-  ): Promise<AppSettings> {
-    return this.blockService.create<AppSettings>(
+  ): Promise<ServiceSettings> {
+    return this.blockService.create<ServiceSettings>(
       {
         data: {
           resource: {
@@ -165,8 +165,8 @@ export class AppSettingsService {
               id: resourceId
             }
           },
-          ...DEFAULT_RESOURCE_SETTINGS,
-          blockType: EnumBlockType.AppSettings
+          ...DEFAULT_SERVICE_SETTINGS,
+          blockType: EnumBlockType.ServiceSettings
         }
       },
       user

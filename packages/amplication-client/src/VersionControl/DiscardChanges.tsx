@@ -40,7 +40,7 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
           cache.evict({
             id: cache.identify({
               id: change.resourceId,
-              __typename: "AppSettings",
+              __typename: "ServiceSettings",
             }),
           });
         }
