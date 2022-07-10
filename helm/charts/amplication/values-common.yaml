@@ -11,14 +11,13 @@ postgres:
   postgresqlPostgresPassword: postgres
   postgresqlDatabase: amplication
   fullnameOverride: postgresql
-  primary:
-    service:
-      type: LoadBalancer
-      annotations:
-        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
-        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
-        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
-        external-dns.alpha.kubernetes.io/hostname: postgres.staging-os.amplication-dev.com
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+      external-dns.alpha.kubernetes.io/hostname: postgres.staging-os.amplication-dev.com
 
 cp-helm-charts:
   enabled: true
