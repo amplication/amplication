@@ -521,3 +521,5 @@ const CREATE_RESOURCE_WITH_ENTITIES = gql`
     }
   }
 `;
+
+export default CreateResourceFromExcel
