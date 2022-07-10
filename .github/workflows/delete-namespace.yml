@@ -34,24 +34,3 @@ jobs:
           APPNAME="amplication-$NAMESPACE"
           set +e
           argocd app delete $APPNAME
-  delete-pv:
-    runs-on: ubuntu-18.04
-    steps:
-      - name: configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: connect to cluster
-        env:
-          AWS_REGION: us-east-1
-          CLUSTER_NAME: useast1-staging-os
-        run: aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-      - name: delete pv
-        env:
-          NAMESPACE: ${{ github.event.inputs.namespace }}
-        run: |
-          kubectl delete pv efs-pv-$NAMESPACE
-
-
