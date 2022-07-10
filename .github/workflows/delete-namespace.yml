@@ -1,10 +1,10 @@
-name: delete-ns
+name: delete-namespace
 on:
   workflow_dispatch:
     inputs:
       namespace:
         type: choice
-        description: Which namespace you want to delete
+        description: Select the namespace you wish to delete
         default: shimi
         required: true
         options: 
@@ -13,7 +13,7 @@ on:
         - amit
 
 jobs:
-  delete-ns:
+  delete-namespace:
     runs-on: ubuntu-18.04
     steps:
       - name: install argocd
@@ -27,7 +27,7 @@ jobs:
         run: |
           ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
           argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web
-      - name: delete ns
+      - name: delete namespace
         env:
           NAMESPACE: ${{ github.event.inputs.namespace }}
         run: |
