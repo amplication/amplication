@@ -257,7 +257,7 @@ export const Routes: RouteDef[] = [
 export const OldRoutes: RouteDef[] = [
   {
     path: "/",
-    redirect: "/workspace",
+    Component: lazy(() => import("./Workspaces/WorkspaceLayout")),
     routeTrackType: "main root",
     exactPath: true,
   },
@@ -266,7 +266,7 @@ export const OldRoutes: RouteDef[] = [
     Component: lazy(() => import("./Workspaces/WorkspaceLayout")),
     permission: true,
     moduleName: "WorkspaceLayout",
-    exactPath: true,
+    exactPath: false,
   },
   {
     path: "/login",
@@ -283,11 +283,11 @@ export const OldRoutes: RouteDef[] = [
     exactPath: true,
   },
   {
-    path: "/:application(.{12,})",
+    path: "/:application([A-Za-z0-9]{12,})",
     Component: lazy(() => import("./Application/ApplicationLayout")),
     moduleName: "ApplicationLayout",
     permission: true,
-    exactPath: true,
+    exactPath: false,
   },
   {
     path: "/signup",
