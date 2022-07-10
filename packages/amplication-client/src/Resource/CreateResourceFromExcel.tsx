@@ -522,4 +522,4 @@ const CREATE_RESOURCE_WITH_ENTITIES = gql`
   }
 `;
 
-export default CreateAppFromExcel
+export default CreateResourceFromExcel

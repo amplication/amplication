@@ -29,7 +29,7 @@ export const Routes: RouteDef[] = [
   },
   {
     path: "/github-auth-app/callback",
-    Component: lazy(() => import("./Application/git/AuthAppWithGitCallback")),
+    Component: lazy(() => import("./Resource/git/AuthResourceWithGitCallback")),
     moduleName: "AuthAppWithGitCallback",
     permission: true,
     routeTrackType: "auth app with git callback",
@@ -76,21 +76,21 @@ export const Routes: RouteDef[] = [
       },
       {
         path: "/:project",
-        Component: lazy(() => import("./Application/ApplicationHome")),
+        Component: lazy(() => import("./Resource/ResourceHome")),
         moduleName: "",
         routeTrackType: "",
         exactPath: true,
         routes: [
           {
             path: "/:workspace/:project/:service",
-            Component: lazy(() => import("./Application/ApplicationHome")),
+            Component: lazy(() => import("./Resource/ResourceHome")),
             moduleName: "",
             routeTrackType: "",
             exactPath: true,
             routes: [
               {
                 path: "/:workspace/:project/:service/entities",
-                Component: lazy(() => import("./Application/EntitiesTile")),
+                Component: lazy(() => import("./Resource/EntitiesTile")),
                 moduleName: "",
                 routeTrackType: "",
                 exactPath: true,
@@ -131,7 +131,7 @@ export const Routes: RouteDef[] = [
               },
               {
                 path: "/:workspace/:project/:service/roles",
-                Component: lazy(() => import("./Application/RolesTile")),
+                Component: lazy(() => import("./Resource/RolesTile")),
                 moduleName: "",
                 routeTrackType: "",
                 exactPath: true,
@@ -164,7 +164,7 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace/:project/:service/github",
                 Component: lazy(() =>
-                  import("./Application/git/SyncWithGithubPage")
+                  import("./Resource/git/SyncWithGithubPage")
                 ),
                 moduleName: "",
                 routeTrackType: "",
@@ -174,7 +174,7 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace/:project/:service/code-view",
                 Component: lazy(() =>
-                  import("./Application/code-view/CodeViewPage")
+                  import("./Resource/code-view/CodeViewPage")
                 ),
                 moduleName: "",
                 routeTrackType: "",
@@ -184,7 +184,7 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace/:project/:service/appSettings",
                 Component: lazy(() =>
-                  import("./Application/appSettings/AppSettingsPage")
+                  import("./Resource/serviceSettings/ServiceSettingsPage")
                 ),
                 moduleName: "",
                 routeTrackType: "",
@@ -245,7 +245,7 @@ export const Routes: RouteDef[] = [
   },
   {
     path: "/create-app",
-    Component: lazy(() => import("./Application/CreateAppFromExcel")),
+    Component: lazy(() => import("./Resource/CreateResourceFromExcel")),
     moduleName: "CreateAppFromExcel",
     permission: true,
     moduleClass: "create-app-from-excel",
@@ -277,14 +277,14 @@ export const OldRoutes: RouteDef[] = [
   },
   {
     path: "/github-auth-app/callback",
-    Component: lazy(() => import("./Application/git/AuthAppWithGitCallback")),
+    Component: lazy(() => import("./Resource/git/AuthResourceWithGitCallback")),
     moduleName: "AuthAppWithGitCallback",
     permission: true,
     exactPath: true,
   },
   {
-    path: "/:application([A-Za-z0-9]{12,})",
-    Component: lazy(() => import("./Application/ApplicationLayout")),
+    path: "/:resource([A-Za-z0-9]{12,})",
+    Component: lazy(() => import("./Resource/ResourceLayout")),
     moduleName: "ApplicationLayout",
     permission: true,
     exactPath: false,
@@ -304,7 +304,7 @@ export const OldRoutes: RouteDef[] = [
   },
   {
     path: "/create-app",
-    Component: lazy(() => import("./Application/CreateAppFromExcel")),
+    Component: lazy(() => import("./Resource/CreateResourceFromExcel")),
     moduleName: "CreateAppFromExcel",
     permission: true,
     exactPath: true,
