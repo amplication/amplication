@@ -1,8 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { FindOneArgs } from 'src/dto';
 import { Project } from 'src/models';
-import { ProjectCreateArgs } from './dto/project-create.args';
-import { ProjectFindManyArgs } from './dto/project-find-many.args';
+import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
+import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { ProjectService } from './project.service';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';

@@ -2,8 +2,8 @@ import { PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { FindOneArgs } from 'src/dto';
 import { Project } from 'src/models';
-import { ProjectCreateArgs } from './dto/project-create.args';
-import { ProjectFindManyArgs } from './dto/project-find-many.args';
+import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
+import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 
 @Injectable()
 export class ProjectService {

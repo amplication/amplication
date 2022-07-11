@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { ProjectCreateInput } from './project-create.input';
+import { ProjectCreateInput } from './ProjectCreateInput';
 
 @ArgsType()
 export class ProjectCreateArgs {
