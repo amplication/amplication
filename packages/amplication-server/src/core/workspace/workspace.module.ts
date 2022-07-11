@@ -8,6 +8,7 @@ import { ResourceModule } from '../resource/resource.module';
 import { MailModule } from '../mail/mail.module';
 import { UserModule } from '../user/user.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
+import { ProjectModule } from '../project/project.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { SubscriptionModule } from '../subscription/subscription.module';
     ResourceModule,
     MailModule,
     UserModule,
+    ProjectModule,
     SubscriptionModule
   ],
   providers: [WorkspaceService, WorkspaceResolver],

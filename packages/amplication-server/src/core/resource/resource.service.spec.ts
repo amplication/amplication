@@ -12,8 +12,7 @@ import { GitService } from '@amplication/git-service';
 import {
   EnumResourceType,
   GitRepository,
-  PrismaService,
-  Project
+  PrismaService
 } from '@amplication/prisma-db';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { EnumDataType } from 'src/enums/EnumDataType';
@@ -50,6 +49,7 @@ import { ServiceSettingsService } from '../serviceSettings/serviceSettings.servi
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_PROJECT_ID = 'exampleResourceId';
 const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
 const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
 const INVALID_COLOR = 'INVALID_COLOR';
@@ -58,13 +58,6 @@ const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
-
-const EXAMPLE_PROJECT: Project = {
-  id: EXAMPLE_RESOURCE_ID,
-  name: EXAMPLE_RESOURCE_NAME,
-  deletedAt: null,
-  workspaceId: 'exampleWorkspaceId'
-};
 
 const EXAMPLE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
@@ -75,11 +68,6 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null
-};
-
-const RESOURCE_WITH_PROJECT = {
-  ...EXAMPLE_RESOURCE,
-  project: () => EXAMPLE_PROJECT
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -254,10 +242,10 @@ const prismaResourceCreateMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
 const prismaResourceFindOneMock = jest.fn(() => {
-  return RESOURCE_WITH_PROJECT;
+  return EXAMPLE_RESOURCE;
 });
 const prismaResourceFindManyMock = jest.fn(() => {
-  return [RESOURCE_WITH_PROJECT];
+  return [EXAMPLE_RESOURCE];
 });
 const prismaResourceDeleteMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
@@ -352,9 +340,6 @@ describe('ResourceService', () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock
-            },
-            project: {
-              update: jest.fn()
             }
           }))
         },
@@ -407,14 +392,19 @@ describe('ResourceService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create an resource', async () => {
+  it('should create a resource', async () => {
     const createResourceArgs = {
       args: {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLOR,
-          resourceType: EnumResourceType.Service
+          resourceType: EnumResourceType.Service,
+          project: {
+            connect: {
+              id: EXAMPLE_PROJECT_ID
+            }
+          }
         }
       },
       user: EXAMPLE_USER
@@ -422,19 +412,13 @@ describe('ResourceService', () => {
     const prismaResourceCreateResourceArgs = {
       data: {
         ...createResourceArgs.args.data,
-        workspace: {
+        project: {
           connect: {
-            id: createResourceArgs.user.workspace?.id
+            id: createResourceArgs.args.data.project.connect.id
           }
         },
         roles: {
           create: EXAMPLE_USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${EXAMPLE_RESOURCE_NAME}`,
-            workspaceId: EXAMPLE_USER.workspace?.id
-          }
         }
       }
     };
@@ -449,8 +433,8 @@ describe('ResourceService', () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
-        workspace: {
-          users: {
+        project: {
+          resources: {
             some: {
               id: EXAMPLE_USER_ID
             }
@@ -560,19 +544,13 @@ describe('ResourceService', () => {
       data: {
         ...DEFAULT_RESOURCE_DATA,
         ...SAMPLE_SERVICE_DATA,
-        workspace: {
+        project: {
           connect: {
-            id: EXAMPLE_USER.workspace?.id
+            id: EXAMPLE_PROJECT_ID
           }
         },
         roles: {
           create: EXAMPLE_USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${SAMPLE_SERVICE_DATA.name}`,
-            workspaceId: EXAMPLE_USER.workspace?.id
-          }
         }
       }
     };
@@ -728,19 +706,9 @@ describe('ResourceService', () => {
       data: {
         ...DEFAULT_RESOURCE_DATA,
         ...SAMPLE_SERVICE_DATA,
-        workspace: {
-          connect: {
-            id: EXAMPLE_USER.workspace?.id
-          }
-        },
+        projectId: EXAMPLE_PROJECT_ID,
         roles: {
           create: EXAMPLE_USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${SAMPLE_SERVICE_DATA.name}`,
-            workspaceId: EXAMPLE_USER.workspace?.id
-          }
         }
       }
     };
@@ -924,14 +892,14 @@ describe('ResourceService', () => {
     ]);
   });
 
-  it('should find an resource', async () => {
+  it('should find a resource', async () => {
     const args = {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID
       }
     };
-    expect(await service.resource(args)).toEqual(RESOURCE_WITH_PROJECT);
+    expect(await service.resource(args)).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceFindOneMock).toBeCalledTimes(1);
     expect(prismaResourceFindOneMock).toBeCalledWith(args);
   });
@@ -943,7 +911,7 @@ describe('ResourceService', () => {
         id: EXAMPLE_RESOURCE_ID
       }
     };
-    expect(await service.resources(args)).toEqual([RESOURCE_WITH_PROJECT]);
+    expect(await service.resources(args)).toEqual([EXAMPLE_RESOURCE]);
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);
     expect(prismaResourceFindManyMock).toBeCalledWith(args);
   });
@@ -984,8 +952,8 @@ describe('ResourceService', () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
-        workspace: {
-          users: {
+        project: {
+          resources: {
             some: {
               id: EXAMPLE_USER_ID
             }

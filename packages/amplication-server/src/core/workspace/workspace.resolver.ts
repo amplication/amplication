@@ -18,7 +18,7 @@ import {
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
-import { Workspace, Resource, User } from 'src/models';
+import { Workspace, User, Project } from 'src/models';
 import { ResourceService } from 'src/core/resource/resource.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseFilters, UseGuards } from '@nestjs/common';
@@ -29,13 +29,15 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { Subscription } from '../subscription/dto/Subscription';
+import { ProjectService } from '../project/project.service';
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly resourceService: ResourceService
+    private readonly resourceService: ResourceService,
+    private readonly projectService: ProjectService
   ) {}
 
   @Query(() => Workspace, {
@@ -57,9 +59,9 @@ export class WorkspaceResolver {
     return currentUser.workspace;
   }
 
-  @ResolveField(() => [Resource])
-  async resources(@Parent() workspace: Workspace): Promise<Resource[]> {
-    return this.resourceService.resources({
+  @ResolveField(() => [Project])
+  async projects(@Parent() workspace: Workspace): Promise<Project[]> {
+    return this.projectService.findProjects({
       where: { workspace: { id: workspace.id } }
     });
   }

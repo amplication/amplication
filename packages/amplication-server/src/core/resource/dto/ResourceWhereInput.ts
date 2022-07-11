@@ -1,6 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { DateTimeFilter, StringFilter } from 'src/dto';
-import { WorkspaceWhereInput } from 'src/core/workspace/dto';
+import { DateTimeFilter, StringFilter, WhereUniqueInput } from 'src/dto';
 
 @InputType({
   isAbstract: true,
@@ -37,5 +36,9 @@ export class ResourceWhereInput {
   })
   description?: StringFilter | null;
 
-  workspace?: WorkspaceWhereInput | null;
+  @Field(() => WhereUniqueInput, {
+    nullable: true,
+    description: undefined
+  })
+  project?: WhereUniqueInput | null;
 }

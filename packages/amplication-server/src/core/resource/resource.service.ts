@@ -6,7 +6,7 @@ import pluralize from 'pluralize';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { Commit, Resource, User, Workspace } from 'src/models';
+import { Commit, Project, Resource, User } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
@@ -75,19 +75,13 @@ export class ResourceService {
       data: {
         ...DEFAULT_RESOURCE_DATA,
         ...args.data,
-        workspace: {
+        project: {
           connect: {
-            id: user.workspace?.id
+            id: args.data.project.connect.id
           }
         },
         roles: {
           create: USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${args.data.name}`,
-            workspaceId: user.workspace?.id
-          }
         }
       }
     });
@@ -196,7 +190,7 @@ export class ResourceService {
           mode: QueryMode.Insensitive,
           startsWith: data.resource.name
         },
-        workspaceId: user.workspace.id,
+        projectId: data.resource.project.connect.id,
         deletedAt: null
       },
       select: {
@@ -367,16 +361,6 @@ export class ResourceService {
       });
     }
 
-    const project = await this.prisma.resource.findUnique(args).project();
-
-    await this.prisma.project.update({
-      where: { id: project.id },
-      data: {
-        name: prepareDeletedItemName(project.name, project.id),
-        deletedAt: new Date()
-      }
-    });
-
     return this.prisma.resource.update({
       where: args.where,
       data: {
@@ -397,21 +381,6 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
-    const project = await this.prisma.resource
-      .findUnique({
-        where: {
-          id: args.where.id
-        }
-      })
-      .project();
-
-    await this.prisma.project.update({
-      where: { id: project.id },
-      data: {
-        name: `project-${args.data.name}`
-      }
-    });
-
     return this.prisma.resource.update(args);
   }
 
@@ -428,8 +397,8 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
+        project: {
+          resources: {
             some: {
               id: user.id
             }
@@ -461,8 +430,8 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
+        project: {
+          resources: {
             some: {
               id: userId
             }
@@ -578,8 +547,8 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
+        project: {
+          resources: {
             some: {
               id: userId
             }
@@ -659,9 +628,9 @@ export class ResourceService {
     });
   }
 
-  async workspace(resourceId: string): Promise<Workspace> {
-    return await this.prisma.resource
-      .findUnique({ where: { id: resourceId } })
+  async project(projectId: string): Promise<Project> {
+    return this.prisma.project
+      .findUnique({ where: { id: projectId } })
       .workspace();
   }
 }

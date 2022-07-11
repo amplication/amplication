@@ -16,7 +16,7 @@ import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourcePar
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { Resource, Commit, Entity, User, Workspace } from 'src/models';
+import { Resource, Commit, Entity, User, Project } from 'src/models';
 import { GitRepository } from 'src/models/GitRepository';
 import { ResourceService, EntityService } from '..';
 import { BuildService } from '../build/build.service';
@@ -59,10 +59,7 @@ export class ResourceResolver {
     description: undefined
   })
   @Roles('ORGANIZATION_ADMIN')
-  @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
-    'where.workspace.id'
-  )
+  @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'where.project.id')
   async resources(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources(args);
   }
@@ -98,10 +95,7 @@ export class ResourceResolver {
 
   @Mutation(() => Resource, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
-  @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
-    'data.workspace.connect.id'
-  )
+  @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'data.project.connect.id')
   async createResource(
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
@@ -111,10 +105,7 @@ export class ResourceResolver {
 
   @Mutation(() => Resource, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
-  @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
-    'data.resource.workspace.connect.id'
-  )
+  @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'data.resource.project.connect.id')
   async createResourceWithEntities(
     @Args() args: CreateResourceWithEntitiesArgs,
     @UserEntity() user: User
@@ -197,8 +188,8 @@ export class ResourceResolver {
     return await this.resourceService.gitRepository(resource.id);
   }
 
-  @ResolveField(() => Workspace)
-  async workspace(@Parent() resource: Resource): Promise<Workspace> {
-    return this.resourceService.workspace(resource.id);
+  @ResolveField(() => Project)
+  async workspace(@Parent() resource: Resource): Promise<Project> {
+    return this.resourceService.project(resource.id);
   }
 }
