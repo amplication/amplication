@@ -1054,6 +1054,7 @@ export type Mutation = {
   createGitRepository: Resource;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
+  createProject?: Maybe<Project>;
   createResource: Resource;
   createResourceRole: ResourceRole;
   createResourceWithEntities: Resource;
@@ -1158,6 +1159,10 @@ export type MutationCreateOneEntityArgs = {
 
 export type MutationCreateOrganizationArgs = {
   data: GitOrganizationCreateInput;
+};
+
+export type MutationCreateProjectArgs = {
+  data: ProjectCreateInput;
 };
 
 export type MutationCreateResourceArgs = {
@@ -1349,6 +1354,29 @@ export type PrivateKeyAuthenticationSettingsInput = {
   type: Scalars['String'];
 };
 
+export type Project = {
+  __typename?: 'Project';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  resources?: Maybe<Array<Resource>>;
+};
+
+export type ProjectCreateInput = {
+  name: Scalars['String'];
+};
+
+export type ProjectOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type ProjectWhereInput = {
+  deletedAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<StringFilter>;
+};
+
 export type PropertySelector = {
   __typename?: 'PropertySelector';
   include: Scalars['Boolean'];
@@ -1383,6 +1411,8 @@ export type Query = {
   gitOrganizations: Array<GitOrganization>;
   me: User;
   pendingChanges: Array<PendingChange>;
+  project?: Maybe<Project>;
+  projects?: Maybe<Array<Project>>;
   remoteGitRepositories: Array<RemoteGitRepository>;
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
@@ -1489,6 +1519,17 @@ export type QueryGitOrganizationsArgs = {
 
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
+};
+
+export type QueryProjectArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryProjectsArgs = {
+  orderBy?: InputMaybe<ProjectOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<ProjectWhereInput>;
 };
 
 export type QueryRemoteGitRepositoriesArgs = {

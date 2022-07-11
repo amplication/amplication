@@ -17,3 +17,4 @@ export { BlockVersion } from './BlockVersion';
 export { IBlock } from './IBlock';
 export { BlockInputOutput } from './BlockInputOutput';
 export { PropertySelector } from './PropertySelector';
+export { Project } from './Project';
