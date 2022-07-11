@@ -130,7 +130,7 @@ export class BlockService {
     args: CreateBlockArgs & {
       data: CreateBlockArgs['data'] & { blockType: keyof typeof EnumBlockType };
     },
-    user: User
+    userId: string
   ): Promise<T> {
     const {
       displayName,
@@ -177,7 +177,7 @@ export class BlockService {
       lockedAt: new Date(),
       lockedByUser: {
         connect: {
-          id: user.id
+          id: userId
         }
       }
     };

@@ -1,4 +1,8 @@
-import { GitRepository, PrismaService } from '@amplication/prisma-db';
+import {
+  EnumResourceType,
+  GitRepository,
+  PrismaService
+} from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
@@ -32,6 +36,8 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_SERVICE_DATA
 } from './sampleResource';
+import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
+import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -45,6 +51,7 @@ export const DEFAULT_RESOURCE_COLOR = '#20A4F3';
 export const DEFAULT_RESOURCE_DATA = {
   color: DEFAULT_RESOURCE_COLOR
 };
+const DEFAULT_PROJECT_CONFIGURATION_COLOR = '#FFBD70';
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 
@@ -56,8 +63,39 @@ export class ResourceService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private serviceSettingsService: ServiceSettingsService
+    private serviceSettingsService: ServiceSettingsService,
+    private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService
   ) {}
+
+  private async assertFistProjectConfiguration(
+    projectId: string
+  ): Promise<void> {
+    const projectConfiguration = await this.prisma.resource.findFirst({
+      where: { projectId, resourceType: EnumResourceType.ProjectConfiguration }
+    });
+    if (!isEmpty(projectConfiguration)) {
+      throw new ProjectConfigurationExistError();
+    }
+    return;
+  }
+
+  async createProjectConfiguration(
+    projectId: string,
+    user: User
+  ): Promise<Resource> {
+    await this.assertFistProjectConfiguration(projectId);
+    const resource = await this.prisma.resource.create({
+      data: {
+        color: DEFAULT_PROJECT_CONFIGURATION_COLOR,
+        resourceType: EnumResourceType.ProjectConfiguration,
+        description: '',
+        name: 'Project configuration',
+        project: { connect: { id: projectId } }
+      }
+    });
+    await this.projectConfigurationSettingsService.create(resource.id, user);
+    return resource;
+  }
 
   /**
    * Create resource in the user's workspace, with the built-in "user" role

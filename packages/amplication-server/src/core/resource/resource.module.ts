@@ -11,6 +11,7 @@ import { ResourceResolver } from './resource.resolver';
 import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
 import { GitModule } from '@amplication/git-service';
 import { ServiceSettingsModule } from '../serviceSettings/serviceSettings.module';
+import { ProjectConfigurationSettingsModule } from '../projectConfigurationSettings/projectConfigurationSettings.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { ServiceSettingsModule } from '../serviceSettings/serviceSettings.module
     EnvironmentModule,
     CommitModule,
     BlockModule,
-    GitModule
+    GitModule,
+    ProjectConfigurationSettingsModule
   ],
   providers: [ResourceService, ResourceResolver],
   exports: [ResourceService, ResourceResolver]
