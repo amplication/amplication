@@ -63,7 +63,7 @@ const EXAMPLE_PROJECT: Project = {
   id: EXAMPLE_RESOURCE_ID,
   name: EXAMPLE_RESOURCE_NAME,
   createdAt: timeNow,
-  updatedAt: timeNow,
+  updatedAt: timeNow
 };
 
 const GET_WORKSPACE_QUERY = gql`

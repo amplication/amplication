@@ -95,7 +95,10 @@ export class ResourceResolver {
 
   @Mutation(() => Resource, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
-  @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'data.project.connect.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ProjectId,
+    'data.project.connect.id'
+  )
   async createResource(
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
@@ -105,7 +108,10 @@ export class ResourceResolver {
 
   @Mutation(() => Resource, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
-  @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'data.resource.project.connect.id')
+  @AuthorizeContext(
+    AuthorizableResourceParameter.ProjectId,
+    'data.resource.project.connect.id'
+  )
   async createResourceWithEntities(
     @Args() args: CreateResourceWithEntitiesArgs,
     @UserEntity() user: User
