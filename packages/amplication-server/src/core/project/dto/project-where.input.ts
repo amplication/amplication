@@ -1,4 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { WorkspaceWhereInput } from 'src/core/workspace/dto';
 import { DateTimeFilter, StringFilter } from 'src/dto';
 
 @InputType({
@@ -22,4 +23,6 @@ export class ProjectWhereInput {
     description: undefined
   })
   name?: StringFilter | null;
+
+  workspace?: WorkspaceWhereInput | null;
 }
