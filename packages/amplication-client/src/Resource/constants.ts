@@ -51,7 +51,7 @@ export const sampleServiceResourceWithoutEntities: models.ResourceCreateWithEnti
     name: "My service",
     description: "",
     color: GREEN,
-    type: models.EnumResourceType.Service,
+    resourceType: models.EnumResourceType.Service,
   },
   commitMessage: "",
   entities: [],
@@ -62,7 +62,7 @@ export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitie
     name: "Sample service",
     description: "Sample service for e-commerce",
     color: YELLOW,
-    type: models.EnumResourceType.Service,
+    resourceType: models.EnumResourceType.Service,
   },
   commitMessage: "",
   entities: [

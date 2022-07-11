@@ -21,7 +21,7 @@ export class ResourceCreateInput {
   color?: string;
 
   @Field(() => EnumResourceType, { nullable: false })
-  type!: keyof typeof EnumResourceType;
+  resourceType!: keyof typeof EnumResourceType;
 
   /**
    * @todo: change it to project?

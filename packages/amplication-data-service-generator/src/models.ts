@@ -1600,7 +1600,7 @@ export type Resource = {
   gitRepositoryId?: Maybe<Scalars["String"]>;
   id: Scalars["String"];
   name: Scalars["String"];
-  type: EnumResourceType;
+  resourceType: EnumResourceType;
   updatedAt: Scalars["DateTime"];
   workspace: Workspace;
 };
@@ -1623,7 +1623,7 @@ export type ResourceCreateInput = {
   color?: InputMaybe<Scalars["String"]>;
   description: Scalars["String"];
   name: Scalars["String"];
-  type: EnumResourceType;
+  resourceType: EnumResourceType;
 };
 
 export type ResourceCreateWithEntitiesEntityInput = {

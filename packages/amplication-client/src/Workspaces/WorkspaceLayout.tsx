@@ -34,7 +34,7 @@ function WorkspaceLayout({ match }: Props) {
   if (isMobileOnly) {
     return <MobileMessage />;
   }
-
+  
   return (
     <MainLayout className={CLASS_NAME}>
       <MainLayout.Menu>

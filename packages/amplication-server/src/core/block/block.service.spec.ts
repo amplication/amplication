@@ -26,7 +26,7 @@ const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 
 const EXAMPLE_RESOURCE: Resource = {
   id: 'ExampleResource',
-  type: EnumResourceType.Service,
+  resourceType: EnumResourceType.Service,
   createdAt: NOW,
   updatedAt: NOW,
   name: 'Example Resource',
