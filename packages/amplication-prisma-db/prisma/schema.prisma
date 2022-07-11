@@ -535,6 +535,7 @@ model Subscription {
 
 enum EnumResourceType {
   Service
+  Project
 }
 
 enum EnumGitProvider {
