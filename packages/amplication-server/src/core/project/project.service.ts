@@ -20,7 +20,7 @@ export class ProjectService {
     return this.prisma.project.findUnique(args);
   }
 
-  async createProject(args: ProjectCreateArgs, user: User): Promise<Project> {
+  async createProject(args: ProjectCreateArgs, userId: string): Promise<Project> {
     const project = await this.prisma.project.create({
       data: {
         ...args.data,
@@ -31,7 +31,7 @@ export class ProjectService {
         }
       }
     });
-    await this.resourceService.createProjectConfiguration(project.id, user);
+    await this.resourceService.createProjectConfiguration(project.id, userId);
 
     return project;
   }

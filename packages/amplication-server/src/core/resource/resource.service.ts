@@ -81,7 +81,7 @@ export class ResourceService {
 
   async createProjectConfiguration(
     projectId: string,
-    user: User
+    userId: string
   ): Promise<Resource> {
     await this.assertFistProjectConfiguration(projectId);
     const resource = await this.prisma.resource.create({
@@ -93,7 +93,7 @@ export class ResourceService {
         project: { connect: { id: projectId } }
       }
     });
-    await this.projectConfigurationSettingsService.create(resource.id, user);
+    await this.projectConfigurationSettingsService.create(resource.id, userId);
     return resource;
   }
 

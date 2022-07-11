@@ -40,6 +40,6 @@ export class ProjectResolver {
     @Args() args: ProjectCreateArgs,
     @UserEntity() user: User
   ): Promise<Project> {
-    return this.projectService.createProject(args, user);
+    return this.projectService.createProject(args, user.id);
   }
 }

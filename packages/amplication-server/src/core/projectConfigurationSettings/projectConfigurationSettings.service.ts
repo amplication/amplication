@@ -11,7 +11,7 @@ export class ProjectConfigurationSettingsService {
 
   create(
     resourceId: string,
-    user: User
+    userId: string
   ): Promise<ProjectConfigurationSettings> {
     const projectConfigurationSettings = this.blockService.create<
       ProjectConfigurationSettings
@@ -27,7 +27,7 @@ export class ProjectConfigurationSettingsService {
           displayName: 'Project Configuration Settings'
         }
       },
-      user.id
+      userId
     );
     return projectConfigurationSettings;
   }
