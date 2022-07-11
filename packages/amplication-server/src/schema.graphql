@@ -49,6 +49,8 @@ type Query {
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
+  project(where: WhereUniqueInput!): Project
 }
 
 type Account {
@@ -92,7 +94,7 @@ type Resource {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   githubLastMessage: String
   githubLastSync: DateTime
-  resourceType: EnumResourceType!
+  type: EnumResourceType!
   workspace: Workspace!
 }
 
@@ -991,6 +993,24 @@ input GitOrganizationWhereInput {
   id: String
 }
 
+type Project {
+  id: String!
+  name: String!
+  resources: [Resource!]
+}
+
+input ProjectWhereInput {
+  id: String
+  deletedAt: DateTimeFilter
+  name: StringFilter
+}
+
+input ProjectOrderByInput {
+  id: SortOrder
+  deletedAt: SortOrder
+  name: SortOrder
+}
+
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1044,6 +1064,7 @@ type Mutation {
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  createProject(data: ProjectCreateInput!): Project!
 }
 
 input UpdateAccountInput {
@@ -1067,7 +1088,7 @@ input ResourceCreateInput {
   name: String!
   description: String!
   color: String
-  resourceType: EnumResourceType!
+  type: EnumResourceType!
 }
 
 input ResourceCreateWithEntitiesInput {
@@ -1365,4 +1386,8 @@ input GitOrganizationCreateInput {
 
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
+}
+
+input ProjectCreateInput {
+  name: String!
 }
