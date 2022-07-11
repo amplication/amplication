@@ -812,6 +812,7 @@ export enum EnumBlockType {
   Flow = "Flow",
   FlowApi = "FlowApi",
   Layout = "Layout",
+  ProjectConfigurationSettings = "ProjectConfigurationSettings",
   ServiceSettings = "ServiceSettings",
 }
 
@@ -907,6 +908,7 @@ export enum EnumPendingChangeResourceType {
 }
 
 export enum EnumResourceType {
+  ProjectConfiguration = "ProjectConfiguration",
   Service = "Service",
 }
 

@@ -357,6 +357,7 @@ type Block {
 
 enum EnumBlockType {
   ServiceSettings
+  ProjectConfigurationSettings
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -608,6 +609,7 @@ type Environment {
 
 enum EnumResourceType {
   Service
+  ProjectConfiguration
 }
 
 type Subscription {
