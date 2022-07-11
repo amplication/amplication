@@ -20,7 +20,7 @@ export class ProjectResolver {
 
   @Query(() => Project, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
-  async project(@Args() args: FindOneArgs): Promise<Project> {
+  async project(@Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.findProject(args);
   }
 
@@ -30,9 +30,7 @@ export class ProjectResolver {
     InjectableResourceParameter.WorkspaceId,
     'data.workspace.connect.id'
   )
-  async createProject(
-    @Args() args: ProjectCreateArgs
-  ): Promise<Project | null> {
+  async createProject(@Args() args: ProjectCreateArgs): Promise<Project> {
     return this.projectService.createProject(args);
   }
 }
