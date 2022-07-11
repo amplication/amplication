@@ -91,7 +91,7 @@ export class Resource {
   githubLastSync?: Date;
 
   @Field(() => EnumResourceType, { nullable: false })
-  type!: keyof typeof EnumResourceType;
+  resourceType!: keyof typeof EnumResourceType;
 
   // no need to expose to GraphQL
   deletedAt?: Date;
