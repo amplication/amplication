@@ -1096,7 +1096,11 @@ input ResourceCreateInput {
   description: String!
   color: String
   resourceType: EnumResourceType!
-  project: String!
+  project: WhereParentIdInput!
+}
+
+input WhereParentIdInput {
+  connect: WhereUniqueInput!
 }
 
 input ResourceCreateWithEntitiesInput {
@@ -1125,10 +1129,6 @@ input ResourceUpdateInput {
 input CommitCreateInput {
   message: String!
   resource: WhereParentIdInput!
-}
-
-input WhereParentIdInput {
-  connect: WhereUniqueInput!
 }
 
 input PendingChangesDiscardInput {

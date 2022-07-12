@@ -24,6 +24,6 @@ export class ResourceCreateInput {
   @Field(() => EnumResourceType, { nullable: false })
   resourceType!: keyof typeof EnumResourceType;
 
-  @Field(() => String, { nullable: false })
+  @Field(() => WhereParentIdInput, { nullable: false })
   project!: WhereParentIdInput;
 }
