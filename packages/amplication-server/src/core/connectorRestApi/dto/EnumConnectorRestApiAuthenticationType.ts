@@ -8,6 +8,5 @@ export enum EnumConnectorRestApiAuthenticationType {
   OAuth2UserAgentFlow = 'OAuth2UserAgentFlow'
 }
 registerEnumType(EnumConnectorRestApiAuthenticationType, {
-  name: 'EnumConnectorRestApiAuthenticationType',
-  description: undefined
+  name: 'EnumConnectorRestApiAuthenticationType'
 });

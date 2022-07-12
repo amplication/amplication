@@ -5,14 +5,12 @@ import { Field, InputType } from '@nestjs/graphql';
 })
 export class BlockUpdateInput {
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   displayName?: string | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string | null;
 }

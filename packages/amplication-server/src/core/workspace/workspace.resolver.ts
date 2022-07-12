@@ -39,8 +39,7 @@ export class WorkspaceResolver {
   ) {}
 
   @Query(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async workspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
@@ -48,8 +47,7 @@ export class WorkspaceResolver {
   }
 
   @Query(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async currentWorkspace(
     @UserEntity() currentUser: User
@@ -65,8 +63,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
@@ -74,8 +71,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
   async updateWorkspace(
@@ -85,8 +81,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async createWorkspace(
     @UserEntity() currentUser: User,
@@ -96,8 +91,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async inviteUser(
     @UserEntity() currentUser: User,
@@ -107,8 +101,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
   async revokeInvitation(
@@ -118,8 +111,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
   async resendInvitation(
@@ -129,8 +121,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => User, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async deleteUser(
     @UserEntity() currentUser: User,
@@ -140,8 +131,7 @@ export class WorkspaceResolver {
   }
 
   @Query(() => [WorkspaceMember], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async workspaceMembers(
     @UserEntity() currentUser: User

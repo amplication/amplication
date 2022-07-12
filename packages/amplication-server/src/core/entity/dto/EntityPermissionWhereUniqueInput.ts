@@ -2,8 +2,7 @@ import { Field, InputType } from '@nestjs/graphql';
 import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityPermissionWhereUniqueInput {
   @Field(() => EnumEntityAction, {

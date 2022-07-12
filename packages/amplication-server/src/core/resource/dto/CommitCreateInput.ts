@@ -11,8 +11,7 @@ export class CommitCreateInput {
   message!: string;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   resource!: WhereParentIdInput;
 

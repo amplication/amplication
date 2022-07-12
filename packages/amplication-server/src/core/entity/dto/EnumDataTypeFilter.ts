@@ -2,31 +2,26 @@ import { Field, InputType } from '@nestjs/graphql';
 import { EnumDataType } from 'src/enums/EnumDataType';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EnumDataTypeFilter {
   @Field(() => EnumDataType, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   equals?: keyof typeof EnumDataType | null;
 
   @Field(() => EnumDataType, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   not?: keyof typeof EnumDataType | null;
 
   @Field(() => [EnumDataType], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   in?: Array<keyof typeof EnumDataType | null>;
 
   @Field(() => [EnumDataType], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   notIn?: Array<keyof typeof EnumDataType | null>;
 }

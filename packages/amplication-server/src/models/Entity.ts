@@ -6,61 +6,51 @@ import { Resource } from './Resource'; // eslint-disable-line import/no-cycle
 import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Entity {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   @Field(() => Resource, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   resource?: Resource;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   resourceId: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   pluralDisplayName!: string;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string;
 
@@ -75,26 +65,22 @@ export class Entity {
   fields?: EntityField[] | null;
 
   @Field(() => [EntityPermission], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   permissions?: EntityPermission[] | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   lockedByUserId?: string;
 
   @Field(() => User, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   lockedByUser?: User;
 
   @Field(() => Date, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   lockedAt?: Date;
 }

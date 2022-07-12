@@ -7,20 +7,17 @@ import { DateTimeFilter, StringFilter } from 'src/dto';
 })
 export class ProjectWhereInput {
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: string | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   deletedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: StringFilter | null;
 

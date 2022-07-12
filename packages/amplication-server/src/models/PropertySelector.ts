@@ -1,23 +1,19 @@
 import { Field, ObjectType, InputType } from '@nestjs/graphql';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 @InputType('PropertySelectorInput', {
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class PropertySelector {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   propertyName!: string;
 
   @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   include!: boolean;
 }

@@ -1,13 +1,11 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class CommitWhereUniqueInput {
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: string | null | undefined;
 }
