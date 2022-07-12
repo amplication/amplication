@@ -1625,7 +1625,7 @@ export type ResourceCreateInput = {
   color?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   name: Scalars['String'];
-  projectId: Scalars['String'];
+  project: Scalars['String'];
   resourceType: EnumResourceType;
 };
 
