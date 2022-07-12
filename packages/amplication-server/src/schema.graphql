@@ -1092,6 +1092,7 @@ input ResourceCreateInput {
   description: String!
   color: String
   resourceType: EnumResourceType!
+  projectId: String!
 }
 
 input ResourceCreateWithEntitiesInput {

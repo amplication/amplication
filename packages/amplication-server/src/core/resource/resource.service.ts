@@ -75,11 +75,6 @@ export class ResourceService {
       data: {
         ...DEFAULT_RESOURCE_DATA,
         ...args.data,
-        project: {
-          connect: {
-            id: args.data.project.connect.id
-          }
-        },
         roles: {
           create: USER_RESOURCE_ROLE
         }
@@ -190,7 +185,7 @@ export class ResourceService {
           mode: QueryMode.Insensitive,
           startsWith: data.resource.name
         },
-        projectId: data.resource.project.connect.id,
+        projectId: data.resource.projectId,
         deletedAt: null
       },
       select: {

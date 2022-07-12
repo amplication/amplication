@@ -30,6 +30,7 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { Subscription } from '../subscription/dto/Subscription';
 import { ProjectService } from '../project/project.service';
+
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
