@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -372,11 +370,15 @@ export type ConnectorRestApiCreateInput = {
   authenticationType: EnumConnectorRestApiAuthenticationType;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  httpBasicAuthenticationSettings?: InputMaybe<HttpBasicAuthenticationSettingsInput>;
+  httpBasicAuthenticationSettings?: InputMaybe<
+    HttpBasicAuthenticationSettingsInput
+  >;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  privateKeyAuthenticationSettings?: InputMaybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: InputMaybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
   resource: WhereParentIdInput;
 };
 
@@ -1354,9 +1356,11 @@ export type PrivateKeyAuthenticationSettingsInput = {
 
 export type Project = {
   __typename?: 'Project';
+  createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   name: Scalars['String'];
   resources?: Maybe<Array<Resource>>;
+  updatedAt: Scalars['DateTime'];
 };
 
 export type ProjectCreateInput = {
@@ -1600,7 +1604,7 @@ export type Resource = {
   name: Scalars['String'];
   resourceType: EnumResourceType;
   updatedAt: Scalars['DateTime'];
-  workspace: Workspace;
+  workspace: Project;
 };
 
 export type ResourceBuildsArgs = {
@@ -1621,6 +1625,7 @@ export type ResourceCreateInput = {
   color?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   name: Scalars['String'];
+  projectId: Scalars['String'];
   resourceType: EnumResourceType;
 };
 
@@ -1702,6 +1707,7 @@ export type ResourceWhereInput = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<StringFilter>;
+  project?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1844,7 +1850,7 @@ export type Workspace = {
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String'];
   name: Scalars['String'];
-  resources: Array<Resource>;
+  projects: Array<Project>;
   subscription?: Maybe<Subscription>;
   updatedAt: Scalars['DateTime'];
   users: Array<User>;
