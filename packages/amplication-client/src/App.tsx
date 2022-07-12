@@ -1,18 +1,18 @@
 import React, { useEffect } from "react";
 import * as reactHotkeys from "react-hotkeys";
-import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import { init as initPaddle } from "./util/paddle";
-import { useRouteMatch } from "react-router-dom";
-import { OldRoutes } from "./appRoutes";
-import { routesGenerator } from "./routesUtil";
+import { Routes } from "./routes/appRoutes";
+import { routesGenerator } from "./routes/routesUtil";
+import useWorkspaceSelector from "./Workspaces/hooks/useWorkspaceSelector";
+import useAuthenticated from "./authentication/use-authenticated";
+import { AppContextProvider } from "./context/appContext";
 
+const GeneratedRoutes = routesGenerator(Routes);
 const context = {
   source: "amplication-client",
 };
-
-const GeneratedRoutes = routesGenerator(OldRoutes);
 
 export const enhance = track<keyof typeof context>(
   // app-level tracking data
@@ -24,16 +24,15 @@ export const enhance = track<keyof typeof context>(
 );
 
 function App() {
-  // const location = useLocation();
-  const match = useRouteMatch();
+  const authenticated = useAuthenticated();
+  const { currentWorkspace, handleSetCurrentWorkspace } = useWorkspaceSelector(
+    authenticated
+  );
+
   useEffect(() => {
     initAnalytics();
     initPaddle();
   }, []);
-
-  useEffect(() => {
-    console.log("match", match);
-  }, [match]);
 
   //The default behavior across all <HotKeys> components
   reactHotkeys.configure({
@@ -46,7 +45,10 @@ function App() {
 
   return (
     <ThemeProvider>
-      <NavigationTabsProvider>{GeneratedRoutes}</NavigationTabsProvider>
+      <AppContextProvider newVal={{
+        currentWorkspace,
+        handleSetCurrentWorkspace
+      }}>{GeneratedRoutes}</AppContextProvider>
     </ThemeProvider>
   );
 }
