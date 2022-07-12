@@ -17,7 +17,7 @@ export const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   description: 'Sample Service for task management',
   name: 'My sample service',
   resourceType: EnumResourceType.Service,
-  project: {connect: {id: 'projectId123'}}
+  project: { connect: { id: 'projectId123' } }
 };
 
 export const CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE = 'Create sample entities';
