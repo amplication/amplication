@@ -185,7 +185,7 @@ export class ResourceService {
           mode: QueryMode.Insensitive,
           startsWith: data.resource.name
         },
-        projectId: data.resource.projectId,
+        projectId: data.resource.project.connect.id,
         deletedAt: null
       },
       select: {

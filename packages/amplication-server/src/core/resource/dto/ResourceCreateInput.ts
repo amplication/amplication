@@ -1,5 +1,6 @@
 import { EnumResourceType } from '@amplication/prisma-db';
 import { Field, InputType } from '@nestjs/graphql';
+import { WhereParentIdInput } from 'src/dto';
 
 @InputType({
   isAbstract: true
@@ -24,5 +25,5 @@ export class ResourceCreateInput {
   resourceType!: keyof typeof EnumResourceType;
 
   @Field(() => String, { nullable: false })
-  projectId!: string;
+  project!: WhereParentIdInput;
 }

@@ -529,7 +529,8 @@ describe('ResourceService', () => {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: INVALID_COLOR,
-          resourceType: EnumResourceType.Service
+          resourceType: EnumResourceType.Service,
+          project: {connect: {id: 'projectId'}}
         }
       },
       user: EXAMPLE_USER
