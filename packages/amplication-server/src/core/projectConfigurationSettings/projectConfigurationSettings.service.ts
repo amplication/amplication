@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { User } from 'src/models';
 import { BlockService } from '../block/block.service';
 import { ProjectConfigurationSettings } from './dto/ProjectConfigurationSettings';
+import { UpdateProjectConfigurationSettingsArgs } from './dto/UpdateProjectConfigurationSettingsArgs';
 
 @Injectable()
 export class ProjectConfigurationSettingsService {
@@ -30,5 +31,12 @@ export class ProjectConfigurationSettingsService {
       userId
     );
     return projectConfigurationSettings;
+  }
+
+  update(
+    args: UpdateProjectConfigurationSettingsArgs,
+    user: User
+  ): Promise<ProjectConfigurationSettings> {
+    return this.blockService.update<ProjectConfigurationSettings>(args, user);
   }
 }

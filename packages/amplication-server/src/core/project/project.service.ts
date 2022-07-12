@@ -1,7 +1,7 @@
 import { PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { FindOneArgs } from 'src/dto';
-import { Project, User } from 'src/models';
+import { Project } from 'src/models';
 import { ResourceService } from '..';
 import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
@@ -20,7 +20,10 @@ export class ProjectService {
     return this.prisma.project.findUnique(args);
   }
 
-  async createProject(args: ProjectCreateArgs, userId: string): Promise<Project> {
+  async createProject(
+    args: ProjectCreateArgs,
+    userId: string
+  ): Promise<Project> {
     const project = await this.prisma.project.create({
       data: {
         ...args.data,
