@@ -195,7 +195,7 @@ export class ResourceResolver {
   }
 
   @ResolveField(() => Project)
-  async workspace(@Parent() resource: Resource): Promise<Project> {
+  async project(@Parent() resource: Resource): Promise<Project> {
     return this.resourceService.project(resource.id);
   }
 }
