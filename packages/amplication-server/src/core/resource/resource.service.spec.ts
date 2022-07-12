@@ -38,10 +38,7 @@ import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
 import { PendingChange } from './dto/PendingChange';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
-import {
-
-  SAMPLE_SERVICE_DATA
-} from './sampleResource';
+import { SAMPLE_SERVICE_DATA } from './sampleResource';
 import { ServiceSettings } from '../serviceSettings/dto';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
