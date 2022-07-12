@@ -572,8 +572,8 @@ describe('ResourceService', () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
-        workspace: {
-          users: {
+        project: {
+          resources: {
             some: {
               id: EXAMPLE_USER_ID
             }
