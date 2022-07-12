@@ -39,8 +39,7 @@ import { PendingChange } from './dto/PendingChange';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import {
-  createSampleResourceEntities,
-  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
+
   SAMPLE_SERVICE_DATA
 } from './sampleResource';
 import { ServiceSettings } from '../serviceSettings/dto';
@@ -49,7 +48,7 @@ import { ServiceSettingsService } from '../serviceSettings/serviceSettings.servi
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
-const EXAMPLE_PROJECT_ID = 'exampleResourceId';
+export const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
 const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
 const INVALID_COLOR = 'INVALID_COLOR';
@@ -540,145 +539,6 @@ describe('ResourceService', () => {
     ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
   });
 
-  it('should create a sample resource', async () => {
-    const prismaResourceCreateResourceArgs = {
-      data: {
-        ...DEFAULT_RESOURCE_DATA,
-        ...SAMPLE_SERVICE_DATA,
-        project: {
-          connect: {
-            id: EXAMPLE_PROJECT_ID
-          }
-        },
-        roles: {
-          create: EXAMPLE_USER_RESOURCE_ROLE
-        }
-      }
-    };
-    const initialCommitArgs = {
-      data: {
-        message: INITIAL_COMMIT_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
-    const createSampleEntitiesCommitArgs = {
-      data: {
-        message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
-    const findManyArgs = {
-      where: {
-        deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID,
-        project: {
-          resources: {
-            some: {
-              id: EXAMPLE_USER_ID
-            }
-          }
-        }
-      }
-    };
-    const createVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
-        }
-      }
-    };
-    const blockCreateVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        block: {
-          connect: {
-            id: EXAMPLE_BLOCK_ID
-          }
-        }
-      }
-    };
-    const changesArgs = {
-      resourceId: EXAMPLE_RESOURCE_ID,
-      userId: EXAMPLE_USER_ID
-    };
-    await expect(service.createSampleResource(EXAMPLE_USER)).resolves.toEqual(
-      EXAMPLE_RESOURCE
-    );
-    expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(
-      prismaResourceCreateResourceArgs
-    );
-    expect(entityServiceFindFirstMock).toBeCalledTimes(1);
-    expect(entityServiceFindFirstMock).toBeCalledWith({
-      where: { name: USER_ENTITY_NAME, resourceId: EXAMPLE_RESOURCE_ID },
-      select: { id: true }
-    });
-    expect(entityServiceBulkCreateEntities).toBeCalledWith(
-      EXAMPLE_RESOURCE_ID,
-      EXAMPLE_USER,
-      createSampleResourceEntities(USER_ENTITY_MOCK.id).entities
-    );
-    expect(entityServiceBulkCreateFields).toBeCalledWith(
-      EXAMPLE_USER,
-      USER_ENTITY_MOCK.id,
-      createSampleResourceEntities(USER_ENTITY_MOCK.id).userEntityFields
-    );
-    expect(prismaResourceFindManyMock).toBeCalledTimes(2);
-    expect(prismaResourceFindManyMock.mock.calls).toEqual([
-      [findManyArgs],
-      [findManyArgs]
-    ]);
-
-    expect(prismaCommitCreateMock).toBeCalledTimes(2);
-    expect(prismaCommitCreateMock.mock.calls).toEqual([
-      [initialCommitArgs],
-      [createSampleEntitiesCommitArgs]
-    ]);
-    expect(entityServiceCreateVersionMock).toBeCalledTimes(2);
-    expect(entityServiceCreateVersionMock.mock.calls).toEqual([
-      [createVersionArgs],
-      [createVersionArgs]
-    ]);
-    expect(blockServiceCreateVersionMock).toBeCalledTimes(2);
-    expect(blockServiceCreateVersionMock.mock.calls).toEqual([
-      [blockCreateVersionArgs],
-      [blockCreateVersionArgs]
-    ]);
-    expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
-    expect(entityServiceReleaseLockMock.mock.calls).toEqual([
-      [EXAMPLE_ENTITY_ID],
-      [EXAMPLE_ENTITY_ID]
-    ]);
-    expect(blockServiceReleaseLockMock).toBeCalledTimes(2);
-    expect(blockServiceReleaseLockMock.mock.calls).toEqual([
-      [EXAMPLE_BLOCK_ID],
-      [EXAMPLE_BLOCK_ID]
-    ]);
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
-    expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
-      [changesArgs.resourceId, changesArgs.userId],
-      [changesArgs.resourceId, changesArgs.userId]
-    ]);
-    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(2);
-    expect(blockServiceGetChangedBlocksMock.mock.calls).toEqual([
-      [changesArgs.resourceId, changesArgs.userId],
-      [changesArgs.resourceId, changesArgs.userId]
-    ]);
-  });
-
   it('should fail to create resource with entities with a reserved name', async () => {
     await expect(
       service.createResourceWithEntities(
@@ -707,7 +567,6 @@ describe('ResourceService', () => {
       data: {
         ...DEFAULT_RESOURCE_DATA,
         ...SAMPLE_SERVICE_DATA,
-        projectId: EXAMPLE_PROJECT_ID,
         roles: {
           create: EXAMPLE_USER_RESOURCE_ROLE
         }
@@ -732,8 +591,8 @@ describe('ResourceService', () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
-        workspace: {
-          users: {
+        project: {
+          resources: {
             some: {
               id: EXAMPLE_USER_ID
             }
@@ -833,7 +692,7 @@ describe('ResourceService', () => {
               mode: QueryMode.Insensitive,
               startsWith: SAMPLE_SERVICE_DATA.name
             },
-            workspaceId: EXAMPLE_WORKSPACE_ID
+            projectId: EXAMPLE_PROJECT_ID
           },
           select: {
             name: true

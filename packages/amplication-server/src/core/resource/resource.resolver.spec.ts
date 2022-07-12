@@ -28,6 +28,8 @@ import {
 } from '@amplication/data/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
+import { ResourceCreateInput } from './dto';
+import { EXAMPLE_PROJECT_ID } from './resource.service.spec';
 
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_NAME = 'exampleName';
@@ -580,15 +582,17 @@ describe('ResourceResolver', () => {
     });
   });
 
-  it('should create an resource', async () => {
+  it('should create a resource', async () => {
+    const resourceCreateInput: ResourceCreateInput = {
+      name: EXAMPLE_NAME,
+      description: EXAMPLE_DESCRIPTION,
+      resourceType: EnumResourceType.Service,
+      project: { connect: { id: EXAMPLE_PROJECT_ID } }
+    };
     const res = await apolloClient.query({
       query: CREATE_RESOURCE_MUTATION,
       variables: {
-        data: {
-          name: EXAMPLE_NAME,
-          description: EXAMPLE_DESCRIPTION,
-          resourceType: EnumResourceType.Service
-        }
+        data: resourceCreateInput
       }
     });
     expect(res.errors).toBeUndefined();
@@ -623,11 +627,7 @@ describe('ResourceResolver', () => {
     expect(createResourceMock).toBeCalledTimes(1);
     expect(createResourceMock).toBeCalledWith(
       {
-        data: {
-          name: EXAMPLE_NAME,
-          description: EXAMPLE_DESCRIPTION,
-          resourceType: EnumResourceType.Service
-        }
+        data: resourceCreateInput
       },
       EXAMPLE_USER
     );

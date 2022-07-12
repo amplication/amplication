@@ -27,11 +27,6 @@ import {
 } from './dto';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
-import {
-  createSampleResourceEntities,
-  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_SERVICE_DATA
-} from './sampleResource';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -110,55 +105,6 @@ export class ResourceService {
         true
       );
     } catch {} //ignore - return the new resource and the message will be available on the build log
-
-    return resource;
-  }
-
-  /**
-   * Create sample resource
-   * @param user the user to associate the created resource with
-   */
-  async createSampleResource(user: User): Promise<Resource> {
-    const resource = await this.createResource(
-      {
-        data: SAMPLE_SERVICE_DATA
-      },
-      user
-    );
-
-    const userEntity = await this.entityService.findFirst({
-      where: { name: USER_ENTITY_NAME, resourceId: resource.id },
-      select: { id: true }
-    });
-
-    const sampleResourceData = createSampleResourceEntities(userEntity.id);
-
-    await this.entityService.bulkCreateEntities(
-      resource.id,
-      user,
-      sampleResourceData.entities
-    );
-    await this.entityService.bulkCreateFields(
-      user,
-      userEntity.id,
-      sampleResourceData.userEntityFields
-    );
-
-    await this.commit({
-      data: {
-        resource: {
-          connect: {
-            id: resource.id
-          }
-        },
-        message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-        user: {
-          connect: {
-            id: user.id
-          }
-        }
-      }
-    });
 
     return resource;
   }
