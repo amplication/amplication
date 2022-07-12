@@ -18,7 +18,7 @@ import { getBuildZipFilePath, getBuildTarGzFilePath } from './storage';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { EntityService } from '..';
+import { EntityService } from '../entity/entity.service';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { ResourceRoleService } from '../resourceRole/resourceRole.service';

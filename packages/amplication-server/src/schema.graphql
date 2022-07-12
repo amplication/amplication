@@ -23,6 +23,8 @@ type Query {
   workspace(where: WhereUniqueInput!): Workspace
   currentWorkspace: Workspace
   workspaceMembers: [WorkspaceMember!]
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
+  project(where: WhereUniqueInput!): Project
   resource(where: WhereUniqueInput!): Resource
   resources(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, take: Int): [Resource!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
@@ -38,8 +40,6 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
-  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
-  project(where: WhereUniqueInput!): Project
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -670,6 +670,18 @@ type Invitation {
   invitedByUser: User
 }
 
+input ProjectWhereInput {
+  id: String
+  deletedAt: DateTimeFilter
+  name: StringFilter
+}
+
+input ProjectOrderByInput {
+  id: SortOrder
+  deletedAt: SortOrder
+  name: SortOrder
+}
+
 input ResourceWhereInput {
   id: String
   createdAt: DateTimeFilter
@@ -817,18 +829,6 @@ input CommitOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   message: SortOrder
-}
-
-input ProjectWhereInput {
-  id: String
-  deletedAt: DateTimeFilter
-  name: StringFilter
-}
-
-input ProjectOrderByInput {
-  id: SortOrder
-  deletedAt: SortOrder
-  name: SortOrder
 }
 
 type ApiToken {
@@ -1023,6 +1023,7 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   resendInvitation(where: WhereUniqueInput!): Invitation
   deleteUser(where: WhereUniqueInput!): User
+  createProject(data: ProjectCreateInput!): Project!
   createResource(data: ResourceCreateInput!): Resource!
   createResourceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
   deleteResource(where: WhereUniqueInput!): Resource
@@ -1048,7 +1049,6 @@ type Mutation {
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
-  createProject(data: ProjectCreateInput!): Project!
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1085,6 +1085,10 @@ input WorkspaceCreateInput {
 
 input InviteUserInput {
   email: String!
+}
+
+input ProjectCreateInput {
+  name: String!
 }
 
 input ResourceCreateInput {
@@ -1248,10 +1252,6 @@ input ResourceRoleUpdateInput {
   name: String
   description: String
   displayName: String!
-}
-
-input ProjectCreateInput {
-  name: String!
 }
 
 input SignupInput {

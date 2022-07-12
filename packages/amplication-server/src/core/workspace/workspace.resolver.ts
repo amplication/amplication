@@ -19,7 +19,6 @@ import {
 import { FindOneArgs } from 'src/dto';
 
 import { Workspace, User, Project } from 'src/models';
-import { ResourceService } from 'src/core/resource/resource.service';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
@@ -37,7 +36,6 @@ import { ProjectService } from '../project/project.service';
 export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly resourceService: ResourceService,
     private readonly projectService: ProjectService
   ) {}
 
