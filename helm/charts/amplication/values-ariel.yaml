@@ -68,7 +68,7 @@ amplication-server:
       GITHUB_APP_INSTALLATION_URL: 'https://github.com/apps/ariel-app/installations/new?state={state}'
 
       #GitHub OAuth App
-      GITHUB_CLIENT_ID: 'e37477c7b7acc2663fea'
+      GITHUB_CLIENT_ID: '83714e54a47335290292'
       GITHUB_REDIRECT_URI: 'https://server-ariel.amplication-dev.com/github/callback'
 
 amplication-git-push-webhook-service:
