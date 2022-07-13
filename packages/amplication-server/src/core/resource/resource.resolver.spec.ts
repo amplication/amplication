@@ -29,7 +29,6 @@ import {
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
 import { ResourceCreateInput } from './dto';
-import { EXAMPLE_PROJECT_ID } from './resource.service.spec';
 
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_NAME = 'exampleName';
@@ -52,6 +51,8 @@ const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 
 const EXAMPLE_BLOCK_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_VERSION_NUMBER = 1;
+
+const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,

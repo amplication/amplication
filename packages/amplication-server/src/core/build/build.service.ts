@@ -253,7 +253,7 @@ export class BuildService {
     return generateStep;
   }
 
-  async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
+  async calcBuildStatus(buildId: string): Promise<EnumBuildStatus> {
     const build = await this.prisma.build.findUnique({
       where: {
         id: buildId

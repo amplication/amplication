@@ -45,7 +45,7 @@ import { ServiceSettingsService } from '../serviceSettings/serviceSettings.servi
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
-export const EXAMPLE_PROJECT_ID = 'exampleProjectId';
+const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
 const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
 const INVALID_COLOR = 'INVALID_COLOR';
