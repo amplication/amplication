@@ -1,4 +1,4 @@
-import { types } from "./";
+import { types } from ".";
 import * as models from "./models";
 
 export {

@@ -1,5 +1,5 @@
 {
-  "name": "@amplication/data",
+  "name": "@amplication/code-gen-types",
   "version": "0.14.1",
   "private": true,
   "main": "dist/index.js",
