@@ -24,16 +24,3 @@ maxMemory: "2Gi"
 minMemory: "2Gi"
 maxCPU: 1
 minCPU: 1
-
-# Postgresql Server
-postgres:
-  install: false
-  postgresqlUsername: postgrespull
-  postgresPassword: postgrespull
-  db: pull
-  fullnameOverride: postgresql
-  postgresql:
-    image: groundnuty/k8s-wait-for:v1.3
-    imagePullPolicy: Always
-    primary:
-      podLabels: { name: "postgres" }
