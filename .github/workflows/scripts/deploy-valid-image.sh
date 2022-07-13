@@ -20,6 +20,5 @@ do
     else
         echo "tag already exist in repository - $REPO_NAME"
         echo "::set-output name=image_exist::true"
-
     fi
 done
