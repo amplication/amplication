@@ -5,39 +5,33 @@ import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/n
 import { PendingChange } from '../core/resource/dto/PendingChange'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Commit {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   resource?: Resource;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   userId!: string;
 
   @Field(() => User, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   user?: User;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   message!: string;
 

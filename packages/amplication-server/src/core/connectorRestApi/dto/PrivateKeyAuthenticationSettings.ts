@@ -2,29 +2,24 @@
 import { Field, ObjectType, InputType } from '@nestjs/graphql';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 @InputType('PrivateKeyAuthenticationSettingsInput', {
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class PrivateKeyAuthenticationSettings {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   keyName: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   keyValue: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   type: 'header' | 'url';
 }

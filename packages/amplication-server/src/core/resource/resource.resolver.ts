@@ -55,8 +55,7 @@ export class ResourceResolver {
   }
 
   @Query(() => [Resource], {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'where.project.id')
@@ -120,8 +119,7 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
   async deleteResource(@Args() args: FindOneArgs): Promise<Resource | null> {
@@ -129,8 +127,7 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Resource, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
   async updateResource(
@@ -140,8 +137,7 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Commit, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(
     AuthorizableResourceParameter.ResourceId,
@@ -156,8 +152,7 @@ export class ResourceResolver {
   }
 
   @Mutation(() => Boolean, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(
     AuthorizableResourceParameter.ResourceId,

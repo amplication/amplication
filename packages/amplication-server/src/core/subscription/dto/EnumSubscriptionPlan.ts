@@ -6,6 +6,5 @@ export enum EnumSubscriptionPlan {
   Enterprise = 'Enterprise'
 }
 registerEnumType(EnumSubscriptionPlan, {
-  name: 'EnumSubscriptionPlan',
-  description: undefined
+  name: 'EnumSubscriptionPlan'
 });

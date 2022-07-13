@@ -3,57 +3,48 @@ import { EnumDataType } from 'src/enums/EnumDataType';
 import { PropertySelector } from './PropertySelector';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 /** @todo: consider another name */
 @InputType('BlockInputOutputInput', {
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class BlockInputOutput {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   description?: string;
 
   ///static data type - one of the supported data types
   @Field(() => EnumDataType, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   dataType?: keyof typeof EnumDataType;
 
   ///composite data type - a reference to one of the entities
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   dataTypeEntityName?: string;
 
   //indication whether this input represents a list of the selected data type
   @Field(() => Boolean, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   isList?: boolean;
 
   @Field(() => Boolean, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   includeAllPropertiesByDefault?: boolean;
 
   @Field(() => [PropertySelector], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   propertyList?: PropertySelector[];
 }

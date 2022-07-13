@@ -4,61 +4,51 @@ import { JsonObject } from 'type-fest';
 import { EnumDataType } from 'src/enums/EnumDataType';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityFieldUpdateInput {
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: string | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   displayName?: string | null;
 
   @Field(() => EnumDataType, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   dataType?: keyof typeof EnumDataType | null;
 
   @Field(() => GraphQLJSONObject, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   properties?: JsonObject | null;
 
   @Field(() => Boolean, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   required?: boolean | null;
 
   @Field(() => Boolean, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   unique?: boolean | null;
 
   @Field(() => Boolean, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   searchable?: boolean | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string | null;
 
   @Field(() => Int, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   position?: number | null;
 }

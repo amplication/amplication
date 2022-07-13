@@ -2,45 +2,38 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Resource } from './Resource'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class ResourceRole {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   resource?: Resource;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string;
 }

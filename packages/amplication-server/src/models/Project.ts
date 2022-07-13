@@ -3,19 +3,16 @@ import { Resource } from './Resource';
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Project {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
@@ -24,8 +21,7 @@ export class Project {
   workspaceId?: string;
 
   @Field(() => [Resource], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   resources?: Resource[];
 
