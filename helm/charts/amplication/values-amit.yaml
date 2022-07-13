@@ -3,6 +3,7 @@ global:
     name: amit-efs-claim
   pv:
     name: efs-pv-amit
+    handle: fs-056391171586c1bac:/amit:fsap-059c0718ada039a49
 
 amplication-client:
   service:
