@@ -15,9 +15,38 @@ on:
         - shimi
         - mor
         - amit
+        - alex
+      confirm-env:
+        type: string
+        description: Confirm the environment to deploy
+        required: true
+        default: staging-os
 jobs:
+  validate-image:
+    runs-on: ubuntu-18.04
+    outputs: 
+      valid_image: ${{ steps.check-image.outputs.image_exist }}
+    steps:  
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: set branch-name
+        run: |
+          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
+      - name: check if image exists for the branch name
+        id: check-image
+        run: |
+          bash ./.github/workflows/scripts/deploy-image.sh
   prepare:
     runs-on: ubuntu-18.04
+    needs: [validate-image]
+    if: ${{ github.event.inputs.target-env == github.event.inputs.confirm-env }} && ${{ needs.validate-image.outputs.image_exist == 'true' }}
     outputs:
       ARGOCD: ${{ steps.create-secret-names.outputs.ARGOCD }}
     steps:
@@ -50,14 +79,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      # - name: install kubectl
-      #   run: |
-      #     sudo apt-get install -y curl awscli && curl -LO https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
       - name: set branch-name
         run: |
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
-        env:
-          SOURCE_BRANCH_NAME: ${{ github.event.inputs.source-branch }}
       - name: calculate docker tags
         id: calculate-docker-tags
         run: |

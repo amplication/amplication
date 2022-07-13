@@ -5,13 +5,6 @@ global:
     name: efs-pv-common
     handle: fs-056391171586c1bac::fsap-059c0718ada039a49
 
-postgres:
-  install: true
-  postgresqlPassword: postgres
-  postgresqlPostgresPassword: postgres
-  postgresqlDatabase: amplication
-  fullnameOverride: postgresql
-
 cp-helm-charts:
   enabled: true
   cp-kafka:
@@ -57,6 +50,21 @@ cp-helm-charts:
     enabled: false
   cp-ksql-server:
     enabled: false
+
+postgres:
+  install: true
+  postgresqlPassword: postgres
+  postgresqlPostgresPassword: postgres
+  postgresqlDatabase: amplication
+  fullnameOverride: postgresql
+  primary:
+    service:
+      type: LoadBalancer
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
+        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+        external-dns.alpha.kubernetes.io/hostname: postgres.amplication-dev.com
 
 amplication-client:
   image:

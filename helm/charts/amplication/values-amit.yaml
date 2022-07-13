@@ -4,6 +4,12 @@ global:
   pv:
     name: efs-pv-amit
 
+postgres:
+  primary:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: postgres-amit.amplication-dev.com
+
 amplication-client:
   service:
     hostname: app-amit.amplication-dev.com
