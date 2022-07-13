@@ -1,5 +1,7 @@
-import { types } from ".";
 import * as models from "./models";
+import { Lookup } from "./types/lookup";
+import { MultiSelectOptionSet } from "./types/multiSelectOptionSet";
+import { OptionSet } from "./types/optionSet";
 
 export {
   EnumEntityPermissionType,
@@ -99,7 +101,7 @@ export type EntityField = Omit<
   dataType: models.EnumDataType;
 };
 
-export type LookupResolvedProperties = types.Lookup & {
+export type LookupResolvedProperties = Lookup & {
   relatedEntity: Entity;
   relatedField: EntityField;
   isOneToOneWithoutForeignKey?: boolean; //in one-to-one only one side should have a foreign key
@@ -110,14 +112,14 @@ export type EntityLookupField = Omit<EntityField, "properties"> & {
 };
 
 export type EntityOptionSetField = Omit<EntityField, "properties"> & {
-  properties: types.OptionSet;
+  properties: OptionSet;
 };
 
 export type EntityMultiSelectOptionSetField = Omit<
   EntityField,
   "properties"
 > & {
-  properties: types.MultiSelectOptionSet;
+  properties: MultiSelectOptionSet;
 };
 
 export type Entity = Omit<
