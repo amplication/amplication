@@ -1,11 +1,11 @@
 apiVersion: v2
-name: amplication-server
-description: A Helm chart for the amplication-server component of Amplication.
+name: infra
+description: A Helm chart for common shared infrastructure resources.
 
 dependencies:
 - name: base
   version: "0.1.0"
-  repository: "file://../../base"
+  repository: "file://../base"
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives

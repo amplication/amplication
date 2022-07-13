@@ -1,9 +1,8 @@
-cp-helm-charts:
-  enabled: true
-  cp-kafka:
-    enabled: true
-  cp-zookeeper:
-    enabled: true
+global:
+  pvc:
+    name: amit-efs-claim
+  pv:
+    name: efs-pv-amit
 
 postgres:
   primary:
@@ -22,13 +21,8 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-amit.amplication-dev.com
 
 amplication-server:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: server-amit.amplication-dev.com
-  pvc:
-    name: amit-efs-claim
   config:
     env:
       HOST: "https://server-amit.amplication-dev.com"
@@ -71,10 +65,7 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server-amit.amplication-dev.com/github/callback"
 
 amplication-git-push-webhook-service:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: webhook-amit.amplication-dev.com
   config:
     env:
@@ -84,10 +75,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  postgres:
-    install: false
-  pvc:
-    name: amit-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -108,8 +95,6 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
-  pvc:
-    name: amit-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
@@ -122,8 +107,6 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   ingress:
     hostname: server-amit.amplication-dev.com
-  pvc:
-    name: amit-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'

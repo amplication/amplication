@@ -1,12 +1,9 @@
-cp-helm-charts:
-  enabled: false
-  cp-kafka:
-    enabled: false
-  cp-zookeeper:
-    enabled: false
-
-postgres:
-  install: false
+global:
+  pvc:
+    name: staging-efs-claim
+  pv:
+    name: efs-pv-staging
+    handle: fs-0a87872138ddc7f6d::fsap-0369ff368700f58c3
 
 amplication-client:
   service:
@@ -20,13 +17,8 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server.staging.amplication-dev.com
 
 amplication-server:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: server.staging.amplication-dev.com
-  pvc:
-    name: staging-efs-claim
   config:
     env:
       HOST: "https://server.staging.amplication-dev.com"
@@ -70,10 +62,7 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server.staging.amplication-dev.com/github/callback"
 
 amplication-git-push-webhook-service:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: webhook.staging.amplication-dev.com
   config:
     env:
@@ -83,10 +72,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  postgres:
-    install: false
-  pvc:
-    name: staging-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -108,8 +93,6 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
-  pvc:
-    name: staging-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["b-1.amplicationuseast1sta.2590lk.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1sta.2590lk.c22.kafka.us-east-1.amazonaws.com:9092"]'
@@ -122,10 +105,17 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   ingress:
     hostname: server.staging.amplication-dev.com
-  pvc:
-    name: staging-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["b-1.amplicationuseast1sta.2590lk.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1sta.2590lk.c22.kafka.us-east-1.amazonaws.com:9092"]'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
+
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
+    enabled: false
+  cp-zookeeper:
+    enabled: false
+postgres:
+  install: false

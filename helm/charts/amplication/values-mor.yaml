@@ -1,3 +1,9 @@
+global:
+  pvc:
+    name: mor-efs-claim
+  pv:
+    name: efs-pv-mor
+    
 postgres:
   primary:
     service:
@@ -5,8 +11,6 @@ postgres:
         external-dns.alpha.kubernetes.io/hostname: postgres-mor.amplication-dev.com
 
 amplication-client:
-  image:
-    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
   service:
     hostname: app-custom.amplication-dev.com
   config:
@@ -16,12 +20,7 @@ amplication-client:
       REACT_APP_GITHUB_CLIENT_ID: value
 
 amplication-server:
-  image:
-      repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: server-custom.amplication-dev.com
   config:
     env:

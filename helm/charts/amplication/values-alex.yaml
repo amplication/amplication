@@ -1,3 +1,15 @@
+global:
+  pvc:
+    name: alex-efs-claim
+  pv:
+    name: efs-pv-alex
+
+postgres:
+  primary:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: postgres-alex.amplication-dev.com
+
 amplication-client:
   service:
     hostname: app-alex.amplication-dev.com
@@ -7,7 +19,6 @@ amplication-client:
       REACT_APP_DATA_SOURCE: "https://server-alex.amplication-dev.com/graphql"
       REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-alex.amplication-dev.com/github"
       REACT_APP_STORAGE_GATEWAY_URL: https://server-alex.amplication-dev.com
-
 
 amplication-server:
   ingress:
