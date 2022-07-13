@@ -26,10 +26,7 @@ amplication-server:
     requests:
       cpu: 3
       memory: 6Gi
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: server.prod.amplication-dev.com
     hostname_production: server.amplication.com
   config:
@@ -79,10 +76,7 @@ amplication-server:
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
 
 amplication-git-push-webhook-service:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: webhooks.amplication.com
   config:
     env:
@@ -93,8 +87,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  postgres:
-    install: false
   config:
     env:
       NODE_ENV: "production"

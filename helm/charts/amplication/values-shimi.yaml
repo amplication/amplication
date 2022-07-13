@@ -15,10 +15,7 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-shimi.amplication-dev.com
 
 amplication-server:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: server-shimi.amplication-dev.com
   config:
     env:
@@ -63,10 +60,7 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server-shimi.amplication-dev.com/github/callback"
 
 amplication-git-push-webhook-service:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: webhook-shimi.amplication-dev.com
   config:
     env:
@@ -76,8 +70,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  postgres:
-    install: false
   config:
     env:
       NODE_ENV: "production"

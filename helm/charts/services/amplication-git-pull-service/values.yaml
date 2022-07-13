@@ -25,15 +25,6 @@ minMemory: "2Gi"
 maxCPU: 1
 minCPU: 1
 
-service:
-  type: ClusterIP
-  port:
-    target: 3000
-  protocol: TCP
-
-ingress:
-  enabled: false
-
 # Postgresql Server
 postgres:
   install: false

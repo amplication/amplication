@@ -26,10 +26,7 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server.staging-os.amplication-dev.com
 
 amplication-server:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: server.staging-os.amplication-dev.com
   config:
     env:
@@ -73,8 +70,6 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server.staging-os.amplication-dev.com/github/callback"
 
 amplication-git-push-webhook-service:
-  postgres:
-    install: false
   ingress:
     enabled: true
     hostname: webhook.staging-os.amplication-dev.com
@@ -86,8 +81,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  postgres:
-    install: false
   config:
     env:
       NODE_ENV: "production"

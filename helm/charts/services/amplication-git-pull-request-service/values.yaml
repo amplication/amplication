@@ -25,12 +25,3 @@ minCPU: 1
 volume:
   name: amplication-data
   path: /amplication-data
-
-service:
-  type: ClusterIP
-  port:
-    target: 3000
-  protocol: TCP
-
-ingress:
-  enabled: false
