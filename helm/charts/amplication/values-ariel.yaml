@@ -99,7 +99,7 @@ amplication-git-pull-service:
 
       #GitHub App
       GITHUB_APP_APP_ID: '219560'
-      GITHUB_APP_CLIENT_ID: 'Iv1.a8ac08d4d3788314'
+      GITHUB_APP_CLIENT_ID: 'Iv1.500372fe9efa340d'
       GIT_DEFAULT_ORIGIN_NAME: origin
 
       KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
