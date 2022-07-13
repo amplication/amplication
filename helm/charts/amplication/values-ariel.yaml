@@ -98,7 +98,7 @@ amplication-git-pull-service:
       MAX_SNAPSHOTS: '100'
 
       #GitHub App
-      GITHUB_APP_APP_ID: '215215'
+      GITHUB_APP_APP_ID: '219560'
       GITHUB_APP_CLIENT_ID: 'Iv1.a8ac08d4d3788314'
       GIT_DEFAULT_ORIGIN_NAME: origin
 
@@ -118,7 +118,7 @@ amplication-git-pull-request-service:
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-      GITHUB_APP_APP_ID: '215215'
+      GITHUB_APP_APP_ID: '219560'
 
 amplication-storage-gateway:
   ingress:
@@ -129,4 +129,4 @@ amplication-storage-gateway:
     env:
       KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-      GITHUB_APP_APP_ID: '215215'
+      GITHUB_APP_APP_ID: '219560'
