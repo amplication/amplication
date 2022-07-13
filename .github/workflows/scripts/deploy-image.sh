@@ -15,10 +15,10 @@ do
     cmd="$(aws ecr describe-images --repository-name=$REPO_NAME --image-ids=imageTag=$IMAGE_TAG_ANCHOR)"
     if [ -z "$cmd" ]
     then
-        echo "This branch name doesn't exist in repository - $REPO_NAME"
+        echo "This branch name doesn't exist in the repository - $REPO_NAME"
         echo "::set-output name=image_exist::false"
     else
-        echo "tag already exist in repository - $REPO_NAME"
+        echo "tag already exist in the repository - $REPO_NAME"
         echo "::set-output name=image_exist::true"
     fi
 done

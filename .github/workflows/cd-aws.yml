@@ -34,10 +34,10 @@ jobs:
       - name: set branch-name
         run: |
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
-      - name: check if image exist
+      - name: check if image exists for the branch name
         id: check-image
         run: |
-          bash ./.github/workflows/scripts/deploy-valid-image.sh
+          bash ./.github/workflows/scripts/deploy-image.sh
   prepare:
     runs-on: ubuntu-18.04
     needs: [validate-image]
