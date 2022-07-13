@@ -1,0 +1,53 @@
+@use "sass:math";
+
+@import "../../style/index.scss";
+
+.create-service-wizard {
+  display: flex;
+  height: 100%;
+
+  &__left {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #22273c;
+  }
+
+  &__right {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    width: 66%;
+
+    .circle-badge i {
+      color: #2c3249;
+    }
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 36px;
+    letter-spacing: 0em;
+    text-align: center;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 27px;
+    letter-spacing: 0em;
+    text-align: center;
+  }
+}
