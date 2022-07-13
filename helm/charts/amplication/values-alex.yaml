@@ -82,8 +82,7 @@ cp-helm-charts:
 
 
 postgres:
-  install: true
-  postgresqlPassword: postgres
-  postgresqlPostgresPassword: postgres
-  postgresqlDatabase: amplication
-  fullnameOverride: postgresql
+  primary:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: postgres-alex.amplication-dev.com
