@@ -1052,7 +1052,7 @@ export type Mutation = {
   createGitRepository: Resource;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
-  createProject?: Maybe<Project>;
+  createProject: Project;
   createResource: Resource;
   createResourceRole: ResourceRole;
   createResourceWithEntities: Resource;
@@ -1410,7 +1410,7 @@ export type Query = {
   me: User;
   pendingChanges: Array<PendingChange>;
   project?: Maybe<Project>;
-  projects?: Maybe<Array<Project>>;
+  projects: Array<Project>;
   remoteGitRepositories: Array<RemoteGitRepository>;
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
