@@ -5,6 +5,7 @@ import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/n
 import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
 import { GitRepository } from './GitRepository';
 import { EnumResourceType } from '@amplication/prisma-db';
+import { Project } from './Project';
 
 registerEnumType(EnumResourceType, {
   name: 'EnumResourceType'
@@ -33,9 +34,9 @@ export class Resource {
   })
   updatedAt!: Date;
 
-  workspace?: Workspace;
+  project?: Project;
 
-  workspaceId?: string;
+  projectId?: string;
 
   @Field(() => GitRepository, {
     nullable: true
