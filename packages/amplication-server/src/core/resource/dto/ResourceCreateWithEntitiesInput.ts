@@ -12,8 +12,7 @@ export class ResourceCreateWithEntitiesFieldInput {
   name!: string;
 
   @Field(() => EnumDataType, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   dataType?: keyof typeof EnumDataType | null;
 }

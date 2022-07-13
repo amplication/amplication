@@ -5,6 +5,5 @@ export enum QueryMode {
   Insensitive = 'insensitive'
 }
 registerEnumType(QueryMode, {
-  name: 'QueryMode',
-  description: undefined
+  name: 'QueryMode'
 });

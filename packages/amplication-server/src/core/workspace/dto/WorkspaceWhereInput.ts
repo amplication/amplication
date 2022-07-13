@@ -2,31 +2,26 @@ import { Field, InputType } from '@nestjs/graphql';
 import { DateTimeFilter, StringFilter } from 'src/dto';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class WorkspaceWhereInput {
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: string | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: StringFilter | null;
 }

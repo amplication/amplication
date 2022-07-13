@@ -8,6 +8,5 @@ export enum EnumEntityAction {
   Search = 'Search'
 }
 registerEnumType(EnumEntityAction, {
-  name: 'EnumEntityAction',
-  description: undefined
+  name: 'EnumEntityAction'
 });

@@ -21,8 +21,7 @@ export class EnvironmentCreateInput {
   address!: string;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   resource!: WhereParentIdInput;
 }

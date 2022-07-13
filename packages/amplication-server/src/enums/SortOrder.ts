@@ -5,6 +5,5 @@ export enum SortOrder {
   Desc = 'desc'
 }
 registerEnumType(SortOrder, {
-  name: 'SortOrder',
-  description: undefined
+  name: 'SortOrder'
 });

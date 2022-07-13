@@ -2,49 +2,41 @@ import { Field, InputType } from '@nestjs/graphql';
 import { DateTimeFilter, StringFilter, WhereUniqueInput } from 'src/dto';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class ResourceRoleWhereInput {
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: string | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: StringFilter | null;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   resource?: WhereUniqueInput | null;
 }

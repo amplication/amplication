@@ -6,37 +6,31 @@ import { EnumPendingChangeResourceType } from './EnumPendingChangeResourceType';
 import { PendingChangeResource } from './PendingChangeResource'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class PendingChange {
   @Field(() => EnumPendingChangeAction, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   action: EnumPendingChangeAction;
 
   @Field(() => EnumPendingChangeResourceType, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   resourceType: EnumPendingChangeResourceType;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   resourceId!: string;
 
   @Field(() => PendingChangeResource, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   resource: Entity | Block;
 
   @Field(() => Int, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   versionNumber!: number;
 }
