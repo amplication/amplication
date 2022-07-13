@@ -18,6 +18,8 @@ amplication-client:
 amplication-server:
   ingress:
     hostname: server-amit.amplication-dev.com
+  volume:
+    path: /amit/amplication-data
   config:
     env:
       HOST: "https://server-amit.amplication-dev.com"
@@ -70,6 +72,8 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
+  volume:
+    path: /amit/amplication-data
   config:
     env:
       NODE_ENV: "production"
@@ -90,6 +94,8 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  volume:
+    path: /amit/amplication-data
   config:
     env:
       KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
@@ -100,6 +106,8 @@ amplication-git-pull-request-service:
       GITHUB_APP_APP_ID: "215215"
 
 amplication-storage-gateway:
+  volume:
+    path: /amit/amplication-data
   ingress:
     hostname: server-amit.amplication-dev.com
   config:
