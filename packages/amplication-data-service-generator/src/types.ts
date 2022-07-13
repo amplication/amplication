@@ -1,4 +1,4 @@
-import { types } from "@amplication/data";
+import { types } from "@amplication/code-gen-types";
 import * as models from "./models";
 
 export {

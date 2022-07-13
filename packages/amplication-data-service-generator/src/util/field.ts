@@ -1,4 +1,4 @@
-import { types } from "@amplication/data";
+import { types } from "@amplication/code-gen-types";
 import { EntityField, EntityLookupField, EnumDataType } from "../types";
 
 const UNEDITABLE_FIELD_NAMES = new Set<string>([
