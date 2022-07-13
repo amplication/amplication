@@ -23,6 +23,8 @@ jobs:
       valid_image: ${{ steps.check-image.outputs.image_exist }}
     steps:  
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
