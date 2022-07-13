@@ -86,4 +86,6 @@ export class Resource {
 
   // no need to expose to GraphQL
   deletedAt?: Date;
+
+  projectId!: string;
 }

@@ -51,6 +51,24 @@
       "cwd": "${workspaceFolder}/packages/amplication-data-service-generator/generated",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Server",
+      "args": [
+          "${workspaceFolder}/packages/amplication-server/src/main.ts"
+      ],
+      "runtimeArgs": [
+          "--nolazy",
+          "-r",
+          "ts-node/register",
+          "-r",
+          "tsconfig-paths/register"
+      ],
+      "sourceMaps": true,
+      "envFile": "${workspaceFolder}/packages/amplication-server/.env",
+      "cwd": "${workspaceRoot}/packages/amplication-server"
+    },
   ]
 }

@@ -15,7 +15,7 @@ export class QueueService implements OnModuleInit {
   generatePullRequestTopic: string;
   constructor(
     @Inject(QUEUE_SERVICE_NAME)
-    private readonly kafkaService: ClientKafka,
+    private readonly kafkaClient: ClientKafka,
     configService: ConfigService
   ) {
     const envGeneratePullRequestTopic = configService.get<string>(
@@ -28,14 +28,14 @@ export class QueueService implements OnModuleInit {
     this.generatePullRequestTopic = envGeneratePullRequestTopic;
   }
   onModuleInit(): void {
-    this.kafkaService.subscribeToResponseOf(this.generatePullRequestTopic);
+    this.kafkaClient.subscribeToResponseOf(this.generatePullRequestTopic);
   }
 
   sendCreateGitPullRequest(
     data: SendPullRequestArgs
   ): Promise<SendPullRequestResponse> {
     return new Promise((resolve, reject) => {
-      this.kafkaService
+      this.kafkaClient
         .send(this.generatePullRequestTopic, data)
         .subscribe((response: ResultMessage<SendPullRequestResponse>) => {
           if (response.status === StatusEnum.GeneralFail) {
@@ -53,5 +53,9 @@ export class QueueService implements OnModuleInit {
           }
         });
     });
+  }
+
+  emitMessage(topic: string, message: string): void {
+    this.kafkaClient.emit(topic, message);
   }
 }

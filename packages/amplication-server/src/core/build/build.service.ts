@@ -8,9 +8,9 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
-import path, { join } from 'path';
+import path from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { ResourceRole, User } from 'src/models';
+import { Entity, ResourceRole, User } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
@@ -40,6 +40,11 @@ import { QueueService } from '../queue/queue.service';
 import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
+import { BuildContext } from './dto/BuildContext';
+import { BuildContextData } from './dto/BuildContextData';
+import { StorageTypeEnum } from './dto/StorageTypeEnum';
+import { BuildContextStorageService } from './buildContextStorage.service';
+import { GenerateResource } from './dto/GenerateResource';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -154,6 +159,7 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
+    private readonly buildContextStorageService: BuildContextStorageService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -204,9 +210,11 @@ export class BuildService {
       },
       include: {
         commit: true,
-        resource: true
+        resource: true,
       }
     });
+
+    build.resource.projectId
 
     const oldBuild = await previousBuild(
       this.prisma,
@@ -314,7 +322,7 @@ export class BuildService {
     build: Build,
     user: User,
     oldBuildId: string
-  ): Promise<string> {
+  ): Promise<void> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -342,18 +350,41 @@ export class BuildService {
 
         const url = `${host}/${build.resourceId}`;
 
-        const modules = await DataServiceGenerator.createDataService(
+        const buildContextData: BuildContextData = {
           entities,
           roles,
-          {
+          appInfo: {
             name: resource.name,
             description: resource.description,
             version: build.version,
             id: build.resourceId,
             url,
             settings: serviceSettings
-          },
-          dataServiceGeneratorLogger
+          }
+        };
+
+        const buildContext: BuildContext = {
+          buildId: build.id,
+          resourceId: build.resourceId,
+          projectId: build.resource.projectId,
+          data: buildContextData
+        }
+
+        const path = await this.buildContextStorageService.saveBuildContext(buildContext);
+
+        const generateResource: GenerateResource = {
+          buildId: build.id,
+          resourceId: build.resourceId,
+          projectId: build.resource.projectId,
+          fileLocation: {
+            storageType: StorageTypeEnum.FS,
+            path: path,
+          }
+        }
+
+        this.queueService.emitMessage(
+          this.configService.get('GENERATE_RESOURCE_TOPIC'),
+          JSON.stringify(generateResource)
         );
 
         await Promise.all(logPromises);
@@ -362,19 +393,9 @@ export class BuildService {
 
         await this.actionService.logInfo(step, ACTION_ZIP_LOG);
 
-        // the path to the tar.gz artifact
-        const tarballURL = await this.save(build, modules);
-
-        await this.buildFilesSaver.saveFiles(
-          join(resource.id, build.id),
-          modules
-        );
-
         await this.saveToGitHub(build, oldBuildId);
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-
-        return tarballURL;
       }
     );
   }
@@ -554,7 +575,7 @@ export class BuildService {
    */
   private async getOrderedEntities(
     buildId: string
-  ): Promise<DataServiceGenerator.Entity[]> {
+  ): Promise<Entity[]> {
     const entities = await this.entityService.getEntitiesByVersions({
       where: {
         builds: {
@@ -565,10 +586,10 @@ export class BuildService {
       },
       include: ENTITIES_INCLUDE
     });
-    return (orderBy(
+    return orderBy(
       entities,
       entity => entity.createdAt
-    ) as unknown) as DataServiceGenerator.Entity[];
+    );
   }
   async canUserAccess({
     userId,
