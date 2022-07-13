@@ -2,6 +2,7 @@ import * as models from "./models";
 import { Lookup } from "./types/lookup";
 import { MultiSelectOptionSet } from "./types/multiSelectOptionSet";
 import { OptionSet } from "./types/optionSet";
+export * from "./types";
 
 export {
   EnumEntityPermissionType,
