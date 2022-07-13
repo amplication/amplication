@@ -4,32 +4,27 @@ import { BlockVersion } from './BlockVersion'; // eslint-disable-line import/no-
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Block {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   /** @todo: do we need the Resource property on the block? should we allow navigation from Block to Resource? */
   @Field(() => Resource, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   resource?: Resource;
 
@@ -37,8 +32,7 @@ export class Block {
   resourceId: string;
 
   @Field(() => Block, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   parentBlock?: Block;
 
@@ -46,38 +40,32 @@ export class Block {
   parentBlockId?: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string;
 
   @Field(() => EnumBlockType, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   blockType: keyof typeof EnumBlockType;
 
   @Field(() => Number, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   versionNumber?: number;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   lockedByUserId?: string;
 
   @Field(() => Date, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   lockedAt?: Date;
 

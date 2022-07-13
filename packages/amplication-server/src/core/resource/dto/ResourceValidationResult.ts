@@ -8,13 +8,11 @@ export enum ResourceValidationErrorTypes {
 }
 
 registerEnumType(ResourceValidationErrorTypes, {
-  name: 'ResourceValidationErrorTypes',
-  description: undefined
+  name: 'ResourceValidationErrorTypes'
 });
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class ResourceValidationResult {
   @Field(() => Boolean)

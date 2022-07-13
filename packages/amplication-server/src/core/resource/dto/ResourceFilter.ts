@@ -2,25 +2,21 @@ import { Field, InputType } from '@nestjs/graphql';
 import { ResourceWhereInput } from './ResourceWhereInput';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class ResourceFilter {
   @Field(() => ResourceWhereInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   every?: ResourceWhereInput | null;
 
   @Field(() => ResourceWhereInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   some?: ResourceWhereInput | null;
 
   @Field(() => ResourceWhereInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   none?: ResourceWhereInput | null;
 }

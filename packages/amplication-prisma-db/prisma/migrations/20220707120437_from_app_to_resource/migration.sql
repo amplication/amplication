@@ -63,6 +63,6 @@ ALTER INDEX "EntityPermissionRole.entityVersionId_action_appRoleId_unique" RENAM
 CREATE TYPE "EnumResourceType" AS ENUM ('Service');
 
 -- Add value to current resources
-ALTER TABLE "Resource" ADD COLUMN     "resourceType" "EnumResourceType" NULL;
-UPDATE "Resource" SET resourceType = 'Service';
-ALTER TABLE "Resource" ALTER COLUMN "resourceType" SET NOT NULL;
+ALTER TABLE "Resource" ADD COLUMN     "type" "EnumResourceType" NULL;
+UPDATE "Resource" SET type = 'Service';
+ALTER TABLE "Resource" ALTER COLUMN "type" SET NOT NULL;

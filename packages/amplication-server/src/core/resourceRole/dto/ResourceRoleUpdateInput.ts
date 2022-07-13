@@ -1,25 +1,21 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class ResourceRoleUpdateInput {
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: string | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string | null;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 }

@@ -4,31 +4,26 @@ import { Resource } from './Resource'; // eslint-disable-line import/no-cycle
 import { GitOrganization } from './GitOrganization';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Workspace {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 

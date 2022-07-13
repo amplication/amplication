@@ -6,8 +6,7 @@ import { WhereParentIdInput } from 'src/dto';
 })
 export class PendingChangesDiscardInput {
   @Field(() => WhereParentIdInput, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   resource!: WhereParentIdInput;
 
