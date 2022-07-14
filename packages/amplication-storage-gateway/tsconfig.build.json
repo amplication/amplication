@@ -7,6 +7,6 @@
     "dist",
     "**/*spec.ts",
     "admin",
-    ".temp"
+    ".amplication_temp"
   ]
 }

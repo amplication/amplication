@@ -7,6 +7,6 @@
     "dist",
     "**/*spec.ts",
     "migration-scripts",
-    ".temp"
+    ".amplication_temp"
   ]
 }

@@ -4,4 +4,4 @@
 /dist
 .DS_Store
 .env.local
-.temp/
+.amplication_temp/

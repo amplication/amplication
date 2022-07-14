@@ -12,4 +12,4 @@ artifacts/
 .eslintcache
 .server-id
 
-.temp/
+.amplication_temp/
