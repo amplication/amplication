@@ -1,6 +1,12 @@
-import { Button, EnumButtonStyle, EnumIconPosition } from "@amplication/design-system";
+import {
+  Button,
+  EnumButtonStyle,
+  EnumIconPosition,
+} from "@amplication/design-system";
 import React from "react";
 import "./AddNewProject.scss";
+
+const CLASS_NAME = "add-new-project";
 
 type Props = {
   onNewProjectClick: () => void;
@@ -16,7 +22,7 @@ const AddNewProject = ({ onNewProjectClick }: Props) => {
       iconPosition={EnumIconPosition.Left}
       iconSize="xsmall"
     >
-      Add New Project
+      <span className={`${CLASS_NAME}__label`}>Add New Project</span>
     </Button>
   );
 };

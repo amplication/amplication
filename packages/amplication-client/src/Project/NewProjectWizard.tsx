@@ -2,6 +2,7 @@ import { Dialog } from "@amplication/design-system";
 import React, { useCallback, useState } from "react";
 import AddNewProject from "./AddNewProject";
 import NewProject from "./NewProject";
+import "./NewProjectWizard.scss";
 
 const CLASS_NAME = "new-project-wizard";
 

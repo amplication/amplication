@@ -10,6 +10,7 @@ import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import "./NewProject.scss";
 
 type CreateProjectType = models.ProjectCreateInput;
 
@@ -26,7 +27,7 @@ const FORM_SCHEMA = {
     },
   },
 };
-const CLASS_NAME = "new-project-dialog";
+const CLASS_NAME = "new-project";
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
