@@ -34,15 +34,11 @@ const SideBar = ({
   projects = ProjectsMock;
   return (
     <div className={CLASS_NAME}>
-        <p className={`${CLASS_NAME}__label`}>Workspace</p>
-        <WorkspaceSelector />
-        <ProjectList
-          projects={projects}
-          onProjectChange={onProjectChange}
-          onCreateNewProjectClicked={onCreateNewProjectClicked}
-        />
-        <AddNewProject onAddNewProject={onCreateNewProjectClicked} />
-        <ProjectSideBarFooter />
+      <p className={`${CLASS_NAME}__label`}>Workspace</p>
+      <WorkspaceSelector />
+      <ProjectList projects={projects} />
+      <AddNewProject onAddNewProject={onCreateNewProjectClicked} />
+      <ProjectSideBarFooter />
     </div>
   );
 };
