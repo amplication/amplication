@@ -20,7 +20,7 @@ export const ProjectListItem = ({
       className={className}
       onClick={onProjectSelected} // if handleOnClick is needed instead of "to"
     >
-      <span>{project.name}</span>
+      {project.name}
     </InnerTabLink>
   );
 };
