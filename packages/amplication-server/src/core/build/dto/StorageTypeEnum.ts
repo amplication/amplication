@@ -1,7 +1,5 @@
-
-
 export enum StorageTypeEnum {
-	FS,
-	S3,
-    GCS
+  FS,
+  S3,
+  GCS
 }

@@ -9,7 +9,7 @@ export const TEST_SERVICE_RESOURCE_MOCK: Resource = {
   name: 'test resource',
   updatedAt: new Date(),
   resourceType: EnumResourceType.Service,
-  projectId: 'exampleProjectId',
+  projectId: 'exampleProjectId'
 };
 export const MOCK_SERVICE_RESOURCE_WITHOUT_GITHUB_TOKEN: Resource = {
   createdAt: new Date(),
@@ -18,5 +18,5 @@ export const MOCK_SERVICE_RESOURCE_WITHOUT_GITHUB_TOKEN: Resource = {
   name: 'test resource',
   updatedAt: new Date(),
   resourceType: EnumResourceType.Service,
-  projectId: 'exampleProjectId',
+  projectId: 'exampleProjectId'
 };
