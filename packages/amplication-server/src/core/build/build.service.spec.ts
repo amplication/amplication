@@ -175,7 +175,7 @@ const EXAMPLE_SERVICE_RESOURCE: Resource = {
   name: 'exampleResourceName',
   description: 'example Resources Description',
   color: '#20A4F3',
-  projectId: 'exampleProjectId',
+  projectId: 'exampleProjectId'
 };
 
 const EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT: Build = {

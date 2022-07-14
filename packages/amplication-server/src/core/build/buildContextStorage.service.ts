@@ -6,14 +6,15 @@ import { BuildContext } from './dto/BuildContext';
 
 @Injectable()
 export class BuildContextStorageService {
-
   private readonly buildContextLocation: string;
 
   constructor(
     private readonly fsStorageService: FsStorageService,
     private readonly configService: ConfigService
   ) {
-    this.buildContextLocation = this.configService.get('BUILD_CONTEXT_LOCATION');
+    this.buildContextLocation = this.configService.get(
+      'BUILD_CONTEXT_LOCATION'
+    );
   }
 
   public async saveBuildContext(buildContext: BuildContext): Promise<string> {

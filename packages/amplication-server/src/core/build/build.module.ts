@@ -38,9 +38,14 @@ import { FsStorageModule } from '../fsStorage/fsStorage.module';
     ServiceSettingsModule,
     QueueModule,
     forwardRef(() => CommitModule),
-    FsStorageModule,
+    FsStorageModule
   ],
-  providers: [BuildService, BuildResolver, BuildFilesSaver, BuildContextStorageService],
+  providers: [
+    BuildService,
+    BuildResolver,
+    BuildFilesSaver,
+    BuildContextStorageService
+  ],
   exports: [BuildService, BuildResolver],
   controllers: [BuildController]
 })

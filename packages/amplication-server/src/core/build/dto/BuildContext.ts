@@ -1,9 +1,8 @@
-import { BuildContextData } from "./BuildContextData";
-
+import { BuildContextData } from './BuildContextData';
 
 export interface BuildContext {
-	buildId: string,
-	resourceId: string,
-	projectId: string,
-	data: BuildContextData
+  buildId: string;
+  resourceId: string;
+  projectId: string;
+  data: BuildContextData;
 }
