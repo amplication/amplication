@@ -54,22 +54,22 @@ const NewProject = () => {
 
         cache.modify({
           fields: {
-            workspaces(existingWorkspaceRefs = [], { readField }) {
-              const newWorkspaceRef = cache.writeFragment({
+            projects(existingProjectRefs = [], { readField }) {
+              const newProjectRef = cache.writeFragment({
                 data: newProject,
                 fragment: NEW_PROJECT_FRAGMENT,
               });
 
               if (
-                existingWorkspaceRefs.some(
-                  (WorkspaceRef: Reference) =>
-                    readField("id", WorkspaceRef) === newProject.id
+                existingProjectRefs.some(
+                  (ProjectRef: Reference) =>
+                    readField("id", ProjectRef) === newProject.id
                 )
               ) {
-                return existingWorkspaceRefs;
+                return existingProjectRefs;
               }
 
-              return [...existingWorkspaceRefs, newWorkspaceRef];
+              return [...existingProjectRefs, newProjectRef];
             },
           },
         });
@@ -110,11 +110,11 @@ const NewProject = () => {
               <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
               <TextField
                 name="name"
-                label="New Workspace Name"
+                label="New Project Name"
                 disabled={loading}
                 autoFocus
                 hideLabel
-                placeholder="Type New Workspace Name"
+                placeholder="Type New Project Name"
                 autoComplete="off"
               />
               <Button
