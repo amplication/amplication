@@ -269,6 +269,14 @@ export const OldRoutes: RouteDef[] = [
     exactPath: false,
   },
   {
+    path: "/project",
+    Component: lazy(() => import("./Project/ProjectSideBar")),
+    moduleName: "Project",
+    routeTrackType: "project",
+    moduleClass: "project-page",
+    exactPath: true,
+  },
+  {
     path: "/login",
     Component: lazy(() => import("./User/Login")),
     moduleName: "Login",
