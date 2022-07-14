@@ -120,7 +120,7 @@
     "@types/react-tracking": "7.0.4",
     "@types/semver": "7.3.9",
     "jest-mock-extended": "^2.0.4",
-    "prettier": "2.0.5",
+    "prettier": "2.1.1",
     "react-app-rewired": "2.1.8",
     "typescript": "3.9.10"
   }
