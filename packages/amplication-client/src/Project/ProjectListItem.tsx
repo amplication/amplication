@@ -4,11 +4,22 @@ import { Project } from "../models";
 
 type Props = {
   project: Project;
+  className: string;
+  onProjectSelected: (project: Project) => void;
 };
 
-export const ProjectListItem = ({ project }: Props) => {
+export const ProjectListItem = ({
+  project,
+  className,
+  onProjectSelected,
+}: Props) => {
   return (
-    <InnerTabLink icon="file" to={`/${project.id}`}>
+    <InnerTabLink
+      icon="file"
+      to={`/${project.id}`}
+      className={className}
+      onClick={onProjectSelected} // if handleOnClick is needed instead of "to"
+    >
       <span>{project.name}</span>
     </InnerTabLink>
   );
