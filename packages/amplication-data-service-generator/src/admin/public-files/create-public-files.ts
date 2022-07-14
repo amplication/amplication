@@ -1,5 +1,5 @@
 import path from "path";
-import { AppInfo, Module } from "../../types";
+import { AppInfo, Module } from "@amplication/code-gen-types";
 import { readCode } from "../../util/module";
 import manifest from "./manifest.json";
 

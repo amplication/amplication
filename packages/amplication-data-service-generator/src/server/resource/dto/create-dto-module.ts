@@ -1,7 +1,7 @@
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
 import { DeclarationKind } from "ast-types/gen/kinds";
-import { Module } from "../../../types";
+import { Module } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 import {
   addAutoGenerationComment,
@@ -79,7 +79,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     FIELD_ID,
   ],
   [SORT_ORDER_MODULE]: [SORT_ORDER_ID],
-  "../../types": [builders.identifier(INPUT_JSON_VALUE_KEY)],
+  "@amplication/code-gen-types": [builders.identifier(INPUT_JSON_VALUE_KEY)],
   ...FILTERS_IMPORTABLE_NAMES,
 };
 

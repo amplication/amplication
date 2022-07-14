@@ -3,7 +3,7 @@ import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../util/field";
-import { Entity } from "../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { NamedClassDeclaration } from "../../../util/ast";
 
 export const SELECT_ID = builders.identifier("select");

@@ -1,7 +1,12 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
-import { types } from "@amplication/code-gen-types";
-import { Entity, EntityField, EnumDataType, Module } from "../../types";
+import {
+  Entity,
+  EntityField,
+  EnumDataType,
+  Module,
+  types,
+} from "@amplication/code-gen-types";
 import { readFile } from "../../util/module";
 import {
   addImports,

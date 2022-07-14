@@ -6,7 +6,7 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
-} from "../../../types";
+} from "@amplication/code-gen-types";
 import {
   addImports,
   getNamedProperties,
@@ -16,7 +16,7 @@ import {
 } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";
-import { EntityComponent } from "../../types";
+
 import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
 
@@ -24,6 +24,7 @@ import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
+import { EntityComponent } from "../../types";
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
   [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
