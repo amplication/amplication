@@ -8,10 +8,10 @@ type Props = {
 
 const AddNewProject = ({ onAddNewProject }: Props) => {
   return (
-    <Button onClick={onAddNewProject} buttonStyle={EnumButtonStyle.Text}>
-      <Icon icon="plus" />
-      Add description
-    </Button>
+      <Button onClick={onAddNewProject} buttonStyle={EnumButtonStyle.Text}>
+        <Icon icon="plus" />
+        Add Description
+      </Button>
   );
 };
 
