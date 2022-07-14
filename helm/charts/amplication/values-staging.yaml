@@ -52,12 +52,12 @@ amplication-server:
       DOCKER_HOST: tcp://docker:2375
 
       #GitHub App
-      GITHUB_APP_APP_ID: "195638"
-      GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
-      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-server-staging/installations/new?state={state}"
+      GITHUB_APP_APP_ID: "174833"
+      GITHUB_APP_CLIENT_ID: "Iv1.e0d76b0ce191a528"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-staging/installations/new?state={state}"
 
       #GitHub OAuth App
-      GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
+      GITHUB_CLIENT_ID: "4f5b9a88cf46d4c5ec32"
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       GITHUB_REDIRECT_URI: "https://server.staging.amplication-dev.com/github/callback"
 
