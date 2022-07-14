@@ -145,6 +145,8 @@ export function createInitialStepData(
 }
 @Injectable()
 export class BuildService {
+  private readonly genResourceTopic: string;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -165,6 +167,8 @@ export class BuildService {
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
+
+    this.genResourceTopic = this.configService.get('GENERATE_RESOURCE_TOPIC');
   }
 
   /**
@@ -210,11 +214,9 @@ export class BuildService {
       },
       include: {
         commit: true,
-        resource: true,
+        resource: true
       }
     });
-
-    build.resource.projectId
 
     const oldBuild = await previousBuild(
       this.prisma,
@@ -353,7 +355,7 @@ export class BuildService {
         const buildContextData: BuildContextData = {
           entities,
           roles,
-          appInfo: {
+          serviceInfo: {
             name: resource.name,
             description: resource.description,
             version: build.version,
@@ -368,9 +370,11 @@ export class BuildService {
           resourceId: build.resourceId,
           projectId: build.resource.projectId,
           data: buildContextData
-        }
+        };
 
-        const path = await this.buildContextStorageService.saveBuildContext(buildContext);
+        const path = await this.buildContextStorageService.saveBuildContext(
+          buildContext
+        );
 
         const generateResource: GenerateResource = {
           buildId: build.id,
@@ -378,12 +382,12 @@ export class BuildService {
           projectId: build.resource.projectId,
           fileLocation: {
             storageType: StorageTypeEnum.FS,
-            path: path,
+            path: path
           }
-        }
+        };
 
         this.queueService.emitMessage(
-          this.configService.get('GENERATE_RESOURCE_TOPIC'),
+          this.genResourceTopic,
           JSON.stringify(generateResource)
         );
 
@@ -573,9 +577,7 @@ export class BuildService {
    * @info this function must always return the entities in the same order to prevent unintended code changes
    * @returns all the entities for build order by date of creation
    */
-  private async getOrderedEntities(
-    buildId: string
-  ): Promise<Entity[]> {
+  private async getOrderedEntities(buildId: string): Promise<Entity[]> {
     const entities = await this.entityService.getEntitiesByVersions({
       where: {
         builds: {
@@ -586,10 +588,7 @@ export class BuildService {
       },
       include: ENTITIES_INCLUDE
     });
-    return orderBy(
-      entities,
-      entity => entity.createdAt
-    );
+    return orderBy(entities, entity => entity.createdAt);
   }
   async canUserAccess({
     userId,
