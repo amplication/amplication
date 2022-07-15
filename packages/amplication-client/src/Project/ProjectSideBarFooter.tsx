@@ -4,7 +4,7 @@ import "./ProjectSideBarFooter.scss";
 
 const CLASS_NAME = 'side-bar-layout';
 
-export const ProjectSideBarFooter = () => {
+const ProjectSideBarFooter = () => {
     return (
         <div className={`${CLASS_NAME}__tabs`}>
           <InnerTabLink to={`/workspace/settings`} icon="settings">
@@ -16,3 +16,5 @@ export const ProjectSideBarFooter = () => {
         </div>
       );
 }
+
+export default ProjectSideBarFooter;
