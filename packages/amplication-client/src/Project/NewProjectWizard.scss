@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.new-project-wizard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 6px;
+  width: 232px;
+  height: 18px;
+}
