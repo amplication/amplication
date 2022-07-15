@@ -1,5 +1,6 @@
 import React from "react";
 import { Project } from "../models";
+import NewProjectWizard from "./NewProjectWizard";
 import "./ProjectList.scss";
 import { ProjectListItem } from "./ProjectListItem";
 
@@ -23,14 +24,17 @@ export const ProjectList = ({
 }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      {projects.map((project) => (
-        <ProjectListItem
-          key={project.id}
-          project={project}
-          className={`${CLASS_NAME}__item`}
-          onProjectSelected={handleProjectChange}
-        />
-      ))}
+      <div className={`${CLASS_NAME}__items`}>
+        {projects.map((project) => (
+          <ProjectListItem
+            key={project.id}
+            project={project}
+            className={`${CLASS_NAME}__item`}
+            onProjectSelected={handleProjectChange}
+          />
+        ))}
+      </div>
+      <NewProjectWizard />
     </div>
   );
 };
