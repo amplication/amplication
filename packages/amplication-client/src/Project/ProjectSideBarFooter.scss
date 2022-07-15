@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 4px;
+  width: 248px;
+  height: 72px;
+  margin: 16px 0;
+
+  .inner-tab-link {
+    width: 100%;
+    height: 28px;
+    border-radius: var(--small-border-radius);
+    padding: 5px 8px;
+
+    .amp-icon {
+      font-size: var(--title1-font-size);
+    }
+  }
+}
