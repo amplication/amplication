@@ -1,5 +1,6 @@
 import React from "react";
 import { Project } from "../models";
+import NewProjectWizard from "./NewProjectWizard";
 import "./ProjectList.scss";
 import { ProjectListItem } from "./ProjectListItem";
 
@@ -33,6 +34,7 @@ export const ProjectList = ({
           />
         ))}
       </div>
+      <NewProjectWizard />
     </div>
   );
 };
