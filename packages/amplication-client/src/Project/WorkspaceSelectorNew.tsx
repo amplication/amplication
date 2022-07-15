@@ -26,7 +26,7 @@ type TSetData = {
 };
 
 export const COLOR = "#A787FF";
-const CLASS_NAME = "workspaces-selector";
+const CLASS_NAME = "workspaces-selector-new";
 
 const WorkspaceSelectorNew = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -96,14 +96,21 @@ const WorkspaceSelectorNew = () => {
               name={data?.currentWorkspace.name || ""}
               color={COLOR}
             />
-            <span className={`${CLASS_NAME}__current__name`}>
-              {data?.currentWorkspace.name}
-            </span>
+            <div className={`${CLASS_NAME}__current__details`}>
+              <span className={`${CLASS_NAME}__current__name`}>
+                {data?.currentWorkspace.name}
+              </span>
+              <span className={`${CLASS_NAME}__current__plan`}>
+                {data?.currentWorkspace.subscription?.subscriptionPlan ||
+                  "Community"}{" "}
+                Plan
+              </span>
+            </div>
             <Button
               buttonStyle={EnumButtonStyle.Text}
               disabled={loading}
               type="button"
-              icon="chevron-down"
+              icon="chevron_down"
             />
           </>
         )}
