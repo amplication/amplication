@@ -270,7 +270,7 @@ export const OldRoutes: RouteDef[] = [
   },
   {
     path: "/project",
-    Component: lazy(() => import("./Project/ProjectSideBarFooter")),
+    Component: lazy(() => import("./Project/WorkspaceSelectorNew")),
     moduleName: "Project",
     routeTrackType: "project",
     moduleClass: "project-page",
