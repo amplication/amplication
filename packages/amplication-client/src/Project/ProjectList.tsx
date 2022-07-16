@@ -20,7 +20,6 @@ export const ProjectList = ({ projects, HandleProjectChange }: Props) => {
           <ProjectListItem
             key={project.id}
             project={project}
-            className={`${CLASS_NAME}__item`}
             onProjectSelected={HandleProjectChange}
           />
         ))}

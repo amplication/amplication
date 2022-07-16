@@ -35,13 +35,11 @@ const SideBar = ({
     <div className={CLASS_NAME}>
       <span className={`${CLASS_NAME}__label`}>Workspace</span>
         <WorkspaceSelectorNew />
-      <div className={`${CLASS_NAME}__inner`}>
         <ProjectList
           projects={projects}
           HandleProjectChange={HandleProjectChange}
           onCreateNewProjectClicked={onCreateNewProjectClicked}
         />
-      </div>
         <ProjectSideBarFooter />
     </div>
   );
