@@ -38,6 +38,7 @@ type serviceSettings = {
 
 type TData = {
   createResourceWithEntities: models.Resource;
+  createResourceGenSettings: models.ResourceGenSettingsCreateInput;
 };
 
 export const CreateServiceWizardForm = () => {
@@ -102,19 +103,32 @@ export const CreateServiceWizardForm = () => {
     trackEvent({
       eventName: "createResourceFromSample",
     });
+    sampleServiceResourceWithEntities.generationSettings = {
+      generateAdminUI: serviceSettingsFields.generateAdminUI,
+      generateGraphQL: serviceSettingsFields.generateGraphQL,
+      generateRestApi: serviceSettingsFields.generateRestApi,
+    };
+
     createResourceWithEntities({
       variables: { data: sampleServiceResourceWithEntities },
     }).catch(console.error);
-  }, [createResourceWithEntities, trackEvent]);
+  }, [createResourceWithEntities, trackEvent, serviceSettingsFields]);
 
   const handleStartFromScratch = useCallback(() => {
     trackEvent({
       eventName: "createResourceFromScratch",
     });
+
+    sampleServiceResourceWithoutEntities.generationSettings = {
+      generateAdminUI: serviceSettingsFields.generateAdminUI,
+      generateGraphQL: serviceSettingsFields.generateGraphQL,
+      generateRestApi: serviceSettingsFields.generateRestApi,
+    };
+
     createResourceWithEntities({
       variables: { data: sampleServiceResourceWithoutEntities },
     }).catch(console.error);
-  }, [createResourceWithEntities, trackEvent]);
+  }, [createResourceWithEntities, trackEvent, serviceSettingsFields]);
 
   const handleClick = useCallback(() => {
     if (serviceSettingsFields.resourceType.scratch) {
@@ -128,15 +142,12 @@ export const CreateServiceWizardForm = () => {
 
   const handleChange = useCallback(
     (event) => {
-            if (event.target.name === "sample") {
+      if (event.target.name === "sample") {
         serviceSettingsFields.resourceType.sample = event.target.checked;
-        serviceSettingsFields.resourceType.scratch = !event.target
-          .checked;
+        serviceSettingsFields.resourceType.scratch = !event.target.checked;
       } else {
-        serviceSettingsFields.resourceType.sample = !event.target
-          .checked;
-          serviceSettingsFields.resourceType.scratch =
-          event.target.checked;
+        serviceSettingsFields.resourceType.sample = !event.target.checked;
+        serviceSettingsFields.resourceType.scratch = event.target.checked;
       }
       setServiceSettings(serviceSettingsFields);
     },

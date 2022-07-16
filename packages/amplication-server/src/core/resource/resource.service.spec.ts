@@ -715,7 +715,12 @@ describe('ResourceService', () => {
                 }
               ]
             }
-          ]
+          ],
+          generationSettings: {
+            generateAdminUI: true,
+            generateGraphQL: true,
+            generateRestApi: true
+          }
         },
 
         EXAMPLE_USER
@@ -843,7 +848,12 @@ describe('ResourceService', () => {
                 }
               ]
             }
-          ]
+          ],
+          generationSettings: {
+            generateAdminUI: true,
+            generateGraphQL: true,
+            generateRestApi: true
+          }
         },
 
         EXAMPLE_USER

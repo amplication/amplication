@@ -55,6 +55,11 @@ export const sampleServiceResourceWithoutEntities: models.ResourceCreateWithEnti
   },
   commitMessage: "",
   entities: [],
+  generationSettings: {
+    generateAdminUI: true,
+    generateGraphQL: true,
+    generateRestApi: true,
+  },
 };
 
 export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitiesInput = {
@@ -149,6 +154,11 @@ export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitie
       ],
     },
   ],
+  generationSettings: {
+    generateAdminUI: true,
+    generateGraphQL: true,
+    generateRestApi: true,
+  },
 };
 
 export const GET_APP_SETTINGS = gql`

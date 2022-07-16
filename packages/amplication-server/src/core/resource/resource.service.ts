@@ -32,6 +32,7 @@ import {
   CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
   SAMPLE_SERVICE_DATA
 } from './sampleResource';
+import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -64,7 +65,8 @@ export class ResourceService {
    */
   async createResource(
     args: CreateOneResourceArgs,
-    user: User
+    user: User,
+    generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<Resource> {
     const { color } = args.data;
     if (color && !validateHTMLColorHex(color)) {
@@ -98,7 +100,8 @@ export class ResourceService {
 
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
-      user
+      user,
+      generationSettings
     );
 
     try {
@@ -219,7 +222,8 @@ export class ResourceService {
       {
         data: data.resource
       },
-      user
+      user,
+      data.generationSettings
     );
 
     const newEntities: {
