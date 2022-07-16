@@ -31,8 +31,8 @@ export class Resource {
 
   project?: Project;
 
-  @Field(() => String, { nullable: false })
-  projectId!: string;
+  @Field(() => String, { nullable: true })
+  projectId?: string;
 
   @Field(() => GitRepository, {
     nullable: true
