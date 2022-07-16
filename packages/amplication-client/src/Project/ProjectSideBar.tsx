@@ -11,16 +11,23 @@ type Props = {
   currentWorkspace: Workspace;
   currentProject: Project;
   projects: Project[];
-  onProjectChange: (project: Project) => void;
+  HandleProjectChange: (project: Project) => void;
   onCreateNewProjectClicked: () => void;
   onSetCurrentWorkspace: (workspaceId: string) => void;
 };
 
+// mock project list until merging with Shimi
+const projectListMock: Project[] = [
+  { id: "1", name: "project-1", resources: [], createdAt: "", updatedAt: "" },
+  { id: "2", name: "project-2", resources: [], createdAt: "", updatedAt: "" },
+  { id: "3", name: "project-3", resources: [], createdAt: "", updatedAt: "" },
+];
+
 const SideBar = ({
   currentWorkspace,
   currentProject,
-  projects,
-  onProjectChange,
+  projects = projectListMock,
+  HandleProjectChange,
   onCreateNewProjectClicked,
   onSetCurrentWorkspace,
 }: Props) => {
@@ -31,7 +38,8 @@ const SideBar = ({
       <div className={`${CLASS_NAME}__inner`}>
         <ProjectList
           projects={projects}
-          handleProjectChange={onProjectChange}
+          HandleProjectChange={HandleProjectChange}
+          onCreateNewProjectClicked={onCreateNewProjectClicked}
         />
       </div>
         <ProjectSideBarFooter />

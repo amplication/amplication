@@ -1,27 +1,18 @@
 import React from "react";
 import { Project } from "../models";
-import NewProjectWizard from "./NewProjectWizard";
+import AddNewProject from "./AddNewProject";
 import "./ProjectList.scss";
 import { ProjectListItem } from "./ProjectListItem";
 
 const CLASS_NAME = "project-list";
 
-// mock project list until merging with Shimi
-const projectListMock: Project[] = [
-  { id: "1", name: "project-1", resources: [], createdAt: "", updatedAt: "" },
-  { id: "2", name: "project-2", resources: [], createdAt: "", updatedAt: "" },
-  { id: "3", name: "project-3", resources: [], createdAt: "", updatedAt: "" },
-];
-
 type Props = {
   projects: Project[];
-  handleProjectChange: (project: Project) => void;
+  HandleProjectChange: (project: Project) => void;
+  onCreateNewProjectClicked: () => void;
 };
 
-export const ProjectList = ({
-  projects = projectListMock,
-  handleProjectChange,
-}: Props) => {
+export const ProjectList = ({ projects, HandleProjectChange }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__items`}>
@@ -30,11 +21,11 @@ export const ProjectList = ({
             key={project.id}
             project={project}
             className={`${CLASS_NAME}__item`}
-            onProjectSelected={handleProjectChange}
+            onProjectSelected={HandleProjectChange}
           />
         ))}
       </div>
-      <NewProjectWizard />
+      <AddNewProject />
     </div>
   );
 };
