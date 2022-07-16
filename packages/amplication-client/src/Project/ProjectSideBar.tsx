@@ -5,7 +5,7 @@ import "./ProjectSideBar.scss";
 import ProjectSideBarFooter from "./ProjectSideBarFooter";
 import WorkspaceSelectorNew from "./WorkspaceSelectorNew";
 
-const CLASS_NAME = "side-bar-layout";
+const CLASS_NAME = "project-sidebar";
 
 type Props = {
   currentWorkspace: Workspace;
@@ -23,7 +23,7 @@ const projectListMock: Project[] = [
   { id: "3", name: "project-3", resources: [], createdAt: "", updatedAt: "" },
 ];
 
-const SideBar = ({
+const ProjectSideBar = ({
   currentWorkspace,
   currentProject,
   projects = projectListMock,
@@ -45,4 +45,4 @@ const SideBar = ({
   );
 };
 
-export default SideBar;
+export default ProjectSideBar;
