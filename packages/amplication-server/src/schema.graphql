@@ -92,6 +92,7 @@ type Resource {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  projectId: String
   gitRepository: GitRepository
   gitRepositoryId: String
   name: String!

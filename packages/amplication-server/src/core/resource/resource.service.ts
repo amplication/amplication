@@ -339,9 +339,11 @@ export class ResourceService {
         id: resourceId,
         deletedAt: null,
         project: {
-          resources: {
-            some: {
-              id: user.id
+          workspace: {
+            users: {
+              some: {
+                id: user.id
+              }
             }
           }
         }
@@ -372,9 +374,11 @@ export class ResourceService {
         id: resourceId,
         deletedAt: null,
         project: {
-          resources: {
-            some: {
-              id: userId
+          workspace: {
+            users: {
+              some: {
+                id: userId
+              }
             }
           }
         }
@@ -489,9 +493,11 @@ export class ResourceService {
         id: resourceId,
         deletedAt: null,
         project: {
-          resources: {
-            some: {
-              id: userId
+          workspace: {
+            users: {
+              some: {
+                id: userId
+              }
             }
           }
         }
@@ -569,9 +575,7 @@ export class ResourceService {
     });
   }
 
-  async project(projectId: string): Promise<Project> {
-    return this.prisma.project
-      .findUnique({ where: { id: projectId } })
-      .workspace();
+  async project(resourceId: string): Promise<Project> {
+    return this.prisma.project.findUnique({ where: { id: resourceId } });
   }
 }

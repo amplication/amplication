@@ -34,11 +34,14 @@ import {
   DEFAULT_ENVIRONMENT_NAME,
   EnvironmentService
 } from '../environment/environment.service';
-import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
+import {
+  EnumPendingChangeAction,
+  EnumPendingChangeResourceType,
+  ResourceCreateInput
+} from './dto';
 import { PendingChange } from './dto/PendingChange';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
-import { SAMPLE_SERVICE_DATA } from './sampleResource';
 import { ServiceSettings } from '../serviceSettings/dto';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
@@ -54,6 +57,13 @@ const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
+
+const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
+  description: 'Sample Service for task management',
+  name: 'My sample service',
+  resourceType: EnumResourceType.Service,
+  project: { connect: { id: 'exampleProjectId' } }
+};
 
 const EXAMPLE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
@@ -430,9 +440,11 @@ describe('ResourceService', () => {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
         project: {
-          resources: {
-            some: {
-              id: EXAMPLE_USER_ID
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }
@@ -589,9 +601,11 @@ describe('ResourceService', () => {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
         project: {
-          resources: {
-            some: {
-              id: EXAMPLE_USER_ID
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }
@@ -810,9 +824,11 @@ describe('ResourceService', () => {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
         project: {
-          resources: {
-            some: {
-              id: EXAMPLE_USER_ID
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }
