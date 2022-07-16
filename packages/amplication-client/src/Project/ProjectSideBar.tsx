@@ -2,7 +2,7 @@ import React from "react";
 import { Project, Workspace } from "../models";
 import ProjectList from "./ProjectList";
 import "./ProjectSideBar.scss";
-import ProjectSideBarFooter from "./WorkspaceActions";
+import ProjectSideBarFooter from "./WorkspaceSettingsNavigation";
 import WorkspaceSelectorNew from "./WorkspaceSelectorNew";
 
 const CLASS_NAME = "project-sidebar";
