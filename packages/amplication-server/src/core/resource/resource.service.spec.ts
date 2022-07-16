@@ -34,7 +34,11 @@ import {
   DEFAULT_ENVIRONMENT_NAME,
   EnvironmentService
 } from '../environment/environment.service';
-import { EnumPendingChangeAction, EnumPendingChangeResourceType, ResourceCreateInput } from './dto';
+import {
+  EnumPendingChangeAction,
+  EnumPendingChangeResourceType,
+  ResourceCreateInput
+} from './dto';
 import { PendingChange } from './dto/PendingChange';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
@@ -436,9 +440,11 @@ describe('ResourceService', () => {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
         project: {
-          resources: {
-            some: {
-              id: EXAMPLE_USER_ID
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }
@@ -595,9 +601,11 @@ describe('ResourceService', () => {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
         project: {
-          resources: {
-            some: {
-              id: EXAMPLE_USER_ID
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }
@@ -816,9 +824,11 @@ describe('ResourceService', () => {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
         project: {
-          resources: {
-            some: {
-              id: EXAMPLE_USER_ID
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }
