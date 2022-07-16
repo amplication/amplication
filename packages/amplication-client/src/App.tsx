@@ -6,7 +6,6 @@ import ResourceLayout from "./Resource/ResourceLayout";
 import Login from "./User/Login";
 import Signup from "./User/Signup";
 import WorkspaceLayout from "./Workspaces/WorkspaceLayout";
-import { CreateResourceFromExcel } from "./Resource/CreateResourceFromExcel";
 
 import PrivateRoute from "./authentication/PrivateRoute";
 import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
@@ -15,6 +14,7 @@ import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import { init as initPaddle } from "./util/paddle";
 import RouteWithAnalytics from "./Layout/RouteWithAnalytics";
 import AuthResourceWithGitCallback from "./Resource/git/AuthResourceWithGitCallback";
+import { CreateServiceWizard } from "./Resource/create-resource/CreateServiceWizard";
 
 const context = {
   source: "amplication-client",
@@ -65,7 +65,7 @@ function App() {
           <PrivateRoute
             exact
             path="/create-resource"
-            component={CreateResourceFromExcel}
+            component={CreateServiceWizard} 
           />
           <PrivateRoute path="/:resource" component={ResourceLayout} />
         </Switch>

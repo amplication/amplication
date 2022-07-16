@@ -4,6 +4,7 @@ import {
   Button,
   EnumButtonStyle,
   RadioButtonField,
+  Snackbar,
   ToggleField,
 } from "@amplication/design-system";
 import { Form, Formik } from "formik";
@@ -19,6 +20,7 @@ import * as models from "../../models";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 import { useHistory } from "react-router-dom";
+import { formatError } from "../../util/error";
 
 const CLASS_NAME = "create-service-wizard-form";
 
@@ -39,9 +41,18 @@ type TData = {
 };
 
 export const CreateServiceWizardForm = () => {
-  
   const { trackEvent } = useTracking();
+
+  const [generalError, setGeneralError] = useState<Error | undefined>(
+    undefined
+  );
+
+  const clearGeneralError = useCallback(() => {
+    setGeneralError(undefined);
+  }, [setGeneralError]);
+
   const history = useHistory();
+
   const [serviceSettingsFields, setServiceSettings] = useState<serviceSettings>(
     {
       generateAdminUI: true,
@@ -54,12 +65,12 @@ export const CreateServiceWizardForm = () => {
     }
   );
 
-  const [createResourceWithEntities, { loading,data }] = useMutation<
-    // todo:: return error
+  const [createResourceWithEntities, { loading, data, error }] = useMutation<
     TData
   >(CREATE_RESOURCE_WITH_ENTITIES, {
     update(cache, { data }) {
       if (!data) return;
+
       const queryData = cache.readQuery<{ resources: Array<models.Resource> }>({
         query: GET_RESOURCES,
       });
@@ -85,7 +96,7 @@ export const CreateServiceWizardForm = () => {
     [setServiceSettings]
   );
 
-  //const errorMessage = formatError(error) || formatError(generalError);
+  const errorMessage = formatError(error) || formatError(generalError);
 
   const handleStartFromSample = useCallback(() => {
     trackEvent({
@@ -117,13 +128,19 @@ export const CreateServiceWizardForm = () => {
 
   const handleChange = useCallback(
     (event) => {
-      serviceSettingsFields.resourceType.sample = !serviceSettingsFields
-        .resourceType.sample;
-      serviceSettingsFields.resourceType.scratch = !serviceSettingsFields
-        .resourceType.scratch;
+            if (event.target.name === "sample") {
+        serviceSettingsFields.resourceType.sample = event.target.checked;
+        serviceSettingsFields.resourceType.scratch = !event.target
+          .checked;
+      } else {
+        serviceSettingsFields.resourceType.sample = !event.target
+          .checked;
+          serviceSettingsFields.resourceType.scratch =
+          event.target.checked;
+      }
       setServiceSettings(serviceSettingsFields);
     },
-    [serviceSettingsFields]
+    [serviceSettingsFields, setServiceSettings]
   );
 
   useEffect(() => {
@@ -199,14 +216,14 @@ export const CreateServiceWizardForm = () => {
                           className=""
                           label="None (start from scratch)"
                           name="scratch"
-                          checked={serviceSettingsFields.resourceType.scratch}
+                          checked={formik.values.resourceType.scratch}
                           onChange={handleChange}
                         />
                         <RadioButtonField
                           className=""
                           label="Order Management"
                           name="sample"
-                          checked={serviceSettingsFields.resourceType.sample}
+                          checked={formik.values.resourceType.sample}
                           onChange={handleChange}
                         />
                       </div>
@@ -218,10 +235,11 @@ export const CreateServiceWizardForm = () => {
           </Formik>
         )
       )}
-      {/* <Snackbar
-        open={Boolean(error)}
-        message={formatError(error || updateError)}
-      /> */}
+      <Snackbar
+        open={Boolean(error) || Boolean(generalError)}
+        message={errorMessage}
+        onClose={clearGeneralError}
+      />
       <footer>
         <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleClick}>
           {"create resource"}
