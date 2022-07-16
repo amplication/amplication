@@ -1,9 +1,11 @@
 import React from "react";
 import InnerTabLink from "../Layout/InnerTabLink";
 
-const ProjectSideBarFooter = () => {
+const CLASS_NAME = "workspace-actions";
+
+const WorkspaceActions = () => {
   return (
-    <div>
+    <div className={CLASS_NAME}>
       <InnerTabLink to={`/workspace/settings`} icon="settings">
         Workspace Settings
       </InnerTabLink>
@@ -14,4 +16,4 @@ const ProjectSideBarFooter = () => {
   );
 };
 
-export default ProjectSideBarFooter;
+export default WorkspaceActions;
