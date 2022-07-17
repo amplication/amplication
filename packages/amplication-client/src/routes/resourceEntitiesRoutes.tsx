@@ -1,21 +1,21 @@
-const serviceEntitiesRoutes = [
+const resourceEntitiesRoutes = [
   {
     path:
-      "/:workspace/:project/:service/entities/permissions",
+      "/:workspace/:project/:resource/entities/permissions",
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
     routes: [],
   },
   {
-    path: "/:workspace/:project/:service/entities/fields",
+    path: "/:workspace/:project/:resource/entities/fields",
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
     routes: [
       {
         path:
-          "/:workspace/:project/:service/entities/fields/:fieldId",
+          "/:workspace/:project/:resource/entities/fields/:fieldId",
         moduleName: "",
         routeTrackType: "",
         exactPath: true,
@@ -25,4 +25,4 @@ const serviceEntitiesRoutes = [
   },
 ];
 
-export default serviceEntitiesRoutes;
+export default resourceEntitiesRoutes;

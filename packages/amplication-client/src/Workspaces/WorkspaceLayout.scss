@@ -13,18 +13,12 @@
     flex-grow: 1;
   }
 
-  &__side_menu {
-    width: 312px;
-    background: #22273c;
-  }
-
   &__main_content {
     flex-grow: 1;
-    background: #22273C;
   }
 
   &__changes_menu {
   width: 261px;
-  background: #15192C;
+  background: var(--menu-background-color);
   }
 }

@@ -1,5 +1,5 @@
 import { ComponentType, lazy, LazyExoticComponent } from "react";
-import serviceRoutes from "./serviceRoutes";
+import resourceRoutes from "./resourceRoutes";
 
 export interface RouteDef {
   path: string;
@@ -24,25 +24,33 @@ export const Routes: RouteDef[] = [
     routes: [
       {
         path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
-        Component: lazy(() => import("../Resource/ResourceHome")),
+        // Component: lazy(() => import("../Resource/ResourceHome")),
         moduleName: "",
         exactPath: true,
         routes: [
+          {
+            path: "/:workspace/:project/",
+            Component: lazy(() => import("../Resource/ResourceHome")),
+            moduleName: "",
+            routeTrackType: "",
+            exactPath: true,
+            routes: resourceRoutes,
+          },
           {
             path: "/:workspace/:project/create-resource",
             Component: lazy(() => import("../Resource/ResourceHome")),
             moduleName: "",
             routeTrackType: "",
             exactPath: true,
-            routes: serviceRoutes,
+            routes: resourceRoutes,
           },
           {
-            path: "/:workspace/:project/:service",
+            path: "/:workspace/:project/:resource",
             Component: lazy(() => import("../Resource/ResourceHome")),
             moduleName: "",
             routeTrackType: "",
             exactPath: true,
-            routes: serviceRoutes,
+            routes: resourceRoutes,
           },
         ],
       },

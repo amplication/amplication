@@ -31,7 +31,6 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
       <WorkspaceHeader />
       <CompleteInvitation />
       <div className={`${moduleClass}__page_content`}>
-        <div className={`${moduleClass}__side_menu`}>hello</div>
         <div className={`${moduleClass}__main_content`}>{InnerRoutes}</div>
         <div className={`${moduleClass}__changes_menu`}>pending changes</div>
       </div>

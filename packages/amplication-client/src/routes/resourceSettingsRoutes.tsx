@@ -1,6 +1,6 @@
-const serviceSettingsRoutes = [
+const resourceSettingsRoutes = [
   {
-    path: "/:workspace/:project/:service/appSettings/update",
+    path: "/:workspace/:project/:resource/appSettings/update",
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
@@ -8,7 +8,7 @@ const serviceSettingsRoutes = [
   },
   {
     path:
-      "/:workspace/:project/:service/appSettings/generationSettings",
+      "/:workspace/:project/:resource/appSettings/generationSettings",
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
@@ -16,21 +16,21 @@ const serviceSettingsRoutes = [
   },
   {
     path:
-      "/:workspace/:project/:service/appSettings/directories",
+      "/:workspace/:project/:resource/appSettings/directories",
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
     routes: [],
   },
   {
-    path: "/:workspace/:project/:service/appSettings/db",
+    path: "/:workspace/:project/:resource/appSettings/db",
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
     routes: [],
   },
   {
-    path: "/:workspace/:project/:service/appSettings/auth",
+    path: "/:workspace/:project/:resource/appSettings/auth",
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
@@ -38,7 +38,7 @@ const serviceSettingsRoutes = [
   },
   {
     path:
-      "/:workspace/:project/:service/appSettings/api-tokens",
+      "/:workspace/:project/:resource/appSettings/api-tokens",
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
@@ -46,4 +46,4 @@ const serviceSettingsRoutes = [
   },
 ]
 
-export default serviceSettingsRoutes;
+export default resourceSettingsRoutes;
