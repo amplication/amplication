@@ -1,9 +1,19 @@
 import { Module } from '@nestjs/common';
-import { FsStorageService } from './fsStorage.service';
+import { FsStorageService, FS_STORAGE_SERVICE } from './fsStorage.service';
 
 @Module({
   controllers: [],
-  providers: [FsStorageService],
-  exports: [FsStorageService]
+  providers: [
+    {
+      useClass: FsStorageService,
+      provide: FS_STORAGE_SERVICE
+    }
+  ],
+  exports: [
+    {
+      useClass: FsStorageService,
+      provide: FS_STORAGE_SERVICE
+    }
+  ]
 })
 export class FsStorageModule {}

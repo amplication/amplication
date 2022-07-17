@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
-import { FsStorageService } from '../fsStorage/fsStorage.service';
+import { StorageService } from 'src/services/storage.service';
+import { FS_STORAGE_SERVICE } from '../fsStorage/fsStorage.service';
 import { BuildContext } from './dto/BuildContext';
 
 @Injectable()
@@ -9,7 +10,8 @@ export class BuildContextStorageService {
   private readonly buildContextLocation: string;
 
   constructor(
-    private readonly fsStorageService: FsStorageService,
+    @Inject(FS_STORAGE_SERVICE)
+    private readonly storageService: StorageService,
     private readonly configService: ConfigService
   ) {
     this.buildContextLocation = this.configService.get(
@@ -26,7 +28,7 @@ export class BuildContextStorageService {
       buildContext.resourceId,
       `${buildContext.buildId}.json`
     );
-    await this.fsStorageService.saveFile(path, JSON.stringify(buildContext));
+    await this.storageService.saveFile(path, JSON.stringify(buildContext));
     return path;
   }
 }
