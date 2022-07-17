@@ -12,48 +12,75 @@ $max-width: 700px;
   height: 100%;
   gap: 48px;
 
+  &__createBtn {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    gap: 48px;
+  }
+
   &__generationSettings {
-    gap: 16px;
     width: 177px;
-    height: 124px;
+    display: flex;
+    flex-direction: column;
   }
 
   &__SampleSettings {
     height: 158px;
     width: 177px;
-    left: 0px;
     top: 276px;
-    border-radius: 0px;
   }
 
   &__generation_setting_wrapper {
-    height: 86px;
-    width: 240px;
-    left: 0px;
-    top: 38px;
-    border-radius: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 48px;
+
+    label {
+      margin-bottom: 5px;
+    }
+  }
+
+  &__generation_setting_resource_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   &__toggle_wrapper {
-    height: 18px;
-    width: 240px;
-    left: 0px;
-    top: 0px;
-    border-radius: 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 34px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
   }
 
-  .toggle {
-    width: 30px;
-    height: 14px;
-    color: green;
+  &__toggle_wrapper_resource {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .toggle-field {
+    margin-bottom: 18px;
+  }
+
+  .amp-radio-field .MuiFormControlLabel-label {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    width: 177px;
   }
 
   label {
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;
-    letter-spacing: 0em;
-    text-align: left;
   }
 
   &__processing {

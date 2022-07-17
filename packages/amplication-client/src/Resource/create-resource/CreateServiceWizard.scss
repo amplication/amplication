@@ -5,6 +5,12 @@
 .create-service-wizard {
   display: flex;
   height: 100%;
+  flex-direction: column;
+
+  &__splitWrapper {
+    display: flex;
+    height: 100%;
+  }
 
   &__left {
     display: flex;
@@ -21,7 +27,6 @@
     justify-content: center;
     align-items: center;
   }
-
   &__description {
     display: flex;
     flex-direction: column;
@@ -34,7 +39,7 @@
       color: #2c3249;
     }
   }
-
+  
   h2 {
     font-size: 24px;
     font-weight: 600;
@@ -50,4 +55,16 @@
     letter-spacing: 0em;
     text-align: center;
   }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    height: 26px;
+    background: #373D57;
+  }
 }
+
+

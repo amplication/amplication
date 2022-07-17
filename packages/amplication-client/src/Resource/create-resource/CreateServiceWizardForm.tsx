@@ -1,8 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import "./CreateServiceWizardForm.scss";
 import {
-  Button,
-  EnumButtonStyle,
   RadioButtonField,
   Snackbar,
   ToggleField,
@@ -24,16 +28,15 @@ import { formatError } from "../../util/error";
 
 const CLASS_NAME = "create-service-wizard-form";
 
-type resourceType = {
-  scratch: boolean;
-  sample: boolean;
+type Props = {
+  isClicked:boolean;
 };
 
 type serviceSettings = {
   generateAdminUI: boolean;
   generateGraphQL: boolean;
   generateRestApi: boolean;
-  resourceType: resourceType;
+  resourceType: string;
 };
 
 type TData = {
@@ -41,7 +44,7 @@ type TData = {
   createResourceGenSettings: models.ResourceGenSettingsCreateInput;
 };
 
-export const CreateServiceWizardForm = () => {
+export const CreateServiceWizardForm = ({isClicked}: Props) => {
   const { trackEvent } = useTracking();
 
   const [generalError, setGeneralError] = useState<Error | undefined>(
@@ -54,16 +57,15 @@ export const CreateServiceWizardForm = () => {
 
   const history = useHistory();
 
-  const [serviceSettingsFields, setServiceSettings] = useState<serviceSettings>(
-    {
-      generateAdminUI: true,
-      generateGraphQL: true,
-      generateRestApi: true,
-      resourceType: {
-        scratch: true,
-        sample: false,
-      },
-    }
+  const serviceSettingsFieldsInitValues = {
+    generateAdminUI: true,
+    generateGraphQL: true,
+    generateRestApi: true,
+    resourceType: "scratch",
+  };
+
+  const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
+    serviceSettingsFieldsInitValues
   );
 
   const [createResourceWithEntities, { loading, data, error }] = useMutation<
@@ -89,13 +91,10 @@ export const CreateServiceWizardForm = () => {
     },
   });
 
-  const handleSubmit = useCallback(
-    (data: serviceSettings) => {
-      if (!data.generateGraphQL) data.generateAdminUI = false;
-      setServiceSettings(data);
-    },
-    [setServiceSettings]
-  );
+  const handleSubmit = (data: serviceSettings) => {
+    if (!data.generateGraphQL) data.generateAdminUI = false;
+    serviceSettingsFields.current = data;
+  };
 
   const errorMessage = formatError(error) || formatError(generalError);
 
@@ -104,9 +103,9 @@ export const CreateServiceWizardForm = () => {
       eventName: "createResourceFromSample",
     });
     sampleServiceResourceWithEntities.generationSettings = {
-      generateAdminUI: serviceSettingsFields.generateAdminUI,
-      generateGraphQL: serviceSettingsFields.generateGraphQL,
-      generateRestApi: serviceSettingsFields.generateRestApi,
+      generateAdminUI: serviceSettingsFields.current.generateAdminUI,
+      generateGraphQL: serviceSettingsFields.current.generateGraphQL,
+      generateRestApi: serviceSettingsFields.current.generateRestApi,
     };
 
     createResourceWithEntities({
@@ -120,9 +119,9 @@ export const CreateServiceWizardForm = () => {
     });
 
     sampleServiceResourceWithoutEntities.generationSettings = {
-      generateAdminUI: serviceSettingsFields.generateAdminUI,
-      generateGraphQL: serviceSettingsFields.generateGraphQL,
-      generateRestApi: serviceSettingsFields.generateRestApi,
+      generateAdminUI: serviceSettingsFields.current.generateAdminUI,
+      generateGraphQL: serviceSettingsFields.current.generateGraphQL,
+      generateRestApi: serviceSettingsFields.current.generateRestApi,
     };
 
     createResourceWithEntities({
@@ -130,29 +129,18 @@ export const CreateServiceWizardForm = () => {
     }).catch(console.error);
   }, [createResourceWithEntities, trackEvent, serviceSettingsFields]);
 
-  const handleClick = useCallback(() => {
-    if (serviceSettingsFields.resourceType.scratch) {
+
+  useEffect(() => {
+        if(isClicked) { 
+        const currentResourceType = serviceSettingsFields.current.resourceType;
+    if (currentResourceType === "scratch") {
       handleStartFromScratch();
-    } else if (serviceSettingsFields.resourceType.sample) {
+    } else if (currentResourceType === "sample") {
       handleStartFromSample();
     } else {
       //error?
-    }
-  }, [serviceSettingsFields, handleStartFromScratch, handleStartFromSample]);
-
-  const handleChange = useCallback(
-    (event) => {
-      if (event.target.name === "sample") {
-        serviceSettingsFields.resourceType.sample = event.target.checked;
-        serviceSettingsFields.resourceType.scratch = !event.target.checked;
-      } else {
-        serviceSettingsFields.resourceType.sample = !event.target.checked;
-        serviceSettingsFields.resourceType.scratch = event.target.checked;
-      }
-      setServiceSettings(serviceSettingsFields);
-    },
-    [serviceSettingsFields, setServiceSettings]
-  );
+    }}
+  }, [ handleStartFromScratch, handleStartFromSample,isClicked]);
 
   useEffect(() => {
     if (data) {
@@ -182,80 +170,63 @@ export const CreateServiceWizardForm = () => {
           </div>
         </div>
       ) : (
-        serviceSettingsFields && (
-          <Formik
-            initialValues={serviceSettingsFields}
-            // validate={(values: serviceSettings) =>
-            //   validate(values, FORM_SCHEMA)
-            //}
-            enableReinitialize
-            onSubmit={handleSubmit}
-          >
-            {(formik) => {
-              return (
-                <Form>
-                  <div className={`${CLASS_NAME}__generationSettings`}>
+        <Formik
+          initialValues={serviceSettingsFieldsInitValues}
+          // validate={(values: serviceSettings) =>
+          //   validate(values, FORM_SCHEMA)
+          //}
+          onSubmit={handleSubmit}
+        >
+          {(formik) => {
+            return (
+              <Form>
+                <div className={`${CLASS_NAME}__generationSettings`}>
+                  <FormikAutoSave debounceMS={200} />
+                  <div className={`${CLASS_NAME}__generation_setting_wrapper`}>
                     <label>APIs Admin UI Settings </label>
-                    <div
-                      className={`${CLASS_NAME}__generation_setting_wrapper`}
-                    >
-                      <FormikAutoSave debounceMS={200} />
-                      <div className={`${CLASS_NAME}__toggle_wrapper`}>
-                        <ToggleField
-                          name="generateGraphQL"
-                          label="GraphQL API"
-                        />
-                        <ToggleField
-                          name="generateRestApi"
-                          label="REST API & Swagger UI"
-                        />
-                        <ToggleField
-                          disabled={!serviceSettingsFields.generateGraphQL}
-                          name="generateAdminUI"
-                          label="Admin UI"
-                        />
-                      </div>
+                    <div>
+                      <ToggleField name="generateGraphQL" label="GraphQL API" />
+                      <ToggleField
+                        name="generateRestApi"
+                        label="REST API & Swagger UI"
+                      />
+                      <ToggleField
+                        disabled={!formik.values.generateGraphQL}
+                        name="generateAdminUI"
+                        label="Admin UI"
+                      />
                     </div>
                   </div>
-                  <div className={`${CLASS_NAME}__SampleSettings`}>
+                  <div
+                    className={`${CLASS_NAME}__generation_setting_resource_wrapper`}
+                  >
                     <label>Sample Entities </label>
-                    <div
-                      className={`${CLASS_NAME}__generation_setting_wrapper`}
-                    >
-                      <div className={`${CLASS_NAME}__toggle_wrapper`}>
-                        <RadioButtonField
-                          className=""
-                          label="None (start from scratch)"
-                          name="scratch"
-                          checked={formik.values.resourceType.scratch}
-                          onChange={handleChange}
-                        />
-                        <RadioButtonField
-                          className=""
-                          label="Order Management"
-                          name="sample"
-                          checked={formik.values.resourceType.sample}
-                          onChange={handleChange}
-                        />
-                      </div>
+                    <div>
+                      <RadioButtonField
+                        label="None (start from scratch)"
+                        value="scratch"
+                        name="resourceType"
+                        checked={formik.values.resourceType === "scratch"}
+                      />
+                      <RadioButtonField
+                        label="Order Management"
+                        value="sample"
+                        name="resourceType"
+                        checked={formik.values.resourceType === "sample"}
+                      />
                     </div>
                   </div>
-                </Form>
-              );
-            }}
-          </Formik>
-        )
+                </div>
+              </Form>
+            );
+          }}
+        </Formik>
       )}
       <Snackbar
         open={Boolean(error) || Boolean(generalError)}
         message={errorMessage}
         onClose={clearGeneralError}
       />
-      <footer>
-        <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleClick}>
-          {"create resource"}
-        </Button>
-      </footer>
     </div>
   );
 };
