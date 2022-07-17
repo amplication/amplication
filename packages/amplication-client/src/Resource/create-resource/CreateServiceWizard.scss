@@ -39,7 +39,7 @@
       color: #2c3249;
     }
   }
-  
+
   h2 {
     font-size: 24px;
     font-weight: 600;
@@ -63,8 +63,26 @@
     align-items: center;
     padding: 16px;
     height: 26px;
-    background: #373D57;
+    background: #373d57;
+
+    label {
+      font-weight: 400;
+      letter-spacing: 0em;
+    }
+  }
+
+  .amp-button--clear[disabled] {
+    color: #686f8c;
+    border: 1px solid #686f8c;
+    padding: 5px 6px;
+    height: 28px;
+    left: 16px;
+  }
+  .amp-icon--size-small {
+    font-size: 12px;
+  }
+  .amp-button--primary {
+    right: 16px;
+    height: 28px;
   }
 }
-
-

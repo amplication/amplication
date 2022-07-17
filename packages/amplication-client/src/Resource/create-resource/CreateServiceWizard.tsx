@@ -2,6 +2,7 @@ import {
   Button,
   CircleBadge,
   EnumButtonStyle,
+  EnumIconPosition,
   Icon,
 } from "@amplication/design-system";
 import React, { useState } from "react";
@@ -38,8 +39,16 @@ export const CreateServiceWizard = () => {
         </div>
       </div>
       <div className={`${CLASS_NAME}__footer`}>
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          disabled
+          icon="arrow_left"
+          iconPosition={EnumIconPosition.Left}
+        >
+          {"Back to project"}
+        </Button>
         <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleClick}>
-          {"create resource"}
+          <label>Create Service</label>
         </Button>
       </div>
     </div>
