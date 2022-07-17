@@ -29,6 +29,7 @@ export class Resource {
   })
   updatedAt!: Date;
 
+  @Field(() => Project, { nullable: true })
   project?: Project;
 
   @Field(() => String, { nullable: true })
