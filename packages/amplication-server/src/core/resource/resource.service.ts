@@ -6,7 +6,7 @@ import pluralize from 'pluralize';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { Commit, Resource, User, Workspace } from 'src/models';
+import { Commit, Project, Resource, User } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
@@ -27,11 +27,6 @@ import {
 } from './dto';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
-import {
-  createSampleResourceEntities,
-  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_SERVICE_DATA
-} from './sampleResource';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -75,19 +70,8 @@ export class ResourceService {
       data: {
         ...DEFAULT_RESOURCE_DATA,
         ...args.data,
-        workspace: {
-          connect: {
-            id: user.workspace?.id
-          }
-        },
         roles: {
           create: USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${args.data.name}`,
-            workspaceId: user.workspace?.id
-          }
         }
       }
     });
@@ -126,55 +110,6 @@ export class ResourceService {
   }
 
   /**
-   * Create sample resource
-   * @param user the user to associate the created resource with
-   */
-  async createSampleResource(user: User): Promise<Resource> {
-    const resource = await this.createResource(
-      {
-        data: SAMPLE_SERVICE_DATA
-      },
-      user
-    );
-
-    const userEntity = await this.entityService.findFirst({
-      where: { name: USER_ENTITY_NAME, resourceId: resource.id },
-      select: { id: true }
-    });
-
-    const sampleResourceData = createSampleResourceEntities(userEntity.id);
-
-    await this.entityService.bulkCreateEntities(
-      resource.id,
-      user,
-      sampleResourceData.entities
-    );
-    await this.entityService.bulkCreateFields(
-      user,
-      userEntity.id,
-      sampleResourceData.userEntityFields
-    );
-
-    await this.commit({
-      data: {
-        resource: {
-          connect: {
-            id: resource.id
-          }
-        },
-        message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-        user: {
-          connect: {
-            id: user.id
-          }
-        }
-      }
-    });
-
-    return resource;
-  }
-
-  /**
    * Create an resource with entities and field in one transaction, based only on entities and fields names
    * @param user the user to associate the created resource with
    */
@@ -196,7 +131,7 @@ export class ResourceService {
           mode: QueryMode.Insensitive,
           startsWith: data.resource.name
         },
-        workspaceId: user.workspace.id,
+        projectId: data.resource.project.connect.id,
         deletedAt: null
       },
       select: {
@@ -367,16 +302,6 @@ export class ResourceService {
       });
     }
 
-    const project = await this.prisma.resource.findUnique(args).project();
-
-    await this.prisma.project.update({
-      where: { id: project.id },
-      data: {
-        name: prepareDeletedItemName(project.name, project.id),
-        deletedAt: new Date()
-      }
-    });
-
     return this.prisma.resource.update({
       where: args.where,
       data: {
@@ -397,21 +322,6 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
-    const project = await this.prisma.resource
-      .findUnique({
-        where: {
-          id: args.where.id
-        }
-      })
-      .project();
-
-    await this.prisma.project.update({
-      where: { id: project.id },
-      data: {
-        name: `project-${args.data.name}`
-      }
-    });
-
     return this.prisma.resource.update(args);
   }
 
@@ -428,10 +338,12 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
-            some: {
-              id: user.id
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: user.id
+              }
             }
           }
         }
@@ -461,10 +373,12 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
-            some: {
-              id: userId
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: userId
+              }
             }
           }
         }
@@ -578,10 +492,12 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
-            some: {
-              id: userId
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: userId
+              }
             }
           }
         }
@@ -659,9 +575,7 @@ export class ResourceService {
     });
   }
 
-  async workspace(resourceId: string): Promise<Workspace> {
-    return await this.prisma.resource
-      .findUnique({ where: { id: resourceId } })
-      .workspace();
+  async project(resourceId: string): Promise<Project> {
+    return this.prisma.project.findUnique({ where: { id: resourceId } });
   }
 }

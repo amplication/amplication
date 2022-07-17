@@ -18,8 +18,7 @@ import { ResourceRoleService } from './resourceRole.service';
 export class ResourceRoleResolver {
   constructor(private readonly resourceRoleService: ResourceRoleService) {}
   @Query(() => ResourceRole, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
   async resourceRole(
@@ -29,8 +28,7 @@ export class ResourceRoleResolver {
   }
 
   @Query(() => [ResourceRole], {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   @AuthorizeContext(
     AuthorizableResourceParameter.ResourceId,
@@ -43,8 +41,7 @@ export class ResourceRoleResolver {
   }
 
   @Mutation(() => ResourceRole, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   @AuthorizeContext(
     AuthorizableResourceParameter.ResourceId,
@@ -57,8 +54,7 @@ export class ResourceRoleResolver {
   }
 
   @Mutation(() => ResourceRole, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceRoleId, 'where.id')
   async deleteResourceRole(
@@ -68,8 +64,7 @@ export class ResourceRoleResolver {
   }
 
   @Mutation(() => ResourceRole, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceRoleId, 'where.id')
   async updateResourceRole(

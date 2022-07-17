@@ -1054,6 +1054,7 @@ export type Mutation = {
   createGitRepository: Resource;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
+  createProject: Project;
   createResource: Resource;
   createResourceRole: ResourceRole;
   createResourceWithEntities: Resource;
@@ -1158,6 +1159,10 @@ export type MutationCreateOneEntityArgs = {
 
 export type MutationCreateOrganizationArgs = {
   data: GitOrganizationCreateInput;
+};
+
+export type MutationCreateProjectArgs = {
+  data: ProjectCreateInput;
 };
 
 export type MutationCreateResourceArgs = {
@@ -1349,6 +1354,31 @@ export type PrivateKeyAuthenticationSettingsInput = {
   type: Scalars['String'];
 };
 
+export type Project = {
+  __typename?: 'Project';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['String'];
+  name: Scalars['String'];
+  resources?: Maybe<Array<Resource>>;
+  updatedAt: Scalars['DateTime'];
+};
+
+export type ProjectCreateInput = {
+  name: Scalars['String'];
+};
+
+export type ProjectOrderByInput = {
+  deletedAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+};
+
+export type ProjectWhereInput = {
+  deletedAt?: InputMaybe<DateTimeFilter>;
+  id?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<StringFilter>;
+};
+
 export type PropertySelector = {
   __typename?: 'PropertySelector';
   include: Scalars['Boolean'];
@@ -1383,6 +1413,8 @@ export type Query = {
   gitOrganizations: Array<GitOrganization>;
   me: User;
   pendingChanges: Array<PendingChange>;
+  project?: Maybe<Project>;
+  projects: Array<Project>;
   remoteGitRepositories: Array<RemoteGitRepository>;
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
@@ -1491,6 +1523,17 @@ export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
 
+export type QueryProjectArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryProjectsArgs = {
+  orderBy?: InputMaybe<ProjectOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<ProjectWhereInput>;
+};
+
 export type QueryRemoteGitRepositoriesArgs = {
   where: RemoteGitRepositoriesWhereUniqueInput;
 };
@@ -1559,9 +1602,9 @@ export type Resource = {
   gitRepositoryId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
-  type: EnumResourceType;
+  resourceType: EnumResourceType;
   updatedAt: Scalars['DateTime'];
-  workspace: Workspace;
+  workspace: Project;
 };
 
 export type ResourceBuildsArgs = {
@@ -1582,7 +1625,8 @@ export type ResourceCreateInput = {
   color?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   name: Scalars['String'];
-  type: EnumResourceType;
+  project: WhereParentIdInput;
+  resourceType: EnumResourceType;
 };
 
 export type ResourceCreateWithEntitiesEntityInput = {
@@ -1663,6 +1707,7 @@ export type ResourceWhereInput = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<StringFilter>;
+  project?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1805,7 +1850,7 @@ export type Workspace = {
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String'];
   name: Scalars['String'];
-  resources: Array<Resource>;
+  projects: Array<Project>;
   subscription?: Maybe<Subscription>;
   updatedAt: Scalars['DateTime'];
   users: Array<User>;

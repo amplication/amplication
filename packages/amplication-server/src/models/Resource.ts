@@ -1,41 +1,39 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Entity } from './Entity'; // eslint-disable-line import/no-cycle
-import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
 import { GitRepository } from './GitRepository';
 import { EnumResourceType } from '@amplication/prisma-db';
+import { Project } from './Project';
 
 registerEnumType(EnumResourceType, {
   name: 'EnumResourceType'
 });
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Resource {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
-  workspace?: Workspace;
+  @Field(() => Project, { nullable: true })
+  project?: Project;
 
-  workspaceId?: string;
+  @Field(() => String, { nullable: true })
+  projectId?: string;
 
   @Field(() => GitRepository, {
     nullable: true
@@ -46,26 +44,22 @@ export class Resource {
   gitRepositoryId?: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   description!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   color?: string;
 
   @Field(() => [Entity], {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   entities?: Entity[];
 
@@ -75,8 +69,7 @@ export class Resource {
   environments?: Environment[];
 
   @Field(() => [Build], {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   builds?: Build[];
 
@@ -91,7 +84,7 @@ export class Resource {
   githubLastSync?: Date;
 
   @Field(() => EnumResourceType, { nullable: false })
-  type!: keyof typeof EnumResourceType;
+  resourceType!: keyof typeof EnumResourceType;
 
   // no need to expose to GraphQL
   deletedAt?: Date;

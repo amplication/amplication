@@ -28,6 +28,7 @@ import {
 } from '@amplication/data/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
+import { ResourceCreateInput } from './dto';
 
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_NAME = 'exampleName';
@@ -50,6 +51,8 @@ const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 
 const EXAMPLE_BLOCK_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_VERSION_NUMBER = 1;
+
+const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
@@ -89,7 +92,7 @@ const EXAMPLE_ENTITY: Entity = {
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
-  type: EnumResourceType.Service,
+  resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
@@ -122,7 +125,7 @@ const FIND_ONE_RESOURCE_QUERY = gql`
       updatedAt
       name
       description
-      type
+      resourceType
       entities {
         id
         createdAt
@@ -208,7 +211,7 @@ const CREATE_RESOURCE_MUTATION = gql`
       updatedAt
       name
       description
-      type
+      resourceType
       entities {
         id
         createdAt
@@ -246,7 +249,7 @@ const DELETE_RESOURCE_MUTATION = gql`
       updatedAt
       name
       description
-      type
+      resourceType
       entities {
         id
         createdAt
@@ -284,7 +287,7 @@ const UPDATE_RESOURCE_MUTATION = gql`
       updatedAt
       name
       description
-      type
+      resourceType
       entities {
         id
         createdAt
@@ -474,7 +477,7 @@ describe('ResourceResolver', () => {
     expect(res.data).toEqual({
       resource: {
         ...EXAMPLE_RESOURCE,
-        type: EnumResourceType.Service,
+        resourceType: EnumResourceType.Service,
 
         createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
         updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
@@ -580,22 +583,24 @@ describe('ResourceResolver', () => {
     });
   });
 
-  it('should create an resource', async () => {
+  it('should create a resource', async () => {
+    const resourceCreateInput: ResourceCreateInput = {
+      name: EXAMPLE_NAME,
+      description: EXAMPLE_DESCRIPTION,
+      resourceType: EnumResourceType.Service,
+      project: { connect: { id: EXAMPLE_PROJECT_ID } }
+    };
     const res = await apolloClient.query({
       query: CREATE_RESOURCE_MUTATION,
       variables: {
-        data: {
-          name: EXAMPLE_NAME,
-          description: EXAMPLE_DESCRIPTION,
-          type: EnumResourceType.Service
-        }
+        data: resourceCreateInput
       }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       createResource: {
         ...EXAMPLE_RESOURCE,
-        type: EnumResourceType.Service,
+        resourceType: EnumResourceType.Service,
         createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
         updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
         entities: [
@@ -623,11 +628,7 @@ describe('ResourceResolver', () => {
     expect(createResourceMock).toBeCalledTimes(1);
     expect(createResourceMock).toBeCalledWith(
       {
-        data: {
-          name: EXAMPLE_NAME,
-          description: EXAMPLE_DESCRIPTION,
-          type: EnumResourceType.Service
-        }
+        data: resourceCreateInput
       },
       EXAMPLE_USER
     );

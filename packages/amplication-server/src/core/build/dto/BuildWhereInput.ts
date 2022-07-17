@@ -24,14 +24,12 @@ export class BuildWhereInput {
   createdBy?: WhereUniqueInput | null | undefined;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   version?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   message?: StringFilter | null;
 

@@ -1,13 +1,11 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class WhereUniqueInput {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id: string;
 }

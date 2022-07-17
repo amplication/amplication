@@ -151,7 +151,7 @@ export function CreateResourceFromExcel() {
       resource: {
         name: fileNameWithoutExtension || "",
         description: fileNameWithoutExtension || "",
-        type: models.EnumResourceType.Service,
+        resourceType: models.EnumResourceType.Service,
       },
       commitMessage: `Import schema from ${fileName}`,
       entities: [
@@ -522,4 +522,4 @@ const CREATE_RESOURCE_WITH_ENTITIES = gql`
   }
 `;
 
-export default CreateResourceFromExcel
+export default CreateResourceFromExcel;

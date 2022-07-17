@@ -41,7 +41,7 @@ const DEFAULT_RESOURCE_DATA = {
 const EXAMPLE_SERVICE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
   id: 'EXAMPLE_RESOURCE_ID',
-  type: EnumResourceType.Service,
+  resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: 'EXAMPLE_RESOURCE_NAME',

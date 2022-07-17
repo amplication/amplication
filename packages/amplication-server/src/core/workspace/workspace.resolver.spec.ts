@@ -12,10 +12,11 @@ import { ConfigService } from '@nestjs/config';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { WorkspaceService } from './workspace.service';
 import { WorkspaceResolver } from './workspace.resolver';
-import { Resource, Workspace, User } from 'src/models';
+import { Resource, Workspace, User, Project } from 'src/models';
 import { Invitation } from './dto/Invitation';
 import { ResourceService } from '../resource/resource.service';
 import { EnumResourceType } from '@amplication/prisma-db';
+import { ProjectService } from '../project/project.service';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
@@ -51,9 +52,16 @@ const EXAMPLE_INVITATION: Invitation = {
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
-  type: EnumResourceType.Service,
+  resourceType: EnumResourceType.Service,
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
+  createdAt: timeNow,
+  updatedAt: timeNow
+};
+
+const EXAMPLE_PROJECT: Project = {
+  id: EXAMPLE_RESOURCE_ID,
+  name: EXAMPLE_RESOURCE_NAME,
   createdAt: timeNow,
   updatedAt: timeNow
 };
@@ -69,14 +77,12 @@ const GET_WORKSPACE_QUERY = gql`
   }
 `;
 
-const GET_RESOURCES_QUERY = gql`
+const GET_PROJECT_QUERY = gql`
   query($id: String!) {
     workspace(where: { id: $id }) {
-      resources {
+      projects {
         id
         name
-        type
-        description
         createdAt
         updatedAt
       }
@@ -122,6 +128,7 @@ const workspaceServiceDeleteWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceUpdateWorkspaceMock = jest.fn(() => EXAMPLE_WORKSPACE);
 const workspaceServiceInviteUserMock = jest.fn(() => EXAMPLE_INVITATION);
 const resourceServiceResourcesMock = jest.fn(() => [EXAMPLE_RESOURCE]);
+const projectServiceProjectsMock = jest.fn(() => [EXAMPLE_PROJECT]);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
@@ -147,6 +154,12 @@ describe('WorkspaceResolver', () => {
           provide: ResourceService,
           useClass: jest.fn(() => ({
             resources: resourceServiceResourcesMock
+          }))
+        },
+        {
+          provide: ProjectService,
+          useClass: jest.fn(() => ({
+            findProjects: projectServiceProjectsMock
           }))
         },
         {
@@ -188,25 +201,25 @@ describe('WorkspaceResolver', () => {
     });
   });
 
-  it('should get an workspace resources', async () => {
+  it("should get workspace's projects", async () => {
     const res = await apolloClient.query({
-      query: GET_RESOURCES_QUERY,
+      query: GET_PROJECT_QUERY,
       variables: { id: EXAMPLE_WORKSPACE_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       workspace: {
-        resources: [
+        projects: [
           {
-            ...EXAMPLE_RESOURCE,
+            ...EXAMPLE_PROJECT,
             createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
             updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString()
           }
         ]
       }
     });
-    expect(resourceServiceResourcesMock).toBeCalledTimes(1);
-    expect(resourceServiceResourcesMock).toBeCalledWith({
+    expect(projectServiceProjectsMock).toBeCalledTimes(1);
+    expect(projectServiceProjectsMock).toBeCalledWith({
       where: { workspace: { id: EXAMPLE_WORKSPACE_ID } }
     });
   });

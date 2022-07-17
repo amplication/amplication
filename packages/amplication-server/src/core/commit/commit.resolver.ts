@@ -34,8 +34,7 @@ export class CommitResolver {
   }
 
   @Query(() => Commit, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.CommitId, 'where.id')
   async commit(@Args() args: FindOneCommitArgs): Promise<Commit> {
@@ -43,8 +42,7 @@ export class CommitResolver {
   }
 
   @Query(() => [Commit], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(
     AuthorizableResourceParameter.ResourceId,
