@@ -19,7 +19,6 @@ import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
 import WorkspaceHeader from "./WorkspaceHeader";
 import WorkspaceFooter from "./WorkspaceFooter";
-import { useAppContext } from "../context/appContext";
 // import { CircularProgress } from "@amplication/design-system";
 // import WorkspaceSelector from "./WorkspaceSelector";
 
@@ -38,10 +37,7 @@ type Props = {
   InnerRoutes: JSX.Element | undefined;
 };
 
-const WorkspaceLayout: React.FC<Props> = ({
-  InnerRoutes,
-  moduleClass,
-}) => {
+const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
   return isMobileOnly ? (
     <MobileMessage />
   ) : (

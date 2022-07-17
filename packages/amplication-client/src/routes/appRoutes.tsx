@@ -29,6 +29,14 @@ export const Routes: RouteDef[] = [
         exactPath: true,
         routes: [
           {
+            path: "/:workspace/:project/create-resource",
+            Component: lazy(() => import("../Resource/ResourceHome")),
+            moduleName: "",
+            routeTrackType: "",
+            exactPath: true,
+            routes: serviceRoutes,
+          },
+          {
             path: "/:workspace/:project/:service",
             Component: lazy(() => import("../Resource/ResourceHome")),
             moduleName: "",
