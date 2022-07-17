@@ -1,17 +1,30 @@
 @import "../style/index.scss";
 
 .workspaces-layout {
-  &__resource-container {
-    height: 100%;
+  height: calc(100%);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface);
+  color: var(--black100);
+
+  &__page_content {
     display: flex;
-    flex-direction: column;
-    justify-content: stretch;
-    align-items: stretch;
+    flex-direction: row;
+    flex-grow: 1;
   }
 
-  &__tabs {
-    @include scrollbars(10px, var(--black60), transparent);
-    padding: var(--large-spacing);
-    overflow: auto;
+  &__side_menu {
+    width: 312px;
+    background: #22273c;
+  }
+
+  &__main_content {
+    flex-grow: 1;
+    background: #22273C;
+  }
+
+  &__changes_menu {
+  width: 261px;
+  background: #15192C;
   }
 }

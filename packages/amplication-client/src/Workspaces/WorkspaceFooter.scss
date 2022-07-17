@@ -1,0 +1,10 @@
+@import "../style/index.scss";
+
+.page_footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 16px;
+  background: #373d57;
+  height: 35px;
+}

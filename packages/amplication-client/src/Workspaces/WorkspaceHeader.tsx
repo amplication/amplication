@@ -1,9 +1,10 @@
 import React from "react";
+import "./WorkspaceHeader.scss"
 
 
 const WorkspaceHeader: React.FC<{}> = ({}) => {
   return (
-    <div>
+    <div className="page_header">
       Amplication header
     </div>
   )
