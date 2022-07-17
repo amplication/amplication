@@ -1,8 +1,7 @@
 import { DTOs } from "../../server/resource/create-dtos";
 import { Entity } from "@amplication/code-gen-types";
-
-import { createEntityComponents } from "./create-entity-components";
 import { EntityComponent, EntityComponents } from "../types";
+import { createEntityComponents } from "./create-entity-components";
 
 export async function createEntitiesComponents(
   entities: Entity[],

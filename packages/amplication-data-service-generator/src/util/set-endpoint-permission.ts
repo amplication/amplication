@@ -1,10 +1,10 @@
 import assert from "assert";
 import { EnumEntityAction, EnumEntityPermissionType } from "../models";
 import { namedTypes } from "ast-types";
+import { Entity } from "@amplication/code-gen-types";
 import { getClassMethodById, removeDecoratorByName } from "./ast";
 import { createPublicDecorator } from "./create-public-decorator";
 import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-generation";
-import { Entity } from "@amplication/code-gen-types";
 
 export const USE_ROLES_DECORATOR_NAME = "UseRoles";
 export const USE_INTERCEPTORS_DECORATOR_NAME = "UseInterceptors";

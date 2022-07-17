@@ -79,7 +79,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     FIELD_ID,
   ],
   [SORT_ORDER_MODULE]: [SORT_ORDER_ID],
-  "@amplication/code-gen-types": [builders.identifier(INPUT_JSON_VALUE_KEY)],
+  "../../types": [builders.identifier(INPUT_JSON_VALUE_KEY)],
   ...FILTERS_IMPORTABLE_NAMES,
 };
 

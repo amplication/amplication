@@ -1,11 +1,10 @@
 import { Entity } from "@amplication/code-gen-types";
 import { DTOs } from "../../server/resource/create-dtos";
-
+import { EntityComponent, EntityComponents } from "../types";
 import { createEntityCreateComponent } from "./entity-create-component/create-entity-create-component";
 import { createEntityListComponent } from "./entity-list-component/create-entity-list-component";
 import { createEditEntityComponent } from "./entity-edit-component/create-edit-entity-component";
 import { createEntityShowComponent } from "./entity-show-component/create-entity-show-component";
-import { EntityComponent, EntityComponents } from "../types";
 
 export async function createEntityComponents(
   entity: Entity,

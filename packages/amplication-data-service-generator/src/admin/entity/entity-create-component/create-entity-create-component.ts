@@ -15,14 +15,13 @@ import {
   interpolate,
 } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
-
+import { EntityComponent } from "../../types";
 import { jsxFragment } from "../../util";
 import { createFieldInput } from "../create-field-input";
 import {
   REACT_ADMIN_COMPONENTS_ID,
   REACT_ADMIN_MODULE,
 } from "../react-admin.util";
-import { EntityComponent } from "../../types";
 const template = path.resolve(
   __dirname,
   "entity-create-component.template.tsx"

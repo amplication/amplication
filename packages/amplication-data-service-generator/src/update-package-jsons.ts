@@ -1,5 +1,5 @@
-import { Module } from "@amplication/code-gen-types";
 import * as semver from "semver";
+import { Module } from "@amplication/code-gen-types";
 
 /**
  * Update package.json and package-lock.json modules in given modules with the

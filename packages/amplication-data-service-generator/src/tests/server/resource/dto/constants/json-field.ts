@@ -1,5 +1,5 @@
-import { EntityField } from "@amplication/code-gen-types";
 import { EnumDataType } from "../../../../../models";
+import { EntityField } from "@amplication/code-gen-types";
 
 const defaultJsonField: Omit<
   EntityField,
