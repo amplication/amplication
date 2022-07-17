@@ -38,6 +38,7 @@ import {
 } from './sampleResource';
 import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
+import { DEFAULT_RESOURCE_COLORS } from './constants';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -47,11 +48,9 @@ const USER_RESOURCE_ROLE = {
 export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
 export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 
-export const DEFAULT_RESOURCE_COLOR = '#20A4F3';
 export const DEFAULT_RESOURCE_DATA = {
-  color: DEFAULT_RESOURCE_COLOR
+  color: DEFAULT_RESOURCE_COLORS.service
 };
-const DEFAULT_PROJECT_CONFIGURATION_COLOR = '#FFBD70';
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 
@@ -86,7 +85,7 @@ export class ResourceService {
     await this.assertFistProjectConfiguration(projectId);
     const resource = await this.prisma.resource.create({
       data: {
-        color: DEFAULT_PROJECT_CONFIGURATION_COLOR,
+        color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
         resourceType: EnumResourceType.ProjectConfiguration,
         description: '',
         name: 'Project configuration',
