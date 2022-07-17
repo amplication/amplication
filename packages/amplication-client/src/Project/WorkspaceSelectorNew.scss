@@ -54,10 +54,10 @@
   align-items: center;
   padding: var(--default-spacing);
   gap: var(--default-spacing-small);
-  width: 252px;
   height: 56px;
   border: 1px solid #2c3249;
   border-radius: var(--default-spacing-small);
+  width: 100%;
 
   &__current {
     @include workspaceItem;

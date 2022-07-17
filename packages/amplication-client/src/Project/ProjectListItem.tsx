@@ -5,17 +5,17 @@ import { Project } from "../models";
 type Props = {
   project: Project;
   onProjectSelected: (project: Project) => void;
+  workspaceId: string;
 };
 
 export const ProjectListItem = ({
   project,
-  onProjectSelected,
+  workspaceId,
 }: Props) => {
   return (
     <InnerTabLink
       icon="file"
-      to={`/${project.id}`}
-      onClick={onProjectSelected} // if handleOnClick is needed instead of "to"
+      to={`/${workspaceId}/${project.id}`}
     >
       {project.name}
     </InnerTabLink>

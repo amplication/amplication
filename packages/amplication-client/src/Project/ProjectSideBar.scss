@@ -1,17 +1,21 @@
 @import "../style/index.scss";
 
 .project-sidebar {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  @include flexColumn;
   padding: var(--large-spacing);
   gap: var(--large-spacing);
-  width: 280px;
   background: var(--surface);
   border: 1px solid var(--black10);
   border-radius: var(--default-border-radius);
+  height: 100vh;
 
   &__label {
-    @include regular-12-gray;
+    @include regular-12;
+    color: #a3a8b8;
+  }
+
+  &__divider {
+    border: 1px solid #2c3249;
+    width: 100%;
   }
 }

@@ -1,9 +1,10 @@
 import React from "react";
 import InnerTabLink from "../Layout/InnerTabLink";
+import "./WorkspaceSettingsNavigation.scss";
 
-const CLASS_NAME = "workspace-actions";
+const CLASS_NAME = "workspace-settings-navigation";
 
-const WorkspaceActions = () => {
+const WorkspaceSettingsNavigation = () => {
   return (
     <div className={CLASS_NAME}>
       <InnerTabLink to={`/workspace/settings`} icon="settings">
@@ -16,4 +17,4 @@ const WorkspaceActions = () => {
   );
 };
 
-export default WorkspaceActions;
+export default WorkspaceSettingsNavigation;

@@ -8,11 +8,15 @@ const CLASS_NAME = "project-list";
 
 type Props = {
   projects: Project[];
-  HandleProjectChange: (project: Project) => void;
-  onCreateNewProjectClicked: () => void;
+  handleProjectChange: (project: Project) => void;
+  workspaceId: string;
 };
 
-export const ProjectList = ({ projects, HandleProjectChange }: Props) => {
+export const ProjectList = ({
+  projects,
+  handleProjectChange,
+  workspaceId,
+}: Props) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__items`}>
@@ -20,7 +24,8 @@ export const ProjectList = ({ projects, HandleProjectChange }: Props) => {
           <ProjectListItem
             key={project.id}
             project={project}
-            onProjectSelected={HandleProjectChange}
+            onProjectSelected={handleProjectChange}
+            workspaceId={workspaceId}
           />
         ))}
       </div>

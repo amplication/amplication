@@ -11,7 +11,7 @@ type Props = {
   currentWorkspace: Workspace;
   currentProject: Project;
   projects: Project[];
-  HandleProjectChange: (project: Project) => void;
+  handleProjectChange: (project: Project) => void;
   onCreateNewProjectClicked: () => void;
   onSetCurrentWorkspace: (workspaceId: string) => void;
 };
@@ -23,11 +23,20 @@ const projectListMock: Project[] = [
   { id: "3", name: "project-3", resources: [], createdAt: "", updatedAt: "" },
 ];
 
+const workspaceMock: Workspace = {
+  id: '1',
+  createdAt: undefined,
+  name: "",
+  projects: [],
+  updatedAt: undefined,
+  users: []
+}
+
 const ProjectSideBar = ({
-  currentWorkspace,
+  currentWorkspace = workspaceMock,
   currentProject,
   projects = projectListMock,
-  HandleProjectChange,
+  handleProjectChange,
   onCreateNewProjectClicked,
   onSetCurrentWorkspace,
 }: Props) => {
@@ -35,11 +44,14 @@ const ProjectSideBar = ({
     <div className={CLASS_NAME}>
       <span className={`${CLASS_NAME}__label`}>Workspace</span>
         <WorkspaceSelectorNew />
+        <hr className={`${CLASS_NAME}__divider`} />
         <ProjectList
           projects={projects}
-          HandleProjectChange={HandleProjectChange}
-          onCreateNewProjectClicked={onCreateNewProjectClicked}
+          handleProjectChange={handleProjectChange}
+          workspaceId={currentWorkspace.id}
+
         />
+        <hr className={`${CLASS_NAME}__divider`} />
         <ProjectSideBarFooter />
     </div>
   );
