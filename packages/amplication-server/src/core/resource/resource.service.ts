@@ -48,7 +48,7 @@ const USER_RESOURCE_ROLE = {
 export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
 export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 
-export const DEFAULT_RESOURCE_DATA = {
+export const DEFAULT_SERVICE_DATA = {
   color: DEFAULT_RESOURCE_COLORS.service
 };
 
@@ -110,7 +110,7 @@ export class ResourceService {
 
     const resource = await this.prisma.resource.create({
       data: {
-        ...DEFAULT_RESOURCE_DATA,
+        ...DEFAULT_SERVICE_DATA,
         ...args.data,
         workspace: {
           connect: {

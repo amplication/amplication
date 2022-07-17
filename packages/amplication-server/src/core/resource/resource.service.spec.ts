@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
   DEFAULT_RESOURCE_COLOR,
-  DEFAULT_RESOURCE_DATA,
+  DEFAULT_SERVICE_DATA,
   INITIAL_COMMIT_MESSAGE,
   INVALID_RESOURCE_ID,
   ResourceService
@@ -67,7 +67,7 @@ const EXAMPLE_PROJECT: Project = {
 };
 
 const EXAMPLE_RESOURCE: Resource = {
-  ...DEFAULT_RESOURCE_DATA,
+  ...DEFAULT_SERVICE_DATA,
   id: EXAMPLE_RESOURCE_ID,
   resourceType: EnumResourceType.Service,
   createdAt: new Date(),
@@ -561,7 +561,7 @@ describe('ResourceService', () => {
   it('should create a sample resource', async () => {
     const prismaResourceCreateResourceArgs = {
       data: {
-        ...DEFAULT_RESOURCE_DATA,
+        ...DEFAULT_SERVICE_DATA,
         ...SAMPLE_SERVICE_DATA,
         workspace: {
           connect: {
@@ -729,7 +729,7 @@ describe('ResourceService', () => {
   it('should create resource with entities', async () => {
     const prismaResourceCreateResourceArgs = {
       data: {
-        ...DEFAULT_RESOURCE_DATA,
+        ...DEFAULT_SERVICE_DATA,
         ...SAMPLE_SERVICE_DATA,
         workspace: {
           connect: {
