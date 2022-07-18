@@ -1,10 +1,10 @@
-name: CD-AWS
+name: Deploy
 on:
   workflow_dispatch:
     inputs:
       target-env:
         type: choice
-        description: To which environment to deploy
+        description: Environment to deploy to
         default: staging
         required: true
         options:
