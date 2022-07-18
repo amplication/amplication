@@ -1,3 +1,12 @@
+global:
+  pvc:
+    name: common-efs-claim
+    storageRequest: 1Gi
+    storageName: efs-sc
+  pv:
+    name: common-efs-pv-custom
+    handle: fs-0a87872138ddc7f6d::fsap-0e0ed55af55fbdf11
+
 cp-helm-charts:
   enabled: true
   cp-kafka:
@@ -45,7 +54,11 @@ cp-helm-charts:
     enabled: false
 
 postgres:
-  install: false
+  install: true
+  postgresqlPassword: postgres
+  postgresqlPostgresPassword: postgres
+  postgresqlDatabase: amplication
+  fullnameOverride: postgresql
 
 amplication-client:
   image:
@@ -64,13 +77,9 @@ amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
     tag: "release-0-13-0"
-  postgres:
-    install: false
   ingress:
     enabled: true
     hostname: server.staging.amplication-dev.com
-  pvc:
-    name: common-efs-claim
   config:
     env:
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
@@ -124,8 +133,6 @@ amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
     tag: "release-0-13-0"
-  postgres:
-    install: false
   ingress:
     enabled: true
     hostname: webhook.staging.amplication-dev.com
@@ -141,10 +148,6 @@ amplication-git-pull-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
     tag: "release-0-13-0"
-  postgres:
-    install: false
-  pvc:
-    name: common-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -168,8 +171,6 @@ amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
     tag: "release-0-13-0"
-  pvc:
-    name: common-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'

@@ -24,30 +24,3 @@ maxMemory: "2Gi"
 minMemory: "2Gi"
 maxCPU: 1
 minCPU: 1
-
-service:
-  type: ClusterIP
-  port:
-    target: 3000
-  protocol: TCP
-
-ingress:
-  enabled: false
-
-pvc:
-  storageRequest: 1Gi
-  name: efs-claim
-  storageName: efs-sc
-
-# Postgresql Server
-postgres:
-  install: false
-  postgresqlUsername: postgrespull
-  postgresPassword: postgrespull
-  db: pull
-  fullnameOverride: postgresql
-  postgresql:
-    image: groundnuty/k8s-wait-for:v1.3
-    imagePullPolicy: Always
-    primary:
-      podLabels: { name: "postgres" }

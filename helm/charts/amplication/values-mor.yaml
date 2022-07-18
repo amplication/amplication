@@ -1,3 +1,19 @@
+global:
+  pvc:
+    name: mor-efs-claim
+  pv:
+    name: mor-efs-pv
+
+cp-helm-charts:
+  enabled: true
+  cp-kafka:
+    enabled: true
+  cp-zookeeper:
+    enabled: true
+
+postgres:
+  install: true
+
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
@@ -12,8 +28,6 @@ amplication-client:
 amplication-server:
   image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-  postgres:
-    install: false
   ingress:
     enabled: true
     hostname: server-custom.amplication-dev.com

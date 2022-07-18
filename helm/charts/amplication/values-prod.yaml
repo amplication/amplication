@@ -1,3 +1,10 @@
+global:
+  pvc:
+    name: prod-efs-claim
+  pv:
+    name: prod-efs-pv
+    handle: fs-0d4fb7d4e763c5fd0::fsap-0ed941c62eddef61c
+
 cp-helm-charts:
   enabled: false
   cp-kafka:
@@ -29,10 +36,6 @@ amplication-server:
     requests:
       cpu: 3
       memory: 6Gi
-  pvc:
-    name: prod-efs-claim
-  postgres:
-    install: false
   ingress:
     enabled: true
     hostname: server.prod.amplication-dev.com
@@ -85,8 +88,6 @@ amplication-server:
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
 
 amplication-git-push-webhook-service:
-  postgres:
-    install: false
   ingress:
     enabled: true
     hostname: webhooks.amplication.com
@@ -99,10 +100,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  pvc:
-    name: prod-efs-claim
-  postgres:
-    install: false
   config:
     env:
       NODE_ENV: "production"
@@ -125,8 +122,6 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
-  pvc:
-    name: prod-efs-claim
   config:
     env:
       #KAFKA
@@ -144,8 +139,6 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   ingress:
     hostname: server.amplication.com
-  pvc:
-    name: prod-efs-claim
   config:
     env:
       #KAFKA

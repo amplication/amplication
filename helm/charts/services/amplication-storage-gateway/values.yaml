@@ -35,8 +35,3 @@ ingress:
   enabled: true
   hostname: server.amplication.com
   path: /storage
-
-pvc:
-  storageRequest: 1Gi
-  name: efs-claim
-  storageName: efs-sc
