@@ -29,7 +29,7 @@ import { formatError } from "../../util/error";
 const CLASS_NAME = "create-service-wizard-form";
 
 type Props = {
-  isClicked:boolean;
+  isClicked: boolean;
 };
 
 type serviceSettings = {
@@ -44,7 +44,7 @@ type TData = {
   createResourceGenSettings: models.ResourceGenSettingsCreateInput;
 };
 
-export const CreateServiceWizardForm = ({isClicked}: Props) => {
+export const CreateServiceWizardForm = ({ isClicked }: Props) => {
   const { trackEvent } = useTracking();
 
   const [generalError, setGeneralError] = useState<Error | undefined>(
@@ -129,18 +129,18 @@ export const CreateServiceWizardForm = ({isClicked}: Props) => {
     }).catch(console.error);
   }, [createResourceWithEntities, trackEvent, serviceSettingsFields]);
 
-
   useEffect(() => {
-        if(isClicked) { 
-        const currentResourceType = serviceSettingsFields.current.resourceType;
-    if (currentResourceType === "scratch") {
-      handleStartFromScratch();
-    } else if (currentResourceType === "sample") {
-      handleStartFromSample();
-    } else {
-      //error?
-    }}
-  }, [ handleStartFromScratch, handleStartFromSample,isClicked]);
+    if (isClicked) {
+      const currentResourceType = serviceSettingsFields.current.resourceType;
+      if (currentResourceType === "scratch") {
+        handleStartFromScratch();
+      } else if (currentResourceType === "sample") {
+        handleStartFromSample();
+      } else {
+        //error?
+      }
+    }
+  }, [handleStartFromScratch, handleStartFromSample, isClicked]);
 
   useEffect(() => {
     if (data) {
