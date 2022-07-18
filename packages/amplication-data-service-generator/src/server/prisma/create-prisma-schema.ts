@@ -1,14 +1,15 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
-import { types } from "@amplication/code-gen-types";
-import { countBy } from "lodash";
 import {
+  types,
   Entity,
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
-} from "../../types";
+} from "@amplication/code-gen-types";
+import { countBy } from "lodash";
+
 import { getEnumFields } from "../../util/entity";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(

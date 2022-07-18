@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { Entity } from "../../../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { NamedClassDeclaration } from "../../../../../util/ast";
 import { isToManyRelationField } from "../../../../../util/field";
 import { EntityDtoTypeEnum } from "../../entity-dto-type-enum";

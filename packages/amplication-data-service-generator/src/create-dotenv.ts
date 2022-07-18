@@ -1,4 +1,4 @@
-import { Module, AppInfo } from "./types";
+import { Module, AppInfo } from "@amplication/code-gen-types";
 import { isEmpty } from "lodash";
 import { readCode } from "./util/module";
 import { replacePlaceholdersInCode } from "./util/text-file-parser";

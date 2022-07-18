@@ -1,4 +1,4 @@
-import { Entity, EntityField } from "../types";
+import { Entity, EntityField } from "@amplication/code-gen-types";
 import { isEnumField, isToManyRelationField } from "./field";
 import { camelCase } from "camel-case";
 import { DTOs } from "../server/resource/create-dtos";

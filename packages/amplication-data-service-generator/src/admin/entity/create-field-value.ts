@@ -3,7 +3,7 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
-} from "../../types";
+} from "@amplication/code-gen-types";
 import { jsxElement } from "../util";
 /**
  * Creates a node for displaying given entity field value

@@ -1,6 +1,6 @@
 import { pascalCase } from "pascal-case";
 import { print } from "recast";
-import { Role } from "../types";
+import { Role } from "@amplication/code-gen-types";
 import {
   createEnumRolesModule,
   createRolesEnumDeclaration,
