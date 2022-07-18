@@ -11,25 +11,21 @@ registerEnumType(EnumResourceType, {
 });
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Resource {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
@@ -46,26 +42,22 @@ export class Resource {
   gitRepositoryId?: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   description!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   color?: string;
 
   @Field(() => [Entity], {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   entities?: Entity[];
 
@@ -75,8 +67,7 @@ export class Resource {
   environments?: Environment[];
 
   @Field(() => [Build], {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   builds?: Build[];
 
@@ -91,7 +82,7 @@ export class Resource {
   githubLastSync?: Date;
 
   @Field(() => EnumResourceType, { nullable: false })
-  type!: keyof typeof EnumResourceType;
+  resourceType!: keyof typeof EnumResourceType;
 
   // no need to expose to GraphQL
   deletedAt?: Date;

@@ -15,8 +15,7 @@ export class ServiceSettingsResolver {
   constructor(private readonly service: ServiceSettingsService) {}
 
   @Mutation(() => ServiceSettings, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
   async updateServiceSettings(

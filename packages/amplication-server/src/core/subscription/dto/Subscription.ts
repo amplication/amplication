@@ -7,79 +7,66 @@ import {
 } from '.';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Subscription {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   @Field(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   workspace?: Workspace;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   workspaceId: string;
 
   @Field(() => EnumSubscriptionPlan, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   subscriptionPlan: keyof typeof EnumSubscriptionPlan;
 
   @Field(() => EnumSubscriptionStatus, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   status: keyof typeof EnumSubscriptionStatus;
 
   @Field(() => Date, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   cancellationEffectiveDate?: Date | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   cancelUrl?: string;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   updateUrl?: string;
 
   @Field(() => Date, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   nextBillDate?: Date;
 
   @Field(() => Number, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   price?: number;
 

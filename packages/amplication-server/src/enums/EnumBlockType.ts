@@ -17,6 +17,5 @@ export enum EnumBlockType {
 }
 
 registerEnumType(EnumBlockType, {
-  name: 'EnumBlockType',
-  description: undefined
+  name: 'EnumBlockType'
 });

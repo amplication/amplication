@@ -89,7 +89,7 @@ const EXAMPLE_ENTITY: Entity = {
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
-  type: EnumResourceType.Service,
+  resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
@@ -122,7 +122,7 @@ const FIND_ONE_RESOURCE_QUERY = gql`
       updatedAt
       name
       description
-      type
+      resourceType
       entities {
         id
         createdAt
@@ -208,7 +208,7 @@ const CREATE_RESOURCE_MUTATION = gql`
       updatedAt
       name
       description
-      type
+      resourceType
       entities {
         id
         createdAt
@@ -246,7 +246,7 @@ const DELETE_RESOURCE_MUTATION = gql`
       updatedAt
       name
       description
-      type
+      resourceType
       entities {
         id
         createdAt
@@ -284,7 +284,7 @@ const UPDATE_RESOURCE_MUTATION = gql`
       updatedAt
       name
       description
-      type
+      resourceType
       entities {
         id
         createdAt
@@ -474,7 +474,7 @@ describe('ResourceResolver', () => {
     expect(res.data).toEqual({
       resource: {
         ...EXAMPLE_RESOURCE,
-        type: EnumResourceType.Service,
+        resourceType: EnumResourceType.Service,
 
         createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
         updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
@@ -587,7 +587,7 @@ describe('ResourceResolver', () => {
         data: {
           name: EXAMPLE_NAME,
           description: EXAMPLE_DESCRIPTION,
-          type: EnumResourceType.Service
+          resourceType: EnumResourceType.Service
         }
       }
     });
@@ -595,7 +595,7 @@ describe('ResourceResolver', () => {
     expect(res.data).toEqual({
       createResource: {
         ...EXAMPLE_RESOURCE,
-        type: EnumResourceType.Service,
+        resourceType: EnumResourceType.Service,
         createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
         updatedAt: EXAMPLE_RESOURCE.updatedAt.toISOString(),
         entities: [
@@ -626,7 +626,7 @@ describe('ResourceResolver', () => {
         data: {
           name: EXAMPLE_NAME,
           description: EXAMPLE_DESCRIPTION,
-          type: EnumResourceType.Service
+          resourceType: EnumResourceType.Service
         }
       },
       EXAMPLE_USER

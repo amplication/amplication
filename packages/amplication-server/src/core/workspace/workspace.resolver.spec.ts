@@ -51,7 +51,7 @@ const EXAMPLE_INVITATION: Invitation = {
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
-  type: EnumResourceType.Service,
+  resourceType: EnumResourceType.Service,
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   createdAt: timeNow,
@@ -75,7 +75,7 @@ const GET_RESOURCES_QUERY = gql`
       resources {
         id
         name
-        type
+        resourceType
         description
         createdAt
         updatedAt

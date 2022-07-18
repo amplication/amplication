@@ -16,14 +16,12 @@ export class ResourceRoleCreateInput {
   description!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   resource!: WhereParentIdInput;
 }

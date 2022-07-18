@@ -4,73 +4,61 @@ import { EnumDataTypeFilter } from './EnumDataTypeFilter';
 import { StringFilter, BooleanFilter, DateTimeFilter } from 'src/dto';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityFieldWhereInput {
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   permanentId?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   displayName?: StringFilter | null;
 
   @Field(() => EnumDataTypeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   dataType?: EnumDataTypeFilter | null;
 
   @Field(() => BooleanFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   required?: BooleanFilter | null;
 
   @Field(() => BooleanFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   unique?: BooleanFilter | null;
 
   @Field(() => BooleanFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   searchable?: BooleanFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: StringFilter | null;
 }

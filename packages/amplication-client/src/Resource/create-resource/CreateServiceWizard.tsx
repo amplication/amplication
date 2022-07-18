@@ -11,7 +11,7 @@ import { CreateServiceWizardForm } from "./CreateServiceWizardForm";
 
 const CLASS_NAME = "create-service-wizard";
 
-export const CreateServiceWizard = () => {
+function CreateServiceWizard() {
   const [clickBtn, setClicked] = useState<boolean>(false);
 
   const handleClick = () => {
@@ -53,4 +53,5 @@ export const CreateServiceWizard = () => {
       </div>
     </div>
   );
-};
+}
+export default CreateServiceWizard;

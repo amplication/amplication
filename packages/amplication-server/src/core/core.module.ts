@@ -20,6 +20,7 @@ import { ServiceSettingsModule } from './serviceSettings/serviceSettings.module'
 import { SubscriptionModule } from './subscription/subscription.module';
 import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
+import { ProjectModule } from './project/project.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -46,6 +47,7 @@ import { HealthModule } from './health/health.module';
     CommitModule,
     MailModule,
     SubscriptionModule,
+    ProjectModule,
     HealthModule
   ],
   exports: [
@@ -70,7 +72,8 @@ import { HealthModule } from './health/health.module';
     CommitModule,
     GitModule,
     MailModule,
-    SubscriptionModule
+    SubscriptionModule,
+    ProjectModule
   ]
 })
 export class CoreModule {}

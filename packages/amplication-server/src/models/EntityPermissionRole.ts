@@ -8,8 +8,7 @@ import { EnumEntityAction } from 'src/enums/EnumEntityAction';
  * Defines an ID so fields EntityPermissionRole can link to it.
  */
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityPermissionRole {
   @Field(() => String, {

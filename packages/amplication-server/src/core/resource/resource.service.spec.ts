@@ -69,7 +69,7 @@ const EXAMPLE_PROJECT: Project = {
 const EXAMPLE_RESOURCE: Resource = {
   ...DEFAULT_RESOURCE_DATA,
   id: EXAMPLE_RESOURCE_ID,
-  type: EnumResourceType.Service,
+  resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
@@ -414,7 +414,7 @@ describe('ResourceService', () => {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLOR,
-          type: EnumResourceType.Service
+          resourceType: EnumResourceType.Service
         }
       },
       user: EXAMPLE_USER
@@ -545,7 +545,7 @@ describe('ResourceService', () => {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: INVALID_COLOR,
-          type: EnumResourceType.Service
+          resourceType: EnumResourceType.Service
         }
       },
       user: EXAMPLE_USER

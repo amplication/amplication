@@ -7,6 +7,5 @@ export enum Role {
   ProjectAdmin = 'PROJECT_ADMIN'
 }
 registerEnumType(Role, {
-  name: 'Role',
-  description: undefined
+  name: 'Role'
 });
