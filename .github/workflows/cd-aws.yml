@@ -5,10 +5,9 @@ on:
       target-env:
         type: choice
         description: To which environment to deploy
-        default: staging-os
+        default: staging
         required: true
         options:
-          - staging-os
           - staging
           - prod
           - custom
@@ -26,10 +25,10 @@ jobs:
         id: create-secret-names
         run: |
           export TARGET_ENV=$(echo $TARGET_ENV | tr 'a-z' 'A-Z' | tr '-' '_')
-          if [ "$TARGET_ENV" = "PROD" ] || [ "$TARGET_ENV" = "STAGING" ]; then
+          if [ "$TARGET_ENV" = "PROD" ]; then
             echo "::set-output name=ARGOCD::AWS_${TARGET_ENV}_ARGOCD"
           else
-            echo "::set-output name=ARGOCD::AWS_STAGING_OS_ARGOCD"
+            echo "::set-output name=ARGOCD::AWS_STAGING_ARGOCD"
           fi
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
@@ -76,8 +75,8 @@ jobs:
       - name: set cluster name
         id: set-cluster-name
         run: |
-          CLUSTER_NAME="useast1-staging-os"
-          if [ "$TARGET_ENV" = "prod" ] || [ "$TARGET_ENV" = "staging" ]; then
+          CLUSTER_NAME="useast1-staging"
+          if [ "$TARGET_ENV" = "prod" ]; then
             CLUSTER_NAME="useast1-$TARGET_ENV"
           fi
           echo "Will deploy to $CLUSTER_NAME eks cluster"
@@ -129,12 +128,14 @@ jobs:
         run: |
           kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
           kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
+          kubectl delete service amplication-git-pull-service -n $NAMESPACE --ignore-not-found
+          kubectl delete service amplication-git-pull-request-service -n $NAMESPACE --ignore-not-found
       - name: deploy app
         id: deploy-app
         run: |
           #set argocd URL
-          ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
-          if [ "$TARGET_ENV" = "prod" ] || [ "$TARGET_ENV" = "staging" ]; then
+          ARGO_CD_URL="argocd.staging.amplication-dev.com"
+          if [ "$TARGET_ENV" = "prod" ]; then
             ARGO_CD_URL="argocd.$TARGET_ENV.amplication-dev.com"
           fi
           echo "ARGO_CD_URL: $ARGO_CD_URL"
