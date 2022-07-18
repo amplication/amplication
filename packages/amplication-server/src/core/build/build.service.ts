@@ -320,11 +320,7 @@ export class BuildService {
    * @param user
    * @param oldBuildId
    */
-  private async generate(
-    build: Build,
-    user: User,
-    oldBuildId: string
-  ): Promise<void> {
+  private async generate(build: Build, user: User): Promise<void> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -394,12 +390,6 @@ export class BuildService {
         await Promise.all(logPromises);
 
         dataServiceGeneratorLogger.destroy();
-
-        await this.actionService.logInfo(step, ACTION_ZIP_LOG);
-
-        await this.saveToGitHub(build, oldBuildId);
-
-        await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
       }
     );
   }
