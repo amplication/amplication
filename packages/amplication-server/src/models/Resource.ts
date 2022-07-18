@@ -1,10 +1,10 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Entity } from './Entity'; // eslint-disable-line import/no-cycle
-import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
 import { GitRepository } from './GitRepository';
 import { EnumResourceType } from '@amplication/prisma-db';
+import { Project } from './Project';
 
 registerEnumType(EnumResourceType, {
   name: 'EnumResourceType'
@@ -29,9 +29,11 @@ export class Resource {
   })
   updatedAt!: Date;
 
-  workspace?: Workspace;
+  @Field(() => Project, { nullable: true })
+  project?: Project;
 
-  workspaceId?: string;
+  @Field(() => String, { nullable: true })
+  projectId?: string;
 
   @Field(() => GitRepository, {
     nullable: true

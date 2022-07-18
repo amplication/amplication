@@ -24,7 +24,8 @@ export async function createResource(
   client: ApolloClient<NormalizedCacheObject>,
   name: string,
   description: string,
-  resourceType: models.EnumResourceType
+  resourceType: models.EnumResourceType,
+  projectId: string
 ): Promise<models.Resource> {
   const { data } = await client.mutate<
     { createResource: models.Resource },
@@ -36,6 +37,7 @@ export async function createResource(
         name,
         description,
         resourceType,
+        project: { connect: { id: projectId } },
       },
     },
   });
