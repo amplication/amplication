@@ -16,7 +16,7 @@ spec:
         imagePullPolicy: {{ .Values.global.postgres.imagePullPolicy }}
         args:
           - "pod"
-          - "amplication-{{ .Values.global.init-job.name }}-postgres-0"
+          - "amplication-{{ .Values.global.initJob.name }}-postgres-0"
       {{ end }}
       containers:
       - name: "{{ .Values.name }}-migrate"

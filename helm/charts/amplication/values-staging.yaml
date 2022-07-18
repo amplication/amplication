@@ -6,7 +6,7 @@ global:
     handle: fs-0a87872138ddc7f6d::fsap-0369ff368700f58c3
   postgres:
     install: false
-  init-job:
+  initJob:
     name: staging
 
 

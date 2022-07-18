@@ -5,7 +5,7 @@ global:
     name: mor-efs-pv
   postgres:
     install: true
-  init-job:
+  initJob:
     name: mor
 
 
