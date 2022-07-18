@@ -5,9 +5,6 @@ global:
     name: mor-efs-pv
   postgres:
     install: true
-  initJob:
-    name: mor
-
 
 cp-helm-charts:
   enabled: true
