@@ -9,11 +9,11 @@ spec:
       name: "{{ .Values.name }}-migrate"
     spec:
       restartPolicy: Never
-      {{ if .Values.postgres.install }}
+      {{ if .Values.global.postgres.install }}
       initContainers:
       - name: wait-for-postgres-connection
-        image: {{ .Values.postgres.postgresql.image }}
-        imagePullPolicy: {{ .Values.postgres.postgresql.imagePullPolicy }}
+        image: {{ .Values.global.postgres.image }}
+        imagePullPolicy: {{ .Values.global.postgres.imagePullPolicy }}
         args:
           - "pod"
           - "postgresql-0"

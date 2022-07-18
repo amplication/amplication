@@ -4,6 +4,8 @@ global:
   pv:
     name: prod-efs-pv
     handle: fs-0d4fb7d4e763c5fd0::fsap-0ed941c62eddef61c
+  postgres:
+    install: false
 
 cp-helm-charts:
   enabled: false
@@ -12,8 +14,6 @@ cp-helm-charts:
   cp-zookeeper:
     enabled: false
 
-postgres:
-  install: false
 
 amplication-client:
   service:

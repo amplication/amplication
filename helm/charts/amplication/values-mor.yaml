@@ -3,6 +3,8 @@ global:
     name: mor-efs-claim
   pv:
     name: mor-efs-pv
+  postgres:
+    install: true
 
 cp-helm-charts:
   enabled: true
@@ -11,8 +13,6 @@ cp-helm-charts:
   cp-zookeeper:
     enabled: true
 
-postgres:
-  install: true
 
 amplication-client:
   image:

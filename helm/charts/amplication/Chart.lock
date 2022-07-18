@@ -26,5 +26,5 @@ dependencies:
 - name: amplication-storage-gateway
   repository: file://../services/amplication-storage-gateway
   version: 0.1.0
-digest: sha256:3ef9163bc8b61090c5f39d364eb18de269d8f7d4a211d12763453c8367d3688f
-generated: "2022-06-08T15:39:27.570568+03:00"
+digest: sha256:38c8ff4278bc5355ca70a3093df92e78753af2911e77c0e31f460666d0091a4b
+generated: "2022-07-18T13:26:08.42265+03:00"

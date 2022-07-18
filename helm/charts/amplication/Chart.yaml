@@ -7,7 +7,7 @@ dependencies:
   alias: postgres
   version: "10.16.2"
   repository: "https://charts.bitnami.com/bitnami"
-  condition: postgres.install
+  condition: global.postgres.install
 - name: amplication-client
   version: "0.1.0"
   repository: "file://../services/amplication-client"
