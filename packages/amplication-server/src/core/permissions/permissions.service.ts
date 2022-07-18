@@ -19,8 +19,10 @@ export class PermissionsService {
         id: resourceId,
         resource: {
           deletedAt: null,
-          workspace: {
-            id: workspace.id
+          project: {
+            workspace: {
+              id: workspace.id
+            }
           }
         }
       }
@@ -51,8 +53,8 @@ export class PermissionsService {
       return matching === 1;
     }
 
-    if (resourceType === AuthorizableResourceParameter.ResourceId) {
-      const matching = await this.prisma.resource.count({
+    if (resourceType === AuthorizableResourceParameter.ProjectId) {
+      const matching = await this.prisma.project.count({
         where: {
           deletedAt: null,
           id: resourceId,
@@ -63,6 +65,22 @@ export class PermissionsService {
       });
       return matching === 1;
     }
+
+    if (resourceType === AuthorizableResourceParameter.ResourceId) {
+      const matching = await this.prisma.resource.count({
+        where: {
+          deletedAt: null,
+          id: resourceId,
+          project: {
+            workspace: {
+              id: workspace.id
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+
     if (resourceType === AuthorizableResourceParameter.InvitationId) {
       const matching = await this.prisma.invitation.count({
         where: {
@@ -95,7 +113,9 @@ export class PermissionsService {
                   build: {
                     resource: {
                       deletedAt: null,
-                      workspaceId: workspace.id
+                      project: {
+                        workspaceId: workspace.id
+                      }
                     }
                   }
                 }
@@ -107,7 +127,9 @@ export class PermissionsService {
                 some: {
                   resource: {
                     deletedAt: null,
-                    workspaceId: workspace.id
+                    project: {
+                      workspaceId: workspace.id
+                    }
                   }
                 }
               }
@@ -124,7 +146,9 @@ export class PermissionsService {
           environment: {
             resource: {
               deletedAt: null,
-              workspaceId: workspace.id
+              project: {
+                workspaceId: workspace.id
+              }
             }
           }
         }
@@ -139,7 +163,9 @@ export class PermissionsService {
             entity: {
               resource: {
                 deletedAt: null,
-                workspaceId: workspace.id
+                project: {
+                  workspaceId: workspace.id
+                }
               }
             }
           }
@@ -158,7 +184,9 @@ export class PermissionsService {
               entity: {
                 resource: {
                   deletedAt: null,
-                  workspaceId: workspace.id
+                  project: {
+                    workspaceId: workspace.id
+                  }
                 }
               }
             }
