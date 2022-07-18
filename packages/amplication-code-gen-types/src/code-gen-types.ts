@@ -1,5 +1,5 @@
-import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import * as models from "./models";
+import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 
 export {
   EnumEntityPermissionType,
