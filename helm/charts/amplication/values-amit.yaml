@@ -1,8 +1,6 @@
 global:
   pvc:
     name: amit-efs-claim
-  pv:
-    name: amit-efs-pv
 
 cp-helm-charts:
   enabled: true
@@ -10,7 +8,6 @@ cp-helm-charts:
     enabled: true
   cp-zookeeper:
     enabled: true
-
 
 amplication-client:
   service:

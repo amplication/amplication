@@ -1,8 +1,6 @@
 global:
   pvc:
     name: ariel-efs-claim
-  pv:
-    name: ariel-efs-pv
 
 cp-helm-charts:
   enabled: true

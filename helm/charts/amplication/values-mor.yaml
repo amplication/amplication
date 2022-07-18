@@ -1,8 +1,6 @@
 global:
   pvc:
     name: mor-efs-claim
-  pv:
-    name: mor-efs-pv
 
 cp-helm-charts:
   enabled: true

@@ -1,8 +1,6 @@
 global:
   pvc:
     name: shimi-efs-claim
-  pv:
-    name: shimi-efs-pv
 
 cp-helm-charts:
   enabled: true
