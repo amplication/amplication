@@ -5,6 +5,9 @@ global:
     name: amit-efs-pv
   postgres:
     install: true
+  init-job:
+    name: amit
+
 
 cp-helm-charts:
   enabled: true

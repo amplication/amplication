@@ -5,6 +5,8 @@ global:
     name: shimi-efs-pv
   postgres:
     install: true
+  init-job:
+    name: shimi
 
 cp-helm-charts:
   enabled: true

@@ -5,6 +5,9 @@ global:
     name: ariel-efs-pv
   postgres:
     install: true
+  init-job:
+    name: ariel
+
 
 cp-helm-charts:
   enabled: true

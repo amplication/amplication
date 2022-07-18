@@ -14,7 +14,9 @@ global:
     fullnameOverride: postgresql
     image: groundnuty/k8s-wait-for:v1.3
     imagePullPolicy: Always
-    
+  init-job:
+    name: common
+
 cp-helm-charts:
   enabled: true
   cp-kafka:
