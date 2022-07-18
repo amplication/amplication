@@ -5,7 +5,7 @@ import { ProjectConfigurationSettingsResolver } from './projectConfigurationSett
 import { ProjectConfigurationSettingsService } from './projectConfigurationSettings.service';
 
 @Module({
-  imports: [BlockModule,PermissionsModule],
+  imports: [BlockModule, PermissionsModule],
   providers: [
     ProjectConfigurationSettingsService,
     ProjectConfigurationSettingsResolver
