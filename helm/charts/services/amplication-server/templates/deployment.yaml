@@ -1,0 +1,61 @@
+{{ include "base.deployment" (list . "amplication-server.deployment") -}}
+{{- define "amplication-server.deployment" -}}
+spec:
+  template:
+    spec:
+      {{- with .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: default
+      containers:
+        - name: '{{ .Values.name }}'
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          resources:
+            limits:
+              cpu: {{ .Values.maxCPU }}
+              memory: {{ .Values.minMemory }}
+            requests:
+              cpu:    {{ .Values.minCPU }}
+              memory: {{ .Values.maxMemory }}
+          {{- if hasKey .Values "config" }}
+          envFrom:
+          - configMapRef:
+              name: '{{ .Values.name }}'
+          - secretRef:
+              name: '{{ .Values.name }}'
+          {{- end }}
+          env: 
+            - name: ENVIRONMENT
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{- if hasKey .Values "securityContext" }}
+          securityContext:
+          {{- with .Values.securityContext -}}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if  hasKey .Values "service" }}
+          ports:
+            - containerPort: {{ .Values.service.port.target }}
+          {{- end }}
+      {{- if hasKey .Values "volume" }}
+          volumeMounts:
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.path }}
+            - name: {{ .Values.volume.name }}-secret
+              mountPath: "/var/secrets"
+              readOnly: true
+      volumes:
+        - name: {{ .Values.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.name }}
+        - name: {{ .Values.volume.name }}-secret
+          secret:
+            secretName: gcp-secret
+      {{- end }}
+{{- end }}

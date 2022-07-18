@@ -29,8 +29,12 @@ $step-min-height: 32px;
     }
   }
 
-  &__open-github {
+  &__view-code {
     display: block;
+
+    .amp-button {
+      border-color: var(--black100);
+    }
   }
   &__sandbox {
     @include flexFullRowWithSpacing;

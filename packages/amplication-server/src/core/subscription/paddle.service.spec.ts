@@ -1,11 +1,14 @@
+import {
+  EnumSubscriptionPlan,
+  EnumSubscriptionStatus
+} from '@amplication/prisma-db';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaddleService, ERR_BAD_SIGNATURE } from './paddle.service';
-import { SubscriptionService } from './subscription.service';
 import { PaddleCreateSubscriptionEvent } from './dto/PaddleCreateSubscriptionEvent';
 import { Subscription } from './dto/Subscription';
 import { EnumPaddleSubscriptionStatus } from './dto/SubscriptionData';
-import { EnumSubscriptionPlan, EnumSubscriptionStatus } from '@prisma/client';
+import { ERR_BAD_SIGNATURE, PaddleService } from './paddle.service';
+import { SubscriptionService } from './subscription.service';
 
 /* eslint-disable @typescript-eslint/naming-convention*/
 const PADDLE_CREATE_EVENT: PaddleCreateSubscriptionEvent = {

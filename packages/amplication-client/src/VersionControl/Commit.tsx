@@ -9,8 +9,9 @@ import { GET_LAST_COMMIT } from "./LastCommit";
 import { TextField, Snackbar } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import CommitValidation from "./CommitValidation";
 import "./Commit.scss";
+import { CREATED_AT_FIELD, GET_BUILDS_COMMIT } from "../Application/code-view/CodeViewExplorer";
+import { SortOrder } from "../models";
 
 type TCommit = {
   message: string;
@@ -55,6 +56,15 @@ const Commit = ({ applicationId, noChanges }: Props) => {
           applicationId,
         },
       },
+      {
+        query: GET_BUILDS_COMMIT,
+        variables: {
+          appId: applicationId,
+          orderBy: {
+            [CREATED_AT_FIELD]: SortOrder.Desc,
+          },
+        }
+      }
     ],
   });
 
@@ -78,7 +88,6 @@ const Commit = ({ applicationId, noChanges }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <CommitValidation applicationId={applicationId} />
       <Formik
         initialValues={INITIAL_VALUES}
         onSubmit={handleSubmit}

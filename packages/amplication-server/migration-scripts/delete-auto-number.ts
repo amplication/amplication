@@ -1,6 +1,6 @@
 // 2020-10-20 Script to remove all fields with data type "Auto Number"
 
-import { PrismaClient, EnumDataType } from '@prisma/client';
+import { PrismaClient, EnumDataType } from '@amplication/prisma-db';
 
 async function main() {
   const client = new PrismaClient();

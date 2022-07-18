@@ -5,7 +5,6 @@ import {
   createEnumRolesModule,
   createRolesEnumDeclaration,
   ENUM_ROLES_ID,
-  MODULE_PATH,
 } from "./create-enum-roles";
 
 const EXAMPLE_ROLE = {
@@ -25,8 +24,8 @@ const EXPECTED_DECLARATION_CODE = `enum ${ENUM_ROLES_ID.name} {
 }`;
 
 describe("createEnumRolesModule", () => {
-  expect(createEnumRolesModule(EXAMPLE_ROLES)).toEqual({
-    path: MODULE_PATH,
+  expect(createEnumRolesModule(EXAMPLE_ROLES, "server")).toEqual({
+    path: "server/user/EnumRoles.ts",
     code: `export ${EXPECTED_DECLARATION_CODE}`,
   });
 });

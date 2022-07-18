@@ -1,7 +1,7 @@
 import { SelectField, Snackbar } from "@amplication/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import * as models from "../models";
@@ -10,22 +10,14 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./ApplicationAuthSettingForm.scss";
+import { GET_APP_SETTINGS, UPDATE_APP_SETTINGS } from "./appSettings/GenerationSettingsForm";
+import useSettingsHook from "./useSettingsHook";
 
 type Props = {
   match: match<{ application: string }>;
 };
 type TData = {
   updateAppSettings: models.AppSettings;
-};
-
-const FORM_SCHEMA = {
-  required: ["authProvider"],
-  properties: {
-    authProvider: {
-      type: "string",
-      minLength: 2,
-    },
-  },
 };
 
 const CLASS_NAME = "application-auth-settings-form";
@@ -54,28 +46,11 @@ function ApplicationAuthSettingForm({ match }: Props) {
     }
   );
 
-  const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
-      trackEvent({
-        eventName: "updateAppSettings",
-      });
-      updateAppSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-          },
-          appId: applicationId,
-        },
-      }).catch(console.error);
-    },
-    [updateAppSettings, applicationId, trackEvent]
-  );
+  const {handleSubmit, FORM_SCHEMA} = useSettingsHook({
+    trackEvent,
+    updateAppSettings,
+    applicationId
+  });
 
   const errorMessage = formatError(error || updateError);
 
@@ -94,9 +69,10 @@ function ApplicationAuthSettingForm({ match }: Props) {
             return (
               <Form>
                 <FormikAutoSave debounceMS={2000} />
-                <h3>Authentication Providers</h3>
-
-                <p>
+                <div className={`${CLASS_NAME}__header`}>
+                  <h3>Authentication Providers</h3>
+                </div>
+                <p className={`${CLASS_NAME}__description`}>
                   Select the authentication method to be used in the generated
                   app.
                 </p>
@@ -124,31 +100,3 @@ function ApplicationAuthSettingForm({ match }: Props) {
 }
 
 export default ApplicationAuthSettingForm;
-
-const UPDATE_APP_SETTINGS = gql`
-  mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
-    updateAppSettings(data: $data, where: { id: $appId }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
-
-const GET_APP_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;

@@ -1,6 +1,6 @@
 import { plural } from "pluralize";
 import { camelCase } from "camel-case";
-import flatten from "lodash.flatten";
+import { flatten } from "lodash";
 import * as winston from "winston";
 import { Entity, Module, AppInfo } from "../../types";
 import { validateEntityName } from "../../util/entity";
@@ -15,11 +15,12 @@ export async function createResourcesModules(
   appInfo: AppInfo,
   entities: Entity[],
   dtos: DTOs,
-  logger: winston.Logger
+  logger: winston.Logger,
+  srcDirectory: string
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
     entities.map((entity) =>
-      createResourceModules(appInfo, entity, dtos, logger)
+      createResourceModules(appInfo, entity, dtos, logger, srcDirectory)
     )
   );
   const resourcesModules = flatten(resourceModuleLists);
@@ -30,7 +31,8 @@ async function createResourceModules(
   appInfo: AppInfo,
   entity: Entity,
   dtos: DTOs,
-  logger: winston.Logger
+  logger: winston.Logger,
+  srcDirectory: string
 ): Promise<Module[]> {
   const entityType = entity.name;
 
@@ -44,54 +46,66 @@ async function createResourceModules(
     entityName,
     entityType,
     entity,
-    dtos
+    dtos,
+    srcDirectory
   );
 
   const [serviceModule] = serviceModules;
 
-  const controllerModules = await createControllerModules(
-    appInfo,
-    resource,
-    entityName,
-    entityType,
-    serviceModule.path,
-    entity,
-    dtos
-  );
+  const controllerModules =
+    (appInfo.settings.serverSettings.generateRestApi &&
+      (await createControllerModules(
+        appInfo,
+        resource,
+        entityName,
+        entityType,
+        serviceModule.path,
+        entity,
+        dtos,
+        srcDirectory
+      ))) ||
+    [];
 
   const [controllerModule, controllerBaseModule] = controllerModules;
 
-  const resolverModules = await createResolverModules(
-    entityName,
-    entityType,
-    serviceModule.path,
-    entity,
-    dtos
-  );
+  const resolverModules =
+    (appInfo.settings.serverSettings.generateGraphQL &&
+      (await createResolverModules(
+        entityName,
+        entityType,
+        serviceModule.path,
+        entity,
+        dtos,
+        srcDirectory
+      ))) ||
+    [];
   const [resolverModule] = resolverModules;
 
   const resourceModules = await createModules(
     entityName,
     entityType,
     serviceModule.path,
-    controllerModule.path,
-    resolverModule.path
+    controllerModule?.path,
+    resolverModule?.path,
+    srcDirectory
   );
 
-  const testModule = await createControllerSpecModule(
-    resource,
-    entity,
-    entityType,
-    serviceModule.path,
-    controllerModule.path,
-    controllerBaseModule.path
-  );
+  const testModule =
+    controllerModule &&
+    (await createControllerSpecModule(
+      resource,
+      entity,
+      entityType,
+      serviceModule.path,
+      controllerModule.path,
+      controllerBaseModule.path
+    ));
 
   return [
     ...serviceModules,
     ...controllerModules,
     ...resolverModules,
     ...resourceModules,
-    testModule,
+    ...(testModule ? [testModule] : []),
   ];
 }

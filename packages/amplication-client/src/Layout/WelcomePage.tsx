@@ -49,7 +49,7 @@ function WelcomePage({
         amplication is an open-source project and you can send us{" "}
         <a
           target="github"
-          href="https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title="
+          href="https://github.com/amplication/amplication/issues/new/choose"
         >
           {" "}
           feature requests
@@ -57,7 +57,7 @@ function WelcomePage({
         ,{" "}
         <a
           target="github"
-          href="https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title="
+          href="https://github.com/amplication/amplication/issues/new/choose"
         >
           {" "}
           bug reports

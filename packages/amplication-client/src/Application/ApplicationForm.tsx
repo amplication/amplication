@@ -103,7 +103,9 @@ function ApplicationForm({ match }: Props) {
             {(formik) => {
               return (
                 <Form>
-                  <h3>App Settings</h3>
+                  <div className={`${CLASS_NAME}__header`}>
+                    <h3>General Settings</h3>
+                  </div>
                   <FormikAutoSave debounceMS={1000} />
                   <TextField name="name" label="Name" />
                   <TextField
@@ -134,7 +136,10 @@ function ApplicationForm({ match }: Props) {
           </div>
         </>
       )}
-      <Snackbar open={Boolean(error?.message || updateError?.message)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(error?.message || updateError?.message)}
+        message={errorMessage}
+      />
     </div>
   );
 }

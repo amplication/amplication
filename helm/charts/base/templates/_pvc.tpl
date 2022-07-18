@@ -2,14 +2,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.volume.name }}
+  name: {{ .Values.pvc.name }}
 spec:
-  volumeMode: Filesystem
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
+  storageClassName: {{ .Values.pvc.storageName }}
   resources:
-    limits:
-      storage: {{ .Values.pvc.storageLimit }}
     requests:
       storage: {{ .Values.pvc.storageRequest }}
 {{- end }}

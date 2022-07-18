@@ -24,7 +24,7 @@
 <div align="center">
  
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-56-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-80-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
@@ -64,6 +64,16 @@ See [Amplication website](http://amplication.com/) or [Amplication docs](http://
 Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
 ## Development Environment (Local)
+
+### System Requirements
+
+:bulb: Before you begin, make sure you have all the below installed:
+
+- [Node.js v14 or above](https://nodejs.org/en/download/)
+- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
+- [Docker](https://docs.docker.com/desktop/)
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
+
 
 ### Initializing all the packages
 
