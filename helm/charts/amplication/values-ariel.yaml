@@ -3,9 +3,6 @@ global:
     name: ariel-efs-claim
   pv:
     name: ariel-efs-pv
-  postgres:
-    install: true
-
 
 cp-helm-charts:
   enabled: true

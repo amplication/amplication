@@ -3,9 +3,6 @@ global:
     name: amit-efs-claim
   pv:
     name: amit-efs-pv
-  postgres:
-    install: true
-
 
 cp-helm-charts:
   enabled: true

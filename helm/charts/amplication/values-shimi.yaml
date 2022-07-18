@@ -3,8 +3,6 @@ global:
     name: shimi-efs-claim
   pv:
     name: shimi-efs-pv
-  postgres:
-    install: true
 
 cp-helm-charts:
   enabled: true

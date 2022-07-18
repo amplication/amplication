@@ -6,14 +6,13 @@ global:
   pv:
     name: common-efs-pv-custom
     handle: fs-0a87872138ddc7f6d::fsap-0e0ed55af55fbdf11
-  postgres:
-    install: true
-    postgresqlPassword: postgres
-    postgresqlPostgresPassword: postgres
-    postgresqlDatabase: amplication
-    fullnameOverride: postgresql
-    image: groundnuty/k8s-wait-for:v1.3
-    imagePullPolicy: Always
+
+postgres:
+  install: true
+  postgresqlPassword: postgres
+  postgresqlPostgresPassword: postgres
+  postgresqlDatabase: amplication
+  fullnameOverride: postgresql
 
 cp-helm-charts:
   enabled: true
