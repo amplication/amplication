@@ -61,7 +61,7 @@ export class ResourceService {
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService
   ) {}
 
-  private async assertFistProjectConfiguration(
+  private async assertFirstProjectConfiguration(
     projectId: string
   ): Promise<void> {
     const projectConfiguration = await this.prisma.resource.findFirst({
@@ -77,7 +77,7 @@ export class ResourceService {
     projectId: string,
     userId: string
   ): Promise<Resource> {
-    await this.assertFistProjectConfiguration(projectId);
+    await this.assertFirstProjectConfiguration(projectId);
     const resource = await this.prisma.resource.create({
       data: {
         color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
