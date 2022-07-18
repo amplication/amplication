@@ -1,7 +1,3 @@
-global:
-  pvc:
-    name: ariel-efs-claim
-
 cp-helm-charts:
   enabled: true
   cp-kafka:
@@ -21,6 +17,9 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-ariel.amplication-dev.com
 
 amplication-server:
+  pvc:
+    name: ariel-efs-claim
+
   ingress:
     enabled: true
     hostname: server-ariel.amplication-dev.com
@@ -77,6 +76,9 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
+  pvc:
+    name: ariel-efs-claim
+
   config:
     env:
       NODE_ENV: 'production'
@@ -97,6 +99,9 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  pvc:
+    name: ariel-efs-claim
+
   config:
     env:
       KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
@@ -107,6 +112,9 @@ amplication-git-pull-request-service:
       GITHUB_APP_APP_ID: '219560'
 
 amplication-storage-gateway:
+  pvc:
+    name: ariel-efs-claim
+
   ingress:
     hostname: server-ariel.amplication-dev.com
   config:

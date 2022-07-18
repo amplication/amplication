@@ -1,9 +1,5 @@
-global:
-  pvc:
-    name: prod-efs-claim
 postgres:
   install: false
-
 
 cp-helm-charts:
   enabled: false
@@ -27,6 +23,9 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
 
 amplication-server:
+  pvc:
+    name: prod-efs-claim
+
   resources:
     limits:
       cpu: 3
@@ -98,6 +97,9 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
+  pvc:
+    name: prod-efs-claim
+
   config:
     env:
       NODE_ENV: "production"
@@ -120,6 +122,9 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  pvc:
+    name: prod-efs-claim
+
   config:
     env:
       #KAFKA
@@ -135,6 +140,9 @@ amplication-git-pull-request-service:
       GITHUB_APP_APP_ID: "176701"
 
 amplication-storage-gateway:
+  pvc:
+    name: prod-efs-claim
+
   ingress:
     hostname: server.amplication.com
   config:

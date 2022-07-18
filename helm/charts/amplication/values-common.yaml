@@ -1,9 +1,3 @@
-global:
-  pvc:
-    name: common-efs-claim
-    storageRequest: 1Gi
-    storageName: efs-sc
-
 postgres:
   install: true
   postgresqlPassword: postgres
@@ -72,6 +66,9 @@ amplication-client:
       REACT_APP_GITHUB_CLIENT_ID: value
 
 amplication-server:
+  pvc:
+    name: common-efs-claim
+
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
     tag: "release-0-13-0"
@@ -143,6 +140,9 @@ amplication-git-push-webhook-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-service:
+  pvc:
+    name: common-efs-claim
+
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
     tag: "release-0-13-0"
@@ -166,6 +166,9 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  pvc:
+    name: common-efs-claim
+
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
     tag: "release-0-13-0"
@@ -179,6 +182,9 @@ amplication-git-pull-request-service:
       GITHUB_APP_APP_ID: "195638"
 
 amplication-storage-gateway:
+  pvc:
+    name: common-efs-claim
+
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
     tag: "feature-add-services"

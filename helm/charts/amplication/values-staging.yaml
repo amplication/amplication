@@ -1,6 +1,3 @@
-global:
-  pvc:
-    name: staging-efs-claim
 postgres:
   install: false
 
@@ -23,6 +20,8 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server.staging.amplication-dev.com
 
 amplication-server:
+  pvc:
+    name: staging-efs-claim
   ingress:
     enabled: true
     hostname: server.staging.amplication-dev.com
@@ -80,6 +79,8 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
+  pvc:
+    name: staging-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -101,6 +102,8 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  pvc:
+    name: staging-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["b-1.amplicationuseast1sta.9134yb.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1sta.9134yb.c22.kafka.us-east-1.amazonaws.com:9092"]'
@@ -111,6 +114,8 @@ amplication-git-pull-request-service:
       GITHUB_APP_APP_ID: "195638"
 
 amplication-storage-gateway:
+  pvc:
+    name: staging-efs-claim
   ingress:
     hostname: server.staging.amplication-dev.com
   config:

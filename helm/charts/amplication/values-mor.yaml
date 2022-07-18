@@ -1,7 +1,3 @@
-global:
-  pvc:
-    name: mor-efs-claim
-
 cp-helm-charts:
   enabled: true
   cp-kafka:
@@ -22,6 +18,9 @@ amplication-client:
       REACT_APP_GITHUB_CLIENT_ID: value
 
 amplication-server:
+  pvc:
+    name: mor-efs-claim
+
   image:
       repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
   ingress:
