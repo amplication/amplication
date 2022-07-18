@@ -20,7 +20,7 @@ import {
   SORT_ORDER_DESC_LITERAL,
   SORT_ORDER_ASC_LITERAL,
 } from "../../sort-order.util";
-import { types } from "@amplication/data";
+import { types } from "@amplication/code-gen-types";
 
 const templatePath = require.resolve("./order-by-input.template.ts");
 

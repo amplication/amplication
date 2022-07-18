@@ -1,6 +1,6 @@
 import { namedTypes, builders } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { types } from "@amplication/data";
+import { types } from "@amplication/code-gen-types";
 import { EntityField, Entity } from "../../../types";
 import { createEnumName } from "../../prisma/create-prisma-schema";
 
