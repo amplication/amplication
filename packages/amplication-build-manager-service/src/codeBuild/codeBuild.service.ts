@@ -19,7 +19,9 @@ export class CodeBuildService {
   }
 
   async runBuild(contextArchivePath: string) {
-    const sourceBaseLocation = this.configService.get<string>(CODE_BUILD_CG_BASE_LOCATION);
+    const sourceBaseLocation = this.configService.get<string>(
+      CODE_BUILD_CG_BASE_LOCATION,
+    );
     const sbci: StartBuildCommandInput = {
       projectName: this.configService.get<string>(CODE_BUILD_PROJECT_NAME),
       sourceLocationOverride: `${sourceBaseLocation}/amplication-plugin-poc.zip`,

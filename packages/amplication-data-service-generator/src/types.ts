@@ -148,3 +148,10 @@ export type ResourceGenerationConfig = {
   dataServiceGeneratorVersion: string;
   appInfo: AppInfo;
 };
+
+export type BuildContext = {
+  buildId: string;
+  resourceId: string;
+  projectId: string;
+  data: WorkerParam;
+};
