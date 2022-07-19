@@ -36,6 +36,7 @@
   --secondary2: #59c4a9;
 
   --secondary-turquoise: #32c9e5;
+  --dark-secondary-turquoise: #53dbee;
   --secondary-light-blue: #20a4f3;
   --secondary-blue: #144bc1;
 
@@ -43,6 +44,7 @@
   --warning-default: #f6aa50;
   --negative: #e93c51;
 
+  --negative-dark: #d41a30;
   --tooltip-background: #1b1f23;
 
   --panel-background: var(--white);
@@ -67,13 +69,13 @@
   --double-spacing: 24px;
   --triple-spacing: 36px;
   --form-field-spacing: 16px;
-  --form-field-long: 400px;
+  --form-field-long: 320px;
   --form-field-normal: 200px;
   --grid-row-gap: 8px;
   --grid-row-height: 48px;
   --textarea-height-small: 60px;
 
-  --field-height: 36px;
+  --field-height: 34px;
   --textarea-height: 130px;
 
   --modal-min-width: 400px;
@@ -96,6 +98,7 @@
   --default-border-radius: 8px;
   --small-border-radius: 4px;
   --form-elements-border-radius: var(--default-border-radius);
+  --form-permission-type-radius: var() var(--small-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
   --side-bar-width: 440px;

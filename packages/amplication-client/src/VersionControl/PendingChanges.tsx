@@ -60,14 +60,20 @@ const PendingChanges = ({ applicationId }: Props) => {
       <Commit applicationId={applicationId} noChanges={noChanges} />
       <div className={`${CLASS_NAME}__changes-header`}>
         <span>Changes</span>
-        <span className={`${CLASS_NAME}__changes-count`}>
+        <span
+          className={
+            data?.pendingChanges.length
+              ? `${CLASS_NAME}__changes-count-warning`
+              : `${CLASS_NAME}__changes-count`
+          }
+        >
           {data?.pendingChanges.length}
         </span>
         <div className="spacer" />
         <Tooltip aria-label={"Compare Changes"} direction="sw">
           <Link to={`/${applicationId}/pending-changes`}>
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               disabled={loading || noChanges}
               icon="compare"
             />
@@ -75,7 +81,7 @@ const PendingChanges = ({ applicationId }: Props) => {
         </Tooltip>
         <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
           <Button
-            buttonStyle={EnumButtonStyle.Clear}
+            buttonStyle={EnumButtonStyle.Text}
             onClick={handleToggleDiscardDialog}
             disabled={loading || noChanges}
             icon="trash_2"

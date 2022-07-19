@@ -13,13 +13,15 @@ import { EntityPageModule } from './entityPage/entityPage.module';
 import { AppRoleModule } from './appRole/appRole.module';
 import { BuildModule } from './build/build.module';
 import { ActionModule } from './action/action.module';
-import { DeploymentModule } from './deployment/deployment.module';
 import { EnvironmentModule } from './environment/environment.module';
 import { CommitModule } from './commit/commit.module';
-import { SystemModule } from './system/system.module';
+import { MailModule } from './mail/mail.module';
 import { AppSettingsModule } from './appSettings/appSettings.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
+import { HealthModule } from './health/health.module';
+
 @Module({
   imports: [
     AccountModule,
@@ -36,13 +38,15 @@ import { GitProviderModule } from './git/git.provider.module';
     AppRoleModule,
     BuildModule,
     ActionModule,
-    DeploymentModule,
     EnvironmentModule,
     CommitModule,
-    SystemModule,
     AppSettingsModule,
     GitModule,
-    GitProviderModule
+    GitProviderModule,
+    CommitModule,
+    MailModule,
+    SubscriptionModule,
+    HealthModule
   ],
   exports: [
     AccountModule,
@@ -58,12 +62,15 @@ import { GitProviderModule } from './git/git.provider.module';
     AppRoleModule,
     BuildModule,
     ActionModule,
-    DeploymentModule,
     EnvironmentModule,
     CommitModule,
     AppSettingsModule,
     GitProviderModule,
-    GitModule
+    GitModule,
+    CommitModule,
+    GitModule,
+    MailModule,
+    SubscriptionModule
   ]
 })
 export class CoreModule {}

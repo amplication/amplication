@@ -11,7 +11,7 @@ import {
   removeTSClassDeclares,
   removeESLintComments,
 } from "../../../util/ast";
-import { SRC_DIRECTORY } from "../../constants";
+import { removeIdentifierFromModuleDecorator } from "../../../util/nestjs-code-generation";
 import { createControllerId } from "../controller/create-controller";
 import { createServiceId } from "../service/create-service";
 import { createResolverId } from "../resolver/create-resolver";
@@ -23,8 +23,9 @@ export async function createModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entityControllerModule: string,
-  entityResolverModule: string
+  entityControllerModule: string | undefined,
+  entityResolverModule: string | undefined,
+  srcDirectory: string
 ): Promise<Module[]> {
   const moduleBaseId = createBaseModuleId(entityType);
 
@@ -35,9 +36,10 @@ export async function createModules(
       entityServiceModule,
       entityControllerModule,
       entityResolverModule,
-      moduleBaseId
+      moduleBaseId,
+      srcDirectory
     ),
-    await createBaseModule(entityName, moduleBaseId),
+    await createBaseModule(entityName, moduleBaseId, srcDirectory),
   ];
 }
 
@@ -45,12 +47,13 @@ async function createModule(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entityControllerModule: string,
-  entityResolverModule: string,
-  moduleBaseId: namedTypes.Identifier
+  entityControllerModule: string | undefined,
+  entityResolverModule: string | undefined,
+  moduleBaseId: namedTypes.Identifier,
+  srcDirectory: string
 ): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/${entityName}.module.ts`;
-  const moduleBasePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.module.base.ts`;
+  const modulePath = `${srcDirectory}/${entityName}/${entityName}.module.ts`;
+  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleTemplatePath);
   const controllerId = createControllerId(entityType);
   const serviceId = createServiceId(entityType);
@@ -65,6 +68,7 @@ async function createModule(
     MODULE: moduleId,
     MODULE_BASE: moduleBaseId,
   });
+
   const moduleBaseImport = importNames(
     [moduleBaseId],
     relativeImportPath(modulePath, moduleBasePath)
@@ -75,22 +79,36 @@ async function createModule(
     relativeImportPath(modulePath, entityServiceModule)
   );
 
-  const controllerImport = importNames(
-    [controllerId],
-    relativeImportPath(modulePath, entityControllerModule)
-  );
+  const controllerImport = entityControllerModule
+    ? importNames(
+        [controllerId],
+        relativeImportPath(modulePath, entityControllerModule)
+      )
+    : undefined;
 
-  const resolverImport = importNames(
-    [resolverId],
-    relativeImportPath(modulePath, entityResolverModule)
-  );
+  //if we are not generating the controller, remove the controller property
+  if (!entityControllerModule) {
+    removeIdentifierFromModuleDecorator(file, controllerId);
+  }
 
-  addImports(file, [
-    moduleBaseImport,
-    serviceImport,
-    controllerImport,
-    resolverImport,
-  ]);
+  const resolverImport = entityResolverModule
+    ? importNames(
+        [resolverId],
+        relativeImportPath(modulePath, entityResolverModule)
+      )
+    : undefined;
+
+  //if we are not generating the resolver, remove it from the providers list
+  if (!entityResolverModule) {
+    removeIdentifierFromModuleDecorator(file, resolverId);
+  }
+
+  addImports(
+    file,
+    [moduleBaseImport, serviceImport, controllerImport, resolverImport].filter(
+      (x) => x //remove nulls and undefined
+    ) as namedTypes.ImportDeclaration[]
+  );
 
   removeTSIgnoreComments(file);
   removeESLintComments(file);
@@ -104,9 +122,10 @@ async function createModule(
 
 async function createBaseModule(
   entityName: string,
-  moduleBaseId: namedTypes.Identifier
+  moduleBaseId: namedTypes.Identifier,
+  srcDirectory: string
 ): Promise<Module> {
-  const modulePath = `${SRC_DIRECTORY}/${entityName}/base/${entityName}.module.base.ts`;
+  const modulePath = `${srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleBaseTemplatePath);
 
   interpolate(file, {

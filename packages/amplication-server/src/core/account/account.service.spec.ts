@@ -1,7 +1,7 @@
+import { Account, PrismaService } from '@amplication/prisma-db';
 import { Test, TestingModule } from '@nestjs/testing';
+import { SegmentAnalyticsService } from 'src/services/segmentAnalytics/segmentAnalytics.service';
 import { AccountService } from './account.service';
-import { PrismaService } from 'nestjs-prisma';
-import { Account } from '@prisma/client';
 
 const EXAMPLE_ACCOUNT_ID = 'ExampleAccountId',
   EXAMPLE_EMAIL = 'example@email.com',
@@ -22,6 +22,13 @@ const EXAMPLE_ACCOUNT: Account = {
   githubId: null
 };
 
+const segmentAnalyticsIdentifyMock = jest.fn(() => {
+  return;
+});
+const segmentAnalyticsTrackMock = jest.fn(() => {
+  return;
+});
+
 const prismaAccountCreateMock = jest.fn(() => {
   return EXAMPLE_ACCOUNT;
 });
@@ -41,6 +48,13 @@ describe('AccountService', () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            identify: segmentAnalyticsIdentifyMock,
+            track: segmentAnalyticsTrackMock
+          }))
+        },
         AccountService,
         {
           provide: PrismaService,
@@ -62,7 +76,7 @@ describe('AccountService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create an account', () => {
+  it('should create an account', async () => {
     const args = {
       data: {
         email: EXAMPLE_EMAIL,
@@ -71,9 +85,18 @@ describe('AccountService', () => {
         password: EXAMPLE_PASSWORD
       }
     };
-    expect(service.createAccount(args)).toEqual(EXAMPLE_ACCOUNT);
+    expect(await service.createAccount(args)).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountCreateMock).toBeCalledTimes(1);
     expect(prismaAccountCreateMock).toBeCalledWith(args);
+    expect(segmentAnalyticsIdentifyMock).toBeCalledTimes(1);
+    expect(segmentAnalyticsTrackMock).toBeCalledTimes(1);
+    expect(segmentAnalyticsIdentifyMock).toBeCalledWith({
+      userId: EXAMPLE_ACCOUNT_ID,
+      createdAt: expect.any(Date),
+      email: EXAMPLE_EMAIL,
+      firstName: EXAMPLE_FIRST_NAME,
+      lastName: EXAMPLE_LAST_NAME
+    });
   });
 
   it('should find one account', () => {

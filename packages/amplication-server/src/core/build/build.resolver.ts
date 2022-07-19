@@ -18,13 +18,12 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
-import { User } from 'src/models';
+import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
-import { Action } from '../action/dto/Action';
-import { Deployment } from '../deployment/dto/Deployment';
+import { Action } from '../action/dto';
 import { ActionService } from '../action/action.service';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { FindManyDeploymentArgs } from '../deployment/dto/FindManyDeploymentArgs';
+import { CommitService } from '../commit/commit.service';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -33,7 +32,8 @@ export class BuildResolver {
   constructor(
     private readonly service: BuildService,
     private readonly userService: UserService,
-    private readonly actionService: ActionService
+    private readonly actionService: ActionService,
+    private readonly commitService: CommitService
   ) {}
 
   @Query(() => [Build])
@@ -59,6 +59,11 @@ export class BuildResolver {
   }
 
   @ResolveField()
+  async commit(@Parent() build: Build): Promise<Commit> {
+    return this.commitService.findOne({ where: { id: build.commitId } });
+  }
+
+  @ResolveField()
   archiveURI(@Parent() build: Build): string {
     return `/generated-apps/${build.id}.zip`;
   }
@@ -66,14 +71,6 @@ export class BuildResolver {
   @ResolveField()
   status(@Parent() build: Build): Promise<EnumBuildStatus> {
     return this.service.calcBuildStatus(build.id);
-  }
-
-  @ResolveField(() => [Deployment])
-  deployments(
-    @Parent() build: Build,
-    @Args() args: FindManyDeploymentArgs
-  ): Promise<Deployment[]> {
-    return this.service.getDeployments(build.id, args);
   }
 
   @Mutation(() => Build)

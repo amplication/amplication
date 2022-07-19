@@ -14,6 +14,9 @@ export enum EnumButtonStyle {
   Secondary = "secondary",
   CallToAction = "call-to-action",
   Clear = "clear",
+  Outline = "outline",
+  Text = "text",
+  Danger = "danger",
 }
 
 export enum EnumIconPosition {
@@ -67,10 +70,7 @@ export const Button = ({
       {!isEmpty(icon) && (
         <Icon
           icon={icon as string}
-          size={
-            iconSize ||
-            (buttonStyle === EnumButtonStyle.Clear ? "small" : "xsmall")
-          }
+          size={iconSize || "small"}
           className="amp-button__icon"
         />
       )}

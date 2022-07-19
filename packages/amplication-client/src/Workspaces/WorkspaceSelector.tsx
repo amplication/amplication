@@ -99,7 +99,7 @@ function WorkspaceSelector() {
               {data?.currentWorkspace.name}
             </span>
             <Button
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               disabled={loading}
               type="button"
               icon="code"
@@ -125,6 +125,17 @@ export const GET_CURRENT_WORKSPACE = gql`
     currentWorkspace {
       id
       name
+      subscription {
+        id
+        workspaceId
+        subscriptionPlan
+        status
+        nextBillDate
+        cancelUrl
+        updateUrl
+        price
+        cancellationEffectiveDate
+      }
     }
   }
 `;

@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Values.name }}-migrate"
+spec:
+  # ttlSecondsAfterFinished: 5
+  template:
+    metadata:
+      name: "{{ .Values.name }}-migrate"
+    spec:
+      restartPolicy: Never
+      {{ if .Values.postgres.install }}
+      initContainers:
+      - name: wait-for-postgres-connection
+        image: {{ .Values.postgres.postgresql.image }}
+        imagePullPolicy: {{ .Values.postgres.postgresql.imagePullPolicy }}
+        args:
+          - "pod"
+          - "postgresql-0"
+      {{ end }}
+      containers:
+      - name: "{{ .Values.name }}-migrate"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        resources:
+          limits:
+            cpu: {{ .Values.maxCPU }}
+            memory: {{ .Values.minMemory }}
+          requests:
+            cpu: {{ .Values.minCPU }}
+            memory: {{ .Values.maxMemory }}
+        command: ["/bin/sh"]
+        args: ["-c", "npm run migrate:up"]
+        env:
+        - name: POSTGRESQL_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.name }}
+              key: POSTGRESQL_URL
+              optional: false
+       

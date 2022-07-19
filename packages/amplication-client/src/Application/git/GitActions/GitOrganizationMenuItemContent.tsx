@@ -6,18 +6,16 @@ const CLASS_NAME = "menu-item-content";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
+  isMenuTitle?: Boolean;
 };
 export const GitOrganizationMenuItemContent = ({
   gitOrganization: { name },
+  isMenuTitle = false,
 }: Props) => {
   return (
-    <>
-      <img
-        className={`${CLASS_NAME}`}
-        src={githubOrganizationImageUrl(name)}
-        alt="Git organization"
-      />
-      {name}
-    </>
+    <span className={`${CLASS_NAME}`}>
+      <img src={githubOrganizationImageUrl(name)} alt="Git organization" />
+      {isMenuTitle ? `${name} connected` : name}
+    </span>
   );
 };

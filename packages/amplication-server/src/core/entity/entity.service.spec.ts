@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Prisma, EnumEntityAction } from '@prisma/client';
+import {
+  Prisma,
+  EnumEntityAction,
+  PrismaService
+} from '@amplication/prisma-db';
 import { camelCase } from 'camel-case';
 import { pick, omit } from 'lodash';
 import {
@@ -9,7 +13,6 @@ import {
   EntityService,
   NAME_VALIDATION_ERROR_MESSAGE
 } from './entity.service';
-import { PrismaService } from 'nestjs-prisma';
 import { Entity, EntityVersion, EntityField, User, Commit } from 'src/models';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
@@ -174,7 +177,8 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  isOwner: true
 };
 
 const RESERVED_NAME = 'class';

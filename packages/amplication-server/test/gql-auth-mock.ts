@@ -1,6 +1,6 @@
 import { ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import set from 'lodash.set';
+import { set } from 'lodash';
 
 /**
  * Creates a mock implementation of GqlAuthGuard.canActivate with given user
