@@ -1,6 +1,6 @@
-# Amplication Data
+# Amplication Code gen types
 
-Amplication data is the component that defines the shared data structures used by the amplication packages.
+Amplication Code gen types is the component that defines the shared data structures used by the amplication packages.
 
 ## Usage
 
