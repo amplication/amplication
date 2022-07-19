@@ -1,9 +1,9 @@
 import { CodeBuildService } from './codeBuild.service';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { BuildContextStorageService } from 'src/buildContextStorage/buildContextStorage.service';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [BuildContextStorageService],
   providers: [CodeBuildService],
   exports: [CodeBuildService],
 })
