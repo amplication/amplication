@@ -5,9 +5,9 @@ import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import { init as initPaddle } from "./util/paddle";
 import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
-import useWorkspaceSelector from "./Workspaces/hooks/useWorkspaceSelector";
 import useAuthenticated from "./authentication/use-authenticated";
-import { AppContextProvider } from "./context/appContext";
+import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
+import { CircularProgress } from "@amplication/design-system";
 
 const GeneratedRoutes = routesGenerator(Routes);
 const context = {
@@ -25,7 +25,7 @@ export const enhance = track<keyof typeof context>(
 
 function App() {
   const authenticated = useAuthenticated();
-  const { currentWorkspace, handleSetCurrentWorkspace } = useWorkspaceSelector(
+  const { currentWorkspaceLoad } = useCurrentWorkspace(
     authenticated
   );
 
@@ -45,10 +45,7 @@ function App() {
 
   return (
     <ThemeProvider>
-      <AppContextProvider newVal={{
-        currentWorkspace,
-        handleSetCurrentWorkspace
-      }}>{GeneratedRoutes}</AppContextProvider>
+      {currentWorkspaceLoad ? <CircularProgress /> : GeneratedRoutes}
     </ThemeProvider>
   );
 }

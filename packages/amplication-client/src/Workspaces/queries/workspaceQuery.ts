@@ -21,9 +21,9 @@ export const GET_CURRENT_WORKSPACE = gql`
 `;
 
 export const SET_CURRENT_WORKSPACE = gql`
-mutation setCurrentWorkspace($workspaceId: String!) {
-  setCurrentWorkspace(data: { id: $workspaceId }) {
-    token
+  mutation setCurrentWorkspace($workspaceId: String!) {
+    setCurrentWorkspace(data: { id: $workspaceId }) {
+      token
+    }
   }
-}
 `;

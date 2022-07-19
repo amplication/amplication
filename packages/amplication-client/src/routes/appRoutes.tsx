@@ -80,7 +80,9 @@ export const Routes: RouteDef[] = [
   },
   {
     path: "/github-auth-app/callback",
-    Component: lazy(() => import("../Resource/git/AuthResourceWithGitCallback")),
+    Component: lazy(() =>
+      import("../Resource/git/AuthResourceWithGitCallback")
+    ),
     moduleName: "AuthAppWithGitCallback",
     permission: true,
     routeTrackType: "auth app with git callback",
@@ -101,14 +103,5 @@ export const Routes: RouteDef[] = [
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
-  },
-  {
-    path: "/create-app",
-    Component: lazy(() => import("../Resource/CreateResourceFromExcel")),
-    moduleName: "CreateAppFromExcel",
-    permission: true,
-    moduleClass: "create-app-from-excel",
-    routeTrackType: "create-app",
-    exactPath: true,
-  },
+  }
 ];

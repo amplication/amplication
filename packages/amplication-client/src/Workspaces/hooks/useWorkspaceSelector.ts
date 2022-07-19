@@ -9,7 +9,7 @@ import { useHistory, useParams, useLocation } from "react-router-dom";
 import {
   GET_CURRENT_WORKSPACE,
   SET_CURRENT_WORKSPACE,
-} from "../workspaceQuery";
+} from "../queries/workspaceQuery";
 import { setToken, unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
 
@@ -36,7 +36,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
         if (error.message === "Unauthorized") {
           unsetToken();
           history.push("/login");
-        } 
+        }
       },
     }
   );
@@ -55,19 +55,14 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   useEffect(() => {
     if (loading && !authenticated) return;
 
-    data && setCurrentWorkspace(data.currentWorkspace);
-  }, [authenticated, data, loading]);
+    data &&
+      data.currentWorkspace.id !== workspace &&
+      history.push(`/${data.currentWorkspace.id}`);
 
-  useEffect(() => {
-    if (!(data && data.currentWorkspace)) return;
-
-    location.pathname === "/" && history.push(`/${data.currentWorkspace.id}`);
-  }, [data, history, location]);
-
-  useEffect(() => {
-    if (!workspace) return;
-    console.log(workspace);
-  }, [workspace]);
+    data &&
+      data.currentWorkspace.id === workspace &&
+      setCurrentWorkspace(data.currentWorkspace);
+  }, [authenticated, data, history, loading, workspace]);
 
   useEffect(() => {
     if (setCurrentData) {
