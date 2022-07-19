@@ -245,7 +245,7 @@ export function createPrismaFields(
           false,
           field.required,
           !field.properties.allowMultipleSelection &&
-            !relatedField.properties.allowMultipleSelection &&
+            !relatedField?.properties.allowMultipleSelection &&
             !isOneToOneWithoutForeignKey
             ? true
             : field.unique
