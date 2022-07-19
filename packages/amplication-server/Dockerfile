@@ -18,10 +18,8 @@ FROM base AS build
 WORKDIR /app
 # Copy amplication/server and the its dependent packages
 COPY packages/amplication-server packages/amplication-server
-COPY packages/amplication-container-builder packages/amplication-container-builder
 COPY packages/amplication-data packages/amplication-data
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
-COPY packages/amplication-deployer packages/amplication-deployer
 COPY packages/amplication-git-service packages/amplication-git-service
 COPY packages/amplication-prisma-db packages/amplication-prisma-db
 COPY packages/amplication-kafka packages/amplication-kafka
@@ -49,10 +47,6 @@ COPY --from=build /app/packages/amplication-server/dist /app/packages/amplicatio
 COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
 
 
-COPY --from=build /app/packages/amplication-container-builder/package.json /app/packages/amplication-container-builder/package.json
-COPY --from=build /app/packages/amplication-container-builder/node_modules /app/packages/amplication-container-builder/node_modules
-COPY --from=build /app/packages/amplication-container-builder/dist /app/packages/amplication-container-builder/dist
-
 COPY --from=build /app/packages/amplication-data/package.json /app/packages/amplication-data/package.json
 COPY --from=build /app/packages/amplication-data/node_modules /app/packages/amplication-data/node_modules
 COPY --from=build /app/packages/amplication-data/dist /app/packages/amplication-data/dist
@@ -60,10 +54,6 @@ COPY --from=build /app/packages/amplication-data/dist /app/packages/amplication-
 COPY --from=build /app/packages/amplication-data-service-generator/package.json /app/packages/amplication-data-service-generator/package.json
 COPY --from=build /app/packages/amplication-data-service-generator/node_modules /app/packages/amplication-data-service-generator/node_modules
 COPY --from=build /app/packages/amplication-data-service-generator/dist /app/packages/amplication-data-service-generator/dist
-
-COPY --from=build /app/packages/amplication-deployer/package.json /app/packages/amplication-deployer/package.json
-COPY --from=build /app/packages/amplication-deployer/node_modules /app/packages/amplication-deployer/node_modules
-COPY --from=build /app/packages/amplication-deployer/dist /app/packages/amplication-deployer/dist
 
 COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
 COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules

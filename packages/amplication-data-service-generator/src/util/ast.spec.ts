@@ -13,6 +13,7 @@ import {
   classDeclaration,
   ParseError,
   partialParse,
+  findFirstDecoratorByName,
 } from "./ast";
 import * as recast from "recast";
 import * as parser from "./parser";
@@ -321,5 +322,47 @@ describe("partialParse", () => {
       throw EXAMPLE_ERROR;
     });
     expect(() => partialParse(EXAMPLE_SOURCE)).toThrow(EXAMPLE_ERROR);
+  });
+});
+
+describe("findFirstDecoratorByName", () => {
+  test("find class decorator", () => {
+    const file = parse(`
+    @Decorator1()
+    export class A {}
+    `);
+    const decorator = findFirstDecoratorByName(file, "Decorator1");
+    expect(decorator.type).toEqual("Decorator");
+  });
+
+  test("fail to find class decorator with wrong name", () => {
+    const file = parse(`
+    @Decorator1()
+    export class A {}
+    `);
+    expect(() => findFirstDecoratorByName(file, "Decorator2")).toThrow();
+  });
+
+  test("find property decorator", () => {
+    const file = parse(`
+    @Decorator1()
+    export class A {
+      @Decorator2(() => String)
+      B: string;
+    }    
+    `);
+    const decorator = findFirstDecoratorByName(file, "Decorator2");
+    expect(decorator.type).toEqual("Decorator");
+  });
+
+  test("fail to find property decorator with wrong name", () => {
+    const file = parse(`
+    @Decorator1()
+    export class A {
+      @Decorator2(() => String)
+      B: string;
+    }  
+    `);
+    expect(() => findFirstDecoratorByName(file, "Decorator3")).toThrow();
   });
 });

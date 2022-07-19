@@ -14,12 +14,10 @@ import { BuildResolver } from './build.resolver';
 import { BuildController } from './build.controller';
 import { RootStorageModule } from '../storage/root-storage.module';
 import { ActionModule } from '../action/action.module';
-import { DeploymentModule } from '../deployment/deployment.module';
-import { ContainerBuilderRootModule } from '../containerBuilder/containerBuilderRoot.module';
 import { StorageOptionsModule } from '../storage/storage-options.module';
 import { BuildFilesSaver } from './utils';
 import { QueueModule } from '../queue/queue.module';
-import { CommitModule } from '../commit/commit.module';
+import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
 
 @Module({
   imports: [
@@ -33,9 +31,7 @@ import { CommitModule } from '../commit/commit.module';
     RootStorageModule,
     AppRoleModule,
     ActionModule,
-    ContainerBuilderRootModule,
     StorageOptionsModule,
-    DeploymentModule,
     forwardRef(() => AppModule),
     AppSettingsModule,
     QueueModule,

@@ -27,3 +27,5 @@ packages/**/lib
 
 **/*.spec.ts
 **/*.mock.ts
+
+!packages/amplication-data-service-generator/src/*/static

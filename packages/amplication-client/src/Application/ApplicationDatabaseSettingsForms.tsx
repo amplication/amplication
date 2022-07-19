@@ -1,7 +1,7 @@
 import { TextField, Snackbar } from "@amplication/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
@@ -10,6 +10,8 @@ import { validate } from "../util/formikValidateJsonSchema";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { match } from "react-router-dom";
 import "./ApplicationDatabaseSettingsForms.scss";
+import { GET_APP_SETTINGS, UPDATE_APP_SETTINGS } from "./appSettings/GenerationSettingsForm";
+import useSettingsHook from "./useSettingsHook";
 
 type Props = {
   match: match<{ application: string }>;
@@ -17,32 +19,6 @@ type Props = {
 
 type TData = {
   updateAppSettings: models.AppSettings;
-};
-
-const FORM_SCHEMA = {
-  required: ["dbHost", "dbUser", "dbPassword", "dbPort"],
-  properties: {
-    dbHost: {
-      type: "string",
-      minLength: 2,
-    },
-    dbUser: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPassword: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPort: {
-      type: "integer",
-      minLength: 4,
-      maxLength: 5,
-    },
-    dbName: {
-      type: "string",
-    },
-  },
 };
 
 const CLASS_NAME = "application-database-settings-form";
@@ -70,28 +46,11 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
     }
   );
 
-  const handleSubmit = useCallback(
-    (data: models.AppSettings) => {
-      const { dbHost, dbName, dbPassword, dbPort, dbUser, authProvider } = data;
-      trackEvent({
-        eventName: "updateAppSettings",
-      });
-      updateAppSettings({
-        variables: {
-          data: {
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
-            authProvider,
-          },
-          appId: applicationId,
-        },
-      }).catch(console.error);
-    },
-    [updateAppSettings, applicationId, trackEvent]
-  );
+  const {handleSubmit, FORM_SCHEMA} = useSettingsHook({
+    trackEvent,
+    updateAppSettings,
+    applicationId
+  });
 
   const errorMessage = formatError(error || updateError);
   return (
@@ -111,7 +70,7 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
                 <div className={`${CLASS_NAME}__header`}>
                   <h3>Database Settings</h3>
                 </div>
-                <p>
+                <p className={`${CLASS_NAME}__description`}>
                   All the below settings will appear in clear text in the
                   generated app. <br />
                   It should only be used for the development environment
@@ -162,31 +121,3 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
 }
 
 export default ApplicationDatabaseSettingsForms;
-
-const UPDATE_APP_SETTINGS = gql`
-  mutation updateAppSettings($data: AppSettingsUpdateInput!, $appId: String!) {
-    updateAppSettings(data: $data, where: { id: $appId }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
-
-const GET_APP_SETTINGS = gql`
-  query appSettings($id: String!) {
-    appSettings(where: { id: $id }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
