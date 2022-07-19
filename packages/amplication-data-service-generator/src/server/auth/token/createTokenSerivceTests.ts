@@ -1,6 +1,6 @@
 import { print } from "recast";
 import { EnumAuthProviderType } from "../../../models";
-import { Module } from "../../../types";
+import { Module } from "@amplication/code-gen-types";
 import { readFile } from "../../../util/module";
 
 export async function createTokenServiceTests(

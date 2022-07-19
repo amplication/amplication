@@ -4,7 +4,7 @@ import {
   EntityField,
   EnumEntityPermissionType,
   EnumEntityAction,
-} from "../types";
+} from "@amplication/code-gen-types";
 
 export const USER_ENTITY_NAME = "User";
 

@@ -1,7 +1,7 @@
 import { builders, namedTypes } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import { ObjectField, ScalarField } from "prisma-schema-dsl";
-import { Entity, EntityField } from "../../../../types";
+import { Entity, EntityField } from "@amplication/code-gen-types";
 import {
   classDeclaration,
   classProperty,

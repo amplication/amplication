@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Formik, FormikErrors } from "formik";
 import { omit, isEmpty } from "lodash";
-import { getSchemaForDataType } from "@amplication/data";
+import { getSchemaForDataType } from "@amplication/code-gen-types";
 import { ToggleField } from "@amplication/design-system";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";

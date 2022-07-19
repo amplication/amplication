@@ -1,5 +1,5 @@
 import { print } from "recast";
-import { Entity } from "../../../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { createWhereUniqueInput } from "../../create-where-unique-input";
 import {
   EXAMPLE_ID_FIELD,

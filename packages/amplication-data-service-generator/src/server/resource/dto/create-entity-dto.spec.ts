@@ -1,6 +1,6 @@
 import { builders } from "ast-types";
 import { print } from "recast";
-import { Entity } from "../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { classDeclaration } from "../../../util/ast";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import { createEntityDTO, OBJECT_TYPE_DECORATOR } from "./create-entity-dto";
