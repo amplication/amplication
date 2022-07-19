@@ -218,19 +218,12 @@ export class BuildService {
       }
     });
 
-    const oldBuild = await previousBuild(
-      this.prisma,
-      resourceId,
-      build.id,
-      build.createdAt
-    );
-
     const logger = this.logger.child({
       buildId: build.id
     });
 
     logger.info(JOB_STARTED_LOG);
-    await this.generate(build, user, oldBuild?.id);
+    await this.generate(build, user);
     logger.info(JOB_DONE_LOG);
 
     return build;
