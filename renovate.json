@@ -1,9 +1,12 @@
 {
   "extends": ["config:base"],
+  "schedule": ["every weekend"],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": false
+      "automerge": false,
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
     },
     {
       "matchDatasources": ["docker"],
