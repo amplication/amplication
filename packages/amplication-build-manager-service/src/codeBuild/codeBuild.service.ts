@@ -10,14 +10,22 @@ import { CODE_BUILD_PROJECT_NAME } from 'src/constants';
 @Injectable()
 export class CodeBuildService {
   private readonly codeBuildClient: CodeBuildClient;
+  private readonly projectName: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.codeBuildClient = new CodeBuildClient({});
+    //TODO: Provide credentials
+    this.codeBuildClient = new CodeBuildClient({
+      // credentials: {
+      //   accessKeyId: configService.get('AWS_KEY_ID'),
+      //   secretAccessKey: configService.get('AWS_SECRET_KEY'),
+      // },
+    });
+    this.projectName = this.configService.get<string>(CODE_BUILD_PROJECT_NAME);
   }
 
   async runBuild(contextArchivePath: string) {
     const sbci: StartBuildCommandInput = {
-      projectName: this.configService.get<string>(CODE_BUILD_PROJECT_NAME),
+      projectName: this.projectName,
       sourceLocationOverride: contextArchivePath,
     };
 

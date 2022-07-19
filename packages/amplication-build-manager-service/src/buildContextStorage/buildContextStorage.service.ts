@@ -5,7 +5,7 @@ import {
   PutObjectCommand,
   PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
-import fs from 'fs';
+import { promises as fsPr } from 'fs';
 import { GenerateResource } from 'src/codeBuild/dto/GenerateResource';
 import JSZip from 'jszip';
 import { join } from 'path';
@@ -21,7 +21,7 @@ export class BuildContextStorageService {
     this.client = new S3Client({
       credentials: {
         accessKeyId: configService.get('AWS_KEY_ID'),
-        secretAccessKey: configService.get('AWS_SECRET_KET'),
+        secretAccessKey: configService.get('AWS_SECRET_KEY'),
       },
     });
 
@@ -36,16 +36,14 @@ export class BuildContextStorageService {
   public async saveBuildContextSource(
     genResource: GenerateResource,
   ): Promise<string> {
-    const buffer = await fs.promises.readFile(
-      genResource.contextFileLocation.path,
-    );
+    const buffer = await fsPr.readFile(genResource.contextFileLocation.path);
 
     const zipper = new JSZip();
     zipper.file('input-data.json', buffer);
     const archive = await zipper.generateAsync({ type: 'uint8array' });
 
     const date = new Date().toISOString().split('T')[0];
-    const path = join(
+    const key = join(
       this.BUILD_CONTEXT_S3_LOCATION,
       date,
       genResource.projectId,
@@ -55,12 +53,13 @@ export class BuildContextStorageService {
 
     const uploadParams: PutObjectCommandInput = {
       Bucket: this.BUILD_CONTEXT_S3_BUCKET,
-      Key: path,
+      Key: key,
       Body: archive,
     };
 
     await this.client.send(new PutObjectCommand(uploadParams));
 
+    const path = join(this.BUILD_CONTEXT_S3_BUCKET, key);
     return path;
   }
 }

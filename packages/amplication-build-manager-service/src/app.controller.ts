@@ -1,6 +1,5 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import fs from 'fs';
 import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
 import { CodeBuildService } from './codeBuild/codeBuild.service';
 import { GenerateResource } from './codeBuild/dto/GenerateResource';
