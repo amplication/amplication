@@ -25,7 +25,7 @@ export default async function generateCode(
   const modules = await createDataService(
     cgi.data.entities,
     cgi.data.roles,
-    cgi.data.appInfo
+    cgi.data.serviceInfo
   );
   await writeModules(modules, destination);
 }
