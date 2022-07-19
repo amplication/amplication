@@ -60,7 +60,7 @@ amplication-server:
       #GitHub App
       GITHUB_APP_APP_ID: "174833"
       GITHUB_APP_CLIENT_ID: "Iv1.e0d76b0ce191a528"
-      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-staging/installations/new?state={state}"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplication-staging/installations/new?state={state}"
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "4f5b9a88cf46d4c5ec32"
