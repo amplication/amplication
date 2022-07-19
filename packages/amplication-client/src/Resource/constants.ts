@@ -8,6 +8,12 @@ const TURQUOISE = "#41CADD";
 const GREEN = "#8DD9B9";
 const BLUE = "#20A4F3";
 
+const generationSettings = {
+  generateAdminUI: true,
+  generateGraphQL: true,
+  generateRestApi: true,
+};
+
 export const COLORS = [
   {
     value: YELLOW,
@@ -55,11 +61,7 @@ export const sampleServiceResourceWithoutEntities: models.ResourceCreateWithEnti
   },
   commitMessage: "",
   entities: [],
-  generationSettings: {
-    generateAdminUI: true,
-    generateGraphQL: true,
-    generateRestApi: true,
-  },
+  generationSettings: generationSettings,
 };
 
 export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitiesInput = {
@@ -154,11 +156,7 @@ export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitie
       ],
     },
   ],
-  generationSettings: {
-    generateAdminUI: true,
-    generateGraphQL: true,
-    generateRestApi: true,
-  },
+  generationSettings: generationSettings,
 };
 
 export const GET_APP_SETTINGS = gql`

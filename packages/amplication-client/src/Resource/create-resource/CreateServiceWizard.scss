@@ -39,7 +39,7 @@
   }
 
   h2 {
-    font-size: 24px;
+    font-size: var(--title4-font-size);
     font-weight: 600;
     line-height: 36px;
     letter-spacing: 0em;
@@ -47,7 +47,7 @@
   }
 
   h3 {
-    font-size: 18px;
+    font-size: var(--title3-font-size);
     font-weight: 400;
     line-height: 27px;
     letter-spacing: 0em;

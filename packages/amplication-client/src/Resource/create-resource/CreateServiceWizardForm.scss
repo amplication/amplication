@@ -12,25 +12,10 @@ $max-width: 700px;
   height: 100%;
   gap: 48px;
 
-  &__createBtn {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    gap: 48px;
-  }
-
   &__generationSettings {
-    width: 177px;
+    width: 180px;
     display: flex;
     flex-direction: column;
-  }
-
-  &__SampleSettings {
-    height: 158px;
-    width: 177px;
-    top: 276px;
   }
 
   &__generation_setting_wrapper {
@@ -40,7 +25,7 @@ $max-width: 700px;
     margin-bottom: 48px;
 
     label {
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
   }
 
@@ -50,32 +35,16 @@ $max-width: 700px;
     align-items: flex-start;
   }
 
-  &__toggle_wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 34px;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 18px;
-  }
-
-  &__toggle_wrapper_resource {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
   .toggle-field {
     margin-bottom: 18px;
   }
 
-  .toggle-field label .input-label-value{
-    font-size: 12px;
+  .toggle-field label .input-label-value {
+    font-size: var(--normal-font-size);
   }
 
   .amp-radio-field .MuiFormControlLabel-label {
-    font-size: 12px;
+    font-size: var(--normal-font-size);
     font-weight: 400;
     line-height: 18px;
     width: 177px;

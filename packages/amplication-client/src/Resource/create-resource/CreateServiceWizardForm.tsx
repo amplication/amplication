@@ -130,23 +130,22 @@ export const CreateServiceWizardForm = ({ isClicked }: Props) => {
   }, [createResourceWithEntities, trackEvent, serviceSettingsFields]);
 
   useEffect(() => {
-    if (isClicked) {
-      const currentResourceType = serviceSettingsFields.current.resourceType;
-      if (currentResourceType === "scratch") {
-        handleStartFromScratch();
-      } else if (currentResourceType === "sample") {
-        handleStartFromSample();
-      } else {
-        //error?
-      }
+    if (!isClicked) return;
+    const currentResourceType = serviceSettingsFields.current.resourceType;
+
+    if (currentResourceType === "scratch") {
+      handleStartFromScratch();
+    } else if (currentResourceType === "sample") {
+      handleStartFromSample();
+    } else {
+      //error?
     }
   }, [handleStartFromScratch, handleStartFromSample, isClicked]);
 
   useEffect(() => {
     if (data) {
-      const resourceId = data.createResourceWithEntities.id;
-
-      history.push(`/${resourceId}`);
+      const resource = data.createResourceWithEntities;
+      history.push(`/${resource.id}`);
     }
   }, [history, data]);
 
@@ -172,9 +171,6 @@ export const CreateServiceWizardForm = ({ isClicked }: Props) => {
       ) : (
         <Formik
           initialValues={serviceSettingsFieldsInitValues}
-          // validate={(values: serviceSettings) =>
-          //   validate(values, FORM_SCHEMA)
-          //}
           onSubmit={handleSubmit}
         >
           {(formik) => {
@@ -183,7 +179,7 @@ export const CreateServiceWizardForm = ({ isClicked }: Props) => {
                 <div className={`${CLASS_NAME}__generationSettings`}>
                   <FormikAutoSave debounceMS={200} />
                   <div className={`${CLASS_NAME}__generation_setting_wrapper`}>
-                    <label>APIs Admin UI Settings </label>
+                    <label>APIs Admin UI Settings</label>
                     <div>
                       <ToggleField name="generateGraphQL" label="GraphQL API" />
                       <ToggleField
@@ -200,7 +196,7 @@ export const CreateServiceWizardForm = ({ isClicked }: Props) => {
                   <div
                     className={`${CLASS_NAME}__generation_setting_resource_wrapper`}
                   >
-                    <label>Sample Entities </label>
+                    <label>Sample Entities</label>
                     <div>
                       <RadioButtonField
                         label="None (start from scratch)"

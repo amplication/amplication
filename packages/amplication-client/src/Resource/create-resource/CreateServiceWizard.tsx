@@ -11,7 +11,7 @@ import { CreateServiceWizardForm } from "./CreateServiceWizardForm";
 
 const CLASS_NAME = "create-service-wizard";
 
-function CreateServiceWizard() {
+const CreateServiceWizard: React.FC<{}> = () => {
   const [clickBtn, setClicked] = useState<boolean>(false);
 
   const handleClick = () => {
@@ -53,5 +53,6 @@ function CreateServiceWizard() {
       </div>
     </div>
   );
-}
+};
+
 export default CreateServiceWizard;
