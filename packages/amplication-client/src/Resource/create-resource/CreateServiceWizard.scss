@@ -1,4 +1,8 @@
+@use "sass:math";
+
 @import "../../style/index.scss";
+
+$max-width: 700px;
 
 .create-service-wizard {
   display: flex;
@@ -82,5 +86,49 @@
   .amp-button--primary {
     right: 16px;
     height: 28px;
+  }
+
+  &__processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: $max-width;
+    margin: auto;
+
+    &__title {
+      @include headline1;
+      text-align: center;
+      padding: 0 var(--default-spacing);
+    }
+
+    &__message {
+      @include sectionTitle;
+      color: var(--black80);
+      margin-top: var(--double-spacing);
+    }
+
+    &__tagline {
+      @include body2;
+      color: var(--black100);
+      max-width: $max-width;
+      text-align: center;
+      max-width: math.div($max-width, 1.5);
+    }
+
+    .svg-theme-image {
+      width: 200px;
+      height: 200px;
+      margin: 50px;
+    }
+    &__loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: var(--double-spacing);
+    }
   }
 }

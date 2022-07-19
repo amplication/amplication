@@ -58,6 +58,11 @@ export const sampleServiceResourceWithoutEntities: models.ResourceCreateWithEnti
     description: "",
     color: GREEN,
     resourceType: models.EnumResourceType.Service,
+    project: {
+      connect :{
+        id: "1234"
+      }
+    }, 
   },
   commitMessage: "",
   entities: [],
@@ -70,6 +75,11 @@ export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitie
     description: "Sample service for e-commerce",
     color: YELLOW,
     resourceType: models.EnumResourceType.Service,
+    project: {
+      connect :{
+        id: "1234"
+      }
+    }, 
   },
   commitMessage: "",
   entities: [
