@@ -1,6 +1,6 @@
 import { print } from "recast";
 import { builders } from "ast-types";
-import { Module } from "../../types";
+import { Module } from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../util/module";
 import {
   getExportedNames,
