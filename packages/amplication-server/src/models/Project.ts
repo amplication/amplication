@@ -25,5 +25,11 @@ export class Project {
   })
   resources?: Resource[];
 
+  @Field(() => Date, { nullable: false })
+  createdAt!: Date;
+
+  @Field(() => Date, { nullable: false })
+  updatedAt!: Date;
+
   deletedAt?: Date;
 }
