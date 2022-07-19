@@ -1,5 +1,3 @@
-@use "sass:math";
-
 @import "../../style/index.scss";
 
 .create-service-wizard {
@@ -18,7 +16,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: #22273c;
+    background: var(--black2);
   }
 
   &__right {
@@ -36,7 +34,7 @@
     width: 66%;
 
     .circle-badge i {
-      color: #2c3249;
+      color: var(--black5);
     }
   }
 
@@ -63,7 +61,7 @@
     align-items: center;
     padding: 16px;
     height: 26px;
-    background: #373d57;
+    background: var(--black10);
 
     label {
       font-weight: 400;
@@ -72,8 +70,8 @@
   }
 
   .amp-button--clear[disabled] {
-    color: #686f8c;
-    border: 1px solid #686f8c;
+    color: var(--black40);
+    border: 1px solid var(--black40);
     padding: 5px 6px;
     height: 28px;
     left: 16px;
