@@ -483,7 +483,7 @@ describe('ResourceService', () => {
       userId: EXAMPLE_USER_ID
     };
     expect(
-      await service.createServiceResource(
+      await service.createResource(
         createResourceArgs.args,
         createResourceArgs.user
       )
@@ -544,10 +544,7 @@ describe('ResourceService', () => {
       user: EXAMPLE_USER
     };
     await expect(
-      service.createServiceResource(
-        createServiceArgs.args,
-        createServiceArgs.user
-      )
+      service.createResource(createServiceArgs.args, createServiceArgs.user)
     ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
   });
 
