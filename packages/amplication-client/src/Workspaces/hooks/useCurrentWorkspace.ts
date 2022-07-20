@@ -19,7 +19,7 @@ const useCurrentWorkspace = (authenticated: boolean) => {
         if (error.message === "Unauthorized") {
           unsetToken();
           history.push("/login");
-        } 
+        }
       },
     }
   );
@@ -40,8 +40,8 @@ const useCurrentWorkspace = (authenticated: boolean) => {
   }, [data, history, location]);
 
   return {
-    currentWorkspaceLoad: location.pathname === "/" ? loading : null
-  }
-}
+    currentWorkspaceLoad: location.pathname === "/" ? loading : null,
+  };
+};
 
 export default useCurrentWorkspace;
