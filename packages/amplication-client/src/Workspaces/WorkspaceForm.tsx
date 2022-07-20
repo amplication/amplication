@@ -8,7 +8,7 @@ import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import { TextField, Snackbar } from "@amplication/design-system";
 import { useTracking } from "../util/analytics";
-import { GET_CURRENT_WORKSPACE } from "./WorkspaceSelector";
+import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQuery";
 import "./WorkspaceForm.scss";
 
 type TData = {

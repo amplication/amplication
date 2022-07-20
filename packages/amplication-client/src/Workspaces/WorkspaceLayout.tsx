@@ -1,102 +1,70 @@
-import React from "react";
-import { match, Switch } from "react-router-dom";
-import MainLayout from "../Layout/MainLayout";
-import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
+import React, { lazy } from "react";
+import { match } from "react-router-dom";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
-import ResourceList from "./ResourceList";
-//import Subscription from "../Subscription/Subscription";
 import { isMobileOnly } from "react-device-detect";
-import InnerTabLink from "../Layout/InnerTabLink";
-import MobileMessage from "../Layout/MobileMessage";
-import PageContent from "../Layout/PageContent";
-import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
-import ProfilePage from "../Profile/ProfilePage";
 import CompleteInvitation from "../User/CompleteInvitation";
-import MemberList from "./MemberList";
-import WorkspaceForm from "./WorkspaceForm";
 import "./WorkspaceLayout.scss";
-import WorkspaceSelector from "./WorkspaceSelector";
+import WorkspaceHeader from "./WorkspaceHeader";
+import WorkspaceFooter from "./WorkspaceFooter";
+import useAuthenticated from "../authentication/use-authenticated";
+import useProjectSelector from "./hooks/useProjectSelector";
+import { AppContextProvider } from "../context/appContext";
+import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
+import { CircularProgress } from "@amplication/design-system";
+
+const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-const CLASS_NAME = "workspaces-layout";
-
 type Props = {
   match: match<{
     workspace: string;
   }>;
+  moduleClass: string;
+  // eslint-disable-next-line no-undef
+  InnerRoutes: JSX.Element | undefined;
 };
 
-function WorkspaceLayout({ match }: Props) {
-  if (isMobileOnly) {
-    return <MobileMessage />;
-  }
-  
-  return (
-    <MainLayout className={CLASS_NAME}>
-      <MainLayout.Menu>
-        <MenuItemWithFixedPanel
-          tooltip=""
-          icon={false}
-          isOpen
-          panelKey={"panelKey"}
-          onClick={() => {}}
-        >
-          <WorkspaceSelector />
-          <div className={`${CLASS_NAME}__tabs`}>
-            <InnerTabLink to={`/`} icon="grid">
-              Resources
-            </InnerTabLink>
-            <InnerTabLink to={`/workspace/settings`} icon="settings">
-              Workspace Settings
-            </InnerTabLink>
-            <InnerTabLink to={`/workspace/members`} icon="users">
-              Workspace Members
-            </InnerTabLink>
-            {/* <InnerTabLink to={`/workspace/plans`} icon="file_text">
-              Workspace Plan
-            </InnerTabLink> */}
+const WorkspaceLayout: React.FC<Props> = ({
+  InnerRoutes,
+  moduleClass,
+}) => {
+  const authenticated = useAuthenticated();
+  const { currentWorkspace, handleSetCurrentWorkspace } = useWorkspaceSelector(authenticated);
+  const { currentProject, projectsList, setNewProject, newProjectRes } = useProjectSelector(authenticated, currentWorkspace);
+
+  return currentWorkspace ? (
+    <AppContextProvider
+      newVal={{
+        currentWorkspace,
+        currentProject,
+        projectsList,
+        setNewProject,
+        newProjectRes,
+        handleSetCurrentWorkspace,
+      }}
+    >
+      {isMobileOnly ? (
+        <MobileMessage />
+      ) : (
+        <div className={moduleClass}>
+          <WorkspaceHeader />
+          <CompleteInvitation />
+          <div className={`${moduleClass}__page_content`}>
+            <div className={`${moduleClass}__main_content`}>{InnerRoutes}</div>
+            <div className={`${moduleClass}__changes_menu`}>
+              pending changes
+            </div>
           </div>
-        </MenuItemWithFixedPanel>
-      </MainLayout.Menu>
-      <MainLayout.Content>
-        <CompleteInvitation />
-        <div className={`${CLASS_NAME}__resource-container`}>
-          <PageContent className={CLASS_NAME}>
-            <Switch>
-              <RouteWithAnalytics exact path="/workspace/settings">
-                <WorkspaceForm />
-              </RouteWithAnalytics>
-            </Switch>
-            <Switch>
-              <RouteWithAnalytics
-                exact
-                path="/workspace/members"
-                component={MemberList}
-              />
-            </Switch>
-            {/* <Switch>
-              <RouteWithAnalytics exact path="/workspace/plans" component={Subscription} />
-            </Switch> */}
-            <Switch>
-              <RouteWithAnalytics exact path="/user/profile">
-                <ProfilePage />
-              </RouteWithAnalytics>
-            </Switch>
-            <Switch>
-              <RouteWithAnalytics exact path="/">
-                <ResourceList />
-              </RouteWithAnalytics>
-            </Switch>
-          </PageContent>
+          <WorkspaceFooter />
+          <ScreenResolutionMessage />
         </div>
-      </MainLayout.Content>
-      <ScreenResolutionMessage />
-    </MainLayout>
-  );
-}
+      )}
+    </AppContextProvider>
+  ) : <CircularProgress />;
+};
 
 export default WorkspaceLayout;
