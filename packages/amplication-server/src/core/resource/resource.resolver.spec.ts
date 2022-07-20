@@ -25,7 +25,7 @@ import { PendingChange } from './dto/PendingChange';
 import {
   EnumPendingChangeAction,
   EnumPendingChangeResourceType
-} from '@amplication/data/dist/models';
+} from '@amplication/code-gen-types/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
 import { ResourceCreateInput } from './dto';

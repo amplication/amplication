@@ -5,7 +5,7 @@ import {
   EnumEntityPermissionType,
   EnumEntityAction,
   Module,
-} from "../types";
+} from "@amplication/code-gen-types";
 
 type Action =
   | "create:any"
