@@ -34,4 +34,4 @@ export const CREATE_PROJECT = gql`
       name
     }
   }
-`
+`;
