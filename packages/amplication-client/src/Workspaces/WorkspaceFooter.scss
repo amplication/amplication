@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0px 16px;
+  padding: 0px var(--large-spacing);
   background: var(--black10);
   height: var(--footer-height);
 }
