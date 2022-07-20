@@ -8,12 +8,6 @@ const TURQUOISE = "#41CADD";
 const GREEN = "#8DD9B9";
 const BLUE = "#20A4F3";
 
-const generationSettings = {
-  generateAdminUI: true,
-  generateGraphQL: true,
-  generateRestApi: true,
-};
-
 export const COLORS = [
   {
     value: YELLOW,
@@ -52,34 +46,48 @@ export const COLOR_TO_NAME: {
   [BLUE]: "blue",
 };
 
-export const sampleServiceResourceWithoutEntities: models.ResourceCreateWithEntitiesInput = {
+export const sampleServiceResourceWithoutEntities = (
+  projectId: string,
+  generateAdminUI: boolean,
+  generateGraphQL: boolean,
+  generateRestApi: boolean
+): models.ResourceCreateWithEntitiesInput => ({
   resource: {
     name: "My service",
     description: "",
     color: GREEN,
     resourceType: models.EnumResourceType.Service,
     project: {
-      connect :{
-        id: "1234"
-      }
-    }, 
+      connect: {
+        id: projectId,
+      },
+    },
   },
   commitMessage: "",
   entities: [],
-  generationSettings: generationSettings,
-};
+  generationSettings: {
+    generateAdminUI: generateAdminUI,
+    generateGraphQL: generateGraphQL,
+    generateRestApi: generateRestApi,
+  },
+});
 
-export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitiesInput = {
+export const sampleServiceResourceWithEntities = (
+  projectId: string,
+  generateAdminUI: boolean,
+  generateGraphQL: boolean,
+  generateRestApi: boolean
+): models.ResourceCreateWithEntitiesInput => ({
   resource: {
     name: "Sample service",
     description: "Sample service for e-commerce",
     color: YELLOW,
     resourceType: models.EnumResourceType.Service,
     project: {
-      connect :{
-        id: "1234"
-      }
-    }, 
+      connect: {
+        id: projectId,
+      },
+    },
   },
   commitMessage: "",
   entities: [
@@ -166,8 +174,12 @@ export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitie
       ],
     },
   ],
-  generationSettings: generationSettings,
-};
+  generationSettings: {
+    generateAdminUI: generateAdminUI,
+    generateGraphQL: generateGraphQL,
+    generateRestApi: generateRestApi,
+  },
+});
 
 export const GET_APP_SETTINGS = gql`
   query serviceSettings($id: String!) {
