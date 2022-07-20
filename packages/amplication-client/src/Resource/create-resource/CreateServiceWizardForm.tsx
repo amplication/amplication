@@ -1,15 +1,9 @@
-import React, {
-  MutableRefObject,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useCallback } from "react";
 import "./CreateServiceWizardForm.scss";
-import {
-  RadioButtonField,
-  ToggleField,
-} from "@amplication/design-system";
+import { RadioButtonField, ToggleField } from "@amplication/design-system";
 import { Form, Formik } from "formik";
-import FormikAutoSave from "../../util/formikAutoSave";;
+import FormikAutoSave from "../../util/formikAutoSave";
+import { serviceSettingsFieldsInitValues } from "./CreateServiceWizard";
 
 const CLASS_NAME = "create-service-wizard-form";
 
@@ -25,76 +19,64 @@ export type serviceSettings = {
 };
 
 export const CreateServiceWizardForm = ({ handleSubmitResource }: Props) => {
-
-  const serviceSettingsFieldsInitValues = {
-    generateAdminUI: true,
-    generateGraphQL: true,
-    generateRestApi: true,
-    resourceType: "scratch",
-  };
-
-  const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
-    serviceSettingsFieldsInitValues
+  const handleSubmit = useCallback(
+    (data: serviceSettings) => {
+      if (!data.generateGraphQL) data.generateAdminUI = false;
+      handleSubmitResource(data);
+    },
+    [handleSubmitResource]
   );
-
-  
-  const handleSubmit = useCallback((data: serviceSettings)  =>  {
-    if (!data.generateGraphQL) data.generateAdminUI = false;
-    serviceSettingsFields.current = data;
-    handleSubmitResource(data);
-  },[handleSubmitResource]);
 
   return (
     <div className={CLASS_NAME}>
-        <Formik
-          initialValues={serviceSettingsFieldsInitValues}
-          onSubmit={handleSubmit}
-        >
-          {(formik) => {
-            return (
-              <Form>
-                <div className={`${CLASS_NAME}__generationSettings`}>
-                  <FormikAutoSave debounceMS={200} />
-                  <div className={`${CLASS_NAME}__generation_setting_wrapper`}>
-                    <label>APIs Admin UI Settings</label>
-                    <div>
-                      <ToggleField name="generateGraphQL" label="GraphQL API" />
-                      <ToggleField
-                        name="generateRestApi"
-                        label="REST API & Swagger UI"
-                      />
-                      <ToggleField
-                        disabled={!formik.values.generateGraphQL}
-                        name="generateAdminUI"
-                        label="Admin UI"
-                      />
-                    </div>
-                  </div>
-                  <div
-                    className={`${CLASS_NAME}__generation_setting_resource_wrapper`}
-                  >
-                    <label>Sample Entities</label>
-                    <div>
-                      <RadioButtonField
-                        label="None (start from scratch)"
-                        value="scratch"
-                        name="resourceType"
-                        checked={formik.values.resourceType === "scratch"}
-                      />
-                      <RadioButtonField
-                        label="Order Management"
-                        value="sample"
-                        name="resourceType"
-                        checked={formik.values.resourceType === "sample"}
-                      />
-                    </div>
+      <Formik
+        initialValues={serviceSettingsFieldsInitValues}
+        onSubmit={handleSubmit}
+      >
+        {(formik) => {
+          return (
+            <Form>
+              <div className={`${CLASS_NAME}__generationSettings`}>
+                <FormikAutoSave debounceMS={200} />
+                <div className={`${CLASS_NAME}__generation_setting_wrapper`}>
+                  <label>APIs Admin UI Settings</label>
+                  <div>
+                    <ToggleField name="generateGraphQL" label="GraphQL API" />
+                    <ToggleField
+                      name="generateRestApi"
+                      label="REST API & Swagger UI"
+                    />
+                    <ToggleField
+                      disabled={!formik.values.generateGraphQL}
+                      name="generateAdminUI"
+                      label="Admin UI"
+                    />
                   </div>
                 </div>
-              </Form>
-            );
-          }}
-        </Formik>
+                <div
+                  className={`${CLASS_NAME}__generation_setting_resource_wrapper`}
+                >
+                  <label>Sample Entities</label>
+                  <div>
+                    <RadioButtonField
+                      label="None (start from scratch)"
+                      value="scratch"
+                      name="resourceType"
+                      checked={formik.values.resourceType === "scratch"}
+                    />
+                    <RadioButtonField
+                      label="Order Management"
+                      value="sample"
+                      name="resourceType"
+                      checked={formik.values.resourceType === "sample"}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Form>
+          );
+        }}
+      </Formik>
     </div>
   );
 };
-

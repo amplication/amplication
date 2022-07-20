@@ -7,7 +7,13 @@ import {
   Snackbar,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { match, useHistory } from "react-router-dom";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -38,9 +44,18 @@ type TData = {
   createResourceGenSettings: models.ResourceGenSettingsCreateInput;
 };
 
+export const serviceSettingsFieldsInitValues = {
+  generateAdminUI: true,
+  generateGraphQL: true,
+  generateRestApi: true,
+  resourceType: "scratch",
+};
+
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
   const { workspace, project } = match.params;
-  const [serviceSettings, setServiceSettings] = useState<serviceSettings>();
+  const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
+    serviceSettingsFieldsInitValues
+  );
   const { trackEvent } = useTracking();
 
   const [generalError, setGeneralError] = useState<Error | undefined>(
@@ -81,40 +96,50 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
       eventName: "createResourceFromSample",
     });
 
-    if (!serviceSettings) return;
+    if (!serviceSettingsFields) return;
 
-    sampleServiceResourceWithEntities.generationSettings = {
-      generateAdminUI: serviceSettings.generateAdminUI,
-      generateGraphQL: serviceSettings.generateGraphQL,
-      generateRestApi: serviceSettings.generateRestApi,
-    };
+    const {
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+    } = serviceSettingsFields.current;
 
-    sampleServiceResourceWithEntities.resource.project.connect.id = project;
+    const sampleResource = sampleServiceResourceWithEntities(
+      project,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi
+    );
 
     createResourceWithEntities({
-      variables: { data: sampleServiceResourceWithEntities },
+      variables: { data: sampleResource },
     }).catch(console.error);
-  }, [createResourceWithEntities, trackEvent, serviceSettings, project]);
+  }, [createResourceWithEntities, trackEvent, serviceSettingsFields, project]);
 
   const handleStartFromScratch = useCallback(() => {
     trackEvent({
       eventName: "createResourceFromScratch",
     });
 
-    if (!serviceSettings) return;
+    if (!serviceSettingsFields) return;
 
-    sampleServiceResourceWithoutEntities.generationSettings = {
-      generateAdminUI: serviceSettings.generateAdminUI,
-      generateGraphQL: serviceSettings.generateGraphQL,
-      generateRestApi: serviceSettings.generateRestApi,
-    };
+    const {
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+    } = serviceSettingsFields.current;
 
-    sampleServiceResourceWithoutEntities.resource.project.connect.id = project;
+    const scratchResource = sampleServiceResourceWithoutEntities(
+      project,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi
+    );
 
     createResourceWithEntities({
-      variables: { data: sampleServiceResourceWithoutEntities },
+      variables: { data: scratchResource },
     }).catch(console.error);
-  }, [createResourceWithEntities, trackEvent, project, serviceSettings]);
+  }, [createResourceWithEntities, trackEvent, project, serviceSettingsFields]);
 
   const history = useHistory();
 
@@ -126,15 +151,15 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
   }, [history, data, project, workspace]);
 
   const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
-    setServiceSettings(currentServiceSettings);
+    serviceSettingsFields.current = currentServiceSettings;
   };
 
   const handleClick = () => {
-    if (!serviceSettings) return;
+    if (!serviceSettingsFields) return;
 
-    if (serviceSettings.resourceType === "sample") {
+    if (serviceSettingsFields.current.resourceType === "sample") {
       handleStartFromSample();
-    } else if (serviceSettings.resourceType === "scratch") {
+    } else if (serviceSettingsFields.current.resourceType === "scratch") {
       handleStartFromScratch();
     }
   };
