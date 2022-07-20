@@ -1,7 +1,7 @@
 import * as path from "path";
 import winston from "winston";
 import { paramCase } from "param-case";
-import { Entity, Role, AppInfo, Module } from "../types";
+import { Entity, Role, AppInfo, Module } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode } from "../util/module";
 import { updatePackageJSONs } from "../update-package-jsons";

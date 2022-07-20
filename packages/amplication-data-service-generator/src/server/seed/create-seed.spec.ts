@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { EntityField, EnumDataType, Entity } from "../../types";
+import { EntityField, EnumDataType, Entity } from "@amplication/code-gen-types";
 import {
   createDefaultValue,
   createUserObjectCustomProperties,

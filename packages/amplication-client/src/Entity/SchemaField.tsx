@@ -5,7 +5,7 @@ import EntitySelectField from "../Components/EntitySelectField";
 import EnumSelectField from "../Components/EnumSelectField";
 import RelatedEntityFieldField from "./RelatedEntityFieldField";
 import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
-import { Schema } from "@amplication/data";
+import { Schema } from "@amplication/code-gen-types";
 import OptionSet from "../Entity/OptionSet";
 
 export const SchemaField = ({

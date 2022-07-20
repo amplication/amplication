@@ -1,4 +1,5 @@
 import winston from "winston";
+import { Module, AppInfo } from "@amplication/code-gen-types";
 import { createDotEnvModule } from "./create-dotenv";
 import { AppInfo, Module } from "./types";
 
