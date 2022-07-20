@@ -369,7 +369,7 @@ export class BuildService {
           buildId: build.id,
           resourceId: build.resourceId,
           projectId: build.resource.projectId,
-          fileLocation: {
+          contextFileLocation: {
             storageType: StorageTypeEnum.FS,
             path: path
           }
