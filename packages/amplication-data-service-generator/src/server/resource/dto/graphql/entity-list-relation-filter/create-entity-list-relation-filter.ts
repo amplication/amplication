@@ -1,5 +1,5 @@
 import { namedTypes, builders } from "ast-types";
-import { Entity } from "../../../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { readFile } from "../../../../../util/module";
 import {
   getClassDeclarationById,

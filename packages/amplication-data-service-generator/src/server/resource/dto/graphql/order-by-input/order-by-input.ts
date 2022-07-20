@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { Entity, EnumDataType } from "../../../../../types";
+import { Entity, EnumDataType, types } from "@amplication/code-gen-types";
 import { readFile } from "../../../../../util/module";
 import {
   interpolate,
@@ -20,7 +20,6 @@ import {
   SORT_ORDER_DESC_LITERAL,
   SORT_ORDER_ASC_LITERAL,
 } from "../../sort-order.util";
-import { types } from "@amplication/data";
 
 const templatePath = require.resolve("./order-by-input.template.ts");
 

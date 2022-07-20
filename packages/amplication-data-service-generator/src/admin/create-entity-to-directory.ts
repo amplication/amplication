@@ -1,5 +1,5 @@
 import { camelCase } from "camel-case";
-import { Entity } from "../types";
+import { Entity } from "@amplication/code-gen-types";
 
 export function createEntityToDirectory(
   entities: Entity[],

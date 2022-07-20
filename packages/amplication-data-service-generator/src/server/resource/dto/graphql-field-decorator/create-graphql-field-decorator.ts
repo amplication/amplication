@@ -6,7 +6,7 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { createEnumName } from "../../../prisma/create-prisma-schema";
-import { Entity, EntityField } from "../../../../types";
+import { Entity, EntityField } from "@amplication/code-gen-types";
 import { isRelationField, isToManyRelationField } from "../../../../util/field";
 import {
   BOOLEAN_ID,

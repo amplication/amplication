@@ -1,4 +1,4 @@
-import { Entity } from "../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { DTOs } from "../../server/resource/create-dtos";
 import { EntityComponent, EntityComponents } from "../types";
 import { createEntityCreateComponent } from "./entity-create-component/create-entity-create-component";

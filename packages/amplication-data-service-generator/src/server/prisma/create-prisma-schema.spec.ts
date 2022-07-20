@@ -8,7 +8,7 @@ import {
   NOW_CALL_EXPRESSION,
   createRelationName,
 } from "./create-prisma-schema";
-import { Entity, EntityField, EnumDataType } from "../../types";
+import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"

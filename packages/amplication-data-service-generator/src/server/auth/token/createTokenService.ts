@@ -1,6 +1,6 @@
 import { print } from "recast";
 import { EnumAuthProviderType } from "../../../models";
-import { Module } from "../../../types";
+import { Module } from "@amplication/code-gen-types";
 import { removeTSIgnoreComments } from "../../../util/ast";
 import { readFile } from "../../../util/module";
 
