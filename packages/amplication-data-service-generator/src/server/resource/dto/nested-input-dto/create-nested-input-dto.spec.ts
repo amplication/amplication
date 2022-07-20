@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { EXAMPLE_LOOKUP_FIELD } from "../../../../server/resource/util/test-data";
-import { Entity } from "../../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { NamedClassDeclaration } from "../../../../util/ast";
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
 import {

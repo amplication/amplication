@@ -1,4 +1,8 @@
-import { Entity, EntityField, EntityPermission } from "../../../../../types";
+import {
+  Entity,
+  EntityField,
+  EntityPermission,
+} from "@amplication/code-gen-types";
 
 const displayName = "displayName";
 const id = "id";

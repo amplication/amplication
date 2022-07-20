@@ -1,7 +1,7 @@
 // 2020-01-04 Script to add related field id to lookup fields
 
 import { PrismaClient, EnumDataType } from '@amplication/prisma-db';
-import { types } from '@amplication/data';
+import { types } from '@amplication/code-gen-types';
 import { camelCase } from 'camel-case';
 import cuid from 'cuid';
 

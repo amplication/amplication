@@ -6,7 +6,7 @@ import {
   ScalarField,
   ScalarType,
 } from "prisma-schema-dsl";
-import { Entity, EntityField } from "../../../types";
+import { Entity, EntityField } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../util/ast";
 import {
   isEnumField,

@@ -1,4 +1,4 @@
-import { AppInfo, Module } from "../../types";
+import { AppInfo, Module } from "@amplication/code-gen-types";
 import { createDefaultGuard } from "./guards/createDefaultGuard";
 import { createTokenServiceTests } from "./token/createTokenSerivceTests";
 import { createTokenService } from "./token/createTokenService";

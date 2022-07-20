@@ -65,7 +65,7 @@ amplication-server:
       #GitHub App
       GITHUB_APP_APP_ID: '219560'
       GITHUB_APP_CLIENT_ID: 'Iv1.500372fe9efa340d'
-      GITHUB_APP_INSTALLATION_URL: 'https://github.com/apps/ariel-app/installations/new?state={state}'
+      GITHUB_APP_INSTALLATION_URL: 'https://github.com/apps/amplication-ariel-weinberger/installations/new?state={state}'
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: '83714e54a47335290292'

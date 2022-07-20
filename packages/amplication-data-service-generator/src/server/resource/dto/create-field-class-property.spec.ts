@@ -8,7 +8,7 @@ import {
   ScalarType,
 } from "prisma-schema-dsl";
 import { print } from "recast";
-import { Entity, EntityField, EnumDataType } from "../../../types";
+import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../util/ast";
 import {
   EXAMPLE_ID_FIELD,

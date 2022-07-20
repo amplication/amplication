@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useContext, useState } from "react";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { types } from "@amplication/data";
+import { types } from "@amplication/code-gen-types";
 import { Snackbar } from "@amplication/design-system";
 
 import { formatError } from "../util/error";
