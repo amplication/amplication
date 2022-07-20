@@ -1,5 +1,5 @@
 import { DTOs } from "../../server/resource/create-dtos";
-import { Entity } from "../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { EntityComponent, EntityComponents } from "../types";
 import { createEntityComponents } from "./create-entity-components";
 

@@ -92,6 +92,7 @@ type Resource {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  project: Project
   projectId: String
   gitRepository: GitRepository
   gitRepositoryId: String
@@ -104,7 +105,6 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   resourceType: EnumResourceType!
-  project: Project!
 }
 
 type GitRepository {

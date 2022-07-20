@@ -56,7 +56,7 @@ export function parse(source: string, options?: ParseOptions): namedTypes.File {
       parser,
     });
   } catch (error) {
-    if (error.constructor === SyntaxError) {
+    if (error instanceof SyntaxError) {
       throw new ParseError(error.message, source);
     }
     throw error;
@@ -78,7 +78,7 @@ export function partialParse(
       parser: partialParser,
     });
   } catch (error) {
-    if (error.constructor === SyntaxError) {
+    if (error instanceof SyntaxError) {
       throw new ParseError(error.message, source);
     }
     throw error;

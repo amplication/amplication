@@ -1,7 +1,13 @@
 import winston from "winston";
 
 import { defaultLogger } from "./server/logging";
-import { Entity, Role, AppInfo, Module, WorkerResult } from "./types";
+import {
+  Entity,
+  Role,
+  AppInfo,
+  Module,
+  WorkerResult,
+} from "@amplication/code-gen-types";
 import { createDataServiceImpl } from "./create-data-service-impl";
 import { Worker } from "worker_threads";
 import path from "path";

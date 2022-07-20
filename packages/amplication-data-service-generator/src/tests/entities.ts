@@ -3,7 +3,7 @@ import {
   EnumDataType,
   EnumEntityPermissionType,
   EnumEntityAction,
-} from "../types";
+} from "@amplication/code-gen-types";
 
 const CUSTOMER_ENTITY_ID = "b8d49afb-8c12-49fa-9d6e-eb64be0ddded";
 const CUSTOMER_ORDERS_FIELD_ID = "a766a160-506c-4212-9e5e-8ecd1d530eb4";

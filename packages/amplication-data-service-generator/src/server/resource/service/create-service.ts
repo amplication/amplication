@@ -1,7 +1,12 @@
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
 import { print } from "recast";
-import { Entity, EntityField, EntityLookupField, Module } from "../../../types";
+import {
+  Entity,
+  EntityField,
+  EntityLookupField,
+  Module,
+} from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
   addIdentifierToConstructorSuperCall,

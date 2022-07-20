@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-pull-request-service",
-  "version": "0.14.1",
+  "version": "0.14.3",
   "private": true,
   "scripts": {
     "prebuild": "rimraf dist",
@@ -18,8 +18,8 @@
     "postinstall": "npm run build"
   },
   "dependencies": {
-    "@amplication/git-service": "^0.14.1",
-    "@amplication/kafka": "^0.14.1",
+    "@amplication/git-service": "^0.14.3",
+    "@amplication/kafka": "^0.14.3",
     "@nestjs/common": "8.4.3",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "8.2.3",

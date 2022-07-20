@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-pull-service",
-  "version": "0.14.1",
+  "version": "0.14.3",
   "private": true,
   "scripts": {
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
@@ -23,14 +23,14 @@
     "docker:build": "docker build ."
   },
   "dependencies": {
-    "@amplication/kafka": "^0.14.1",
+    "@amplication/kafka": "^0.14.3",
     "@nestjs/common": "8.4.3",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "8.2.3",
     "@nestjs/microservices": "8.4.3",
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
-    "@prisma/client": "3.6.0",
+    "@prisma/client": "3.15.2",
     "bcrypt": "5.0.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
@@ -39,7 +39,7 @@
     "nest-access-control": "2.0.3",
     "nest-morgan": "1.0.1",
     "nest-winston": "1.6.2",
-    "nestjs-prisma": "0.14.3",
+    "nestjs-prisma": "0.16.0",
     "npm-run-all": "4.1.5",
     "octokit": "1.7.1",
     "prettier": "2.6.0",
@@ -60,7 +60,7 @@
     "@types/supertest": "2.0.11",
     "jest": "27.0.6",
     "jest-mock-extended": "^2.0.4",
-    "prisma": "3.6.0",
+    "prisma": "3.15.2",
     "supertest": "4.0.2",
     "ts-jest": "27.0.3",
     "type-fest": "0.11.0",
