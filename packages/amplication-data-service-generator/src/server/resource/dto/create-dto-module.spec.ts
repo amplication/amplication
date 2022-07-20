@@ -5,7 +5,7 @@ import {
   exportNames,
   importNames,
 } from "../../../util/ast";
-import { Entity } from "../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,

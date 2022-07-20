@@ -1,6 +1,6 @@
 import { namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
-import { Entity, Module } from "../../types";
+import { Entity, Module } from "@amplication/code-gen-types";
 import { NamedClassDeclaration } from "../../util/ast";
 import { getEnumFields } from "../../util/entity";
 import { createEnumName } from "../prisma/create-prisma-schema";

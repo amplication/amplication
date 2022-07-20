@@ -7,7 +7,7 @@ import {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType,
-} from "../types";
+} from "@amplication/code-gen-types";
 import {
   createGrants,
   Grant,
