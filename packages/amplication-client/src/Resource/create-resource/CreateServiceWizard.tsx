@@ -205,7 +205,6 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
           </div>
         </div>
       )}
-      ;
       <div className={`${moduleClass}__footer`}>
         <Button
           buttonStyle={EnumButtonStyle.Clear}
