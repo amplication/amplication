@@ -190,11 +190,10 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
               <CircleBadge name={""} size="size40" color="#A787FF">
                 <Icon icon="services" size="medium" />
               </CircleBadge>
-
-              <h2>Lorem ipsum dolor sit amet</h2>
+              <h2>Let’s start building your service</h2>
               <h3>
-                Your Amplication-generated app is ready. We created it using the
-                amazing open-source technologies.
+                Select which components to include in your service and whether
+                to use sample entities
               </h3>
             </div>
           </div>
