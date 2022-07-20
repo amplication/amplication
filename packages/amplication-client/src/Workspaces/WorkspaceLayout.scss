@@ -18,7 +18,7 @@
   }
 
   &__changes_menu {
-  width: 261px;
+  width: var(--changes-menu-width);
   background: var(--menu-background-color);
   }
 }
