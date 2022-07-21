@@ -133,6 +133,7 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: '["b-1.amplicationuseast1pro.sb17jm.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1pro.sb17jm.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data

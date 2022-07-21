@@ -16,7 +16,7 @@ import {
   removeESLintComments,
 } from "../../../util/ast";
 import { createPrismaFields } from "../../prisma/create-prisma-schema";
-import { Entity, EntityField, Module } from "../../../types";
+import { Entity, EntityField, Module } from "@amplication/code-gen-types";
 import { isOneToOneRelationField, isRelationField } from "../../../util/field";
 import { createServiceId } from "../service/create-service";
 import { createControllerId } from "../controller/create-controller";

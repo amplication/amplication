@@ -1,5 +1,5 @@
-import { Module } from "../../types";
-import { EntityComponents, EntityComponent } from "../types";
+import { Module } from "@amplication/code-gen-types";
+import { EntityComponent, EntityComponents } from "../types";
 import { createEntityComponentModule } from "./create-entity-component-module";
 
 export function createEntityComponentsModules(
