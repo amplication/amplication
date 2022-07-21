@@ -436,7 +436,8 @@ describe('BuildService', () => {
         {
           provide: QueueService,
           useValue: {
-            emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
+            emitCreateGitPullRequest: () => ({ url: 'http://url.com' }),
+            emitMessage: jest.fn((topic, body) => ({}))
           }
         },
         {
