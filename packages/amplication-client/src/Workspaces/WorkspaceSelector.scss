@@ -23,6 +23,7 @@
   }
 
   &__name {
+    @include regular-12;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;

@@ -9,11 +9,8 @@ const CLASS_NAME = "project-sidebar";
 
 type Props = {
   currentWorkspace: Workspace;
-  currentProject: Project;
   projectsList: Project[];
   setNewProject: (project: Project) => void;
-  newProjectRes: () => void;
-  handleSetCurrentWorkspace: (workspaceId: string) => void;
 };
 
 const ProjectSideBar = ({
