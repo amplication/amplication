@@ -19,7 +19,7 @@ import { ResourceService } from '../resource/resource.service';
 import { ActionService } from '../action/action.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
-import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
@@ -575,10 +575,7 @@ describe('BuildService', () => {
     ]);
 
     expect(actionServiceLogMock).toBeCalledTimes(0);
-    expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
-    expect(storageServiceDiskGetUrlMock).toBeCalledWith(
-      getBuildTarGzFilePath(EXAMPLE_BUILD.id)
-    );
+
     expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
     expect(winstonConsoleTransportOnMock).toBeCalledTimes(1);
     /** @todo add expect(winstonConsoleTransportOnMock).toBeCalledWith() */
