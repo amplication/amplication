@@ -5,7 +5,6 @@ import * as winston from 'winston';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { orderBy } from 'lodash';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
