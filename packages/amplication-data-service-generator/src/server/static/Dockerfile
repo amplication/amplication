@@ -1,8 +1,4 @@
-ARG ALPINE_VERSION=alpine3.14
-ARG NODE_VERSION=16.13.1
-
-# Use node as the base image
-FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
+FROM node:16-alpine AS base
 
 # Define how verbose should npm install be
 ARG NPM_LOG_LEVEL=silent
