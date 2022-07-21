@@ -1,4 +1,4 @@
-FROM node:16-alpine AS base
+FROM node:16.16-alpine AS base
 
 ARG NPM_VERSION=8.1.2
 ENV NPM_CONFIG_LOGLEVEL=silent

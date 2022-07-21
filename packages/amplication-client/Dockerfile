@@ -1,4 +1,4 @@
-FROM node:16-alpine AS build
+FROM node:16.16-alpine AS build
 
 ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1

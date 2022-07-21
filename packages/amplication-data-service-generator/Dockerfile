@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:16.16-alpine AS build
 
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
