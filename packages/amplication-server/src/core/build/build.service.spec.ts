@@ -565,19 +565,6 @@ describe('BuildService', () => {
       }
     });
 
-    expect(DataServiceGenerator.createDataService).toBeCalledWith(
-      orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
-      EXAMPLE_APP_ROLES,
-      {
-        name: EXAMPLE_SERVICE_RESOURCE.name,
-        description: EXAMPLE_SERVICE_RESOURCE.description,
-        version: EXAMPLE_BUILD.version,
-        id: EXAMPLE_SERVICE_RESOURCE.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
-        settings: EXAMPLE_APP_SETTINGS_VALUES
-      },
-      MOCK_LOGGER
-    );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(1);
