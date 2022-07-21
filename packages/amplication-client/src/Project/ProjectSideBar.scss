@@ -9,11 +9,11 @@
 
   &__label {
     @include regular-12;
-    color: #a3a8b8;
+    color: var(--black80);
   }
 
   &__divider {
-    border: 1px solid #2c3249;
+    border: 1px solid var(--black90);
     width: 100%;
   }
 }

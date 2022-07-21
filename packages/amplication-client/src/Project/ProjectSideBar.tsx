@@ -18,11 +18,8 @@ type Props = {
 
 const ProjectSideBar = ({
   currentWorkspace,
-  currentProject,
   projectsList,
   setNewProject,
-  newProjectRes,
-  handleSetCurrentWorkspace,
 }: Props) => {
   return (
     <div className={CLASS_NAME}>
