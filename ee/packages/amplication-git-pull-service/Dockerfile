@@ -1,4 +1,4 @@
-FROM node:16-alpine AS base
+FROM node:16.16-alpine AS base
 
 RUN apk --no-cache add git
 RUN git config --global --add safe.directory '*'
