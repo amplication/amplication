@@ -24,10 +24,10 @@
 
   &__name {
     @include regular-12;
+    font-size: 12px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    font-size: 12px;
   }
 
   &__plan {
@@ -36,10 +36,7 @@
   }
 
   &__details {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    @include flexColumn;
     font-weight: 400;
     margin-right: auto;
   }
@@ -52,7 +49,7 @@
   align-items: center;
   padding: var(--default-spacing);
   gap: var(--default-spacing-small);
-  height: 56px;
+  height: var(--header-height);
   border: 1px solid #2c3249;
   border-radius: var(--default-spacing-small);
   width: 100%;
