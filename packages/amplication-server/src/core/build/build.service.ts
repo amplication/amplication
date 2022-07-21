@@ -357,7 +357,7 @@ export class BuildService {
         const buildContext: BuildContext = {
           buildId: build.id,
           resourceId: build.resourceId,
-          projectId: build.resource.projectId,
+          projectId: '',
           data: buildContextData
         };
 
@@ -368,7 +368,7 @@ export class BuildService {
         const generateResource: GenerateResource = {
           buildId: build.id,
           resourceId: build.resourceId,
-          projectId: build.resource.projectId,
+          projectId: '',
           contextFileLocation: {
             storageType: StorageTypeEnum.FS,
             path: path
