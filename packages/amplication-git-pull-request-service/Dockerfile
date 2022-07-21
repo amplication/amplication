@@ -1,4 +1,6 @@
-FROM node:16.16-alpine AS base
+ARG NODE_VERSION=16.16-alpine
+
+FROM node:$NODE_VERSION AS base
 
 ARG NPM_VERSION=8.1.2
 ENV NPM_CONFIG_LOGLEVEL=silent

@@ -1,5 +1,6 @@
-FROM node:16.16-alpine AS base
+ARG NODE_VERSION=16.16-alpine
 
+FROM node:$NODE_VERSION AS base
 RUN apk --no-cache add git
 RUN git config --global --add safe.directory '*'
 

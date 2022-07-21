@@ -1,4 +1,7 @@
-FROM node:16.16-alpine AS build
+ARG NODE_VERSION=16.16-alpine
+ARG NGINX_VERSION=1.20-alpine
+
+FROM node:$NODE_VERSION AS build
 
 ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
@@ -14,7 +17,7 @@ COPY packages packages
 RUN npm run bootstrap -- --scope @amplication/client --include-dependencies
 RUN npm run build -- --scope @amplication/client --include-dependencies
 
-FROM nginx:1.20-alpine as client
+FROM nginx:$NGINX_VERSION as client
 
 RUN apk add --update nodejs
 
