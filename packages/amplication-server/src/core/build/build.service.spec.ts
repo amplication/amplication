@@ -441,8 +441,8 @@ describe('BuildService', () => {
         },
         {
           provide: BuildContextStorageService,
-          useValue: { 
-            saveBuildContext: jest.fn(buildContext => 'example/path.json'),
+          useValue: {
+            saveBuildContext: jest.fn(buildContext => 'example/path.json')
           }
         }
       ]
