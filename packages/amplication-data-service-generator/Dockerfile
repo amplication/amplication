@@ -1,6 +1,6 @@
 ARG NODE_VERSION=16.16-alpine
 
-FROM node:$NODE_VERSION AS build
+FROM node:$NODE_VERSION
 
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
