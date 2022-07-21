@@ -27,14 +27,11 @@
     text-overflow: ellipsis;
     overflow: hidden;
     font-size: 12px;
-    line-height: 18px;
   }
 
   &__plan {
-    @include body2;
-    color: var(--black60);
     font-size: 10px;
-    line-height: 15px;
+    color: var(--black60);
   }
 
   &__details {

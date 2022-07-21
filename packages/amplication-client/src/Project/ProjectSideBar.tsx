@@ -1,9 +1,9 @@
 import React from "react";
 import { Project, Workspace } from "../models";
+import WorkspaceSelector from "../Workspaces/WorkspaceSelector";
 import ProjectList from "./ProjectList";
 import "./ProjectSideBar.scss";
 import ProjectSideBarFooter from "./WorkspaceSettingsNavigation";
-import WorkspaceSelectorNew from "./WorkspaceSelectorNew";
 
 const CLASS_NAME = "project-sidebar";
 
@@ -24,7 +24,7 @@ const ProjectSideBar = ({
   return (
     <div className={CLASS_NAME}>
       <span className={`${CLASS_NAME}__label`}>Workspace</span>
-      <WorkspaceSelectorNew />
+      <WorkspaceSelector />
       <hr className={`${CLASS_NAME}__divider`} />
       <ProjectList
         projects={projectsList}
