@@ -6,10 +6,8 @@ import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
-  ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
   GENERATE_STEP_NAME,
-  ACTION_ZIP_LOG,
   BuildService,
   ENTITIES_INCLUDE,
   ACTION_INCLUDE
@@ -575,11 +573,7 @@ describe('BuildService', () => {
         expect.any(Function)
       ]
     ]);
-    expect(actionServiceLogInfoMock).toBeCalledTimes(2);
-    expect(actionServiceLogInfoMock.mock.calls).toEqual([
-      [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
-      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG]
-    ]);
+
     expect(actionServiceLogMock).toBeCalledTimes(0);
     expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
     expect(storageServiceDiskGetUrlMock).toBeCalledWith(
