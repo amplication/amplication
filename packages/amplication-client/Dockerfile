@@ -1,10 +1,8 @@
 FROM node:16-alpine AS base
 
-ARG NPM_VERSION=8.1.2
 ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
 
-RUN npm install --global npm@$NPM_VERSION
 RUN npm config set fund false
 
 WORKDIR /app
@@ -16,7 +14,7 @@ COPY packages packages
 RUN npm run bootstrap -- --scope @amplication/client --include-dependencies
 RUN npm run build -- --scope @amplication/client --include-dependencies
 
-FROM nginx:$NGINX_VERSION as client
+FROM nginx:1.20-alpine as client
 
 RUN apk add --update nodejs
 
