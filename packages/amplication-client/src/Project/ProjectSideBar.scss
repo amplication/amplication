@@ -5,7 +5,7 @@
   padding: var(--large-spacing);
   gap: var(--large-spacing);
   border-radius: var(--default-border-radius);
-  height: 100vh;
+  height: 100%;
 
   &__label {
     @include regular-12;
