@@ -1080,7 +1080,6 @@ export type Mutation = {
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   signup: Auth;
-  update?: Maybe<ProjectConfigurationSettings>;
   updateAccount: Account;
   updateConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApiCall: ConnectorRestApiCall;
@@ -1090,6 +1089,7 @@ export type Mutation = {
   updateEntityPermission: EntityPermission;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
+  updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
   updateResourceRole?: Maybe<ResourceRole>;
   updateServiceSettings?: Maybe<ServiceSettings>;
@@ -1261,11 +1261,6 @@ export type MutationSignupArgs = {
   data: SignupInput;
 };
 
-export type MutationUpdateArgs = {
-  data: ProjectConfigurationSettingsUpdateInput;
-  where: WhereUniqueInput;
-};
-
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
 };
@@ -1308,6 +1303,11 @@ export type MutationUpdateEntityPermissionFieldRolesArgs = {
 
 export type MutationUpdateEntityPermissionRolesArgs = {
   data: EntityUpdatePermissionRolesInput;
+};
+
+export type MutationUpdateProjectConfigurationSettingsArgs = {
+  data: ProjectConfigurationSettingsUpdateInput;
+  where: WhereUniqueInput;
 };
 
 export type MutationUpdateResourceArgs = {
@@ -1445,6 +1445,7 @@ export type Query = {
   me: User;
   pendingChanges: Array<PendingChange>;
   project?: Maybe<Project>;
+  projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
   remoteGitRepositories: Array<RemoteGitRepository>;
   resource?: Maybe<Resource>;
@@ -1555,6 +1556,10 @@ export type QueryPendingChangesArgs = {
 };
 
 export type QueryProjectArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryProjectConfigurationSettingsArgs = {
   where: WhereUniqueInput;
 };
 

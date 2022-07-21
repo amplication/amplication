@@ -1,5 +1,6 @@
-import { EnumBlockType } from '@amplication/prisma-db';
 import { Inject, Injectable } from '@nestjs/common';
+import { FindOneArgs } from 'src/dto';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { User } from 'src/models';
 import { BlockService } from '../block/block.service';
 import { ProjectConfigurationSettings } from './dto/ProjectConfigurationSettings';
@@ -38,5 +39,23 @@ export class ProjectConfigurationSettingsService {
     user: User
   ): Promise<ProjectConfigurationSettings> {
     return this.blockService.update<ProjectConfigurationSettings>(args, user);
+  }
+
+  async findOne(args: FindOneArgs): Promise<ProjectConfigurationSettings> {
+    const [
+      projectConfigurationSettings
+    ] = await this.blockService.findManyByBlockType<
+      ProjectConfigurationSettings
+    >(
+      {
+        where: {
+          resource: {
+            id: args.where.id
+          }
+        }
+      },
+      EnumBlockType.ProjectConfigurationSettings
+    );
+    return projectConfigurationSettings;
   }
 }

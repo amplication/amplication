@@ -40,6 +40,7 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -834,6 +835,22 @@ input CommitOrderByInput {
   message: SortOrder
 }
 
+type ProjectConfigurationSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  baseDirectory: String!
+}
+
 type ApiToken {
   id: String!
   createdAt: DateTime!
@@ -1052,7 +1069,7 @@ type Mutation {
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
-  update(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
+  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1256,22 +1273,6 @@ input ResourceRoleUpdateInput {
   name: String
   description: String
   displayName: String!
-}
-
-type ProjectConfigurationSettings implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String!
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  baseDirectory: String!
 }
 
 input ProjectConfigurationSettingsUpdateInput {
