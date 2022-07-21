@@ -1080,6 +1080,7 @@ export type Mutation = {
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   signup: Auth;
+  update?: Maybe<ProjectConfigurationSettings>;
   updateAccount: Account;
   updateConnectorRestApi: ConnectorRestApi;
   updateConnectorRestApiCall: ConnectorRestApiCall;
@@ -1260,6 +1261,11 @@ export type MutationSignupArgs = {
   data: SignupInput;
 };
 
+export type MutationUpdateArgs = {
+  data: ProjectConfigurationSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
 };
@@ -1363,6 +1369,29 @@ export type Project = {
   name: Scalars['String'];
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime'];
+};
+
+export type ProjectConfigurationSettings = IBlock & {
+  __typename?: 'ProjectConfigurationSettings';
+  baseDirectory: Scalars['String'];
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime'];
+  description: Scalars['String'];
+  displayName: Scalars['String'];
+  id: Scalars['String'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  updatedAt: Scalars['DateTime'];
+  versionNumber: Scalars['Float'];
+};
+
+export type ProjectConfigurationSettingsUpdateInput = {
+  baseDirectory?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  displayName?: InputMaybe<Scalars['String']>;
 };
 
 export type ProjectCreateInput = {
@@ -1604,9 +1633,10 @@ export type Resource = {
   gitRepositoryId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
+  project?: Maybe<Project>;
+  projectId?: Maybe<Scalars['String']>;
   resourceType: EnumResourceType;
   updatedAt: Scalars['DateTime'];
-  workspace: Project;
 };
 
 export type ResourceBuildsArgs = {
