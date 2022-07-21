@@ -39,6 +39,7 @@ import { GitService } from '@amplication/git-service/';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
+import { BuildContextStorageService } from './buildContextStorage.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -436,6 +437,12 @@ describe('BuildService', () => {
           provide: QueueService,
           useValue: {
             emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
+          }
+        },
+        {
+          provide: BuildContextStorageService,
+          useValue: { 
+            saveBuildContext: jest.fn(buildContext => 'example/path.json'),
           }
         }
       ]
