@@ -564,7 +564,7 @@ describe('BuildService', () => {
         }
       }
     });
-    
+
     expect(DataServiceGenerator.createDataService).toBeCalledWith(
       orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
       EXAMPLE_APP_ROLES,
