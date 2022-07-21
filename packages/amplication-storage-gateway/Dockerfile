@@ -1,8 +1,12 @@
-FROM node:16.16-alpine AS base
+ARG ALPINE_VERSION=alpine3.14
+ARG NODE_VERSION=16.13.1
 
+FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
+ARG NPM_VERSION=8.1.2
 ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
 
+RUN npm install --global npm@$NPM_VERSION
 RUN npm config set fund false
 
 WORKDIR /app
