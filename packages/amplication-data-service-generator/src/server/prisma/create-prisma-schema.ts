@@ -218,7 +218,7 @@ export function createPrismaFields(
             name,
             relatedEntity.name,
             !isOneToOneWithoutForeignKey,
-            true,
+            allowMultipleSelection || false,
             relationName
           ),
         ];
@@ -244,7 +244,11 @@ export function createPrismaFields(
           PrismaSchemaDSL.ScalarType.String,
           false,
           field.required,
-          field.unique
+          !field.properties.allowMultipleSelection &&
+            !relatedField?.properties.allowMultipleSelection &&
+            !isOneToOneWithoutForeignKey
+            ? true
+            : field.unique
         ),
       ];
     }
