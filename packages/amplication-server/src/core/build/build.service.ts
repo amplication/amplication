@@ -467,7 +467,6 @@ export class BuildService {
                 installationId: appRepository.gitOrganization.installationId,
                 newBuildId: build.id,
                 oldBuildId,
-                // the base parameter is missing because that in the future we will implement a custom branches but now we don't send so its the default branch
                 commit: {
                   head: `amplication-build-${build.id}`,
                   title: commitMessage,
