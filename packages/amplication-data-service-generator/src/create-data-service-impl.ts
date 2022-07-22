@@ -9,11 +9,12 @@ import {
   Module,
   EnumDataType,
   LookupResolvedProperties,
-} from "./types";
+  types,
+} from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
 import { createServerModules } from "./server/create-server";
-import { types } from "@amplication/data";
+
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
 

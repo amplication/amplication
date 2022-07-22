@@ -95,14 +95,21 @@ function WorkspaceSelector() {
               name={data?.currentWorkspace.name || ""}
               color={COLOR}
             />
-            <span className={`${CLASS_NAME}__current__name`}>
-              {data?.currentWorkspace.name}
-            </span>
+            <div className={`${CLASS_NAME}__current__details`}>
+              <span className={`${CLASS_NAME}__current__name`}>
+                {data?.currentWorkspace.name}
+              </span>
+              <span className={`${CLASS_NAME}__current__plan`}>
+                {data?.currentWorkspace.subscription?.subscriptionPlan ||
+                  "Community"}{" "}
+                Plan
+              </span>
+            </div>
             <Button
               buttonStyle={EnumButtonStyle.Text}
               disabled={loading}
               type="button"
-              icon="code"
+              icon="chevron_down"
             />
           </>
         )}
@@ -116,7 +123,7 @@ function WorkspaceSelector() {
       )}
     </div>
   );
-}
+};
 
 export default WorkspaceSelector;
 

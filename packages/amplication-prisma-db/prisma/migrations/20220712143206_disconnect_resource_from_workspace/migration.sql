@@ -18,7 +18,10 @@ DROP INDEX "Resource.workspaceId_name_unique";
 
 -- AlterTable
 ALTER TABLE "Project" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
+ADD COLUMN "updatedAt" TIMESTAMP(3)  NULL;
+UPDATE "Project" SET "updatedAt" = NOW();
+ALTER TABLE "Project" ALTER COLUMN "updatedAt" SET NOT NULL;
+
 
 -- AlterTable
 ALTER TABLE "Resource" DROP COLUMN "workspaceId",
