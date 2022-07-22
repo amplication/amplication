@@ -24,12 +24,12 @@ const useProjectSelector = (
       // if error push to ? check with @Yuval
     },
   });
-  const [setNewProject] = useMutation<
-    models.ProjectCreateInput
-  >(CREATE_PROJECT);
+  const [setNewProject] = useMutation<models.ProjectCreateInput>(
+    CREATE_PROJECT
+  );
 
   const createProject = (data: models.ProjectCreateInput) => {
-    setNewProject({variables: data});
+    setNewProject({ variables: data });
   };
 
   const findCurrentProject = useCallback(
