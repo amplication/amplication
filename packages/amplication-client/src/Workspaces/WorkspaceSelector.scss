@@ -21,40 +21,44 @@
     margin-left: 0;
     margin-right: var(--default-spacing);
   }
-  &:hover,
-  &--active {
-    background-color: var(--black2);
-  }
 
   &__name {
+    @include regular-12;
+    font-size: 12px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
   &__plan {
-    @include body2;
+    font-size: 10px;
     color: var(--black60);
   }
 
   &__details {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    @include flexColumn;
+    font-weight: 400;
+    margin-right: auto;
   }
 }
 
 .workspaces-selector {
-  margin: var(--large-spacing);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: var(--default-spacing);
+  gap: var(--default-spacing-small);
+  height: var(--header-height);
+  border: 1px solid #2c3249;
+  border-radius: var(--default-spacing-small);
+  width: 100%;
 
   &__current {
     @include workspaceItem;
-    margin-bottom: var(--default-spacing);
 
     .amp-icon {
-      margin-left: var(--default-spacing);
-      transform: rotate(90deg);
+      justify-self: flex-end;
     }
   }
 

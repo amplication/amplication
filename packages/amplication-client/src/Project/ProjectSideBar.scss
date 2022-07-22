@@ -1,0 +1,19 @@
+@import "../style/index.scss";
+
+.project-sidebar {
+  @include flexColumn;
+  padding: var(--large-spacing);
+  gap: var(--large-spacing);
+  border-radius: var(--default-border-radius);
+  height: 100%;
+
+  &__label {
+    @include regular-12;
+    color: var(--black80);
+  }
+
+  &__divider {
+    border: 1px solid var(--black90);
+    width: 100%;
+  }
+}
