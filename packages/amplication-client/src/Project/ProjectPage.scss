@@ -7,18 +7,17 @@
 
   &__sidebar {
     flex-grow: 1;
-    padding: 16px;
+    padding: var(--large-spacing);
   }
 
   &__sidebar-content {
     border: 1px solid var(--black5);
-    border-radius: 4px;
+    border-radius: var(--small-border-radius);
     height: 100%;
   }
 
   &__content {
     flex-grow: 20;
     border: 1px solid var(--black5);
-    border-radius: 4px;
   }
 }

@@ -17,9 +17,12 @@ type Props = {
 const ProjectSideBar = ({ currentWorkspace, projectsList }: Props) => {
   const history = useHistory();
 
-  const handleProjectCreated = useCallback((project: Project) => {
-    history.push(`/${currentWorkspace?.id}/${project.id}`);
-  }, [currentWorkspace, history]);
+  const handleProjectCreated = useCallback(
+    (project: Project) => {
+      history.push(`/${currentWorkspace?.id}/${project.id}`);
+    },
+    [currentWorkspace, history]
+  );
 
   return currentWorkspace ? (
     <div className={CLASS_NAME}>
