@@ -3,9 +3,6 @@
 .project-sidebar {
   @include flexColumn;
   padding: var(--large-spacing);
-  gap: var(--large-spacing);
-  border-radius: var(--default-border-radius);
-  height: 100%;
 
   &__label {
     @include regular-12;
@@ -13,7 +10,7 @@
   }
 
   &__divider {
-    border: 1px solid var(--black90);
+    border: 1px solid var(--black5);
     width: 100%;
   }
 }

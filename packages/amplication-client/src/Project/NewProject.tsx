@@ -1,5 +1,5 @@
 import { TextField, Snackbar } from "@amplication/design-system";
-import { gql, Reference, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
@@ -10,6 +10,7 @@ import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { GET_PROJECTS } from "../Workspaces/queries/projectQuery";
 import "./NewProject.scss";
 
 type CreateProjectType = models.ProjectCreateInput;
@@ -37,43 +38,22 @@ type DType = {
   createProject: models.Project;
 };
 
-const NewProject = () => {
+type Props = {
+  onProjectCreated: (project: models.Project) => void;
+};
+
+const NewProject = ({ onProjectCreated }: Props) => {
   const { trackEvent } = useTracking();
   const [createProject, { error, loading }] = useMutation<DType>(
     CREATE_PROJECT,
     {
+      refetchQueries: [{ query: GET_PROJECTS }],
       onCompleted: (data) => {
         trackEvent({
           eventName: "createProject",
           projectName: data.createProject.name,
         });
-      },
-      update(cache, { data }) {
-        if (!data) return;
-
-        const newProject = data.createProject;
-
-        cache.modify({
-          fields: {
-            projects(existingProjectRefs = [], { readField }) {
-              const newProjectRef = cache.writeFragment({
-                data: newProject,
-                fragment: NEW_PROJECT_FRAGMENT,
-              });
-
-              if (
-                existingProjectRefs.some(
-                  (ProjectRef: Reference) =>
-                    readField("id", ProjectRef) === newProject.id
-                )
-              ) {
-                return existingProjectRefs;
-              }
-
-              return [...existingProjectRefs, newProjectRef];
-            },
-          },
-        });
+        onProjectCreated(data.createProject)
       },
     }
   );
@@ -142,12 +122,5 @@ const CREATE_PROJECT = gql`
       id
       name
     }
-  }
-`;
-
-const NEW_PROJECT_FRAGMENT = gql`
-  fragment NewProject on Project {
-    id
-    name
   }
 `;

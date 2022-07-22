@@ -4,7 +4,6 @@ import { Project } from "../models";
 
 type Props = {
   project: Project;
-  onProjectSelected: (project: Project) => void;
   workspaceId: string;
 };
 

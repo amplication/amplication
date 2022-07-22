@@ -8,12 +8,6 @@ type TData = {
   projects: models.Project[];
 };
 
-type TSetData = {
-  data: {
-    name: string;
-  };
-};
-
 const useProjectSelector = (
   authenticated: boolean,
   currentWorkspace: models.Workspace | undefined
@@ -30,9 +24,13 @@ const useProjectSelector = (
       // if error push to ? check with @Yuval
     },
   });
-  const [setNewProject, { data: newProjectRes }] = useMutation<TSetData>(
-    CREATE_PROJECT
-  );
+  const [setNewProject] = useMutation<
+    models.ProjectCreateInput
+  >(CREATE_PROJECT);
+
+  const createProject = (data: models.ProjectCreateInput) => {
+    setNewProject({variables: data});
+  };
 
   const findCurrentProject = useCallback(
     (projects: models.Project[]) => {
@@ -78,8 +76,7 @@ const useProjectSelector = (
   return {
     currentProject,
     projectsList,
-    setNewProject,
-    newProjectRes,
+    createProject,
   };
 };
 

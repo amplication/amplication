@@ -53,6 +53,7 @@
   border: 1px solid #2c3249;
   border-radius: var(--default-spacing-small);
   width: 100%;
+  margin-bottom: var(--default-spacing-small);
 
   &__current {
     @include workspaceItem;

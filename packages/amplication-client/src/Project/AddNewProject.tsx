@@ -5,17 +5,27 @@ import {
   EnumIconPosition,
 } from "@amplication/design-system";
 import React, { useCallback, useState } from "react";
+import { Project } from "../models";
 import "./AddNewProject.scss";
 import NewProject from "./NewProject";
 
 const CLASS_NAME = "add-new-project";
 
-const AddNewProject = () => {
+type Props = {
+  onProjectCreated: (project: Project) => void;
+};
+
+const AddNewProject = ({ onProjectCreated }: Props) => {
   const [newProject, setNewProject] = useState<boolean>(false);
 
   const handleNewProjectClick = useCallback(() => {
     setNewProject(!newProject);
   }, [newProject, setNewProject]);
+
+  const handleProjectCreated = useCallback((data: Project) => {
+    setNewProject(false);
+    onProjectCreated(data);
+  }, [onProjectCreated, setNewProject]);
 
   return (
     <>
@@ -25,7 +35,7 @@ const AddNewProject = () => {
         onDismiss={handleNewProjectClick}
         title="New Project"
       >
-        <NewProject />
+        <NewProject onProjectCreated={handleProjectCreated} />
       </Dialog>
       <Button
         onClick={handleNewProjectClick}
