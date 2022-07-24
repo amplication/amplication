@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
 import { CodeBuildService } from './codeBuild/codeBuild.service';
 import { GenerateResource } from './codeBuild/dto/GenerateResource';
@@ -11,7 +11,7 @@ export class AppController {
     private readonly buildContextStorage: BuildContextStorageService,
   ) {}
 
-  @MessagePattern('build.internal.generate-resource.event.0')
+  @EventPattern('build.internal.generate-resource.event.0')
   async receiveCodeGenRequest(@Payload() message: any) {
     const gr: GenerateResource = message.value;
 
