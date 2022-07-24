@@ -7,11 +7,15 @@ import { BlockValuesExtended } from '../block/types';
 import { ProjectConfigurationSettings } from './dto/ProjectConfigurationSettings';
 import { UpdateProjectConfigurationSettingsArgs } from './dto/UpdateProjectConfigurationSettingsArgs';
 
+const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration Settings';
+const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
+  'This resource is used to store project configuration settings.';
+
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS: BlockValuesExtended<ProjectConfigurationSettings> = {
   baseDirectory: '/',
   blockType: EnumBlockType.ProjectConfigurationSettings,
-  description: '',
-  displayName: 'Project Configuration Settings'
+  description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
+  displayName: DEFAULT_PROJECT_CONFIGURATION_NAME
 };
 @Injectable()
 export class ProjectConfigurationSettingsService {
