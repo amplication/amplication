@@ -1,7 +1,7 @@
 import { parentPort } from "worker_threads";
 import { createDataServiceImpl } from "./create-data-service-impl";
 
-import { WorkerParam, WorkerResult } from "./types";
+import { WorkerParam, WorkerResult } from "@amplication/code-gen-types";
 import { createWorkerLogger } from "./util/worker-logging";
 
 parentPort?.once("message", (params: WorkerParam) => {

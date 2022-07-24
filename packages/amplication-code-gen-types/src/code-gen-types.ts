@@ -1,5 +1,5 @@
-import { types } from "@amplication/data";
 import * as models from "./models";
+import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 
 export {
   EnumEntityPermissionType,
@@ -20,8 +20,8 @@ export type WorkerParam = {
   appInfo: AppInfo;
 };
 
-export type ServiceSettings = Omit<
-  models.ServiceSettings,
+export type AppSettings = Omit<
+  models.AppSettings,
   | "__typename"
   | "id"
   | "createdAt"
@@ -43,11 +43,11 @@ export type AppInfo = {
   version: string;
   id: string;
   url: string;
-  settings: ServiceSettings;
+  settings: AppSettings;
 };
 
 export type Role = Omit<
-  models.ResourceRole,
+  models.AppRole,
   "__typename" | "id" | "createdAt" | "updatedAt"
 >;
 
@@ -58,10 +58,10 @@ export type EntityPermissionRole = Omit<
   | "entityVersionId"
   | "action"
   | "entityPermission"
-  | "resourceRoleId"
-  | "resourceRole"
+  | "appRoleId"
+  | "appRole"
 > & {
-  resourceRole: Role;
+  appRole: Role;
 };
 
 export type EntityPermissionField = Omit<
@@ -99,7 +99,7 @@ export type EntityField = Omit<
   dataType: models.EnumDataType;
 };
 
-export type LookupResolvedProperties = types.Lookup & {
+export type LookupResolvedProperties = Lookup & {
   relatedEntity: Entity;
   relatedField: EntityField;
   isOneToOneWithoutForeignKey?: boolean; //in one-to-one only one side should have a foreign key
@@ -110,14 +110,14 @@ export type EntityLookupField = Omit<EntityField, "properties"> & {
 };
 
 export type EntityOptionSetField = Omit<EntityField, "properties"> & {
-  properties: types.OptionSet;
+  properties: OptionSet;
 };
 
 export type EntityMultiSelectOptionSetField = Omit<
   EntityField,
   "properties"
 > & {
-  properties: types.MultiSelectOptionSet;
+  properties: MultiSelectOptionSet;
 };
 
 export type Entity = Omit<
@@ -125,8 +125,8 @@ export type Entity = Omit<
   | "__typename"
   | "createdAt"
   | "updatedAt"
-  | "resource"
-  | "resourceId"
+  | "app"
+  | "appId"
   | "entityVersions"
   | "fields"
   | "permissions"
@@ -142,9 +142,4 @@ export type Entity = Omit<
 export type Module = {
   path: string;
   code: string;
-};
-
-export type ResourceGenerationConfig = {
-  dataServiceGeneratorVersion: string;
-  appInfo: AppInfo;
 };

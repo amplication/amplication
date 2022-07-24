@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { useFormikContext } from "formik";
 import { DATA_TYPE_TO_LABEL_AND_ICON, SYSTEM_DATA_TYPES } from "./constants";
-import { getSchemaForDataType } from "@amplication/data";
+import { getSchemaForDataType } from "@amplication/code-gen-types";
 import * as models from "../models";
 import { SelectField, SelectFieldProps } from "@amplication/design-system";
 

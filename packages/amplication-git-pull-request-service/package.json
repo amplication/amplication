@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-pull-request-service",
-  "version": "0.14.1",
+  "version": "0.14.5",
   "private": true,
   "scripts": {
     "prebuild": "rimraf dist",
@@ -18,8 +18,8 @@
     "postinstall": "npm run build"
   },
   "dependencies": {
-    "@amplication/git-service": "^0.14.1",
-    "@amplication/kafka": "^0.14.1",
+    "@amplication/git-service": "^0.14.5",
+    "@amplication/kafka": "^0.14.5",
     "@nestjs/common": "8.4.3",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "8.2.3",
@@ -35,7 +35,7 @@
     "winston-cloud-logging": "1.0.2"
   },
   "devDependencies": {
-    "@nestjs/cli": "8.2.4",
+    "@nestjs/cli": "8.2.5",
     "@nestjs/testing": "8.4.4",
     "@types/jest": "27.4.1",
     "@types/node": "17.0.23",

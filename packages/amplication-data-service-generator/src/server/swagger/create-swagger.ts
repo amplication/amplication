@@ -1,7 +1,7 @@
 import { builders, namedTypes } from "ast-types";
 import { EnumAuthProviderType } from "../../models";
 import { print } from "recast";
-import { AppInfo, Module } from "../../types";
+import { AppInfo, Module } from "@amplication/code-gen-types";
 import {
   interpolate,
   removeTSIgnoreComments,

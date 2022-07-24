@@ -1,4 +1,4 @@
-import { EntityField, EnumDataType } from "../../../types";
+import { EntityField, EnumDataType } from "@amplication/code-gen-types";
 
 export const EXAMPLE_ID_FIELD: EntityField = {
   id: "EXAMPLE_ID_FIELD_ID",

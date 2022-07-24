@@ -1,7 +1,7 @@
 import * as path from "path";
 import { print } from "recast";
 import { builders } from "ast-types";
-import { Module, AppInfo } from "../../types";
+import { Module, AppInfo } from "@amplication/code-gen-types";
 import {
   addImports,
   importNames,
@@ -10,8 +10,9 @@ import {
   removeTSVariableDeclares,
 } from "../../util/ast";
 import { readFile, relativeImportPath } from "../../util/module";
-import { EntityComponents } from "../types";
+
 import { jsxElement, jsxFragment } from "../util";
+import { EntityComponents } from "../types";
 
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
 
