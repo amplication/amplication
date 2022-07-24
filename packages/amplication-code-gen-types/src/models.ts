@@ -1697,6 +1697,130 @@ export type RemoteGitRepository = {
   url: Scalars["String"];
 };
 
+export type Resource = {
+  __typename?: "Resource";
+  builds: Array<Build>;
+  color: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  description: Scalars["String"];
+  entities: Array<Entity>;
+  environments: Array<Environment>;
+  githubLastMessage?: Maybe<Scalars["String"]>;
+  githubLastSync?: Maybe<Scalars["DateTime"]>;
+  gitRepository?: Maybe<GitRepository>;
+  gitRepositoryId?: Maybe<Scalars["String"]>;
+  id: Scalars["String"];
+  name: Scalars["String"];
+  project?: Maybe<Project>;
+  projectId?: Maybe<Scalars["String"]>;
+  resourceType: EnumResourceType;
+  updatedAt: Scalars["DateTime"];
+};
+
+export type ResourceBuildsArgs = {
+  orderBy?: InputMaybe<BuildOrderByInput>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  take?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<BuildWhereInput>;
+};
+
+export type ResourceEntitiesArgs = {
+  orderBy?: InputMaybe<EntityOrderByInput>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  take?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<EntityWhereInput>;
+};
+
+export type ResourceCreateInput = {
+  color?: InputMaybe<Scalars["String"]>;
+  description: Scalars["String"];
+  name: Scalars["String"];
+  project: WhereParentIdInput;
+  resourceType: EnumResourceType;
+};
+
+export type ResourceCreateWithEntitiesEntityInput = {
+  fields: Array<ResourceCreateWithEntitiesFieldInput>;
+  name: Scalars["String"];
+  relationsToEntityIndex?: InputMaybe<Array<Scalars["Int"]>>;
+};
+
+export type ResourceCreateWithEntitiesFieldInput = {
+  dataType?: InputMaybe<EnumDataType>;
+  name: Scalars["String"];
+};
+
+export type ResourceCreateWithEntitiesInput = {
+  commitMessage: Scalars["String"];
+  entities: Array<ResourceCreateWithEntitiesEntityInput>;
+  resource: ResourceCreateInput;
+};
+
+export type ResourceOrderByInput = {
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ResourceRole = {
+  __typename?: "ResourceRole";
+  createdAt: Scalars["DateTime"];
+  description?: Maybe<Scalars["String"]>;
+  displayName: Scalars["String"];
+  id: Scalars["String"];
+  name: Scalars["String"];
+  updatedAt: Scalars["DateTime"];
+};
+
+export type ResourceRoleCreateInput = {
+  description: Scalars["String"];
+  displayName: Scalars["String"];
+  name: Scalars["String"];
+  resource: WhereParentIdInput;
+};
+
+export type ResourceRoleOrderByInput = {
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ResourceRoleUpdateInput = {
+  description?: InputMaybe<Scalars["String"]>;
+  displayName: Scalars["String"];
+  name?: InputMaybe<Scalars["String"]>;
+};
+
+export type ResourceRoleWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<StringFilter>;
+  resource?: InputMaybe<WhereUniqueInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type ResourceUpdateInput = {
+  color?: InputMaybe<Scalars["String"]>;
+  description?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<Scalars["String"]>;
+};
+
+export type ResourceWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  id?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<StringFilter>;
+  project?: InputMaybe<WhereUniqueInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export enum Role {
   Admin = "Admin",
   OrganizationAdmin = "OrganizationAdmin",

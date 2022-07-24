@@ -5,13 +5,10 @@
     "packages/amplication-data-service-generator/src/admin/static/",
     "packages/amplication-data-service-generator/src/server/static/"
   ],
-  "version": "0.14.5",
+  "version": "0.14.3",
   "command": {
     "bootstrap": {
-      "ignore": [
-        "admin-template",
-        "server-template"
-      ]
+      "ignore": ["admin-template", "server-template"]
     }
   }
 }

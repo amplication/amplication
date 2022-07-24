@@ -2,9 +2,6 @@
 
 .circle-badge {
   @include title1;
-  width: var(--menu-item-width);
-  min-width: var(--menu-item-width);
-  height: var(--menu-item-width);
   box-sizing: border-box;
   transition: all var(--menu-expand-animation-duration) ease-in;
   margin: auto;
@@ -19,32 +16,61 @@
   background-color: var(--secondary-turquoise);
 }
 
-.size24 {
-  width: 24px;
-  height: 24px;
+.xxsmall {
+  width: 16px;
+  height: 16px;
+  .amp-icon {
+    color: var(--black2);
+    font-size: 12px;
+  }
 }
 
-.size32 {
-  width: 32px;
-  height: 32px;
+.xsmall {
+  width: 20px;
+  height: 20px;
+  .amp-icon {
+    color: var(--black2);
+    font-size: 12px;
+  }
 }
 
-.size40 {
-  width: 40px;
-  height: 40px;
+.small {
+  width: var(--double-spacing);
+  height: var(--double-spacing);
+  .amp-icon {
+    color: var(--black2);
+    font-size: 12px;
+  }
 }
-
-.size54 {
+.medium {
+  width: var(--menu-item-width);
+  height: var(--menu-item-width);
+  .amp-icon {
+    color: var(--black2);
+    font-size: 12px;
+  }
+}
+.large {
+  width: 44px;
+  height: 44px;
+  .amp-icon {
+    color: var(--black2);
+    font-size: 20px;
+  }
+}
+.xlarge {
   width: 54px;
   height: 54px;
+  .amp-icon {
+    color: var(--black2);
+    font-size: 24px;
+  }
 }
-
-.size64 {
+.xxlarge {
   width: 64px;
   height: 64px;
-}
-
-.size80 {
-  width: 80px;
-  height: 80px;
+  .amp-icon {
+    color: var(--black2);
+    font-size: 32px;
+  }
 }

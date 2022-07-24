@@ -1,8 +1,8 @@
 @import "../style/index.scss";
 
-.page_header {
-  height: 50px;
+.workspace-header {
+  height: var(--header-height);
   display: flex;
-  background: #22273C;
-  border-bottom: 1px solid #2C3249;;
+  background: var(--black2);
+  border-bottom: 1px solid var(--black5);
 }

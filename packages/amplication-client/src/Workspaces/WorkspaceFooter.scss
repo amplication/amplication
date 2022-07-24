@@ -1,10 +1,10 @@
 @import "../style/index.scss";
 
-.page_footer {
+.workspace-footer {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0px 16px;
-  background: #373d57;
-  height: 35px;
+  padding: 0px var(--large-spacing);
+  background: var(--black10);
+  height: var(--footer-height);
 }

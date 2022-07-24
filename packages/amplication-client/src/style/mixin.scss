@@ -125,6 +125,12 @@ $bullet-size: 6px;
   align-items: center;
 }
 
+@mixin flexColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 @mixin flexVerticalCenter {
   display: flex;
   align-items: center;
@@ -410,3 +416,5 @@ $active-indicator-width: 4px;
   line-height: 18px;
   color: #f5f6fa;
 }
+
+

@@ -1602,9 +1602,10 @@ export type Resource = {
   gitRepositoryId?: Maybe<Scalars["String"]>;
   id: Scalars["String"];
   name: Scalars["String"];
+  project?: Maybe<Project>;
+  projectId?: Maybe<Scalars["String"]>;
   resourceType: EnumResourceType;
   updatedAt: Scalars["DateTime"];
-  workspace: Project;
 };
 
 export type ResourceBuildsArgs = {
