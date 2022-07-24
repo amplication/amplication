@@ -42,6 +42,7 @@ export const DEFAULT_RESOURCE_DATA = {
 };
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
+import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 
 @Injectable()
 export class ResourceService {
@@ -59,7 +60,8 @@ export class ResourceService {
    */
   async createResource(
     args: CreateOneResourceArgs,
-    user: User
+    user: User,
+    generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<Resource> {
     const { color } = args.data;
     if (color && !validateHTMLColorHex(color)) {
@@ -82,7 +84,8 @@ export class ResourceService {
 
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
-      user
+      user,
+      generationSettings
     );
 
     try {
@@ -154,7 +157,8 @@ export class ResourceService {
       {
         data: data.resource
       },
-      user
+      user,
+      data.generationSettings
     );
 
     const newEntities: {

@@ -1,6 +1,7 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { ResourceCreateInput } from './ResourceCreateInput';
 import { EnumDataType } from 'src/enums/EnumDataType';
+import { ResourceGenSettingsCreateInput } from './ResourceGenSettingsCreateInput';
 
 @InputType({
   isAbstract: true
@@ -50,6 +51,11 @@ export class ResourceCreateWithEntitiesInput {
     nullable: false
   })
   entities!: ResourceCreateWithEntitiesEntityInput[];
+
+  @Field(() => ResourceGenSettingsCreateInput, {
+    nullable: false
+  })
+  generationSettings!: ResourceGenSettingsCreateInput;
 
   @Field(() => String, {
     nullable: false

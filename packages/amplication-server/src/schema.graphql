@@ -1107,6 +1107,7 @@ input WhereParentIdInput {
 input ResourceCreateWithEntitiesInput {
   resource: ResourceCreateInput!
   entities: [ResourceCreateWithEntitiesEntityInput!]!
+  generationSettings: ResourceGenSettingsCreateInput!
   commitMessage: String!
 }
 
@@ -1119,6 +1120,12 @@ input ResourceCreateWithEntitiesEntityInput {
 input ResourceCreateWithEntitiesFieldInput {
   name: String!
   dataType: EnumDataType
+}
+
+input ResourceGenSettingsCreateInput {
+  generateAdminUI: Boolean!
+  generateGraphQL: Boolean!
+  generateRestApi: Boolean!
 }
 
 input ResourceUpdateInput {

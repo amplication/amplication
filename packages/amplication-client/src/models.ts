@@ -1644,7 +1644,14 @@ export type ResourceCreateWithEntitiesFieldInput = {
 export type ResourceCreateWithEntitiesInput = {
   commitMessage: Scalars["String"];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
+  generationSettings: ResourceGenSettingsCreateInput;
   resource: ResourceCreateInput;
+};
+
+export type ResourceGenSettingsCreateInput = {
+  generateAdminUI: Scalars["Boolean"];
+  generateGraphQL: Scalars["Boolean"];
+  generateRestApi: Scalars["Boolean"];
 };
 
 export type ResourceOrderByInput = {

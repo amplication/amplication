@@ -1,0 +1,56 @@
+@import "../../style/index.scss";
+
+$max-width: 700px;
+
+.create-service-wizard-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 48px;
+
+  &__generationSettings {
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__generation_setting_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 48px;
+
+    label {
+      margin-bottom: 4px;
+    }
+  }
+
+  &__generation_setting_resource_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toggle-field {
+    margin-bottom: 18px;
+  }
+
+  .toggle-field label .input-label-value {
+    font-size: var(--normal-font-size);
+  }
+
+  .amp-radio-field .MuiFormControlLabel-label {
+    font-size: var(--normal-font-size);
+    font-weight: 400;
+    line-height: 18px;
+    width: 177px;
+  }
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+  }
+}
