@@ -54,6 +54,8 @@ You can also use a more manual step-by-step approach to set up Amplication serve
 | GITHUB_APP_APP_ID | ID of the installed github app  |[github-app-app-id]|
 | GITHUB_APP_PRIVATE_KEY|  private key of the installed github app  |[github-app-private-key] |
 | GITHUB_APP_INSTALLATION_URL| the url of your github app  |[github-app-installation-url] |
+| GENERATE_RESOURCE_TOPIC | topic that contains request for code generation | [generate-resource-topic] |
+| BUILD_CONTEXT_LOCATION | folder in file system that stores build contexts | [build-context]
 
 #### Manual one-time set up
 

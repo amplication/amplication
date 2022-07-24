@@ -5,12 +5,9 @@ import * as winston from 'winston';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { orderBy } from 'lodash';
 import {
-  ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
   GENERATE_STEP_NAME,
-  ACTION_ZIP_LOG,
   BuildService,
   ENTITIES_INCLUDE,
   ACTION_INCLUDE
@@ -22,7 +19,7 @@ import { ResourceService } from '../resource/resource.service';
 import { ActionService } from '../action/action.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
-import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
@@ -39,6 +36,7 @@ import { GitService } from '@amplication/git-service/';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
+import { BuildContextStorageService } from './buildContextStorage.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -435,7 +433,14 @@ describe('BuildService', () => {
         {
           provide: QueueService,
           useValue: {
-            emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
+            emitCreateGitPullRequest: () => ({ url: 'http://url.com' }),
+            emitMessage: jest.fn((topic, body) => ({}))
+          }
+        },
+        {
+          provide: BuildContextStorageService,
+          useValue: {
+            saveBuildContext: jest.fn(buildContext => 'example/path.json')
           }
         }
       ]
@@ -556,20 +561,7 @@ describe('BuildService', () => {
         }
       }
     });
-    expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
-    expect(DataServiceGenerator.createDataService).toBeCalledWith(
-      orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
-      EXAMPLE_APP_ROLES,
-      {
-        name: EXAMPLE_SERVICE_RESOURCE.name,
-        description: EXAMPLE_SERVICE_RESOURCE.description,
-        version: EXAMPLE_BUILD.version,
-        id: EXAMPLE_SERVICE_RESOURCE.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
-        settings: EXAMPLE_APP_SETTINGS_VALUES
-      },
-      MOCK_LOGGER
-    );
+
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(1);
@@ -581,16 +573,9 @@ describe('BuildService', () => {
         expect.any(Function)
       ]
     ]);
-    expect(actionServiceLogInfoMock).toBeCalledTimes(2);
-    expect(actionServiceLogInfoMock.mock.calls).toEqual([
-      [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
-      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG]
-    ]);
+
     expect(actionServiceLogMock).toBeCalledTimes(0);
-    expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
-    expect(storageServiceDiskGetUrlMock).toBeCalledWith(
-      getBuildTarGzFilePath(EXAMPLE_BUILD.id)
-    );
+
     expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
     expect(winstonConsoleTransportOnMock).toBeCalledTimes(1);
     /** @todo add expect(winstonConsoleTransportOnMock).toBeCalledWith() */

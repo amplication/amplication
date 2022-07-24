@@ -8,9 +8,9 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
-import path, { join } from 'path';
+import path from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { ResourceRole, User } from 'src/models';
+import { Entity, ResourceRole, User } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
@@ -37,9 +37,14 @@ import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
-import { previousBuild, BuildFilesSaver } from './utils';
+import { BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
+import { BuildContext } from './dto/BuildContext';
+import { BuildContextData } from './dto/BuildContextData';
+import { StorageTypeEnum } from './dto/StorageTypeEnum';
+import { BuildContextStorageService } from './buildContextStorage.service';
+import { GenerateResource } from './dto/GenerateResource';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -140,6 +145,8 @@ export function createInitialStepData(
 }
 @Injectable()
 export class BuildService {
+  private readonly genResourceTopic: string;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -154,11 +161,14 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
+    private readonly buildContextStorageService: BuildContextStorageService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
+
+    this.genResourceTopic = this.configService.get('GENERATE_RESOURCE_TOPIC');
   }
 
   /**
@@ -208,19 +218,12 @@ export class BuildService {
       }
     });
 
-    const oldBuild = await previousBuild(
-      this.prisma,
-      resourceId,
-      build.id,
-      build.createdAt
-    );
-
     const logger = this.logger.child({
       buildId: build.id
     });
 
     logger.info(JOB_STARTED_LOG);
-    await this.generate(build, user, oldBuild?.id);
+    await this.generate(build, user);
     logger.info(JOB_DONE_LOG);
 
     return build;
@@ -310,11 +313,7 @@ export class BuildService {
    * @param user
    * @param oldBuildId
    */
-  private async generate(
-    build: Build,
-    user: User,
-    oldBuildId: string
-  ): Promise<string> {
+  private async generate(build: Build, user: User): Promise<void> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -342,39 +341,48 @@ export class BuildService {
 
         const url = `${host}/${build.resourceId}`;
 
-        const modules = await DataServiceGenerator.createDataService(
+        const buildContextData: BuildContextData = {
           entities,
           roles,
-          {
+          serviceInfo: {
             name: resource.name,
             description: resource.description,
             version: build.version,
             id: build.resourceId,
             url,
             settings: serviceSettings
-          },
-          dataServiceGeneratorLogger
+          }
+        };
+
+        const buildContext: BuildContext = {
+          buildId: build.id,
+          resourceId: build.resourceId,
+          projectId: '',
+          data: buildContextData
+        };
+
+        const path = await this.buildContextStorageService.saveBuildContext(
+          buildContext
+        );
+
+        const generateResource: GenerateResource = {
+          buildId: build.id,
+          resourceId: build.resourceId,
+          projectId: '',
+          contextFileLocation: {
+            storageType: StorageTypeEnum.FS,
+            path: path
+          }
+        };
+
+        this.queueService.emitMessage(
+          this.genResourceTopic,
+          JSON.stringify(generateResource)
         );
 
         await Promise.all(logPromises);
 
         dataServiceGeneratorLogger.destroy();
-
-        await this.actionService.logInfo(step, ACTION_ZIP_LOG);
-
-        // the path to the tar.gz artifact
-        const tarballURL = await this.save(build, modules);
-
-        await this.buildFilesSaver.saveFiles(
-          join(resource.id, build.id),
-          modules
-        );
-
-        await this.saveToGitHub(build, oldBuildId);
-
-        await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-
-        return tarballURL;
       }
     );
   }
@@ -552,9 +560,7 @@ export class BuildService {
    * @info this function must always return the entities in the same order to prevent unintended code changes
    * @returns all the entities for build order by date of creation
    */
-  private async getOrderedEntities(
-    buildId: string
-  ): Promise<DataServiceGenerator.Entity[]> {
+  private async getOrderedEntities(buildId: string): Promise<Entity[]> {
     const entities = await this.entityService.getEntitiesByVersions({
       where: {
         builds: {
@@ -565,10 +571,8 @@ export class BuildService {
       },
       include: ENTITIES_INCLUDE
     });
-    return (orderBy(
-      entities,
-      entity => entity.createdAt
-    ) as unknown) as DataServiceGenerator.Entity[];
+
+    return orderBy(entities, entity => entity.createdAt);
   }
   async canUserAccess({
     userId,
