@@ -49,6 +49,10 @@ export const DEFAULT_SERVICE_DATA = {
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 
+const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
+const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
+  'This resource is used to store project configuration.';
+
 @Injectable()
 export class ResourceService {
   constructor(
@@ -82,8 +86,8 @@ export class ResourceService {
       data: {
         color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
         resourceType: EnumResourceType.ProjectConfiguration,
-        description: '',
-        name: 'Project configuration',
+        description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
+        name: DEFAULT_PROJECT_CONFIGURATION_NAME,
         project: { connect: { id: projectId } }
       }
     });
