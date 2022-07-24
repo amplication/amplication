@@ -6,7 +6,7 @@ import {
   PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { promises as fsPr } from 'fs';
-import { GenerateResource } from 'src/codeBuild/dto/GenerateResource';
+import { GenerateResource } from '../codeBuild/dto/GenerateResource';
 import JSZip from 'jszip';
 import { join } from 'path';
 
