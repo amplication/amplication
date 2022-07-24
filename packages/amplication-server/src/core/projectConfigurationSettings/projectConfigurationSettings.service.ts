@@ -34,11 +34,21 @@ export class ProjectConfigurationSettingsService {
     return projectConfigurationSettings;
   }
 
-  update(
+  async update(
     args: UpdateProjectConfigurationSettingsArgs,
     user: User
   ): Promise<ProjectConfigurationSettings> {
-    return this.blockService.update<ProjectConfigurationSettings>(args, user);
+    const projectConfigurationSettings = await this.findOne({
+      where: args.where
+    });
+    return this.blockService.update<ProjectConfigurationSettings>(
+      {
+        where: { id: projectConfigurationSettings.id },
+        ...projectConfigurationSettings,
+        ...args
+      },
+      user
+    );
   }
 
   async findOne(args: FindOneArgs): Promise<ProjectConfigurationSettings> {
