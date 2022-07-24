@@ -86,7 +86,7 @@ export class ResourceService {
         project: { connect: { id: projectId } }
       }
     });
-    await this.projectConfigurationSettingsService.create(
+    await this.projectConfigurationSettingsService.createDefault(
       newProjectConfiguration.id,
       userId
     );
