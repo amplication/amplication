@@ -12,12 +12,12 @@ import { join } from 'path';
 
 @Injectable()
 export class BuildContextStorageService {
-  private readonly client: S3Client;
+  private readonly storageClient: S3Client;
   private readonly BUILD_CONTEXT_S3_BUCKET: string;
   private readonly BUILD_CONTEXT_S3_LOCATION: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.client = new S3Client({
+    this.storageClient = new S3Client({
       credentials: {
         accessKeyId: configService.get('AWS_KEY_ID'),
         secretAccessKey: configService.get('AWS_SECRET_KEY'),
@@ -34,30 +34,34 @@ export class BuildContextStorageService {
   public async saveBuildContextSource(
     genResource: GenerateResource,
   ): Promise<string> {
-    const buffer = await fsPr.readFile(genResource.contextFileLocation.path);
+    try {
+      const buffer = await fsPr.readFile(genResource.contextFileLocation.path);
 
-    const zipper = new JSZip();
-    zipper.file('input-data.json', buffer);
-    const archive = await zipper.generateAsync({ type: 'uint8array' });
+      const zipper = new JSZip();
+      zipper.file('input-data.json', buffer);
+      const archive = await zipper.generateAsync({ type: 'uint8array' });
 
-    const date = new Date().toISOString().split('T')[0];
-    const key = join(
-      this.BUILD_CONTEXT_S3_LOCATION,
-      date,
-      genResource.projectId,
-      genResource.resourceId,
-      `${genResource.buildId}.zip`,
-    );
+      const date = new Date().toISOString().split('T')[0];
+      const key = join(
+        this.BUILD_CONTEXT_S3_LOCATION,
+        date,
+        genResource.projectId,
+        genResource.resourceId,
+        `${genResource.buildId}.zip`,
+      );
 
-    const uploadParams: PutObjectCommandInput = {
-      Bucket: this.BUILD_CONTEXT_S3_BUCKET,
-      Key: key,
-      Body: archive,
-    };
+      const uploadParams: PutObjectCommandInput = {
+        Bucket: this.BUILD_CONTEXT_S3_BUCKET,
+        Key: key,
+        Body: archive,
+      };
 
-    await this.client.send(new PutObjectCommand(uploadParams));
+      await this.storageClient.send(new PutObjectCommand(uploadParams));
 
-    const path = join(this.BUILD_CONTEXT_S3_BUCKET, key);
-    return path;
+      const path = join(this.BUILD_CONTEXT_S3_BUCKET, key);
+      return path;
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
