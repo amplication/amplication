@@ -11,10 +11,13 @@ if (!source) {
 if (!destination) {
   throw new Error("OUTPUT is not defined");
 }
-generateCode(source, destination).catch((error) => {
-  console.error(error);
+
+try {
+ await generateCode(source, destination);
+} catch (err) {
+  console.error(err);
   process.exit(1);
-});
+}
 
 export default async function generateCode(
   source: string,
