@@ -45,6 +45,7 @@ import { ServiceSettings } from '../serviceSettings/dto';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { DEFAULT_RESOURCE_COLORS } from './constants';
+import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
@@ -387,6 +388,10 @@ describe('ResourceService', () => {
             create: serviceSettingsCreateMock,
             createDefaultServiceSettings: serviceSettingsCreateMock
           }))
+        },
+        {
+          provide: ProjectConfigurationSettingsService,
+          useClass: jest.fn(() => ({}))
         }
       ]
     }).compile();
