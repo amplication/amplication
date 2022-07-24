@@ -37,6 +37,7 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
     currentProject,
     createProject,
     projectsList,
+    onNewProjectCompleted,
   } = useProjectSelector(authenticated, currentWorkspace);
 
   return currentWorkspace ? (
@@ -46,6 +47,7 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
         currentProject,
         projectsList,
         setNewProject: createProject,
+        onNewProjectCompleted,
         handleSetCurrentWorkspace,
       }}
     >

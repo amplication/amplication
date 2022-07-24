@@ -1,29 +1,48 @@
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
+import get from "lodash.get";
 import * as models from "../../models";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQuery";
-
-type TData = {
-  projects: models.Project[];
-};
 
 const useProjectSelector = (
   authenticated: boolean,
   currentWorkspace: models.Workspace | undefined
 ) => {
   const history = useHistory();
-  const { project } = useParams<{ project?: string; resource?: string }>();
+  const workspaceMatch: {
+    params: { workspace: string };
+  } | null = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})");
+  const projectMatch: {
+    params: { workspace: string; project: string };
+  } | null = useRouteMatch(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
+  );
+  const project = get(projectMatch, "params.project", null);
+  const workspace = get(
+    projectMatch,
+    "params.workspace",
+    workspaceMatch?.params.workspace
+  );
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
-  const [
-    getProjectList,
-    { loading: loadingList, data: projectListData },
-  ] = useLazyQuery<TData>(GET_PROJECTS, {
-    onError: (error) => {
-      // if error push to ? check with @Yuval
-    },
-  });
+
+  const { data: projectListData, loading: loadingList, refetch } = useQuery(
+    GET_PROJECTS,
+    {
+      skip: !workspace || currentWorkspace?.id !== workspace,
+      onError: (error) => {
+        // if error push to ? check with @Yuval
+      },
+    }
+  );
+
+  const projectRedirect = useCallback(
+    (projectId: string) =>
+      history.push(`/${currentWorkspace?.id || workspace}/${projectId}`),
+    [currentWorkspace?.id, history, workspace]
+  );
+
   const [setNewProject] = useMutation<models.ProjectCreateInput>(
     CREATE_PROJECT
   );
@@ -32,51 +51,41 @@ const useProjectSelector = (
     setNewProject({ variables: data });
   };
 
-  const findCurrentProject = useCallback(
-    (projects: models.Project[]) => {
-      const selectedProject = projects.reduce(
-        (selected: models.Project | null, proj: models.Project) => {
-          if (!selected && !project) selected = proj;
-
-          if (project && proj.id === project) selected = proj;
-
-          return selected;
-        },
-        null
-      );
-
-      selectedProject && setCurrentProject(selectedProject);
-      currentWorkspace &&
-        history.push(
-          `/${currentWorkspace.id}/${
-            selectedProject ? selectedProject.id : projects[0].id
-          }`
-        );
+  const onNewProjectCompleted = useCallback(
+    (data: models.Project) => {
+      refetch().then(() => projectRedirect(data.id));
     },
-    [currentWorkspace, history, project]
+    [projectRedirect, refetch]
   );
-
-  useEffect(() => {
-    if (!currentWorkspace) return;
-
-    getProjectList({
-      variables: {
-        id: currentWorkspace.id,
-      },
-    });
-  }, [currentWorkspace, getProjectList]);
 
   useEffect(() => {
     if (loadingList || !projectListData) return;
 
     setProjectList(projectListData.projects);
-    findCurrentProject(projectListData.projects);
-  }, [loadingList, projectListData, findCurrentProject]);
+  }, [projectListData, loadingList]);
+
+  useEffect(() => {
+    if (project || !projectsList.length) return;
+
+    projectRedirect(projectsList[0].id);
+  }, [history, project, projectRedirect, projectsList, workspace]);
+
+  useEffect(() => {
+    if (!project || !projectsList.length) return;
+
+    const selectedProject = projectsList.find(
+      (projectDB: models.Project) => projectDB.id === project
+    );
+    if (!selectedProject) projectRedirect(projectsList[0].id);
+    console.log('setCurrentProject')
+    setCurrentProject(selectedProject);
+  }, [project, projectRedirect, projectsList]);
 
   return {
     currentProject,
     projectsList,
     createProject,
+    onNewProjectCompleted,
   };
 };
 

@@ -7,6 +7,7 @@ export interface AppContextInterface {
   currentProject: models.Project | undefined;
   projectsList: models.Project[];
   setNewProject: (data: models.ProjectCreateInput) => void;
+  onNewProjectCompleted: (data: models.Project) => void;
 }
 
 const initialContext: AppContextInterface = {
@@ -14,7 +15,8 @@ const initialContext: AppContextInterface = {
   handleSetCurrentWorkspace: () => {},
   currentProject: undefined,
   projectsList: [],
-  setNewProject: () => {}
+  setNewProject: () => {},
+  onNewProjectCompleted: () => {}
 };
 
 export const AppContext = React.createContext<AppContextInterface>(

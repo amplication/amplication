@@ -1,16 +1,16 @@
 import { TextField, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
-import { GET_PROJECTS } from "../Workspaces/queries/projectQuery";
 import "./NewProject.scss";
 
 type CreateProjectType = models.ProjectCreateInput;
@@ -39,21 +39,22 @@ type DType = {
 };
 
 type Props = {
-  onProjectCreated: (project: models.Project) => void;
+  onProjectCreated: () => void;
 };
 
 const NewProject = ({ onProjectCreated }: Props) => {
+  const { onNewProjectCompleted } = useContext(AppContext);
   const { trackEvent } = useTracking();
   const [createProject, { error, loading }] = useMutation<DType>(
     CREATE_PROJECT,
     {
-      refetchQueries: [{ query: GET_PROJECTS }],
       onCompleted: (data) => {
         trackEvent({
           eventName: "createProject",
           projectName: data.createProject.name,
         });
-        onProjectCreated(data.createProject)
+        onProjectCreated();
+        onNewProjectCompleted(data.createProject);
       },
     }
   );

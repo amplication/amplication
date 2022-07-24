@@ -1,6 +1,5 @@
-import React, { useCallback } from "react";
-import { useHistory } from "react-router-dom";
-import { Project, Workspace } from "../models";
+import React, { useContext } from "react";
+import { AppContext } from "../context/appContext";
 import WorkspaceSelector from "../Workspaces/WorkspaceSelector";
 import AddNewProject from "./AddNewProject";
 import ProjectList from "./ProjectList";
@@ -9,20 +8,8 @@ import ProjectSideBarFooter from "./WorkspaceSettingsNavigation";
 
 const CLASS_NAME = "project-sidebar";
 
-type Props = {
-  currentWorkspace: Workspace | undefined;
-  projectsList: Project[] | null;
-};
-
-const ProjectSideBar = ({ currentWorkspace, projectsList }: Props) => {
-  const history = useHistory();
-
-  const handleProjectCreated = useCallback(
-    (project: Project) => {
-      history.push(`/${currentWorkspace?.id}/${project.id}`);
-    },
-    [currentWorkspace, history]
-  );
+const ProjectSideBar = () => {
+  const { currentWorkspace, projectsList } = useContext(AppContext);
 
   return currentWorkspace ? (
     <div className={CLASS_NAME}>
@@ -35,7 +22,7 @@ const ProjectSideBar = ({ currentWorkspace, projectsList }: Props) => {
           workspaceId={currentWorkspace?.id}
         />
       )}
-      <AddNewProject onProjectCreated={handleProjectCreated} />
+      <AddNewProject />
       <hr className={`${CLASS_NAME}__divider`} />
       <ProjectSideBarFooter />
     </div>

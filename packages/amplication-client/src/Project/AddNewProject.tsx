@@ -5,33 +5,27 @@ import {
   EnumIconPosition,
 } from "@amplication/design-system";
 import React, { useCallback, useState } from "react";
-import { Project } from "../models";
 import "./AddNewProject.scss";
 import NewProject from "./NewProject";
 
 const CLASS_NAME = "add-new-project";
 
-type Props = {
-  onProjectCreated: (project: Project) => void;
-};
-
-const AddNewProject = ({ onProjectCreated }: Props) => {
-  const [newProject, setNewProject] = useState<boolean>(false);
+const AddNewProject = () => {
+  const [projectDialogStatus, setProjectDialogStatus] = useState<boolean>(false);
 
   const handleNewProjectClick = useCallback(() => {
-    setNewProject(!newProject);
-  }, [newProject, setNewProject]);
+    setProjectDialogStatus(!projectDialogStatus);
+  }, [projectDialogStatus, setProjectDialogStatus]);
 
-  const handleProjectCreated = useCallback((data: Project) => {
-    setNewProject(false);
-    onProjectCreated(data);
-  }, [onProjectCreated, setNewProject]);
+  const handleProjectCreated = useCallback(() => {
+    setProjectDialogStatus(false);
+  }, [setProjectDialogStatus]);
 
   return (
     <>
       <Dialog
         className="new-entity-dialog"
-        isOpen={newProject}
+        isOpen={projectDialogStatus}
         onDismiss={handleNewProjectClick}
         title="New Project"
       >

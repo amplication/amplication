@@ -27,7 +27,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   const apolloClient = useApolloClient();
   const history = useHistory();
   const location = useLocation();
-  const { workspace } = useParams<{ workspace?: string }>();
+  const { workspace } = useParams<{ workspace?: string }>()
   const [currentWorkspace, setCurrentWorkspace] = useState<models.Workspace>();
   const [getCurrentWorkspace, { loading, data }] = useLazyQuery<TData>(
     GET_CURRENT_WORKSPACE,
