@@ -13,13 +13,7 @@ export class CodeBuildService {
   private readonly projectName: string;
 
   constructor(private readonly configService: ConfigService) {
-    //TODO: Provide credentials
-    this.codeBuildClient = new CodeBuildClient({
-      // credentials: {
-      //   accessKeyId: configService.get('AWS_KEY_ID'),
-      //   secretAccessKey: configService.get('AWS_SECRET_KEY'),
-      // },
-    });
+    this.codeBuildClient = new CodeBuildClient({});
     this.projectName = this.configService.get<string>(CODE_BUILD_PROJECT_NAME);
   }
 

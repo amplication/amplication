@@ -13,7 +13,6 @@ import { join } from 'path';
 @Injectable()
 export class BuildContextStorageService {
   private readonly client: S3Client;
-
   private readonly BUILD_CONTEXT_S3_BUCKET: string;
   private readonly BUILD_CONTEXT_S3_LOCATION: string;
 
@@ -24,7 +23,6 @@ export class BuildContextStorageService {
         secretAccessKey: configService.get('AWS_SECRET_KEY'),
       },
     });
-
     this.BUILD_CONTEXT_S3_BUCKET = this.configService.get<string>(
       'BUILD_CONTEXT_S3_BUCKET',
     );
