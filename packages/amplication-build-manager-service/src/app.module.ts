@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,18 +9,24 @@ import { CodeBuildModule } from './codeBuild/codeBuild.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
-        name: 'MAIN_KAFKA',
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            brokers: ['localhost:9092'],
-          },
-          consumer: {
-            //TODO: Expose groupId via env
-            groupId: 'code-gem-manager-consumer',
-          },
+        name: 'kafkaModule',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: async (configService: ConfigService) => {
+          return {
+            name: 'MAIN_KAFKA',
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                brokers: configService.get<string[]>('KAFKA_BROKERS'),
+              },
+              consumer: {
+                groupId: configService.get<string>('KAFKA_GROUP_ID'),
+              },
+            },
+          };
         },
       },
     ]),
