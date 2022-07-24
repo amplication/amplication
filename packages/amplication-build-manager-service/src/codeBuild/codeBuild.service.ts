@@ -18,15 +18,15 @@ export class CodeBuildService {
   }
 
   async runBuild(contextArchivePath: string) {
-    const sbci: StartBuildCommandInput = {
+    const input: StartBuildCommandInput = {
       projectName: this.projectName,
       sourceLocationOverride: contextArchivePath,
     };
 
-    const sbc = new StartBuildCommand(sbci);
+    const command = new StartBuildCommand(input);
 
     try {
-      await this.codeBuildClient.send(sbc);
+      await this.codeBuildClient.send(command);
     } catch (err) {
       console.log(err);
     }
