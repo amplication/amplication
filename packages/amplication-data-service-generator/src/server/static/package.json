@@ -1,6 +1,6 @@
 {
   "name": "server-template",
-  "version": "0.14.5",
+  "version": "0.14.6",
   "private": true,
   "scripts": {
     "start": "nest start",
@@ -29,7 +29,7 @@
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
     "@nestjs/swagger": "5.1.5",
-    "@prisma/client": "3.6.0",
+    "@prisma/client": "3.15.2",
     "apollo-server-express": "3.6.1",
     "bcrypt": "5.0.1",
     "class-transformer": "0.5.1",
@@ -50,7 +50,6 @@
   "devDependencies": {
     "@nestjs/cli": "8.2.5",
     "@nestjs/testing": "8.2.3",
-    "@prisma/client": "3.15.2",
     "@types/bcrypt": "5.0.0",
     "@types/express": "4.17.9",
     "@types/graphql-type-json": "0.3.2",
