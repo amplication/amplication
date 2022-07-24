@@ -3,9 +3,16 @@ import { FindOneArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { User } from 'src/models';
 import { BlockService } from '../block/block.service';
+import { BlockValuesExtended } from '../block/types';
 import { ProjectConfigurationSettings } from './dto/ProjectConfigurationSettings';
 import { UpdateProjectConfigurationSettingsArgs } from './dto/UpdateProjectConfigurationSettingsArgs';
 
+const DEFAULT_PROJECT_CONFIGURATION_SETTINGS: BlockValuesExtended<ProjectConfigurationSettings> = {
+  baseDirectory: '/',
+  blockType: EnumBlockType.ProjectConfigurationSettings,
+  description: '',
+  displayName: 'Project Configuration Settings'
+};
 @Injectable()
 export class ProjectConfigurationSettingsService {
   @Inject()
@@ -25,8 +32,7 @@ export class ProjectConfigurationSettingsService {
               id: resourceId
             }
           },
-          blockType: EnumBlockType.ProjectConfigurationSettings,
-          displayName: 'Project Configuration Settings'
+          ...DEFAULT_PROJECT_CONFIGURATION_SETTINGS
         }
       },
       userId
