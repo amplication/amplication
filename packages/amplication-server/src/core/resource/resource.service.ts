@@ -65,24 +65,19 @@ export class ResourceService {
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService
   ) {}
 
-  private async assertFirstProjectConfiguration(
-    projectId: string
-  ): Promise<void> {
-    const projectConfiguration = await this.prisma.resource.findFirst({
-      where: { projectId, resourceType: EnumResourceType.ProjectConfiguration }
-    });
-    if (!isEmpty(projectConfiguration)) {
-      throw new ProjectConfigurationExistError();
-    }
-    return;
-  }
-
   async createProjectConfiguration(
     projectId: string,
     userId: string
   ): Promise<Resource> {
-    await this.assertFirstProjectConfiguration(projectId);
-    const resource = await this.prisma.resource.create({
+    const existingProjectConfiguration = await this.prisma.resource.findFirst({
+      where: { projectId, resourceType: EnumResourceType.ProjectConfiguration }
+    });
+
+    if (!isEmpty(existingProjectConfiguration)) {
+      throw new ProjectConfigurationExistError();
+    }
+
+    const newProjectConfiguration = await this.prisma.resource.create({
       data: {
         color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
         resourceType: EnumResourceType.ProjectConfiguration,
@@ -91,8 +86,11 @@ export class ResourceService {
         project: { connect: { id: projectId } }
       }
     });
-    await this.projectConfigurationSettingsService.create(resource.id, userId);
-    return resource;
+    await this.projectConfigurationSettingsService.create(
+      newProjectConfiguration.id,
+      userId
+    );
+    return newProjectConfiguration;
   }
 
   /**
