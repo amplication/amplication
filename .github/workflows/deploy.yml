@@ -154,8 +154,6 @@ jobs:
         run: |
           kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
           kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
-          kubectl delete service amplication-git-pull-service -n $NAMESPACE --ignore-not-found
-          kubectl delete service amplication-git-pull-request-service -n $NAMESPACE --ignore-not-found
       - name: deploy app
         id: deploy-app
         run: |
@@ -176,13 +174,13 @@ jobs:
           $COMMAND
 
           #argocd create app
-          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS --upsert --sync-option Prune=true"
+          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS --upsert --sync-policy automated --auto-prune --self-heal"
           COMMAND=$(echo $COMMAND|tr -d '\n')
           echo "$COMMAND"
           $COMMAND
 
           #argocd sync app
-          COMMAND="argocd app sync $APP_NAME"
+          COMMAND="argocd app sync $APP_NAME --prune"
           echo "$COMMAND"
           $COMMAND
 
