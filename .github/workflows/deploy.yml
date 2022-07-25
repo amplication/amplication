@@ -154,8 +154,6 @@ jobs:
         run: |
           kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
           kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
-          kubectl delete service amplication-git-pull-service -n $NAMESPACE --ignore-not-found
-          kubectl delete service amplication-git-pull-request-service -n $NAMESPACE --ignore-not-found
       - name: deploy app
         id: deploy-app
         run: |
