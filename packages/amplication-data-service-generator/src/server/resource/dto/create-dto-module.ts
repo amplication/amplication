@@ -1,7 +1,7 @@
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
 import { DeclarationKind } from "ast-types/gen/kinds";
-import { Module } from "../../../types";
+import { Module } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 import {
   addAutoGenerationComment,
