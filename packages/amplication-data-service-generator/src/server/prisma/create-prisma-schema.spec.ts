@@ -8,7 +8,7 @@ import {
   NOW_CALL_EXPRESSION,
   createRelationName,
 } from "./create-prisma-schema";
-import { Entity, EntityField, EnumDataType } from "../../types";
+import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -148,7 +148,7 @@ model ${EXAMPLE_ENTITY_NAME} {
 
 model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
   ${EXAMPLE_LOOKUP_FIELD_NAME}   ${EXAMPLE_ENTITY_NAME} @relation(fields: [${EXAMPLE_LOOKUP_FIELD_NAME}Id], references: [id])
-  ${EXAMPLE_LOOKUP_FIELD_NAME}Id String
+  ${EXAMPLE_LOOKUP_FIELD_NAME}Id String            @unique
 }`,
     ],
   ];

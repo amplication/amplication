@@ -3,7 +3,7 @@ import * as fs from "fs";
 import entities from "../src/tests/entities";
 import roles from "../src/tests/roles";
 import { appInfo } from "../src/tests/appInfo";
-import { AppInfo, Module } from "../src/types";
+import { AppInfo, Module } from "@amplication/code-gen-types";
 import { createDataService } from "../src/create-data-service";
 
 if (require.main === module) {

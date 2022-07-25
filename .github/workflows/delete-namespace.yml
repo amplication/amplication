@@ -23,9 +23,9 @@ jobs:
           chmod +x /usr/local/bin/argocd
       - name: argocd login
         env: 
-          ARGO_CD_PASSWORD: ${{ secrets.AWS_STAGING_OS_ARGOCD }}
+          ARGO_CD_PASSWORD: ${{ secrets.AWS_STAGING_ARGOCD }}
         run: |
-          ARGO_CD_URL="argocd.staging-os.amplication-dev.com"
+          ARGO_CD_URL="argocd.staging.amplication-dev.com"
           argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web
       - name: delete namespace
         env:

@@ -1,6 +1,6 @@
 import { builders } from "ast-types";
 import { print } from "recast";
-import { Entity } from "../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_NON_SEARCHABLE_SINGLE_LINE_TEXT_FIELD,

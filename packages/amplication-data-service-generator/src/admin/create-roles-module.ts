@@ -1,4 +1,4 @@
-import { Module, Role } from "../types";
+import { Module, Role } from "@amplication/code-gen-types";
 
 export function createRolesModule(roles: Role[], srcDirectory: string): Module {
   return {

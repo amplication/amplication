@@ -5,7 +5,7 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
-} from "../../../types";
+} from "@amplication/code-gen-types";
 import {
   addImports,
   importContainedIdentifiers,

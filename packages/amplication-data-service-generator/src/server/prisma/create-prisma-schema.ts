@@ -1,14 +1,15 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
-import { types } from "@amplication/data";
-import { countBy } from "lodash";
 import {
+  types,
   Entity,
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
-} from "../../types";
+} from "@amplication/code-gen-types";
+import { countBy } from "lodash";
+
 import { getEnumFields } from "../../util/entity";
 
 export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
@@ -217,7 +218,7 @@ export function createPrismaFields(
             name,
             relatedEntity.name,
             !isOneToOneWithoutForeignKey,
-            true,
+            allowMultipleSelection || false,
             relationName
           ),
         ];
@@ -243,7 +244,11 @@ export function createPrismaFields(
           PrismaSchemaDSL.ScalarType.String,
           false,
           field.required,
-          field.unique
+          !field.properties.allowMultipleSelection &&
+            !relatedField?.properties.allowMultipleSelection &&
+            !isOneToOneWithoutForeignKey
+            ? true
+            : field.unique
         ),
       ];
     }

@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { ExpressionKind } from "ast-types/gen/kinds";
-import { Entity } from "../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { NamedClassDeclaration } from "../../../util/ast";
 import { isOneToOneRelationField } from "../../../util/field";
 

@@ -23,8 +23,6 @@ amplication-client:
 amplication-server:
   ingress:
     hostname: server-alex.amplication-dev.com
-  pvc:
-    name: alex-efs-claim
   config:
     env:
 
@@ -53,8 +51,6 @@ amplication-git-push-webhook-service:
 
 
 amplication-git-pull-service:
-  pvc:
-    name: alex-efs-claim
   config:
     env:
     #GitHub App
@@ -65,8 +61,6 @@ amplication-git-pull-service:
 
 
 amplication-git-pull-request-service:
-  pvc:
-    name: alex-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
@@ -76,24 +70,7 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   ingress:
     hostname: server-alex.amplication-dev.com
-  pvc:
-    name: alex-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
       GITHUB_APP_APP_ID: "217654"
-
-
-cp-helm-charts:
-  enabled: true
-  cp-kafka:
-    enabled: true
-  cp-zookeeper:
-    enabled: true
-
-
-postgres:
-  primary:
-    service:
-      annotations:
-        external-dns.alpha.kubernetes.io/hostname: postgres-alex.amplication-dev.com

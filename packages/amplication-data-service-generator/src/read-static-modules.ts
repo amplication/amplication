@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import normalize from "normalize-path";
 import fg from "fast-glob";
-import { Module } from "./types";
+import { Module } from "@amplication/code-gen-types";
 
 /**
  * Reads files from given source directory and maps them to module objects with
