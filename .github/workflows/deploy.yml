@@ -176,7 +176,7 @@ jobs:
           $COMMAND
 
           #argocd create app
-          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS --upsert --auto-prune --self-heal"
+          COMMAND="argocd app create $APP_NAME --project default --dest-namespace $NAMESPACE --path helm/charts/amplication  --dest-server https://kubernetes.default.svc --repo $REPO_URL --revision $GITHUB_REF_NAME --values $COMMONM_VALUES_FILE --values $ENV_VALUES_FILE $VERSIONS --upsert --sync-policy automated --auto-prune --self-heal"
           COMMAND=$(echo $COMMAND|tr -d '\n')
           echo "$COMMAND"
           $COMMAND
