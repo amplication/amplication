@@ -18,7 +18,7 @@ do
         echo "This branch name doesn't exist in the repository - $REPO_NAME"
         echo "::set-output name=image_exist::false"
     else
-        echo "tag already exist in the repository - $REPO_NAME"
+        echo "tag already exists in the repository - $REPO_NAME"
         echo "::set-output name=image_exist::true"
     fi
 done
