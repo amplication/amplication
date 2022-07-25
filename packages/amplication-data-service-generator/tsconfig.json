@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "module": "es2022",
-    "moduleResolution": "node",
+    "module": "commonjs",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

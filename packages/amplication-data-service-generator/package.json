@@ -16,7 +16,6 @@
     "test:watch": "jest --watch",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
     "generate-test-data-service": "ts-node scripts/generate-test-data-service.ts generated",
-    "generate-code": "node ./dist/index.js",
     "update-test-data-service-snapshot": "jest -u src/tests/*.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {

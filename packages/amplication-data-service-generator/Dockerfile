@@ -1,32 +1,24 @@
-ARG ALPINE_VERSION=alpine3.14
-ARG NODE_VERSION=16.13.1
+# Use node 14.15.3 as the base image
+FROM node@sha256:bac289a6f393990e759c672d5f567553c697255d1fb858e2c62d086a2dfae44a AS node
+FROM node
 
+# Hide Open Collective message from install logs
+ENV OPENCOLLECTIVE_HIDE=1
+# Hiden NPM security message from install logs
+ENV NPM_CONFIG_AUDIT=false
+# Hide NPM funding message from install logs
+ENV NPM_CONFIG_FUND=false
 
-FROM node:$NODE_VERSION-$ALPINE_VERSION AS builder
+# Update npm to version 7
+RUN npm i -g npm@7.3.0
 
-COPY ./ /app
-
+# Set the working directory
 WORKDIR /app
 
-RUN npm ci
+# Copy files specifying dependencies
+COPY src/server/static/package.json src/server/static/package-lock.json ./server/
+COPY src/admin/static/package.json src/admin/static/package-lock.json ./admin/
 
-RUN npm run bootstrap -- --scope @amplication/data-service-generator --include-dependencies
-
-RUN npm run build -- --scope @amplication/data-service-generator --include-dependencies
-
-RUN npm run clean -- --yes
-# Rebuild production node_modules
-RUN npm run bootstrap -- -- --production --scope @amplication/data-service-generator --include-dependencies
-
-FROM node:$NODE_VERSION-$ALPINE_VERSION as runner
-WORKDIR /app
-
-COPY --from=builder /app/packages/amplication-data-service-generator/package.json /app/packages/amplication-data-service-generator/package.json
-COPY --from=builder /app/packages/amplication-data-service-generator/node_modules /app/packages/amplication-data-service-generator/node_modules
-COPY --from=builder /app/packages/amplication-data-service-generator/dist /app/packages/amplication-data-service-generator/dist
-
-
-COPY --from=builder /app/packages/amplication-data/package.json /app/packages/amplication-data/package.json
-COPY --from=builder /app/packages/amplication-data/node_modules /app/packages/amplication-data/node_modules
-COPY --from=builder /app/packages/amplication-data/dist /app/packages/amplication-data/dist
-
+# Install dependencies
+RUN cd server; npm ci --silent;
+RUN cd admin; npm ci --silent;
