@@ -1,15 +1,16 @@
 import { EnvironmentVariables } from '@amplication/kafka';
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
-import { CodeBuildService } from './codeBuild/codeBuild.service';
+import { BuildService } from './codeBuild/build.service';
+import { CODE_BUILD_SERVICE } from './codeBuild/codeBuild.module';
 import { GenerateResource } from './codeBuild/dto/GenerateResource';
 import { GENERATE_RESOURCE_TOPIC } from './constants';
 
 @Controller()
 export class AppController {
   constructor(
-    private readonly codeBuildService: CodeBuildService,
+    @Inject(CODE_BUILD_SERVICE) private readonly buildService: BuildService,
     private readonly buildContextStorage: BuildContextStorageService,
   ) {}
 
@@ -19,6 +20,6 @@ export class AppController {
   async receiveCodeGenRequest(@Payload() message: any) {
     const gr: GenerateResource = message.value;
     const path = await this.buildContextStorage.saveBuildContextSource(gr);
-    await this.codeBuildService.runBuild(path);
+    await this.buildService.runBuild(path);
   }
 }

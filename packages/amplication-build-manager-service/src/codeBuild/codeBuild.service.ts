@@ -6,9 +6,10 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CODE_BUILD_PROJECT_NAME } from 'src/constants';
+import { BuildService } from './build.service';
 
 @Injectable()
-export class CodeBuildService {
+export class CodeBuildService implements BuildService {
   private readonly codeBuildClient: CodeBuildClient;
   private readonly projectName: string;
 
