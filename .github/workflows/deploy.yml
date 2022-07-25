@@ -179,10 +179,10 @@ jobs:
           echo "$COMMAND"
           $COMMAND
 
-          # #argocd sync app
-          # COMMAND="argocd app sync $APP_NAME"
-          # echo "$COMMAND"
-          # $COMMAND
+          #argocd sync app
+          COMMAND="argocd app sync $APP_NAME --prune"
+          echo "$COMMAND"
+          $COMMAND
 
         env:
           ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
