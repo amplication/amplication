@@ -18,8 +18,12 @@ export class AppController {
     EnvironmentVariables.instance.get(GENERATE_RESOURCE_TOPIC, true),
   )
   async receiveCodeGenRequest(@Payload() message: any) {
-    const gr: GenerateResource = message.value;
-    const path = await this.buildContextStorage.saveBuildContextSource(gr);
-    await this.buildService.runBuild(path);
+    try {
+      const gr: GenerateResource = message.value;
+      const path = await this.buildContextStorage.saveBuildContextSource(gr);
+      await this.buildService.runBuild(path);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

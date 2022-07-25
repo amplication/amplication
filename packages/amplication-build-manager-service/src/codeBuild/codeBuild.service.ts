@@ -29,7 +29,7 @@ export class CodeBuildService implements BuildService {
     try {
       await this.codeBuildClient.send(command);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 }
