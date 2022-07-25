@@ -3,7 +3,16 @@ global:
     name: prod-efs-claim
   pv:
     name: efs-pv-prod
-    handle: fs-0d4fb7d4e763c5fd0::fsap-07aa4780aac8b22d3
+    handle: fs-0d4fb7d4e763c5fd0::fsap-0ed941c62eddef61c
+
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
+    enabled: false
+  cp-zookeeper:
+    enabled: false
+postgres:
+  install: false
 
 amplication-client:
   service:
@@ -110,12 +119,15 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  pvc:
+    name: prod-efs-claim
   config:
     env:
       #KAFKA
       KAFKA_BROKERS: '["b-1.amplicationuseast1pro.sb17jm.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1pro.sb17jm.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
@@ -136,12 +148,3 @@ amplication-storage-gateway:
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
-
-cp-helm-charts:
-  enabled: false
-  cp-kafka:
-    enabled: false
-  cp-zookeeper:
-    enabled: false
-postgres:
-  install: false

@@ -5,6 +5,15 @@ global:
     name: efs-pv-staging
     handle: fs-0a87872138ddc7f6d::fsap-0369ff368700f58c3
 
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
+    enabled: false
+  cp-zookeeper:
+    enabled: false
+postgres:
+  install: false
+
 amplication-client:
   service:
     hostname: app.staging.amplication-dev.com
@@ -72,6 +81,7 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
       GITHUB_APP_APP_ID: "174833"
       GITHUB_APP_CLIENT_ID: "Iv1.e0d76b0ce191a528"
+
 amplication-git-pull-service:
   config:
     env:
@@ -110,12 +120,3 @@ amplication-storage-gateway:
     env:
       KAFKA_BROKERS: '["b-1.amplicationuseast1sta.9134yb.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1sta.9134yb.c22.kafka.us-east-1.amazonaws.com:9092"]'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-      
-cp-helm-charts:
-  enabled: false
-  cp-kafka:
-    enabled: false
-  cp-zookeeper:
-    enabled: false
-postgres:
-  install: false
