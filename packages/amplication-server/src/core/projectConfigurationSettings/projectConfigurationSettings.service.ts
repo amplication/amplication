@@ -32,7 +32,7 @@ export class ProjectConfigurationSettingsService {
     const existingProjectConfigurationSettings = await this.findOne({
       where: { id: resourceId }
     });
-    
+
     if (!isEmpty(existingProjectConfigurationSettings)) {
       throw new ProjectConfigurationSettingsExistError();
     }
