@@ -23,6 +23,7 @@ on:
 jobs:
   validate-image:
       runs-on: ubuntu-18.04
+      if: github.event.inputs.target-env == github.event.inputs.confirm-env
       outputs: 
         valid_image: ${{ steps.check-image.outputs.image_exist }}
       steps:  
@@ -45,7 +46,7 @@ jobs:
   prepare:
     runs-on: ubuntu-18.04
     needs: [validate-image]
-    if: (needs.validate-image.outputs.image_exist == 'true' && github.event.inputs.target-env == github.event.inputs.confirm-env)
+    if: ${{ needs.validate-image.outputs.image_exist == 'true' }}
     outputs:
       ARGOCD: ${{ steps.create-secret-names.outputs.ARGOCD }}
     steps:
