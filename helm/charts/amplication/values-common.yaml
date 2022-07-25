@@ -69,7 +69,6 @@ postgres:
 amplication-client:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-client
-    tag: "release-0-14-1" # Need to change for dev.
   service:
     hostname: app-dev.staging.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
@@ -82,7 +81,6 @@ amplication-client:
 amplication-server:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-server
-    tag: "release-0-14-1"
   ingress:
     enabled: true
     hostname: server.staging.amplication-dev.com
@@ -138,7 +136,6 @@ amplication-server:
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
-    tag: "release-0-14-1"
   ingress:
     enabled: true
     hostname: webhook.staging.amplication-dev.com
@@ -153,7 +150,6 @@ amplication-git-push-webhook-service:
 amplication-git-pull-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service
-    tag: "release-0-14-1"
   config:
     env:
       NODE_ENV: "production"
@@ -176,7 +172,6 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
-    tag: "release-0-14-1"
   config:
     env:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
@@ -189,7 +184,6 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
-    tag: "release-0-14-1"
   ingress:
     hostname: server.staging.amplication-dev.com
   config:
