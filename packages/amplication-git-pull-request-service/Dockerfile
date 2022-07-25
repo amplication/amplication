@@ -1,7 +1,7 @@
-ARG ALPINE_VERSION=alpine3.14
-ARG NODE_VERSION=16.13.1
- 
-FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
+ARG NODE_VERSION=16.16-alpine
+
+FROM node:$NODE_VERSION AS base
+
 ARG NPM_VERSION=8.1.2
 ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
@@ -15,6 +15,7 @@ COPY package*.json /app/
 RUN npm ci --production
 
 FROM base AS build
+
 WORKDIR /app
 # Copy amplication/git-pull-request-service and the its dependent packages
 COPY packages/amplication-git-pull-request-service packages/amplication-git-pull-request-service

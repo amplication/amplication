@@ -3,9 +3,10 @@ import {
   EnumDataType,
   EnumEntityPermissionType,
   EnumEntityAction,
-} from "../types";
+} from "@amplication/code-gen-types";
 
 const CUSTOMER_ENTITY_ID = "b8d49afb-8c12-49fa-9d6e-eb64be0ddded";
+const PROFILE_ENTITY_ID = "f36aa4e3-d275-41d0-843a-876ec66bc2f7";
 const CUSTOMER_ORDERS_FIELD_ID = "a766a160-506c-4212-9e5e-8ecd1d530eb4";
 const CUSTOMER_ORGANIZATION_FIELD_ID = "e4ea7c84-e998-482e-8bd2-34657a3ff23c";
 const CUSTOMER_VIP_ORGANIZATION_FIELD_ID =
@@ -22,6 +23,9 @@ const USER_ORGANIZATION_FIELD_ID = "ae21f2fb-9174-49de-9576-632d859a5dd1";
 
 const USER_MANAGER_FIELD_ID = "9bb55fcc-1c3a-4b99-8bcf-6ea85d052c3d";
 const USER_EMPLOYEES_FIELD_ID = "7bb3d5c1-f5b9-4fa4-8087-87f0c549d5f2";
+
+const USER_PROFILE_FIELD_ID = "118e407b-30f7-48da-af9c-de1393548b4c";
+const PROFILE_USER_FIELD_ID = "42d31012-6164-472a-92d0-a8f5dc0486d4";
 
 const USER: Entity = {
   id: USER_ID,
@@ -210,6 +214,124 @@ const USER: Entity = {
       unique: false,
       searchable: true,
       dataType: EnumDataType.Json,
+    },
+    // check 1:1 relation
+    {
+      id: "b227bd7a-2fe5-47f8-8f3e-29a2c26111b7",
+      permanentId: USER_PROFILE_FIELD_ID,
+      name: "profile",
+      displayName: "Profile",
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: PROFILE_ENTITY_ID,
+        relatedFieldId: PROFILE_USER_FIELD_ID,
+        allowMultipleSelection: false,
+      },
+      required: false,
+      unique: false,
+      searchable: true,
+    },
+  ],
+  permissions: [
+    {
+      action: EnumEntityAction.Create,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Delete,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Search,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Update,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.View,
+      permissionFields: [],
+      permissionRoles: [],
+      type: EnumEntityPermissionType.AllRoles,
+    },
+  ],
+};
+
+const PROFILE: Entity = {
+  id: PROFILE_ENTITY_ID,
+  name: "Profile",
+  displayName: "Profile",
+  pluralDisplayName: "Profiles",
+  pluralName: "profiles",
+  fields: [
+    {
+      id: "fbf703ef-c844-4ccc-9e0b-519bb5865dd4",
+      permanentId: "34306463-d040-40cf-8027-732256a2f09a",
+      name: "id",
+      displayName: "Id",
+      dataType: EnumDataType.Id,
+      properties: {},
+      required: true,
+      unique: false,
+      searchable: true,
+    },
+    {
+      id: "9fb9d3a7-dbb9-446d-86c6-64288f155376",
+      permanentId: "0f95129d-21bc-4356-b654-06bb6bc716d9",
+      name: "createdAt",
+      displayName: "Created At",
+      dataType: EnumDataType.CreatedAt,
+      properties: {},
+      required: true,
+      unique: false,
+      searchable: true,
+    },
+    {
+      id: "6c373d03-3e01-4b49-9a24-abae9a019acb",
+      permanentId: "540c2056-7b17-4d9f-b880-d151f3d09e36",
+      name: "updatedAt",
+      displayName: "Updated At",
+      dataType: EnumDataType.UpdatedAt,
+      properties: {},
+      required: true,
+      unique: false,
+      searchable: true,
+    },
+    {
+      id: "73ae2f7e-be53-4ad1-9e0a-e67b4813f152",
+      permanentId: "50068313-7da1-406a-a6d0-99600ef0291a",
+      name: "email",
+      displayName: "Email",
+      dataType: EnumDataType.Email,
+      properties: {},
+      required: true,
+      unique: false,
+      searchable: true,
+    },
+    // check 1:1 relation
+    {
+      id: "c98933ba-1fbb-46b3-9460-07328bc3b08b",
+      permanentId: PROFILE_USER_FIELD_ID,
+      name: "user",
+      displayName: "User",
+      dataType: EnumDataType.Lookup,
+      properties: {
+        relatedEntityId: USER_ID,
+        relatedFieldId: USER_PROFILE_FIELD_ID,
+        allowMultipleSelection: false,
+      },
+      required: false,
+      unique: false,
+      searchable: true,
     },
   ],
   permissions: [
@@ -877,6 +999,13 @@ const EMPTY: Entity = {
   ],
 };
 
-const entities: Entity[] = [USER, ORDER, ORGANIZATION, CUSTOMER, EMPTY];
+const entities: Entity[] = [
+  USER,
+  PROFILE,
+  ORDER,
+  ORGANIZATION,
+  CUSTOMER,
+  EMPTY,
+];
 
 export default entities;

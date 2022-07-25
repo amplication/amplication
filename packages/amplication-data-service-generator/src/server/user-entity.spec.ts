@@ -1,4 +1,4 @@
-import { EntityField, EnumDataType } from "../types";
+import { EntityField, EnumDataType } from "@amplication/code-gen-types";
 import {
   getMissingAuthFields,
   InvalidDataTypeError,

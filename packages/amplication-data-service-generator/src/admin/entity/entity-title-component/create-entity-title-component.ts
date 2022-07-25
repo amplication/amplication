@@ -1,6 +1,6 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity, EnumDataType } from "../../../types";
+import { Entity, EnumDataType } from "@amplication/code-gen-types";
 import { addImports, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { DTOs } from "../../../server/resource/create-dtos";

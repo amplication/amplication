@@ -1,5 +1,5 @@
 import { builders } from "ast-types";
-import { Entity } from "../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { createCreateInput } from "../dto/create-create-input";
 import { EXAMPLE_ID_FIELD, EXAMPLE_LOOKUP_FIELD } from "../util/test-data";
 import { CONNECT_ID, createDataMapping } from "./create-data-mapping";

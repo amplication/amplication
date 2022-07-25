@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { Entity, EntityField } from "../../../types";
+import { Entity, EntityField } from "@amplication/code-gen-types";
 import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";

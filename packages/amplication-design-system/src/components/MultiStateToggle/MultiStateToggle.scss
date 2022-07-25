@@ -27,10 +27,6 @@
       outline: none;
       cursor: pointer;
 
-      &:hover {
-        background-color: var(--black5);
-      }
-
       &__text__primary-action:focus {
         outline: none;
       }

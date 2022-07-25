@@ -1,13 +1,13 @@
-# Amplication Data
+# Amplication Code gen types
 
-Amplication data is the component that defines the shared data structures used by the amplication packages.
+Amplication Code gen types is the component that defines the shared data structures used by the amplication packages.
 
 ## Usage
 
 ### Get properties schema for entity field data type
 
 ```typescript
-import { getSchemaForDataType } from "@amplication/data";
+import { getSchemaForDataType } from "@amplication/code-gen-types";
 
 getSchemaForDataType(EnumDataType.SingleLineText);
 ```
@@ -15,7 +15,7 @@ getSchemaForDataType(EnumDataType.SingleLineText);
 ### Get type of data type properties
 
 ```typescript
-import { types } from "@amplication/data";
+import { types } from "@amplication/code-gen-types";
 
 const lookupProperties: types.Lookup = {
   relatedEntityId: "exampleId",
@@ -60,7 +60,7 @@ After cloning the repository open its root directory and run the following comma
   ```
 - Build the Data package:
   ```
-  npm run build -- --scope @amplication/data
+  npm run build -- --scope @amplication/code-gen-types
   ```
 
 ### Workflow

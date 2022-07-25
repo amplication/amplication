@@ -91,8 +91,8 @@ export class GitService {
     commitName: string,
     commitMessage: string,
     commitDescription: string,
-    baseBranchName: string,
-    installationId: string
+    installationId: string,
+    baseBranchName?: string
   ): Promise<string> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.createPullRequest(
