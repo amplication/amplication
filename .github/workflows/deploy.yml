@@ -149,13 +149,11 @@ jobs:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
           SECRETS_FILE_PATH: helm/charts/amplication/values-secrets-raw.json
           SECRETS_TEMPLATE_FILE_PATH: .github/workflows/scripts/secret_template.yaml
-      - name: delete unused job
-        id: delete-job
-        run: |
-          kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
-          kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
-          kubectl delete service amplication-git-pull-service -n $NAMESPACE --ignore-not-found
-          kubectl delete service amplication-git-pull-request-service -n $NAMESPACE --ignore-not-found
+      # - name: delete unused job
+      #   id: delete-job
+      #   run: |
+      #     kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
+      #     kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
       - name: deploy app
         id: deploy-app
         run: |
