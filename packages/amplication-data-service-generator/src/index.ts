@@ -12,7 +12,7 @@ if (!destination) {
   throw new Error("OUTPUT is not defined");
 }
 
-generateCode(source, destination).catch(err => {
+generateCode(source, destination).catch((err) => {
   console.error(err);
   process.exit(1);
 });
