@@ -1,6 +1,6 @@
-# Use node 14.15.3 as the base image
-FROM node@sha256:bac289a6f393990e759c672d5f567553c697255d1fb858e2c62d086a2dfae44a AS node
-FROM node
+ARG NODE_VERSION=16.16-alpine
+
+FROM node:$NODE_VERSION
 
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
