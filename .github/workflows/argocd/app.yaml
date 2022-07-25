@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: APP_NAME_PLACE_HOLER
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-options: Prune=false
 spec:
   project: default
   source:
@@ -19,3 +17,5 @@ spec:
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
