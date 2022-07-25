@@ -5,7 +5,7 @@ import { WorkerParam, WorkerResult } from "./types";
 import { createWorkerLogger } from "./util/worker-logging";
 
 parentPort?.once("message", (params: WorkerParam) => {
-  const { entities, roles, appInfo } = params;
+  const { entities, roles, serviceInfo } = params;
 
   const loggerCallback = (message: string) => {
     const messageData: WorkerResult = {
@@ -17,7 +17,7 @@ parentPort?.once("message", (params: WorkerParam) => {
 
   const logger = createWorkerLogger(loggerCallback);
 
-  createDataServiceImpl(entities, roles, appInfo, logger)
+  createDataServiceImpl(entities, roles, serviceInfo, logger)
     .then((modules) => {
       const results: WorkerResult = {
         done: true,
