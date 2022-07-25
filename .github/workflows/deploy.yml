@@ -46,7 +46,7 @@ jobs:
   prepare:
     runs-on: ubuntu-18.04
     needs: [validate-image]
-    if: ${{ needs.validate-image.outputs.image_exist == 'true' }}
+    if: ${{ needs.validate-image.outputs.valid_image == 'true' }}
     outputs:
       ARGOCD: ${{ steps.create-secret-names.outputs.ARGOCD }}
     steps:
