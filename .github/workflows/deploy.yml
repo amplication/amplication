@@ -180,7 +180,7 @@ jobs:
           $COMMAND
 
           #argocd sync app
-          COMMAND="argocd app sync $APP_NAME --prune"
+          COMMAND="argocd app sync $APP_NAME"
           echo "$COMMAND"
           $COMMAND
 
