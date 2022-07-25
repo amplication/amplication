@@ -191,7 +191,7 @@ describe('BlockService', () => {
           ...EXAMPLE_BLOCK_SETTINGS
         }
       },
-      EXAMPLE_USER
+      EXAMPLE_USER.id
     );
     expect(result).toEqual(EXAMPLE_IBLOCK);
     expect(prismaBlockVersionCreateMock).toHaveBeenCalledTimes(1);
