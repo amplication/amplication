@@ -1,9 +1,7 @@
 import {
   Button,
-  CircleBadge,
   EnumButtonStyle,
   EnumIconPosition,
-  Icon,
   Snackbar,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
@@ -21,6 +19,7 @@ import { GET_RESOURCES } from "../../Workspaces/ResourceList";
 import { createResource, serviceSettingsFieldsInitValues } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
+import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 
 type Props = {
   match: match<{
@@ -39,6 +38,8 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
   );
+
+  console.log("create service wizard");
 
   const { trackEvent } = useTracking();
   const history = useHistory();
@@ -141,13 +142,12 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
         <div className={`${moduleClass}__splitWrapper`}>
           <div className={`${moduleClass}__left`}>
             <div className={`${moduleClass}__description`}>
-              <CircleBadge name={""} size="medium" color="#A787FF">
-                <Icon icon="services" size="medium" />
-              </CircleBadge>
+              <ResourceCircleBadge type="service" />
               <h3>Amplication Resource Creation Wizard</h3>
               <h2>Let’s start building your app</h2>
               <h3>
-              Select which components to include in your app and whether to use sample entities
+                Select which components to include in your app and whether to
+                use sample entities
               </h3>
             </div>
           </div>
