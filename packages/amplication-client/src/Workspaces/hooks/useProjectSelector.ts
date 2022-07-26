@@ -77,7 +77,7 @@ const useProjectSelector = (
       (projectDB: models.Project) => projectDB.id === project
     );
     if (!selectedProject) projectRedirect(projectsList[0].id);
-    console.log('setCurrentProject')
+    console.log("setCurrentProject");
     setCurrentProject(selectedProject);
   }, [project, projectRedirect, projectsList]);
 
