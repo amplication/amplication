@@ -41,15 +41,10 @@ $max-width: 700px;
   }
 
   .amp-radio-field .MuiFormControlLabel-label {
-    font-size: var(--normal-font-size);
-    font-weight: 400;
-    line-height: 18px;
-    width: 177px;
+    @include createServiceFormLabelMuiFormControl;
   }
 
   label {
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 22px;
+    @include createServiceFormLabel;
   }
 }

@@ -34,6 +34,7 @@ $max-width: 700px;
     justify-content: center;
     align-items: center;
     width: 66%;
+    gap: 24px;
 
     .circle-badge i {
       color: var(--black5);
@@ -41,19 +42,11 @@ $max-width: 700px;
   }
 
   h2 {
-    font-size: var(--title4-font-size);
-    font-weight: 600;
-    line-height: 36px;
-    letter-spacing: 0em;
-    text-align: center;
+    @include createServiceWizard_h2; 
   }
 
   h3 {
-    font-size: var(--title3-font-size);
-    font-weight: 400;
-    line-height: 27px;
-    letter-spacing: 0em;
-    text-align: center;
+  @include createServiceWizard_h3;
   }
 
   &__footer {
@@ -64,10 +57,9 @@ $max-width: 700px;
     padding: 16px;
     height: 26px;
     background: var(--black10);
-
+   
     label {
-      font-weight: 400;
-      letter-spacing: 0em;
+     @include createServiceWizardLabel;
     }
   }
 
