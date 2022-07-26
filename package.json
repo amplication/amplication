@@ -30,7 +30,7 @@
     "winston": "3.3.4"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.3.0",
+    "@graphql-codegen/cli": "2.6.3",
     "@graphql-codegen/typescript": "2.4.1",
     "@types/jest": "27.0.2",
     "@types/ora": "3.2.0",

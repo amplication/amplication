@@ -148,7 +148,7 @@ model ${EXAMPLE_ENTITY_NAME} {
 
 model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
   ${EXAMPLE_LOOKUP_FIELD_NAME}   ${EXAMPLE_ENTITY_NAME} @relation(fields: [${EXAMPLE_LOOKUP_FIELD_NAME}Id], references: [id])
-  ${EXAMPLE_LOOKUP_FIELD_NAME}Id String
+  ${EXAMPLE_LOOKUP_FIELD_NAME}Id String            @unique
 }`,
     ],
   ];

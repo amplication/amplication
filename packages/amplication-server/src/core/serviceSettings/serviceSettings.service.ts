@@ -180,7 +180,7 @@ export class ServiceSettingsService {
           blockType: EnumBlockType.ServiceSettings
         }
       },
-      user
+      user.id
     );
   }
   private updateServiceGenerationSettings(
