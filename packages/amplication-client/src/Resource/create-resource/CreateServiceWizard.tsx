@@ -39,8 +39,6 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
     serviceSettingsFieldsInitValues
   );
 
-  console.log("create service wizard");
-
   const { trackEvent } = useTracking();
   const history = useHistory();
 
