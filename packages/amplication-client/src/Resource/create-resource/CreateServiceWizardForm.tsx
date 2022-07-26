@@ -3,7 +3,7 @@ import "./CreateServiceWizardForm.scss";
 import { RadioButtonField, ToggleField } from "@amplication/design-system";
 import { Form, Formik } from "formik";
 import FormikAutoSave from "../../util/formikAutoSave";
-import { serviceSettingsFieldsInitValues } from "./CreateServiceWizard";
+import { serviceSettingsFieldsInitValues } from "../constants";
 
 const CLASS_NAME = "create-service-wizard-form";
 

@@ -18,7 +18,7 @@ import {
 } from "./CreateServiceWizardForm";
 import * as models from "../../models";
 import { GET_RESOURCES } from "../../Workspaces/ResourceList";
-import { createResource } from "../constants";
+import { createResource, serviceSettingsFieldsInitValues } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 
@@ -33,13 +33,6 @@ type Props = {
 type TData = {
   createResourceWithEntities: models.Resource;
   createResourceGenSettings: models.ResourceGenSettingsCreateInput;
-};
-
-export const serviceSettingsFieldsInitValues = {
-  generateAdminUI: true,
-  generateGraphQL: true,
-  generateRestApi: true,
-  resourceType: "scratch",
 };
 
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {

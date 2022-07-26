@@ -45,6 +45,12 @@ export const COLOR_TO_NAME: {
   [GREEN]: "green",
   [BLUE]: "blue",
 };
+export const serviceSettingsFieldsInitValues = {
+  generateAdminUI: true,
+  generateGraphQL: true,
+  generateRestApi: true,
+  resourceType: "scratch",
+};
 
 export const sampleServiceResourceWithoutEntities = (
   projectId: string,
@@ -180,6 +186,13 @@ export const sampleServiceResourceWithEntities = (
     },
   ],
 });
+
+export type createServiceSettings = {
+  generateAdminUI: boolean;
+  generateGraphQL: boolean;
+  generateRestApi: boolean;
+  resourceType: string;
+};
 
 export function createResource(
   projectId: string,
