@@ -181,6 +181,30 @@ export const sampleServiceResourceWithEntities = (
   ],
 });
 
+export function createResource(
+  projectId: string,
+  isResourceWithEntities: boolean,
+  generateAdminUI: boolean,
+  generateGraphQL: boolean,
+  generateRestApi: boolean
+): models.ResourceCreateWithEntitiesInput {
+  if (isResourceWithEntities) {
+    return sampleServiceResourceWithoutEntities(
+      projectId,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi
+    );
+  } else {
+    return sampleServiceResourceWithEntities(
+      projectId,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi
+    );
+  }
+}
+
 export const GET_APP_SETTINGS = gql`
   query serviceSettings($id: String!) {
     serviceSettings(where: { id: $id }) {

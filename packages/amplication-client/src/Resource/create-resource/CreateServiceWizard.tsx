@@ -7,13 +7,7 @@ import {
   Snackbar,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
-import React, {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { MutableRefObject, useCallback, useEffect, useRef } from "react";
 import { match, useHistory } from "react-router-dom";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -24,10 +18,7 @@ import {
 } from "./CreateServiceWizardForm";
 import * as models from "../../models";
 import { GET_RESOURCES } from "../../Workspaces/ResourceList";
-import {
-  sampleServiceResourceWithEntities,
-  sampleServiceResourceWithoutEntities,
-} from "../constants";
+import { createResource } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 
@@ -56,15 +47,9 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
   );
+
   const { trackEvent } = useTracking();
-
-  const [generalError, setGeneralError] = useState<Error | undefined>(
-    undefined
-  );
-
-  const clearGeneralError = useCallback(() => {
-    setGeneralError(undefined);
-  }, [setGeneralError]);
+  const history = useHistory();
 
   const [createResourceWithEntities, { loading, data, error }] = useMutation<
     TData
@@ -89,59 +74,19 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
     },
   });
 
-  const errorMessage = formatError(error) || formatError(generalError);
+  const errorMessage = formatError(error);
 
-  const handleStartFromSample = useCallback(() => {
-    trackEvent({
-      eventName: "createResourceFromSample",
-    });
-
-    if (!serviceSettingsFields) return;
-
-    const {
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi,
-    } = serviceSettingsFields.current;
-
-    const sampleResource = sampleServiceResourceWithEntities(
-      project,
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi
-    );
-
-    createResourceWithEntities({
-      variables: { data: sampleResource },
-    }).catch(console.error);
-  }, [createResourceWithEntities, trackEvent, serviceSettingsFields, project]);
-
-  const handleStartFromScratch = useCallback(() => {
-    trackEvent({
-      eventName: "createResourceFromScratch",
-    });
-
-    if (!serviceSettingsFields) return;
-
-    const {
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi,
-    } = serviceSettingsFields.current;
-
-    const scratchResource = sampleServiceResourceWithoutEntities(
-      project,
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi
-    );
-
-    createResourceWithEntities({
-      variables: { data: scratchResource },
-    }).catch(console.error);
-  }, [createResourceWithEntities, trackEvent, project, serviceSettingsFields]);
-
-  const history = useHistory();
+  const createStarterResource = useCallback(
+    (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
+      trackEvent({
+        eventName: eventName,
+      });
+      createResourceWithEntities({
+        variables: { data: data },
+      }).catch(console.error);
+    },
+    [createResourceWithEntities, trackEvent]
+  );
 
   useEffect(() => {
     if (data) {
@@ -156,12 +101,29 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
 
   const handleClick = () => {
     if (!serviceSettingsFields) return;
+    const {
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+    } = serviceSettingsFields.current;
 
-    if (serviceSettingsFields.current.resourceType === "sample") {
-      handleStartFromSample();
-    } else if (serviceSettingsFields.current.resourceType === "scratch") {
-      handleStartFromScratch();
-    }
+    const isResourceWithEntities =
+      serviceSettingsFields.current.resourceType === "sample";
+
+    const resource = createResource(
+      project,
+      isResourceWithEntities,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi
+    );
+
+    createStarterResource(
+      resource,
+      isResourceWithEntities
+        ? "createResourceFromSample"
+        : "createResourceFromScratch"
+    );
   };
 
   return (
@@ -187,7 +149,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
         <div className={`${moduleClass}__splitWrapper`}>
           <div className={`${moduleClass}__left`}>
             <div className={`${moduleClass}__description`}>
-              <CircleBadge name={""} size="size40" color="#A787FF">
+              <CircleBadge name={""} size="medium" color="#A787FF">
                 <Icon icon="services" size="medium" />
               </CircleBadge>
               <h2>Let’s start building your service</h2>
@@ -217,11 +179,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
           <label>Create Service</label>
         </Button>
       </div>
-      <Snackbar
-        open={Boolean(error) || Boolean(generalError)}
-        message={errorMessage}
-        onClose={clearGeneralError}
-      />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 };
