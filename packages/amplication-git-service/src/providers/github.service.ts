@@ -10,10 +10,13 @@ import { ConverterUtil } from '../utils/ConverterUtil';
 import { createAppAuth } from '@octokit/auth-app';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import {
+  AMPLICATION_IGNORE_FILE_NAME,
   REPO_NAME_TAKEN_ERROR_MESSAGE,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE
 } from '../utils/constants';
 import { components } from '@octokit/openapi-types';
+import { isInAmplicationIgnore } from '../utils/isInAmplicationIgnore';
+import { getAmplicationIgnoreStatements } from '../utils/getAmplicationIgnoreStatements';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -173,6 +176,14 @@ export class GithubService implements IGitClient {
       auth: token
     });
 
+    const amplicationIgnoreStatements = await getAmplicationIgnoreStatements(
+      this,
+      userName,
+      repoName,
+      baseBranchName,
+      installationId
+    );
+
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
     //do not override server/scripts/customSeed.ts
     const doNotOverride = [
@@ -188,8 +199,9 @@ export class GithubService implements IGitClient {
     const files = Object.fromEntries(
       modules.map(module => {
         if (
-          !module.path.startsWith(authFolder) &&
-          doNotOverride.some(rx => rx.test(module.path))
+          (!module.path.startsWith(authFolder) &&
+            doNotOverride.some(rx => rx.test(module.path))) ||
+          isInAmplicationIgnore(amplicationIgnoreStatements, module.path)
         ) {
           return [
             module.path,

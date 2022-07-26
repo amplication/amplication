@@ -7,3 +7,5 @@ export const GIT_REPOSITORY_EXIST =
 export const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
 export const UNSUPPORTED_GIT_ORGANIZATION_TYPE =
   'Creation of repositories in a personal account is not supported';
+
+export const AMPLICATION_IGNORE_FILE_NAME = '.amplicationignore';

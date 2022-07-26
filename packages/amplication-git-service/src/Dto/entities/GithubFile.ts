@@ -1,9 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
-@ObjectType({
-  isAbstract: true,
-  description: undefined
-})
+@ObjectType({ isAbstract: true })
 export class GithubFile {
   @Field(() => String)
   name: string | null;
@@ -12,7 +9,7 @@ export class GithubFile {
   path: string | null;
 
   @Field(() => String)
-  content: string;
+  content!: string;
 
   @Field(() => String)
   htmlUrl: string | null;
