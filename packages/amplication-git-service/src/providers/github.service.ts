@@ -15,7 +15,7 @@ import {
 } from '../utils/constants';
 import { components } from '@octokit/openapi-types';
 import { isInAmplicationIgnore } from '../utils/isInAmplicationIgnore';
-import { getAmplicationIgnoreStatements } from '../utils/getAmplicationIgnoreStatements';
+import { getAmplicationIgnoreExpressions } from '../utils/getAmplicationIgnoreExpressions';
 import { join } from 'path';
 
 const GITHUB_FILE_TYPE = 'file';
@@ -177,7 +177,7 @@ export class GithubService implements IGitClient {
       auth: token
     });
 
-    const amplicationIgnoreStatements = await getAmplicationIgnoreStatements(
+    const amplicationIgnoreExpressions = await getAmplicationIgnoreExpressions(
       this,
       userName,
       repoName,
@@ -197,14 +197,14 @@ export class GithubService implements IGitClient {
 
     const authFolder = 'server/src/auth';
 
-    const isHaveAmplicationIgnoreStatements =
-      amplicationIgnoreStatements.length > 0;
+    const isAmplicationIgnoreHaveExpressions =
+      amplicationIgnoreExpressions.length > 0;
 
     const files = Object.fromEntries(
       modules.map(module => {
         if (
-          isHaveAmplicationIgnoreStatements &&
-          isInAmplicationIgnore(amplicationIgnoreStatements, module.path)
+          isAmplicationIgnoreHaveExpressions &&
+          isInAmplicationIgnore(amplicationIgnoreExpressions, module.path)
         ) {
           return [
             join('.amplication', 'ignored', amplicationBuildId, module.path),

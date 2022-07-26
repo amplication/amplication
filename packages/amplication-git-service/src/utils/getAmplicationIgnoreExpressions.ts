@@ -1,14 +1,14 @@
 import { IGitClient } from '../contracts/IGitClient';
 import { AMPLICATION_IGNORE_FILE_NAME } from './constants';
 
-export const getAmplicationIgnoreStatements = async (
+export const getAmplicationIgnoreExpressions = async (
   gitClient: IGitClient,
   userName: string,
   repoName: string,
   baseBranchName: string,
   installationId: string
 ): Promise<string[]> => {
-  let amplicationIgnoreStatements = [];
+  let amplicationIgnoreExpressions = [];
 
   try {
     const amplicationignore = await gitClient.getFile(
@@ -18,10 +18,10 @@ export const getAmplicationIgnoreStatements = async (
       baseBranchName,
       installationId
     );
-    amplicationIgnoreStatements = amplicationignore.content.split('\n') || [];
+    amplicationIgnoreExpressions = amplicationignore.content.split('\n') || [];
   } catch (error) {
     console.log('Repository does not have a .amplicationignore file');
   }
 
-  return amplicationIgnoreStatements;
+  return amplicationIgnoreExpressions;
 };

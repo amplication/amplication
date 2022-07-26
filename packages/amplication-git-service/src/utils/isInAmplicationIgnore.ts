@@ -1,14 +1,14 @@
 import minimatch from 'minimatch';
 
 export function isInAmplicationIgnore(
-  amplicationIgnoreStatements: string[],
+  amplicationIgnoreExpressions: string[],
   filePath: string
 ): boolean {
-  if (amplicationIgnoreStatements.length === 0) {
+  if (amplicationIgnoreExpressions.length === 0) {
     return false;
   }
 
-  const isInAmplicationIgnore = amplicationIgnoreStatements.some(
+  const isInAmplicationIgnore = amplicationIgnoreExpressions.some(
     globStatement => {
       const result = minimatch(filePath, globStatement, { dot: true });
       return result;
