@@ -21,7 +21,6 @@ const ProjectSideBar = () => {
           workspaceId={currentWorkspace?.id}
         />
       <AddNewProject />
-      <hr className={`${CLASS_NAME}__divider`} />
       <ProjectSideBarFooter />
     </div>
   ) : null;

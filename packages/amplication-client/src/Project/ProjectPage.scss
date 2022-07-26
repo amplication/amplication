@@ -3,22 +3,22 @@
 .project-page {
   display: flex;
   height: 100%;
-  align-items: stretch;
+  flex: 1 auto;
 
   &__sidebar {
-    flex-grow: 1;
     padding: var(--large-spacing);
   }
 
   &__sidebar-content {
     border: 1px solid var(--black5);
     border-radius: var(--small-border-radius);
+    display: flex;
     height: 100%;
     max-height: 820px;
   }
 
   &__content {
-    flex-grow: 20;
-    border: 1px solid var(--black5);
+    width: 100%;
+    padding: var(--large-spacing);
   }
 }

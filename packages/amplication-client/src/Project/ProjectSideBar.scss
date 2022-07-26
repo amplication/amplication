@@ -3,10 +3,10 @@
 .project-sidebar {
   @include flexColumn;
   padding: var(--large-spacing);
+  width: 100%;
 
   &__label {
-    @include regular-12;
-    color: var(--black80);
+    @include headline-description;
   }
 
   &__divider {
