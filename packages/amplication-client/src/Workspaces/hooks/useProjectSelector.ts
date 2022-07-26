@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import get from "lodash.get";
+import { get } from "lodash";
 import * as models from "../../models";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQuery";
 
