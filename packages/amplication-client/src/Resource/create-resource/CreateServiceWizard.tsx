@@ -144,10 +144,10 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
               <CircleBadge name={""} size="medium" color="#A787FF">
                 <Icon icon="services" size="medium" />
               </CircleBadge>
-              <h2>Let’s start building your service</h2>
+              <h3>Amplication Resource Creation Wizard</h3>
+              <h2>Let’s start building your app</h2>
               <h3>
-                Select which components to include in your service and whether
-                to use sample entities
+              Select which components to include in your app and whether to use sample entities
               </h3>
             </div>
           </div>
