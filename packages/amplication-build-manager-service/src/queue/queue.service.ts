@@ -6,14 +6,8 @@ export const KAFKA_CLIENT = 'KAFKA_CLIENT';
 @Injectable()
 export class QueueService {
   private readonly observer = {
-    next(data) {
-      console.log(data);
-    },
     error(e) {
-      console.log(e);
-    },
-    complete() {
-      console.log('request complete');
+      console.error(e);
     },
   };
 
