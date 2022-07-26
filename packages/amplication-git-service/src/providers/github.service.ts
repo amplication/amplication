@@ -10,13 +10,13 @@ import { ConverterUtil } from '../utils/ConverterUtil';
 import { createAppAuth } from '@octokit/auth-app';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import {
-  AMPLICATION_IGNORE_FILE_NAME,
   REPO_NAME_TAKEN_ERROR_MESSAGE,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE
 } from '../utils/constants';
 import { components } from '@octokit/openapi-types';
 import { isInAmplicationIgnore } from '../utils/isInAmplicationIgnore';
 import { getAmplicationIgnoreStatements } from '../utils/getAmplicationIgnoreStatements';
+import { join } from 'path';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -167,7 +167,8 @@ export class GithubService implements IGitClient {
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
-    installationId: string
+    installationId: string,
+    amplicationBuildId: string
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
@@ -198,10 +199,15 @@ export class GithubService implements IGitClient {
 
     const files = Object.fromEntries(
       modules.map(module => {
+        if (isInAmplicationIgnore(amplicationIgnoreStatements, module.path)) {
+          return [
+            join('.amplication', 'ignored', amplicationBuildId, module.path),
+            module.code
+          ];
+        }
         if (
-          (!module.path.startsWith(authFolder) &&
-            doNotOverride.some(rx => rx.test(module.path))) ||
-          isInAmplicationIgnore(amplicationIgnoreStatements, module.path)
+          !module.path.startsWith(authFolder) &&
+          doNotOverride.some(rx => rx.test(module.path))
         ) {
           return [
             module.path,
