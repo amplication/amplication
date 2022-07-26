@@ -42,11 +42,12 @@ $max-width: 700px;
   }
 
   h2 {
-    @include createServiceWizard_h2; 
+    @include title-24;
   }
 
   h3 {
-  @include createServiceWizard_h3;
+    @include title-14;
+    text-align: center;
   }
 
   &__footer {
@@ -57,10 +58,6 @@ $max-width: 700px;
     padding: 16px;
     height: 26px;
     background: var(--black10);
-   
-    label {
-     @include createServiceWizardLabel;
-    }
   }
 
   .amp-button--clear[disabled] {

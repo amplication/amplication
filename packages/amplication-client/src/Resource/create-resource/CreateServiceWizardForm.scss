@@ -13,6 +13,10 @@ $max-width: 700px;
     width: 180px;
     display: flex;
     flex-direction: column;
+
+    p {
+      font-size: 14px;
+    }
   }
 
   &__generation_setting_wrapper {
@@ -40,11 +44,4 @@ $max-width: 700px;
     font-size: var(--normal-font-size);
   }
 
-  .amp-radio-field .MuiFormControlLabel-label {
-    @include createServiceFormLabelMuiFormControl;
-  }
-
-  label {
-    @include createServiceFormLabel;
-  }
 }

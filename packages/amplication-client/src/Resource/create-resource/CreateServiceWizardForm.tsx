@@ -39,7 +39,7 @@ export const CreateServiceWizardForm = ({ handleSubmitResource }: Props) => {
               <div className={`${CLASS_NAME}__generationSettings`}>
                 <FormikAutoSave debounceMS={200} />
                 <div className={`${CLASS_NAME}__generation_setting_wrapper`}>
-                  <label>APIs Admin UI Settings</label>
+                  <p>APIs Admin UI Settings</p>
                   <div>
                     <ToggleField name="generateGraphQL" label="GraphQL API" />
                     <ToggleField
@@ -56,7 +56,7 @@ export const CreateServiceWizardForm = ({ handleSubmitResource }: Props) => {
                 <div
                   className={`${CLASS_NAME}__generation_setting_resource_wrapper`}
                 >
-                  <label>Sample Entities</label>
+                  <p>Sample Entities</p>
                   <div>
                     <RadioButtonField
                       label="None (start from scratch)"

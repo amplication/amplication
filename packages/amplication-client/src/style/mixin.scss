@@ -281,39 +281,6 @@ $bullet-size: 6px;
   }
 }
 
-@mixin createServiceWizard_h2 {
-  font-size: var(--title4-font-size);
-  font-weight: 600;
-  line-height: 36px;
-  letter-spacing: 0em;
-  text-align: center;
-}
-
-@mixin createServiceWizard_h3 {
-  font-size: var(--title3-font-size);
-  font-weight: 600;
-  line-height: 28px;
-  letter-spacing: 0em;
-  text-align: center;
-}
-
-@mixin createServiceFormLabelMuiFormControl {
-  font-size: var(--normal-font-size);
-  font-weight: 400;
-  line-height: 18px;
-  width: 180px;
-}
-
-@mixin createServiceWizardLabel {
-  font-weight: 400;
-  letter-spacing: 0em;
-}
-
-@mixin createServiceFormLabel {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 24px;
-}
 
 @mixin modalForm {
   display: flex;
