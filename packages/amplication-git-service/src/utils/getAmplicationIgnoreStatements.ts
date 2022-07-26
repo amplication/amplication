@@ -20,7 +20,7 @@ export const getAmplicationIgnoreStatements = async (
     );
     amplicationIgnoreStatements = amplicationignore.content.split('\n') || [];
   } catch (error) {
-    console.log("Repository don't have an .amplicationignore file");
+    console.log('Repository does not have a .amplicationignore file');
   }
 
   return amplicationIgnoreStatements;
