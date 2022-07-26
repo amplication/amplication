@@ -32,7 +32,6 @@ type Props = {
 
 type TData = {
   createResourceWithEntities: models.Resource;
-  createResourceGenSettings: models.ResourceGenSettingsCreateInput;
 };
 
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
