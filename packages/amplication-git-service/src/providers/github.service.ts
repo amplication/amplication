@@ -197,9 +197,15 @@ export class GithubService implements IGitClient {
 
     const authFolder = 'server/src/auth';
 
+    const isHaveAmplicationIgnoreStatements =
+      amplicationIgnoreStatements.length > 0;
+
     const files = Object.fromEntries(
       modules.map(module => {
-        if (isInAmplicationIgnore(amplicationIgnoreStatements, module.path)) {
+        if (
+          isHaveAmplicationIgnoreStatements &&
+          isInAmplicationIgnore(amplicationIgnoreStatements, module.path)
+        ) {
           return [
             join('.amplication', 'ignored', amplicationBuildId, module.path),
             module.code
