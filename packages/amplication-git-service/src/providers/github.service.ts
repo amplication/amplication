@@ -10,6 +10,8 @@ import { ConverterUtil } from '../utils/ConverterUtil';
 import { createAppAuth } from '@octokit/auth-app';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import {
+  AMPLICATION_FOLDER,
+  AMPLICATION_IGNORED_FOLDER,
   REPO_NAME_TAKEN_ERROR_MESSAGE,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE
 } from '../utils/constants';
@@ -207,7 +209,7 @@ export class GithubService implements IGitClient {
           isInAmplicationIgnore(amplicationIgnoreExpressions, module.path)
         ) {
           return [
-            join('.amplication', 'ignored', amplicationBuildId, module.path),
+            join(AMPLICATION_IGNORED_FOLDER, amplicationBuildId, module.path),
             module.code
           ];
         }
