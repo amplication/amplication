@@ -25,9 +25,13 @@ type TDeleteData = {
   deleteResource: models.Resource;
 };
 
+type Props = {
+  projectId: string | undefined;
+};
+
 const CLASS_NAME = "resource-list";
 
-function ResourceList() {
+function ResourceList({ projectId }: Props) {
   const { trackEvent } = useTracking();
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error | null>(null);
@@ -79,6 +83,7 @@ function ResourceList() {
     GET_RESOURCES,
     {
       variables: {
+        projectId: projectId,
         whereName:
           searchPhrase !== ""
             ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
@@ -150,8 +155,11 @@ function ResourceList() {
 export default ResourceList;
 
 export const GET_RESOURCES = gql`
-  query getResources($whereName: StringFilter) {
-    resources(where: { name: $whereName }, orderBy: { createdAt: Desc }) {
+  query getResources($projectId: String!, $whereName: StringFilter) {
+    resources(
+      where: { project: { id: $projectId }, name: $whereName }
+      orderBy: { createdAt: Desc }
+    ) {
       id
       name
       description
