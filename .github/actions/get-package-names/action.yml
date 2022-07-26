@@ -1,0 +1,11 @@
+name: 'Get package names'
+description: 'Get package names is a GitHub action that returns corresponding package names for a given list of folders. The action is to search for the package name from the package.json files. In case a package is not found, or the package.json is not containing the package name, the folder will be discarded and will not be in the action output'
+inputs:
+  folders:
+    description: 'A list of folders to get search for their app name'
+outputs:
+  package_names:
+    description: 'list of folders with their package names'
+runs:
+  using: 'node16'
+  main: 'scripts/run-action.js'
