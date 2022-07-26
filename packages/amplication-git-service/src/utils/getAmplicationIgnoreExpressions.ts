@@ -18,7 +18,8 @@ export const getAmplicationIgnoreExpressions = async (
       baseBranchName,
       installationId
     );
-    amplicationIgnoreExpressions = amplicationignore.content.split('\n') || [];
+    amplicationIgnoreExpressions =
+      amplicationignore?.content?.split('\n') || [];
   } catch (error) {
     console.log('Repository does not have a .amplicationignore file');
   }

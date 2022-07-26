@@ -9,7 +9,7 @@ export class GithubFile {
   path: string | null;
 
   @Field(() => String)
-  content!: string;
+  content: string;
 
   @Field(() => String)
   htmlUrl: string | null;
