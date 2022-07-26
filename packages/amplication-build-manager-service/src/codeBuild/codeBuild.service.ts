@@ -18,7 +18,7 @@ export class CodeBuildService implements BuildService {
     this.projectName = this.configService.get<string>(CODE_BUILD_PROJECT_NAME);
   }
 
-  async runBuild(contextArchivePath: string) {
+  runBuild(contextArchivePath: string) {
     const input: StartBuildCommandInput = {
       projectName: this.projectName,
       sourceLocationOverride: contextArchivePath,
@@ -27,7 +27,7 @@ export class CodeBuildService implements BuildService {
     const command = new StartBuildCommand(input);
 
     try {
-      await this.codeBuildClient.send(command);
+      return this.codeBuildClient.send(command);
     } catch (err) {
       console.error(err);
     }
