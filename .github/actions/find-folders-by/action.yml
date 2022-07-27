@@ -1,0 +1,21 @@
+name: 'Find folders by'
+description: 'Find folders that contains specific files'
+inputs:
+  files-to-find:
+    required: true
+    description: 'list of files to check if a folder has'
+  include-folders:
+    required: true
+    description: 'list of seed folders for the search'
+  ignore-folders:
+    required: true
+    description: 'list of folders to ignore (will be skipped)'
+  search-recursive:
+    required: true
+    description: 'checking folders or stopping in the seed folders list (include-folders) level '
+outputs:
+  folders:
+    description: 'list of folders that contains the files that was searched'
+runs:
+  using: 'node16'
+  main: 'scripts/run-action.js'
