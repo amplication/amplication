@@ -89,6 +89,7 @@ export class GitService {
     commitMessage: string,
     commitDescription: string,
     installationId: string,
+    amplicationBuildId: string,
     baseBranchName?: string
   ): Promise<string> {
     const service = this.gitServiceFactory.getService(gitProvider);
@@ -100,7 +101,8 @@ export class GitService {
       commitMessage,
       commitDescription,
       baseBranchName,
-      installationId
+      installationId,
+      amplicationBuildId
     );
   }
 }
