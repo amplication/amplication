@@ -25,27 +25,26 @@ export const Routes: RouteDef[] = [
       {
         path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
         // Component: lazy(() => import("../Resource/ResourceHome")),
-        moduleName: "",
-        exactPath: true,
+
+        moduleName: "CreateServiceWizard",
+        moduleClass: "create-service-wizard",
+        permission: true,
+        exactPath: false,
         routes: [
           {
-            path: "/:workspace/:project/",
-            Component: lazy(() => import("../Resource/ResourceHome")),
-            moduleName: "",
+            path:
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
+            Component: lazy(
+              () => import("../Resource/create-resource/CreateServiceWizard")
+            ),
+            moduleName: "CreateServiceWizard",
+            moduleClass: "create-service-wizard",
             routeTrackType: "",
             exactPath: true,
-            routes: resourceRoutes,
           },
           {
-            path: "/:workspace/:project/create-resource",
-            Component: lazy(() => import("../Resource/ResourceHome")),
-            moduleName: "",
-            routeTrackType: "",
-            exactPath: true,
-            routes: resourceRoutes,
-          },
-          {
-            path: "/:workspace/:project/:resource",
+            path:
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource",
             Component: lazy(() => import("../Resource/ResourceHome")),
             moduleName: "",
             routeTrackType: "",
@@ -80,8 +79,8 @@ export const Routes: RouteDef[] = [
   },
   {
     path: "/github-auth-app/callback",
-    Component: lazy(() =>
-      import("../Resource/git/AuthResourceWithGitCallback")
+    Component: lazy(
+      () => import("../Resource/git/AuthResourceWithGitCallback")
     ),
     moduleName: "AuthAppWithGitCallback",
     permission: true,
@@ -103,5 +102,5 @@ export const Routes: RouteDef[] = [
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
-  }
+  },
 ];

@@ -28,7 +28,10 @@ type Props = {
   InnerRoutes: JSX.Element | undefined;
 };
 
-const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
+const WorkspaceLayout: React.FC<Props> = ({
+  InnerRoutes,
+  moduleClass,
+}) => {
   const authenticated = useAuthenticated();
   const { currentWorkspace, handleSetCurrentWorkspace } = useWorkspaceSelector(
     authenticated

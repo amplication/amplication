@@ -1,6 +1,6 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import * as models from "../../models";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQuery";
 
@@ -19,6 +19,7 @@ const useProjectSelector = (
   currentWorkspace: models.Workspace | undefined
 ) => {
   const history = useHistory();
+  const location = useLocation();
   const { project } = useParams<{ project?: string; resource?: string }>();
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
@@ -47,14 +48,16 @@ const useProjectSelector = (
         null
       );
 
+      const isFromSignup = location.search.includes("route=create-resource");
       selectedProject && setCurrentProject(selectedProject);
       currentWorkspace &&
         history.push(
           `/${currentWorkspace.id}/${
             selectedProject ? selectedProject.id : projects[0].id
-          }`
+          }${isFromSignup ? "/create-resource" : ""}`
         );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentWorkspace, history, project]
   );
 
