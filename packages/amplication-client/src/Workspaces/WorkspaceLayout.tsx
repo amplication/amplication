@@ -12,6 +12,7 @@ import useProjectSelector from "./hooks/useProjectSelector";
 import { AppContextProvider } from "../context/appContext";
 import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
+import useResources from "./hooks/useResources";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -46,6 +47,10 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
     onNewProjectCompleted,
   } = useProjectSelector(authenticated, currentWorkspace);
 
+  const { resources, handleSearchChange, loadingResources, errorResources } = useResources(
+    currentProject
+  );
+
   return currentWorkspace ? (
     <AppContextProvider
       newVal={{
@@ -55,6 +60,10 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
         setNewProject: createProject,
         onNewProjectCompleted,
         handleSetCurrentWorkspace,
+        resources,
+        handleSearchChange,
+        loadingResources,
+        errorResources,
         createWorkspace,
         createNewWorkspaceError,
         loadingCreateNewWorkspace
