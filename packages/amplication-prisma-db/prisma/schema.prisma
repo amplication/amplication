@@ -451,6 +451,7 @@ enum EnumDataType {
 
 enum EnumBlockType {
   ServiceSettings
+  ProjectConfigurationSettings
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -533,6 +534,7 @@ model Subscription {
 
 enum EnumResourceType {
   Service
+  ProjectConfiguration
 }
 
 enum EnumGitProvider {

@@ -812,6 +812,7 @@ export enum EnumBlockType {
   Flow = "Flow",
   FlowApi = "FlowApi",
   Layout = "Layout",
+  ProjectConfigurationSettings = "ProjectConfigurationSettings",
   ServiceSettings = "ServiceSettings",
 }
 
@@ -907,6 +908,7 @@ export enum EnumPendingChangeResourceType {
 }
 
 export enum EnumResourceType {
+  ProjectConfiguration = "ProjectConfiguration",
   Service = "Service",
 }
 
@@ -1087,6 +1089,7 @@ export type Mutation = {
   updateEntityPermission: EntityPermission;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
+  updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
   updateResourceRole?: Maybe<ResourceRole>;
   updateServiceSettings?: Maybe<ServiceSettings>;
@@ -1302,6 +1305,11 @@ export type MutationUpdateEntityPermissionRolesArgs = {
   data: EntityUpdatePermissionRolesInput;
 };
 
+export type MutationUpdateProjectConfigurationSettingsArgs = {
+  data: ProjectConfigurationSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationUpdateResourceArgs = {
   data: ResourceUpdateInput;
   where: WhereUniqueInput;
@@ -1363,6 +1371,29 @@ export type Project = {
   updatedAt: Scalars["DateTime"];
 };
 
+export type ProjectConfigurationSettings = IBlock & {
+  __typename?: "ProjectConfigurationSettings";
+  baseDirectory: Scalars["String"];
+  blockType: EnumBlockType;
+  createdAt: Scalars["DateTime"];
+  description: Scalars["String"];
+  displayName: Scalars["String"];
+  id: Scalars["String"];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars["DateTime"]>;
+  lockedByUserId?: Maybe<Scalars["String"]>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  updatedAt: Scalars["DateTime"];
+  versionNumber: Scalars["Float"];
+};
+
+export type ProjectConfigurationSettingsUpdateInput = {
+  baseDirectory?: InputMaybe<Scalars["String"]>;
+  description?: InputMaybe<Scalars["String"]>;
+  displayName?: InputMaybe<Scalars["String"]>;
+};
+
 export type ProjectCreateInput = {
   name: Scalars["String"];
 };
@@ -1414,6 +1445,7 @@ export type Query = {
   me: User;
   pendingChanges: Array<PendingChange>;
   project?: Maybe<Project>;
+  projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
   remoteGitRepositories: Array<RemoteGitRepository>;
   resource?: Maybe<Resource>;
@@ -1524,6 +1556,10 @@ export type QueryPendingChangesArgs = {
 };
 
 export type QueryProjectArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryProjectConfigurationSettingsArgs = {
   where: WhereUniqueInput;
 };
 

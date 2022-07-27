@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
-  DEFAULT_RESOURCE_COLOR,
-  DEFAULT_RESOURCE_DATA,
+  DEFAULT_SERVICE_DATA,
   INITIAL_COMMIT_MESSAGE,
   INVALID_RESOURCE_ID,
   ResourceService
@@ -45,6 +44,8 @@ import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ServiceSettings } from '../serviceSettings/dto';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
+import { DEFAULT_RESOURCE_COLORS } from './constants';
+import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
@@ -66,7 +67,7 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
 };
 
 const EXAMPLE_RESOURCE: Resource = {
-  ...DEFAULT_RESOURCE_DATA,
+  ...DEFAULT_SERVICE_DATA,
   id: EXAMPLE_RESOURCE_ID,
   resourceType: EnumResourceType.Service,
   createdAt: new Date(),
@@ -387,6 +388,10 @@ describe('ResourceService', () => {
             create: serviceSettingsCreateMock,
             createDefaultServiceSettings: serviceSettingsCreateMock
           }))
+        },
+        {
+          provide: ProjectConfigurationSettingsService,
+          useClass: jest.fn(() => ({}))
         }
       ]
     }).compile();
@@ -404,7 +409,7 @@ describe('ResourceService', () => {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
-          color: DEFAULT_RESOURCE_COLOR,
+          color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
           project: {
             connect: {
@@ -574,7 +579,7 @@ describe('ResourceService', () => {
   it('should create resource with entities', async () => {
     const prismaResourceCreateResourceArgs = {
       data: {
-        ...DEFAULT_RESOURCE_DATA,
+        ...DEFAULT_SERVICE_DATA,
         ...SAMPLE_SERVICE_DATA,
         roles: {
           create: EXAMPLE_USER_RESOURCE_ROLE

@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { FindOneArgs } from 'src/dto';
-import { Project } from 'src/models';
+import { Project, User } from 'src/models';
 import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { ProjectService } from './project.service';
@@ -12,6 +12,7 @@ import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.f
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { UserEntity } from 'src/decorators/user.decorator';
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -42,7 +43,10 @@ export class ProjectResolver {
     InjectableResourceParameter.WorkspaceId,
     'data.workspace.connect.id'
   )
-  async createProject(@Args() args: ProjectCreateArgs): Promise<Project> {
-    return this.projectService.createProject(args);
+  async createProject(
+    @Args() args: ProjectCreateArgs,
+    @UserEntity() user: User
+  ): Promise<Project> {
+    return this.projectService.createProject(args, user.id);
   }
 }

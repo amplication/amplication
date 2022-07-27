@@ -2,4 +2,14 @@
 
 .workspace-settings-navigation {
   width: 100%;
+  margin-top: auto; 
+
+  &__divider {
+    border: 1px solid var(--black5);
+    width: 100%;
+  }
+
+  &__links {
+    padding: var(--default-spacing-small);
+  }
 }
