@@ -25,10 +25,5 @@ COPY --from=builder /app/packages/amplication-build-manager-service/package.json
 COPY --from=builder /app/packages/amplication-build-manager-service/node_modules /app/packages/amplication-build-manager-service/node_modules
 COPY --from=builder /app/packages/amplication-build-manager-service/dist /app/packages/amplication-build-manager-service/dist
 
-
-COPY --from=builder /app/packages/amplication-data/package.json /app/packages/amplication-data/package.json
-COPY --from=builder /app/packages/amplication-data/node_modules /app/packages/amplication-data/node_modules
-COPY --from=builder /app/packages/amplication-data/dist /app/packages/amplication-data/dist
-
 CMD [ "node", "/dist/main.js" ]
 
