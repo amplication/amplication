@@ -11,7 +11,11 @@ const useResources = (currentProject: models.Project | undefined) => {
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const { data: resourcesData, loading: loadingResources, error: errorResources } = useQuery<TData>(GET_RESOURCES, {
+  const {
+    data: resourcesData,
+    loading: loadingResources,
+    error: errorResources,
+  } = useQuery<TData>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
       whereName:

@@ -26,7 +26,6 @@ const CLASS_NAME = "resource-list";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
-  // const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error | null>(null);
   const {resources, handleSearchChange, loadingResources, errorResources} = useContext(AppContext);
 
@@ -65,14 +64,7 @@ function ResourceList() {
     },
     [deleteResource, setError, trackEvent]
   );
-
-  // const handleSearchChange = useCallback(
-  //   (value) => {
-  //     setSearchPhrase(value);
-  //   },
-  //   [setSearchPhrase]
-  // );
-
+  
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -135,46 +127,6 @@ function ResourceList() {
 }
 
 export default ResourceList;
-
-export const GET_RESOURCES = gql`
-  query getResources($projectId: String!, $whereName: StringFilter) {
-    resources(
-      where: { project: { id: $projectId }, name: $whereName }
-      orderBy: { createdAt: Desc }
-    ) {
-      id
-      name
-      description
-      color
-      updatedAt
-      builds(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        version
-        createdAt
-        status
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
-      }
-    }
-  }
-`;
 
 const DELETE_RESOURCE = gql`
   mutation deleteResource($resourceId: String!) {
