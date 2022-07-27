@@ -13,7 +13,7 @@ const CLASS_NAME = "workspaces-selector__list";
 
 type Props = {
   selectedWorkspace: models.Workspace;
-  onWorkspaceSelected: (workspace: models.Workspace) => void;
+  onWorkspaceSelected: (workspaceId: string) => void;
   onNewWorkspaceClick: () => void;
 };
 
@@ -39,11 +39,14 @@ function WorkspaceSelectorList({
             />
           ))}
           <div className={`${CLASS_NAME}__new`}>
+            <hr className={`${CLASS_NAME}__divider`} />
             <Button
               buttonStyle={EnumButtonStyle.Text}
               disabled={loading}
               type="button"
               icon="plus"
+              className={`${CLASS_NAME}__button`}
+              iconPosition="left"
               onClick={onNewWorkspaceClick}
             >
               Create new workspace

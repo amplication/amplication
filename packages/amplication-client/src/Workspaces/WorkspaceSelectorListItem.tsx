@@ -1,4 +1,4 @@
-import { CircleBadge } from "@amplication/design-system";
+import { CircleBadge, Icon } from "@amplication/design-system";
 import classNames from "classnames";
 import React, { useCallback } from "react";
 import * as models from "../models";
@@ -9,7 +9,7 @@ const CLASS_NAME = "workspaces-selector__list__item";
 type Props = {
   workspace: models.Workspace;
   selected: boolean;
-  onWorkspaceSelected: (workspace: models.Workspace) => void;
+  onWorkspaceSelected: (workspaceId: string) => void;
 };
 
 function WorkspaceSelectorListItem({
@@ -18,7 +18,7 @@ function WorkspaceSelectorListItem({
   onWorkspaceSelected,
 }: Props) {
   const handleClick = useCallback(() => {
-    onWorkspaceSelected && onWorkspaceSelected(workspace);
+    onWorkspaceSelected && onWorkspaceSelected(workspace.id);
   }, [onWorkspaceSelected, workspace]);
 
   return (
@@ -35,6 +35,7 @@ function WorkspaceSelectorListItem({
           {workspace.subscription?.subscriptionPlan || "Community"} Plan
         </span>
       </div>
+      {selected && <Icon icon="check" size="xsmall" className={`${CLASS_NAME}__icon`} />}
     </div>
   );
 }

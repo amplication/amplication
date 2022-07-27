@@ -3,14 +3,18 @@
 .project-sidebar {
   @include flexColumn;
   padding: var(--large-spacing);
-  width: 100%;
-
+  &__project-wrapper {
+    flex-grow: 1;
+    width: 100%;
+  }
   &__label {
-    @include headline-description;
+    @include regular-12;
+    margin-bottom: 8px;
+    color: var(--black80);
   }
 
   &__divider {
     border: 1px solid var(--black5);
-    width: 100%;
+    width: 99%;
   }
 }

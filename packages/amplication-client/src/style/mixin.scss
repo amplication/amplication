@@ -417,4 +417,10 @@ $active-indicator-width: 4px;
   color: #f5f6fa;
 }
 
-
+@mixin regular-10 {
+  @include font-base();
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 15px;
+  color: #f5f6fa;
+}

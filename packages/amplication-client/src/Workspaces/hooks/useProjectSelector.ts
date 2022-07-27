@@ -26,11 +26,11 @@ const useProjectSelector = (
   );
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
-
   const { data: projectListData, loading: loadingList, refetch } = useQuery(
     GET_PROJECTS,
     {
-      skip: !workspace || currentWorkspace?.id !== workspace,
+      skip:
+        !workspace || (currentWorkspace && currentWorkspace?.id !== workspace),
       onError: (error) => {
         // if error push to ? check with @Yuval
       },
@@ -77,7 +77,6 @@ const useProjectSelector = (
       (projectDB: models.Project) => projectDB.id === project
     );
     if (!selectedProject) projectRedirect(projectsList[0].id);
-    console.log("setCurrentProject");
     setCurrentProject(selectedProject);
   }, [project, projectRedirect, projectsList]);
 

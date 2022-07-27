@@ -10,6 +10,8 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
+import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { UserEntity } from 'src/decorators/user.decorator';
 
 @Resolver(() => Project)
@@ -20,12 +22,17 @@ export class ProjectResolver {
 
   @Query(() => [Project], { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
+  @InjectContextValue(
+    InjectableResourceParameter.WorkspaceId,
+    'where.workspace.id'
+  )
   async projects(@Args() args: ProjectFindManyArgs): Promise<Project[]> {
     return this.projectService.findProjects(args);
   }
 
   @Query(() => Project, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
+  @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'where.id')
   async project(@Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.findProject(args);
   }
