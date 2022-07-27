@@ -11,7 +11,7 @@ const useResources = (currentProject: models.Project | undefined) => {
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
-  const { data: resourcesData, loading } = useQuery<TData>(GET_RESOURCES, {
+  const { data: resourcesData, loading: loadingResources, error: errorResources } = useQuery<TData>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
       whereName:
@@ -23,9 +23,9 @@ const useResources = (currentProject: models.Project | undefined) => {
   });
 
   useEffect(() => {
-    if (loading || !resourcesData) return;
+    if (loadingResources || !resourcesData) return;
     setResources(resourcesData.resources);
-  }, [resourcesData, loading]);
+  }, [resourcesData, loadingResources]);
 
   const handleSearchChange = useCallback(
     (value) => {
@@ -34,7 +34,7 @@ const useResources = (currentProject: models.Project | undefined) => {
     [setSearchPhrase]
   );
 
-  return { resources, handleSearchChange };
+  return { resources, handleSearchChange, loadingResources, errorResources };
 };
 
 export default useResources;

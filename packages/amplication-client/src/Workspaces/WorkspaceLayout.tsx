@@ -41,7 +41,9 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
     onNewProjectCompleted,
   } = useProjectSelector(authenticated, currentWorkspace);
 
-  const { resources, handleSearchChange } = useResources(currentProject);
+  const { resources, handleSearchChange, loadingResources, errorResources } = useResources(
+    currentProject
+  );
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -53,7 +55,9 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
         onNewProjectCompleted,
         handleSetCurrentWorkspace,
         resources,
-        handleSearchChange
+        handleSearchChange,
+        loadingResources,
+        errorResources,
       }}
     >
       {isMobileOnly ? (

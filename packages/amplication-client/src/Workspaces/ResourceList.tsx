@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { gql, Reference, useMutation, useQuery } from "@apollo/client";
+import React, { useCallback, useContext, useState } from "react";
+import { gql, Reference, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
@@ -16,25 +16,19 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
 import ResourceListItem from "./ResourceListItem";
 import "./ResourceList.scss";
-
-type TData = {
-  resources: Array<models.Resource>;
-};
+import { AppContext } from "../context/appContext";
 
 type TDeleteData = {
   deleteResource: models.Resource;
 };
 
-type Props = {
-  projectId: string | undefined;
-};
-
 const CLASS_NAME = "resource-list";
 
-function ResourceList({ projectId }: Props) {
+function ResourceList() {
   const { trackEvent } = useTracking();
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
+  // const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error | null>(null);
+  const {resources, handleSearchChange, loadingResources, errorResources} = useContext(AppContext);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -72,27 +66,15 @@ function ResourceList({ projectId }: Props) {
     [deleteResource, setError, trackEvent]
   );
 
-  const handleSearchChange = useCallback(
-    (value) => {
-      setSearchPhrase(value);
-    },
-    [setSearchPhrase]
-  );
+  // const handleSearchChange = useCallback(
+  //   (value) => {
+  //     setSearchPhrase(value);
+  //   },
+  //   [setSearchPhrase]
+  // );
 
-  const { data, error: errorLoading, loading } = useQuery<TData>(
-    GET_RESOURCES,
-    {
-      variables: {
-        projectId: projectId,
-        whereName:
-          searchPhrase !== ""
-            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-            : undefined,
-      },
-    }
-  );
   const errorMessage =
-    formatError(errorLoading) || (error && formatError(error));
+    formatError(errorResources) || (error && formatError(error));
 
   const handleNewResourceClick = useCallback(() => {
     trackEvent({
@@ -120,11 +102,11 @@ function ResourceList({ projectId }: Props) {
         </Link>
       </div>
       <div className={`${CLASS_NAME}__title`}>
-        {data?.resources.length} Resources
+        {resources.length} Resources
       </div>
-      {loading && <CircularProgress />}
+      {loadingResources && <CircularProgress />}
 
-      {isEmpty(data?.resources) && !loading ? (
+      {isEmpty(resources) && !loadingResources ? (
         <div className={`${CLASS_NAME}__empty-state`}>
           <SvgThemeImage image={EnumImages.AddResource} />
           <div className={`${CLASS_NAME}__empty-state__title`}>
@@ -132,7 +114,7 @@ function ResourceList({ projectId }: Props) {
           </div>
         </div>
       ) : (
-        data?.resources.map((resource) => {
+        resources.map((resource) => {
           return (
             <ResourceListItem
               key={resource.id}
@@ -144,7 +126,7 @@ function ResourceList({ projectId }: Props) {
       )}
 
       <Snackbar
-        open={Boolean(error || errorLoading)}
+        open={Boolean(error || errorResources)}
         message={errorMessage}
         onClose={clearError}
       />
