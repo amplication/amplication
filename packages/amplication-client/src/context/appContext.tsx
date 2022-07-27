@@ -8,6 +8,8 @@ export interface AppContextInterface {
   projectsList: models.Project[];
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
+  resources: models.Resource[];
+  handleSearchChange: (value: any) => void
 }
 
 const initialContext: AppContextInterface = {
@@ -16,7 +18,9 @@ const initialContext: AppContextInterface = {
   currentProject: undefined,
   projectsList: [],
   setNewProject: () => {},
-  onNewProjectCompleted: () => {}
+  onNewProjectCompleted: () => {},
+  resources: [],
+  handleSearchChange: () => {}
 };
 
 export const AppContext = React.createContext<AppContextInterface>(
