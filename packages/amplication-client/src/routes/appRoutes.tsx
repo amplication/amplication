@@ -25,7 +25,8 @@ export const Routes: RouteDef[] = [
       {
         path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
         Component: lazy(() => import("../Project/ProjectPage")),
-        moduleName: "",
+        moduleName: "ProjectPage",
+        moduleClass: "project-page",
         exactPath: false,
         routes: [
           {

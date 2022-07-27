@@ -3,16 +3,21 @@ import ResourceList from "../Workspaces/ResourceList";
 import "./ProjectPage.scss";
 import ProjectSideBar from "./ProjectSideBar";
 
-const CLASS_NAME = "project-page";
+type Props = {
+  moduleClass: string;
+  // eslint-disable-next-line no-undef
+  InnerRoutes: JSX.Element | undefined;
+};
 
-const ProjectPage = () => (
-  <div className={CLASS_NAME}>
-    <div className={`${CLASS_NAME}__sidebar`}>
-      <div className={`${CLASS_NAME}__sidebar-content`}>
+const ProjectPage: React.FC<Props> = ({ InnerRoutes, moduleClass }) => (
+  <div className={moduleClass}>
+    {InnerRoutes}
+    <div className={`${moduleClass}__sidebar`}>
+      <div className={`${moduleClass}__sidebar-content`}>
         <ProjectSideBar />
       </div>
     </div>
-    <div className={`${CLASS_NAME}__content`}>
+    <div className={`${moduleClass}__content`}>
       <ResourceList />
     </div>
   </div>
