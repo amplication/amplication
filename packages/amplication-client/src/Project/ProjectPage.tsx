@@ -1,4 +1,5 @@
 import React from "react";
+import ResourceList from "../Workspaces/ResourceList";
 import "./ProjectPage.scss";
 import ProjectSideBar from "./ProjectSideBar";
 
@@ -11,7 +12,9 @@ const ProjectPage = () => (
         <ProjectSideBar />
       </div>
     </div>
-    <div className={`${CLASS_NAME}__content`}>content</div>
+    <div className={`${CLASS_NAME}__content`}>
+      <ResourceList />
+    </div>
   </div>
 );
 

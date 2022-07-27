@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { gql, Reference, useMutation, useQuery } from "@apollo/client";
+import React, { useCallback, useContext, useState } from "react";
+import { gql, Reference, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
@@ -16,10 +16,7 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
 import ResourceListItem from "./ResourceListItem";
 import "./ResourceList.scss";
-
-type TData = {
-  resources: Array<models.Resource>;
-};
+import { AppContext } from "../context/appContext";
 
 type TDeleteData = {
   deleteResource: models.Resource;
@@ -29,8 +26,8 @@ const CLASS_NAME = "resource-list";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error | null>(null);
+  const {resources, handleSearchChange, loadingResources, errorResources} = useContext(AppContext);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -67,27 +64,9 @@ function ResourceList() {
     },
     [deleteResource, setError, trackEvent]
   );
-
-  const handleSearchChange = useCallback(
-    (value) => {
-      setSearchPhrase(value);
-    },
-    [setSearchPhrase]
-  );
-
-  const { data, error: errorLoading, loading } = useQuery<TData>(
-    GET_RESOURCES,
-    {
-      variables: {
-        whereName:
-          searchPhrase !== ""
-            ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-            : undefined,
-      },
-    }
-  );
+  
   const errorMessage =
-    formatError(errorLoading) || (error && formatError(error));
+    formatError(errorResources) || (error && formatError(error));
 
   const handleNewResourceClick = useCallback(() => {
     trackEvent({
@@ -115,11 +94,11 @@ function ResourceList() {
         </Link>
       </div>
       <div className={`${CLASS_NAME}__title`}>
-        {data?.resources.length} Resources
+        {resources.length} Resources
       </div>
-      {loading && <CircularProgress />}
+      {loadingResources && <CircularProgress />}
 
-      {isEmpty(data?.resources) && !loading ? (
+      {isEmpty(resources) && !loadingResources ? (
         <div className={`${CLASS_NAME}__empty-state`}>
           <SvgThemeImage image={EnumImages.AddResource} />
           <div className={`${CLASS_NAME}__empty-state__title`}>
@@ -127,7 +106,7 @@ function ResourceList() {
           </div>
         </div>
       ) : (
-        data?.resources.map((resource) => {
+        resources.map((resource) => {
           return (
             <ResourceListItem
               key={resource.id}
@@ -139,7 +118,7 @@ function ResourceList() {
       )}
 
       <Snackbar
-        open={Boolean(error || errorLoading)}
+        open={Boolean(error || errorResources)}
         message={errorMessage}
         onClose={clearError}
       />
@@ -148,43 +127,6 @@ function ResourceList() {
 }
 
 export default ResourceList;
-
-export const GET_RESOURCES = gql`
-  query getResources($whereName: StringFilter) {
-    resources(where: { name: $whereName }, orderBy: { createdAt: Desc }) {
-      id
-      name
-      description
-      color
-      updatedAt
-      builds(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        version
-        createdAt
-        status
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
-      }
-    }
-  }
-`;
 
 const DELETE_RESOURCE = gql`
   mutation deleteResource($resourceId: String!) {
