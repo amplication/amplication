@@ -9,7 +9,7 @@ export interface AppContextInterface {
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
   resources: models.Resource[];
-  handleSearchChange: (value: any) => void
+  handleSearchChange: (searchResults: string) => void
   loadingResources: boolean;
   errorResources: Error | undefined;
 }
