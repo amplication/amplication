@@ -3,7 +3,7 @@ export const AMP_CURRENT_ENTITY = 'AMP_CURRENT_ENTITY';
 export const AMP_CURRENT_FIELD = 'AMP_CURRENT_FIELD';
 export const AMP_SERVER_URL = 'AMP_SERVER_URL';
 export const AMP_OUTPUT_FORMAT = 'AMP_OUTPUT_FORMAT';
-export const DEFAULT_SERVER_URL = 'https://app.amplication.com';
+export const DEFAULT_SERVER_URL = 'https://server.amplication.com';
 
 export const allowedProperties = [
   AMP_CURRENT_APP,
