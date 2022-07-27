@@ -23,74 +23,80 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   const { trackEvent } = useTracking();
   const history = useHistory();
   const location = useLocation();
-  const { workspace } = useParams<{ workspace?: string }>()
+  const { workspace } = useParams<{ workspace?: string }>();
   const [currentWorkspace, setCurrentWorkspace] = useState<models.Workspace>();
-  const [getCurrentWorkspace, { loading: loadingCurrentWorkspace, data }] = useLazyQuery<TData>(
-    GET_CURRENT_WORKSPACE,
-    {
-      onError: (error) => {
-        if (error.message === "Unauthorized") {
-          unsetToken();
-          history.push("/login");
-        }
-      },
-    }
-  );
+  const [
+    getCurrentWorkspace,
+    { loading: loadingCurrentWorkspace, data },
+  ] = useLazyQuery<TData>(GET_CURRENT_WORKSPACE, {
+    onError: (error) => {
+      if (error.message === "Unauthorized") {
+        unsetToken();
+        history.push("/login");
+      }
+    },
+  });
 
   const [setServerCurrentWorkspace, { data: setCurrentData }] = useMutation<
     TSetData
   >(SET_CURRENT_WORKSPACE);
 
-  const [createNewWorkspace, { error: createNewWorkspaceError, loading: loadingCreateNewWorkspace }] = useMutation<DType>(
-    CREATE_WORKSPACE,
-    {
-      onCompleted: (data) => {
-        trackEvent({
-          eventName: "createWorkspace",
-          workspaceName: data.createWorkspace.name,
-        });
-        handleSetCurrentWorkspace(data.createWorkspace.id);
-      },
-      update(cache, { data }) {
-        if (!data) return;
+  const [
+    createNewWorkspace,
+    { error: createNewWorkspaceError, loading: loadingCreateNewWorkspace },
+  ] = useMutation<DType>(CREATE_WORKSPACE, {
+    onCompleted: (data) => {
+      trackEvent({
+        eventName: "createWorkspace",
+        workspaceName: data.createWorkspace.name,
+      });
+      handleSetCurrentWorkspace(data.createWorkspace.id);
+    },
+    update(cache, { data }) {
+      if (!data) return;
 
-        const newWorkspace = data.createWorkspace;
+      const newWorkspace = data.createWorkspace;
 
-        cache.modify({
-          fields: {
-            workspaces(existingWorkspaceRefs = [], { readField }) {
-              const newWorkspaceRef = cache.writeFragment({
-                data: newWorkspace,
-                fragment: NEW_WORKSPACE_FRAGMENT,
-              });
+      cache.modify({
+        fields: {
+          workspaces(existingWorkspaceRefs = [], { readField }) {
+            const newWorkspaceRef = cache.writeFragment({
+              data: newWorkspace,
+              fragment: NEW_WORKSPACE_FRAGMENT,
+            });
 
-              if (
-                existingWorkspaceRefs.some(
-                  (WorkspaceRef: Reference) =>
-                    readField("id", WorkspaceRef) === newWorkspace.id
-                )
-              ) {
-                return existingWorkspaceRefs;
-              }
+            if (
+              existingWorkspaceRefs.some(
+                (WorkspaceRef: Reference) =>
+                  readField("id", WorkspaceRef) === newWorkspace.id
+              )
+            ) {
+              return existingWorkspaceRefs;
+            }
 
-              return [...existingWorkspaceRefs, newWorkspaceRef];
-            },
+            return [...existingWorkspaceRefs, newWorkspaceRef];
           },
-        });
-      },
-    }
+        },
+      });
+    },
+  });
+
+  const createWorkspace = useCallback(
+    (data: CreateWorkspaceType) => {
+      createNewWorkspace({
+        variables: {
+          data,
+        },
+      }).catch(console.error);
+    },
+    [createNewWorkspace]
   );
-  
-  const createWorkspace = useCallback((data: CreateWorkspaceType) => {
-    createNewWorkspace({
-      variables: {
-        data,
-      },
-    }).catch(console.error);
-  }, [createNewWorkspace])
 
   useEffect(() => {
-    !authenticated && location.pathname === "/" && !currentWorkspace && history.push("/login");
+    !authenticated &&
+      location.pathname === "/" &&
+      !currentWorkspace &&
+      history.push("/login");
 
     authenticated && !currentWorkspace && getCurrentWorkspace();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,7 +131,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
         },
       })
         .then((results: FetchResult) => {
-          !results && history.push("/login")
+          !results && history.push("/login");
         })
         .catch((error) => console.log(error));
     },
@@ -138,7 +144,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     handleSetCurrentWorkspace,
     createWorkspace,
     createNewWorkspaceError,
-    loadingCreateNewWorkspace
+    loadingCreateNewWorkspace,
   };
 };
 

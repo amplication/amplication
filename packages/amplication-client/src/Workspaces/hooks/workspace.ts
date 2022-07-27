@@ -7,7 +7,7 @@ export type TData = {
 export type TSetData = {
   setCurrentWorkspace: {
     token: string;
-  }
+  };
 };
 
 export type DType = {
