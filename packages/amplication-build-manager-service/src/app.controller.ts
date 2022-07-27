@@ -34,6 +34,7 @@ export class AppController {
       const runResponse = await this.buildService.runBuild(path);
       this.emitInitMessage(runResponse.runId, 'Generating code');
     } catch (error) {
+      //TODO: When our logger is ready get back and use it here
       console.error(error);
       this.emitFailureMessage(gr.buildId, error.message);
     }
