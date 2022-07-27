@@ -30,7 +30,13 @@ type Props = {
 
 const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
   const authenticated = useAuthenticated();
-  const { currentWorkspace, handleSetCurrentWorkspace } = useWorkspaceSelector(
+  const {
+    currentWorkspace,
+    handleSetCurrentWorkspace,
+    createWorkspace,
+    createNewWorkspaceError,
+    loadingCreateNewWorkspace,
+  } = useWorkspaceSelector(
     authenticated
   );
   const {
@@ -49,6 +55,9 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
         setNewProject: createProject,
         onNewProjectCompleted,
         handleSetCurrentWorkspace,
+        createWorkspace,
+        createNewWorkspaceError,
+        loadingCreateNewWorkspace
       }}
     >
       {isMobileOnly ? (

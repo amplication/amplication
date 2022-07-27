@@ -27,3 +27,19 @@ export const SET_CURRENT_WORKSPACE = gql`
     }
   }
 `;
+
+export const CREATE_WORKSPACE = gql`
+  mutation createWorkspace($data: WorkspaceCreateInput!) {
+    createWorkspace(data: $data) {
+      id
+      name
+    }
+  }
+`;
+
+export const NEW_WORKSPACE_FRAGMENT = gql`
+  fragment NewWorkspace on Workspace {
+    id
+    name
+  }
+`;

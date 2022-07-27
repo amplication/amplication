@@ -1,35 +1,31 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   FetchResult,
+  Reference,
   useApolloClient,
   useLazyQuery,
   useMutation,
 } from "@apollo/client";
 import { useHistory, useParams, useLocation } from "react-router-dom";
 import {
+  CREATE_WORKSPACE,
   GET_CURRENT_WORKSPACE,
+  NEW_WORKSPACE_FRAGMENT,
   SET_CURRENT_WORKSPACE,
 } from "../queries/workspaceQuery";
 import { setToken, unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
-
-type TData = {
-  currentWorkspace: models.Workspace;
-};
-
-type TSetData = {
-  setServerCurrentWorkspace: {
-    token: string;
-  };
-};
+import { CreateWorkspaceType, DType, TData, TSetData } from "./workspace";
+import { useTracking } from "react-tracking";
 
 const useWorkspaceSelector = (authenticated: boolean) => {
   const apolloClient = useApolloClient();
+  const { trackEvent } = useTracking();
   const history = useHistory();
   const location = useLocation();
   const { workspace } = useParams<{ workspace?: string }>()
   const [currentWorkspace, setCurrentWorkspace] = useState<models.Workspace>();
-  const [getCurrentWorkspace, { loading, data }] = useLazyQuery<TData>(
+  const [getCurrentWorkspace, { loading: loadingCurrentWorkspace, data }] = useLazyQuery<TData>(
     GET_CURRENT_WORKSPACE,
     {
       onError: (error) => {
@@ -45,15 +41,63 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     TSetData
   >(SET_CURRENT_WORKSPACE);
 
+  const [createNewWorkspace, { error: createNewWorkspaceError, loading: loadingCreateNewWorkspace }] = useMutation<DType>(
+    CREATE_WORKSPACE,
+    {
+      onCompleted: (data) => {
+        trackEvent({
+          eventName: "createWorkspace",
+          workspaceName: data.createWorkspace.name,
+        });
+        handleSetCurrentWorkspace(data.createWorkspace.id);
+      },
+      update(cache, { data }) {
+        if (!data) return;
+
+        const newWorkspace = data.createWorkspace;
+
+        cache.modify({
+          fields: {
+            workspaces(existingWorkspaceRefs = [], { readField }) {
+              const newWorkspaceRef = cache.writeFragment({
+                data: newWorkspace,
+                fragment: NEW_WORKSPACE_FRAGMENT,
+              });
+
+              if (
+                existingWorkspaceRefs.some(
+                  (WorkspaceRef: Reference) =>
+                    readField("id", WorkspaceRef) === newWorkspace.id
+                )
+              ) {
+                return existingWorkspaceRefs;
+              }
+
+              return [...existingWorkspaceRefs, newWorkspaceRef];
+            },
+          },
+        });
+      },
+    }
+  );
+  
+  const createWorkspace = useCallback((data: CreateWorkspaceType) => {
+    createNewWorkspace({
+      variables: {
+        data,
+      },
+    }).catch(console.error);
+  }, [createNewWorkspace])
+
   useEffect(() => {
-    !authenticated && location.pathname === "/" && history.push("/login");
+    !authenticated && location.pathname === "/" && !currentWorkspace && history.push("/login");
 
     authenticated && !currentWorkspace && getCurrentWorkspace();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated]);
 
   useEffect(() => {
-    if (loading && !authenticated) return;
+    if (loadingCurrentWorkspace && !authenticated) return;
 
     data &&
       data.currentWorkspace.id !== workspace &&
@@ -62,12 +106,12 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     data &&
       data.currentWorkspace.id === workspace &&
       setCurrentWorkspace(data.currentWorkspace);
-  }, [authenticated, data, history, loading, workspace]);
+  }, [authenticated, data, history, loadingCurrentWorkspace, workspace]);
 
   useEffect(() => {
     if (setCurrentData) {
       apolloClient.clearStore();
-      setToken(setCurrentData.setServerCurrentWorkspace.token);
+      setToken(setCurrentData.setCurrentWorkspace.token);
       history.replace("/");
       window.location.reload();
     }
@@ -81,19 +125,20 @@ const useWorkspaceSelector = (authenticated: boolean) => {
         },
       })
         .then((results: FetchResult) => {
-          // on success replace url with new workspace id
-          // setCurrentWorkspace(new workspace)
-          console.log(results, setCurrentWorkspace);
+          !results && history.push("/login")
         })
         .catch((error) => console.log(error));
     },
-    [setServerCurrentWorkspace]
+    [history, setServerCurrentWorkspace]
   );
 
   return {
     currentWorkspace,
-    loadingWorkspace: loading,
+    loadingWorkspace: loadingCurrentWorkspace,
     handleSetCurrentWorkspace,
+    createWorkspace,
+    createNewWorkspaceError,
+    loadingCreateNewWorkspace
   };
 };
 
