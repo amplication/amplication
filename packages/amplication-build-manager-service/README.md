@@ -1,73 +1,50 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Amplication Build Manager
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Amplication Build Manager is a service which is responsible for managing code generation process. It uses Kafka as a message bus in order to communicate with other services, manages CodeBuild.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+If you need help or have a question, go to our [Discord channel](https://discord.gg/Z2CG3rUFnu), we are here to help.
 
-## Description
+## Development
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+:bulb: Before you begin, make sure you have all the below installed:
 
-## Installation
+- [Node.js v14 or above](https://nodejs.org/en/download/)
+- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
+- [Docker](https://docs.docker.com/desktop/)
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
-```bash
-$ npm install
-```
+#### Automatic one-time setup
 
-## Running the app
+Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, you should follow the instruction on the [README.md](../../README.md) file in the project root folder.
 
-```bash
-# development
-$ npm run start
+You can also use a more manual step-by-step approach to set up Amplication Build Manager - to do that, follow the instructions below.
 
-# watch mode
-$ npm run start:dev
+## Environment Variables:
 
-# production mode
-$ npm run start:prod
-```
+| Environment | Description | Value       |
+| ----------- | ----------- | ----------- |
+| KAFKA_BROKERS | kafka client must be configured with at least one broker. The brokers on the list are considered seed brokers and are only used to bootstrap the client and load initial metadata  | `["localhost:9092"]` |
+| KAFKA_CLIENT_ID | A logical identifier of an application. Can be used by brokers to apply quotas or trace requests to a specific application. Example: booking-events-processor | `server-queue-client` |
+| KAFKA_GROUP_ID |  prevent collisions between Nest microservice client and server components  | "main-server-group" |
+| GENERATE_RESOURCE_TOPIC | From this topic the service obtains requests for code build process.  | `build.internal.generate-resource.event.0` |
+| BUILD_STATUS_TOPIC | Topic for code build statuses. The service issue init or failed status. | 'build.internal.build-status.event.0' |
+| BUILD_CONTEXT_FS_LOCATION | Provides location of build contexts in file system. | `/home/build-manager/build-contexts` |
+| BUILD_CONTEXT_S3_BUCKET | S3 bucket that stores build contexts required by CodeBuild. | `amplication-dsg-dev` |
+| BUILD_CONTEXT_S3_LOCATION | Base location of build contexts in the bucket. | `build-contexts` |
+| BUILD_ARTIFACT_S3_BUCKET | S3 bucket that stores artifacts that produced by CodeBuild. | `amplication-dsg-dev` |
+| BUILD_ARTIFACT_S3_LOCATION | Base location of artifacts in the bucket. | `build-artifacts` |
+| CODE_BUILD_PROJECT_NAME | CodeBuild Project Name that the service uses for code build process. | `code-generator-dev` |
 
-## Test
+#### Manual one-time set up
 
-```bash
-# unit tests
-$ npm run test
+- Install dependencies of the monorepo (execute in root directory):
 
-# e2e tests
-$ npm run test:e2e
+  ```
+  npm install
+  npm run bootstrap
+  ```
 
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- Start the development server and watch for changes (execute in server directory "packages/amplication-server")
+  ```
+  npm run start:watch
+  ```
