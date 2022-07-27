@@ -1,6 +1,6 @@
+import { Entity, EntityField } from "@amplication/code-gen-types";
 import { cloneDeep } from "lodash";
 import { createEntityDTO } from "../../../../server/resource/dto/create-entity-dto";
-import { Entity, EntityField } from "../../../../types";
 import defaultEntity from "./constants/default-entity";
 import defaultJsonField from "./constants/json-field";
 import { printTypescript } from "./utils";

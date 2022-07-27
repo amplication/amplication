@@ -22,7 +22,7 @@ import {
   EntityPermissionField
 } from 'src/models';
 import { JsonObject } from 'type-fest';
-import { getSchemaForDataType, types } from '@amplication/data';
+import { getSchemaForDataType, types } from '@amplication/code-gen-types';
 import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
 import { DiffService } from 'src/services/diff.service';
 import { SchemaValidationResult } from 'src/dto/schemaValidationResult';

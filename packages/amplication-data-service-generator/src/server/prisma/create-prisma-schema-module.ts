@@ -1,4 +1,4 @@
-import { Entity, Module } from "../../types";
+import { Entity, Module } from "@amplication/code-gen-types";
 import { createPrismaSchema } from "./create-prisma-schema";
 
 export async function createPrismaSchemaModule(

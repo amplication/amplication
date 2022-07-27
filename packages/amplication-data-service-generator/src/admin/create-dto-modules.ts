@@ -1,6 +1,6 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
-import { Module } from "../types";
+import { Module } from "@amplication/code-gen-types";
 import { DTOs } from "../server/resource/create-dtos";
 import { createDTOFile } from "../server/resource/dto/create-dto-module";
 import { getNamedProperties, NamedClassDeclaration } from "../util/ast";

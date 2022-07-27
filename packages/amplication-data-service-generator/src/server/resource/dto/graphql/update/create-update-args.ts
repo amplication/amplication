@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { Entity } from "../../../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { readFile } from "../../../../../util/module";
 import {
   interpolate,

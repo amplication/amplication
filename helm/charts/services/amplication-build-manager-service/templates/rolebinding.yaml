@@ -1,0 +1,3 @@
+{{ include "base.rolebinding" (list . "amplication-build-manager-service.rolebinding") -}}
+{{- define "amplication-build-manager-service.rolebinding" -}}
+{{- end }}

@@ -70,5 +70,23 @@
       "envFile": "${workspaceFolder}/packages/amplication-server/.env",
       "cwd": "${workspaceRoot}/packages/amplication-server"
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Build Manager",
+      "args": [
+          "${workspaceFolder}/packages/amplication-build-manager-service/src/main.ts"
+      ],
+      "runtimeArgs": [
+          "--nolazy",
+          "-r",
+          "ts-node/register",
+          "-r",
+          "tsconfig-paths/register"
+      ],
+      "sourceMaps": true,
+      "envFile": "${workspaceFolder}/packages/amplication-build-manager-service/.env",
+      "cwd": "${workspaceRoot}/packages/amplication-build-manager-service"
+    },
   ]
 }
