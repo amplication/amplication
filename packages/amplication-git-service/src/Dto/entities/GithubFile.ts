@@ -1,9 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
-@ObjectType({
-  isAbstract: true,
-  description: undefined
-})
+@ObjectType({ isAbstract: true })
 export class GithubFile {
   @Field(() => String)
   name: string | null;
