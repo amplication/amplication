@@ -10,11 +10,10 @@
   }
 
   &__sidebar-content {
-    border: 1px solid var(--black5);
+    border: var(--border-black5);
     border-radius: var(--small-border-radius);
     display: flex;
     height: 100%;
-    max-height: 820px;
   }
 
   &__content {

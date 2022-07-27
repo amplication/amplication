@@ -7,7 +7,6 @@ const CLASS_NAME = "workspace-settings-navigation";
 const WorkspaceSettingsNavigation = () => {
   return (
     <div className={CLASS_NAME}>
-      <hr className={`${CLASS_NAME}__divider`} />
       <div className={`${CLASS_NAME}__links`}>
         <InnerTabLink to={`/workspace/settings`} icon="settings">
           Workspace Settings

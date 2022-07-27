@@ -3,18 +3,22 @@
 .project-sidebar {
   @include flexColumn;
   padding: var(--large-spacing);
+  border: $border-black70;
+  border-radius: var(--default-spacing-small);
+  width: 256px;
+
   &__project-wrapper {
     flex-grow: 1;
     width: 100%;
   }
   &__label {
     @include regular-12;
-    margin-bottom: 8px;
+    margin-bottom: var(--default-spacing-small);
     color: var(--black80);
   }
 
   &__divider {
-    border: 1px solid var(--black5);
+    border: $border-black5;
     width: 99%;
   }
 }

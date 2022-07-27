@@ -12,7 +12,7 @@ import {
   GET_CURRENT_WORKSPACE,
   NEW_WORKSPACE_FRAGMENT,
   SET_CURRENT_WORKSPACE,
-} from "../queries/workspaceQuery";
+} from "../queries/workspaceQueries";
 import { setToken, unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
 import { CreateWorkspaceType, DType, TData, TSetData } from "./workspace";
