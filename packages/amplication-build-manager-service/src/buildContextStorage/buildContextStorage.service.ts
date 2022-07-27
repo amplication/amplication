@@ -56,9 +56,9 @@ export class BuildContextStorageService {
       const path = join(this.BUILD_CONTEXT_S3_BUCKET, filePath);
       return path;
     } catch (err) {
-      //TODO: When our logger is ready get back and use it here
-      console.error(err);
-      throw err;
+      throw new Error(
+        `Failed to save context file in S3 bucket. Input: generateResource: ${generateResource}. Source error: ${err}`,
+      );
     }
   }
 }

@@ -29,8 +29,9 @@ export class CodeBuildService implements BuildService {
     try {
       return this.codeBuildClient.send(command);
     } catch (err) {
-      console.error(err);
-      throw err;
+      throw new Error(
+        `Failed to trigger CodeBuild job run. Input: contextArchivePath: ${contextArchivePath}. Source error: ${err}`,
+      );
     }
   }
 }

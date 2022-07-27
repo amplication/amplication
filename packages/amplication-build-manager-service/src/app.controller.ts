@@ -1,5 +1,5 @@
 import { EnvironmentVariables } from '@amplication/kafka';
-import { Controller, Inject } from '@nestjs/common';
+import { Controller, Inject, LoggerService } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
 import { BuildService } from './codeBuild/build.service';
@@ -10,6 +10,7 @@ import { QueueService } from './queue/queue.service';
 import { ConfigService } from '@nestjs/config';
 import { BuildStatusEvent } from './codeBuild/dto/BuildStatusEvent';
 import { BuildStatusEnum } from './codeBuild/dto/BuildStatusEnum';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Controller()
 export class AppController {
@@ -20,6 +21,8 @@ export class AppController {
     private readonly queueService: QueueService,
     private readonly configService: ConfigService,
     private readonly buildContextStorage: BuildContextStorageService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
   ) {
     this.buildStatusTopic = this.configService.get<string>(BUILD_STATUS_TOPIC);
   }
@@ -34,8 +37,10 @@ export class AppController {
       const runResponse = await this.buildService.runBuild(path);
       this.emitInitMessage(runResponse.runId, 'Generating code');
     } catch (error) {
-      //TODO: When our logger is ready get back and use it here
-      console.error(error);
+      this.logger.error(
+        `Failed to run code build: message: ${message} error: ${error}`,
+        { error, class: QueueService.name, message },
+      );
       this.emitFailureMessage(gr.buildId, error.message);
     }
   }

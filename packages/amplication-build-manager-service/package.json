@@ -29,6 +29,8 @@
     "@nestjs/core": "8.2.3",
     "@nestjs/microservices": "^8.4.5",
     "@nestjs/platform-express": "^8.0.0",
+    "nest-winston": "1.6.2",
+    "winston-cloud-logging": "1.0.2",
     "jszip": "^3.10.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2"
