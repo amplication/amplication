@@ -40,7 +40,7 @@ const useProjectSelector = (
     (projectId: string, search?: string) =>
       history.push({
         pathname: `/${currentWorkspace?.id || workspace}/${projectId}`,
-        search: search || ""
+        search: search || "",
       }),
     [currentWorkspace?.id, history, workspace]
   );
@@ -70,10 +70,21 @@ const useProjectSelector = (
     if (project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("route=create-resource");
-    history.push(`/${currentWorkspace?.id}/${projectsList[0].id}${isFromSignup ? "/create-resource" : ""}`);
+    history.push(
+      `/${currentWorkspace?.id}/${projectsList[0].id}${
+        isFromSignup ? "/create-resource" : ""
+      }`
+    );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentWorkspace?.id, history, project, projectRedirect, projectsList, workspace]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentWorkspace?.id,
+    history,
+    project,
+    projectRedirect,
+    projectsList,
+    workspace,
+  ]);
 
   useEffect(() => {
     if (!project || !projectsList.length) return;
