@@ -32,18 +32,30 @@ export class AppController {
       const gr: GenerateResource = message.value;
       const path = await this.buildContextStorage.saveBuildContextSource(gr);
       const runResponse = await this.buildService.runBuild(path);
-      const initEvent: BuildStatusEvent = {
-        runId: runResponse.build.id,
-        status: BuildStatusEnum.Init,
-        timestamp: new Date().toISOString(),
-        message: '',
-      };
-      this.queueService.emitMessage(
-        this.buildStatusTopic,
-        JSON.stringify(initEvent),
-      );
+      this.emitInitMessage(runResponse.runId, 'Generating code');
     } catch (error) {
       console.error(error);
+      this.emitFailureMessage(message.runId, error.message);
     }
+  }
+
+  emitInitMessage(runId: string, message: string) {
+    const event: BuildStatusEvent = {
+      runId,
+      status: BuildStatusEnum.Init,
+      timestamp: new Date().toISOString(),
+      message,
+    };
+    this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
+  }
+
+  emitFailureMessage(runId: string, message: string) {
+    const event: BuildStatusEvent = {
+      runId,
+      status: BuildStatusEnum.Failed,
+      timestamp: new Date().toISOString(),
+      message,
+    };
+    this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
   }
 }

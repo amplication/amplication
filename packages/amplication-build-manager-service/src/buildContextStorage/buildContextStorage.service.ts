@@ -54,6 +54,7 @@ export class BuildContextStorageService {
       return path;
     } catch (err) {
       console.error(err);
+      throw err;
     }
   }
 }

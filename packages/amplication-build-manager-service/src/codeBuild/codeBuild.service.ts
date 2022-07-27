@@ -30,6 +30,7 @@ export class CodeBuildService implements BuildService {
       return this.codeBuildClient.send(command);
     } catch (err) {
       console.error(err);
+      throw err;
     }
   }
 }
