@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { promises as fsPr } from 'fs';
+import { promises as fsPromises } from 'fs';
 import { GenerateResource } from '../codeBuild/dto/GenerateResource';
 import { join } from 'path';
 import { timeFormatYearMonthDay } from '../utils/timeFormat';
@@ -27,32 +27,36 @@ export class BuildContextStorageService {
   }
 
   public async saveBuildContextSource(
-    genResource: GenerateResource,
+    generateResource: GenerateResource,
   ): Promise<string> {
     try {
-      const buffer = await fsPr.readFile(genResource.contextFileLocation.path);
+      const buffer = await fsPromises.readFile(
+        generateResource.contextFileLocation.path,
+      );
       const archive = await this.compressionService.createZipArchive([
         { path: 'input-data.json', data: buffer },
       ]);
 
       const date = timeFormatYearMonthDay(new Date());
-      const key = join(
+      const filePath = join(
         this.BUILD_CONTEXT_S3_LOCATION,
         date,
-        genResource.projectId,
-        genResource.resourceId,
-        `${genResource.buildId}.zip`,
+        //TODO: validate projectId
+        generateResource.projectId,
+        generateResource.resourceId,
+        `${generateResource.buildId}.zip`,
       );
 
       await this.storageService.saveFile(
         this.BUILD_CONTEXT_S3_BUCKET,
-        key,
+        filePath,
         archive,
       );
 
-      const path = join(this.BUILD_CONTEXT_S3_BUCKET, key);
+      const path = join(this.BUILD_CONTEXT_S3_BUCKET, filePath);
       return path;
     } catch (err) {
+      //TODO: When our logger is ready get back and use it here
       console.error(err);
       throw err;
     }
