@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import * as models from "../../models";
-import { GET_RESOURCES } from "../queries/resourcesQuery";
+import { GET_RESOURCES } from "../queries/resourcesQueries";
 
 type TData = {
   resources: models.Resource[];
