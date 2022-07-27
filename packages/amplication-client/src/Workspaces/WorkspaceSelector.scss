@@ -7,7 +7,6 @@
   align-items: center;
   cursor: pointer;
   padding: var(--default-spacing);
-  gap: 4px;
   width: 100%;
 
   .circle-badge {
@@ -41,11 +40,11 @@
   flex-direction: row;
   align-items: center;
   background-color: var(--surface);
-  border: 1px solid var(--black5);
+  border: $border-black5;
   border-top-left-radius: var(--default-spacing-small);
   border-top-right-radius: var(--default-spacing-small);
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: var(--large-spacing);
 
   &__current {
     @include workspaceItem;
@@ -59,8 +58,8 @@
     position: absolute;
     top: 57px;
     left: -1px;
-    width: calc(100% - 24px);
-    border: 1px solid var(--black30);
+    width: calc(100% - var(--double-spacing));
+    border: $border-black30;
     border-bottom-left-radius: var(--default-spacing-small);
     border-bottom-right-radius: var(--default-spacing-small);
     background-color: var(--black2);
@@ -69,10 +68,10 @@
 
     &__item {
       @include workspaceItem;
-      width: calc(100% - 24px);
-      margin-bottom: 4px;
+      width: calc(100% - var(--double-spacing));
+      margin-bottom: var(--icon-spacing);
       &__icon {
-        color: #31c587;
+        color: var(--positive-default);
       }
     }
 
@@ -81,8 +80,8 @@
     }
 
     &__button {
-      margin-left: 12px;
-      margin-top: 10px;
+      margin-left: var(--default-spacing);
+      margin-top: var(--default-spacing-small);
     }
 
     &__new {
@@ -92,7 +91,7 @@
       align-items: flex-start;
     }
     &__divider {
-      width: calc(100% - 24px);
+      width: calc(100% - var(--double-spacing));
       border: 1px solid var(--black30);
     }
   }
@@ -100,14 +99,14 @@
 
 .workspaces-selector:hover {
   background-color: var(--black2);
-  border: 1px solid var(--black30);
+  border: $border-black30;
 }
 
-.workspaces-selector-close {
+.workspaces-selector__close {
   border-bottom-left-radius: var(--default-spacing-small);
   border-bottom-right-radius: var(--default-spacing-small);
 }
-.workspaces-selector-open {
+.workspaces-selector__open {
   background-color: var(--black2);
-  border: 1px solid var(--black30);
+  border: $border-black30;
 }

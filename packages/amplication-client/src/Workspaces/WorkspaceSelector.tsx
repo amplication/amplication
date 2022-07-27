@@ -37,7 +37,7 @@ function WorkspaceSelector() {
   return (
     <div
       className={`${CLASS_NAME}${
-        isOpen ? " workspaces-selector-open " : " workspaces-selector-close"
+        isOpen ? ` ${CLASS_NAME}__open` : ` ${CLASS_NAME}__close`
       }`}
     >
       <Dialog
