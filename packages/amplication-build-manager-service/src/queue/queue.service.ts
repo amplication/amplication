@@ -5,19 +5,18 @@ export const KAFKA_CLIENT = 'KAFKA_CLIENT';
 
 @Injectable()
 export class QueueService {
-  private readonly observer = {
-    error(e) {
-      console.error(e);
-    },
-  };
-
   constructor(
     @Inject(KAFKA_CLIENT)
     private readonly kafkaClient: ClientKafka,
   ) {}
 
   emitMessage(topic: string, message: string): void {
+    const observer = {
+      error(e) {
+        console.error(topic, message, e);
+      },
+    };
     const response = this.kafkaClient.emit(topic, message);
-    response.subscribe(this.observer);
+    response.subscribe(observer);
   }
 }
