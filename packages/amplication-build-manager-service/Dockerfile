@@ -13,7 +13,6 @@ RUN npm ci
 RUN npm run bootstrap -- --scope @amplication/build-manager-service --include-dependencies
 
 RUN npm run build -- --scope @amplication/build-manager-service --include-dependencies
-# RUN npm run build -- --scope @amplication/kafka --include-dependencies
 
 FROM node:$NODE_VERSION-$ALPINE_VERSION as runner
 WORKDIR /app
