@@ -15,9 +15,8 @@ import {
   UNSUPPORTED_GIT_ORGANIZATION_TYPE
 } from '../utils/constants';
 import { components } from '@octokit/openapi-types';
-import { isInAmplicationIgnore } from '../utils/isInAmplicationIgnore';
-import { getAmplicationIgnoreExpressions } from '../utils/getAmplicationIgnoreExpressions';
 import { join } from 'path';
+import { AmplicationIgnoreManger } from '../utils/AmplicationIgnoreManger';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -178,13 +177,23 @@ export class GithubService implements IGitClient {
       auth: token
     });
 
-    const amplicationIgnoreExpressions = await getAmplicationIgnoreExpressions(
-      this,
-      userName,
-      repoName,
-      baseBranchName,
-      installationId
-    );
+    const amplicationIgnoreManger = new AmplicationIgnoreManger();
+    await amplicationIgnoreManger.init(async fileName => {
+      try {
+        return (
+          await this.getFile(
+            userName,
+            repoName,
+            fileName,
+            baseBranchName,
+            installationId
+          )
+        ).content;
+      } catch (error) {
+        console.log('Repository does not have a .amplicationignore file');
+        return '';
+      }
+    });
 
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
     //do not override server/scripts/customSeed.ts
@@ -198,15 +207,9 @@ export class GithubService implements IGitClient {
 
     const authFolder = 'server/src/auth';
 
-    const isAmplicationIgnoreHaveExpressions =
-      amplicationIgnoreExpressions.length > 0;
-
     const files = Object.fromEntries(
       modules.map(module => {
-        if (
-          isAmplicationIgnoreHaveExpressions &&
-          isInAmplicationIgnore(amplicationIgnoreExpressions, module.path)
-        ) {
+        if (amplicationIgnoreManger.isIgnored(module.path)) {
           return [
             join(AMPLICATION_IGNORED_FOLDER, amplicationBuildId, module.path),
             module.code
