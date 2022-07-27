@@ -5,7 +5,7 @@ import {
   EntityOptionSetField,
   EntityMultiSelectOptionSetField,
   LookupResolvedProperties,
-} from "../../types";
+} from "@amplication/code-gen-types";
 import { jsxElement } from "../util";
 import { isToManyRelationField } from "../../util/field";
 

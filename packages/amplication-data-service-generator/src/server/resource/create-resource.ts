@@ -2,7 +2,7 @@ import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { flatten } from "lodash";
 import * as winston from "winston";
-import { Entity, Module, AppInfo } from "../../types";
+import { Entity, Module, AppInfo } from "@amplication/code-gen-types";
 import { validateEntityName } from "../../util/entity";
 import { DTOs } from "./create-dtos";
 import { createServiceModules } from "./service/create-service";

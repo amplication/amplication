@@ -5,7 +5,7 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
-} from "../../../types";
+} from "@amplication/code-gen-types";
 import { getFieldsFromDTOWithoutToManyRelations } from "../../../util/entity";
 import {
   addImports,

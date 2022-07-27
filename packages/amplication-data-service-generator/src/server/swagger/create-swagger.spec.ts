@@ -1,5 +1,5 @@
 import { EnumAuthProviderType } from "../../models";
-import { AppInfo } from "../../types";
+import { AppInfo } from "@amplication/code-gen-types";
 import {
   createDescription,
   getInstructions,

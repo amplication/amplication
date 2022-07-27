@@ -4,7 +4,7 @@ import {
   removeTSInterfaceDeclares,
   removeTSVariableDeclares,
 } from "../../util/ast";
-import { Module } from "../../types";
+import { Module } from "@amplication/code-gen-types";
 import { EntityComponent } from "../types";
 
 export async function createEntityComponentModule(

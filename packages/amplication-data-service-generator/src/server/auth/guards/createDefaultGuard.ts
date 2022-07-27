@@ -1,7 +1,7 @@
 import { builders } from "ast-types";
 import { print } from "recast";
 import { EnumAuthProviderType } from "../../../models";
-import { Module } from "../../../types";
+import { Module } from "@amplication/code-gen-types";
 import {
   addImports,
   importNames,
