@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQueries";
 
@@ -9,16 +9,20 @@ const useProjectSelector = (
   currentWorkspace: models.Workspace | undefined
 ) => {
   const history = useHistory();
+  const location = useLocation();
   const workspaceMatch: {
     params: { workspace: string };
-  } | null = useRouteMatch<{ workspace: string }>("/:workspace([A-Za-z0-9-]{20,})");
+  } | null = useRouteMatch<{ workspace: string }>(
+    "/:workspace([A-Za-z0-9-]{20,})"
+  );
   const projectMatch: {
     params: { workspace: string; project: string };
   } | null = useRouteMatch<{ workspace: string; project: string }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
   );
   const project = projectMatch?.params?.project;
-  const workspace = projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
+  const workspace =
+    projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
   const { data: projectListData, loading: loadingList, refetch } = useQuery(
@@ -72,7 +76,16 @@ const useProjectSelector = (
       (projectDB: models.Project) => projectDB.id === project
     );
     if (!selectedProject) projectRedirect(projectsList[0].id);
+
     setCurrentProject(selectedProject);
+    const isFromSignup = location.search.includes("route=create-resource");
+    currentWorkspace &&
+      history.push(
+        `/${currentWorkspace.id}/${
+          selectedProject ? selectedProject.id : projectsList[0].id
+        }${isFromSignup ? "/create-resource" : ""}`
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project, projectRedirect, projectsList]);
 
   return {

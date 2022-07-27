@@ -15,11 +15,11 @@ import {
   serviceSettings,
 } from "./CreateServiceWizardForm";
 import * as models from "../../models";
-import { GET_RESOURCES } from "../../Workspaces/ResourceList";
 import { createResource, serviceSettingsFieldsInitValues } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
 
 type Props = {
   match: match<{
@@ -41,7 +41,6 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
 
   const { trackEvent } = useTracking();
   const history = useHistory();
-
   const [createResourceWithEntities, { loading, data, error }] = useMutation<
     TData
   >(CREATE_RESOURCE_WITH_ENTITIES, {

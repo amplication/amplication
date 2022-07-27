@@ -35,8 +35,11 @@ const useCurrentWorkspace = (authenticated: boolean) => {
 
   useEffect(() => {
     if (!(data && data.currentWorkspace)) return;
-
-    location.pathname === "/" && history.push(`/${data.currentWorkspace.id}`);
+    location.pathname === "/" &&
+      history.push({
+        pathname: `/${data.currentWorkspace.id}`,
+        search: location.search,
+      });
   }, [data, history, location]);
 
   return {

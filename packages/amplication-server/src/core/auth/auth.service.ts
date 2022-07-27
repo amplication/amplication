@@ -119,6 +119,17 @@ export class AuthService {
         account
       );
 
+      await this.prismaService.project.create({
+        data: {
+          name: 'My project',
+          workspace: {
+            connect: {
+              id: workspace.id
+            }
+          }
+        }
+      });
+
       const [user] = workspace.users;
 
       await this.accountService.setCurrentUser(account.id, user.id);

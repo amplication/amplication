@@ -29,21 +29,12 @@ export const Routes: RouteDef[] = [
         exactPath: false,
         routes: [
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/",
-            Component: lazy(() => import("../Resource/ResourceHome")),
-            moduleName: "",
-            routeTrackType: "",
-            exactPath: false,
-            routes: resourceRoutes,
-          },
-          {
             path:
               "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
-            Component: lazy(() => import("../Resource/ResourceHome")),
-            moduleName: "",
-            routeTrackType: "",
+            Component: lazy(() => import("../Resource/create-resource/CreateServiceWizard")),
+            moduleName: "CreateServiceWizard",
+            routeTrackType: "create-service-wizard",
             exactPath: true,
-            routes: resourceRoutes,
           },
           {
             path:
