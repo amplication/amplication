@@ -31,18 +31,20 @@ export const Routes: RouteDef[] = [
           {
             path:
               "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
-            Component: lazy(() => import("../Resource/create-resource/CreateServiceWizard")),
+            Component: lazy(
+              () => import("../Resource/create-resource/CreateServiceWizard")
+            ),
             moduleName: "CreateServiceWizard",
             routeTrackType: "create-service-wizard",
-            exactPath: true,
+            exactPath: false,
           },
           {
             path:
-              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource",
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Resource/ResourceHome")),
             moduleName: "",
             routeTrackType: "",
-            exactPath: true,
+            exactPath: false,
             routes: resourceRoutes,
           },
         ],

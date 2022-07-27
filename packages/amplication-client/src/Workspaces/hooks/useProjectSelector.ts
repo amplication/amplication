@@ -37,8 +37,11 @@ const useProjectSelector = (
   );
 
   const projectRedirect = useCallback(
-    (projectId: string) =>
-      history.push(`/${currentWorkspace?.id || workspace}/${projectId}`),
+    (projectId: string, search?: string) =>
+      history.push({
+        pathname: `/${currentWorkspace?.id || workspace}/${projectId}`,
+        search: search || ""
+      }),
     [currentWorkspace?.id, history, workspace]
   );
 
@@ -66,8 +69,11 @@ const useProjectSelector = (
   useEffect(() => {
     if (project || !projectsList.length) return;
 
-    projectRedirect(projectsList[0].id);
-  }, [history, project, projectRedirect, projectsList, workspace]);
+    const isFromSignup = location.search.includes("route=create-resource");
+    history.push(`/${currentWorkspace?.id}/${projectsList[0].id}${isFromSignup ? "/create-resource" : ""}`);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentWorkspace?.id, history, project, projectRedirect, projectsList, workspace]);
 
   useEffect(() => {
     if (!project || !projectsList.length) return;
@@ -78,14 +84,6 @@ const useProjectSelector = (
     if (!selectedProject) projectRedirect(projectsList[0].id);
 
     setCurrentProject(selectedProject);
-    const isFromSignup = location.search.includes("route=create-resource");
-    currentWorkspace &&
-      history.push(
-        `/${currentWorkspace.id}/${
-          selectedProject ? selectedProject.id : projectsList[0].id
-        }${isFromSignup ? "/create-resource" : ""}`
-      );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project, projectRedirect, projectsList]);
 
   return {
