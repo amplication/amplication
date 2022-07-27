@@ -13,10 +13,7 @@ RUN npm ci
 RUN npm run bootstrap -- --scope @amplication/build-manager-service --include-dependencies
 
 RUN npm run build -- --scope @amplication/build-manager-service --include-dependencies
-
-RUN npm run clean -- --yes
-# Rebuild production node_modules
-RUN npm run bootstrap -- -- --production --scope @amplication/build-manager-service --include-dependencies
+# RUN npm run build -- --scope @amplication/kafka --include-dependencies
 
 FROM node:$NODE_VERSION-$ALPINE_VERSION as runner
 WORKDIR /app
@@ -25,5 +22,9 @@ COPY --from=builder /app/packages/amplication-build-manager-service/package.json
 COPY --from=builder /app/packages/amplication-build-manager-service/node_modules /app/packages/amplication-build-manager-service/node_modules
 COPY --from=builder /app/packages/amplication-build-manager-service/dist /app/packages/amplication-build-manager-service/dist
 
-CMD [ "node", "/dist/main.js" ]
+COPY --from=builder /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
+COPY --from=builder /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
+COPY --from=builder /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
+
+CMD [ "node", "/app/packages/amplication-build-manager-service/dist/main.js" ]
 

@@ -1,0 +1,3 @@
+{{ include "base.role" (list . "amplication-build-manager-service.role") -}}
+{{- define "amplication-build-manager-service.role" -}}
+{{- end }}
