@@ -41,7 +41,6 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
 
   const { trackEvent } = useTracking();
   const history = useHistory();
-  
   const [createResourceWithEntities, { loading, data, error }] = useMutation<
     TData
   >(CREATE_RESOURCE_WITH_ENTITIES, {
