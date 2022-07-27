@@ -31,15 +31,3 @@ ingress:
   enabled: true
   hostname: webhook.amplication.com
   path: /
-
-postgres:
-  install: false
-  postgresqlUsername: postgres
-  postgresPassword: postgres
-  db: amplication
-  fullnameOverride: postgresql
-  postgresql:
-    image: groundnuty/k8s-wait-for:v1.3
-    imagePullPolicy: Always
-    primary:
-      podLabels: { name: "postgres" }
