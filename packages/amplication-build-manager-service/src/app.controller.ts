@@ -28,14 +28,14 @@ export class AppController {
     EnvironmentVariables.instance.get(GENERATE_RESOURCE_TOPIC, true),
   )
   async receiveCodeGenRequest(@Payload() message: any) {
+    const gr: GenerateResource = message.value || {};
     try {
-      const gr: GenerateResource = message.value;
       const path = await this.buildContextStorage.saveBuildContextSource(gr);
       const runResponse = await this.buildService.runBuild(path);
       this.emitInitMessage(runResponse.runId, 'Generating code');
     } catch (error) {
       console.error(error);
-      this.emitFailureMessage(message.runId, error.message);
+      this.emitFailureMessage(gr.buildId, error.message);
     }
   }
 
@@ -49,9 +49,9 @@ export class AppController {
     this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
   }
 
-  emitFailureMessage(runId: string, message: string) {
+  emitFailureMessage(buildId: string, message: string) {
     const event: BuildStatusEvent = {
-      runId,
+      buildId,
       status: BuildStatusEnum.Failed,
       timestamp: new Date().toISOString(),
       message,
