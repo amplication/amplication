@@ -15,7 +15,7 @@ import path from "path";
 export async function createDataService(
   entities: Entity[],
   roles: Role[],
-  appInfo: AppInfo,
+  serviceInfo: AppInfo,
   logger: winston.Logger = defaultLogger,
   useWorker = true
 ): Promise<Module[]> {
@@ -44,13 +44,13 @@ export async function createDataService(
       worker.postMessage({
         entities,
         roles,
-        appInfo,
+        serviceInfo,
       });
     });
   } else {
     console.warn(
       "Creating data service without a worker. It is recommended to always use useWorker=true "
     );
-    return await createDataServiceImpl(entities, roles, appInfo, logger);
+    return await createDataServiceImpl(entities, roles, serviceInfo, logger);
   }
 }
