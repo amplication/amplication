@@ -69,5 +69,9 @@ COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amp
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
+COPY --from=builder /app/packages/amplication-build-types/package.json /app/packages/amplication-build-types/package.json
+COPY --from=builder /app/packages/amplication-build-types/node_modules /app/packages/amplication-build-types/node_modules
+COPY --from=builder /app/packages/amplication-build-types/dist /app/packages/amplication-build-types/dist
+
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]
