@@ -42,9 +42,8 @@ import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { BuildContext } from './dto/BuildContext';
 import { BuildContextData } from './dto/BuildContextData';
-import { StorageTypeEnum } from './dto/StorageTypeEnum';
+import { GenerateResource, StorageTypeEnum } from '@amplication/build-types';
 import { BuildContextStorageService } from './buildContextStorage.service';
-import { GenerateResource } from './dto/GenerateResource';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -368,7 +367,6 @@ export class BuildService {
         const generateResource: GenerateResource = {
           buildId: build.id,
           resourceId: build.resourceId,
-          projectId: '',
           contextFileLocation: {
             storageType: StorageTypeEnum.FS,
             path: path

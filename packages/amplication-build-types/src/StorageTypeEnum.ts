@@ -1,5 +1,4 @@
 export enum StorageTypeEnum {
-  FS,
-  S3,
-  GCS
+  FS = 'FS',
+  S3 = 'S3',
 }

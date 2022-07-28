@@ -25,5 +25,9 @@ COPY --from=builder /app/packages/amplication-kafka/package.json /app/packages/a
 COPY --from=builder /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
 COPY --from=builder /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
+COPY --from=builder /app/packages/amplication-build-types/package.json /app/packages/amplication-build-types/package.json
+COPY --from=builder /app/packages/amplication-build-types/node_modules /app/packages/amplication-build-types/node_modules
+COPY --from=builder /app/packages/amplication-build-types/dist /app/packages/amplication-build-types/dist
+
 CMD [ "node", "/app/packages/amplication-build-manager-service/dist/main.js" ]
 
