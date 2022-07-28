@@ -23,38 +23,38 @@ jobs:
       packages: ${{ steps.packages.outputs.package_names }}
     steps:
 
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
-      - name: set base to compare
-        id: base-head
-        run: |
-          if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
-               echo "::set-output name=value::${{ github.base_ref }}"
-          else
-               echo "::set-output name=value::orign/master"
-          fi
-      - run: echo ${{ steps.base-head.outputs.value }}
+    - name: set base to compare
+      id: base-head
+      run: |
+        if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
+             echo "::set-output name=value::${{ github.base_ref }}"
+        else
+             echo "::set-output name=value::orign/master"
+        fi
+    - run: echo ${{ steps.base-head.outputs.value }}
 
-      - name: get changed folders
-        id: changed-folders
-        env:
-          BASE_HEAD: ${{ steps.base-head.outputs.value }}
-        run: |
-          echo ::set-output name=foldes::$( \
+    - name: get changed folders
+      id: changed-folders
+      env:
+        BASE_HEAD: ${{ steps.base-head.outputs.value }}
+      run: |
+        echo ::set-output name=foldes::$( \
           
-          # Git Diff - Get all changed files from BASE_HEAD 
-          git diff $BASE_HEAD --name-only -- '*packages/**' | 
+        # Git Diff - Get all changed files from BASE_HEAD 
+        git diff $BASE_HEAD --name-only -- '*packages/**' | 
+        
+        # Extract folder names from files path
+        grep -Eio "[^\/]+./packages.[^\/]+" | 
           
-          # Extract folder names from files path
-          grep -Eio "[^\/]+./packages.[^\/]+" | 
+        # Dedupplicate folders
+        uniq |
           
-          # Dedupplicate folders
-          uniq |
-          
-          # Format results as JSON array
-          jq -Rs 'split("\n") | map(select(length > 0))')
+        # Format results as JSON array
+        jq -Rs 'split("\n") | map(select(length > 0))')
 
     - run: echo ${{ steps.changed-folders.outputs.foldes }}
 
