@@ -2,9 +2,15 @@ import React from "react";
 import ResourceList from "../Workspaces/ResourceList";
 import "./ProjectPage.scss";
 import ProjectSideBar from "./ProjectSideBar";
-import { AppRouteProps, AppMatchRoute } from "../routes/routesUtil";
+import { AppRouteProps } from "../routes/routesUtil";
+import { match } from "react-router-dom";
 
-type Props = AppRouteProps & AppMatchRoute;
+type Props = AppRouteProps & {
+  match: match<{
+    workspace: string;
+    project: string;
+  }>;
+};
 
 const ProjectPage: React.FC<Props> = ({ innerRoutes, match, moduleClass }) => {
   return (

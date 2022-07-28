@@ -1,21 +1,7 @@
 import React, { Suspense } from "react";
-import { match, Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
-
-export enum MatchRoute {
-  WORKSPACE = "workspace",
-  PROJECT = "project",
-  RESOURCE = "resource",
-  COMMIT_ID = "commitId",
-  ENTITY_ID = "entityId",
-  FIELD_ID = "fieldId",
-  BUILD_ID = "buildId",
-}
-
-export type AppMatchRoute = {
-  match: match<{ [property in MatchRoute]: string }>;
-};
 
 export type AppRouteProps = {
   moduleName: string | undefined;

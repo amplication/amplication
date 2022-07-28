@@ -1,4 +1,5 @@
 import React, { lazy } from "react";
+import { match } from "react-router-dom";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import { isMobileOnly } from "react-device-detect";
@@ -12,7 +13,7 @@ import { AppContextProvider } from "../context/appContext";
 import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
 import useResources from "./hooks/useResources";
-import { AppRouteProps, AppMatchRoute } from "../routes/routesUtil";
+import { AppRouteProps } from "../routes/routesUtil";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -20,7 +21,11 @@ export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-type Props = AppRouteProps & AppMatchRoute;
+type Props = AppRouteProps & {
+  match: match<{
+    workspace: string;
+  }>;
+};
 
 const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
   const authenticated = useAuthenticated();
