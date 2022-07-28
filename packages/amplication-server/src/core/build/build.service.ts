@@ -368,7 +368,6 @@ export class BuildService {
         const generateResource: GenerateResource = {
           buildId: build.id,
           resourceId: build.resourceId,
-          projectId: '',
           contextFileLocation: {
             storageType: StorageTypeEnum.FS,
             path: path

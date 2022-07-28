@@ -41,8 +41,6 @@ export class BuildContextStorageService {
       const filePath = join(
         this.BUILD_CONTEXT_S3_LOCATION,
         date,
-        //TODO: validate projectId
-        generateResource.projectId,
         generateResource.resourceId,
         `${generateResource.buildId}.zip`,
       );
