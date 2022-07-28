@@ -66,7 +66,7 @@ installationId: string
 | KAFKA_CONSUMER_GROUP | consumer group | git-pull-event |
 | KAFKA_CLIENT_ID | A logical identifier of an application. Can be used by brokers to apply quotas or trace requests to a specific application. Example: booking-events-processor | repository-pull |
 | KAFKA_REPOSITORY_PUSH_QUEUE | Kafka topics are the categories used to organize messages. Each topic has a name that is unique across the entire Kafka cluster | "git.external.push.event.0" |
-| STORAGE_PATH | max storage snapshot | The default path will be inside your amplication repository |
+| STORAGE_PATH | max storage snapshot | Absolute path to a folder where your builds will be saved for development purposes, leave this variable empty to use `.amplication/storage` relative to the execution folder.  |
 | MAX_SNAPSHOTS | a number represents the size of the storage | [place-your-max-snapshot-here] |
 | GIT_DEFAULT_ORIGIN_NAME | git remote name | origin |
 | GITHUB_APP_APP_ID| ID of the istalled github app  |[github-app-app-id]|
