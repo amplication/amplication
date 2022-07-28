@@ -12,6 +12,7 @@ import useProjectSelector from "./hooks/useProjectSelector";
 import { AppContextProvider } from "../context/appContext";
 import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
+import useResources from "./hooks/useResources";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -28,20 +29,28 @@ type Props = {
   InnerRoutes: JSX.Element | undefined;
 };
 
-const WorkspaceLayout: React.FC<Props> = ({
-  InnerRoutes,
-  moduleClass,
-}) => {
+const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
   const authenticated = useAuthenticated();
-  const { currentWorkspace, handleSetCurrentWorkspace } = useWorkspaceSelector(
-    authenticated
-  );
+  const {
+    currentWorkspace,
+    handleSetCurrentWorkspace,
+    createWorkspace,
+    createNewWorkspaceError,
+    loadingCreateNewWorkspace,
+  } = useWorkspaceSelector(authenticated);
   const {
     currentProject,
+    createProject,
     projectsList,
-    setNewProject,
-    newProjectRes,
+    onNewProjectCompleted,
   } = useProjectSelector(authenticated, currentWorkspace);
+
+  const {
+    resources,
+    handleSearchChange,
+    loadingResources,
+    errorResources,
+  } = useResources(currentProject);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -49,9 +58,16 @@ const WorkspaceLayout: React.FC<Props> = ({
         currentWorkspace,
         currentProject,
         projectsList,
-        setNewProject,
-        newProjectRes,
+        setNewProject: createProject,
+        onNewProjectCompleted,
         handleSetCurrentWorkspace,
+        resources,
+        handleSearchChange,
+        loadingResources,
+        errorResources,
+        createWorkspace,
+        createNewWorkspaceError,
+        loadingCreateNewWorkspace,
       }}
     >
       {isMobileOnly ? (

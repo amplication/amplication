@@ -24,11 +24,9 @@ export const Routes: RouteDef[] = [
     routes: [
       {
         path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
-        // Component: lazy(() => import("../Resource/ResourceHome")),
-
-        moduleName: "CreateServiceWizard",
-        moduleClass: "create-service-wizard",
-        permission: true,
+        Component: lazy(() => import("../Project/ProjectPage")),
+        moduleName: "ProjectPage",
+        moduleClass: "project-page",
         exactPath: false,
         routes: [
           {
@@ -38,17 +36,16 @@ export const Routes: RouteDef[] = [
               () => import("../Resource/create-resource/CreateServiceWizard")
             ),
             moduleName: "CreateServiceWizard",
-            moduleClass: "create-service-wizard",
-            routeTrackType: "",
-            exactPath: true,
+            routeTrackType: "create-service-wizard",
+            exactPath: false,
           },
           {
             path:
-              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource",
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Resource/ResourceHome")),
             moduleName: "",
             routeTrackType: "",
-            exactPath: true,
+            exactPath: false,
             routes: resourceRoutes,
           },
         ],

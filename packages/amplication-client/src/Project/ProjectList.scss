@@ -2,12 +2,10 @@
 
 .project-list {
   @include flexColumn;
-  margin: var(--large-spacing) 0;
+  padding: var(--large-spacing) 0;
   width: 100%;
-  flex-grow: 1;
 
   &__items {
     width: 100%;
   }
-
 }

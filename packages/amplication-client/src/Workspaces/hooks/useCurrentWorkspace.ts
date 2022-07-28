@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
-import { GET_CURRENT_WORKSPACE } from "../queries/workspaceQuery";
+import { GET_CURRENT_WORKSPACE } from "../queries/workspaceQueries";
 
 type TData = {
   currentWorkspace: models.Workspace;

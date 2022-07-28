@@ -1,37 +1,32 @@
-import React from "react";
-import { Project, Workspace } from "../models";
+import React, { useContext } from "react";
+import { AppContext } from "../context/appContext";
 import WorkspaceSelector from "../Workspaces/WorkspaceSelector";
+import AddNewProject from "./AddNewProject";
 import ProjectList from "./ProjectList";
 import "./ProjectSideBar.scss";
 import ProjectSideBarFooter from "./WorkspaceSettingsNavigation";
 
 const CLASS_NAME = "project-sidebar";
 
-type Props = {
-  currentWorkspace: Workspace;
-  projectsList: Project[];
-  setNewProject: (project: Project) => void;
-};
+const ProjectSideBar = () => {
+  const { currentWorkspace, projectsList } = useContext(AppContext);
 
-const ProjectSideBar = ({
-  currentWorkspace,
-  projectsList,
-  setNewProject,
-}: Props) => {
-  return (
+  return currentWorkspace ? (
     <div className={CLASS_NAME}>
-      <span className={`${CLASS_NAME}__label`}>Workspace</span>
-      <WorkspaceSelector />
-      <hr className={`${CLASS_NAME}__divider`} />
-      <ProjectList
-        projects={projectsList}
-        handleProjectChange={setNewProject}
-        workspaceId={currentWorkspace.id}
-      />
+      <div className={`${CLASS_NAME}__project-wrapper`}>
+        <p className={`${CLASS_NAME}__label`}>Workspace</p>
+        <WorkspaceSelector />
+        <hr className={`${CLASS_NAME}__divider`} />
+        <ProjectList
+          projects={projectsList}
+          workspaceId={currentWorkspace?.id}
+        />
+        <AddNewProject />
+      </div>
       <hr className={`${CLASS_NAME}__divider`} />
       <ProjectSideBarFooter />
     </div>
-  );
+  ) : null;
 };
 
 export default ProjectSideBar;

@@ -15,11 +15,11 @@ import {
   serviceSettings,
 } from "./CreateServiceWizardForm";
 import * as models from "../../models";
-import { GET_RESOURCES } from "../../Workspaces/ResourceList";
 import { createResource, serviceSettingsFieldsInitValues } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
 
 type Props = {
   match: match<{

@@ -11,21 +11,25 @@ import NewProject from "./NewProject";
 const CLASS_NAME = "add-new-project";
 
 const AddNewProject = () => {
-  const [newProject, setNewProject] = useState<boolean>(false);
+  const [projectDialogStatus, setProjectDialogStatus] = useState<boolean>(false);
 
   const handleNewProjectClick = useCallback(() => {
-    setNewProject(!newProject);
-  }, [newProject, setNewProject]);
+    setProjectDialogStatus(!projectDialogStatus);
+  }, [projectDialogStatus, setProjectDialogStatus]);
+
+  const handleProjectCreated = useCallback(() => {
+    setProjectDialogStatus(false);
+  }, [setProjectDialogStatus]);
 
   return (
     <>
       <Dialog
         className="new-entity-dialog"
-        isOpen={newProject}
+        isOpen={projectDialogStatus}
         onDismiss={handleNewProjectClick}
         title="New Project"
       >
-        <NewProject />
+        <NewProject onProjectCreated={handleProjectCreated} />
       </Dialog>
       <Button
         onClick={handleNewProjectClick}
