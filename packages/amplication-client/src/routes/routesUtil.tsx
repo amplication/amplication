@@ -14,8 +14,8 @@ export enum MatchRoute {
 }
 
 export type AppMatchRoute = {
-  match: match<{ [property in MatchRoute]: string | undefined }>;
-}
+  match: match<{ [property in MatchRoute]: string }>;
+};
 
 export type AppRouteProps = {
   moduleName: string | undefined;
