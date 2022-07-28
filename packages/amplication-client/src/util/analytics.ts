@@ -48,7 +48,7 @@ type EventProps = {
 };
 
 export function identity(userId: string, props: EventProps) {
-  _hsq.push(["identify"], { user: userId, ...props });
+  _hsq.push(["identify", { id: userId, ...props }]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
     //@ts-ignore
     const analytics = window.analytics;
