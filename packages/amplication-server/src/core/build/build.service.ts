@@ -45,7 +45,6 @@ import { BuildContextData } from './dto/BuildContextData';
 import { GenerateResource, StorageTypeEnum } from '@amplication/build-types';
 import { BuildContextStorageService } from './buildContextStorage.service';
 
-
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';

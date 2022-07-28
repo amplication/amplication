@@ -1,5 +1,5 @@
-import { BuildStatusEnum } from './BuildStatusEnum';
-import { FileLocation } from './FileLocation';
+import { BuildStatusEnum } from "./BuildStatusEnum";
+import { FileLocation } from "./FileLocation";
 
 export interface BuildStatusEvent {
   buildId?: string;

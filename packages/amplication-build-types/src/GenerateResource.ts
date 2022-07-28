@@ -1,4 +1,4 @@
-import { FileLocation } from './FileLocation';
+import { FileLocation } from "./FileLocation";
 
 export interface GenerateResource {
   resourceId: string;
