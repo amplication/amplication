@@ -1,8 +1,6 @@
-ARG ALPINE_VERSION=alpine3.14
-ARG NODE_VERSION=16.13.1
+ARG NODE_VERSION=16.16-alpine
 
-
-FROM node:$NODE_VERSION-$ALPINE_VERSION AS builder
+FROM node:$NODE_VERSION AS builder
 
 COPY ./ /app
 
@@ -18,7 +16,7 @@ RUN npm run clean -- --yes
 # Rebuild production node_modules
 RUN npm run bootstrap -- -- --production --scope @amplication/data-service-generator --include-dependencies
 
-FROM node:$NODE_VERSION-$ALPINE_VERSION as runner
+FROM node:$NODE_VERSION as runner
 WORKDIR /app
 
 COPY --from=builder /app/packages/amplication-data-service-generator/package.json /app/packages/amplication-data-service-generator/package.json

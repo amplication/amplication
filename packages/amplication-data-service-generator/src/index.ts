@@ -6,10 +6,10 @@ import { BuildContext, Module } from "./types";
 
 const [, , source, destination] = process.argv;
 if (!source) {
-  throw new Error("INPUT is not defined");
+  throw new Error("SOURCE is not defined");
 }
 if (!destination) {
-  throw new Error("OUTPUT is not defined");
+  throw new Error("DESTINATION is not defined");
 }
 
 generateCode(source, destination).catch((err) => {
