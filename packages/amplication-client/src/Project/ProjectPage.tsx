@@ -1,38 +1,33 @@
 import React from "react";
-import { match } from "react-router-dom";
 import ResourceList from "../Workspaces/ResourceList";
 import "./ProjectPage.scss";
 import ProjectSideBar from "./ProjectSideBar";
+import { AppRouteProps } from "../routes/routesUtil";
+import { match } from "react-router-dom";
 
-type Props = {
+type Props = AppRouteProps & {
   match: match<{
     workspace: string;
     project: string;
   }>;
-  moduleClass: string;
-  noduleName: string;
-  // eslint-disable-next-line no-undef
-  InnerRoutes: JSX.Element | undefined;
 };
 
-const CLASS_NAME = "project-page";
-
-const ProjectPage: React.FC<Props> = ({ InnerRoutes, match }) => {
+const ProjectPage: React.FC<Props> = ({ innerRoutes, match, moduleClass }) => {
   return (
-    <div className={CLASS_NAME}>
+    <div className={moduleClass}>
       {match.isExact ? (
         <>
-          <div className={`${CLASS_NAME}__sidebar`}>
-            <div className={`${CLASS_NAME}__sidebar-content`}>
+          <div className={`${moduleClass}__sidebar`}>
+            <div className={`${moduleClass}__sidebar-content`}>
               <ProjectSideBar />
             </div>
           </div>
-          <div className={`${CLASS_NAME}__content`}>
+          <div className={`${moduleClass}__content`}>
             <ResourceList />
           </div>
         </>
       ) : (
-        InnerRoutes
+        innerRoutes
       )}
     </div>
   );

@@ -13,6 +13,7 @@ import { AppContextProvider } from "../context/appContext";
 import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
 import useResources from "./hooks/useResources";
+import { AppRouteProps } from "../routes/routesUtil";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -20,16 +21,13 @@ export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-type Props = {
+type Props = AppRouteProps & {
   match: match<{
     workspace: string;
   }>;
-  moduleClass: string;
-  // eslint-disable-next-line no-undef
-  InnerRoutes: JSX.Element | undefined;
 };
 
-const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
+const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
@@ -77,7 +75,7 @@ const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
           <WorkspaceHeader />
           <CompleteInvitation />
           <div className={`${moduleClass}__page_content`}>
-            <div className={`${moduleClass}__main_content`}>{InnerRoutes}</div>
+            <div className={`${moduleClass}__main_content`}>{innerRoutes}</div>
             <div className={`${moduleClass}__changes_menu`}>
               pending changes
             </div>
