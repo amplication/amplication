@@ -1,7 +1,28 @@
 import React, { Suspense } from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { match, Redirect, Route, Switch } from "react-router-dom";
 import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
+
+export enum MatchRoute {
+  WORKSPACE = "workspace",
+  PROJECT = "project",
+  RESOURCE = "resource",
+  COMMIT_ID = "commitId",
+  ENTITY_ID = "entityId",
+  FIELD_ID = "fieldId",
+  BUILD_ID = "buildId",
+}
+
+export type AppMatchRoute = {
+  match: match<{ [property in MatchRoute]: string | undefined }>;
+}
+
+export type AppRouteProps = {
+  moduleName: string | undefined;
+  moduleClass: string;
+  // eslint-disable-next-line no-undef
+  innerRoutes: JSX.Element | undefined;
+};
 
 const LazyRouteWrapper: React.FC<{
   route: RouteDef;
@@ -19,6 +40,12 @@ const LazyRouteWrapper: React.FC<{
           const nestedRoutes =
             route.routes && routesGenerator(route.routes, route.path);
 
+          const appRouteProps: AppRouteProps = {
+            moduleName: route.moduleName,
+            moduleClass: route.moduleClass || "",
+            innerRoutes: nestedRoutes,
+          };
+
           return route.redirect ? (
             <Redirect
               to={{
@@ -31,8 +58,7 @@ const LazyRouteWrapper: React.FC<{
               route.Component &&
               React.createElement(route.Component, {
                 ...props,
-                moduleClass: route.moduleClass || "",
-                InnerRoutes: nestedRoutes,
+                ...appRouteProps,
               })
             ) : (
               <Redirect
@@ -53,7 +79,7 @@ const LazyRouteWrapper: React.FC<{
             ) : (
               React.createElement(route.Component, {
                 ...props,
-                InnerRoutes: nestedRoutes,
+                ...appRouteProps,
               })
             ))
           );

@@ -6,7 +6,7 @@ import {
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import React, { MutableRefObject, useCallback, useEffect, useRef } from "react";
-import { match, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
@@ -20,14 +20,9 @@ import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
+import { AppRouteProps, AppMatchRoute } from "../../routes/routesUtil";
 
-type Props = {
-  match: match<{
-    workspace: string;
-    project: string;
-  }>;
-  moduleClass: string;
-};
+type Props = AppRouteProps & AppMatchRoute;
 
 type TData = {
   createResourceWithEntities: models.Resource;
