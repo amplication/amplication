@@ -62,7 +62,7 @@ jobs:
       id: packages
       uses: ./.github/actions/get-package-names
       with:
-        folders: ${{ steps.changed-folders.outputs.foldes }}
+        folders: ${{ steps.changed-folders.outputs.folders }}
 
     - run: echo ${{ steps.packages.outputs.package_names }}
 
