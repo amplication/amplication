@@ -1,4 +1,4 @@
-import { StorageTypeEnum } from "./StorageTypeEnum";
+import { StorageTypeEnum } from './StorageTypeEnum';
 
 export interface FileLocation {
   storageType: StorageTypeEnum;
