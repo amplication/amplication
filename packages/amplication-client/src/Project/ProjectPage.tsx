@@ -1,26 +1,41 @@
 import React from "react";
+import { match } from "react-router-dom";
 import ResourceList from "../Workspaces/ResourceList";
 import "./ProjectPage.scss";
 import ProjectSideBar from "./ProjectSideBar";
 
 type Props = {
+  match: match<{
+    workspace: string;
+    project: string;
+  }>;
   moduleClass: string;
+  noduleName: string;
   // eslint-disable-next-line no-undef
   InnerRoutes: JSX.Element | undefined;
 };
 
-const ProjectPage: React.FC<Props> = ({ InnerRoutes, moduleClass }) => (
-  <div className={moduleClass}>
-    {InnerRoutes}
-    <div className={`${moduleClass}__sidebar`}>
-      <div className={`${moduleClass}__sidebar-content`}>
-        <ProjectSideBar />
-      </div>
+const CLASS_NAME = "project-page";
+
+const ProjectPage: React.FC<Props> = ({ InnerRoutes, match }) => {
+  return (
+    <div className={CLASS_NAME}>
+      {match.isExact ? (
+        <>
+          <div className={`${CLASS_NAME}__sidebar`}>
+            <div className={`${CLASS_NAME}__sidebar-content`}>
+              <ProjectSideBar />
+            </div>
+          </div>
+          <div className={`${CLASS_NAME}__content`}>
+            <ResourceList />
+          </div>
+        </>
+      ) : (
+        InnerRoutes
+      )}
     </div>
-    <div className={`${moduleClass}__content`}>
-      <ResourceList />
-    </div>
-  </div>
-);
+  );
+};
 
 export default ProjectPage;

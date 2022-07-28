@@ -29,10 +29,7 @@ type Props = {
   InnerRoutes: JSX.Element | undefined;
 };
 
-const WorkspaceLayout: React.FC<Props> = ({
-  InnerRoutes,
-  moduleClass,
-}) => {
+const WorkspaceLayout: React.FC<Props> = ({ InnerRoutes, moduleClass }) => {
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
@@ -40,9 +37,7 @@ const WorkspaceLayout: React.FC<Props> = ({
     createWorkspace,
     createNewWorkspaceError,
     loadingCreateNewWorkspace,
-  } = useWorkspaceSelector(
-    authenticated
-  );
+  } = useWorkspaceSelector(authenticated);
   const {
     currentProject,
     createProject,
@@ -50,9 +45,12 @@ const WorkspaceLayout: React.FC<Props> = ({
     onNewProjectCompleted,
   } = useProjectSelector(authenticated, currentWorkspace);
 
-  const { resources, handleSearchChange, loadingResources, errorResources } = useResources(
-    currentProject
-  );
+  const {
+    resources,
+    handleSearchChange,
+    loadingResources,
+    errorResources,
+  } = useResources(currentProject);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -69,7 +67,7 @@ const WorkspaceLayout: React.FC<Props> = ({
         errorResources,
         createWorkspace,
         createNewWorkspaceError,
-        loadingCreateNewWorkspace
+        loadingCreateNewWorkspace,
       }}
     >
       {isMobileOnly ? (
