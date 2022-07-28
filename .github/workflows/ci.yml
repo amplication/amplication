@@ -33,7 +33,7 @@ jobs:
         if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
              echo "::set-output name=value::${{ github.base_ref }}"
         else
-             echo "::set-output name=value::orign/master"
+             echo "::set-output name=value::origin/master"
         fi
     - run: echo ${{ steps.base-head.outputs.value }}
 
