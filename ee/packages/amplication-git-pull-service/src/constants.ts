@@ -7,6 +7,7 @@ export const DOT_AMPLICATION_FOLDER = join(
 );
 export const DEFAULT_GITHUB_PULL_FOLDER = join(
   DOT_AMPLICATION_FOLDER,
+  'storage',
   'github',
   'pulls'
 );
