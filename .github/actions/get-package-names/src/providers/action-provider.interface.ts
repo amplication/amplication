@@ -1,4 +1,4 @@
-import {ActionResult} from "../entities/action-result.interface";
+import { ActionResult } from '../entities/action-result.interface';
 
 export interface ActionProvider {
   getWorkingDirectory(): string;

@@ -8,4 +8,4 @@ outputs:
     description: 'list of folders with their package names'
 runs:
   using: 'node16'
-  main: 'scripts/run-action.js'
+  main: 'out/action/index.js'

@@ -1,16 +1,16 @@
 import { ActionProvider } from './action-provider.interface';
-import {ActionResult} from "../entities/action-result.interface";
-const core = require('@actions/core');
+import { ActionResult } from '../entities/action-result.interface';
+
+import core = require('@actions/core');
 
 export class GitHubActionProvider implements ActionProvider {
-
   getFolders(): string[] {
     try {
       const folders = core.getInput('folders');
       console.log(`FOLDERS: ${folders}`);
       return JSON.parse(folders);
     } catch (err) {
-      console.error('failed to read folders input',err);
+      console.error('failed to read folders input', err);
       throw err;
     }
   }

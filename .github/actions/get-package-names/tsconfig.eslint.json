@@ -1,6 +1,0 @@
-{
-  "include": [
-    ".eslintrc.js",
-    "__tests__/*"
-  ]
-}

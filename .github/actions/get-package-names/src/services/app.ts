@@ -1,6 +1,6 @@
 import { ActionProvider } from '../providers/action-provider.interface';
 import { readFile } from '../utils/utils';
-import {ActionResult} from "../entities/action-result.interface";
+import { ActionResult } from '../entities/action-result.interface';
 
 export class App {
   constructor(private actionProvider: ActionProvider) {}
