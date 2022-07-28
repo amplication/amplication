@@ -1,6 +1,6 @@
 {
   "name": "@amplication/build-manager-service",
-  "version": "0.14.1",
+  "version": "0.14.3",
   "description": "",
   "author": "",
   "private": true,
@@ -21,7 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@amplication/kafka": "^0.14.1",
+    "@amplication/build-types": "^0.14.3",
+    "@amplication/kafka": "^0.14.3",
     "@aws-sdk/client-codebuild": "^3.100.0",
     "@aws-sdk/client-s3": "^3.113.0",
     "@nestjs/common": "8.4.3",

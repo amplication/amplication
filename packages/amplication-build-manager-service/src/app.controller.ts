@@ -4,12 +4,14 @@ import { EventPattern, Payload } from '@nestjs/microservices';
 import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
 import { BuildService } from './codeBuild/build.service';
 import { CODE_BUILD_SERVICE } from './codeBuild/codeBuild.module';
-import { GenerateResource } from './codeBuild/dto/GenerateResource';
 import { BUILD_STATUS_TOPIC, GENERATE_RESOURCE_TOPIC } from './constants';
 import { QueueService } from './queue/queue.service';
 import { ConfigService } from '@nestjs/config';
-import { BuildStatusEvent } from './codeBuild/dto/BuildStatusEvent';
-import { BuildStatusEnum } from './codeBuild/dto/BuildStatusEnum';
+import {
+  GenerateResource,
+  BuildStatusEvent,
+  BuildStatusEnum,
+} from '@amplication/build-types';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Controller()

@@ -12,7 +12,8 @@
     "sourceMap": true,
     "outDir": "dist",
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
   },
-  "include": ["src"]
+  "include": ["src"],
 }

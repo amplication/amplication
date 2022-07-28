@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { promises as fsPromises } from 'fs';
-import { GenerateResource } from '../codeBuild/dto/GenerateResource';
+import { GenerateResource } from '@amplication/build-types';
 import { join } from 'path';
 import { timeFormatYearMonthDay } from '../utils/timeFormat';
 import { StorageService } from '../storage/storage.service';
