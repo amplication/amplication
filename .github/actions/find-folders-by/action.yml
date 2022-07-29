@@ -18,4 +18,4 @@ outputs:
     description: 'list of folders that contains the files that was searched'
 runs:
   using: 'node16'
-  main: 'scripts/run-action.js'
+  main: 'dist/action/index.js'
