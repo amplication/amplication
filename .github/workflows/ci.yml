@@ -132,9 +132,9 @@ jobs:
         id: find-folders
         uses: ./.github/actions/find-folders-by
         with:
-          files-to-find: "['Dockerfile']"
-          include-folders: "['ee/packages', 'packages']"
-          ignore-folders: "[ 'node_modules', 'lib', 'dist', 'bin', 'src', '__mocks__', 'public', 'scripts', 'test', 'prisma', 'graphql', 'generated']"
+          files-to-find: '["Dockerfile"]'
+          include-folders: '[ "ee/packages",  "packages" ]'
+          ignore-folders: '[  "node_modules",  "lib",  "dist",  "bin",  "src",  "__mocks__",  "public",  "scripts",  "test",  "prisma",  "graphql",  "generated" ]'
           search-recursive: true
 
       - name: 'Usage example'
