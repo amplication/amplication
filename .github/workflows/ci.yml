@@ -48,7 +48,7 @@ jobs:
         git diff $BASE_HEAD --name-only -- 'packages/**' 'ee/packages/**' | 
         
         # Extract folder names from files path
-        grep -Eio "[^\/]+./packages.[^\/]+" | 
+        grep -Eio "(.+||^)packages.[^\/]+" | 
           
         # Dedupplicate folders
         uniq |
