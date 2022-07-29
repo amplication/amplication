@@ -1,5 +1,5 @@
-import core from '@actions/core';
 import { ActionProvider } from './action-provider.interface';
+import core = require('@actions/core');
 
 export class GitHubActionProvider implements ActionProvider {
   getWorkingDirectory(): string {
