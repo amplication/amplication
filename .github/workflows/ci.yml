@@ -120,18 +120,27 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
           DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{matrix.package}}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'
 
+  hashes:
+    runs-on: ubuntu-18.04
+    outputs:
+      hashes: ${{ steps.service-hashes.outputs.service_hashes }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: 'Find folders that containing Dockerfile'
+        id: find-folders
+        uses: ./.github/actions/find-folders
+        with:
+          files-to-find: "['Dockerfile']"
+          include-folders: "['ee/packages', 'packages']"
+          ignore-folders: "[ 'node_modules', 'lib', 'dist', 'bin', 'src', '__mocks__', 'public', 'scripts', 'test', 'prisma', 'graphql', 'generated']"
+          search-recursive: true
 
+      - name: 'Usage example'
+        run: |
+          echo "${{ steps.find-folders.outputs.folders }}"
 
-
-#
-#  hashes:
-#    runs-on: ubuntu-18.04
-#    outputs:
-#      hashes: ${{ steps.service-hashes.outputs.service_hashes }}
-#    steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          fetch-depth: 1
 #      - name: get services hash
 #        id: service-hashes
 #        uses: ./.github/actions/get-services-hash
@@ -145,6 +154,9 @@ jobs:
 #        env:
 #          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
 #          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
+
+
+
 #
 #  docker-build:
 #    runs-on: ubuntu-20.04
