@@ -4,7 +4,7 @@ inputs:
   files-to-find:
     required: true
     description: 'list of files to check if a folder has'
-  include-folders:
+  folders-to-search:
     required: true
     description: 'list of seed folders for the search'
   ignore-folders:

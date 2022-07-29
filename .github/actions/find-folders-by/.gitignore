@@ -1,2 +1,3 @@
 .eslintcache
-out/*
+dist/*
+coverage/*

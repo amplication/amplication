@@ -26,7 +26,7 @@ jobs:
         uses: ./.github/actions/find-folders
         with:
           files-to-find: ['Dockerfile']
-          include-folders: ['ee/packages', 'packages']
+          folders-to-search: ['ee/packages', 'packages']
           ignore-folders:
             [
               'node_modules',
