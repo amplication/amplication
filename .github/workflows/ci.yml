@@ -45,7 +45,7 @@ jobs:
         echo ::set-output name=folders::$( \
           
         # Git Diff - Get all changed files from BASE_HEAD 
-        git diff $BASE_HEAD --name-only -- '*packages/**' | 
+        git diff $BASE_HEAD --name-only -- 'packages/**' 'ee/packages/**' | 
         
         # Extract folder names from files path
         grep -Eio "[^\/]+./packages.[^\/]+" | 
