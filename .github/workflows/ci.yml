@@ -130,7 +130,7 @@ jobs:
           fetch-depth: 1
       - name: 'Find folders that containing Dockerfile'
         id: find-folders
-        uses: ./.github/actions/find-folders
+        uses: ./.github/actions/find-folders-by
         with:
           files-to-find: "['Dockerfile']"
           include-folders: "['ee/packages', 'packages']"
