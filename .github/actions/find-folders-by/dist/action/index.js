@@ -1,7 +1,7 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 241:
+/***/ 351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -135,7 +135,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
-const command_1 = __nccwpck_require__(241);
+const command_1 = __nccwpck_require__(351);
 const file_command_1 = __nccwpck_require__(717);
 const utils_1 = __nccwpck_require__(278);
 const os = __importStar(__nccwpck_require__(37));
@@ -1739,7 +1739,7 @@ exports.checkBypass = checkBypass;
 
 /***/ }),
 
-/***/ 351:
+/***/ 679:
 /***/ ((module) => {
 
 /******************************************************************************
@@ -2350,8 +2350,7 @@ exports.debug = debug; // for test
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GitHubActionProvider = void 0;
-const tslib_1 = __nccwpck_require__(351);
-const core_1 = tslib_1.__importDefault(__nccwpck_require__(186));
+const core = __nccwpck_require__(186);
 class GitHubActionProvider {
     getWorkingDirectory() {
         const GITHUB_WORKSPACE = process.env.GITHUB_WORKSPACE;
@@ -2365,10 +2364,10 @@ class GitHubActionProvider {
         }
     }
     setOutput(actionResults) {
-        core_1.default.setOutput('folders', actionResults);
+        core.setOutput('folders', actionResults);
     }
     setFailed(message) {
-        core_1.default.setFailed(message);
+        core.setFailed(message);
     }
     getFilesToFined() {
         return GitHubActionProvider.getInputAsArray('files-to-find');
@@ -2381,7 +2380,7 @@ class GitHubActionProvider {
     }
     getRecursive() {
         try {
-            return JSON.parse(core_1.default.getInput('search-recursive'));
+            return JSON.parse(core.getInput('search-recursive'));
         }
         catch (err) {
             console.error(`failed to read search-recursive input`);
@@ -2390,7 +2389,7 @@ class GitHubActionProvider {
     }
     static getInputAsArray(key) {
         try {
-            const arrayString = core_1.default.getInput(key);
+            const arrayString = core.getInput(key);
             console.log(`${key}: ${arrayString}`);
             return JSON.parse(arrayString);
         }
@@ -2437,7 +2436,7 @@ exports.FsStorageProvider = FsStorageProvider;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.App = void 0;
-const tslib_1 = __nccwpck_require__(351);
+const tslib_1 = __nccwpck_require__(679);
 const underscore_1 = tslib_1.__importDefault(__nccwpck_require__(67));
 class App {
     constructor(actionProvider, storageProvider) {
