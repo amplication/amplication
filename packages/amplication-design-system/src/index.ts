@@ -155,3 +155,5 @@ export {
   TreeViewProps,
   TreeItemProps,
 } from "./components/TreeView/TreeView";
+
+export { HorizontalRule } from "./components/HorizontalRule/HorizontalRule";
