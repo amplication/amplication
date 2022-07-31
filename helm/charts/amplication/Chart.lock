@@ -1,7 +1,4 @@
 dependencies:
-- name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 10.16.2
 - name: amplication-client
   repository: file://../services/amplication-client
   version: 0.1.0
@@ -11,9 +8,6 @@ dependencies:
 - name: amplication-server
   repository: file://../services/amplication-server
   version: 0.1.0
-- name: cp-helm-charts
-  repository: https://confluentinc.github.io/cp-helm-charts/
-  version: 0.6.1
 - name: amplication-git-pull-request-service
   repository: file://../services/amplication-git-pull-request-service
   version: 0.1.0
@@ -26,5 +20,14 @@ dependencies:
 - name: amplication-storage-gateway
   repository: file://../services/amplication-storage-gateway
   version: 0.1.0
-digest: sha256:3ef9163bc8b61090c5f39d364eb18de269d8f7d4a211d12763453c8367d3688f
-generated: "2022-06-08T15:39:27.570568+03:00"
+- name: infra
+  repository: file://../infra
+  version: 0.1.0
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 10.16.2
+- name: cp-helm-charts
+  repository: https://confluentinc.github.io/cp-helm-charts/
+  version: 0.6.1
+digest: sha256:015b5ac36c36a25d1d40b78e952745b22de4293489bcad9d084f640fbffba48b
+generated: "2022-07-07T17:38:59.527319+03:00"
