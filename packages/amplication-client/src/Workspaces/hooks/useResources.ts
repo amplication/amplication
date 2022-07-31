@@ -9,6 +9,10 @@ type TData = {
 
 const useResources = (currentProject: models.Project | undefined) => {
   const [resources, setResources] = useState<models.Resource[]>([]);
+  const [
+    projectConfigurationResource,
+    setProjectConfigurationResource,
+  ] = useState<models.Resource | undefined>(undefined);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const {
@@ -28,7 +32,15 @@ const useResources = (currentProject: models.Project | undefined) => {
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
-    setResources(resourcesData.resources);
+    const projectConfigurationResource = resourcesData.resources.find(
+      (r) => r.resourceType === models.EnumResourceType.ProjectConfiguration
+    );
+    setProjectConfigurationResource(projectConfigurationResource);
+
+    const resources = resourcesData.resources.filter(
+      (r) => r.resourceType !== models.EnumResourceType.ProjectConfiguration
+    );
+    setResources(resources);
   }, [resourcesData, loadingResources]);
 
   const handleSearchChange = useCallback(
@@ -38,7 +50,13 @@ const useResources = (currentProject: models.Project | undefined) => {
     [setSearchPhrase]
   );
 
-  return { resources, handleSearchChange, loadingResources, errorResources };
+  return {
+    resources,
+    projectConfigurationResource,
+    handleSearchChange,
+    loadingResources,
+    errorResources,
+  };
 };
 
 export default useResources;
