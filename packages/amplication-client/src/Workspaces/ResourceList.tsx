@@ -27,7 +27,13 @@ const CLASS_NAME = "resource-list";
 function ResourceList() {
   const { trackEvent } = useTracking();
   const [error, setError] = useState<Error | null>(null);
-  const {resources, handleSearchChange, loadingResources, errorResources} = useContext(AppContext);
+  const {
+    resources,
+    projectConfigurationResource,
+    handleSearchChange,
+    loadingResources,
+    errorResources,
+  } = useContext(AppContext);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -64,7 +70,7 @@ function ResourceList() {
     },
     [deleteResource, setError, trackEvent]
   );
-  
+
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -93,9 +99,7 @@ function ResourceList() {
           </Button>
         </Link>
       </div>
-      <div className={`${CLASS_NAME}__title`}>
-        {resources.length} Resources
-      </div>
+      <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
       {loadingResources && <CircularProgress />}
 
       {isEmpty(resources) && !loadingResources ? (
@@ -106,15 +110,20 @@ function ResourceList() {
           </div>
         </div>
       ) : (
-        resources.map((resource) => {
-          return (
-            <ResourceListItem
-              key={resource.id}
-              resource={resource}
-              onDelete={handleDelete}
-            />
-          );
-        })
+        <>
+          {projectConfigurationResource && (
+            <ResourceListItem resource={projectConfigurationResource} />
+          )}
+          {resources.map((resource) => {
+            return (
+              <ResourceListItem
+                key={resource.id}
+                resource={resource}
+                onDelete={handleDelete}
+              />
+            );
+          })}
+        </>
       )}
 
       <Snackbar
