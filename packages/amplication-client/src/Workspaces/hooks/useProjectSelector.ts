@@ -67,7 +67,7 @@ const useProjectSelector = (
   }, [projectListData, loadingList]);
 
   useEffect(() => {
-    if (project || !projectsList.length) return;
+    if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("route=create-resource");
     history.push(
