@@ -2,10 +2,8 @@ import { CircleBadge, Snackbar } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import React from "react";
-import { match, Route, Switch, useLocation } from "react-router-dom";
+import { match} from "react-router-dom";
 import PageContent from "../Layout/PageContent";
-import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import "./ResourceHome.scss";
@@ -18,17 +16,22 @@ import OverviewTile from "./OverviewTile";
 import RolesTile from "./RolesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
+import { AppRouteProps } from "../routes/routesUtil";
 
-type Props = {
-  match: match<{ resource: string }>;
+
+
+type Props = AppRouteProps & {
+  match: match<{
+    workspace: string;
+    project: string;
+    resource: string; 
+  }>;
 };
 
 const CLASS_NAME = "resource-home";
-const NAVIGATION_KEY = "RESOURCE_HOME";
 
-function ResourceHome({ match }: Props) {
+function ResourceHome({ match,innerRoutes , moduleClass }: Props) {
   const resourceId = match.params.resource;
-  const location = useLocation();
 
   const { data, error } = useQuery<{
     resource: models.Resource;
@@ -38,26 +41,16 @@ function ResourceHome({ match }: Props) {
     },
   });
 
-  useNavigationTabs(
-    resourceId,
-    NAVIGATION_KEY,
-    location.pathname,
-    data?.resource.name
-  );
 
   const errorMessage = formatError(error);
 
   return (
+    match.isExact ? ( 
     <PageContent
       className={CLASS_NAME}
       sideContent=""
       pageTitle={data?.resource.name}
     >
-      <Switch>
-        <Route
-          path="/:resource/"
-          render={() => (
-            <>
               <div
                 className={classNames(
                   `${CLASS_NAME}__header`,
@@ -70,10 +63,6 @@ function ResourceHome({ match }: Props) {
                   color={data?.resource.color || "transparent"}
                 />
               </div>
-              <RouteWithAnalytics
-                exact
-                path="/:resource/"
-                component={() => (
                   <div className={`${CLASS_NAME}__tiles`}>
                     <NewVersionTile resourceId={resourceId} />
                     <OverviewTile resourceId={resourceId} />
@@ -84,14 +73,8 @@ function ResourceHome({ match }: Props) {
                     <DocsTile />
                     <FeatureRequestTile />
                   </div>
-                )}
-              />
-            </>
-          )}
-        />
-      </Switch>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </PageContent>
+    </PageContent> ) : innerRoutes 
   );
 }
 
