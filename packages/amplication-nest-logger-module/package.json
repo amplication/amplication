@@ -7,8 +7,8 @@
     "build": "tsc",
     "prebuild": "rimraf dist",
     "test": "jest",
-    "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
-    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
+    "check-format": "prettier --check \"**/*.{ts,json,gql,md,yaml}\"",
+    "format": "prettier --write \"**/*.{ts,json,gql,md,yaml}\""
   },
   "author": "tupe12334",
   "devDependencies": {
