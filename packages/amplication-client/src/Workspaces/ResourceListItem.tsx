@@ -19,7 +19,7 @@ import {
 
 type Props = {
   resource: models.Resource;
-  onDelete: (resource: models.Resource) => void;
+  onDelete?: (resource: models.Resource) => void;
 };
 
 const DATE_FORMAT = "P p";
@@ -48,7 +48,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
 
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
-    onDelete(resource);
+    onDelete && onDelete(resource);
   }, [onDelete, resource]);
 
   const handleClick = useCallback(() => {
@@ -84,11 +84,13 @@ function ResourceListItem({ resource, onDelete }: Props) {
             <span className={`${CLASS_NAME}__title`}>{name}</span>
 
             <span className="spacer" />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="trash_2"
-              onClick={handleDelete}
-            />
+            {onDelete && (
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="trash_2"
+                onClick={handleDelete}
+              />
+            )}
           </div>
           <div className={`${CLASS_NAME}__row`}>
             <span className={`${CLASS_NAME}__description`}>{description}</span>
