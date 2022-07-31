@@ -6,6 +6,8 @@ import { format as winstonCloudLoggingFormat } from "winston-cloud-logging";
 
 export const LEVEL = process.env.AMPLICATION_LOG_LEVEL || "info";
 
+export type defaultMeta = { service: string };
+
 export const developmentFormat = logformFormat.combine(
   logformFormat.errors({ stack: true }),
   logformFormat.timestamp(),
@@ -21,7 +23,8 @@ export const productionFormat = logformFormat.combine(
 );
 
 export const winstonConfigFactory = (
-  isProduction: boolean
+  isProduction: boolean,
+  defaultMeta: defaultMeta
 ): WinstonModuleOptions => {
   assert(
     typeof isProduction === "boolean",
@@ -29,6 +32,7 @@ export const winstonConfigFactory = (
   );
 
   return {
+    defaultMeta,
     level: LEVEL,
     format: isProduction ? productionFormat : developmentFormat,
     transports: [new transports.Console()],
