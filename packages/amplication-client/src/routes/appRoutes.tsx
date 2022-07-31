@@ -36,12 +36,13 @@ export const Routes: RouteDef[] = [
               () => import("../Resource/create-resource/CreateServiceWizard")
             ),
             moduleName: "CreateServiceWizard",
-            routeTrackType: "create-service-wizard",
+            moduleClass: "create-service-wizard",
+            routeTrackType: "",
             exactPath: false,
           },
           {
             path:
-              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})", //todo
             Component: lazy(() => import("../Resource/ResourceHome")),
             moduleName: "",
             routeTrackType: "",
@@ -75,7 +76,7 @@ export const Routes: RouteDef[] = [
     exactPath: true,
   },
   {
-    path: "/github-auth-app/callback",
+    path: "/github-auth-app/callback", //todo
     Component: lazy(
       () => import("../Resource/git/AuthResourceWithGitCallback")
     ),

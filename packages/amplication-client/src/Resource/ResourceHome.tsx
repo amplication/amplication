@@ -24,7 +24,7 @@ type Props = {
 };
 
 const CLASS_NAME = "resource-home";
-const NAVIGATION_KEY = "APP_HOME";
+const NAVIGATION_KEY = "RESOURCE_HOME";
 
 function ResourceHome({ match }: Props) {
   const resourceId = match.params.resource;
@@ -37,6 +37,7 @@ function ResourceHome({ match }: Props) {
       id: resourceId,
     },
   });
+
   useNavigationTabs(
     resourceId,
     NAVIGATION_KEY,

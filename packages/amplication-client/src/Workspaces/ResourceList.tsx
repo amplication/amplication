@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useState } from "react";
 import { gql, Reference, useMutation } from "@apollo/client";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { useTracking } from "../util/analytics";
@@ -28,6 +28,10 @@ function ResourceList() {
   const { trackEvent } = useTracking();
   const [error, setError] = useState<Error | null>(null);
   const {resources, handleSearchChange, loadingResources, errorResources} = useContext(AppContext);
+
+ const  {workspace, project} = useParams(); 
+
+ const linkToCreateResource = `/${workspace}/${project}/create-resource`; 
 
   const clearError = useCallback(() => {
     setError(null);
@@ -82,8 +86,7 @@ function ResourceList() {
           placeholder="search"
           onChange={handleSearchChange}
         />
-
-        <Link onClick={handleNewResourceClick} to="/create-resource">
+        <Link onClick={handleNewResourceClick} to={linkToCreateResource}>
           <Button
             className={`${CLASS_NAME}__add-button`}
             buttonStyle={EnumButtonStyle.Primary}
