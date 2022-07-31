@@ -14,6 +14,7 @@ describe("WinstonConfigFactory", () => {
       level: LEVEL,
       format: developmentFormat,
       transports: [expect.any(transports.Console)],
+      defaultMeta: defaultMeta,
     });
   });
 
@@ -22,6 +23,7 @@ describe("WinstonConfigFactory", () => {
       level: LEVEL,
       format: productionFormat,
       transports: [expect.any(transports.Console)],
+      defaultMeta: defaultMeta,
     });
   });
 });
