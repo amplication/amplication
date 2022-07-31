@@ -20,13 +20,13 @@ import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
+import { AppRouteProps } from "../../routes/routesUtil";
 
-type Props = {
+type Props = AppRouteProps & {
   match: match<{
     workspace: string;
     project: string;
   }>;
-  moduleClass: string;
 };
 
 type TData = {
