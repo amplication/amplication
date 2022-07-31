@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
@@ -23,6 +23,7 @@ const EVENT_DATA: TrackEvent = {
 
 function EntitiesTile({ resourceId }: Props) {
   const history = useHistory();
+  const {workspace,project} = useParams();
   const { data, loading } = useQuery<{
     entities: models.Entity[];
   }>(GET_ENTITIES, {
@@ -36,9 +37,9 @@ function EntitiesTile({ resourceId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${resourceId}/entities`);
+      history.push(`/${workspace}/${project}/${resourceId}/entities`);
     },
-    [history, trackEvent, resourceId]
+    [history, trackEvent, resourceId,workspace,project]
   );
 
   return (
