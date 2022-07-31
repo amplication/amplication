@@ -16,14 +16,14 @@
     "docker:build": "docker build ."
   },
   "dependencies": {
-    "@amplication/kafka": "^0.14.5",
+    "@amplication/kafka": "^0.14.8",
     "@nestjs/common": "8.4.4",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "8.2.3",
     "@nestjs/graphql": "9.1.2",
     "@nestjs/jwt": "8.0.0",
     "@nestjs/microservices": "8.4.4",
-    "@nestjs/passport": "8.2.1",
+    "@nestjs/passport": "8.2.2",
     "@nestjs/platform-express": "8.2.3",
     "@nestjs/serve-static": "2.2.2",
     "@nestjs/swagger": "5.1.5",
@@ -74,5 +74,5 @@
       "<rootDir>/dist/"
     ]
   },
-  "version": "0.14.5"
+  "version": "0.14.8"
 }

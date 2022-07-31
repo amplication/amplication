@@ -3,21 +3,12 @@ kind: Job
 metadata:
   name: "{{ .Values.name }}-migrate"
 spec:
-  # ttlSecondsAfterFinished: 5
+  ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: "{{ .Values.name }}-migrate"
     spec:
       restartPolicy: Never
-      {{ if .Values.postgres.install }}
-      initContainers:
-      - name: wait-for-postgres-connection
-        image: {{ .Values.postgres.postgresql.image }}
-        imagePullPolicy: {{ .Values.postgres.postgresql.imagePullPolicy }}
-        args:
-          - "pod"
-          - "postgresql-0"
-      {{ end }}
       containers:
       - name: "{{ .Values.name }}-migrate"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

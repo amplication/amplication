@@ -45,6 +45,7 @@ export class PullRequestService {
       title,
       body,
       installationId,
+      newBuildId,
       base
     );
     this.logger.info('Opened a new pull request', { prUrl });

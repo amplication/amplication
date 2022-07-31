@@ -43,6 +43,7 @@ export interface IGitClient {
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
-    installationId: string
+    installationId: string,
+    amplicationBuildId: string
   ): Promise<string>;
 }
