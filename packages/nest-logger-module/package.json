@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "prebuild": "rimraf dist",
-    "test": "jest"
+    "test": "jest",
+    "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
+    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
   "author": "tupe12334",
   "devDependencies": {
@@ -15,6 +17,7 @@
     "@types/node": "18.6.1",
     "jest": "28.1.3",
     "nest-winston": "1.7.0",
+    "prettier": "2.7.1",
     "reflect-metadata": "0.1.13",
     "rimraf": "3.0.2",
     "ts-jest": "28.0.7",
