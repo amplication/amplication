@@ -27,10 +27,16 @@ const CLASS_NAME = "resource-list";
 function ResourceList() {
   const { trackEvent } = useTracking();
   const [error, setError] = useState<Error | null>(null);
-  const {resources, handleSearchChange, loadingResources, errorResources} = useContext(AppContext);
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const {
+    resources,
+    handleSearchChange,
+    loadingResources,
+    errorResources,
+    currentWorkspace,
+    currentProject,
+  } = useContext(AppContext);
 
- const linkToCreateResource = `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`; 
+  const linkToCreateResource = `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`;
 
   const clearError = useCallback(() => {
     setError(null);
@@ -67,7 +73,7 @@ function ResourceList() {
     },
     [deleteResource, setError, trackEvent]
   );
-  
+
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -95,9 +101,7 @@ function ResourceList() {
           </Button>
         </Link>
       </div>
-      <div className={`${CLASS_NAME}__title`}>
-        {resources.length} Resources
-      </div>
+      <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
       {loadingResources && <CircularProgress />}
 
       {isEmpty(resources) && !loadingResources ? (

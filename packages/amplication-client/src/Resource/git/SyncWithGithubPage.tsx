@@ -3,7 +3,6 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
-import useNavigationTabs from "../../Layout/UseNavigationTabs";
 import { EnumGitOrganizationType } from "../../models";
 import { formatError } from "../../util/error";
 import AuthResourceWithGit from "./AuthResourceWithGit";
@@ -32,14 +31,12 @@ export type GitRepositoryWithGitOrganization = {
 };
 export type ResourceWithGitRepository = {
   id: string;
-  workspace: WorkspaceFromResourceWithGitOrganizations;
   gitRepository: null | GitRepositoryWithGitOrganization;
 };
 
 type Props = {
   match: match<{ resource: string }>;
 };
-const NAVIGATION_KEY = "GITHUB";
 function SyncWithGithubPage({ match }: Props) {
   const { resource } = match.params;
 
@@ -51,7 +48,6 @@ function SyncWithGithubPage({ match }: Props) {
     },
   });
   const pageTitle = "GitHub";
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
   const errorMessage = formatError(error);
 
   return (
@@ -85,14 +81,6 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
       name
       color
       githubLastSync
-      workspace {
-        id
-        gitOrganizations {
-          id
-          name
-          type
-        }
-      }
       gitRepository {
         id
         name
