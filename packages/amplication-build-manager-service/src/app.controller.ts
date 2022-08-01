@@ -4,7 +4,12 @@ import { EventPattern, Payload } from '@nestjs/microservices';
 import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
 import { BuildService } from './codeBuild/build.service';
 import { CODE_BUILD_SERVICE } from './codeBuild/codeBuild.module';
-import { BUILD_STATUS_TOPIC, GENERATE_RESOURCE_TOPIC } from './constants';
+import {
+  BUILD_PHASE_TOPIC,
+  BUILD_STATE_TOPIC,
+  BUILD_STATUS_TOPIC,
+  GENERATE_RESOURCE_TOPIC,
+} from './constants';
 import { QueueService } from './queue/queue.service';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -45,6 +50,24 @@ export class AppController {
       );
       this.emitFailureMessage(gr.buildId, error.message);
     }
+  }
+
+  @EventPattern(EnvironmentVariables.instance.get(BUILD_STATE_TOPIC, true))
+  async receiveBuildState(@Payload() message: any) {
+    const messageValue = message.value || {};
+    const event =
+      this.buildService.mapBuildStateMessageToBuildStatusEvent(messageValue);
+
+    this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
+  }
+
+  @EventPattern(EnvironmentVariables.instance.get(BUILD_PHASE_TOPIC, true))
+  async receiveBuildPhase(@Payload() message: any) {
+    const messageValue = message.value || {};
+    const event =
+      this.buildService.mapBuildPhaseMessageToBuildStatusEvent(messageValue);
+
+    this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
   }
 
   emitInitMessage(runId: string, message: string) {
