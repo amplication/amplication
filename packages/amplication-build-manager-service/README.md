@@ -34,6 +34,8 @@ You can also use a more manual step-by-step approach to set up Amplication Build
 | BUILD_ARTIFACT_S3_BUCKET | S3 bucket that stores artifacts that produced by CodeBuild. | `amplication-dsg-dev` |
 | BUILD_ARTIFACT_S3_LOCATION | Base location of artifacts in the bucket. | `build-artifacts` |
 | CODE_BUILD_PROJECT_NAME | CodeBuild Project Name that the service uses for code build process. | `code-generator-dev` |
+| BUILD_STATE_TOPIC | Topic that stores build status messages from CodeBuild. | `build.external.build-state.event.0` |
+| BUILD_STATE_TOPIC | Topic that stores build phase messages from CodeBuild. | `build.external.build-phase.event.0` |
 
 #### Manual one-time set up
 
