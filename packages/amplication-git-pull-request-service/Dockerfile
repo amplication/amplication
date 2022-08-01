@@ -45,6 +45,10 @@ COPY --from=build /app/packages/amplication-git-service/package.json /app/packag
 COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
 COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
 
+COPY --from=build /app/packages/amplication-nest-logger-module/package.json /app/packages/amplication-nest-logger-module/package.json
+COPY --from=build /app/packages/amplication-nest-logger-module/node_modules /app/packages/amplication-nest-logger-module/node_modules
+COPY --from=build /app/packages/amplication-nest-logger-module/dist /app/packages/amplication-nest-logger-module/dist
+
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
