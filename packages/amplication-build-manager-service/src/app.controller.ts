@@ -72,25 +72,6 @@ export class AppController {
     }
   }
 
-  // @EventPattern(EnvironmentVariables.instance.get(BUILD_PHASE_TOPIC, true))
-  async receiveBuildPhase(@Payload() queueMessage: any) {
-    try {
-      const notification = queueMessage.value as CodeGenNotification;
-      const event = this.buildService.mapBuildPhaseMessageToBuildStatusEvent(
-        notification.Message,
-      );
-      this.queueService.emitMessage(
-        this.buildStatusTopic,
-        JSON.stringify(event),
-      );
-    } catch (error) {
-      this.logger.error(
-        `Failed to convert code build message to status event. message: ${queueMessage} error: ${error}`,
-        { error, message: queueMessage },
-      );
-    }
-  }
-
   emitInitMessage(runId: string, message: string) {
     const event: BuildStatusEvent = {
       runId,

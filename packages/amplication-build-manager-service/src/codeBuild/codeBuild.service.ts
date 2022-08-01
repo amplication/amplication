@@ -46,37 +46,6 @@ export class CodeBuildService implements BuildService {
     }
   }
 
-  mapBuildPhaseMessageToBuildStatusEvent(message: string): BuildStatusEvent {
-    const m: CodeGenNotificationMessage = JSON.parse(message);
-    const phaseChangeDetail = m.detail as BuildPhaseChangeDetail;
-
-    const buildId = phaseChangeDetail['build-id'];
-
-    const phaseStatus = phaseChangeDetail['completed-phase-status'];
-    const buildStatus =
-      phaseStatus === 'SUCCEEDED'
-        ? phaseChangeDetail['completed-phase']
-        : 'FAILED';
-    const buildStatusEventStatus = buildStatus as BuildStatusEnum;
-
-    const buildStateArtifact =
-      phaseChangeDetail['additional-information'].artifact;
-    const artifact: FileLocation = {
-      storageType: StorageTypeEnum.S3,
-      path: buildStateArtifact.location,
-    };
-
-    const event: BuildStatusEvent = {
-      runId: buildId,
-      status: buildStatusEventStatus,
-      message: message,
-      timestamp: m.time,
-      artifact,
-    };
-
-    return event;
-  }
-
   mapBuildStateMessageToBuildStatusEvent(message: string): BuildStatusEvent {
     const m: CodeGenNotificationMessage = JSON.parse(message);
     const stateChangeDetail = m.detail as BuildStateChangeDetail;
@@ -96,7 +65,7 @@ export class CodeBuildService implements BuildService {
     const event: BuildStatusEvent = {
       runId: buildId,
       status: buildStatusEventStatus,
-      message,
+      message: m.detailType,
       timestamp: m.time,
       artifact,
     };
