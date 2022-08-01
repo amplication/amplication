@@ -4,6 +4,7 @@ import {
   DEFAULT_SERVICE_DATA,
   INITIAL_COMMIT_MESSAGE,
   INVALID_RESOURCE_ID,
+  INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService
 } from './resource.service';
 
@@ -11,7 +12,8 @@ import { GitService } from '@amplication/git-service';
 import {
   EnumResourceType,
   GitRepository,
-  PrismaService
+  PrismaService,
+  Prisma
 } from '@amplication/prisma-db';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { EnumDataType } from 'src/enums/EnumDataType';
@@ -49,6 +51,8 @@ import { ProjectConfigurationSettingsService } from '../projectConfigurationSett
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID =
+  'exampleProjectConfigurationResourceId';
 const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
 const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
@@ -70,6 +74,17 @@ const EXAMPLE_RESOURCE: Resource = {
   ...DEFAULT_SERVICE_DATA,
   id: EXAMPLE_RESOURCE_ID,
   resourceType: EnumResourceType.Service,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_RESOURCE_NAME,
+  description: EXAMPLE_RESOURCE_DESCRIPTION,
+  deletedAt: null
+};
+
+const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
+  ...DEFAULT_SERVICE_DATA,
+  id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID,
+  resourceType: EnumResourceType.ProjectConfiguration,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
@@ -248,9 +263,15 @@ const serviceSettingsCreateMock = jest.fn(() => {
 const prismaResourceCreateMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
-const prismaResourceFindOneMock = jest.fn(() => {
-  return EXAMPLE_RESOURCE;
-});
+const prismaResourceFindOneMock = jest.fn(
+  (args: Prisma.ResourceFindUniqueArgs) => {
+    if (args.where.id === EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID) {
+      return EXAMPLE_PROJECT_CONFIGURATION_RESOURCE;
+    } else {
+      return EXAMPLE_RESOURCE;
+    }
+  }
+);
 const prismaResourceFindManyMock = jest.fn(() => {
   return [EXAMPLE_RESOURCE];
 });
@@ -802,7 +823,7 @@ describe('ResourceService', () => {
     expect(prismaResourceFindManyMock).toBeCalledWith(args);
   });
 
-  it('should delete an resource', async () => {
+  it('should delete a resource', async () => {
     const args = { where: { id: EXAMPLE_RESOURCE_ID } };
     const dateSpy = jest.spyOn(global, 'Date');
     expect(await service.deleteResource(args)).toEqual(EXAMPLE_RESOURCE);
@@ -814,6 +835,13 @@ describe('ResourceService', () => {
         name: prepareDeletedItemName(EXAMPLE_RESOURCE.name, EXAMPLE_RESOURCE.id)
       }
     });
+  });
+
+  it('should not delete a resource of Project configuration', async () => {
+    const args = { where: { id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID } };
+    await expect(service.deleteResource(args)).rejects.toThrow(
+      new Error(INVALID_DELETE_PROJECT_CONFIGURATION)
+    );
   });
 
   it('should update an resource', async () => {

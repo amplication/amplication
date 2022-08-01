@@ -7,15 +7,14 @@ import { format } from "date-fns";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 import "./ResourceListItem.scss";
-import { BuildStatusIcons } from "../VersionControl/BuildStatusIcons";
 import {
   ConfirmationDialog,
-  CircleBadge,
   EnumPanelStyle,
   Panel,
   Icon,
   Tooltip,
 } from "@amplication/design-system";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 
 type Props = {
   resource: models.Resource;
@@ -28,7 +27,7 @@ const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 function ResourceListItem({ resource, onDelete }: Props) {
-  const { id, name, description, color } = resource;
+  const { id, name, description } = resource;
   const { trackEvent } = useTracking();
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -79,7 +78,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
           panelStyle={EnumPanelStyle.Bordered}
         >
           <div className={`${CLASS_NAME}__row`}>
-            <CircleBadge name={name} color={color} />
+            <ResourceCircleBadge type={resource.resourceType} />
 
             <span className={`${CLASS_NAME}__title`}>{name}</span>
 
@@ -110,7 +109,6 @@ function ResourceListItem({ resource, onDelete }: Props) {
                 </Tooltip>
               </div>
             )}
-            <BuildStatusIcons build={resource.builds[0]} />
             <span className="spacer" />
           </div>
         </Panel>
