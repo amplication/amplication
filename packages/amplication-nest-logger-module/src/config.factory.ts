@@ -4,7 +4,7 @@ import { WinstonModuleOptions } from "nest-winston";
 import { transports } from "winston";
 import { format as winstonCloudLoggingFormat } from "winston-cloud-logging";
 
-export const LEVEL = process.env.AMPLICATION_LOG_LEVEL || "info";
+export const LEVEL = process.env.LOG_LEVEL || "info";
 
 export type defaultMeta = { service: string };
 
