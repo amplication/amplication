@@ -17,6 +17,8 @@ export interface AppContextInterface {
   handleSearchChange: (searchResults: string) => void
   loadingResources: boolean;
   errorResources: Error | undefined;
+  currentResource: models.Resource | undefined
+  setResource: (resource: models.Resource) => void
 }
 
 const initialContext: AppContextInterface = {
@@ -33,6 +35,8 @@ const initialContext: AppContextInterface = {
   handleSearchChange: () => {},
   loadingResources: true,
   errorResources: undefined,
+  currentResource: undefined,
+  setResource: () => {}
 };
 
 export const AppContext = React.createContext<AppContextInterface>(

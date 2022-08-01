@@ -11,6 +11,7 @@ export const GET_RESOURCES = gql`
       description
       color
       updatedAt
+      resourceType
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         version
