@@ -1,6 +1,6 @@
 import { transports } from "winston";
 import {
-  defaultMeta,
+  LoggerMetadata,
   developmentFormat,
   LEVEL,
   productionFormat,
@@ -8,7 +8,7 @@ import {
 } from "./config.factory";
 
 describe("WinstonConfigFactory", () => {
-  const defaultMeta: defaultMeta = { service: "server" };
+  const defaultMeta: LoggerMetadata = { service: "server" };
   it("should return development config if false", () => {
     expect(winstonConfigFactory(false, defaultMeta)).toEqual({
       level: LEVEL,

@@ -1,17 +1,20 @@
 import { DynamicModule, Module } from "@nestjs/common";
 import { WinstonModule } from "nest-winston";
-import { defaultMeta, winstonConfigFactory } from "./config.factory";
+import { LoggerMetadata, winstonConfigFactory } from "./config.factory";
 
-export type ModuleOptions = defaultMeta;
+export interface AmplicationLoggerModuleOptions {
+  metadata: LoggerMetadata;
+}
 
 @Module({})
 export class AmplicationLoggerModule {
-  static register(options: ModuleOptions): DynamicModule {
+  static register(options: AmplicationLoggerModuleOptions): DynamicModule {
     return WinstonModule.forRootAsync({
       useFactory: () =>
-        winstonConfigFactory(process.env.NODE_ENV === "production", {
-          ...options,
-        }),
+        winstonConfigFactory(
+          process.env.NODE_ENV === "production",
+          options.metadata
+        ),
     });
   }
 }

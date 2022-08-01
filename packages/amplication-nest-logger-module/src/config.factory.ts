@@ -6,7 +6,9 @@ import { format as winstonCloudLoggingFormat } from "winston-cloud-logging";
 
 export const LEVEL = process.env.LOG_LEVEL || "info";
 
-export type defaultMeta = { service: string };
+export interface LoggerMetadata {
+  service: string;
+}
 
 export const developmentFormat = logformFormat.combine(
   logformFormat.errors({ stack: true }),
@@ -24,7 +26,7 @@ export const productionFormat = logformFormat.combine(
 
 export const winstonConfigFactory = (
   isProduction: boolean,
-  defaultMeta: defaultMeta
+  defaultMeta: LoggerMetadata
 ): WinstonModuleOptions => {
   assert(
     typeof isProduction === "boolean",
