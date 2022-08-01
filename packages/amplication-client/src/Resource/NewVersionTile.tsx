@@ -6,9 +6,10 @@ import {
 } from "@amplication/design-system";
 import { useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import { AppContext } from "../context/appContext";
 import { GET_LOOKUP_FIELDS } from "../Entity/RelatedFieldsMigrationFix";
 import * as models from "../models";
 import { Event as TrackEvent, useTracking } from "../util/analytics";
@@ -30,6 +31,7 @@ const EVENT_DATA: TrackEvent = {
 
 function NewVersionTile({ resourceId }: Props) {
   const history = useHistory();
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const { data, loading } = useQuery<TData>(GET_LOOKUP_FIELDS, {
     variables: {
@@ -41,9 +43,9 @@ function NewVersionTile({ resourceId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${resourceId}/fix-related-entities`);
+      history.push(`/${currentWorkspace?.id}/${currentProject?.id}${resourceId}/fix-related-entities`);
     },
-    [history, trackEvent, resourceId]
+    [history, trackEvent, resourceId,currentWorkspace,currentProject]
   );
 
   const requiredFixesCount = useMemo(() => {

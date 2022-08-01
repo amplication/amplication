@@ -34,7 +34,11 @@ function ResourceList() {
     handleSearchChange,
     loadingResources,
     errorResources,
+    currentWorkspace,
+    currentProject,
   } = useContext(AppContext);
+
+  const linkToCreateResource = `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`;
 
   const clearError = useCallback(() => {
     setError(null);
@@ -89,8 +93,7 @@ function ResourceList() {
           placeholder="search"
           onChange={handleSearchChange}
         />
-
-        <Link onClick={handleNewResourceClick} to="/create-resource">
+        <Link onClick={handleNewResourceClick} to={linkToCreateResource}>
           <Button
             className={`${CLASS_NAME}__add-button`}
             buttonStyle={EnumButtonStyle.Primary}

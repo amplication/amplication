@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 
@@ -12,6 +12,7 @@ import {
 import { GET_ROLES } from "../Roles/RoleList";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   resourceId: string;
@@ -23,7 +24,7 @@ const EVENT_DATA: TrackEvent = {
 
 function RolesTile({ resourceId }: Props) {
   const history = useHistory();
-
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const { data, loading } = useQuery<{
     resourceRoles: models.ResourceRole[];
   }>(GET_ROLES, {
@@ -36,9 +37,9 @@ function RolesTile({ resourceId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${resourceId}/roles`);
+      history.push(`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles`);
     },
-    [history, trackEvent, resourceId]
+    [history, trackEvent, resourceId,currentWorkspace,currentProject]
   );
 
   return (

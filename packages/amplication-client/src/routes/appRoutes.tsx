@@ -36,8 +36,9 @@ export const Routes: RouteDef[] = [
               () => import("../Resource/create-resource/CreateServiceWizard")
             ),
             moduleName: "CreateServiceWizard",
-            routeTrackType: "create-service-wizard",
-            exactPath: false,
+            moduleClass: "create-service-wizard",
+            routeTrackType: "",
+            exactPath: true,
           },
           {
             path:
@@ -75,7 +76,7 @@ export const Routes: RouteDef[] = [
     exactPath: true,
   },
   {
-    path: "/github-auth-app/callback",
+    path: "/github-auth-app/callback", //todo
     Component: lazy(
       () => import("../Resource/git/AuthResourceWithGitCallback")
     ),
