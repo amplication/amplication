@@ -7,43 +7,36 @@ import {
 } from 'src/dto';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class BlockVersionWhereInput {
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => IntFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   versionNumber?: IntFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   label?: StringFilter | null;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   block: WhereUniqueInput;
 }

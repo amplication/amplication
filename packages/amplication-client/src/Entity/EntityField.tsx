@@ -38,15 +38,15 @@ const EntityField = () => {
   const [error, setError] = useState<Error>();
 
   const match = useRouteMatch<{
-    application: string;
+    resource: string;
     entity: string;
     field: string;
-  }>("/:application/entities/:entity/fields/:field");
+  }>("/:resource/entities/:entity/fields/:field");
 
-  const { application, entity, field } = match?.params ?? {};
+  const { resource, entity, field } = match?.params ?? {};
 
-  if (!application) {
-    throw new Error("application parameters is required in the query string");
+  if (!resource) {
+    throw new Error("resource parameters is required in the query string");
   }
 
   const { data, error: loadingError, loading } = useQuery<TData>(
@@ -93,8 +93,8 @@ const EntityField = () => {
   );
 
   const handleDeleteField = useCallback(() => {
-    history.push(`/${application}/entities/${entity}/fields/`);
-  }, [history, application, entity]);
+    history.push(`/${resource}/entities/${entity}/fields/`);
+  }, [history, resource, entity]);
 
   const handleSubmit = useCallback(
     (data) => {
@@ -188,7 +188,7 @@ const EntityField = () => {
             }
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
-            applicationId={application}
+            resourceId={resource}
             entityDisplayName={entityDisplayName || ""}
           />
         </>

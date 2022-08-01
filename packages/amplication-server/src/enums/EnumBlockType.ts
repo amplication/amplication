@@ -1,7 +1,7 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumBlockType {
-  AppSettings = 'AppSettings',
+  ServiceSettings = 'ServiceSettings',
   Flow = 'Flow',
   ConnectorRestApi = 'ConnectorRestApi',
   ConnectorRestApiCall = 'ConnectorRestApiCall',
@@ -17,6 +17,5 @@ export enum EnumBlockType {
 }
 
 registerEnumType(EnumBlockType, {
-  name: 'EnumBlockType',
-  description: undefined
+  name: 'EnumBlockType'
 });

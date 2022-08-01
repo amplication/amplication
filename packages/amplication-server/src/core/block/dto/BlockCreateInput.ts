@@ -4,45 +4,38 @@ import { WhereParentIdInput } from 'src/dto';
 import { BlockInputOutput } from 'src/models';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export abstract class BlockCreateInput implements JsonObject {
   [key: string]: JsonValue;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
-  app!: WhereParentIdInput & JsonValue;
+  resource!: WhereParentIdInput & JsonValue;
 
   @Field(() => WhereParentIdInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   parentBlock?: WhereParentIdInput & JsonValue;
 
   @Field(() => [BlockInputOutput], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   inputParameters?: BlockInputOutput[] & JsonArray;
 
   @Field(() => [BlockInputOutput], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   outputParameters?: BlockInputOutput[] & JsonArray;
 }

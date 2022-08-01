@@ -3,15 +3,13 @@ import { WhereUniqueInput } from 'src/dto/WhereUniqueInput';
 import { EnumSubscriptionStatusFilter } from './EnumSubscriptionStatusFilter';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class FindSubscriptionsInput {
   workspace!: WhereUniqueInput;
 
   @Field(() => EnumSubscriptionStatusFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   status?: EnumSubscriptionStatusFilter | null;
 }

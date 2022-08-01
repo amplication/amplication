@@ -4,8 +4,8 @@ import * as models from "../models";
 import { ToggleButton } from "@amplication/design-system";
 
 type Props = {
-  role: models.AppRole;
-  onClick: (role: models.AppRole, checked: boolean) => void;
+  role: models.ResourceRole;
+  onClick: (role: models.ResourceRole, checked: boolean) => void;
   selected: boolean;
 };
 

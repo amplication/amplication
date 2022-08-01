@@ -5,31 +5,26 @@ import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/n
 import { EnumDataType } from './../enums/EnumDataType';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityField {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   permanentId!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
@@ -38,56 +33,47 @@ export class EntityField {
   entityVersion?: EntityVersion;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => EnumDataType, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   dataType!: keyof typeof EnumDataType;
 
   @Field(() => GraphQLJSONObject, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   properties!: JsonValue;
 
   @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   required!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   unique!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   searchable!: boolean;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description: string;
 
   @Field(() => Int, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   position?: number;
 }

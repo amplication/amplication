@@ -2,79 +2,66 @@ import { Field, InputType } from '@nestjs/graphql';
 import { SortOrder } from 'src/enums/SortOrder';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityFieldOrderByInput {
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   permanentId?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   updatedAt?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   displayName?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   dataType?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   required?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   unique?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   searchable?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: SortOrder | null;
 
   @Field(() => SortOrder, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   position?: SortOrder | null;
 }

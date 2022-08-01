@@ -24,20 +24,20 @@ type LogData = {
 };
 
 type Props = {
-  match: match<{ application: string; buildId: string }>;
+  match: match<{ resource: string; buildId: string }>;
 };
 const CLASS_NAME = "build-page";
 const NAVIGATION_KEY = "BUILDS";
 
 const BuildPage = ({ match }: Props) => {
-  const { application, buildId } = match.params;
+  const { resource, buildId } = match.params;
 
   const truncatedId = useMemo(() => {
     return truncateId(buildId);
   }, [buildId]);
 
   useNavigationTabs(
-    application,
+    resource,
     `${NAVIGATION_KEY}_${buildId}`,
     match.url,
     `Build ${truncatedId}`
@@ -89,7 +89,7 @@ const BuildPage = ({ match }: Props) => {
               {commitData && (
                 <ClickableId
                   label="Commit"
-                  to={`/${application}/commits/${commitData.commit.id}`}
+                  to={`/${resource}/commits/${commitData.commit.id}`}
                   id={commitData.commit.id}
                   eventData={{
                     eventName: "commitHeaderIdClick",

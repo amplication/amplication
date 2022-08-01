@@ -16,7 +16,7 @@ export class PullRequestService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
   async createPullRequest({
-    amplicationAppId,
+    resourceId,
     oldBuildId,
     newBuildId,
     gitOrganizationName,
@@ -26,7 +26,7 @@ export class PullRequestService {
     gitProvider,
   }: SendPullRequestArgs): Promise<ResultMessage<SendPullRequestResponse>> {
     const changedFiles = await this.diffService.listOfChangedFiles(
-      amplicationAppId,
+      resourceId,
       oldBuildId,
       newBuildId
     );

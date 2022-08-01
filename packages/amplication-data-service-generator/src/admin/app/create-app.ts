@@ -42,7 +42,7 @@ export async function createAppModule(
     }
   );
   interpolate(file, {
-    APP_NAME: builders.stringLiteral(appInfo.name),
+    RESOURCE_NAME: builders.stringLiteral(appInfo.name),
     RESOURCES: jsxFragment`<>${resources}</>`,
     AUTH_PROVIDER_NAME: authProviderIdentifier,
   });

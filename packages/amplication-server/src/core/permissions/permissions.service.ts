@@ -14,10 +14,10 @@ export class PermissionsService {
   ): Promise<boolean> {
     const { workspace } = user;
 
-    const checkByAppParameters = {
+    const checkByResourceParameters = {
       where: {
         id: resourceId,
-        app: {
+        resource: {
           deletedAt: null,
           workspace: {
             id: workspace.id
@@ -51,8 +51,8 @@ export class PermissionsService {
       return matching === 1;
     }
 
-    if (resourceType === AuthorizableResourceParameter.AppId) {
-      const matching = await this.prisma.app.count({
+    if (resourceType === AuthorizableResourceParameter.ResourceId) {
+      const matching = await this.prisma.resource.count({
         where: {
           deletedAt: null,
           id: resourceId,
@@ -93,7 +93,7 @@ export class PermissionsService {
               deployments: {
                 some: {
                   build: {
-                    app: {
+                    resource: {
                       deletedAt: null,
                       workspaceId: workspace.id
                     }
@@ -105,7 +105,7 @@ export class PermissionsService {
               id: resourceId,
               builds: {
                 some: {
-                  app: {
+                  resource: {
                     deletedAt: null,
                     workspaceId: workspace.id
                   }
@@ -122,7 +122,7 @@ export class PermissionsService {
         where: {
           id: resourceId,
           environment: {
-            app: {
+            resource: {
               deletedAt: null,
               workspaceId: workspace.id
             }
@@ -137,7 +137,7 @@ export class PermissionsService {
           id: resourceId,
           entityVersion: {
             entity: {
-              app: {
+              resource: {
                 deletedAt: null,
                 workspaceId: workspace.id
               }
@@ -156,7 +156,7 @@ export class PermissionsService {
           field: {
             entityVersion: {
               entity: {
-                app: {
+                resource: {
                   deletedAt: null,
                   workspaceId: workspace.id
                 }
@@ -168,29 +168,35 @@ export class PermissionsService {
       return matching === 1;
     }
     if (resourceType === AuthorizableResourceParameter.EntityId) {
-      const matching = await this.prisma.entity.count(checkByAppParameters);
+      const matching = await this.prisma.entity.count(
+        checkByResourceParameters
+      );
       return matching === 1;
     }
     if (resourceType === AuthorizableResourceParameter.BlockId) {
-      const matching = await this.prisma.block.count(checkByAppParameters);
+      const matching = await this.prisma.block.count(checkByResourceParameters);
       return matching === 1;
     }
     if (resourceType === AuthorizableResourceParameter.BuildId) {
-      const matching = await this.prisma.build.count(checkByAppParameters);
+      const matching = await this.prisma.build.count(checkByResourceParameters);
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.AppRoleId) {
-      const matching = await this.prisma.appRole.count(checkByAppParameters);
+    if (resourceType === AuthorizableResourceParameter.ResourceRoleId) {
+      const matching = await this.prisma.resourceRole.count(
+        checkByResourceParameters
+      );
       return matching === 1;
     }
     if (resourceType === AuthorizableResourceParameter.EnvironmentId) {
       const matching = await this.prisma.environment.count(
-        checkByAppParameters
+        checkByResourceParameters
       );
       return matching === 1;
     }
     if (resourceType === AuthorizableResourceParameter.CommitId) {
-      const matching = await this.prisma.commit.count(checkByAppParameters);
+      const matching = await this.prisma.commit.count(
+        checkByResourceParameters
+      );
       return matching === 1;
     }
 

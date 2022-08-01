@@ -1,8 +1,8 @@
-export { getApp } from './apps-get';
-export { getApps } from './apps-list';
-export { createApp } from './apps-create';
-export { updateApp } from './apps-update';
-export { commitChanges } from './apps-commit';
+export { getResource } from './resources-get';
+export { getResources } from './resources-list';
+export { createResource } from './resources-create';
+export { updateResource } from './resources-update';
+export { commitChanges } from './resources-commit';
 
 export { getEntities } from './entities-list';
 export { getEntity } from './entities-get';

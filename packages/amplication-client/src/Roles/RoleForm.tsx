@@ -11,8 +11,8 @@ import { validate } from "../util/formikValidateJsonSchema";
 import FormikAutoSave from "../util/formikAutoSave";
 
 type Props = {
-  onSubmit: (values: models.AppRole) => void;
-  defaultValues?: models.AppRole;
+  onSubmit: (values: models.ResourceRole) => void;
+  defaultValues?: models.ResourceRole;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -22,7 +22,7 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-export const INITIAL_VALUES: Partial<models.AppRole> = {
+export const INITIAL_VALUES: Partial<models.ResourceRole> = {
   name: "",
   displayName: "",
   description: "",
@@ -51,13 +51,13 @@ const RoleForm = ({ onSubmit, defaultValues }: Props) => {
     return {
       ...INITIAL_VALUES,
       ...sanitizedDefaultValues,
-    } as models.AppRole;
+    } as models.ResourceRole;
   }, [defaultValues]);
 
   return (
     <Formik
       initialValues={initialValues}
-      validate={(values: models.AppRole) => validate(values, FORM_SCHEMA)}
+      validate={(values: models.ResourceRole) => validate(values, FORM_SCHEMA)}
       enableReinitialize
       onSubmit={onSubmit}
     >

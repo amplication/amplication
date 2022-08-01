@@ -16,7 +16,7 @@ export class BuildWhereInput {
   createdAt?: DateTimeFilter | null | undefined;
 
   @Field(() => WhereUniqueInput)
-  app?: WhereUniqueInput;
+  resource?: WhereUniqueInput;
 
   @Field(() => WhereUniqueInput, {
     nullable: true
@@ -24,14 +24,12 @@ export class BuildWhereInput {
   createdBy?: WhereUniqueInput | null | undefined;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   version?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   message?: StringFilter | null;
 

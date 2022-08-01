@@ -6,26 +6,22 @@ import { HttpBasicAuthenticationSettings } from './HttpBasicAuthenticationSettin
 import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class ConnectorRestApiCreateInput extends BlockCreateInput {
   @Field(() => EnumConnectorRestApiAuthenticationType, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   authenticationType!: keyof typeof EnumConnectorRestApiAuthenticationType;
 
   @Field(() => PrivateKeyAuthenticationSettings, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings &
     JsonValue;
 
   @Field(() => HttpBasicAuthenticationSettings, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings & JsonValue;
 }

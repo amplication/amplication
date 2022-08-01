@@ -87,7 +87,7 @@ export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
 
 type EntityData = Omit<
   Entity,
-  'id' | 'createdAt' | 'updatedAt' | 'app' | 'appId' | 'fields'
+  'id' | 'createdAt' | 'updatedAt' | 'resource' | 'resourceId' | 'fields'
 > & {
   fields: EntityFieldData[];
 };
@@ -100,7 +100,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
     displayName: 'User',
     pluralDisplayName: 'Users',
     description:
-      'An automatically created entity to manage users in the application',
+      'An automatically created entity to manage users in the service',
     fields: [
       ...INITIAL_ENTITY_FIELDS,
       {

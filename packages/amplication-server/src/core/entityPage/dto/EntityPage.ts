@@ -31,16 +31,14 @@ export class EntityPage extends IBlock {
   listSettings?: EntityPageListSettings & JsonValue;
 
   @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   showAllFields!: boolean;
 
   @ValidateIf(o => !o.showAllFields)
   @IsNotEmpty()
   @Field(() => [String], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   showFieldList?: string[];
 }

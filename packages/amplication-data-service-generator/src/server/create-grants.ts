@@ -73,7 +73,7 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
           fieldsWithRoles.add(field.name);
           const roles = permissionField.permissionRoles || [];
           for (const permissionFieldRole of roles) {
-            const role = permissionFieldRole.appRole.name;
+            const role = permissionFieldRole.resourceRole.name;
             if (!(role in roleToFields)) {
               roleToFields[role] = new Set();
             }
@@ -103,8 +103,8 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
               "For granular permissions, permissionRoles must be defined"
             );
           }
-          for (const { appRole } of permission.permissionRoles) {
-            const fields = roleToFields[appRole.name] || new Set();
+          for (const { resourceRole } of permission.permissionRoles) {
+            const fields = roleToFields[resourceRole.name] || new Set();
             /** Set of fields allowed other roles */
             const forbiddenFields = difference(fieldsWithRoles, fields);
             const attributes = createAttributes([
@@ -114,7 +114,7 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
               ),
             ]);
             grants.push({
-              role: appRole.name,
+              role: resourceRole.name,
               resource: entity.name,
               action: actionToACLAction[permission.action],
               attributes,

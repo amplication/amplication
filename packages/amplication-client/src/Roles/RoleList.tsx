@@ -14,19 +14,19 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import "./RoleList.scss";
 
 type TData = {
-  appRoles: models.AppRole[];
+  resourceRoles: models.ResourceRole[];
 };
 
 const DATE_CREATED_FIELD = "createdAt";
 const CLASS_NAME = "role-list";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   selectFirst?: boolean;
 };
 
 export const RoleList = React.memo(
-  ({ applicationId, selectFirst = false }: Props) => {
+  ({ resourceId, selectFirst = false }: Props) => {
     const [searchPhrase, setSearchPhrase] = useState<string>("");
 
     const handleSearchChange = useCallback(
@@ -39,7 +39,7 @@ export const RoleList = React.memo(
 
     const { data, loading, error } = useQuery<TData>(GET_ROLES, {
       variables: {
-        id: applicationId,
+        id: resourceId,
         orderBy: {
           [DATE_CREATED_FIELD]: models.SortOrder.Asc,
         },
@@ -56,21 +56,21 @@ export const RoleList = React.memo(
     const errorMessage = formatError(error);
 
     const handleRoleChange = useCallback(
-      (role: models.AppRole) => {
-        const fieldUrl = `/${applicationId}/roles/${role.id}`;
+      (role: models.ResourceRole) => {
+        const fieldUrl = `/${resourceId}/roles/${role.id}`;
         history.push(fieldUrl);
       },
-      [history, applicationId]
+      [history, resourceId]
     );
 
     useEffect(() => {
-      if (selectFirst && data && !isEmpty(data.appRoles)) {
+      if (selectFirst && data && !isEmpty(data.resourceRoles)) {
         console.log("role list effect - inside");
-        const role = data.appRoles[0];
-        const fieldUrl = `/${applicationId}/roles/${role.id}`;
+        const role = data.resourceRoles[0];
+        const fieldUrl = `/${resourceId}/roles/${role.id}`;
         history.push(fieldUrl);
       }
-    }, [data, selectFirst, applicationId, history]);
+    }, [data, selectFirst, resourceId, history]);
 
     return (
       <div className={CLASS_NAME}>
@@ -80,21 +80,18 @@ export const RoleList = React.memo(
           onChange={handleSearchChange}
         />
         <div className={`${CLASS_NAME}__header`}>
-          {data?.appRoles.length} Roles
+          {data?.resourceRoles.length} Roles
         </div>
         {loading && <CircularProgress />}
-        {data?.appRoles?.map((role) => (
+        {data?.resourceRoles?.map((role) => (
           <div key={role.id}>
-            <InnerTabLink
-              icon="roles"
-              to={`/${applicationId}/roles/${role.id}`}
-            >
+            <InnerTabLink icon="roles" to={`/${resourceId}/roles/${role.id}`}>
               <span>{role.displayName}</span>
             </InnerTabLink>
           </div>
         ))}
-        {data?.appRoles && (
-          <NewRole onRoleAdd={handleRoleChange} applicationId={applicationId} />
+        {data?.resourceRoles && (
+          <NewRole onRoleAdd={handleRoleChange} resourceId={resourceId} />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>
@@ -105,11 +102,11 @@ export const RoleList = React.memo(
 export const GET_ROLES = gql`
   query getRoles(
     $id: String!
-    $orderBy: AppRoleOrderByInput
+    $orderBy: ResourceRoleOrderByInput
     $whereName: StringFilter
   ) {
-    appRoles(
-      where: { app: { id: $id }, displayName: $whereName }
+    resourceRoles(
+      where: { resource: { id: $id }, displayName: $whereName }
       orderBy: $orderBy
     ) {
       id

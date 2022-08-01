@@ -11,27 +11,27 @@ import { CircleBadge, Icon } from "@amplication/design-system";
 import * as models from "../models";
 import "./CommandPalette.scss";
 
-export type AppDescriptor = Pick<models.App, "id" | "name" | "color">;
+export type ResourceDescriptor = Pick<models.Resource, "id" | "name" | "color">;
 export type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
-export type AppDescriptorWithEntityDescriptors = AppDescriptor & {
+export type ResourceDescriptorWithEntityDescriptors = ResourceDescriptor & {
   entities: EntityDescriptor[];
 };
 export type TData = {
-  apps: AppDescriptorWithEntityDescriptors[];
+  resources: ResourceDescriptorWithEntityDescriptors[];
 };
 
 export interface Command {
   name: string;
-  showAppData: boolean;
-  isCurrentApp: boolean;
+  showResourceData: boolean;
+  isCurrentResource: boolean;
   type: string;
-  appName?: string;
-  appColor?: string;
+  resourceName?: string;
+  resourceColor?: string;
   highlight?: string;
   command(): void;
 }
 
-const HOT_KEYS = ["command+shift+p", "ctrl+shift+p"];
+const HOT_KEYS = ["command+shift+k", "ctrl+shift+k"];
 /**
  * Wrapping with a class for testing purposes
  * @see https://github.com/asabaylus/react-command-palette/issues/520
@@ -42,28 +42,28 @@ export class NavigationCommand implements Command {
     public readonly name: string,
     public readonly link: string,
     public readonly type: string,
-    public readonly isCurrentApp: boolean,
-    public readonly showAppData: boolean,
-    public readonly appName?: string,
-    public readonly appColor?: string
+    public readonly isCurrentResource: boolean,
+    public readonly showResourceData: boolean,
+    public readonly resourceName?: string,
+    public readonly resourceColor?: string
   ) {}
   command() {
     this.history.push(this.link);
   }
 }
 
-const TYPE_APP = "app";
+const TYPE_RESOURCE = "resource";
 const TYPE_ENTITY = "entity";
 const TYPE_ROLES = "roles";
 
 const STATIC_COMMANDS = [
   {
-    name: "Applications",
+    name: "Resources",
     link: "/",
   },
 ];
 
-const APPLICATION_COMMANDS = [
+const RESOURCE_COMMANDS = [
   {
     name: "Entities",
     link: "/:id/entities",
@@ -101,9 +101,9 @@ type Props = {
 };
 
 const CommandPalette = ({ trigger }: Props) => {
-  const match = useRouteMatch<{ applicationId: string }>("/:applicationId/");
+  const match = useRouteMatch<{ resourceId: string }>("/:resourceId/");
 
-  const { applicationId } = match?.params || {};
+  const { resourceId } = match?.params || {};
 
   const history = useHistory();
   const [query, setQuery] = useState("");
@@ -114,8 +114,8 @@ const CommandPalette = ({ trigger }: Props) => {
     variables: { query },
   });
   const commands = useMemo(
-    () => (data ? getCommands(data, history, applicationId) : []),
-    [data, history, applicationId]
+    () => (data ? getCommands(data, history, resourceId) : []),
+    [data, history, resourceId]
   );
 
   return (
@@ -129,7 +129,7 @@ const CommandPalette = ({ trigger }: Props) => {
       hotKeys={HOT_KEYS}
       options={{
         key: "name",
-        keys: ["name", "appName"],
+        keys: ["name", "resourceName"],
         allowTypo: true,
         scoreFn: calcCommandScore,
       }}
@@ -142,13 +142,20 @@ export default CommandPalette;
 
 function CommandPaletteItem(suggestion: Command) {
   // A suggestion object will be passed to your custom component for each command
-  const { appColor, appName, name, highlight, showAppData, type } = suggestion;
+  const {
+    resourceColor,
+    resourceName,
+    name,
+    highlight,
+    showResourceData,
+    type,
+  } = suggestion;
   return (
     <>
-      {showAppData && (
+      {showResourceData && (
         <>
-          <CircleBadge name={appName || ""} color={appColor} />
-          <span className="command-palette__app-name">{appName}</span>
+          <CircleBadge name={resourceName || ""} color={resourceColor} />
+          <span className="command-palette__resource-name">{resourceName}</span>
         </>
       )}
       <Icon icon={type} />
@@ -173,7 +180,7 @@ export type CommandScoreType = {
 
 export function calcCommandScore(item: CommandScoreType): number {
   const command: NavigationCommand = item.obj;
-  const scoreFactor = command.isCurrentApp ? 1000 : 0;
+  const scoreFactor = command.isCurrentResource ? 1000 : 0;
 
   return Math.max(
     item[0] ? item[0].score + scoreFactor : -1000,
@@ -188,60 +195,60 @@ export function getStaticCommands(history: History): Command[] {
         history,
         command.name,
         command.link,
-        TYPE_APP,
+        TYPE_RESOURCE,
         false,
         false
       )
   );
 }
 
-export function getAppCommands(
-  app: AppDescriptor,
+export function getResourceCommands(
+  resource: ResourceDescriptor,
   history: History,
-  isCurrentApp: boolean
+  isCurrentResource: boolean
 ): Command[] {
-  const appCommand = new NavigationCommand(
+  const resourceCommand = new NavigationCommand(
     history,
-    app.name,
-    `/${app.id}`,
-    TYPE_APP,
-    isCurrentApp,
+    resource.name,
+    `/${resource.id}`,
+    TYPE_RESOURCE,
+    isCurrentResource,
     true,
-    app.name,
-    app.color
+    resource.name,
+    resource.color
   );
-  const appCommands = APPLICATION_COMMANDS.map(
+  const resourceCommands = RESOURCE_COMMANDS.map(
     (command) =>
       new NavigationCommand(
         history,
         command.name,
-        command.link.replace(":id", app.id),
+        command.link.replace(":id", resource.id),
         command.type,
-        isCurrentApp,
+        isCurrentResource,
         true,
-        app.name,
-        app.color
+        resource.name,
+        resource.color
       )
   );
-  return [appCommand, ...appCommands];
+  return [resourceCommand, ...resourceCommands];
 }
 
 export function getEntityCommands(
   entity: EntityDescriptor,
-  app: AppDescriptor,
+  resource: ResourceDescriptor,
   history: History,
-  isCurrentApp: boolean
+  isCurrentResource: boolean
 ): Command[] {
   return [
     new NavigationCommand(
       history,
       entity.displayName,
-      `/${app.id}/entities/${entity.id}`,
+      `/${resource.id}/entities/${entity.id}`,
       TYPE_ENTITY,
-      isCurrentApp,
+      isCurrentResource,
       true,
-      app.name,
-      app.color
+      resource.name,
+      resource.color
     ),
   ];
 }
@@ -249,23 +256,27 @@ export function getEntityCommands(
 export function getCommands(
   data: TData,
   history: History,
-  currentAppId: string | undefined
+  currentResourceId: string | undefined
 ): Command[] {
-  const appCommands = data.apps.flatMap((app) => {
-    const isCurrentApp = currentAppId === app.id;
-    const appCommands = getAppCommands(app, history, isCurrentApp);
-    const entityCommands = app.entities.flatMap((entity) =>
-      getEntityCommands(entity, app, history, isCurrentApp)
+  const resourceCommands = data.resources.flatMap((resource) => {
+    const isCurrentResource = currentResourceId === resource.id;
+    const resourceCommands = getResourceCommands(
+      resource,
+      history,
+      isCurrentResource
     );
-    return [...appCommands, ...entityCommands];
+    const entityCommands = resource.entities.flatMap((entity) =>
+      getEntityCommands(entity, resource, history, isCurrentResource)
+    );
+    return [...resourceCommands, ...entityCommands];
   });
   const staticCommands = getStaticCommands(history);
-  return [...staticCommands, ...appCommands];
+  return [...staticCommands, ...resourceCommands];
 }
 
 const SEARCH = gql`
   query search {
-    apps {
+    resources {
       id
       name
       color
