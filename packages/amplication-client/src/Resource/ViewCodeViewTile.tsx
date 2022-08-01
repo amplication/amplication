@@ -1,10 +1,11 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { useHistory } from "react-router-dom";
+import { AppContext } from "../context/appContext";
 
 const EVENT_DATA: TrackEvent = {
   eventName: "viewCodeViewTileClick",
@@ -16,13 +17,16 @@ type Props = {
 function ViewCodeViewTile({ resourceId }: Props) {
   const { trackEvent } = useTracking();
   const history = useHistory();
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${resourceId}/code-view`);
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/code-view`
+      );
     },
-    [history, trackEvent, resourceId]
+    [history, trackEvent, resourceId, currentWorkspace, currentProject]
   );
 
   return (
