@@ -3,7 +3,7 @@ export interface CodeGenNotificationMessage {
   detailType: string;
   region: string;
   source: string;
-  time: Date;
+  time: string;
   notificationRuleArn: string;
   detail: BuildPhaseChangeDetail | BuildStateChangeDetail;
   resources: string[];
@@ -41,9 +41,9 @@ export interface AdditionalInformation {
 }
 
 export interface BuildPhaseChangeDetail {
-  'complete-phase': string;
-  'project-name': string;
   'build-id': string;
+  'project-name': string;
+  'completed-phase': string;
   'completed-phase-context': string;
   'additional-information': AdditionalInformation;
   'completed-phase-status': string;
@@ -81,4 +81,16 @@ export interface Logs {
   groupName: string;
   streamName: string;
   deepLink: string;
+}
+
+export interface CodeGenNotification {
+  Type: string;
+  MessageId: string;
+  TopicArn: string;
+  Message: string;
+  Timestamp: Date;
+  SignatureVersion: string;
+  Signature: string;
+  SigningCertURL: string;
+  UnsubscribeURL: string;
 }

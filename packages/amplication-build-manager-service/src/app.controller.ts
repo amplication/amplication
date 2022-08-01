@@ -18,6 +18,7 @@ import {
   BuildStatusEnum,
 } from '@amplication/build-types';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { CodeGenNotification } from './codeBuild/dto/CodeBuildNotificationMessage';
 
 @Controller()
 export class AppController {
@@ -53,21 +54,41 @@ export class AppController {
   }
 
   @EventPattern(EnvironmentVariables.instance.get(BUILD_STATE_TOPIC, true))
-  async receiveBuildState(@Payload() message: any) {
-    const messageValue = message.value || {};
-    const event =
-      this.buildService.mapBuildStateMessageToBuildStatusEvent(messageValue);
-
-    this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
+  async receiveBuildState(@Payload() queueMessage: any) {
+    try {
+      const notification = queueMessage.value as CodeGenNotification;
+      const event = this.buildService.mapBuildStateMessageToBuildStatusEvent(
+        notification.Message,
+      );
+      this.queueService.emitMessage(
+        this.buildStatusTopic,
+        JSON.stringify(event),
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to convert code build message to status event. message: ${queueMessage} error: ${error}`,
+        { error, message: queueMessage },
+      );
+    }
   }
 
-  @EventPattern(EnvironmentVariables.instance.get(BUILD_PHASE_TOPIC, true))
-  async receiveBuildPhase(@Payload() message: any) {
-    const messageValue = message.value || {};
-    const event =
-      this.buildService.mapBuildPhaseMessageToBuildStatusEvent(messageValue);
-
-    this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
+  // @EventPattern(EnvironmentVariables.instance.get(BUILD_PHASE_TOPIC, true))
+  async receiveBuildPhase(@Payload() queueMessage: any) {
+    try {
+      const notification = queueMessage.value as CodeGenNotification;
+      const event = this.buildService.mapBuildPhaseMessageToBuildStatusEvent(
+        notification.Message,
+      );
+      this.queueService.emitMessage(
+        this.buildStatusTopic,
+        JSON.stringify(event),
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to convert code build message to status event. message: ${queueMessage} error: ${error}`,
+        { error, message: queueMessage },
+      );
+    }
   }
 
   emitInitMessage(runId: string, message: string) {

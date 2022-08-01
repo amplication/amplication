@@ -52,10 +52,11 @@ export class CodeBuildService implements BuildService {
 
     const buildId = phaseChangeDetail['build-id'];
 
-    const buildIdParts = buildId.split(':');
-    const runId = buildIdParts[buildIdParts.length - 1];
-
-    const buildStatus = phaseChangeDetail['completed-phase-status'];
+    const phaseStatus = phaseChangeDetail['completed-phase-status'];
+    const buildStatus =
+      phaseStatus === 'SUCCEEDED'
+        ? phaseChangeDetail['completed-phase']
+        : 'FAILED';
     const buildStatusEventStatus = buildStatus as BuildStatusEnum;
 
     const buildStateArtifact =
@@ -66,11 +67,10 @@ export class CodeBuildService implements BuildService {
     };
 
     const event: BuildStatusEvent = {
-      buildId,
-      runId,
+      runId: buildId,
       status: buildStatusEventStatus,
       message: message,
-      timestamp: m.time.toISOString(),
+      timestamp: m.time,
       artifact,
     };
 
@@ -83,9 +83,6 @@ export class CodeBuildService implements BuildService {
 
     const buildId = stateChangeDetail['build-id'];
 
-    const buildIdParts = buildId.split(':');
-    const runId = buildIdParts[buildIdParts.length - 1];
-
     const buildStatus = stateChangeDetail['build-status'];
     const buildStatusEventStatus = buildStatus as BuildStatusEnum;
 
@@ -97,11 +94,10 @@ export class CodeBuildService implements BuildService {
     };
 
     const event: BuildStatusEvent = {
-      buildId,
-      runId,
+      runId: buildId,
       status: buildStatusEventStatus,
       message,
-      timestamp: m.time.toISOString(),
+      timestamp: m.time,
       artifact,
     };
 
