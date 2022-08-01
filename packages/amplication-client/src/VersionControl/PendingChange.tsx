@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Tooltip } from "@amplication/design-system";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 
 import * as models from "../models";
 import "./PendingChange.scss";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "pending-change";
 const TOOLTIP_DIRECTION = "ne";
@@ -28,11 +29,13 @@ const PendingChange = ({
   resourceId,
   linkToResource = false,
 }: Props) => {
+
+  const {currentWorkspace, currentProject} = useContext(AppContext); 
   /**@todo: update the url for other types of blocks  */
   const url =
     change.resourceType === models.EnumPendingChangeResourceType.Entity
-      ? `/${resourceId}/entities/${change.resourceId}`
-      : `/${resourceId}/update`;
+      ? `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${change.resourceId}`
+      : `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/update`;
 
   const isDeletedEntity =
     change.action === models.EnumPendingChangeAction.Delete;

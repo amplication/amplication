@@ -8,16 +8,8 @@ const resourceRoutes = [
     Component: lazy(() => import("../Entity/EntityList")),
     moduleName: "",
     routeTrackType: "",
-    exactPath: true,
-    routes: [
-      {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities/:entityId",
-        moduleName: "",
-        routeTrackType: "",
-        exactPath: false,
-        routes: resourceEntitiesRoutes,
-      },
-    ],
+    exactPath: false,
+    routes: resourceEntitiesRoutes,
   },
   {
     path: "/:workspace/:project/:resource/roles",

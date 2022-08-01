@@ -25,6 +25,7 @@ const LazyRouteWrapper: React.FC<{
           const { location } = props;
           const nestedRoutes =
             route.routes && routesGenerator(route.routes, route.path);
+          console.log({ route });
 
           const appRouteProps: AppRouteProps = {
             moduleName: route.moduleName,

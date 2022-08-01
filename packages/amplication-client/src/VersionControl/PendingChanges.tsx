@@ -14,6 +14,7 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import "./PendingChanges.scss";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "pending-changes";
 
@@ -28,6 +29,7 @@ type Props = {
 const PendingChanges = ({ resourceId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const pendingChangesContext = useContext(PendingChangesContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const { data, loading, error, refetch } = useQuery<TData>(
     GET_PENDING_CHANGES,
@@ -71,7 +73,9 @@ const PendingChanges = ({ resourceId }: Props) => {
         </span>
         <div className="spacer" />
         <Tooltip aria-label={"Compare Changes"} direction="sw">
-          <Link to={`/${resourceId}/pending-changes`}>
+          <Link
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/pending-changes`}
+          >
             <Button
               buttonStyle={EnumButtonStyle.Text}
               disabled={loading || noChanges}
