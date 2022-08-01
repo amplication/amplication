@@ -28,7 +28,7 @@ export const winstonConfigFactory = (
 ): WinstonModuleOptions => {
   assert(
     typeof isProduction === "boolean",
-    "Missing isProduction variable in the winstonConfigFactory"
+    "Missing isProduction argument in the winstonConfigFactory"
   );
 
   return {
