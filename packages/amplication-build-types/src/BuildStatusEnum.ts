@@ -2,6 +2,7 @@ export enum BuildStatusEnum {
   Init = 'INIT',
   InProgress = 'IN_PROGRESS',
   Failed = 'FAILED',
+  Succeeded = 'SUCCEEDED',
   Succeed = 'SUCCEED',
   Submitted = 'SUBMITTED',
   Provisioning = 'PROVISIONING',
