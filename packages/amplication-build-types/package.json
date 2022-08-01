@@ -2,8 +2,9 @@
   "name": "@amplication/build-types",
   "version": "0.14.3",
   "private": true,
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
