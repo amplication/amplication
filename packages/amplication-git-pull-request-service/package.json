@@ -18,7 +18,7 @@
     "postinstall": "npm run build"
   },
   "dependencies": {
-    "@amplication/nest-logger-module": "0.14.9",
+    "@amplication/nest-logger-module": "^0.14.9",
     "@amplication/git-service": "^0.14.9",
     "@amplication/kafka": "^0.14.9",
     "@nestjs/common": "8.4.3",
