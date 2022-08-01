@@ -17,6 +17,7 @@ import {
 } from "./RelatedFieldDialog";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityField.scss";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   entity: models.Entity;
@@ -34,6 +35,7 @@ const EntityField = () => {
     null
   );
   const pendingChangesContext = useContext(PendingChangesContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const history = useHistory();
   const [error, setError] = useState<Error>();
 
@@ -41,7 +43,7 @@ const EntityField = () => {
     resource: string;
     entity: string;
     field: string;
-  }>("/:resource/entities/:entity/fields/:field");
+  }>("/:workspace/:project/:resource/entities/:entity/fields/:field");
 
   const { resource, entity, field } = match?.params ?? {};
 
@@ -93,8 +95,10 @@ const EntityField = () => {
   );
 
   const handleDeleteField = useCallback(() => {
-    history.push(`/${resource}/entities/${entity}/fields/`);
-  }, [history, resource, entity]);
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resource}/entities/${entity}/fields/`
+    );
+  }, [history, resource, entity, currentWorkspace, currentProject]);
 
   const handleSubmit = useCallback(
     (data) => {

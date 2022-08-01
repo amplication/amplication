@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { gql, useQuery } from "@apollo/client";
@@ -12,6 +12,7 @@ import {
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
 import "./RoleList.scss";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   resourceRoles: models.ResourceRole[];
@@ -28,6 +29,7 @@ type Props = {
 export const RoleList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
     const [searchPhrase, setSearchPhrase] = useState<string>("");
+    const { currentWorkspace, currentProject } = useContext(AppContext);
 
     const handleSearchChange = useCallback(
       (value) => {
@@ -57,20 +59,27 @@ export const RoleList = React.memo(
 
     const handleRoleChange = useCallback(
       (role: models.ResourceRole) => {
-        const fieldUrl = `/${resourceId}/roles/${role.id}`;
+        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`;
         history.push(fieldUrl);
       },
-      [history, resourceId]
+      [history, resourceId, currentWorkspace, currentProject]
     );
 
     useEffect(() => {
       if (selectFirst && data && !isEmpty(data.resourceRoles)) {
         console.log("role list effect - inside");
         const role = data.resourceRoles[0];
-        const fieldUrl = `/${resourceId}/roles/${role.id}`;
+        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`;
         history.push(fieldUrl);
       }
-    }, [data, selectFirst, resourceId, history]);
+    }, [
+      data,
+      selectFirst,
+      resourceId,
+      history,
+      currentWorkspace,
+      currentProject,
+    ]);
 
     return (
       <div className={CLASS_NAME}>
@@ -85,7 +94,10 @@ export const RoleList = React.memo(
         {loading && <CircularProgress />}
         {data?.resourceRoles?.map((role) => (
           <div key={role.id}>
-            <InnerTabLink icon="roles" to={`/${resourceId}/roles/${role.id}`}>
+            <InnerTabLink
+              icon="roles"
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`}
+            >
               <span>{role.displayName}</span>
             </InnerTabLink>
           </div>

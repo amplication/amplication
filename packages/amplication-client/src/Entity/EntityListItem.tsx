@@ -13,6 +13,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { USER_ENTITY } from "./constants";
 import "./EntityListItem.scss";
+import { AppContext } from "../context/appContext";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -37,6 +38,7 @@ export const EntityListItem = ({
   onError,
 }: Props) => {
   const pendingChangesContext = useContext(PendingChangesContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const history = useHistory();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -88,8 +90,10 @@ export const EntityListItem = ({
   }, [entity, deleteEntity, onError]);
 
   const handleRowClick = useCallback(() => {
-    history.push(`/${resourceId}/entities/${entity.id}`);
-  }, [history, resourceId, entity]);
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`
+    );
+  }, [history, resourceId, entity, currentWorkspace, currentProject]);
 
   const [latestVersion] = entity.versions;
 
@@ -114,7 +118,7 @@ export const EntityListItem = ({
           <Link
             className={`${CLASS_NAME}__title`}
             title={entity.displayName}
-            to={`/${resourceId}/entities/${entity.id}`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`}
           >
             {entity.displayName}
           </Link>
