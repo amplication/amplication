@@ -1,17 +1,14 @@
-cp-helm-charts:
-  enabled: true
-  cp-kafka:
-    enabled: true
-  cp-zookeeper:
-    enabled: true
+global:
+  pvc:
+    name: shimi-efs-claim
+  pv:
+    name: efs-pv-shimi
 
 postgres:
-  install: true
-  postgresqlPassword: postgres
-  postgresqlPostgresPassword: postgres
-  postgresqlDatabase: amplication
-  fullnameOverride: postgresql
-
+  primary:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: postgres-shimi.amplication-dev.com
 
 amplication-client:
   service:
@@ -24,13 +21,8 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-shimi.amplication-dev.com
 
 amplication-server:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: server-shimi.amplication-dev.com
-  pvc:
-    name: shimi-efs-claim
   config:
     env:
 
@@ -74,10 +66,7 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server-shimi.amplication-dev.com/github/callback"
 
 amplication-git-push-webhook-service:
-  postgres:
-    install: false
   ingress:
-    enabled: true
     hostname: webhook-shimi.amplication-dev.com
   config:
     env:
@@ -87,10 +76,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  postgres:
-    install: false
-  pvc:
-    name: shimi-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -111,8 +96,6 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
-  pvc:
-    name: shimi-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-shimi-cp-kafka-headless:9092"]'
@@ -125,8 +108,6 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   ingress:
     hostname: server-shimi.amplication-dev.com
-  pvc:
-    name: shimi-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-shimi-cp-kafka-headless:9092"]'
