@@ -1,0 +1,6 @@
+dependencies:
+- name: base
+  repository: file://../base
+  version: 0.1.0
+digest: sha256:4d9316865bd04773ef9cafbc6353103e22a699177a2c2d55d7aed1c86cb6d157
+generated: "2022-07-07T17:39:11.196257+03:00"

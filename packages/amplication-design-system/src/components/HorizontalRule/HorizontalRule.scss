@@ -1,0 +1,8 @@
+@import "../../style/index.scss";
+.amp-horizontal-rule {
+  border: none;
+  border-top: $border-black5;
+  margin-top: var(--default-spacing);
+  margin-bottom: var(--default-spacing);
+  width: 100%;
+}

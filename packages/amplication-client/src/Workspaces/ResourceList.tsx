@@ -9,6 +9,7 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
+  HorizontalRule,
 } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
@@ -29,6 +30,7 @@ function ResourceList() {
   const [error, setError] = useState<Error | null>(null);
   const {
     resources,
+    projectConfigurationResource,
     handleSearchChange,
     loadingResources,
     errorResources,
@@ -101,6 +103,13 @@ function ResourceList() {
           </Button>
         </Link>
       </div>
+      <HorizontalRule />
+      <div className={`${CLASS_NAME}__title`}>Project Settings</div>
+
+      {projectConfigurationResource && (
+        <ResourceListItem resource={projectConfigurationResource} />
+      )}
+      <HorizontalRule />
       <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
       {loadingResources && <CircularProgress />}
 
