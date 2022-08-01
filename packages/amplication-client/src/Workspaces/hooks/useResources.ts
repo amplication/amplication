@@ -66,6 +66,7 @@ const useResources = (currentWorkspace: models.Workspace | undefined, currentPro
 
   return {
     resources,
+    projectConfigurationResource,
     handleSearchChange,
     loadingResources,
     errorResources,
