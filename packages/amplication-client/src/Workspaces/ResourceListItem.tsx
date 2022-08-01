@@ -27,7 +27,7 @@ const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 function ResourceListItem({ resource, onDelete }: Props) {
-  const { id, name, description, color } = resource;
+  const { id, name, description } = resource;
   const { trackEvent } = useTracking();
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
