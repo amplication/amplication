@@ -4,7 +4,12 @@ import { EventPattern, Payload } from '@nestjs/microservices';
 import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
 import { BuildService } from './codeBuild/build.service';
 import { CODE_BUILD_SERVICE } from './codeBuild/codeBuild.module';
-import { BUILD_STATUS_TOPIC, GENERATE_RESOURCE_TOPIC } from './constants';
+import {
+  BUILD_PHASE_TOPIC,
+  BUILD_STATE_TOPIC,
+  BUILD_STATUS_TOPIC,
+  GENERATE_RESOURCE_TOPIC,
+} from './constants';
 import { QueueService } from './queue/queue.service';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -13,6 +18,7 @@ import {
   BuildStatusEnum,
 } from '@amplication/build-types';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { CodeGenNotification } from './codeBuild/dto/CodeBuildNotificationMessage';
 
 @Controller()
 export class AppController {
@@ -44,6 +50,25 @@ export class AppController {
         { error, class: QueueService.name, message },
       );
       this.emitFailureMessage(gr.buildId, error.message);
+    }
+  }
+
+  @EventPattern(EnvironmentVariables.instance.get(BUILD_STATE_TOPIC, true))
+  async receiveBuildState(@Payload() queueMessage: any) {
+    try {
+      const notification = queueMessage.value as CodeGenNotification;
+      const event = this.buildService.mapBuildStateMessageToBuildStatusEvent(
+        notification.Message,
+      );
+      this.queueService.emitMessage(
+        this.buildStatusTopic,
+        JSON.stringify(event),
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to convert code build message to status event. message: ${queueMessage} error: ${error}`,
+        { error, message: queueMessage },
+      );
     }
   }
 
