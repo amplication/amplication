@@ -7,19 +7,18 @@ import { format } from "date-fns";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 import "./ResourceListItem.scss";
-import { BuildStatusIcons } from "../VersionControl/BuildStatusIcons";
 import {
   ConfirmationDialog,
-  CircleBadge,
   EnumPanelStyle,
   Panel,
   Icon,
   Tooltip,
 } from "@amplication/design-system";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 
 type Props = {
   resource: models.Resource;
-  onDelete: (resource: models.Resource) => void;
+  onDelete?: (resource: models.Resource) => void;
 };
 
 const DATE_FORMAT = "P p";
@@ -28,7 +27,7 @@ const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 function ResourceListItem({ resource, onDelete }: Props) {
-  const { id, name, description, color } = resource;
+  const { id, name, description } = resource;
   const { trackEvent } = useTracking();
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -48,7 +47,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
 
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
-    onDelete(resource);
+    onDelete && onDelete(resource);
   }, [onDelete, resource]);
 
   const handleClick = useCallback(() => {
@@ -79,16 +78,18 @@ function ResourceListItem({ resource, onDelete }: Props) {
           panelStyle={EnumPanelStyle.Bordered}
         >
           <div className={`${CLASS_NAME}__row`}>
-            <CircleBadge name={name} color={color} />
+            <ResourceCircleBadge type={resource.resourceType} />
 
             <span className={`${CLASS_NAME}__title`}>{name}</span>
 
             <span className="spacer" />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="trash_2"
-              onClick={handleDelete}
-            />
+            {onDelete && (
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="trash_2"
+                onClick={handleDelete}
+              />
+            )}
           </div>
           <div className={`${CLASS_NAME}__row`}>
             <span className={`${CLASS_NAME}__description`}>{description}</span>
@@ -108,7 +109,6 @@ function ResourceListItem({ resource, onDelete }: Props) {
                 </Tooltip>
               </div>
             )}
-            <BuildStatusIcons build={resource.builds[0]} />
             <span className="spacer" />
           </div>
         </Panel>

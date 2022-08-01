@@ -10,8 +10,6 @@ import {
   Snackbar,
   CircularProgress,
 } from "@amplication/design-system";
-import useNavigationTabs from "../Layout/UseNavigationTabs";
-
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";
@@ -29,16 +27,13 @@ type Props = {
 
 const NAME_FIELD = "displayName";
 const CLASS_NAME = "entity-list";
-const NAVIGATION_KEY = "ENTITY_LIST";
 
 const POLL_INTERVAL = 2000;
 
-export const EntityList = ({ match }: Props) => {
+function EntityList({ match }: Props) {
   const { resource } = match.params;
   const [error, setError] = useState<Error>();
   const pageTitle = "Entities";
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
-
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
 
@@ -128,7 +123,9 @@ export const EntityList = ({ match }: Props) => {
     </PageContent>
   );
   /**@todo: move error message to hosting page  */
-};
+}
+
+export default EntityList;
 
 /**@todo: expand search on other field  */
 /**@todo: find a solution for case insensitive search  */

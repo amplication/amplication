@@ -95,8 +95,10 @@ describe('PermissionsService', () => {
       where: {
         deletedAt: null,
         id: args.resourceId,
-        workspace: {
-          id: EXAMPLE_WORKSPACE_ID
+        project: {
+          workspace: {
+            id: EXAMPLE_WORKSPACE_ID
+          }
         }
       }
     };
@@ -122,8 +124,10 @@ describe('PermissionsService', () => {
         id: args.resourceId,
         resource: {
           deletedAt: null,
-          workspace: {
-            id: EXAMPLE_WORKSPACE_ID
+          project: {
+            workspace: {
+              id: EXAMPLE_WORKSPACE_ID
+            }
           }
         }
       }

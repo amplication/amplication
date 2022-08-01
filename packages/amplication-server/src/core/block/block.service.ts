@@ -75,6 +75,7 @@ export class BlockService {
     ]),
     [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.Flow, null]),
     [EnumBlockType.ServiceSettings]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.ProjectConfigurationSettings]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Flow]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorSoapApi]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorFile]: ALLOW_NO_PARENT_ONLY,
@@ -102,6 +103,7 @@ export class BlockService {
     }
     if (matchingBlocks.length === 1) {
       const [block] = matchingBlocks;
+
       return block;
     }
     throw new Error('Unexpected length of matchingBlocks');
@@ -128,7 +130,7 @@ export class BlockService {
     args: CreateBlockArgs & {
       data: CreateBlockArgs['data'] & { blockType: keyof typeof EnumBlockType };
     },
-    user: User
+    userId: string
   ): Promise<T> {
     const {
       displayName,
@@ -175,7 +177,7 @@ export class BlockService {
       lockedAt: new Date(),
       lockedByUser: {
         connect: {
-          id: user.id
+          id: userId
         }
       }
     };

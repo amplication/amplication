@@ -15,7 +15,11 @@ const CLASS_NAME = "inner-tab-link";
 
 function InnerTabLink({ children, icon, to, className }: Props) {
   return (
-    <NavLink to={to} exact className={classNames(CLASS_NAME, className)}>
+    <NavLink
+      to={to}
+      exact
+      className={classNames(CLASS_NAME, className)}
+    >
       <Icon icon={icon} size="medium" />
       <span>{children}</span>
     </NavLink>

@@ -149,7 +149,7 @@ describe('BlockTypeService', () => {
     };
     expect(await service.create(args, EXAMPLE_USER)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceCreateMock).toBeCalledTimes(1);
-    expect(blockServiceCreateMock).toBeCalledWith(createArgs, EXAMPLE_USER);
+    expect(blockServiceCreateMock).toBeCalledWith(createArgs, EXAMPLE_USER.id);
   });
 
   it('should update a block service', async () => {

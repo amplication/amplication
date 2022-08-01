@@ -812,6 +812,7 @@ export enum EnumBlockType {
   Flow = 'Flow',
   FlowApi = 'FlowApi',
   Layout = 'Layout',
+  ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   ServiceSettings = 'ServiceSettings',
 }
 
@@ -907,6 +908,7 @@ export enum EnumPendingChangeResourceType {
 }
 
 export enum EnumResourceType {
+  ProjectConfiguration = 'ProjectConfiguration',
   Service = 'Service',
 }
 
@@ -1054,7 +1056,7 @@ export type Mutation = {
   createGitRepository: Resource;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
-  createProject?: Maybe<Project>;
+  createProject: Project;
   createResource: Resource;
   createResourceRole: ResourceRole;
   createResourceWithEntities: Resource;
@@ -1087,6 +1089,7 @@ export type Mutation = {
   updateEntityPermission: EntityPermission;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
+  updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
   updateResourceRole?: Maybe<ResourceRole>;
   updateServiceSettings?: Maybe<ServiceSettings>;
@@ -1302,6 +1305,11 @@ export type MutationUpdateEntityPermissionRolesArgs = {
   data: EntityUpdatePermissionRolesInput;
 };
 
+export type MutationUpdateProjectConfigurationSettingsArgs = {
+  data: ProjectConfigurationSettingsUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationUpdateResourceArgs = {
   data: ResourceUpdateInput;
   where: WhereUniqueInput;
@@ -1356,9 +1364,34 @@ export type PrivateKeyAuthenticationSettingsInput = {
 
 export type Project = {
   __typename?: 'Project';
+  createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   name: Scalars['String'];
   resources?: Maybe<Array<Resource>>;
+  updatedAt: Scalars['DateTime'];
+};
+
+export type ProjectConfigurationSettings = IBlock & {
+  __typename?: 'ProjectConfigurationSettings';
+  baseDirectory: Scalars['String'];
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime'];
+  description: Scalars['String'];
+  displayName: Scalars['String'];
+  id: Scalars['String'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  updatedAt: Scalars['DateTime'];
+  versionNumber: Scalars['Float'];
+};
+
+export type ProjectConfigurationSettingsUpdateInput = {
+  baseDirectory?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  displayName?: InputMaybe<Scalars['String']>;
 };
 
 export type ProjectCreateInput = {
@@ -1412,7 +1445,8 @@ export type Query = {
   me: User;
   pendingChanges: Array<PendingChange>;
   project?: Maybe<Project>;
-  projects?: Maybe<Array<Project>>;
+  projectConfigurationSettings: ProjectConfigurationSettings;
+  projects: Array<Project>;
   remoteGitRepositories: Array<RemoteGitRepository>;
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
@@ -1525,6 +1559,10 @@ export type QueryProjectArgs = {
   where: WhereUniqueInput;
 };
 
+export type QueryProjectConfigurationSettingsArgs = {
+  where: WhereUniqueInput;
+};
+
 export type QueryProjectsArgs = {
   orderBy?: InputMaybe<ProjectOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
@@ -1600,9 +1638,10 @@ export type Resource = {
   gitRepositoryId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
+  project?: Maybe<Project>;
+  projectId?: Maybe<Scalars['String']>;
   resourceType: EnumResourceType;
   updatedAt: Scalars['DateTime'];
-  workspace: Workspace;
 };
 
 export type ResourceBuildsArgs = {
@@ -1623,6 +1662,7 @@ export type ResourceCreateInput = {
   color?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   name: Scalars['String'];
+  project: WhereParentIdInput;
   resourceType: EnumResourceType;
 };
 
@@ -1640,7 +1680,14 @@ export type ResourceCreateWithEntitiesFieldInput = {
 export type ResourceCreateWithEntitiesInput = {
   commitMessage: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
+  generationSettings: ResourceGenSettingsCreateInput;
   resource: ResourceCreateInput;
+};
+
+export type ResourceGenSettingsCreateInput = {
+  generateAdminUI: Scalars['Boolean'];
+  generateGraphQL: Scalars['Boolean'];
+  generateRestApi: Scalars['Boolean'];
 };
 
 export type ResourceOrderByInput = {
@@ -1704,6 +1751,7 @@ export type ResourceWhereInput = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<StringFilter>;
+  project?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1846,7 +1894,7 @@ export type Workspace = {
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String'];
   name: Scalars['String'];
-  resources: Array<Resource>;
+  projects: Array<Project>;
   subscription?: Maybe<Subscription>;
   updatedAt: Scalars['DateTime'];
   users: Array<User>;

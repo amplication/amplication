@@ -23,6 +23,8 @@ type Query {
   workspace(where: WhereUniqueInput!): Workspace
   currentWorkspace: Workspace
   workspaceMembers: [WorkspaceMember!]
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
+  project(where: WhereUniqueInput!): Project
   resource(where: WhereUniqueInput!): Resource
   resources(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, take: Int): [Resource!]!
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
@@ -38,6 +40,7 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -49,8 +52,6 @@ type Query {
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
-  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
-  project(where: WhereUniqueInput!): Project
 }
 
 type Account {
@@ -74,16 +75,26 @@ type Workspace {
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
-  resources: [Resource!]!
+  projects: [Project!]!
   gitOrganizations: [GitOrganization!]
   users: [User!]!
   subscription: Subscription
+}
+
+type Project {
+  id: String!
+  name: String!
+  resources: [Resource!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Resource {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  project: Project
+  projectId: String
   gitRepository: GitRepository
   gitRepositoryId: String
   name: String!
@@ -94,8 +105,7 @@ type Resource {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   githubLastMessage: String
   githubLastSync: DateTime
-  type: EnumResourceType!
-  workspace: Workspace!
+  resourceType: EnumResourceType!
 }
 
 type GitRepository {
@@ -359,6 +369,7 @@ type Block {
 
 enum EnumBlockType {
   ServiceSettings
+  ProjectConfigurationSettings
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -610,6 +621,7 @@ type Environment {
 
 enum EnumResourceType {
   Service
+  ProjectConfiguration
 }
 
 type Subscription {
@@ -662,12 +674,25 @@ type Invitation {
   invitedByUser: User
 }
 
+input ProjectWhereInput {
+  id: String
+  deletedAt: DateTimeFilter
+  name: StringFilter
+}
+
+input ProjectOrderByInput {
+  id: SortOrder
+  deletedAt: SortOrder
+  name: SortOrder
+}
+
 input ResourceWhereInput {
   id: String
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
   description: StringFilter
+  project: WhereUniqueInput
 }
 
 input ResourceOrderByInput {
@@ -808,6 +833,22 @@ input CommitOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   message: SortOrder
+}
+
+type ProjectConfigurationSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  baseDirectory: String!
 }
 
 type ApiToken {
@@ -993,24 +1034,6 @@ input GitOrganizationWhereInput {
   id: String
 }
 
-type Project {
-  id: String!
-  name: String!
-  resources: [Resource!]
-}
-
-input ProjectWhereInput {
-  id: String
-  deletedAt: DateTimeFilter
-  name: StringFilter
-}
-
-input ProjectOrderByInput {
-  id: SortOrder
-  deletedAt: SortOrder
-  name: SortOrder
-}
-
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1020,6 +1043,7 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   resendInvitation(where: WhereUniqueInput!): Invitation
   deleteUser(where: WhereUniqueInput!): User
+  createProject(data: ProjectCreateInput!): Project!
   createResource(data: ResourceCreateInput!): Resource!
   createResourceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
   deleteResource(where: WhereUniqueInput!): Resource
@@ -1045,6 +1069,7 @@ type Mutation {
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1064,7 +1089,6 @@ type Mutation {
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
-  createProject(data: ProjectCreateInput!): Project!
 }
 
 input UpdateAccountInput {
@@ -1084,16 +1108,26 @@ input InviteUserInput {
   email: String!
 }
 
+input ProjectCreateInput {
+  name: String!
+}
+
 input ResourceCreateInput {
   name: String!
   description: String!
   color: String
-  type: EnumResourceType!
+  resourceType: EnumResourceType!
+  project: WhereParentIdInput!
+}
+
+input WhereParentIdInput {
+  connect: WhereUniqueInput!
 }
 
 input ResourceCreateWithEntitiesInput {
   resource: ResourceCreateInput!
   entities: [ResourceCreateWithEntitiesEntityInput!]!
+  generationSettings: ResourceGenSettingsCreateInput!
   commitMessage: String!
 }
 
@@ -1108,6 +1142,12 @@ input ResourceCreateWithEntitiesFieldInput {
   dataType: EnumDataType
 }
 
+input ResourceGenSettingsCreateInput {
+  generateAdminUI: Boolean!
+  generateGraphQL: Boolean!
+  generateRestApi: Boolean!
+}
+
 input ResourceUpdateInput {
   name: String
   description: String
@@ -1117,10 +1157,6 @@ input ResourceUpdateInput {
 input CommitCreateInput {
   message: String!
   resource: WhereParentIdInput!
-}
-
-input WhereParentIdInput {
-  connect: WhereUniqueInput!
 }
 
 input PendingChangesDiscardInput {
@@ -1244,6 +1280,12 @@ input ResourceRoleUpdateInput {
   name: String
   description: String
   displayName: String!
+}
+
+input ProjectConfigurationSettingsUpdateInput {
+  displayName: String
+  description: String
+  baseDirectory: String
 }
 
 input SignupInput {
@@ -1386,8 +1428,4 @@ input GitOrganizationCreateInput {
 
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
-}
-
-input ProjectCreateInput {
-  name: String!
 }

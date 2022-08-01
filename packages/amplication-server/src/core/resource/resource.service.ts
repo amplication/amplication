@@ -1,4 +1,8 @@
-import { GitRepository, PrismaService } from '@amplication/prisma-db';
+import {
+  EnumResourceType,
+  GitRepository,
+  PrismaService
+} from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
@@ -6,7 +10,7 @@ import pluralize from 'pluralize';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { Commit, Resource, User, Workspace } from 'src/models';
+import { Commit, Project, Resource, User } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
@@ -27,11 +31,9 @@ import {
 } from './dto';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
-import {
-  createSampleResourceEntities,
-  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_SERVICE_DATA
-} from './sampleResource';
+import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
+import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
+import { DEFAULT_RESOURCE_COLORS } from './constants';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -41,12 +43,18 @@ const USER_RESOURCE_ROLE = {
 export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
 export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 
-export const DEFAULT_RESOURCE_COLOR = '#20A4F3';
-export const DEFAULT_RESOURCE_DATA = {
-  color: DEFAULT_RESOURCE_COLOR
+export const DEFAULT_SERVICE_DATA = {
+  color: DEFAULT_RESOURCE_COLORS.service
 };
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
+export const INVALID_DELETE_PROJECT_CONFIGURATION =
+  'The resource of type `ProjectConfiguration` cannot be deleted';
+import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
+
+const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
+const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
+  'This resource is used to store project configuration.';
 
 @Injectable()
 export class ResourceService {
@@ -56,15 +64,45 @@ export class ResourceService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private serviceSettingsService: ServiceSettingsService
+    private serviceSettingsService: ServiceSettingsService,
+    private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService
   ) {}
+
+  async createProjectConfiguration(
+    projectId: string,
+    userId: string
+  ): Promise<Resource> {
+    const existingProjectConfiguration = await this.prisma.resource.findFirst({
+      where: { projectId, resourceType: EnumResourceType.ProjectConfiguration }
+    });
+
+    if (!isEmpty(existingProjectConfiguration)) {
+      throw new ProjectConfigurationExistError();
+    }
+
+    const newProjectConfiguration = await this.prisma.resource.create({
+      data: {
+        color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
+        resourceType: EnumResourceType.ProjectConfiguration,
+        description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
+        name: DEFAULT_PROJECT_CONFIGURATION_NAME,
+        project: { connect: { id: projectId } }
+      }
+    });
+    await this.projectConfigurationSettingsService.createDefault(
+      newProjectConfiguration.id,
+      userId
+    );
+    return newProjectConfiguration;
+  }
 
   /**
    * Create resource in the user's workspace, with the built-in "user" role
    */
   async createResource(
     args: CreateOneResourceArgs,
-    user: User
+    user: User,
+    generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<Resource> {
     const { color } = args.data;
     if (color && !validateHTMLColorHex(color)) {
@@ -73,21 +111,10 @@ export class ResourceService {
 
     const resource = await this.prisma.resource.create({
       data: {
-        ...DEFAULT_RESOURCE_DATA,
+        ...DEFAULT_SERVICE_DATA,
         ...args.data,
-        workspace: {
-          connect: {
-            id: user.workspace?.id
-          }
-        },
         roles: {
           create: USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${args.data.name}`,
-            workspaceId: user.workspace?.id
-          }
         }
       }
     });
@@ -98,7 +125,8 @@ export class ResourceService {
 
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
-      user
+      user,
+      generationSettings
     );
 
     try {
@@ -126,55 +154,6 @@ export class ResourceService {
   }
 
   /**
-   * Create sample resource
-   * @param user the user to associate the created resource with
-   */
-  async createSampleResource(user: User): Promise<Resource> {
-    const resource = await this.createResource(
-      {
-        data: SAMPLE_SERVICE_DATA
-      },
-      user
-    );
-
-    const userEntity = await this.entityService.findFirst({
-      where: { name: USER_ENTITY_NAME, resourceId: resource.id },
-      select: { id: true }
-    });
-
-    const sampleResourceData = createSampleResourceEntities(userEntity.id);
-
-    await this.entityService.bulkCreateEntities(
-      resource.id,
-      user,
-      sampleResourceData.entities
-    );
-    await this.entityService.bulkCreateFields(
-      user,
-      userEntity.id,
-      sampleResourceData.userEntityFields
-    );
-
-    await this.commit({
-      data: {
-        resource: {
-          connect: {
-            id: resource.id
-          }
-        },
-        message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-        user: {
-          connect: {
-            id: user.id
-          }
-        }
-      }
-    });
-
-    return resource;
-  }
-
-  /**
    * Create an resource with entities and field in one transaction, based only on entities and fields names
    * @param user the user to associate the created resource with
    */
@@ -196,7 +175,7 @@ export class ResourceService {
           mode: QueryMode.Insensitive,
           startsWith: data.resource.name
         },
-        workspaceId: user.workspace.id,
+        projectId: data.resource.project.connect.id,
         deletedAt: null
       },
       select: {
@@ -219,7 +198,8 @@ export class ResourceService {
       {
         data: data.resource
       },
-      user
+      user,
+      data.generationSettings
     );
 
     const newEntities: {
@@ -353,6 +333,10 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
+    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
+      throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
+    }
+
     const gitRepo = await this.prisma.gitRepository.findUnique({
       where: {
         resourceId: resource.id
@@ -366,16 +350,6 @@ export class ResourceService {
         }
       });
     }
-
-    const project = await this.prisma.resource.findUnique(args).project();
-
-    await this.prisma.project.update({
-      where: { id: project.id },
-      data: {
-        name: prepareDeletedItemName(project.name, project.id),
-        deletedAt: new Date()
-      }
-    });
 
     return this.prisma.resource.update({
       where: args.where,
@@ -397,21 +371,6 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
-    const project = await this.prisma.resource
-      .findUnique({
-        where: {
-          id: args.where.id
-        }
-      })
-      .project();
-
-    await this.prisma.project.update({
-      where: { id: project.id },
-      data: {
-        name: `project-${args.data.name}`
-      }
-    });
-
     return this.prisma.resource.update(args);
   }
 
@@ -428,10 +387,12 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
-            some: {
-              id: user.id
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: user.id
+              }
             }
           }
         }
@@ -461,10 +422,12 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
-            some: {
-              id: userId
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: userId
+              }
             }
           }
         }
@@ -578,10 +541,12 @@ export class ResourceService {
       where: {
         id: resourceId,
         deletedAt: null,
-        workspace: {
-          users: {
-            some: {
-              id: userId
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: userId
+              }
             }
           }
         }
@@ -659,9 +624,7 @@ export class ResourceService {
     });
   }
 
-  async workspace(resourceId: string): Promise<Workspace> {
-    return await this.prisma.resource
-      .findUnique({ where: { id: resourceId } })
-      .workspace();
+  async project(resourceId: string): Promise<Project> {
+    return this.prisma.project.findUnique({ where: { id: resourceId } });
   }
 }
