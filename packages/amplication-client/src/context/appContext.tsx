@@ -8,13 +8,14 @@ export interface AppContextInterface {
   handleSetCurrentWorkspace: (workspaceId: string) => void;
   createWorkspace: (data: CreateWorkspaceType) => void;
   createNewWorkspaceError: ApolloError | undefined;
-  loadingCreateNewWorkspace: boolean
+  loadingCreateNewWorkspace: boolean;
   currentProject: models.Project | undefined;
   projectsList: models.Project[];
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
   resources: models.Resource[];
-  handleSearchChange: (searchResults: string) => void
+  projectConfigurationResource: models.Resource | undefined;
+  handleSearchChange: (searchResults: string) => void;
   loadingResources: boolean;
   errorResources: Error | undefined;
   currentResource: models.Resource | undefined
@@ -32,6 +33,7 @@ const initialContext: AppContextInterface = {
   setNewProject: () => {},
   onNewProjectCompleted: () => {},
   resources: [],
+  projectConfigurationResource: undefined,
   handleSearchChange: () => {},
   loadingResources: true,
   errorResources: undefined,

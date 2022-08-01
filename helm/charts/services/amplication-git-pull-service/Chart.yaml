@@ -3,13 +3,6 @@ name: amplication-git-pull-service
 description: A Helm chart for the amplication-git-pull-service component of Amplication.
 
 dependencies:
-
-- name: postgresql
-  alias: postgres
-  version: "10.5.2"
-  repository: "https://charts.bitnami.com/bitnami"
-  condition: postgres.install
-
 - name: base
   version: "0.1.0"
   repository: "file://../../base"

@@ -1,0 +1,14 @@
+apiVersion: v2
+name: infra
+description: A Helm chart for common shared infrastructure resources.
+
+dependencies:
+- name: base
+  version: "0.1.0"
+  repository: "file://../base"
+
+type: application
+
+version: 0.1.0
+
+appVersion: 0.5.0

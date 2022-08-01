@@ -18,6 +18,10 @@ const useResources = (currentWorkspace: models.Workspace | undefined, currentPro
   const [currentResource, setCurrentResource] = useState<models.Resource>();
   console.log(resourceMatch); // will be using next issue
   const [resources, setResources] = useState<models.Resource[]>([]);
+  const [
+    projectConfigurationResource,
+    setProjectConfigurationResource,
+  ] = useState<models.Resource | undefined>(undefined);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const {
@@ -37,7 +41,15 @@ const useResources = (currentWorkspace: models.Workspace | undefined, currentPro
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
-    setResources(resourcesData.resources);
+    const projectConfigurationResource = resourcesData.resources.find(
+      (r) => r.resourceType === models.EnumResourceType.ProjectConfiguration
+    );
+    setProjectConfigurationResource(projectConfigurationResource);
+
+    const resources = resourcesData.resources.filter(
+      (r) => r.resourceType !== models.EnumResourceType.ProjectConfiguration
+    );
+    setResources(resources);
   }, [resourcesData, loadingResources]);
 
   const handleSearchChange = useCallback(

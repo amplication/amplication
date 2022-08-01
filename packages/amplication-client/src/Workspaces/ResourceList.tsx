@@ -9,6 +9,7 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
+  HorizontalRule,
 } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
@@ -27,7 +28,17 @@ const CLASS_NAME = "resource-list";
 function ResourceList() {
   const { trackEvent } = useTracking();
   const [error, setError] = useState<Error | null>(null);
-  const {resources, handleSearchChange, loadingResources, errorResources} = useContext(AppContext);
+  const {
+    resources,
+    projectConfigurationResource,
+    handleSearchChange,
+    loadingResources,
+    errorResources,
+    currentWorkspace,
+    currentProject,
+  } = useContext(AppContext);
+
+  const linkToCreateResource = `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`;
 
   const clearError = useCallback(() => {
     setError(null);
@@ -64,7 +75,7 @@ function ResourceList() {
     },
     [deleteResource, setError, trackEvent]
   );
-  
+
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -82,8 +93,7 @@ function ResourceList() {
           placeholder="search"
           onChange={handleSearchChange}
         />
-
-        <Link onClick={handleNewResourceClick} to="/create-resource">
+        <Link onClick={handleNewResourceClick} to={linkToCreateResource}>
           <Button
             className={`${CLASS_NAME}__add-button`}
             buttonStyle={EnumButtonStyle.Primary}
@@ -93,9 +103,14 @@ function ResourceList() {
           </Button>
         </Link>
       </div>
-      <div className={`${CLASS_NAME}__title`}>
-        {resources.length} Resources
-      </div>
+      <HorizontalRule />
+      <div className={`${CLASS_NAME}__title`}>Project Settings</div>
+
+      {projectConfigurationResource && (
+        <ResourceListItem resource={projectConfigurationResource} />
+      )}
+      <HorizontalRule />
+      <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
       {loadingResources && <CircularProgress />}
 
       {isEmpty(resources) && !loadingResources ? (

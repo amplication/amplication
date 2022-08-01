@@ -1,27 +1,25 @@
 import { CircleBadge, Icon } from "@amplication/design-system";
 import React from "react";
+import * as models from "../models";
 
 interface Props {
-  type: "settings" | "service" | "api" | "queue";
+  type: models.EnumResourceType;
   size?: "xsmall" | "small" | "medium" | "large" | "xlarge" | "xxlarge";
 }
 
-const resourceMap = {
-  settings: {
+const resourceMap: {
+  [key in models.EnumResourceType]: {
+    icon: string;
+    color: string;
+  };
+} = {
+  [models.EnumResourceType.ProjectConfiguration]: {
     icon: "app-settings",
     color: "#FFBD70",
   },
-  service: {
+  [models.EnumResourceType.Service]: {
     icon: "services",
     color: "#A787FF",
-  },
-  api: {
-    icon: "api",
-    color: "#53DBEE",
-  },
-  queue: {
-    icon: "queue",
-    color: "#8DD9B9",
   },
 };
 
