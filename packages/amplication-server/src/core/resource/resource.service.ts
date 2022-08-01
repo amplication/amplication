@@ -48,6 +48,8 @@ export const DEFAULT_SERVICE_DATA = {
 };
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
+export const INVALID_DELETE_PROJECT_CONFIGURATION =
+  'The resource of type `ProjectConfiguration` cannot be deleted';
 import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 
 const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
@@ -329,6 +331,10 @@ export class ResourceService {
 
     if (isEmpty(resource)) {
       throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
+      throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
     }
 
     const gitRepo = await this.prisma.gitRepository.findUnique({

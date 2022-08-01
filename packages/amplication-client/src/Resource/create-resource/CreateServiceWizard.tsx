@@ -139,7 +139,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
         <div className={`${moduleClass}__splitWrapper`}>
           <div className={`${moduleClass}__left`}>
             <div className={`${moduleClass}__description`}>
-              <ResourceCircleBadge type="service" />
+              <ResourceCircleBadge type={models.EnumResourceType.Service} />
               <h3>Amplication Resource Creation Wizard</h3>
               <h2>Let’s start building your app</h2>
               <h3>
