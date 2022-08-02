@@ -1,6 +1,13 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver
+} from '@nestjs/graphql';
 import { FindOneArgs } from 'src/dto';
-import { Project, User } from 'src/models';
+import { Project, Resource, User } from 'src/models';
 import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { ProjectService } from './project.service';
@@ -48,5 +55,10 @@ export class ProjectResolver {
     @UserEntity() user: User
   ): Promise<Project> {
     return this.projectService.createProject(args, user.id);
+  }
+
+  @ResolveField(() => Resource)
+  async resources(@Parent() project: Project): Promise<Resource[]> {
+    return this.projectService.resources(project.id);
   }
 }
