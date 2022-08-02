@@ -495,9 +495,7 @@ export class AppService {
           }
         });
 
-        const releasePromise = this.entityService.releaseLock(
-          change.originId
-        );
+        const releasePromise = this.entityService.releaseLock(change.originId);
 
         return [
           versionPromise.then(() => null),
@@ -598,10 +596,7 @@ export class AppService {
     }
 
     const entityPromises = changedEntities.map(change => {
-      return this.entityService.discardPendingChanges(
-        change.originId,
-        userId
-      );
+      return this.entityService.discardPendingChanges(change.originId, userId);
     });
     const blockPromises = changedBlocks.map(change => {
       return this.blockService.discardPendingChanges(change.originId, userId);
