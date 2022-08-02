@@ -24,7 +24,7 @@ import { Commit } from 'src/models/Commit';
 import { PendingChange } from './dto/PendingChange';
 import {
   EnumPendingChangeAction,
-  EnumPendingChangeResourceType
+  EnumPendingChangeOriginType
 } from '@amplication/code-gen-types/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
@@ -48,7 +48,7 @@ const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_RESOURCE_ID = 'exampleOriginId';
 const EXAMPLE_VERSION_NUMBER = 1;
 
 const EXAMPLE_COMMIT: Commit = {
@@ -100,9 +100,9 @@ const EXAMPLE_APP: App = {
 
 const EXAMPLE_PENDING_CHANGE: PendingChange = {
   action: EnumPendingChangeAction.Create,
-  resourceType: EnumPendingChangeResourceType.Entity,
-  resourceId: EXAMPLE_RESOURCE_ID,
-  resource: EXAMPLE_ENTITY,
+  originType: EnumPendingChangeOriginType.Entity,
+  originId: EXAMPLE_RESOURCE_ID,
+  origin: EXAMPLE_ENTITY,
   versionNumber: EXAMPLE_VERSION_NUMBER
 };
 
@@ -331,10 +331,10 @@ const PENDING_CHANGE_QUERY = gql`
   query($appId: String!) {
     pendingChanges(where: { app: { id: $appId } }) {
       action
-      resourceType
-      resourceId
+      originType
+      originId
       versionNumber
-      resource {
+      origin {
         ... on Entity {
           id
           createdAt

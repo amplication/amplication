@@ -1055,7 +1055,7 @@ export enum EnumPendingChangeAction {
   Update = 'Update',
 }
 
-export enum EnumPendingChangeResourceType {
+export enum EnumPendingChangeOriginType {
   Block = 'Block',
   Entity = 'Entity',
 }
@@ -1470,9 +1470,9 @@ export type MutationUpdateWorkspaceArgs = {
 export type PendingChange = {
   __typename?: 'PendingChange';
   action: EnumPendingChangeAction;
-  resource: PendingChangeResource;
-  resourceId: Scalars['String'];
-  resourceType: EnumPendingChangeResourceType;
+  origin: PendingChangeResource;
+  originId: Scalars['String'];
+  originType: EnumPendingChangeOriginType;
   versionNumber: Scalars['Int'];
 };
 

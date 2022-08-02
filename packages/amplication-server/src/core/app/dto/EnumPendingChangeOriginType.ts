@@ -6,5 +6,5 @@ export enum EnumPendingChangeOriginType {
 }
 
 registerEnumType(EnumPendingChangeOriginType, {
-  name: 'EnumPendingChangeResourceType'
+  name: 'EnumPendingChangeOriginType'
 });
