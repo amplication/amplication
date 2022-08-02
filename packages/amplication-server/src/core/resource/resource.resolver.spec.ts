@@ -325,9 +325,9 @@ const DISCARD_CHANGES_MUTATION = gql`
 `;
 
 const COMMIT_MUTATION = gql`
-  mutation($message: String!, $resourceId: String!) {
+  mutation($message: String!, $projectId: String!) {
     commit(
-      data: { message: $message, resource: { connect: { id: $resourceId } } }
+      data: { message: $message, project: { connect: { id: $projectId } } }
     ) {
       id
       createdAt
@@ -721,7 +721,7 @@ describe('ResourceResolver', () => {
   it('should commit', async () => {
     const res = await apolloClient.query({
       query: COMMIT_MUTATION,
-      variables: { message: EXAMPLE_MESSAGE, resourceId: EXAMPLE_RESOURCE_ID }
+      variables: { message: EXAMPLE_MESSAGE, projectId: EXAMPLE_PROJECT_ID }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -734,7 +734,7 @@ describe('ResourceResolver', () => {
     expect(commitMock).toBeCalledWith({
       data: {
         message: EXAMPLE_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } }
+        project: { connect: { id: EXAMPLE_PROJECT_ID } }
       }
     });
   });

@@ -457,7 +457,7 @@ describe('ResourceService', () => {
     const commitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
+        project: { connect: { id: EXAMPLE_PROJECT_ID } },
         user: { connect: { id: EXAMPLE_USER_ID } }
       }
     };
@@ -858,7 +858,7 @@ describe('ResourceService', () => {
     const args = {
       data: {
         message: EXAMPLE_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
+        project: { connect: { id: EXAMPLE_PROJECT_ID } },
         user: { connect: { id: EXAMPLE_USER_ID } }
       }
     };

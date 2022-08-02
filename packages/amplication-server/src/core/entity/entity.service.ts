@@ -104,7 +104,7 @@ export type BulkEntityData = Omit<
 
 export type EntityPendingChange = {
   /** The id of the changed entity */
-  resourceId: string;
+  resourceId: string; // change the name
   /** The type of change */
   action: EnumPendingChangeAction;
   resourceType: EnumPendingChangeResourceType.Entity;
@@ -451,13 +451,17 @@ export class EntityService {
    * @param userId the user ID the resource ID relates to
    */
   async getChangedEntities(
-    resourceId: string,
+    projectId: string,
     userId: string
   ): Promise<EntityPendingChange[]> {
     const changedEntities = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
-        resourceId
+        resource: {
+          project: {
+            id: projectId
+          }
+        }
       },
       include: {
         lockedByUser: true,
@@ -729,7 +733,7 @@ export class EntityService {
   }
 
   /**
-   * Higher order function responsible for encapsulating the locking behaviour.
+   * Higher order function responsible for encapsulating the locking behavior.
    * It will lock an entity, execute some provided operations on it then update the lock
    * (unlock it or keep it locked).
    * @param entityId The entity on which the locking and operations are performed

@@ -133,9 +133,9 @@ export class ResourceService {
       await this.commit(
         {
           data: {
-            resource: {
+            project: {
               connect: {
-                id: resource.id
+                id: resource.projectId
               }
             },
             message: INITIAL_COMMIT_MESSAGE,
@@ -284,9 +284,9 @@ export class ResourceService {
       try {
         await this.commit({
           data: {
-            resource: {
+            project: {
               connect: {
-                id: resource.id
+                id: resource.projectId
               }
             },
             message: data.commitMessage,
@@ -416,11 +416,11 @@ export class ResourceService {
     skipPublish?: boolean
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
-    const resourceId = args.data.resource.connect.id;
+    const projectId = args.data.project.connect.id;
 
-    const resource = await this.prisma.resource.findMany({
+    const resources = await this.prisma.resource.findMany({
       where: {
-        id: resourceId,
+        projectId: projectId,
         deletedAt: null,
         project: {
           workspace: {
@@ -434,13 +434,13 @@ export class ResourceService {
       }
     });
 
-    if (isEmpty(resource)) {
+    if (isEmpty(resources)) {
       throw new Error(`Invalid userId or resourceId`);
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(resourceId, userId),
-      this.blockService.getChangedBlocks(resourceId, userId)
+      this.entityService.getChangedEntities(projectId, userId),
+      this.blockService.getChangedBlocks(projectId, userId)
     ]);
 
     /**@todo: consider discarding locked objects that have no actual changes */
@@ -509,7 +509,8 @@ export class ResourceService {
         data: {
           resource: {
             connect: {
-              id: resourceId
+              // TODO: change it
+              id: resources[0].id 
             }
           },
           commit: {

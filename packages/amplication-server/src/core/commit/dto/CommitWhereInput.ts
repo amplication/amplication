@@ -16,7 +16,7 @@ export class CommitWhereInput {
   createdAt?: DateTimeFilter | null;
 
   @Field(() => WhereUniqueInput)
-  resource?: WhereUniqueInput;
+  project?: WhereUniqueInput;
 
   @Field(() => WhereUniqueInput, {
     nullable: true
