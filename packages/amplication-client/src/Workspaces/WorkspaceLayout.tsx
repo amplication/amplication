@@ -49,7 +49,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     handleSearchChange,
     loadingResources,
     errorResources,
-  } = useResources(currentProject);
+    currentResource,
+    setResource
+  } = useResources(currentWorkspace, currentProject);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -65,6 +67,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         handleSearchChange,
         loadingResources,
         errorResources,
+        currentResource,
+        setResource,
         createWorkspace,
         createNewWorkspaceError,
         loadingCreateNewWorkspace,
