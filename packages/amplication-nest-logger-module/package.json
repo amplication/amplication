@@ -1,6 +1,6 @@
 {
   "name": "@amplication/nest-logger-module",
-  "version": "0.14.9",
+  "version": "0.14.10",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "prebuild": "rimraf dist",
     "test": "jest",
     "check-format": "prettier --check \"**/*.{ts,json,gql,md,yaml}\"",
-    "format": "prettier --write \"**/*.{ts,json,gql,md,yaml}\""
+    "format": "prettier --write \"**/*.{ts,json,gql,md,yaml}\"",
+    "postinstall": "npm run build"
   },
   "author": "tupe12334",
   "devDependencies": {

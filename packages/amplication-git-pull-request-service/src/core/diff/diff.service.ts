@@ -1,18 +1,21 @@
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
 import assert from 'assert';
 import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { join, normalize } from 'path';
-import { Logger } from 'winston';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 
 @Injectable()
 export class DiffService {
   constructor(
     private readonly buildsPathFactory: BuildPathFactory,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {}
   async listOfChangedFiles(
     amplicationAppId: string,

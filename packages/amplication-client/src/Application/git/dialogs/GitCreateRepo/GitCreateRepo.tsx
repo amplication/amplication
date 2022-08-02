@@ -3,6 +3,7 @@ import {
   CircularProgress,
   Label,
   TextField,
+  ToggleField,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
@@ -70,7 +71,7 @@ export default function GitCreateRepo({
       validateOnChange={false}
       validateOnBlur
     >
-      {({ errors: formError }) => (
+      {({ errors: formError, values, handleChange }) => (
         <Form>
           <div className={`${CLASS_NAME}__header`}>
             <h4>
@@ -78,6 +79,14 @@ export default function GitCreateRepo({
               with
             </h4>
             <br />
+          </div>
+          <div>
+            <ToggleField
+              name="public"
+              label={values.public ? "Public Repo" : "Private Repo"}
+              checked={values.public}
+              onChange={handleChange}
+            />
           </div>
           <table className={`${CLASS_NAME}__table`}>
             <tr>
