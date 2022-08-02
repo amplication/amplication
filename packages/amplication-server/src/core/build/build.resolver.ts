@@ -22,7 +22,6 @@ import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
 import { Action } from '../action/dto';
 import { ActionService } from '../action/action.service';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { CommitService } from '../commit/commit.service';
 
 @Resolver(() => Build)
@@ -69,11 +68,6 @@ export class BuildResolver {
   @ResolveField()
   archiveURI(@Parent() build: Build): string {
     return `/generated-apps/${build.id}.zip`;
-  }
-
-  @ResolveField()
-  status(@Parent() build: Build): Promise<EnumBuildStatus> {
-    return this.service.calcBuildStatus(build.id);
   }
 
   @Mutation(() => Build)
