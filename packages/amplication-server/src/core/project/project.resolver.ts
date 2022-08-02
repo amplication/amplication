@@ -20,12 +20,16 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { ResourceService } from '../resource/resource.service';
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class ProjectResolver {
-  constructor(private projectService: ProjectService) {}
+  constructor(
+    private projectService: ProjectService,
+    private resourceService: ResourceService
+  ) {}
 
   @Query(() => [Project], { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
@@ -59,6 +63,8 @@ export class ProjectResolver {
 
   @ResolveField(() => [Resource])
   async resources(@Parent() project: Project): Promise<Resource[]> {
-    return this.projectService.resources(project.id);
+    return this.resourceService.resources({
+      where: { project: { id: project.id } }
+    });
   }
 }
