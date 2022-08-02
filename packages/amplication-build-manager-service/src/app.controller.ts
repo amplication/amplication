@@ -43,7 +43,11 @@ export class AppController {
     try {
       const path = await this.buildContextStorage.saveBuildContextSource(gr);
       const runResponse = await this.buildService.runBuild(path);
-      this.emitInitMessage(runResponse.runId, 'Generating code');
+      this.emitInitMessage(
+        gr.buildId,
+        runResponse.build.arn,
+        'Generating code',
+      );
     } catch (error) {
       this.logger.error(
         `Failed to run code build: message: ${message} error: ${error}`,
@@ -72,8 +76,9 @@ export class AppController {
     }
   }
 
-  emitInitMessage(runId: string, message: string) {
+  emitInitMessage(buildId: string, runId: string, message: string) {
     const event: BuildStatusEvent = {
+      buildId,
       runId,
       status: BuildStatusEnum.Init,
       timestamp: new Date().toISOString(),
