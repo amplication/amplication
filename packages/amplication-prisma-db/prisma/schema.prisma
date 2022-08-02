@@ -356,6 +356,8 @@ model Build {
   createdAt                DateTime        @default(now())
   resourceId               String
   userId                   String
+  status                   BuildStatus
+  runId                    String?
   version                  String
   message                  String?
   actionId                 String
@@ -487,6 +489,14 @@ enum EnumDeploymentStatus {
   Removed
 }
 
+enum BuildStatus {
+  Init
+  InProgress
+  Succeeded
+  Failed
+  Stopped
+}
+
 model Invitation {
   id              String    @id @default(cuid())
   createdAt       DateTime  @default(now())
@@ -500,7 +510,6 @@ model Invitation {
   newUser         User?     @relation(fields: [newUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   token           String
   tokenExpiration DateTime
-
 
   @@unique([workspaceId, email], map: "Invitation.workspaceId_email_unique")
 }
@@ -529,7 +538,6 @@ model Subscription {
   status                    EnumSubscriptionStatus
   subscriptionData          Json
   cancellationEffectiveDate DateTime?
-
 }
 
 enum EnumResourceType {
