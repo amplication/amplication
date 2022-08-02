@@ -17,6 +17,7 @@ import RolesTile from "./RolesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { AppRouteProps } from "../routes/routesUtil";
+import ResourceMenu from "./ResourceMenu";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -28,7 +29,7 @@ type Props = AppRouteProps & {
 
 const CLASS_NAME = "resource-home";
 
-const ResourceHome = ({ match, innerRoutes } : Props) => {
+const ResourceHome = ({ match, innerRoutes }: Props) => {
   const resourceId = match.params.resource;
 
   const { data, error } = useQuery<{
@@ -41,38 +42,43 @@ const ResourceHome = ({ match, innerRoutes } : Props) => {
 
   const errorMessage = formatError(error);
 
-  return match.isExact ? (
-    <PageContent
-      className={CLASS_NAME}
-      sideContent=""
-      pageTitle={data?.resource.name}
-    >
-      <div
-        className={classNames(
-          `${CLASS_NAME}__header`,
-          `theme-${data && COLOR_TO_NAME[data.resource.color]}`
-        )}
-      >
-        {data?.resource.name}
-        <CircleBadge
-          name={data?.resource.name || ""}
-          color={data?.resource.color || "transparent"}
-        />
-      </div>
-      <div className={`${CLASS_NAME}__tiles`}>
-        <NewVersionTile resourceId={resourceId} />
-        <OverviewTile resourceId={resourceId} />
-        <SyncWithGithubTile resourceId={resourceId} />
-        <ViewCodeViewTile resourceId={resourceId} />
-        <EntitiesTile resourceId={resourceId} />
-        <RolesTile resourceId={resourceId} />
-        <DocsTile />
-        <FeatureRequestTile />
-      </div>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
-    </PageContent>
-  ) : (
-    innerRoutes
+  return (
+    <>
+      <ResourceMenu />
+      {match.isExact ? (
+        <PageContent
+          className={CLASS_NAME}
+          sideContent=""
+          pageTitle={data?.resource.name}
+        >
+          <div
+            className={classNames(
+              `${CLASS_NAME}__header`,
+              `theme-${data && COLOR_TO_NAME[data.resource.color]}`
+            )}
+          >
+            {data?.resource.name}
+            <CircleBadge
+              name={data?.resource.name || ""}
+              color={data?.resource.color || "transparent"}
+            />
+          </div>
+          <div className={`${CLASS_NAME}__tiles`}>
+            <NewVersionTile resourceId={resourceId} />
+            <OverviewTile resourceId={resourceId} />
+            <SyncWithGithubTile resourceId={resourceId} />
+            <ViewCodeViewTile resourceId={resourceId} />
+            <EntitiesTile resourceId={resourceId} />
+            <RolesTile resourceId={resourceId} />
+            <DocsTile />
+            <FeatureRequestTile />
+          </div>
+          <Snackbar open={Boolean(error)} message={errorMessage} />
+        </PageContent>
+      ) : (
+        innerRoutes
+      )}
+    </>
   );
 };
 

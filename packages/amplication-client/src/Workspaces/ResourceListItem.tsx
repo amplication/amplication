@@ -28,6 +28,7 @@ const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 function ResourceListItem({ resource, onDelete }: Props) {
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const { id, name, description } = resource;
   const { trackEvent } = useTracking();
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -56,8 +57,6 @@ function ResourceListItem({ resource, onDelete }: Props) {
       eventName: "resourceCardClick",
     });
   }, [trackEvent]);
-
-  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const lastBuildDate = resource.builds[0]
     ? new Date(resource.builds[0].createdAt)
