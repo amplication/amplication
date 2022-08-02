@@ -21,6 +21,7 @@ WORKDIR /app
 COPY packages/amplication-git-pull-request-service packages/amplication-git-pull-request-service
 COPY packages/amplication-git-service packages/amplication-git-service
 COPY packages/amplication-kafka packages/amplication-kafka
+COPY packages/amplication-nest-logger-module packages/amplication-nest-logger-module
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/git-pull-request-service --include-dependencies
@@ -44,6 +45,10 @@ COPY --from=build /app/packages/amplication-git-pull-request-service/dist /app/p
 COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
 COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
 COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
+
+COPY --from=build /app/packages/amplication-nest-logger-module/package.json /app/packages/amplication-nest-logger-module/package.json
+COPY --from=build /app/packages/amplication-nest-logger-module/node_modules /app/packages/amplication-nest-logger-module/node_modules
+COPY --from=build /app/packages/amplication-nest-logger-module/dist /app/packages/amplication-nest-logger-module/dist
 
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
