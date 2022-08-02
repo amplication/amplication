@@ -156,4 +156,7 @@ export {
   TreeItemProps,
 } from "./components/TreeView/TreeView";
 
-export { HorizontalRule } from "./components/HorizontalRule/HorizontalRule";
+export {
+  HorizontalRule,
+  EnumHorizontalRuleStyle,
+} from "./components/HorizontalRule/HorizontalRule";
