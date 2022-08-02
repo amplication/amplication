@@ -15,11 +15,13 @@ import "./WorkspaceHeader.scss";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { Link } from "react-router-dom";
 
 const CLASS_NAME = "workspace-header";
 
 const WorkspaceHeader: React.FC<{}> = () => {
   const {
+    currentWorkspace,
     currentProject,
     currentResource,
     setResource,
@@ -35,7 +37,9 @@ const WorkspaceHeader: React.FC<{}> = () => {
         {currentProject && (
           <>
             <div className={`${CLASS_NAME}__breadcrumbs__project`}>
-              {currentProject?.name}
+              <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
+                {currentProject?.name}
+              </Link>
             </div>
             <div>
               <hr className={`${CLASS_NAME}__vertical_border`} />
