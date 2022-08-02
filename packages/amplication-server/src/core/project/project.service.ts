@@ -40,6 +40,8 @@ export class ProjectService {
   }
 
   async resources(projectId: string): Promise<Resource[]> {
-    return this.prisma.resource.findMany({ where: { projectId: projectId } });
+    return this.resourceService.resources({
+      where: { project: { id: projectId } }
+    });
   }
 }

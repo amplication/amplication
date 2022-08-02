@@ -57,7 +57,7 @@ export class ProjectResolver {
     return this.projectService.createProject(args, user.id);
   }
 
-  @ResolveField(() => Resource)
+  @ResolveField(() => [Resource])
   async resources(@Parent() project: Project): Promise<Resource[]> {
     return this.projectService.resources(project.id);
   }
