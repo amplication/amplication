@@ -212,10 +212,11 @@ type Build {
 }
 
 enum EnumBuildStatus {
-  Running
-  Completed
+  Init
+  InProgress
+  Succeeded
   Failed
-  Invalid
+  Stopped
 }
 
 type Action {
