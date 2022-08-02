@@ -21,6 +21,7 @@ WORKDIR /app
 COPY packages/amplication-git-pull-request-service packages/amplication-git-pull-request-service
 COPY packages/amplication-git-service packages/amplication-git-service
 COPY packages/amplication-kafka packages/amplication-kafka
+COPY packages/amplication-kafka packages/amplication-nest-logger-module
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/git-pull-request-service --include-dependencies
