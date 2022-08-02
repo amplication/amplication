@@ -42,6 +42,7 @@ model Project {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
+  commits     Commit[]
 
   @@unique([workspaceId, name])
 }
@@ -172,6 +173,8 @@ model Commit {
   builds         Build[]
   entityVersions EntityVersion[]
   releases       Release[]
+  project        Project?        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId      String?
 }
 
 model Entity {
@@ -501,7 +504,6 @@ model Invitation {
   token           String
   tokenExpiration DateTime
 
-
   @@unique([workspaceId, email], map: "Invitation.workspaceId_email_unique")
 }
 
@@ -529,7 +531,6 @@ model Subscription {
   status                    EnumSubscriptionStatus
   subscriptionData          Json
   cancellationEffectiveDate DateTime?
-
 }
 
 enum EnumResourceType {
