@@ -29,69 +29,75 @@ const WorkspaceHeader: React.FC<{}> = () => {
         <Icon icon="logo white" size="medium" />
       </div>
       <div className={`${CLASS_NAME}__breadcrumbs`}>
-        <div className={`${CLASS_NAME}__breadcrumbs__project`}>
-          {currentProject?.name}
-        </div>
-        <div>
-          <hr className={`${CLASS_NAME}__vertical_border`} />
-        </div>
-        <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
-          <SelectMenu
-            css={undefined}
-            title={
-              <p
-                className={`${CLASS_NAME}__breadcrumbs__resource__title ${CLASS_NAME}__breadcrumbs__resource__title${
-                  currentResource ? "__selected" : "__not_selected"
-                }`}
-              >
-                {currentResource ? currentResource.name : "Resource List"}
-              </p>
-            }
-            buttonStyle={EnumButtonStyle.Text}
-            icon="chevron_down"
-            openIcon="chevron_up"
-            className={`${CLASS_NAME}__breadcrumbs__menu`}
-          >
-            <SelectMenuModal css={undefined}>
-              <SelectMenuList>
-                {resources.map((resource: models.Resource) => (
-                  <SelectMenuItem
-                    css={null}
-                    closeAfterSelectionChange
-                    selected={currentResource?.id === resource.id}
-                    key={resource.id}
-                    onSelectionChange={() => {
-                      setResource(resource);
-                    }}
+        {currentProject && (
+          <>
+            <div className={`${CLASS_NAME}__breadcrumbs__project`}>
+              {currentProject?.name}
+            </div>
+            <div>
+              <hr className={`${CLASS_NAME}__vertical_border`} />
+            </div>
+            <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
+              <SelectMenu
+                css={undefined}
+                title={
+                  <p
+                    className={`${CLASS_NAME}__breadcrumbs__resource__title ${CLASS_NAME}__breadcrumbs__resource__title${
+                      currentResource ? "__selected" : "__not_selected"
+                    }`}
                   >
-                    <div
-                      className={`${CLASS_NAME}__breadcrumbs__resource__item`}
-                    >
-                      <ResourceCircleBadge
-                        type={resource.resourceType as models.EnumResourceType}
-                        size="xsmall"
-                      />
-                      <div
-                        className={`${CLASS_NAME}__breadcrumbs__resource__text`}
+                    {currentResource ? currentResource.name : "Resource List"}
+                  </p>
+                }
+                buttonStyle={EnumButtonStyle.Text}
+                icon="chevron_down"
+                openIcon="chevron_up"
+                className={`${CLASS_NAME}__breadcrumbs__menu`}
+              >
+                <SelectMenuModal css={undefined}>
+                  <SelectMenuList>
+                    {resources.map((resource: models.Resource) => (
+                      <SelectMenuItem
+                        css={null}
+                        closeAfterSelectionChange
+                        selected={currentResource?.id === resource.id}
+                        key={resource.id}
+                        onSelectionChange={() => {
+                          setResource(resource);
+                        }}
                       >
                         <div
-                          className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                          className={`${CLASS_NAME}__breadcrumbs__resource__item`}
                         >
-                          {resource.name}
+                          <ResourceCircleBadge
+                            type={
+                              resource.resourceType as models.EnumResourceType
+                            }
+                            size="xsmall"
+                          />
+                          <div
+                            className={`${CLASS_NAME}__breadcrumbs__resource__text`}
+                          >
+                            <div
+                              className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                            >
+                              {resource.name}
+                            </div>
+                            <div
+                              className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
+                            >
+                              {resource.description}
+                            </div>
+                          </div>
                         </div>
-                        <div
-                          className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
-                        >
-                          {resource.description}
-                        </div>
-                      </div>
-                    </div>
-                  </SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
-        </div>
+                      </SelectMenuItem>
+                    ))}
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
+            </div>
+          </>
+        )}
       </div>
       <div className={`${CLASS_NAME}__links`}>
         <a

@@ -14,6 +14,7 @@ import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
 import useResources from "./hooks/useResources";
 import { AppRouteProps } from "../routes/routesUtil";
+import ProjectEmptyState from "../Project/ProjectEmptyState";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -50,7 +51,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     loadingResources,
     errorResources,
     currentResource,
-    setResource
+    setResource,
   } = useResources(currentWorkspace, currentProject);
 
   return currentWorkspace ? (
@@ -81,7 +82,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
           <WorkspaceHeader />
           <CompleteInvitation />
           <div className={`${moduleClass}__page_content`}>
-            <div className={`${moduleClass}__main_content`}>{innerRoutes}</div>
+            <div className={`${moduleClass}__main_content`}>
+              {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+            </div>
             <div className={`${moduleClass}__changes_menu`}>
               pending changes
             </div>
