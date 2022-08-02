@@ -58,8 +58,6 @@ function ResourceListItem({ resource, onDelete }: Props) {
     });
   }, [trackEvent]);
 
-  const { currentWorkspace, currentProject } = useContext(AppContext);
-
   const lastBuildDate = resource.builds[0]
     ? new Date(resource.builds[0].createdAt)
     : undefined;
