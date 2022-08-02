@@ -1,11 +1,13 @@
 import { Module } from '@amplication/data-service-generator';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import assert from 'assert';
 import { outputFile, remove } from 'fs-extra';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { join, normalize } from 'path';
-import { BASE_BUILDS_FOLDER } from 'src/constants';
+import {
+  BASE_BUILDS_FOLDER,
+  DEFAULT_BUILDS_FOLDER
+} from '../../../../constants';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { Logger } from 'winston';
 @Injectable()
@@ -16,9 +18,10 @@ export class BuildFilesSaver {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {
     const envFilePath = configService.get<string>(BASE_BUILDS_FOLDER);
-    assert(envFilePath);
-    this.baseBuildsPath = normalize(envFilePath);
-    logger.info(`The BASE_BUILDS_FOLDER value is ${envFilePath}`);
+
+    this.baseBuildsPath = envFilePath
+      ? normalize(envFilePath)
+      : DEFAULT_BUILDS_FOLDER;
   }
   async saveFiles(relativePath: string, modules: Module[]): Promise<void> {
     this.logger.info(

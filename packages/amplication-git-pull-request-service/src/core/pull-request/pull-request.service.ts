@@ -44,8 +44,9 @@ export class PullRequestService {
       head,
       title,
       body,
-      base,
-      installationId
+      installationId,
+      newBuildId,
+      base
     );
     this.logger.info('Opened a new pull request', { prUrl });
     return { value: { url: prUrl }, status: StatusEnum.Success, error: null };

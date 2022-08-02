@@ -12,7 +12,9 @@
     "sourceMap": true,
     "outDir": "dist",
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
+  "exclude": ["node_modules", "dist"],
   "include": ["src"]
 }

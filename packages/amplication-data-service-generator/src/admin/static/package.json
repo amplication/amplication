@@ -1,9 +1,9 @@
 {
   "name": "admin-template",
-  "version": "0.14.1",
+  "version": "0.14.9",
   "private": true,
   "dependencies": {
-    "@apollo/client": "3.3.18",
+    "@apollo/client": "3.6.9",
     "@material-ui/core": "4.12.1",
     "gql": "1.1.2",
     "graphql": "15.6.1",
@@ -14,7 +14,7 @@
     "react": "16.14.0",
     "react-admin": "3.17.0",
     "react-dom": "16.14.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "5.0.0",
     "sass": "^1.39.0",
     "typescript": "4.2.4",
     "web-vitals": "1.1.2"

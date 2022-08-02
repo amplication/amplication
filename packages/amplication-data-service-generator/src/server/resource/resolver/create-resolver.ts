@@ -2,7 +2,7 @@ import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
-import { Entity, EntityLookupField, Module } from "../../../types";
+import { Entity, EntityLookupField, Module } from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import {

@@ -1,16 +1,8 @@
-cp-helm-charts:
-  enabled: true
-  cp-kafka:
-    enabled: true
-  cp-zookeeper:
-    enabled: true
-
 postgres:
-  install: true
-  postgresqlPassword: postgres
-  postgresqlPostgresPassword: postgres
-  postgresqlDatabase: amplication
-  fullnameOverride: postgresql
+  primary:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: postgres-ariel.amplication-dev.com
 
 amplication-client:
   service:
@@ -23,13 +15,9 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-ariel.amplication-dev.com
 
 amplication-server:
-  postgres:
-    install: false
   ingress:
     enabled: true
     hostname: server-ariel.amplication-dev.com
-  pvc:
-    name: ariel-efs-claim
   config:
     env:
       HOST: 'https://server-ariel.amplication-dev.com'
@@ -65,15 +53,13 @@ amplication-server:
       #GitHub App
       GITHUB_APP_APP_ID: '219560'
       GITHUB_APP_CLIENT_ID: 'Iv1.500372fe9efa340d'
-      GITHUB_APP_INSTALLATION_URL: 'https://github.com/apps/ariel-app/installations/new?state={state}'
+      GITHUB_APP_INSTALLATION_URL: 'https://github.com/apps/amplication-ariel-weinberger/installations/new?state={state}'
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: '83714e54a47335290292'
       GITHUB_REDIRECT_URI: 'https://server-ariel.amplication-dev.com/github/callback'
 
 amplication-git-push-webhook-service:
-  postgres:
-    install: false
   ingress:
     enabled: true
     hostname: webhook-ariel.amplication-dev.com
@@ -85,10 +71,6 @@ amplication-git-push-webhook-service:
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
 
 amplication-git-pull-service:
-  postgres:
-    install: false
-  pvc:
-    name: ariel-efs-claim
   config:
     env:
       NODE_ENV: 'production'
@@ -109,8 +91,6 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
-  pvc:
-    name: ariel-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
@@ -123,8 +103,6 @@ amplication-git-pull-request-service:
 amplication-storage-gateway:
   ingress:
     hostname: server-ariel.amplication-dev.com
-  pvc:
-    name: ariel-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'

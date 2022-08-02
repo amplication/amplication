@@ -1,5 +1,5 @@
 import winston from "winston";
-import { Module, AppInfo } from "./types";
+import { Module, AppInfo } from "@amplication/code-gen-types";
 import { createDotEnvModule } from "./create-dotenv";
 
 export async function createRootModules(

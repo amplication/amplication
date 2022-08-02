@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "0.14.1",
+  "version": "0.14.9",
   "main": "dist/index.js",
   "scripts": {
     "check-format": "prettier --check .",

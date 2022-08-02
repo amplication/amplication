@@ -13,6 +13,7 @@ import { IGitPullEventRepository } from '../../contracts/interfaces/gitPullEvent
 import { IStorage } from '../../contracts/interfaces/storage.interface';
 import { IGitClient } from '../../contracts/interfaces/gitClient.interface';
 import { IGitHostProviderFactory } from '../../contracts/interfaces/gitHostProviderFactory.interface';
+import { DEFAULT_GITHUB_PULL_FOLDER } from 'src/constants';
 
 const ROOT_STORAGE_DIR = 'STORAGE_PATH';
 const PRISMA_SKIP_VALUE = 'MAX_SNAPSHOTS';
@@ -32,7 +33,8 @@ export class GitPullEventService implements IGitPullEvent {
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
   ) {
     this.rootStorageDir =
-      this.configService.get<string>(ROOT_STORAGE_DIR) || os.homedir();
+      this.configService.get<string>(ROOT_STORAGE_DIR) ||
+      DEFAULT_GITHUB_PULL_FOLDER;
     this.skipPrismaValue = convertToNumber(
       this.configService.get<string>(PRISMA_SKIP_VALUE) || '0'
     );

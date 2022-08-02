@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { Entity } from "../../../types";
+import { Entity } from "@amplication/code-gen-types";
 import { NamedClassDeclaration } from "../../../util/ast";
 import { isEditableField } from "../../../util/field";
 import { createInput } from "./create-input";

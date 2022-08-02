@@ -1,5 +1,9 @@
-postgres:
-  install: false
+global:
+  pvc:
+    name: staging-efs-claim
+  pv:
+    name: efs-pv-staging
+    handle: fs-0a87872138ddc7f6d::fsap-0369ff368700f58c3
 
 cp-helm-charts:
   enabled: false
@@ -7,6 +11,8 @@ cp-helm-charts:
     enabled: false
   cp-zookeeper:
     enabled: false
+postgres:
+  install: false
 
 amplication-client:
   service:
@@ -20,10 +26,7 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server.staging.amplication-dev.com
 
 amplication-server:
-  pvc:
-    name: staging-efs-claim
   ingress:
-    enabled: true
     hostname: server.staging.amplication-dev.com
   config:
     env:
@@ -60,7 +63,7 @@ amplication-server:
       #GitHub App
       GITHUB_APP_APP_ID: "174833"
       GITHUB_APP_CLIENT_ID: "Iv1.e0d76b0ce191a528"
-      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplicaiton-staging/installations/new?state={state}"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/amplication-staging/installations/new?state={state}"
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "4f5b9a88cf46d4c5ec32"
@@ -69,7 +72,6 @@ amplication-server:
 
 amplication-git-push-webhook-service:
   ingress:
-    enabled: true
     hostname: webhook.staging.amplication-dev.com
   config:
     env:
@@ -77,10 +79,10 @@ amplication-git-push-webhook-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
+      GITHUB_APP_APP_ID: "174833"
+      GITHUB_APP_CLIENT_ID: "Iv1.e0d76b0ce191a528"
 
 amplication-git-pull-service:
-  pvc:
-    name: staging-efs-claim
   config:
     env:
       NODE_ENV: "production"
@@ -90,8 +92,8 @@ amplication-git-pull-service:
       MAX_SNAPSHOTS: "100"
 
       #GitHub App
-      GITHUB_APP_APP_ID: "195638"
-      GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
+      GITHUB_APP_APP_ID: "174833"
+      GITHUB_APP_CLIENT_ID: "Iv1.e0d76b0ce191a528"
       GIT_DEFAULT_ORIGIN_NAME: origin
       GITHUB_APP_PRIVATE_KEY: ""
 
@@ -102,8 +104,6 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
-  pvc:
-    name: staging-efs-claim
   config:
     env:
       KAFKA_BROKERS: '["b-1.amplicationuseast1sta.9134yb.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1sta.9134yb.c22.kafka.us-east-1.amazonaws.com:9092"]'
@@ -111,15 +111,12 @@ amplication-git-pull-request-service:
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-      GITHUB_APP_APP_ID: "195638"
+      GITHUB_APP_APP_ID: "174833"
 
 amplication-storage-gateway:
-  pvc:
-    name: staging-efs-claim
   ingress:
     hostname: server.staging.amplication-dev.com
   config:
     env:
       KAFKA_BROKERS: '["b-1.amplicationuseast1sta.9134yb.c22.kafka.us-east-1.amazonaws.com:9092","b-2.amplicationuseast1sta.9134yb.c22.kafka.us-east-1.amazonaws.com:9092"]'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-      GITHUB_APP_APP_ID: "195638"

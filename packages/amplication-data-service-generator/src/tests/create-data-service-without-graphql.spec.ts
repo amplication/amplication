@@ -1,7 +1,7 @@
 import { createDataService } from "../create-data-service";
 import entities from "./entities";
 import roles from "./roles";
-import { AppInfo } from "../types";
+import { AppInfo } from "@amplication/code-gen-types";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 
 const newAppInfo: AppInfo = {

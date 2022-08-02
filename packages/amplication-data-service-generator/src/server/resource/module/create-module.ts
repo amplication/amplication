@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { Module } from "../../../types";
+import { Module } from "@amplication/code-gen-types";
 import { relativeImportPath, readFile } from "../../../util/module";
 import {
   interpolate,
