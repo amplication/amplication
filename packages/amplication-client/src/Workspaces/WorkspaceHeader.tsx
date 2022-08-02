@@ -1,17 +1,20 @@
 import {
-  EnumButtonStyle,
   Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
+  Tooltip,
 } from "@amplication/design-system";
 import React, { useContext } from "react";
 import * as models from "../models";
 import UserBadge from "../Components/UserBadge";
 import { AppContext } from "../context/appContext";
+import { isMacOs } from "react-device-detect";
 import "./WorkspaceHeader.scss";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import CommandPalette from "../CommandPalette/CommandPalette";
+import { Button, EnumButtonStyle } from "../Components/Button";
 
 const CLASS_NAME = "workspace-header";
 
@@ -119,7 +122,22 @@ const WorkspaceHeader: React.FC<{}> = () => {
       </div>
       <hr className={`${CLASS_NAME}__vertical_border`} />
       <div className={`${CLASS_NAME}__search`}>
-        <Icon icon="search" size="medium" />
+        <CommandPalette
+          trigger={
+            <Tooltip
+              className="amp-menu-item__tooltip"
+              aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
+              direction="sw"
+              noDelay
+            >
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="search"
+                iconSize="medium"
+              />
+            </Tooltip>
+          }
+        />
       </div>
       <hr className={`${CLASS_NAME}__vertical_border`} />
       <div className={`${CLASS_NAME}__user`}>
