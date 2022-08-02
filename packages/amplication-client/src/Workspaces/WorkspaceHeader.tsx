@@ -16,7 +16,12 @@ import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 const CLASS_NAME = "workspace-header";
 
 const WorkspaceHeader: React.FC<{}> = () => {
-  const { currentProject, currentResource, setResource, resources } = useContext(AppContext);
+  const {
+    currentProject,
+    currentResource,
+    setResource,
+    resources,
+  } = useContext(AppContext);
 
   return (
     <div className={CLASS_NAME}>
@@ -47,57 +52,38 @@ const WorkspaceHeader: React.FC<{}> = () => {
             openIcon="chevron_up"
             className={`${CLASS_NAME}__breadcrumbs__menu`}
           >
-            <SelectMenuModal
-              css={undefined}
-              sx={{
-                width: "220px",
-                background: "#22273c",
-                border: "1px solid #515873",
-                boxShadow: "0px 18px 28px -8px rgba(9, 11, 20, 0.6)",
-                borderRadius: "8px",
-                right: "45%",
-                ":first-child": {
-                  width: "220px",
-                },
-              }}
-            >
-              <SelectMenuList
-                sx={{
-                  width: "220px",
-                  display: "flex",
-                  padding: "5px 0px",
-                  flexDirection: "column",
-                  border: "none",
-                }}
-              >
+            <SelectMenuModal css={undefined}>
+              <SelectMenuList>
                 {resources.map((resource: models.Resource) => (
                   <SelectMenuItem
                     css={null}
-                    sx={{
-                      padding: "0px",
-                      marginBottom: "4px",
-                    }}
                     closeAfterSelectionChange
                     selected={currentResource?.id === resource.id}
                     key={resource.id}
                     onSelectionChange={() => {
-                      setResource(resource)
+                      setResource(resource);
                     }}
                   >
                     <div
                       className={`${CLASS_NAME}__breadcrumbs__resource__item`}
                     >
                       <ResourceCircleBadge
-                        type={
-                          resource.resourceType.toLowerCase() as models.EnumResourceType
-                        }
+                        type={resource.resourceType as models.EnumResourceType}
                         size="xsmall"
                       />
                       <div
                         className={`${CLASS_NAME}__breadcrumbs__resource__text`}
                       >
-                        <div className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}>{resource.name}</div>
-                        <div className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}>{resource.description}</div>
+                        <div
+                          className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                        >
+                          {resource.name}
+                        </div>
+                        <div
+                          className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
+                        >
+                          {resource.description}
+                        </div>
                       </div>
                     </div>
                   </SelectMenuItem>
@@ -131,7 +117,9 @@ const WorkspaceHeader: React.FC<{}> = () => {
       </div>
       <hr className={`${CLASS_NAME}__vertical_border`} />
       <div className={`${CLASS_NAME}__user`}>
-        <UserBadge />
+        <a href="/user/profile">
+          <UserBadge />
+        </a>
       </div>
     </div>
   );

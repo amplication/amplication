@@ -8,8 +8,11 @@ type TData = {
   resources: models.Resource[];
 };
 
-const useResources = (currentWorkspace: models.Workspace | undefined, currentProject: models.Project | undefined) => {
-  const history = useHistory()
+const useResources = (
+  currentWorkspace: models.Workspace | undefined,
+  currentProject: models.Project | undefined
+) => {
+  const history = useHistory();
   const resourceMatch: { params: { resource: string } } | null = useRouteMatch<{
     resource: string;
   }>(
@@ -59,10 +62,17 @@ const useResources = (currentWorkspace: models.Workspace | undefined, currentPro
     [setSearchPhrase]
   );
 
-  const setResource = useCallback((resource: models.Resource) => {
-    setCurrentResource(resource)
-    currentWorkspace && currentProject && history.push(`/${currentWorkspace.id}/${currentProject.id}/${resource.id}`)
-  }, [currentProject, currentWorkspace, history])
+  const setResource = useCallback(
+    (resource: models.Resource) => {
+      setCurrentResource(resource);
+      currentWorkspace &&
+        currentProject &&
+        history.push(
+          `/${currentWorkspace.id}/${currentProject.id}/${resource.id}`
+        );
+    },
+    [currentProject, currentWorkspace, history]
+  );
 
   return {
     resources,
