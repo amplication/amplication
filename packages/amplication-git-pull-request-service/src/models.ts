@@ -1470,13 +1470,13 @@ export type MutationUpdateWorkspaceArgs = {
 export type PendingChange = {
   __typename?: 'PendingChange';
   action: EnumPendingChangeAction;
-  origin: PendingChangeResource;
+  origin: PendingChangeOrigin;
   originId: Scalars['String'];
   originType: EnumPendingChangeOriginType;
   versionNumber: Scalars['Int'];
 };
 
-export type PendingChangeResource = Block | Entity;
+export type PendingChangeOrigin = Block | Entity;
 
 export type PendingChangesDiscardInput = {
   app: WhereParentIdInput;

@@ -25,7 +25,7 @@ import { UseFilters, UseGuards } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { WorkspaceService } from './workspace.service';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { Subscription } from '../subscription/dto/Subscription';
@@ -42,7 +42,7 @@ export class WorkspaceResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async workspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.getWorkspace(args);
   }
@@ -68,7 +68,7 @@ export class WorkspaceResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.deleteWorkspace(args);
   }
@@ -77,7 +77,7 @@ export class WorkspaceResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async updateWorkspace(
     @Args() args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
@@ -110,7 +110,7 @@ export class WorkspaceResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, 'where.id')
   async revokeInvitation(
     @Args() args: RevokeInvitationArgs
   ): Promise<Invitation> {
@@ -121,7 +121,7 @@ export class WorkspaceResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, 'where.id')
   async resendInvitation(
     @Args() args: ResendInvitationArgs
   ): Promise<Invitation> {

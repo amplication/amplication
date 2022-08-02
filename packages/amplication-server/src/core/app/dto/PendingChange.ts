@@ -3,7 +3,7 @@ import { EnumPendingChangeAction } from './EnumPendingChangeAction';
 import { Entity } from 'src/models/Entity'; // eslint-disable-line import/no-cycle
 import { Block } from 'src/models/Block'; // eslint-disable-line import/no-cycle
 import { EnumPendingChangeOriginType } from './EnumPendingChangeOriginType';
-import { PendingChangeResource } from './PendingChangeResource'; // eslint-disable-line import/no-cycle
+import { PendingChangeOrigin } from './PendingChangeOrigin'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true,
@@ -28,7 +28,7 @@ export class PendingChange {
   })
   originId!: string;
 
-  @Field(() => PendingChangeResource, {
+  @Field(() => PendingChangeOrigin, {
     nullable: false,
     description: undefined
   })

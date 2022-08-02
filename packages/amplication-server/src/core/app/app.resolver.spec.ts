@@ -48,7 +48,7 @@ const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 
-const EXAMPLE_RESOURCE_ID = 'exampleOriginId';
+const EXAMPLE_ORIGIN_ID = 'exampleOriginId';
 const EXAMPLE_VERSION_NUMBER = 1;
 
 const EXAMPLE_COMMIT: Commit = {
@@ -101,7 +101,7 @@ const EXAMPLE_APP: App = {
 const EXAMPLE_PENDING_CHANGE: PendingChange = {
   action: EnumPendingChangeAction.Create,
   originType: EnumPendingChangeOriginType.Entity,
-  originId: EXAMPLE_RESOURCE_ID,
+  originId: EXAMPLE_ORIGIN_ID,
   origin: EXAMPLE_ENTITY,
   versionNumber: EXAMPLE_VERSION_NUMBER
 };
@@ -741,7 +741,7 @@ describe('AppResolver', () => {
       pendingChanges: [
         {
           ...EXAMPLE_PENDING_CHANGE,
-          resource: {
+          origin: {
             ...EXAMPLE_ENTITY,
             createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
             updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()

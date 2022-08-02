@@ -410,7 +410,7 @@ export class AppService {
   }
 
   /**
-   * Gets all the resources changed since the last commit in the app
+   * Gets all the origins changed since the last commit in the app
    */
   async getPendingChanges(
     args: FindPendingChangesArgs,

@@ -29,16 +29,16 @@ const PendingChangeWithCompare = ({
       className={CLASS_NAME}
       headerContent={<PendingChange change={change} />}
     >
-      {change.resourceType === models.EnumPendingChangeResourceType.Entity ? (
+      {change.originType === models.EnumPendingChangeOriginType.Entity ? (
         <PendingChangeDiffEntity
-          key={change.resourceId}
+          key={change.originId}
           change={change}
           compareType={compareType}
           splitView={splitView}
         />
       ) : (
         <PendingChangeDiffBlock
-          key={change.resourceId}
+          key={change.originId}
           change={change}
           compareType={compareType}
           splitView={splitView}

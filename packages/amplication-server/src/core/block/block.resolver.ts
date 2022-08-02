@@ -2,7 +2,7 @@ import { UseFilters, UseGuards } from '@nestjs/common';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { FindOneArgs } from 'src/dto';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Block, BlockVersion, User } from 'src/models';
@@ -25,7 +25,7 @@ export class BlockResolver {
     nullable: false,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.app.id')
   async blocks(@Args() args: FindManyBlockArgs): Promise<Block[]> {
     return this.blockService.findMany(args);
   }
@@ -34,7 +34,7 @@ export class BlockResolver {
     nullable: false,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
   async block(@Args() args: FindOneArgs): Promise<Block> {
     return this.blockService.block(args);
   }
