@@ -13,7 +13,11 @@ const useResources = (
   currentProject: models.Project | undefined
 ) => {
   const history = useHistory();
-  const resourceMatch: match & { params: { workspace: string; project: string; resource: string }} | null = useRouteMatch<{
+  const resourceMatch:
+    | (match & {
+        params: { workspace: string; project: string; resource: string };
+      })
+    | null = useRouteMatch<{
     workspace: string;
     project: string;
     resource: string;
@@ -46,11 +50,13 @@ const useResources = (
   useEffect(() => {
     if (!resourceMatch || !resources.length) return;
 
-    const urlResource = resourceMatch && resourceMatch.params && resourceMatch.params.resource;
-    const resource = resources.find((resource: models.Resource) => resource.id === urlResource);
-    setCurrentResource(resource)
-
-  }, [resourceMatch, resources])
+    const urlResource =
+      resourceMatch && resourceMatch.params && resourceMatch.params.resource;
+    const resource = resources.find(
+      (resource: models.Resource) => resource.id === urlResource
+    );
+    setCurrentResource(resource);
+  }, [resourceMatch, resources]);
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
