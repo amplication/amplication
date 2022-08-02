@@ -10,7 +10,6 @@ import {
   GENERATE_STEP_NAME,
   BuildService,
   ENTITIES_INCLUDE,
-  ACTION_INCLUDE
 } from './build.service';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { EntityService } from '..';
@@ -21,10 +20,8 @@ import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
 import { getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
 import { QueueService } from '../queue/queue.service';
-import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
 import { Resource, Commit, Entity } from 'src/models';
 import {
   ActionStep,
@@ -106,11 +103,6 @@ const EXAMPLE_COMPLETED_GENERATE_STEP = {
   status: EnumActionStepStatus.Success,
   completedAt: new Date()
 };
-const EXAMPLE_FAILED_GENERATE_STEP = {
-  ...EXAMPLE_GENERATE_STEP,
-  status: EnumActionStepStatus.Failed,
-  completedAt: new Date()
-};
 
 const EXAMPLE_ACTION = {
   id: 'ExampleActionId',
@@ -137,26 +129,6 @@ const EXAMPLE_COMPLETED_BUILD: Build = {
     createdAt: new Date(),
     steps: [EXAMPLE_COMPLETED_GENERATE_STEP]
   }
-};
-const EXAMPLE_RUNNING_BUILD: Build = {
-  ...EXAMPLE_BUILD,
-  id: 'ExampleRunningBuild'
-};
-
-const EXAMPLE_FAILED_BUILD: Build = {
-  ...EXAMPLE_BUILD,
-  id: 'ExampleFailedBuild',
-  action: {
-    id: 'ExampleFailedBuildAction',
-    createdAt: new Date(),
-    steps: [EXAMPLE_FAILED_GENERATE_STEP]
-  }
-};
-
-const EXAMPLE_INVALID_BUILD: Build = {
-  ...EXAMPLE_BUILD,
-  id: 'ExampleInvalidBuild',
-  action: undefined
 };
 
 const EXAMPLE_USER = {
@@ -644,73 +616,5 @@ describe('BuildService', () => {
     expect(storageServiceDiskExistsMock).toBeCalledWith(buildFilePath);
     expect(storageServiceDiskStreamMock).toBeCalledTimes(1);
     expect(storageServiceDiskStreamMock).toBeCalledWith(buildFilePath);
-  });
-
-  test('fail to create download stream for a non existing build', async () => {
-    prismaBuildFindOneMock.mockImplementation(() => null);
-    const args: FindOneBuildArgs = {
-      where: {
-        id: 'nonExistingId'
-      }
-    };
-    await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith(args);
-    expect(storageServiceDiskExistsMock).toBeCalledTimes(0);
-    expect(storageServiceDiskStreamMock).toBeCalledTimes(0);
-  });
-
-  it('should return invalid', async () => {
-    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_INVALID_BUILD);
-    const invalid = EnumBuildStatus.Invalid;
-    const buildId = EXAMPLE_INVALID_BUILD.id;
-    const findOneArgs = {
-      where: { id: buildId },
-      include: ACTION_INCLUDE
-    };
-    expect(await service.calcBuildStatus(buildId)).toEqual(invalid);
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
-  });
-
-  it('should return build status Running', async () => {
-    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_RUNNING_BUILD);
-    const buildId = EXAMPLE_RUNNING_BUILD.id;
-    const findOneArgs = {
-      where: { id: buildId },
-      include: ACTION_INCLUDE
-    };
-    expect(await service.calcBuildStatus(buildId)).toEqual(
-      EnumBuildStatus.Running
-    );
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
-  });
-
-  it('should return build status Failed', async () => {
-    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_FAILED_BUILD);
-    const buildId = EXAMPLE_FAILED_BUILD.id;
-    const findOneArgs = {
-      where: { id: buildId },
-      include: ACTION_INCLUDE
-    };
-    expect(await service.calcBuildStatus(buildId)).toEqual(
-      EnumBuildStatus.Failed
-    );
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
-  });
-
-  it('should return build status Completed', async () => {
-    prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_COMPLETED_BUILD);
-    const findOneArgs = {
-      where: { id: EXAMPLE_BUILD_ID },
-      include: ACTION_INCLUDE
-    };
-    expect(await service.calcBuildStatus(EXAMPLE_BUILD_ID)).toEqual(
-      EnumBuildStatus.Completed
-    );
-    expect(prismaBuildFindOneMock).toBeCalledTimes(1);
-    expect(prismaBuildFindOneMock).toBeCalledWith(findOneArgs);
   });
 });
