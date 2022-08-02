@@ -55,7 +55,7 @@ export const GET_BUILD = gql`
     build(where: { id: $buildId }) {
       id
       createdAt
-      appId
+      resourceId
       version
       message
       createdAt

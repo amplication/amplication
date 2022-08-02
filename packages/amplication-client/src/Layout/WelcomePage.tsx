@@ -33,8 +33,8 @@ function WelcomePage({
         {!isEmpty(message) && (
           <div className={`${CLASS_NAME}__source-title`}>{message}</div>
         )}
-        Amplication is currently in Beta however your generated apps are
-        production-ready. Every app generated using Amplication platform
+        Amplication is currently in Beta however your generated resources are
+        production-ready. Every resource generated using Amplication platform
         contains popular, documented, secured, and supported production-ready
         open-source components & packages. Read more about our stack{" "}
         <a

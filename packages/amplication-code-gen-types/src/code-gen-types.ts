@@ -20,8 +20,8 @@ export type WorkerParam = {
   appInfo: AppInfo;
 };
 
-export type AppSettings = Omit<
-  models.AppSettings,
+export type ServiceSettings = Omit<
+  models.ServiceSettings,
   | "__typename"
   | "id"
   | "createdAt"
@@ -43,11 +43,11 @@ export type AppInfo = {
   version: string;
   id: string;
   url: string;
-  settings: AppSettings;
+  settings: ServiceSettings;
 };
 
 export type Role = Omit<
-  models.AppRole,
+  models.ResourceRole,
   "__typename" | "id" | "createdAt" | "updatedAt"
 >;
 
@@ -58,10 +58,10 @@ export type EntityPermissionRole = Omit<
   | "entityVersionId"
   | "action"
   | "entityPermission"
-  | "appRoleId"
-  | "appRole"
+  | "resourceRoleId"
+  | "resourceRole"
 > & {
-  appRole: Role;
+  resourceRole: Role;
 };
 
 export type EntityPermissionField = Omit<
@@ -125,8 +125,8 @@ export type Entity = Omit<
   | "__typename"
   | "createdAt"
   | "updatedAt"
-  | "app"
-  | "appId"
+  | "resource"
+  | "resourceId"
   | "entityVersions"
   | "fields"
   | "permissions"
@@ -142,4 +142,9 @@ export type Entity = Omit<
 export type Module = {
   path: string;
   code: string;
+};
+
+export type ResourceGenerationConfig = {
+  dataServiceGeneratorVersion: string;
+  appInfo: AppInfo;
 };

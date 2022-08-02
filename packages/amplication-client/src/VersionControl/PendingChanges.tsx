@@ -14,6 +14,7 @@ import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import "./PendingChanges.scss";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "pending-changes";
 
@@ -22,18 +23,19 @@ type TData = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
-const PendingChanges = ({ applicationId }: Props) => {
+const PendingChanges = ({ resourceId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const pendingChangesContext = useContext(PendingChangesContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const { data, loading, error, refetch } = useQuery<TData>(
     GET_PENDING_CHANGES,
     {
       variables: {
-        applicationId,
+        resourceId,
       },
     }
   );
@@ -57,7 +59,7 @@ const PendingChanges = ({ applicationId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <Commit applicationId={applicationId} noChanges={noChanges} />
+      <Commit resourceId={resourceId} noChanges={noChanges} />
       <div className={`${CLASS_NAME}__changes-header`}>
         <span>Changes</span>
         <span
@@ -71,7 +73,9 @@ const PendingChanges = ({ applicationId }: Props) => {
         </span>
         <div className="spacer" />
         <Tooltip aria-label={"Compare Changes"} direction="sw">
-          <Link to={`/${applicationId}/pending-changes`}>
+          <Link
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/pending-changes`}
+          >
             <Button
               buttonStyle={EnumButtonStyle.Text}
               disabled={loading || noChanges}
@@ -104,7 +108,7 @@ const PendingChanges = ({ applicationId }: Props) => {
             title="Discard Changes"
           >
             <DiscardChanges
-              applicationId={applicationId}
+              resourceId={resourceId}
               onComplete={handleDiscardDialogCompleted}
               onCancel={handleToggleDiscardDialog}
             />
@@ -118,7 +122,7 @@ const PendingChanges = ({ applicationId }: Props) => {
                 <PendingChange
                   key={change.resourceId}
                   change={change}
-                  applicationId={applicationId}
+                  resourceId={resourceId}
                   linkToResource
                 />
               ))}
@@ -134,8 +138,8 @@ const PendingChanges = ({ applicationId }: Props) => {
 export default PendingChanges;
 
 export const GET_PENDING_CHANGES = gql`
-  query pendingChanges($applicationId: String!) {
-    pendingChanges(where: { app: { id: $applicationId } }) {
+  query pendingChanges($resourceId: String!) {
+    pendingChanges(where: { resource: { id: $resourceId } }) {
       resourceId
       action
       resourceType

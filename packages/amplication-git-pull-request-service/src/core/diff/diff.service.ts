@@ -18,20 +18,20 @@ export class DiffService {
     private readonly logger: AmplicationLogger
   ) {}
   async listOfChangedFiles(
-    amplicationAppId: string,
+    resourceId: string,
     previousAmplicationBuildId: string,
     newAmplicationBuildId: string
   ): Promise<{ path: string; code: string }[]> {
     const oldBuildPath = this.buildsPathFactory.get(
-      amplicationAppId,
+      resourceId,
       previousAmplicationBuildId
     );
     const newBuildPath = this.buildsPathFactory.get(
-      amplicationAppId,
+      resourceId,
       newAmplicationBuildId
     );
     this.logger.info('List of the paths', {
-      appId: amplicationAppId,
+      resourceId,
       previousAmplicationBuildId,
       newAmplicationBuildId,
     });

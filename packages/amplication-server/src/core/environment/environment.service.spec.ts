@@ -11,7 +11,7 @@ const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
 const EXAMPLE_ENVIRONMENT_NAME = 'exampleEnvironmentName';
 const EXAMPLE_ENVIRONMENT_ADDRESS = 'exampleEnvironmentAddress';
 const EXAMPLE_ENVIRONMENT_DESCRIPTION = 'exampleEnvironmentDescription';
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const SANDBOX_ENVIRONMENT = 'Sandbox environment';
 
 const EXAMPLE_CUID = 'EXAMPLE_CUID';
@@ -22,7 +22,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   name: EXAMPLE_ENVIRONMENT_NAME,
   address: EXAMPLE_ENVIRONMENT_ADDRESS,
-  appId: EXAMPLE_APP_ID
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const prismaEnvironmentCreateMock = jest.fn(() => {
@@ -78,7 +78,7 @@ describe('EnvironmentService', () => {
         name: EXAMPLE_ENVIRONMENT_NAME,
         description: EXAMPLE_ENVIRONMENT_DESCRIPTION,
         address: EXAMPLE_ENVIRONMENT_ADDRESS,
-        app: { connect: { id: EXAMPLE_APP_ID } }
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } }
       }
     };
     expect(await service.createEnvironment(args)).toEqual(EXAMPLE_ENVIRONMENT);
@@ -91,10 +91,10 @@ describe('EnvironmentService', () => {
       data: {
         name: DEFAULT_ENVIRONMENT_NAME,
         address: EXAMPLE_CUID,
-        app: { connect: { id: EXAMPLE_APP_ID } }
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } }
       }
     };
-    expect(await service.createDefaultEnvironment(EXAMPLE_APP_ID)).toEqual(
+    expect(await service.createDefaultEnvironment(EXAMPLE_RESOURCE_ID)).toEqual(
       EXAMPLE_ENVIRONMENT
     );
     expect(prismaEnvironmentCreateMock).toBeCalledTimes(1);
@@ -109,22 +109,22 @@ describe('EnvironmentService', () => {
   });
 
   it('should find many environment', async () => {
-    const args = { where: { app: { id: EXAMPLE_ENVIRONMENT_ID } } };
+    const args = { where: { resource: { id: EXAMPLE_ENVIRONMENT_ID } } };
     expect(await service.findMany(args)).toEqual([EXAMPLE_ENVIRONMENT]);
     expect(prismaEnvironmentFindManyMock).toBeCalledTimes(1);
     expect(prismaEnvironmentFindManyMock).toBeCalledWith(args);
   });
 
   it('should get a default environment', async () => {
-    expect(await service.getDefaultEnvironment(EXAMPLE_APP_ID)).toEqual(
+    expect(await service.getDefaultEnvironment(EXAMPLE_RESOURCE_ID)).toEqual(
       EXAMPLE_ENVIRONMENT
     );
     expect(prismaEnvironmentFindManyMock).toBeCalledTimes(1);
     expect(prismaEnvironmentFindManyMock).toBeCalledWith({
       take: 1,
       where: {
-        app: {
-          id: EXAMPLE_APP_ID
+        resource: {
+          id: EXAMPLE_RESOURCE_ID
         },
         name: { equals: SANDBOX_ENVIRONMENT }
       }

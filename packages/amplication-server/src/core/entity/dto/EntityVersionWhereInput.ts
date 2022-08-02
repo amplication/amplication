@@ -7,67 +7,56 @@ import {
 } from 'src/dto';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityVersionWhereInput {
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => IntFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   versionNumber?: IntFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   pluralDisplayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   label?: StringFilter | null;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   entity: WhereUniqueInput;
 }

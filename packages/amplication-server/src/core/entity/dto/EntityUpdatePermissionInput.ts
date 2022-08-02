@@ -3,8 +3,7 @@ import { EnumEntityAction } from 'src/enums/EnumEntityAction';
 import { EnumEntityPermissionType } from 'src/enums/EnumEntityPermissionType';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityUpdatePermissionInput {
   @Field(() => EnumEntityAction, { nullable: false })

@@ -7,6 +7,5 @@ export enum EnumEntityPageType {
 }
 
 registerEnumType(EnumEntityPageType, {
-  name: 'EnumEntityPageType',
-  description: undefined
+  name: 'EnumEntityPageType'
 });
