@@ -1,6 +1,13 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver
+} from '@nestjs/graphql';
 import { FindOneArgs } from 'src/dto';
-import { Project, User } from 'src/models';
+import { Project, Resource, User } from 'src/models';
 import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { ProjectService } from './project.service';
@@ -13,12 +20,16 @@ import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { ResourceService } from '../resource/resource.service';
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class ProjectResolver {
-  constructor(private projectService: ProjectService) {}
+  constructor(
+    private projectService: ProjectService,
+    private resourceService: ResourceService
+  ) {}
 
   @Query(() => [Project], { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
@@ -48,5 +59,12 @@ export class ProjectResolver {
     @UserEntity() user: User
   ): Promise<Project> {
     return this.projectService.createProject(args, user.id);
+  }
+
+  @ResolveField(() => [Resource])
+  async resources(@Parent() project: Project): Promise<Resource[]> {
+    return this.resourceService.resources({
+      where: { project: { id: project.id } }
+    });
   }
 }
