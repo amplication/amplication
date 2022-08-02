@@ -4,7 +4,8 @@ import resourceSettingsRoutes from "./resourceSettingsRoutes";
 
 const resourceRoutes = [
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities",
+    path:
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities",
     Component: lazy(() => import("../Entity/EntityList")),
     moduleName: "",
     routeTrackType: "",
@@ -13,16 +14,17 @@ const resourceRoutes = [
   },
   {
     path: "/:workspace/:project/:resource/roles",
-    Component: lazy(() => import("../Resource/RolesTile")),
+    Component: lazy(() => import("../Roles/RolesPage")),
     moduleName: "",
     routeTrackType: "",
-    exactPath: true,
+    exactPath: false,
     routes: [
       {
         path: "/:workspace/:project/:resource/roles/:roleId",
+        Component: lazy(() => import("../Roles/Role")),
         moduleName: "",
         routeTrackType: "",
-        exactPath: false,
+        exactPath: true,
         routes: [],
       },
     ],
