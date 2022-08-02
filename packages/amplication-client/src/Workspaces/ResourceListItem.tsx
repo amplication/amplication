@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTracking } from "../util/analytics";
 
@@ -15,6 +15,7 @@ import {
   Tooltip,
 } from "@amplication/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   resource: models.Resource;
@@ -56,6 +57,8 @@ function ResourceListItem({ resource, onDelete }: Props) {
     });
   }, [trackEvent]);
 
+  const { currentWorkspace, currentProject } = useContext(AppContext);
+
   const lastBuildDate = resource.builds[0]
     ? new Date(resource.builds[0].createdAt)
     : undefined;
@@ -70,7 +73,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
-      <NavLink to={`/${id}`}>
+      <NavLink to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}>
         <Panel
           className={CLASS_NAME}
           clickable

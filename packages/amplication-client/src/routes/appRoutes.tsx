@@ -76,7 +76,7 @@ export const Routes: RouteDef[] = [
     exactPath: true,
   },
   {
-    path: "/github-auth-app/callback", //todo
+    path: "/github-auth-app/callback",
     Component: lazy(
       () => import("../Resource/git/AuthResourceWithGitCallback")
     ),
@@ -100,5 +100,6 @@ export const Routes: RouteDef[] = [
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
+    routes: [],
   },
 ];
