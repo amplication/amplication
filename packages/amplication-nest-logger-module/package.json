@@ -40,7 +40,7 @@
     }
   },
   "dependencies": {
-    "@nestjs/common": "9.0.7",
+    "@nestjs/common": "8.4.3",
     "nest-winston": "1.7.0",
     "reflect-metadata": "0.1.13",
     "winston": "3.8.1",
