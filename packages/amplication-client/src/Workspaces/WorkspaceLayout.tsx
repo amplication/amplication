@@ -15,6 +15,7 @@ import useResources from "./hooks/useResources";
 import { AppRouteProps } from "../routes/routesUtil";
 import usePendingChanges, { PendingChangeItem } from "./hooks/usePendingChanges";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
+import PendingChanges from "../VersionControl/PendingChanges";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -107,7 +108,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
               {projectsList.length ? innerRoutes : <ProjectEmptyState />}
             </div>
             <div className={`${moduleClass}__changes_menu`}>
-              pending changes
+              { currentResource ? <PendingChanges resourceId={currentResource.id} /> : null}
             </div>
           </div>
           <WorkspaceFooter />
