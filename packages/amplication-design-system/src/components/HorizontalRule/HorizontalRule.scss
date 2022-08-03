@@ -5,4 +5,12 @@
   margin-top: var(--default-spacing);
   margin-bottom: var(--default-spacing);
   width: 100%;
+
+  &--black5 {
+    border-top: $border-black5;
+  }
+
+  &--black10 {
+    border-top: $border-black10;
+  }
 }
