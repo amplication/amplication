@@ -8,7 +8,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Panel, EnumPanelStyle, PanelHeader } from "@amplication/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "entity-permission-fields";
 
@@ -27,8 +27,7 @@ export const EntityPermissionField = ({
   permission,
   onDeleteField,
 }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+  const { addEntity } = useContext(AppContext);
   const availableRoles = useMemo((): models.ResourceRole[] => {
     if (!permission.permissionRoles) {
       return [];
@@ -46,7 +45,7 @@ export const EntityPermissionField = ({
   /**@todo: handle  errors */
   const [updateRole] = useMutation(UPDATE_ROLES, {
     onCompleted: (data) => {
-      pendingChangesContext.addEntity(entityId);
+      addEntity(entityId);
     },
     update(cache, { data: { updateEntityPermissionFieldRoles } }) {
       const queryData = cache.readQuery<{

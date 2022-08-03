@@ -10,7 +10,6 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { USER_ENTITY } from "./constants";
 import "./EntityListItem.scss";
 import { AppContext } from "../context/appContext";
@@ -37,8 +36,7 @@ export const EntityListItem = ({
   onDelete,
   onError,
 }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
   const history = useHistory();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -62,7 +60,7 @@ export const EntityListItem = ({
         });
       },
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(data.deleteEntity.id);
+        addEntity(data.deleteEntity.id);
         onDelete && onDelete();
       },
     }
@@ -95,7 +93,7 @@ export const EntityListItem = ({
     );
   }, [history, resourceId, entity, currentWorkspace, currentProject]);
 
-  const [latestVersion] = entity.versions;
+  const [latestVersion] = entity.versions || [];
 
   return (
     <>

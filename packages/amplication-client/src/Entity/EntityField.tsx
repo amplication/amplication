@@ -6,7 +6,6 @@ import { Snackbar } from "@amplication/design-system";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 import { useTracking } from "../util/analytics";
 import { SYSTEM_DATA_TYPES } from "./constants";
@@ -34,8 +33,7 @@ const EntityField = () => {
   const [lookupPendingData, setLookupPendingData] = useState<Values | null>(
     null
   );
-  const pendingChangesContext = useContext(PendingChangesContext);
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
   const history = useHistory();
   const [error, setError] = useState<Error>();
 
@@ -84,7 +82,7 @@ const EntityField = () => {
         }
       },
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(entity);
+        entity && addEntity(entity);
         trackEvent({
           eventName: "updateEntityField",
           entityFieldName: data.updateEntityField.displayName,

@@ -4,11 +4,11 @@ import { Form, Formik } from "formik";
 import React, { useContext } from "react";
 import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
+import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./ApplicationAuthSettingForm.scss";
 import {
   GET_RESOURCE_SETTINGS,
@@ -35,16 +35,14 @@ function ApplicationAuthSettingForm({ match }: Props) {
       id: resourceId,
     },
   });
-
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+  const { addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
   const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
     UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addBlock(data.updateServiceSettings.id);
+        addBlock(data.updateServiceSettings.id);
       },
     }
   );

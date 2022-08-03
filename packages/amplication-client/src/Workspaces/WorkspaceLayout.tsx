@@ -1,7 +1,6 @@
 import React, { lazy } from "react";
 import { match } from "react-router-dom";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import { isMobileOnly } from "react-device-detect";
 import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
@@ -14,6 +13,7 @@ import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
 import useResources from "./hooks/useResources";
 import { AppRouteProps } from "../routes/routesUtil";
+import usePendingChanges, { PendingChangeItem } from "./hooks/usePendingChanges";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -50,8 +50,20 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     loadingResources,
     errorResources,
     currentResource,
-    setResource
+    setResource,
   } = useResources(currentWorkspace, currentProject);
+
+  const {
+    pendingChanges,
+    commitRunning,
+    pendingChangesIsError,
+    addEntity,
+    addBlock,
+    addChange,
+    resetPendingChanges,
+    setCommitRunning,
+    setPendingChangesError,
+  } = usePendingChanges(currentResource);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -72,6 +84,15 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         createWorkspace,
         createNewWorkspaceError,
         loadingCreateNewWorkspace,
+        pendingChanges,
+        commitRunning,
+        pendingChangesIsError,
+        addEntity,
+        addBlock,
+        addChange,
+        resetPendingChanges,
+        setCommitRunning,
+        setPendingChangesError,
       }}
     >
       {isMobileOnly ? (

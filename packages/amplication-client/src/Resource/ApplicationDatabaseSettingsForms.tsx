@@ -7,7 +7,6 @@ import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { match } from "react-router-dom";
 import "./ApplicationDatabaseSettingsForms.scss";
 import {
@@ -15,6 +14,7 @@ import {
   UPDATE_SERVICE_SETTINGS,
 } from "./serviceSettings/GenerationSettingsForm";
 import useSettingsHook from "./useSettingsHook";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -35,15 +35,14 @@ function ApplicationDatabaseSettingsForms({ match }: Props) {
       id: resourceId,
     },
   });
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+  const { addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
   const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
     UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addBlock(data.updateServiceSettings.id);
+        addBlock(data.updateServiceSettings.id);
       },
     }
   );
