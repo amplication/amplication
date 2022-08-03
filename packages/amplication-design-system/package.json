@@ -35,7 +35,7 @@
     "@storybook/addon-essentials": "6.4.22",
     "@storybook/addon-interactions": "6.4.22",
     "@storybook/addon-links": "6.4.22",
-    "@storybook/builder-webpack5": "6.4.22",
+    "@storybook/builder-webpack5": "6.5.9",
     "@storybook/manager-webpack5": "6.4.22",
     "@storybook/preset-scss": "1.0.3",
     "@storybook/react": "6.4.22",
