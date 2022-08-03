@@ -10,7 +10,8 @@
     "outDir": "./lib",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true
+    "strict": true,
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "lib"],
   "include": ["src"]

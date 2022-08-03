@@ -3,7 +3,7 @@
  */
 
 import { SetMetadata } from '@nestjs/common';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import {
   AUTHORIZE_CONTEXT,
   AuthorizeContextParameters
@@ -19,7 +19,7 @@ import {
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const AuthorizeContext = (
-  parameterType: AuthorizableResourceParameter,
+  parameterType: AuthorizableOriginParameter,
   parameterPath: string
 ) =>
   SetMetadata<string, AuthorizeContextParameters>(AUTHORIZE_CONTEXT, {

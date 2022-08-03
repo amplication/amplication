@@ -19,8 +19,8 @@ import { FindOneArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { UserEntity } from 'src/decorators/user.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UserService } from '../user/user.service';
@@ -57,7 +57,7 @@ export class EntityResolver {
   @Query(() => Entity, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
   async entity(@Args() args: FindOneEntityArgs): Promise<Entity | null> {
     return this.entityService.entity(args);
   }
@@ -66,7 +66,7 @@ export class EntityResolver {
     nullable: false
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'where.resource.id'
   )
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
@@ -77,7 +77,7 @@ export class EntityResolver {
     nullable: false
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
   async createOneEntity(
@@ -90,7 +90,7 @@ export class EntityResolver {
   @Mutation(() => Entity, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
   async deleteEntity(
     @UserEntity() user: User,
     @Args() args: DeleteOneEntityArgs
@@ -101,7 +101,7 @@ export class EntityResolver {
   @Mutation(() => Entity, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
   async updateEntity(
     @UserEntity() user: User,
     @Args() args: UpdateOneEntityArgs
@@ -112,8 +112,8 @@ export class EntityResolver {
   @Mutation(() => Entity, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
-  @InjectContextValue(InjectableResourceParameter.UserId, 'userId')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
+  @InjectContextValue(InjectableOriginParameter.UserId, 'userId')
   async lockEntity(
     @UserEntity() user: User,
     @Args() args: LockEntityArgs
@@ -164,7 +164,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityPermission, { nullable: false })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
   async updateEntityPermission(
     @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionArgs
@@ -174,7 +174,7 @@ export class EntityResolver {
 
   @Mutation(() => EntityPermission, { nullable: false })
   @AuthorizeContext(
-    AuthorizableResourceParameter.EntityId,
+    AuthorizableOriginParameter.EntityId,
     'data.entity.connect.id'
   )
   async updateEntityPermissionRoles(
@@ -186,7 +186,7 @@ export class EntityResolver {
 
   @Mutation(() => EntityPermissionField, { nullable: false })
   @AuthorizeContext(
-    AuthorizableResourceParameter.EntityId,
+    AuthorizableOriginParameter.EntityId,
     'data.entity.connect.id'
   )
   async addEntityPermissionField(
@@ -197,7 +197,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityPermissionField, { nullable: false })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityId, 'where.entityId')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.entityId')
   async deleteEntityPermissionField(
     @UserEntity() user: User,
     @Args() args: DeleteEntityPermissionFieldArgs
@@ -207,7 +207,7 @@ export class EntityResolver {
 
   @Mutation(() => EntityPermissionField, { nullable: false })
   @AuthorizeContext(
-    AuthorizableResourceParameter.EntityPermissionFieldId,
+    AuthorizableOriginParameter.EntityPermissionFieldId,
     'data.permissionField.connect.id'
   )
   async updateEntityPermissionFieldRoles(
@@ -219,7 +219,7 @@ export class EntityResolver {
 
   @Mutation(() => EntityField, { nullable: false })
   @AuthorizeContext(
-    AuthorizableResourceParameter.EntityId,
+    AuthorizableOriginParameter.EntityId,
     'data.entity.connect.id'
   )
   async createEntityField(
@@ -231,7 +231,7 @@ export class EntityResolver {
 
   @Mutation(() => EntityField, { nullable: false })
   @AuthorizeContext(
-    AuthorizableResourceParameter.EntityId,
+    AuthorizableOriginParameter.EntityId,
     'data.entity.connect.id'
   )
   async createEntityFieldByDisplayName(
@@ -242,7 +242,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityField, { nullable: false })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityFieldId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, 'where.id')
   async deleteEntityField(
     @UserEntity() user: User,
     @Args() args: FindOneArgs
@@ -251,7 +251,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityField, { nullable: false })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityFieldId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, 'where.id')
   async updateEntityField(
     @UserEntity() user: User,
     @Args() args: UpdateOneEntityFieldArgs
@@ -260,7 +260,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityField, { nullable: false })
-  @AuthorizeContext(AuthorizableResourceParameter.EntityFieldId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, 'where.id')
   async createDefaultRelatedField(
     @UserEntity() user: User,
     @Args() args: CreateDefaultRelatedFieldArgs

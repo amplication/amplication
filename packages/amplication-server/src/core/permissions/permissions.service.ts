@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@amplication/prisma-db';
 import { User } from 'src/models';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 
 @Injectable()
 export class PermissionsService {
@@ -9,14 +9,14 @@ export class PermissionsService {
 
   async validateAccess(
     user: User,
-    resourceType: AuthorizableResourceParameter,
-    resourceId: string
+    originType: AuthorizableOriginParameter,
+    originId: string
   ): Promise<boolean> {
     const { workspace } = user;
 
     const checkByResourceParameters = {
       where: {
-        id: resourceId,
+        id: originId,
         resource: {
           deletedAt: null,
           project: {
@@ -28,14 +28,14 @@ export class PermissionsService {
       }
     };
 
-    if (resourceType === AuthorizableResourceParameter.WorkspaceId) {
-      return resourceId === workspace.id;
+    if (originType === AuthorizableOriginParameter.WorkspaceId) {
+      return originId === workspace.id;
     }
 
-    if (resourceType === AuthorizableResourceParameter.GitOrganizationId) {
+    if (originType === AuthorizableOriginParameter.GitOrganizationId) {
       const matching = await this.prisma.gitOrganization.count({
         where: {
-          id: resourceId,
+          id: originId,
           workspace: {
             id: workspace.id
           }
@@ -44,16 +44,16 @@ export class PermissionsService {
       return matching === 1;
     }
 
-    if (resourceType === AuthorizableResourceParameter.GitRepositoryId) {
+    if (originType === AuthorizableOriginParameter.GitRepositoryId) {
       const matching = await this.prisma.gitRepository.count({
         where: {
-          id: resourceId
+          id: originId
         }
       });
       return matching === 1;
     }
 
-    if (resourceType === AuthorizableResourceParameter.ProjectId) {
+    if (originType === AuthorizableOriginParameter.ProjectId) {
       const matching = await this.prisma.project.count({
         where: {
           deletedAt: null,
@@ -70,7 +70,7 @@ export class PermissionsService {
       const matching = await this.prisma.resource.count({
         where: {
           deletedAt: null,
-          id: resourceId,
+          id: originId,
           project: {
             workspace: {
               id: workspace.id
@@ -81,10 +81,10 @@ export class PermissionsService {
       return matching === 1;
     }
 
-    if (resourceType === AuthorizableResourceParameter.InvitationId) {
+    if (originType === AuthorizableOriginParameter.InvitationId) {
       const matching = await this.prisma.invitation.count({
         where: {
-          id: resourceId,
+          id: originId,
           workspace: {
             id: workspace.id
           }
@@ -92,22 +92,22 @@ export class PermissionsService {
       });
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.ApiTokenId) {
+    if (originType === AuthorizableOriginParameter.ApiTokenId) {
       const matching = await this.prisma.apiToken.count({
         where: {
-          id: resourceId,
+          id: originId,
           userId: user.id
         }
       });
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.ActionId) {
+    if (originType === AuthorizableOriginParameter.ActionId) {
       const matching = await this.prisma.action.count({
         where: {
           // eslint-disable-next-line  @typescript-eslint/naming-convention
           OR: [
             {
-              id: resourceId,
+              id: originId,
               deployments: {
                 some: {
                   build: {
@@ -122,7 +122,7 @@ export class PermissionsService {
               }
             },
             {
-              id: resourceId,
+              id: originId,
               builds: {
                 some: {
                   resource: {
@@ -139,10 +139,10 @@ export class PermissionsService {
       });
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.DeploymentId) {
+    if (originType === AuthorizableOriginParameter.DeploymentId) {
       const matching = await this.prisma.deployment.count({
         where: {
-          id: resourceId,
+          id: originId,
           environment: {
             resource: {
               deletedAt: null,
@@ -155,10 +155,10 @@ export class PermissionsService {
       });
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.EntityFieldId) {
+    if (originType === AuthorizableOriginParameter.EntityFieldId) {
       const matching = await this.prisma.entityField.count({
         where: {
-          id: resourceId,
+          id: originId,
           entityVersion: {
             entity: {
               resource: {
@@ -173,12 +173,10 @@ export class PermissionsService {
       });
       return matching === 1;
     }
-    if (
-      resourceType === AuthorizableResourceParameter.EntityPermissionFieldId
-    ) {
+    if (originType === AuthorizableOriginParameter.EntityPermissionFieldId) {
       const matching = await this.prisma.entityPermissionField.count({
         where: {
-          id: resourceId,
+          id: originId,
           field: {
             entityVersion: {
               entity: {
@@ -195,39 +193,39 @@ export class PermissionsService {
       });
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.EntityId) {
+    if (originType === AuthorizableOriginParameter.EntityId) {
       const matching = await this.prisma.entity.count(
         checkByResourceParameters
       );
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.BlockId) {
+    if (originType === AuthorizableOriginParameter.BlockId) {
       const matching = await this.prisma.block.count(checkByResourceParameters);
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.BuildId) {
+    if (originType === AuthorizableOriginParameter.BuildId) {
       const matching = await this.prisma.build.count(checkByResourceParameters);
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.ResourceRoleId) {
+    if (originType === AuthorizableOriginParameter.ResourceRoleId) {
       const matching = await this.prisma.resourceRole.count(
         checkByResourceParameters
       );
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.EnvironmentId) {
+    if (originType === AuthorizableOriginParameter.EnvironmentId) {
       const matching = await this.prisma.environment.count(
         checkByResourceParameters
       );
       return matching === 1;
     }
-    if (resourceType === AuthorizableResourceParameter.CommitId) {
+    if (originType === AuthorizableOriginParameter.CommitId) {
       const matching = await this.prisma.commit.count(
         checkByResourceParameters
       );
       return matching === 1;
     }
 
-    throw new Error(`Unexpected resource type ${resourceType}`);
+    throw new Error(`Unexpected origin type ${originType}`);
   }
 }

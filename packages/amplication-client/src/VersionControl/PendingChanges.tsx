@@ -118,10 +118,10 @@ const PendingChanges = ({ resourceId }: Props) => {
             <div className={`${CLASS_NAME}__changes`}>
               {data?.pendingChanges.map((change) => (
                 <PendingChange
-                  key={change.resourceId}
+                  key={change.originId}
                   change={change}
                   resourceId={resourceId}
-                  linkToResource
+                  linkToOrigin
                 />
               ))}
             </div>
@@ -138,11 +138,11 @@ export default PendingChanges;
 export const GET_PENDING_CHANGES = gql`
   query pendingChanges($resourceId: String!) {
     pendingChanges(where: { resource: { id: $resourceId } }) {
-      resourceId
+      originId
       action
-      resourceType
+      originType
       versionNumber
-      resource {
+      origin {
         __typename
         ... on Entity {
           id
