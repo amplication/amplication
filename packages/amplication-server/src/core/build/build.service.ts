@@ -245,12 +245,15 @@ export class BuildService {
     });
   }
 
-  async logGenerateStatusByRunId(runId: string, status: EnumBuildStatus): Promise<void> {
+  async logGenerateStatusByRunId(
+    runId: string,
+    status: EnumBuildStatus
+  ): Promise<void> {
     const build = await this.findByRunId(runId);
-    const steps = await this.actionService.getSteps(build.actionId)
-    const generateStep = steps.find(step => step.name === GENERATE_STEP_NAME);  
+    const steps = await this.actionService.getSteps(build.actionId);
+    const generateStep = steps.find(step => step.name === GENERATE_STEP_NAME);
     await this.actionService.logInfo(
-      generateStep, 
+      generateStep,
       `Build with id:${build.id} and runId: ${runId} status changed to ${status}`
     );
   }
@@ -277,14 +280,17 @@ export class BuildService {
   async onBuildInit(buildId: string, runId: string): Promise<void> {
     await this.prisma.build.update({
       where: { id: buildId },
-      data: { 
+      data: {
         runId: runId,
         status: EnumBuildStatus.Init
       }
     });
   }
 
-  async updateStateByRunId(runId: string, status: EnumBuildStatus): Promise<void> {
+  async updateStateByRunId(
+    runId: string,
+    status: EnumBuildStatus
+  ): Promise<void> {
     await this.prisma.build.updateMany({
       where: { runId: runId },
       data: { status: status }
