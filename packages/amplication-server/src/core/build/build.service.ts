@@ -245,7 +245,7 @@ export class BuildService {
     });
   }
 
-  async logGenerateStatusByRunId(runId: string, status: string): Promise<void> {
+  async logGenerateStatusByRunId(runId: string, status: EnumBuildStatus): Promise<void> {
     const build = await this.findByRunId(runId);
     const steps = await this.actionService.getSteps(build.actionId)
     const generateStep = steps.find(step => step.name === GENERATE_STEP_NAME);  
