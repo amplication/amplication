@@ -4,10 +4,10 @@ import Slide from "@mui/material/Slide";
 import Dialog from "@mui/material/Dialog";
 
 interface Props {
-  onCloseEvent: () => void;
+  onCloseEvent?: () => void;
   open: boolean;
   fullScreen: boolean;
-  css: string;
+  css?: string;
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -27,7 +27,7 @@ export const Modal: React.FC<Props> = ({
   children,
 }) => {
   const handleClose = useCallback(() => {
-    onCloseEvent();
+    onCloseEvent && onCloseEvent();
   }, [onCloseEvent]);
 
   return children ? (
