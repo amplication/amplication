@@ -4,7 +4,7 @@ import { BlockVersion } from 'src/models/BlockVersion'; // eslint-disable-line i
 import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line import/no-cycle
 import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
-import { EnumBuildStatus } from './EnumBuildStatus';
+import { BuildStatus } from '@amplication/build-types';
 
 @ObjectType({
   isAbstract: true
@@ -34,10 +34,10 @@ export class Build {
   })
   userId!: string;
 
-  @Field(() => EnumBuildStatus, {
+  @Field(() => BuildStatus, {
     nullable: true
   })
-  status?: keyof typeof EnumBuildStatus;
+  status?: keyof typeof BuildStatus;
 
   @Field(() => String)
   archiveURI?: string;

@@ -493,8 +493,10 @@ enum BuildStatus {
   Init
   InProgress
   Succeeded
+  Unpacking
   Failed
   Stopped
+  Ready
 }
 
 model Invitation {

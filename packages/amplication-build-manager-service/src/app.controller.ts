@@ -5,7 +5,6 @@ import { BuildContextStorageService } from './buildContextStorage/buildContextSt
 import { BuildService } from './codeBuild/build.service';
 import { CODE_BUILD_SERVICE } from './codeBuild/codeBuild.module';
 import {
-  BUILD_PHASE_TOPIC,
   BUILD_STATE_TOPIC,
   BUILD_STATUS_TOPIC,
   GENERATE_RESOURCE_TOPIC,
@@ -15,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   GenerateResource,
   BuildStatusEvent,
-  BuildStatusEnum,
+  BuildStatus,
 } from '@amplication/build-types';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { CodeGenNotification } from './codeBuild/dto/CodeBuildNotificationMessage';
@@ -82,7 +81,7 @@ export class AppController {
     const event: BuildStatusEvent = {
       buildId,
       runId,
-      status: BuildStatusEnum.Init,
+      status: BuildStatus.Init,
       timestamp: new Date().toISOString(),
       message,
     };
@@ -92,7 +91,7 @@ export class AppController {
   emitFailureMessage(buildId: string, message: string) {
     const event: BuildStatusEvent = {
       buildId,
-      status: BuildStatusEnum.Failed,
+      status: BuildStatus.Failed,
       timestamp: new Date().toISOString(),
       message,
     };

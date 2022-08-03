@@ -16,7 +16,7 @@ import { UserService } from '../user/user.service';
 import { Build } from './dto/Build';
 import { Commit, User } from 'src/models/';
 import { Action } from '../action/dto';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { BuildStatus } from '@amplication/build-types';
 import { CommitService } from '../commit/commit.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
@@ -152,7 +152,7 @@ const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
 
 const buildServiceCalcBuildStatusMock = jest.fn(() => {
-  return EnumBuildStatus.Completed;
+  return BuildStatus.Ready;
 });
 
 const mockCanActivate = jest.fn(() => true);
@@ -317,7 +317,7 @@ describe('BuildResolver', () => {
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       build: {
-        status: EnumBuildStatus.Completed
+        status: BuildStatus.Ready
       }
     });
     expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(1);

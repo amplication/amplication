@@ -1,5 +1,5 @@
 import {
-  BuildStatusEnum,
+  BuildStatus,
   BuildStatusEvent,
   FileLocation,
   StorageTypeEnum,
@@ -14,7 +14,6 @@ import { ConfigService } from '@nestjs/config';
 import { CODE_BUILD_PROJECT_NAME } from 'src/constants';
 import { BuildService } from './build.service';
 import {
-  BuildPhaseChangeDetail,
   BuildStateChangeDetail,
   CodeGenNotificationMessage,
 } from './dto/CodeBuildNotificationMessage';
@@ -46,6 +45,21 @@ export class CodeBuildService implements BuildService {
     }
   }
 
+  mapCodeBuildStatusToAmplicationBuildStatus(buildStatus: string): BuildStatus {
+    switch (buildStatus) {
+      case 'SUCCEEDED':
+        return BuildStatus.Succeeded;
+      case 'FAILED':
+        return BuildStatus.Failed;
+      case 'IN_PROGRESS':
+        return BuildStatus.InProgress;
+      case 'STOPPED':
+        return BuildStatus.Stopped;
+      default:
+        throw new Error(`Unknown CodeBuild build status: ${buildStatus}.`);
+    }
+  }
+
   mapBuildStateMessageToBuildStatusEvent(message: string): BuildStatusEvent {
     const m: CodeGenNotificationMessage = JSON.parse(message);
     const stateChangeDetail = m.detail as BuildStateChangeDetail;
@@ -53,7 +67,8 @@ export class CodeBuildService implements BuildService {
     const buildId = stateChangeDetail['build-id'];
 
     const buildStatus = stateChangeDetail['build-status'];
-    const buildStatusEventStatus = buildStatus as BuildStatusEnum;
+    const buildStatusEventStatus =
+      this.mapCodeBuildStatusToAmplicationBuildStatus(buildStatus);
 
     const buildStateArtifact =
       stateChangeDetail['additional-information'].artifact;

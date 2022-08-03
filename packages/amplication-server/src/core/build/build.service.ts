@@ -15,7 +15,7 @@ import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildZipFilePath, getBuildTarGzFilePath } from './storage';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { BuildStatus, GenerateResource, StorageTypeEnum } from '@amplication/build-types';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
@@ -42,7 +42,6 @@ import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { BuildContext } from './dto/BuildContext';
 import { BuildContextData } from './dto/BuildContextData';
-import { GenerateResource, StorageTypeEnum } from '@amplication/build-types';
 import { BuildContextStorageService } from './buildContextStorage.service';
 
 export const HOST_VAR = 'HOST';
@@ -197,7 +196,7 @@ export class BuildService {
         ...args.data,
         version,
         createdAt: new Date(),
-        status: EnumBuildStatus.Init,
+        status: BuildStatus.Init,
         blockVersions: {
           connect: []
         },
@@ -247,7 +246,7 @@ export class BuildService {
 
   async logGenerateStatusByRunId(
     runId: string,
-    status: EnumBuildStatus
+    status: BuildStatus
   ): Promise<void> {
     const build = await this.findByRunId(runId);
     const steps = await this.actionService.getSteps(build.actionId);
@@ -282,15 +281,12 @@ export class BuildService {
       where: { id: buildId },
       data: {
         runId: runId,
-        status: EnumBuildStatus.Init
+        status: BuildStatus.Init
       }
     });
   }
 
-  async updateStateByRunId(
-    runId: string,
-    status: EnumBuildStatus
-  ): Promise<void> {
+  async updateStateByRunId(runId: string, status: BuildStatus): Promise<void> {
     await this.prisma.build.updateMany({
       where: { runId: runId },
       data: { status: status }

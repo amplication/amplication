@@ -25,18 +25,24 @@ import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';
 import { EnvironmentVariables } from '@amplication/kafka';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { ActionService } from '../action/action.service';
+import { BuildStatus } from '@amplication/build-types';
+import { QueueService } from '../queue/queue.service';
+import { ConfigService } from '@nestjs/config';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
+  private readonly buildStatusTopic: string;
+
   constructor(
     private readonly buildService: BuildService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    private readonly actionService: ActionService
-  ) {}
+    private readonly queueService: QueueService,
+    private readonly configService: ConfigService
+  ) {
+    this.buildStatusTopic = this.configService.get(BUILD_STATUS_TOPIC);
+  }
 
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
@@ -84,32 +90,21 @@ export class BuildController {
     const { buildId, runId, status } = message.value;
     try {
       switch (status) {
-        case 'INIT':
+        case BuildStatus.Init:
           await this.buildService.onBuildInit(buildId, runId);
           break;
-        case 'IN_PROGRESS':
-          await this.buildService.updateStateByRunId(
-            runId,
-            EnumBuildStatus.InProgress
-          );
+        case BuildStatus.Succeeded:
+          await this.buildService.updateStateByRunId(runId, BuildStatus.Succeeded);
+          const build = await this.buildService.findByRunId(runId);
+          const body = { ...message.value, buildId: build.id, status: BuildStatus.Unpacking };
+          this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(body));
           break;
-        case 'SUCCEEDED':
-          await this.buildService.updateStateByRunId(
-            runId,
-            EnumBuildStatus.Succeeded
-          );
-          break;
-        case 'FAILED':
-          await this.buildService.updateStateByRunId(
-            runId,
-            EnumBuildStatus.Failed
-          );
-          break;
-        case 'STOPPED':
-          await this.buildService.updateStateByRunId(
-            runId,
-            EnumBuildStatus.Stopped
-          );
+        case BuildStatus.InProgress:
+        case BuildStatus.Unpacking:
+        case BuildStatus.Failed:
+        case BuildStatus.Stopped:
+        case BuildStatus.Ready:
+          await this.buildService.updateStateByRunId(runId, status);
           break;
       }
 
