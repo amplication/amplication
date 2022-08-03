@@ -26,6 +26,7 @@ import { StatusEnum } from '../queue/dto/StatusEnum';
 import { EnvironmentVariables } from '@amplication/kafka';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { ActionService } from '../action/action.service';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
@@ -34,6 +35,7 @@ export class BuildController {
     private readonly buildService: BuildService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
+    private readonly actionService: ActionService,
   ) {}
 
   @Get(`/:id.zip`)
@@ -97,7 +99,8 @@ export class BuildController {
         case 'STOPPED':
           await this.buildService.updateStateByRunId(runId, EnumBuildStatus.Stopped);
           break;
-        }
+      }
+      await this.actionService.logInfo(status, `Build ${buildId} status changed to ${status}`);
     } catch (error) {
       this.logger.error(
         `Failed to update build status' buildId: ${buildId}, runId: ${runId}, status: ${status}, error: ${error}`
