@@ -42,6 +42,7 @@ model Project {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
+  commits     Commit[]
 
   @@unique([workspaceId, name])
 }
@@ -134,7 +135,6 @@ model Resource {
   roles             ResourceRole[]
   blocks            Block[]
   builds            Build[]
-  commits           Commit[]
   entities          Entity[]
   environments      Environment[]
   gitRepository     GitRepository?
@@ -163,15 +163,15 @@ model ResourceRole {
 model Commit {
   id             String          @id @default(cuid())
   createdAt      DateTime        @default(now())
-  resourceId     String
   userId         String
   message        String
-  resource       Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   blockVersions  BlockVersion[]
   builds         Build[]
   entityVersions EntityVersion[]
   releases       Release[]
+  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId      String
 }
 
 model Entity {
@@ -501,7 +501,6 @@ model Invitation {
   token           String
   tokenExpiration DateTime
 
-
   @@unique([workspaceId, email], map: "Invitation.workspaceId_email_unique")
 }
 
@@ -529,7 +528,6 @@ model Subscription {
   status                    EnumSubscriptionStatus
   subscriptionData          Json
   cancellationEffectiveDate DateTime?
-
 }
 
 enum EnumResourceType {
