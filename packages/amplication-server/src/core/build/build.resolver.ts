@@ -37,10 +37,7 @@ export class BuildResolver {
   ) {}
 
   @Query(() => [Build])
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    'where.resource.id'
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async builds(@Args() args: FindManyBuildArgs): Promise<Build[]> {
     return this.service.findMany(args);
   }

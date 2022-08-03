@@ -332,9 +332,9 @@ enum SortOrder {
 
 type PendingChange {
   action: EnumPendingChangeAction!
-  resourceType: EnumPendingChangeResourceType!
-  resourceId: String!
-  resource: PendingChangeResource!
+  originType: EnumPendingChangeOriginType!
+  originId: String!
+  origin: PendingChangeOrigin!
   versionNumber: Int!
 }
 
@@ -344,12 +344,12 @@ enum EnumPendingChangeAction {
   Delete
 }
 
-enum EnumPendingChangeResourceType {
+enum EnumPendingChangeOriginType {
   Entity
   Block
 }
 
-union PendingChangeResource = Entity | Block
+union PendingChangeOrigin = Entity | Block
 
 type Block {
   id: String!

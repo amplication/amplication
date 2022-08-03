@@ -61,7 +61,10 @@ export function BlockTypeResolver<
       name: createName,
       nullable: false
     })
-    @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'data.resource.connect.id')
+    @AuthorizeContext(
+      AuthorizableOriginParameter.ResourceId,
+      'data.resource.connect.id'
+    )
     async [createName](
       @Args({ type: () => createArgsRef }) args: CreateArgs,
       @UserEntity() user: User

@@ -30,10 +30,7 @@ export class ResourceRoleResolver {
   @Query(() => [ResourceRole], {
     nullable: false
   })
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    'where.resource.id'
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async resourceRoles(
     @Args() args: FindManyResourceRoleArgs
   ): Promise<ResourceRole[]> {

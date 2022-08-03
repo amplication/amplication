@@ -143,10 +143,7 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
-  @InjectContextValue(
-    InjectableOriginParameter.UserId,
-    'data.user.connect.id'
-  )
+  @InjectContextValue(InjectableOriginParameter.UserId, 'data.user.connect.id')
   async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
     return this.resourceService.commit(args);
   }
@@ -158,10 +155,7 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
-  @InjectContextValue(
-    InjectableOriginParameter.UserId,
-    'data.user.connect.id'
-  )
+  @InjectContextValue(InjectableOriginParameter.UserId, 'data.user.connect.id')
   async discardPendingChanges(
     @Args() args: DiscardPendingChangesArgs
   ): Promise<boolean | null> {
@@ -171,10 +165,7 @@ export class ResourceResolver {
   @Query(() => [PendingChange], {
     nullable: false
   })
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    'where.resource.id'
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async pendingChanges(
     @Args() args: FindPendingChangesArgs,
     @UserEntity() user: User

@@ -24,10 +24,7 @@ export class BlockResolver {
   @Query(() => [Block], {
     nullable: false
   })
-  @AuthorizeContext(
-    AuthorizableOriginParameter.ResourceId,
-    'where.resource.id'
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async blocks(@Args() args: FindManyBlockArgs): Promise<Block[]> {
     return this.blockService.findMany(args);
   }
