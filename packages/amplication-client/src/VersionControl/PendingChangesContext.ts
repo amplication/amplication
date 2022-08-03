@@ -3,7 +3,7 @@ import * as models from "../models";
 
 export type PendingChangeItem = Pick<
   models.PendingChange,
-  "resourceId" | "resourceType"
+  "originId" | "originType"
 >;
 
 export type ContextDataType = {
@@ -15,8 +15,8 @@ export type ContextDataType = {
   addEntity: (entityId: string) => void;
   addBlock: (blockId: string) => void;
   addChange: (
-    resourceId: string,
-    resourceType: models.EnumPendingChangeResourceType
+    originId: string,
+    originType: models.EnumPendingChangeOriginType
   ) => void;
   reset: () => void;
 };
@@ -38,8 +38,8 @@ const PendingChangesContext = createContext<ContextDataType>({
     throw new Error();
   },
   addChange: (
-    resourceId: string,
-    resourceType: models.EnumPendingChangeResourceType
+    originId: string,
+    originType: models.EnumPendingChangeOriginType
   ) => {
     throw new Error();
   },

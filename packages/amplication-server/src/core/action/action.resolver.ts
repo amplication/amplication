@@ -7,7 +7,7 @@ import { ActionStep } from './dto/ActionStep';
 import { FindOneActionArgs } from './dto/FindOneActionArgs';
 import { ActionService } from './action.service';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 
 @Resolver(() => Action)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -16,7 +16,7 @@ export class ActionResolver {
   constructor(private readonly service: ActionService) {}
 
   @Query(() => Action)
-  @AuthorizeContext(AuthorizableResourceParameter.ActionId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ActionId, 'where.id')
   async action(@Args() args: FindOneActionArgs): Promise<Action> {
     return this.service.findOne(args);
   }

@@ -5,7 +5,7 @@ import {
   NestInterceptor
 } from '@nestjs/common';
 import { set } from 'lodash';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 import { User } from 'src/models';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
@@ -13,7 +13,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 export const INJECT_CONTEXT_VALUE = 'injectContextValue';
 
 export type InjectContextValueParameters = {
-  parameterType: InjectableResourceParameter;
+  parameterType: InjectableOriginParameter;
   parameterPath: string;
 };
 
@@ -54,13 +54,13 @@ export class InjectContextInterceptor implements NestInterceptor {
 
   private getInjectableContextValue(
     user: User,
-    parameterType: InjectableResourceParameter
+    parameterType: InjectableOriginParameter
   ): string | undefined {
     switch (parameterType) {
-      case InjectableResourceParameter.UserId: {
+      case InjectableOriginParameter.UserId: {
         return user.id;
       }
-      case InjectableResourceParameter.WorkspaceId: {
+      case InjectableOriginParameter.WorkspaceId: {
         return user.workspace?.id;
       }
       default: {

@@ -12,7 +12,7 @@ const TOOLTIP_DIRECTION = "ne";
 type Props = {
   change: models.PendingChange;
   applicationId: string;
-  linkToResource?: boolean;
+  linkToOrigin?: boolean;
 };
 
 const ACTION_TO_LABEL: {
@@ -26,12 +26,12 @@ const ACTION_TO_LABEL: {
 const PendingChange = ({
   change,
   applicationId,
-  linkToResource = false,
+  linkToOrigin = false,
 }: Props) => {
   /**@todo: update the url for other types of blocks  */
   const url =
-    change.resourceType === models.EnumPendingChangeResourceType.Entity
-      ? `/${applicationId}/entities/${change.resourceId}`
+    change.originType === models.EnumPendingChangeOriginType.Entity
+      ? `/${applicationId}/entities/${change.originId}`
       : `/${applicationId}/update`;
 
   const isDeletedEntity =
@@ -47,15 +47,15 @@ const PendingChange = ({
           className={`${CLASS_NAME}__tooltip_deleted`}
         >
           <div className={classNames(`${CLASS_NAME}__deleted`)}>
-            {change.resource.displayName}
+            {change.origin.displayName}
           </div>
         </Tooltip>
       );
     }
-    if (linkToResource) {
-      return <Link to={url}>{change.resource.displayName}</Link>;
+    if (linkToOrigin) {
+      return <Link to={url}>{change.origin.displayName}</Link>;
     }
-    return change.resource.displayName;
+    return change.origin.displayName;
   };
 
   return (

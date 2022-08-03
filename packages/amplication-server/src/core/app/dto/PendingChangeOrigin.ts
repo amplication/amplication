@@ -3,8 +3,8 @@ import { Entity } from 'src/models/Entity'; // eslint-disable-line import/no-cyc
 import { Block } from 'src/models/Block'; // eslint-disable-line import/no-cycle
 
 // eslint-disable-next-line  @typescript-eslint/naming-convention
-export const PendingChangeResource = createUnionType({
-  name: 'PendingChangeResource',
+export const PendingChangeOrigin = createUnionType({
+  name: 'PendingChangeOrigin',
   types: () => [Entity, Block],
   resolveType(value) {
     if (value.blockType) {
