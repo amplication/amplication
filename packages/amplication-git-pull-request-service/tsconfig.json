@@ -15,7 +15,8 @@
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
     "noImplicitUseStrict": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "dist", "builds"]
 }
