@@ -12,7 +12,7 @@ export { DiscardPendingChangesArgs } from './DiscardPendingChangesArgs';
 export { CommitCreateInput } from './CommitCreateInput';
 export { FindPendingChangesArgs } from './FindPendingChangesArgs';
 export { PendingChange } from './PendingChange';
-export { EnumPendingChangeResourceType } from './EnumPendingChangeResourceType';
+export { EnumPendingChangeOriginType } from './EnumPendingChangeOriginType';
 export { EnumPendingChangeAction } from './EnumPendingChangeAction';
 export { FindManyCommitsArgs } from './FindManyCommitsArgs';
 export { AppCreateWithEntitiesInput } from './AppCreateWithEntitiesInput';

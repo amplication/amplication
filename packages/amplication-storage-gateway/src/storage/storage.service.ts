@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { readFileSync } from "fs";
 import { sync } from "glob";
 import { join } from "path";
-import { BASE_BUILDS_FOLDER, DEFAULT_BUILDS_FOLDER } from "src/constants";
+import { BASE_BUILDS_FOLDER, DEFAULT_BUILDS_FOLDER } from "../constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 
