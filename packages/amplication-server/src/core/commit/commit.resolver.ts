@@ -3,7 +3,7 @@ import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { FindManyCommitArgs } from './dto/FindManyCommitArgs';
 import { FindOneCommitArgs } from './dto/FindOneCommitArgs';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Commit, User } from 'src/models';
@@ -36,7 +36,7 @@ export class CommitResolver {
   @Query(() => Commit, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.CommitId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.CommitId, 'where.id')
   async commit(@Args() args: FindOneCommitArgs): Promise<Commit> {
     return this.commitService.findOne(args);
   }
@@ -44,10 +44,7 @@ export class CommitResolver {
   @Query(() => [Commit], {
     nullable: true
   })
-  @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
-    'where.resource.id'
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async commits(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
     return this.commitService.findMany(args);
   }

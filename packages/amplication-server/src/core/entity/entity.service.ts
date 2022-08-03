@@ -45,7 +45,7 @@ import {
 } from 'src/util/softDelete';
 
 import {
-  EnumPendingChangeResourceType,
+  EnumPendingChangeOriginType,
   EnumPendingChangeAction,
   PendingChange
 } from '../resource/dto';
@@ -104,14 +104,14 @@ export type BulkEntityData = Omit<
 
 export type EntityPendingChange = {
   /** The id of the changed entity */
-  resourceId: string;
+  originId: string;
   /** The type of change */
   action: EnumPendingChangeAction;
-  resourceType: EnumPendingChangeResourceType.Entity;
+  originType: EnumPendingChangeOriginType.Entity;
   /** The entity version number */
   versionNumber: number;
   /** The entity */
-  resource: Entity;
+  origin: Entity;
 };
 
 /**
@@ -495,11 +495,11 @@ export class EntityService {
       }
 
       return {
-        resourceId: entity.id,
+        originId: entity.id,
         action: action,
-        resourceType: EnumPendingChangeResourceType.Entity,
+        originType: EnumPendingChangeOriginType.Entity,
         versionNumber: lastVersion.versionNumber + 1,
-        resource: entity
+        origin: entity
       };
     });
   }
@@ -539,11 +539,11 @@ export class EntityService {
       }
 
       return {
-        resourceId: entity.id,
+        originId: entity.id,
         action: action,
-        resourceType: EnumPendingChangeResourceType.Entity,
+        originType: EnumPendingChangeOriginType.Entity,
         versionNumber: changedVersion.versionNumber,
-        resource: entity
+        origin: entity
       };
     });
   }

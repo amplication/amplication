@@ -78,13 +78,13 @@ function ResourceLayout({ match }: Props) {
 
   const addChange = useCallback(
     (
-      resourceId: string,
-      resourceType: models.EnumPendingChangeResourceType
+      originId: string,
+      originType: models.EnumPendingChangeOriginType
     ) => {
       const existingChange = pendingChanges.find(
         (changeItem) =>
-          changeItem.resourceId === resourceId &&
-          changeItem.resourceType === resourceType
+          changeItem.originId === originId &&
+          changeItem.originType === originType
       );
       if (existingChange) {
         //reassign pending changes to trigger refresh
@@ -93,8 +93,8 @@ function ResourceLayout({ match }: Props) {
         setPendingChanges(
           pendingChanges.concat([
             {
-              resourceId,
-              resourceType,
+              originId,
+              originType,
             },
           ])
         );
@@ -105,14 +105,14 @@ function ResourceLayout({ match }: Props) {
 
   const addEntity = useCallback(
     (entityId: string) => {
-      addChange(entityId, models.EnumPendingChangeResourceType.Entity);
+      addChange(entityId, models.EnumPendingChangeOriginType.Entity);
     },
     [addChange]
   );
 
   const addBlock = useCallback(
     (blockId: string) => {
-      addChange(blockId, models.EnumPendingChangeResourceType.Block);
+      addChange(blockId, models.EnumPendingChangeOriginType.Block);
     },
     [addChange]
   );
@@ -273,8 +273,8 @@ export default enhance(ResourceLayout);
 export const GET_PENDING_CHANGES_STATUS = gql`
   query pendingChangesStatus($resourceId: String!) {
     pendingChanges(where: { resource: { id: $resourceId } }) {
-      resourceId
-      resourceType
+      originId
+      originType
     }
   }
 `;

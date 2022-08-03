@@ -15,6 +15,8 @@ on:
           - mor
           - amit
           - ariel
+          - alex
+
       confirm-env:
           type: string
           description: Confirm the environment to deploy
