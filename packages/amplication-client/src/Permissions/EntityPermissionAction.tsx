@@ -16,8 +16,7 @@ import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import { GET_ROLES } from "../Roles/RoleList";
-
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "entity-permissions-action";
 type TData = {
@@ -45,7 +44,7 @@ export const EntityPermissionAction = ({
   entityDisplayName,
   resourceId,
 }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const { addEntity } = useContext(AppContext);
 
   const selectedRoleIds = useMemo((): Set<string> => {
     return new Set(
@@ -56,14 +55,14 @@ export const EntityPermissionAction = ({
   /**@todo: handle  errors */
   const [updatePermission] = useMutation(UPDATE_PERMISSION, {
     onCompleted: (data) => {
-      pendingChangesContext.addEntity(entityId);
+      addEntity(entityId);
     },
   });
 
   /**@todo: handle  errors */
   const [updateRole] = useMutation(UPDATE_ROLES, {
     onCompleted: (data) => {
-      pendingChangesContext.addEntity(entityId);
+      addEntity(entityId);
     },
     update(cache, { data: { updateEntityPermissionRoles } }) {
       const queryData = cache.readQuery<{

@@ -9,11 +9,11 @@ import { camelCase } from "camel-case";
 import { keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo } from "react";
 import { match } from "react-router-dom";
+import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import {
   EntityRelationFieldsChart,
   FormValues,
@@ -33,7 +33,7 @@ const NAVIGATION_KEY = "FIX_RELATED_ENTITIES";
 
 export const RelatedFieldsMigrationFix = ({ match }: Props) => {
   const resourceId = match.params.resource;
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const { addEntity } = useContext(AppContext);
   const pageTitle = "Fix Entity Relations";
   useNavigationTabs(
     resourceId,
@@ -53,7 +53,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
   }>(CREATE_DEFAULT_RELATED_ENTITY, {
     onCompleted: (createData) => {
       refetch();
-      pendingChangesContext.addEntity(
+      addEntity(
         createData.createDefaultRelatedField.properties.relatedEntityId
       );
 
@@ -63,7 +63,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
         )
       );
       if (entity) {
-        pendingChangesContext.addEntity(entity.id);
+        addEntity(entity.id);
       }
     },
   });
