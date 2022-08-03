@@ -23,7 +23,7 @@
     "docker:dev": "docker-compose -f docker-compose.dev.yml up -d"
   },
   "dependencies": {
-    "lerna": "5.0.0",
+    "lerna": "4.0.0",
     "ora": "5.4.0",
     "react-query": "^3.39.1",
     "semver": "7.3.5",
