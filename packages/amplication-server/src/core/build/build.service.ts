@@ -237,6 +237,24 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
+  async findByRunId(runId: string): Promise<Build | null> {
+    return this.prisma.build.findFirst({
+      where: {
+        runId
+      }
+    });
+  }
+
+  async logGenerateStatusByRunId(runId: string, status: string): Promise<void> {
+    const build = await this.findByRunId(runId);
+    const steps = await this.actionService.getSteps(build.actionId)
+    const generateStep = steps.find(step => step.name === GENERATE_STEP_NAME);  
+    await this.actionService.logInfo(
+      generateStep, 
+      `Build with id:${build.id} and runId: ${runId} status changed to ${status}`
+    );
+  }
+
   private async getGenerateCodeStepStatus(
     buildId: string
   ): Promise<ActionStep | undefined> {

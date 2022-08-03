@@ -100,7 +100,8 @@ export class BuildController {
           await this.buildService.updateStateByRunId(runId, EnumBuildStatus.Stopped);
           break;
       }
-      await this.actionService.logInfo(status, `Build ${buildId} status changed to ${status}`);
+
+      await this.buildService.logGenerateStatusByRunId(runId, status);
     } catch (error) {
       this.logger.error(
         `Failed to update build status' buildId: ${buildId}, runId: ${runId}, status: ${status}, error: ${error}`
