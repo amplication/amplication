@@ -197,6 +197,7 @@ export class BuildService {
         ...args.data,
         version,
         createdAt: new Date(),
+        status: EnumBuildStatus.Init,
         blockVersions: {
           connect: []
         },
@@ -236,6 +237,24 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
+  async findByRunId(runId: string): Promise<Build | null> {
+    return this.prisma.build.findFirst({
+      where: {
+        runId
+      }
+    });
+  }
+
+  async logGenerateStatusByRunId(runId: string, status: EnumBuildStatus): Promise<void> {
+    const build = await this.findByRunId(runId);
+    const steps = await this.actionService.getSteps(build.actionId)
+    const generateStep = steps.find(step => step.name === GENERATE_STEP_NAME);  
+    await this.actionService.logInfo(
+      generateStep, 
+      `Build with id:${build.id} and runId: ${runId} status changed to ${status}`
+    );
+  }
+
   private async getGenerateCodeStepStatus(
     buildId: string
   ): Promise<ActionStep | undefined> {
@@ -255,25 +274,23 @@ export class BuildService {
     return generateStep;
   }
 
-  async calcBuildStatus(buildId): Promise<EnumBuildStatus> {
-    const build = await this.prisma.build.findUnique({
-      where: {
-        id: buildId
-      },
-      include: ACTION_INCLUDE
+  async onBuildInit(buildId: string, runId: string): Promise<void> {
+    await this.prisma.build.update({
+      where: { id: buildId },
+      data: { 
+        runId: runId,
+        status: EnumBuildStatus.Init
+      }
     });
-
-    if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
-    const steps = build.action.steps;
-
-    if (steps.every(step => step.status === EnumActionStepStatus.Success))
-      return EnumBuildStatus.Completed;
-
-    if (steps.some(step => step.status === EnumActionStepStatus.Failed))
-      return EnumBuildStatus.Failed;
-
-    return EnumBuildStatus.Running;
   }
+
+  async updateStateByRunId(runId: string, status: EnumBuildStatus): Promise<void> {
+    await this.prisma.build.updateMany({
+      where: { runId: runId },
+      data: { status: status }
+    });
+  }
+
   /**
    *
    * Give the ReadableStream of the build zip file

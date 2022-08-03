@@ -5,7 +5,9 @@ import {
   Controller,
   UseInterceptors,
   NotFoundException,
-  BadRequestException
+  BadRequestException,
+  Inject,
+  LoggerService
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
@@ -16,17 +18,25 @@ import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { plainToInstance } from 'class-transformer';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CHECK_USER_ACCESS_TOPIC } from 'src/constants';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import { BUILD_STATUS_TOPIC, CHECK_USER_ACCESS_TOPIC } from '../../constants';
 import { KafkaMessage } from 'kafkajs';
 import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';
 import { EnvironmentVariables } from '@amplication/kafka';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { ActionService } from '../action/action.service';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
-  constructor(private readonly buildService: BuildService) {}
+  constructor(
+    private readonly buildService: BuildService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
+    private readonly actionService: ActionService,
+  ) {}
 
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
@@ -67,5 +77,35 @@ export class BuildController {
     return {
       value: { error: null, status: StatusEnum.Success, value: isUserCanAccess }
     };
+  }
+
+  @EventPattern(EnvironmentVariables.instance.get(BUILD_STATUS_TOPIC, true))
+  async onBuildStatus(@Payload() message): Promise<void> {
+    const { buildId, runId, status } = message.value;
+    try {
+      switch (status) {
+        case 'INIT':
+          await this.buildService.onBuildInit(buildId, runId);
+          break;
+        case 'IN_PROGRESS':
+          await this.buildService.updateStateByRunId(runId, EnumBuildStatus.InProgress);
+          break;
+        case 'SUCCEEDED':
+          await this.buildService.updateStateByRunId(runId, EnumBuildStatus.Succeeded);
+          break;
+        case 'FAILED':
+          await this.buildService.updateStateByRunId(runId, EnumBuildStatus.Failed);
+          break;
+        case 'STOPPED':
+          await this.buildService.updateStateByRunId(runId, EnumBuildStatus.Stopped);
+          break;
+      }
+
+      await this.buildService.logGenerateStatusByRunId(runId, status);
+    } catch (error) {
+      this.logger.error(
+        `Failed to update build status' buildId: ${buildId}, runId: ${runId}, status: ${status}, error: ${error}`
+      );
+    }
   }
 }
