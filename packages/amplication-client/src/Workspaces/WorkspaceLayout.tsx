@@ -1,7 +1,6 @@
 import React, { lazy } from "react";
 import { match } from "react-router-dom";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import { isMobileOnly } from "react-device-detect";
 import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
@@ -12,6 +11,10 @@ import useProjectSelector from "./hooks/useProjectSelector";
 import { AppContextProvider } from "../context/appContext";
 import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
+import useResources from "./hooks/useResources";
+import { AppRouteProps } from "../routes/routesUtil";
+import usePendingChanges, { PendingChangeItem } from "./hooks/usePendingChanges";
+import ProjectEmptyState from "../Project/ProjectEmptyState";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -19,22 +22,49 @@ export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-type Props = {
+type Props = AppRouteProps & {
   match: match<{
     workspace: string;
   }>;
-  moduleClass: string;
-  // eslint-disable-next-line no-undef
-  InnerRoutes: JSX.Element | undefined;
 };
 
-const WorkspaceLayout: React.FC<Props> = ({
-  InnerRoutes,
-  moduleClass,
-}) => {
+const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
   const authenticated = useAuthenticated();
-  const { currentWorkspace, handleSetCurrentWorkspace } = useWorkspaceSelector(authenticated);
-  const { currentProject, projectsList, setNewProject, newProjectRes } = useProjectSelector(authenticated, currentWorkspace);
+  const {
+    currentWorkspace,
+    handleSetCurrentWorkspace,
+    createWorkspace,
+    createNewWorkspaceError,
+    loadingCreateNewWorkspace,
+  } = useWorkspaceSelector(authenticated);
+  const {
+    currentProject,
+    createProject,
+    projectsList,
+    onNewProjectCompleted,
+  } = useProjectSelector(authenticated, currentWorkspace);
+
+  const {
+    resources,
+    projectConfigurationResource,
+    handleSearchChange,
+    loadingResources,
+    errorResources,
+    currentResource,
+    setResource,
+  } = useResources(currentWorkspace, currentProject);
+
+  const {
+    pendingChanges,
+    commitRunning,
+    pendingChangesIsError,
+    addEntity,
+    addBlock,
+    addChange,
+    resetPendingChanges,
+    setCommitRunning,
+    setPendingChangesError,
+  } = usePendingChanges(currentResource);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -42,9 +72,28 @@ const WorkspaceLayout: React.FC<Props> = ({
         currentWorkspace,
         currentProject,
         projectsList,
-        setNewProject,
-        newProjectRes,
+        setNewProject: createProject,
+        onNewProjectCompleted,
         handleSetCurrentWorkspace,
+        resources,
+        projectConfigurationResource,
+        handleSearchChange,
+        loadingResources,
+        errorResources,
+        currentResource,
+        setResource,
+        createWorkspace,
+        createNewWorkspaceError,
+        loadingCreateNewWorkspace,
+        pendingChanges,
+        commitRunning,
+        pendingChangesIsError,
+        addEntity,
+        addBlock,
+        addChange,
+        resetPendingChanges,
+        setCommitRunning,
+        setPendingChangesError,
       }}
     >
       {isMobileOnly ? (
@@ -54,7 +103,9 @@ const WorkspaceLayout: React.FC<Props> = ({
           <WorkspaceHeader />
           <CompleteInvitation />
           <div className={`${moduleClass}__page_content`}>
-            <div className={`${moduleClass}__main_content`}>{InnerRoutes}</div>
+            <div className={`${moduleClass}__main_content`}>
+              {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+            </div>
             <div className={`${moduleClass}__changes_menu`}>
               pending changes
             </div>
@@ -64,7 +115,9 @@ const WorkspaceLayout: React.FC<Props> = ({
         </div>
       )}
     </AppContextProvider>
-  ) : <CircularProgress />;
+  ) : (
+    <CircularProgress />
+  );
 };
 
 export default WorkspaceLayout;

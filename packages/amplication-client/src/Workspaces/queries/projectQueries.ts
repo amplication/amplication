@@ -35,3 +35,12 @@ export const CREATE_PROJECT = gql`
     }
   }
 `;
+// temporary demand by resource until API will be ready
+export const GET_PENDING_CHANGES_STATUS = gql`
+  query pendingChangesStatus($resourceId: String!) {
+    pendingChanges(where: { resource: { id: $resourceId } }) {
+      resourceId
+      resourceType
+    }
+  }
+`;

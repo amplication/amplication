@@ -10,10 +10,13 @@ import { ConverterUtil } from '../utils/ConverterUtil';
 import { createAppAuth } from '@octokit/auth-app';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import {
+  AMPLICATION_IGNORED_FOLDER,
   REPO_NAME_TAKEN_ERROR_MESSAGE,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE
 } from '../utils/constants';
 import { components } from '@octokit/openapi-types';
+import { join } from 'path';
+import { AmplicationIgnoreManger } from '../utils/AmplicationIgnoreManger';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -46,14 +49,16 @@ export class GithubService implements IGitClient {
   createUserRepository(
     installationId: string,
     owner: string,
-    name: string
+    name: string,
+    isPublic: boolean
   ): Promise<RemoteGitRepository> {
     throw new Error(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
   }
   async createOrganizationRepository(
     installationId: string,
     owner: string,
-    name: string
+    name: string,
+    isPublic: boolean
   ): Promise<RemoteGitRepository> {
     const octokit = await this.getInstallationOctokit(installationId);
 
@@ -69,7 +74,8 @@ export class GithubService implements IGitClient {
       name: name,
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      auto_init: true
+      auto_init: true,
+      private: !isPublic
     });
 
     return {
@@ -164,13 +170,32 @@ export class GithubService implements IGitClient {
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
-    installationId: string
+    installationId: string,
+    amplicationBuildId: string
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
     const token = await this.getInstallationAuthToken(installationId);
     const octokit = new myOctokit({
       auth: token
+    });
+
+    const amplicationIgnoreManger = new AmplicationIgnoreManger();
+    await amplicationIgnoreManger.init(async fileName => {
+      try {
+        return (
+          await this.getFile(
+            userName,
+            repoName,
+            fileName,
+            baseBranchName,
+            installationId
+          )
+        ).content;
+      } catch (error) {
+        console.log('Repository does not have a .amplicationignore file');
+        return '';
+      }
     });
 
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
@@ -187,6 +212,12 @@ export class GithubService implements IGitClient {
 
     const files = Object.fromEntries(
       modules.map(module => {
+        if (amplicationIgnoreManger.isIgnored(module.path)) {
+          return [
+            join(AMPLICATION_IGNORED_FOLDER, amplicationBuildId, module.path),
+            module.code
+          ];
+        }
         if (
           !module.path.startsWith(authFolder) &&
           doNotOverride.some(rx => rx.test(module.path))

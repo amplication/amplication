@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import * as models from "../models";
 
 import { UserAndTime } from "@amplication/design-system";
@@ -6,6 +6,7 @@ import { ClickableId } from "../Components/ClickableId";
 import { TruncatedId } from "../Components/TruncatedId";
 
 import "./CommitHeader.scss";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "commit-header";
 
@@ -16,6 +17,7 @@ type Props = {
 };
 const CommitHeader = ({ resourceId, commit, clickableId }: Props) => {
   const account = commit.user?.account;
+  const {currentWorkspace, currentProject} = useContext(AppContext); 
 
   return (
     <div className={`${CLASS_NAME}`}>
@@ -23,7 +25,7 @@ const CommitHeader = ({ resourceId, commit, clickableId }: Props) => {
         Commit{" "}
         {clickableId ? (
           <ClickableId
-            to={`/${resourceId}/commits/${commit.id}`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/commits/${commit.id}`}
             id={commit.id}
             eventData={{
               eventName: "commitHeaderIdClick",

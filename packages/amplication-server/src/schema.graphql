@@ -40,6 +40,7 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
@@ -368,6 +369,7 @@ type Block {
 
 enum EnumBlockType {
   ServiceSettings
+  ProjectConfigurationSettings
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -619,6 +621,7 @@ type Environment {
 
 enum EnumResourceType {
   Service
+  ProjectConfiguration
 }
 
 type Subscription {
@@ -830,6 +833,22 @@ input CommitOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   message: SortOrder
+}
+
+type ProjectConfigurationSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  baseDirectory: String!
 }
 
 type ApiToken {
@@ -1050,6 +1069,7 @@ type Mutation {
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1107,6 +1127,7 @@ input WhereParentIdInput {
 input ResourceCreateWithEntitiesInput {
   resource: ResourceCreateInput!
   entities: [ResourceCreateWithEntitiesEntityInput!]!
+  generationSettings: ResourceGenSettingsCreateInput!
   commitMessage: String!
 }
 
@@ -1119,6 +1140,12 @@ input ResourceCreateWithEntitiesEntityInput {
 input ResourceCreateWithEntitiesFieldInput {
   name: String!
   dataType: EnumDataType
+}
+
+input ResourceGenSettingsCreateInput {
+  generateAdminUI: Boolean!
+  generateGraphQL: Boolean!
+  generateRestApi: Boolean!
 }
 
 input ResourceUpdateInput {
@@ -1253,6 +1280,12 @@ input ResourceRoleUpdateInput {
   name: String
   description: String
   displayName: String!
+}
+
+input ProjectConfigurationSettingsUpdateInput {
+  displayName: String
+  description: String
+  baseDirectory: String
 }
 
 input SignupInput {

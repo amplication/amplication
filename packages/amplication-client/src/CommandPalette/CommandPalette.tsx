@@ -1,14 +1,15 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useContext } from "react";
 // @ts-ignore
 import ReactCommandPalette from "react-command-palette";
 // @ts-ignore
 import { useQuery, gql } from "@apollo/client";
 import { History } from "history";
 
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { CircleBadge, Icon } from "@amplication/design-system";
 
 import * as models from "../models";
+import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
 
 export type ResourceDescriptor = Pick<models.Resource, "id" | "name" | "color">;
@@ -58,7 +59,7 @@ const TYPE_ROLES = "roles";
 
 const STATIC_COMMANDS = [
   {
-    name: "Resources",
+    name: "Project",
     link: "/",
   },
 ];
@@ -101,9 +102,14 @@ type Props = {
 };
 
 const CommandPalette = ({ trigger }: Props) => {
-  const match = useRouteMatch<{ resourceId: string }>("/:resourceId/");
+  const { currentWorkspace, currentProject, currentResource } = useContext(
+    AppContext
+  );
 
-  const { resourceId } = match?.params || {};
+  const projectBaseUrl = useMemo(
+    () => `/${currentWorkspace?.id}/${currentProject?.id}`,
+    [currentWorkspace, currentProject]
+  );
 
   const history = useHistory();
   const [query, setQuery] = useState("");
@@ -111,11 +117,12 @@ const CommandPalette = ({ trigger }: Props) => {
     setQuery(userQuery);
   };
   const { data } = useQuery<TData>(SEARCH, {
-    variables: { query },
+    variables: { query, projectId: currentProject?.id },
   });
   const commands = useMemo(
-    () => (data ? getCommands(data, history, resourceId) : []),
-    [data, history, resourceId]
+    () =>
+      data ? getCommands(data, history, currentResource, projectBaseUrl) : [],
+    [data, history, currentResource, projectBaseUrl]
   );
 
   return (
@@ -188,13 +195,16 @@ export function calcCommandScore(item: CommandScoreType): number {
   );
 }
 
-export function getStaticCommands(history: History): Command[] {
+export function getStaticCommands(
+  history: History,
+  projectBaseUrl: string
+): Command[] {
   return STATIC_COMMANDS.map(
     (command) =>
       new NavigationCommand(
         history,
         command.name,
-        command.link,
+        `${projectBaseUrl}${command.link}`,
         TYPE_RESOURCE,
         false,
         false
@@ -205,12 +215,13 @@ export function getStaticCommands(history: History): Command[] {
 export function getResourceCommands(
   resource: ResourceDescriptor,
   history: History,
-  isCurrentResource: boolean
+  isCurrentResource: boolean,
+  projectBaseUrl: string
 ): Command[] {
   const resourceCommand = new NavigationCommand(
     history,
     resource.name,
-    `/${resource.id}`,
+    `${projectBaseUrl}/${resource.id}`,
     TYPE_RESOURCE,
     isCurrentResource,
     true,
@@ -222,7 +233,7 @@ export function getResourceCommands(
       new NavigationCommand(
         history,
         command.name,
-        command.link.replace(":id", resource.id),
+        `${projectBaseUrl}${command.link.replace(":id", resource.id)}`,
         command.type,
         isCurrentResource,
         true,
@@ -237,13 +248,14 @@ export function getEntityCommands(
   entity: EntityDescriptor,
   resource: ResourceDescriptor,
   history: History,
-  isCurrentResource: boolean
+  isCurrentResource: boolean,
+  projectBaseUrl: string
 ): Command[] {
   return [
     new NavigationCommand(
       history,
       entity.displayName,
-      `/${resource.id}/entities/${entity.id}`,
+      `${projectBaseUrl}/${resource.id}/entities/${entity.id}`,
       TYPE_ENTITY,
       isCurrentResource,
       true,
@@ -256,27 +268,35 @@ export function getEntityCommands(
 export function getCommands(
   data: TData,
   history: History,
-  currentResourceId: string | undefined
+  currentResourceId: string | undefined,
+  projectBaseUrl: string
 ): Command[] {
   const resourceCommands = data.resources.flatMap((resource) => {
     const isCurrentResource = currentResourceId === resource.id;
     const resourceCommands = getResourceCommands(
       resource,
       history,
-      isCurrentResource
+      isCurrentResource,
+      projectBaseUrl
     );
     const entityCommands = resource.entities.flatMap((entity) =>
-      getEntityCommands(entity, resource, history, isCurrentResource)
+      getEntityCommands(
+        entity,
+        resource,
+        history,
+        isCurrentResource,
+        projectBaseUrl
+      )
     );
     return [...resourceCommands, ...entityCommands];
   });
-  const staticCommands = getStaticCommands(history);
+  const staticCommands = getStaticCommands(history, projectBaseUrl);
   return [...staticCommands, ...resourceCommands];
 }
 
 const SEARCH = gql`
-  query search {
-    resources {
+  query search($projectId: String!) {
+    resources(where: { project: { id: $projectId } }) {
       id
       name
       color

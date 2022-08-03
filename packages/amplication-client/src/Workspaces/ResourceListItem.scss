@@ -26,12 +26,12 @@
     height: var(--medium-button-height);
     border-radius: var(--medium-button-radius);
     @include flexFullRow;
-    color: var(--black60);
+    color: var(--black100);
     box-sizing: border-box;
     white-space: nowrap;
 
-    i {
-      padding-right: calc(var(--default-spacing-small) / 2);
+    .user-and-time {
+      padding-left: var(--default-spacing-small);
     }
   }
 }

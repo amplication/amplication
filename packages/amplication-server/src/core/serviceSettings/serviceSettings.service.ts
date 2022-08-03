@@ -3,9 +3,14 @@ import { ServiceSettings, UpdateServiceSettingsArgs } from './dto';
 import { FindOneArgs } from 'src/dto';
 import { BlockService } from '../block/block.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { DEFAULT_SERVICE_SETTINGS, ServiceSettingsValues } from './constants';
+import {
+  DEFAULT_SERVICE_SETTINGS,
+  ServiceSettingsValues,
+  ServiceSettingsValuesExtended
+} from './constants';
 import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
+import { ResourceGenSettingsCreateInput } from '../resource/dto/ResourceGenSettingsCreateInput';
 
 export const isStringBool = (val: any) =>
   typeof val === 'boolean' || typeof val === 'string';
@@ -155,8 +160,14 @@ export class ServiceSettingsService {
 
   async createDefaultServiceSettings(
     resourceId: string,
-    user: User
+    user: User,
+    generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<ServiceSettings> {
+    const settings = DEFAULT_SERVICE_SETTINGS;
+
+    if (generationSettings)
+      this.updateServiceGenerationSettings(settings, generationSettings);
+
     return this.blockService.create<ServiceSettings>(
       {
         data: {
@@ -165,11 +176,25 @@ export class ServiceSettingsService {
               id: resourceId
             }
           },
-          ...DEFAULT_SERVICE_SETTINGS,
+          ...settings,
           blockType: EnumBlockType.ServiceSettings
         }
       },
-      user
+      user.id
     );
+  }
+  private updateServiceGenerationSettings(
+    settings: ServiceSettingsValuesExtended,
+    generationSettings: ResourceGenSettingsCreateInput
+  ): void {
+    (settings.adminUISettings = {
+      generateAdminUI: generationSettings.generateAdminUI,
+      adminUIPath: ''
+    }),
+      (settings.serverSettings = {
+        generateGraphQL: generationSettings.generateGraphQL,
+        generateRestApi: generationSettings.generateRestApi,
+        serverPath: ''
+      });
   }
 }

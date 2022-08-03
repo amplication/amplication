@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
-import { GET_CURRENT_WORKSPACE } from "../queries/workspaceQuery";
+import { GET_CURRENT_WORKSPACE } from "../queries/workspaceQueries";
 
 type TData = {
   currentWorkspace: models.Workspace;
@@ -31,12 +31,15 @@ const useCurrentWorkspace = (authenticated: boolean) => {
 
     authenticated && getCurrentWorkspace();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authenticated]);
+  }, [authenticated, location.pathname]);
 
   useEffect(() => {
     if (!(data && data.currentWorkspace)) return;
-
-    location.pathname === "/" && history.push(`/${data.currentWorkspace.id}`);
+    location.pathname === "/" &&
+      history.push({
+        pathname: `/${data.currentWorkspace.id}`,
+        search: location.search,
+      });
   }, [data, history, location]);
 
   return {

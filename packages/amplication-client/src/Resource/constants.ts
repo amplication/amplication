@@ -45,111 +45,161 @@ export const COLOR_TO_NAME: {
   [GREEN]: "green",
   [BLUE]: "blue",
 };
+export const serviceSettingsFieldsInitValues = {
+  generateAdminUI: true,
+  generateGraphQL: true,
+  generateRestApi: true,
+  resourceType: "scratch",
+};
 
-export const sampleServiceResourceWithoutEntities: models.ResourceCreateWithEntitiesInput = {
+export const sampleServiceResourceWithoutEntities = (
+  projectId: string,
+  generateAdminUI: boolean,
+  generateGraphQL: boolean,
+  generateRestApi: boolean
+): models.ResourceCreateWithEntitiesInput => ({
   resource: {
     name: "My service",
     description: "",
     color: GREEN,
     resourceType: models.EnumResourceType.Service,
+    project: {
+      connect: {
+        id: projectId,
+      },
+    },
   },
   commitMessage: "",
   entities: [],
+  generationSettings: {
+    generateAdminUI: generateAdminUI,
+    generateGraphQL: generateGraphQL,
+    generateRestApi: generateRestApi,
+  },
+});
+
+export const sampleServiceResourceWithEntities = [
+  {
+    name: "Orders",
+    fields: [
+      {
+        name: "Quantity",
+        dataType: models.EnumDataType.WholeNumber,
+      },
+      {
+        name: "Discount",
+        dataType: models.EnumDataType.DecimalNumber,
+      },
+      {
+        name: "Total Price",
+        dataType: models.EnumDataType.WholeNumber,
+      },
+    ],
+    relationsToEntityIndex: [1, 3],
+  },
+  {
+    name: "Customer",
+    fields: [
+      {
+        name: "First Name",
+        dataType: models.EnumDataType.SingleLineText,
+      },
+      {
+        name: "Last Name",
+        dataType: models.EnumDataType.SingleLineText,
+      },
+      {
+        name: "Email",
+        dataType: models.EnumDataType.Email,
+      },
+      {
+        name: "Phone",
+        dataType: models.EnumDataType.SingleLineText,
+      },
+    ],
+    relationsToEntityIndex: [2],
+  },
+  {
+    name: "Address",
+    fields: [
+      {
+        name: "Address 1",
+        dataType: models.EnumDataType.SingleLineText,
+      },
+      {
+        name: "Address 2",
+        dataType: models.EnumDataType.SingleLineText,
+      },
+      {
+        name: "City",
+        dataType: models.EnumDataType.SingleLineText,
+      },
+      {
+        name: "State",
+        dataType: models.EnumDataType.SingleLineText,
+      },
+      {
+        name: "Zip",
+        dataType: models.EnumDataType.WholeNumber,
+      },
+    ],
+  },
+  {
+    name: "Product",
+    fields: [
+      {
+        name: "Name",
+        dataType: models.EnumDataType.SingleLineText,
+      },
+      {
+        name: "Item Price",
+        dataType: models.EnumDataType.DecimalNumber,
+      },
+      {
+        name: "Description",
+        dataType: models.EnumDataType.MultiLineText,
+      },
+    ],
+  },
+];
+
+export type createServiceSettings = {
+  generateAdminUI: boolean;
+  generateGraphQL: boolean;
+  generateRestApi: boolean;
+  resourceType: string;
 };
 
-export const sampleServiceResourceWithEntities: models.ResourceCreateWithEntitiesInput = {
-  resource: {
-    name: "Sample service",
-    description: "Sample service for e-commerce",
-    color: YELLOW,
-    resourceType: models.EnumResourceType.Service,
-  },
-  commitMessage: "",
-  entities: [
-    {
-      name: "Orders",
-      fields: [
-        {
-          name: "Quantity",
-          dataType: models.EnumDataType.WholeNumber,
+export function createResource(
+  projectId: string,
+  isResourceWithEntities: boolean,
+  generateAdminUI: boolean,
+  generateGraphQL: boolean,
+  generateRestApi: boolean
+): models.ResourceCreateWithEntitiesInput {
+  return {
+    resource: {
+      name: isResourceWithEntities ? "Sample service" : "My service",
+      description: isResourceWithEntities
+        ? "Sample service for e-commerce"
+        : "",
+      color: isResourceWithEntities ? YELLOW : GREEN,
+      resourceType: models.EnumResourceType.Service,
+      project: {
+        connect: {
+          id: projectId,
         },
-        {
-          name: "Discount",
-          dataType: models.EnumDataType.DecimalNumber,
-        },
-        {
-          name: "Total Price",
-          dataType: models.EnumDataType.WholeNumber,
-        },
-      ],
-      relationsToEntityIndex: [1, 3],
+      },
     },
-    {
-      name: "Customer",
-      fields: [
-        {
-          name: "First Name",
-          dataType: models.EnumDataType.SingleLineText,
-        },
-        {
-          name: "Last Name",
-          dataType: models.EnumDataType.SingleLineText,
-        },
-        {
-          name: "Email",
-          dataType: models.EnumDataType.Email,
-        },
-        {
-          name: "Phone",
-          dataType: models.EnumDataType.SingleLineText,
-        },
-      ],
-      relationsToEntityIndex: [2],
+    commitMessage: "",
+    generationSettings: {
+      generateAdminUI: generateAdminUI,
+      generateGraphQL: generateGraphQL,
+      generateRestApi: generateRestApi,
     },
-    {
-      name: "Address",
-      fields: [
-        {
-          name: "Address 1",
-          dataType: models.EnumDataType.SingleLineText,
-        },
-        {
-          name: "Address 2",
-          dataType: models.EnumDataType.SingleLineText,
-        },
-        {
-          name: "City",
-          dataType: models.EnumDataType.SingleLineText,
-        },
-        {
-          name: "State",
-          dataType: models.EnumDataType.SingleLineText,
-        },
-        {
-          name: "Zip",
-          dataType: models.EnumDataType.WholeNumber,
-        },
-      ],
-    },
-    {
-      name: "Product",
-      fields: [
-        {
-          name: "Name",
-          dataType: models.EnumDataType.SingleLineText,
-        },
-        {
-          name: "Item Price",
-          dataType: models.EnumDataType.DecimalNumber,
-        },
-        {
-          name: "Description",
-          dataType: models.EnumDataType.MultiLineText,
-        },
-      ],
-    },
-  ],
-};
+    entities: isResourceWithEntities ? sampleServiceResourceWithEntities : [],
+  };
+}
 
 export const GET_APP_SETTINGS = gql`
   query serviceSettings($id: String!) {

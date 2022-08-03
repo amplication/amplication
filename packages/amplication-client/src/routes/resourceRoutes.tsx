@@ -4,30 +4,24 @@ import resourceSettingsRoutes from "./resourceSettingsRoutes";
 
 const resourceRoutes = [
   {
-    path: "/:workspace/:project/:resource/entities",
-    Component: lazy(() => import("../Resource/EntitiesTile")),
+    path:
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities",
+    Component: lazy(() => import("../Entity/EntityList")),
     moduleName: "",
     routeTrackType: "",
-    exactPath: true,
-    routes: [
-      {
-        path: "/:workspace/:project/:resource/entities/:entityId",
-        moduleName: "",
-        routeTrackType: "",
-        exactPath: true,
-        routes: resourceEntitiesRoutes,
-      },
-    ],
+    exactPath: false,
+    routes: resourceEntitiesRoutes,
   },
   {
     path: "/:workspace/:project/:resource/roles",
-    Component: lazy(() => import("../Resource/RolesTile")),
+    Component: lazy(() => import("../Roles/RolesPage")),
     moduleName: "",
     routeTrackType: "",
-    exactPath: true,
+    exactPath: false,
     routes: [
       {
         path: "/:workspace/:project/:resource/roles/:roleId",
+        Component: lazy(() => import("../Roles/Role")),
         moduleName: "",
         routeTrackType: "",
         exactPath: true,
@@ -53,9 +47,7 @@ const resourceRoutes = [
   },
   {
     path: "/:workspace/:project/:resource/github",
-    Component: lazy(() =>
-      import("../Resource/git/SyncWithGithubPage")
-    ),
+    Component: lazy(() => import("../Resource/git/SyncWithGithubPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
@@ -63,9 +55,7 @@ const resourceRoutes = [
   },
   {
     path: "/:workspace/:project/:resource/code-view",
-    Component: lazy(() =>
-      import("../Resource/code-view/CodeViewPage")
-    ),
+    Component: lazy(() => import("../Resource/code-view/CodeViewPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
@@ -73,14 +63,14 @@ const resourceRoutes = [
   },
   {
     path: "/:workspace/:project/:resource/appSettings",
-    Component: lazy(() =>
-      import("../Resource/serviceSettings/ServiceSettingsPage")
+    Component: lazy(
+      () => import("../Resource/serviceSettings/ServiceSettingsPage")
     ),
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
     routes: resourceSettingsRoutes,
   },
-]
+];
 
 export default resourceRoutes;

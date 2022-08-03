@@ -6,13 +6,15 @@ export interface IGitClient {
   createUserRepository(
     installationId: string,
     owner: string,
-    name: string
+    name: string,
+    isPublic: boolean
   ): Promise<RemoteGitRepository>;
 
   createOrganizationRepository(
     installationId: string,
     owner: string,
-    name: string
+    name: string,
+    isPublic: boolean
   ): Promise<RemoteGitRepository>;
 
   getOrganizationRepos(installationId: string): Promise<RemoteGitRepository[]>;
@@ -43,6 +45,7 @@ export interface IGitClient {
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
-    installationId: string
+    installationId: string,
+    amplicationBuildId: string
   ): Promise<string>;
 }

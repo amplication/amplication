@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "amplicationignore",
     "Amplication",
     "Authorizable",
     "Datagrid",
@@ -34,6 +35,7 @@
     "isequalwith",
     "kafkajs",
     "linkcode",
+    "logform",
     "loglevel",
     "microservices",
     "nestjs",
@@ -51,6 +53,7 @@
     "schemaname",
     "scrollbar",
     "scrollbars",
+    "SENDGRID",
     "Signup",
     "slynova",
     "tablename",

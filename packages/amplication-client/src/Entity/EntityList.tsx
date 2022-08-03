@@ -10,35 +10,35 @@ import {
   Snackbar,
   CircularProgress,
 } from "@amplication/design-system";
-import useNavigationTabs from "../Layout/UseNavigationTabs";
-
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./EntityList.scss";
+import { AppRouteProps } from "../routes/routesUtil";
 
 type TData = {
   entities: models.Entity[];
 };
 
-type Props = {
-  match: match<{ resource: string }>;
+type Props = AppRouteProps & {
+  match: match<{
+    workspace: string;
+    project: string;
+    resource: string;
+  }>;
 };
 
 const NAME_FIELD = "displayName";
 const CLASS_NAME = "entity-list";
-const NAVIGATION_KEY = "ENTITY_LIST";
 
 const POLL_INTERVAL = 2000;
 
-export const EntityList = ({ match }: Props) => {
+const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
   const [error, setError] = useState<Error>();
   const pageTitle = "Entities";
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
-
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
 
@@ -85,50 +85,59 @@ export const EntityList = ({ match }: Props) => {
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
-  return (
+  return match.isExact ? (
     <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-      <Dialog
-        className="new-entity-dialog"
-        isOpen={newEntity}
-        onDismiss={handleNewEntityClick}
-        title="New Entity"
-      >
-        <NewEntity resourceId={resource} />
-      </Dialog>
-      <div className={`${CLASS_NAME}__header`}>
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
-        <Button
-          className={`${CLASS_NAME}__add-button`}
-          buttonStyle={EnumButtonStyle.Primary}
-          onClick={handleNewEntityClick}
-          icon="plus"
+      <>
+        <Dialog
+          className="new-entity-dialog"
+          isOpen={newEntity}
+          onDismiss={handleNewEntityClick}
+          title="New Entity"
         >
-          Add entity
-        </Button>
-      </div>
-      <div className={`${CLASS_NAME}__title`}>
-        {data?.entities.length} Entities
-      </div>
-      {loading && <CircularProgress />}
+          <NewEntity resourceId={resource} />
+        </Dialog>
+        <div className={`${CLASS_NAME}__header`}>
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          />
+          <Button
+            className={`${CLASS_NAME}__add-button`}
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleNewEntityClick}
+            icon="plus"
+          >
+            Add entity
+          </Button>
+        </div>
+        <div className={`${CLASS_NAME}__title`}>
+          {data?.entities.length} Entities
+        </div>
+        {loading && <CircularProgress />}
 
-      {data?.entities.map((entity) => (
-        <EntityListItem
-          key={entity.id}
-          entity={entity}
-          resourceId={resource}
-          onError={setError}
+        {data?.entities.map((entity) => (
+          <EntityListItem
+            key={entity.id}
+            entity={entity}
+            resourceId={resource}
+            onError={setError}
+          />
+        ))}
+
+        <Snackbar
+          open={Boolean(error || errorLoading)}
+          message={errorMessage}
         />
-      ))}
-
-      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
+      </>
     </PageContent>
+  ) : (
+    innerRoutes
   );
   /**@todo: move error message to hosting page  */
 };
+
+export default EntityList;
 
 /**@todo: expand search on other field  */
 /**@todo: find a solution for case insensitive search  */

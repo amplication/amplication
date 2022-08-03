@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-service",
-  "version": "0.14.3",
+  "version": "0.14.10",
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "8.2.3",
     "@octokit/openapi-types": "2.3.1",
     "graphql": "15.7.2",
+    "minimatch": "5.1.0",
     "octokit": "^1.7.1",
     "octokit-plugin-create-pull-request": "^3.11.0",
     "reflect-metadata": "^0.1.13",
@@ -36,10 +37,11 @@
     "rxjs": "^7.2.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "7.6.0",
+    "@nestjs/cli": "8.0.0",
     "@nestjs/testing": "8.2.4",
     "@types/express": "^4.17.13",
     "@types/jest": "27.0.2",
+    "@types/minimatch": "3.0.5",
     "@types/node": "^16.0.0",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "4.28.3",

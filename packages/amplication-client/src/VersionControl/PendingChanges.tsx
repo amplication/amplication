@@ -10,10 +10,10 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog, Snackbar, Tooltip } from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import "./PendingChanges.scss";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "pending-changes";
 
@@ -27,7 +27,7 @@ type Props = {
 
 const PendingChanges = ({ resourceId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const { currentWorkspace, currentProject, pendingChanges } = useContext(AppContext);
 
   const { data, loading, error, refetch } = useQuery<TData>(
     GET_PENDING_CHANGES,
@@ -41,7 +41,7 @@ const PendingChanges = ({ resourceId }: Props) => {
   //refetch when pending changes object change
   useEffect(() => {
     refetch().catch(console.error);
-  }, [refetch, pendingChangesContext.pendingChanges]);
+  }, [refetch, pendingChanges]);
 
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
@@ -71,7 +71,9 @@ const PendingChanges = ({ resourceId }: Props) => {
         </span>
         <div className="spacer" />
         <Tooltip aria-label={"Compare Changes"} direction="sw">
-          <Link to={`/${resourceId}/pending-changes`}>
+          <Link
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/pending-changes`}
+          >
             <Button
               buttonStyle={EnumButtonStyle.Text}
               disabled={loading || noChanges}

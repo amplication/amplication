@@ -1,7 +1,9 @@
 import { GitService } from '@amplication/git-service';
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
 import { DiffService } from '../diff';
 import { ResultMessage } from './dto/ResultMessage';
 import { SendPullRequestArgs } from './dto/sendPullRequest';
@@ -13,7 +15,8 @@ export class PullRequestService {
   constructor(
     private readonly diffService: DiffService,
     protected readonly gitService: GitService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {}
   async createPullRequest({
     resourceId,
@@ -44,8 +47,9 @@ export class PullRequestService {
       head,
       title,
       body,
-      base,
-      installationId
+      installationId,
+      newBuildId,
+      base
     );
     this.logger.info('Opened a new pull request', { prUrl });
     return { value: { url: prUrl }, status: StatusEnum.Success, error: null };

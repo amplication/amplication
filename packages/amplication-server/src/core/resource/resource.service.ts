@@ -1,4 +1,8 @@
-import { GitRepository, PrismaService } from '@amplication/prisma-db';
+import {
+  EnumResourceType,
+  GitRepository,
+  PrismaService
+} from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
@@ -27,6 +31,9 @@ import {
 } from './dto';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
+import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
+import { DEFAULT_RESOURCE_COLORS } from './constants';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -36,12 +43,18 @@ const USER_RESOURCE_ROLE = {
 export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
 export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 
-export const DEFAULT_RESOURCE_COLOR = '#20A4F3';
-export const DEFAULT_RESOURCE_DATA = {
-  color: DEFAULT_RESOURCE_COLOR
+export const DEFAULT_SERVICE_DATA = {
+  color: DEFAULT_RESOURCE_COLORS.service
 };
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
+export const INVALID_DELETE_PROJECT_CONFIGURATION =
+  'The resource of type `ProjectConfiguration` cannot be deleted';
+import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
+
+const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
+const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
+  'This resource is used to store project configuration.';
 
 @Injectable()
 export class ResourceService {
@@ -51,15 +64,45 @@ export class ResourceService {
     private blockService: BlockService,
     private environmentService: EnvironmentService,
     private buildService: BuildService,
-    private serviceSettingsService: ServiceSettingsService
+    private serviceSettingsService: ServiceSettingsService,
+    private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService
   ) {}
+
+  async createProjectConfiguration(
+    projectId: string,
+    userId: string
+  ): Promise<Resource> {
+    const existingProjectConfiguration = await this.prisma.resource.findFirst({
+      where: { projectId, resourceType: EnumResourceType.ProjectConfiguration }
+    });
+
+    if (!isEmpty(existingProjectConfiguration)) {
+      throw new ProjectConfigurationExistError();
+    }
+
+    const newProjectConfiguration = await this.prisma.resource.create({
+      data: {
+        color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
+        resourceType: EnumResourceType.ProjectConfiguration,
+        description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
+        name: DEFAULT_PROJECT_CONFIGURATION_NAME,
+        project: { connect: { id: projectId } }
+      }
+    });
+    await this.projectConfigurationSettingsService.createDefault(
+      newProjectConfiguration.id,
+      userId
+    );
+    return newProjectConfiguration;
+  }
 
   /**
    * Create resource in the user's workspace, with the built-in "user" role
    */
   async createResource(
     args: CreateOneResourceArgs,
-    user: User
+    user: User,
+    generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<Resource> {
     const { color } = args.data;
     if (color && !validateHTMLColorHex(color)) {
@@ -68,7 +111,7 @@ export class ResourceService {
 
     const resource = await this.prisma.resource.create({
       data: {
-        ...DEFAULT_RESOURCE_DATA,
+        ...DEFAULT_SERVICE_DATA,
         ...args.data,
         roles: {
           create: USER_RESOURCE_ROLE
@@ -82,7 +125,8 @@ export class ResourceService {
 
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
-      user
+      user,
+      generationSettings
     );
 
     try {
@@ -154,7 +198,8 @@ export class ResourceService {
       {
         data: data.resource
       },
-      user
+      user,
+      data.generationSettings
     );
 
     const newEntities: {
@@ -286,6 +331,10 @@ export class ResourceService {
 
     if (isEmpty(resource)) {
       throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
+      throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
     }
 
     const gitRepo = await this.prisma.gitRepository.findUnique({

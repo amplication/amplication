@@ -6,7 +6,6 @@ import { Snackbar } from "@amplication/design-system";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 
 import { useTracking } from "../util/analytics";
 import { SYSTEM_DATA_TYPES } from "./constants";
@@ -17,6 +16,7 @@ import {
 } from "./RelatedFieldDialog";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityField.scss";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   entity: models.Entity;
@@ -33,7 +33,7 @@ const EntityField = () => {
   const [lookupPendingData, setLookupPendingData] = useState<Values | null>(
     null
   );
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
   const history = useHistory();
   const [error, setError] = useState<Error>();
 
@@ -41,7 +41,7 @@ const EntityField = () => {
     resource: string;
     entity: string;
     field: string;
-  }>("/:resource/entities/:entity/fields/:field");
+  }>("/:workspace/:project/:resource/entities/:entity/fields/:field");
 
   const { resource, entity, field } = match?.params ?? {};
 
@@ -82,7 +82,7 @@ const EntityField = () => {
         }
       },
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(entity);
+        entity && addEntity(entity);
         trackEvent({
           eventName: "updateEntityField",
           entityFieldName: data.updateEntityField.displayName,
@@ -93,8 +93,10 @@ const EntityField = () => {
   );
 
   const handleDeleteField = useCallback(() => {
-    history.push(`/${resource}/entities/${entity}/fields/`);
-  }, [history, resource, entity]);
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resource}/entities/${entity}/fields/`
+    );
+  }, [history, resource, entity, currentWorkspace, currentProject]);
 
   const handleSubmit = useCallback(
     (data) => {

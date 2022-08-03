@@ -125,6 +125,12 @@ $bullet-size: 6px;
   align-items: center;
 }
 
+@mixin flexColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 @mixin flexVerticalCenter {
   display: flex;
   align-items: center;
@@ -275,6 +281,7 @@ $bullet-size: 6px;
   }
 }
 
+
 @mixin modalForm {
   display: flex;
   flex-direction: column;
@@ -408,5 +415,13 @@ $active-indicator-width: 4px;
   font-weight: 400;
   font-size: 12px;
   line-height: 18px;
+  color: #f5f6fa;
+}
+
+@mixin regular-10 {
+  @include font-base();
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 15px;
   color: #f5f6fa;
 }

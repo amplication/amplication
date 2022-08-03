@@ -474,7 +474,6 @@ export class BuildService {
                 newBuildId: build.id,
                 oldBuildId,
                 commit: {
-                  base: 'main',
                   head: `amplication-build-${build.id}`,
                   title: commitMessage,
                   body: `Amplication build # ${build.id}.
