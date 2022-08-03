@@ -39,12 +39,14 @@ export class AppController {
     EnvironmentVariables.instance.get(GENERATE_RESOURCE_TOPIC, true),
   )
   async receiveCodeGenRequest(@Payload() message: any) {
-    const gr: GenerateResource = message.value || {};
+    const generateResource: GenerateResource = message.value || {};
     try {
-      const path = await this.buildContextStorage.saveBuildContextSource(gr);
+      const path = await this.buildContextStorage.saveBuildContextSource(
+        generateResource,
+      );
       const runResponse = await this.buildService.runBuild(path);
       this.emitInitMessage(
-        gr.buildId,
+        generateResource.buildId,
         runResponse.build.arn,
         'Generating code',
       );
@@ -53,7 +55,7 @@ export class AppController {
         `Failed to run code build: message: ${message} error: ${error}`,
         { error, class: QueueService.name, message },
       );
-      this.emitFailureMessage(gr.buildId, error.message);
+      this.emitFailureMessage(generateResource.buildId, error.message);
     }
   }
 
