@@ -6,7 +6,8 @@ import {
   SelectMenuModal,
   Tooltip,
 } from "@amplication/design-system";
-import React, { useContext } from "react";
+import { useApolloClient } from "@apollo/client";
+import React, { useCallback, useContext } from "react";
 import * as models from "../models";
 import UserBadge from "../Components/UserBadge";
 import { AppContext } from "../context/appContext";
@@ -15,7 +16,8 @@ import "./WorkspaceHeader.scss";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { unsetToken } from "../authentication/authentication";
 
 const CLASS_NAME = "workspace-header";
 
@@ -27,6 +29,16 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setResource,
     resources,
   } = useContext(AppContext);
+  const apolloClient = useApolloClient();
+  const history = useHistory();
+
+  const handleSignOut = useCallback(() => {
+    /**@todo: sign out on server */
+    unsetToken();
+    apolloClient.clearStore();
+
+    history.replace("/login");
+  }, [history, apolloClient]);
 
   return (
     <div className={CLASS_NAME}>
@@ -148,6 +160,11 @@ const WorkspaceHeader: React.FC<{}> = () => {
         <a href="/user/profile">
           <UserBadge />
         </a>
+        <Button 
+          buttonStyle={EnumButtonStyle.Text}
+          icon="log_out_outline"
+          onClick={handleSignOut}
+        />
       </div>
     </div>
   );

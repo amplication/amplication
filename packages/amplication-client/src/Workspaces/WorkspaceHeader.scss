@@ -2,7 +2,7 @@
 
 $logo-header-width: 50px;
 $search-header-width: 52px;
-$user-header-width: 64px;
+$user-header-width: 90px; // 64px after remove signout
 $modal-menu-width: 220px;
 $modal-menu-top: 30px;
 
@@ -110,7 +110,7 @@ $modal-menu-top: 30px;
   &__user {
     width: $user-header-width;
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
     cursor: pointer;
   }
