@@ -16,7 +16,7 @@ const ResourceMenu: React.FC<{}> = () => {
   const { currentWorkspace, currentProject, currentResource } = useContext(
     AppContext
   );
-  console.log(currentWorkspace, currentProject, currentResource);
+
   return currentWorkspace && currentProject && currentResource ? (
     <div className={CLASS_NAME}>
       <MenuItem

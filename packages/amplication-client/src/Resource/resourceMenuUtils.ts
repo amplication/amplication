@@ -17,6 +17,14 @@ export const resourceMenuLayout: { [key: string]: string[] } = {
     "code",
     "settings",
   ],
+  [EnumResourceType.ProjectConfiguration]: [
+    "entities",
+    "roles",
+    "commits",
+    "github",
+    "code",
+    "settings",
+  ],
 };
 
 export const linksMap = {

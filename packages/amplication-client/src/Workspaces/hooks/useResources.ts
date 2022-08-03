@@ -48,15 +48,16 @@ const useResources = (
   });
 
   useEffect(() => {
-    if (!resourceMatch || !resources.length) return;
+    if (!resourceMatch || !resources.length || !projectConfigurationResource) return;
 
     const urlResource =
       resourceMatch && resourceMatch.params && resourceMatch.params.resource;
-    const resource = resources.find(
+    const resource = [...resources, projectConfigurationResource].find(
       (resource: models.Resource) => resource.id === urlResource
     );
+
     setCurrentResource(resource);
-  }, [resourceMatch, resources]);
+  }, [resourceMatch, resources, projectConfigurationResource]);
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
