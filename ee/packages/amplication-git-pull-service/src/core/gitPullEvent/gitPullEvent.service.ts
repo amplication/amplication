@@ -13,7 +13,7 @@ import { IGitPullEventRepository } from '../../contracts/interfaces/gitPullEvent
 import { IStorage } from '../../contracts/interfaces/storage.interface';
 import { IGitClient } from '../../contracts/interfaces/gitClient.interface';
 import { IGitHostProviderFactory } from '../../contracts/interfaces/gitHostProviderFactory.interface';
-import { DEFAULT_GITHUB_PULL_FOLDER } from 'src/constants';
+import { DEFAULT_GITHUB_PULL_FOLDER } from '../../constants';
 
 const ROOT_STORAGE_DIR = 'STORAGE_PATH';
 const PRISMA_SKIP_VALUE = 'MAX_SNAPSHOTS';

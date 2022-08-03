@@ -1,0 +1,1 @@
+# amplication-nest-logger-module
