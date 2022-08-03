@@ -19,7 +19,7 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Modal: React.FC<Props> = ({
+export const Modal: React.FC<Props> = ({
   onCloseEvent,
   open,
   fullScreen = false,
@@ -42,5 +42,3 @@ const Modal: React.FC<Props> = ({
     </Dialog>
   ) : null;
 };
-
-export default Modal;

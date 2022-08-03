@@ -155,3 +155,5 @@ export {
   TreeViewProps,
   TreeItemProps,
 } from "./components/TreeView/TreeView";
+
+export { Modal } from "./components/Modal/Modal";
