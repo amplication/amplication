@@ -48,7 +48,7 @@ export const linksMap = {
   settings: {
     title: "Settings",
     icon: "settings",
-    to: "/serviceSettings/update",
+    to: "/settings/update",
   },
 };
 
