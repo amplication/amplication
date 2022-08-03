@@ -12,8 +12,8 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { Roles } from 'src/decorators/roles.decorator';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { FindOneArgs } from 'src/dto';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Resource, Commit, Entity, User, Project } from 'src/models';
@@ -49,7 +49,7 @@ export class ResourceResolver {
 
   @Query(() => Resource, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async resource(@Args() args: FindOneArgs): Promise<Resource | null> {
     return this.resourceService.resource(args);
   }
@@ -58,7 +58,7 @@ export class ResourceResolver {
     nullable: false
   })
   @Roles('ORGANIZATION_ADMIN')
-  @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'where.project.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, 'where.project.id')
   async resources(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources(args);
   }
@@ -95,7 +95,7 @@ export class ResourceResolver {
   @Mutation(() => Resource, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(
-    AuthorizableResourceParameter.ProjectId,
+    AuthorizableOriginParameter.ProjectId,
     'data.project.connect.id'
   )
   async createResource(
@@ -108,7 +108,7 @@ export class ResourceResolver {
   @Mutation(() => Resource, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(
-    AuthorizableResourceParameter.ProjectId,
+    AuthorizableOriginParameter.ProjectId,
     'data.resource.project.connect.id'
   )
   async createResourceWithEntities(
@@ -121,7 +121,7 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async deleteResource(@Args() args: FindOneArgs): Promise<Resource | null> {
     return this.resourceService.deleteResource(args);
   }
@@ -129,7 +129,7 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async updateResource(
     @Args() args: UpdateOneResourceArgs
   ): Promise<Resource | null> {
@@ -140,11 +140,11 @@ export class ResourceResolver {
     nullable: true
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
   @InjectContextValue(
-    InjectableResourceParameter.UserId,
+    InjectableOriginParameter.UserId,
     'data.user.connect.id'
   )
   async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
@@ -155,11 +155,11 @@ export class ResourceResolver {
     nullable: true
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
   @InjectContextValue(
-    InjectableResourceParameter.UserId,
+    InjectableOriginParameter.UserId,
     'data.user.connect.id'
   )
   async discardPendingChanges(
@@ -172,7 +172,7 @@ export class ResourceResolver {
     nullable: false
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'where.resource.id'
   )
   async pendingChanges(

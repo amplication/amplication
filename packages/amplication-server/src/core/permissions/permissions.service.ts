@@ -57,7 +57,7 @@ export class PermissionsService {
       const matching = await this.prisma.project.count({
         where: {
           deletedAt: null,
-          id: resourceId,
+          id: originId,
           workspace: {
             id: workspace.id
           }
@@ -66,7 +66,7 @@ export class PermissionsService {
       return matching === 1;
     }
 
-    if (resourceType === AuthorizableResourceParameter.ResourceId) {
+    if (originType === AuthorizableOriginParameter.ResourceId) {
       const matching = await this.prisma.resource.count({
         where: {
           deletedAt: null,

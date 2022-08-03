@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseFilters } from '@nestjs/common';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import {
   CreateResourceRoleArgs,
   FindManyResourceRoleArgs,
@@ -20,7 +20,7 @@ export class ResourceRoleResolver {
   @Query(() => ResourceRole, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
   async resourceRole(
     @Args() args: FindOneResourceRoleArgs
   ): Promise<ResourceRole | null> {
@@ -31,7 +31,7 @@ export class ResourceRoleResolver {
     nullable: false
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'where.resource.id'
   )
   async resourceRoles(
@@ -44,7 +44,7 @@ export class ResourceRoleResolver {
     nullable: false
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
   async createResourceRole(
@@ -56,7 +56,7 @@ export class ResourceRoleResolver {
   @Mutation(() => ResourceRole, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceRoleId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceRoleId, 'where.id')
   async deleteResourceRole(
     @Args() args: DeleteResourceRoleArgs
   ): Promise<ResourceRole | null> {
@@ -66,7 +66,7 @@ export class ResourceRoleResolver {
   @Mutation(() => ResourceRole, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceRoleId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceRoleId, 'where.id')
   async updateResourceRole(
     @Args() args: UpdateOneResourceRoleArgs
   ): Promise<ResourceRole | null> {
