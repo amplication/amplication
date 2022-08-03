@@ -41,12 +41,16 @@ export const ActionRoleList = ({
     [setSelectedRoleList, selectedRoleList, debouncedOnChange]
   );
 
-  return availableRoles.map((role) => (
-    <ActionRole
-      key={role.id}
-      role={role}
-      onClick={handleRoleSelect}
-      selected={selectedRoleList.has(role.id)}
-    />
-  ));
+  return (
+    <>
+      {availableRoles.map((role) => (
+        <ActionRole
+          key={role.id}
+          role={role}
+          onClick={handleRoleSelect}
+          selected={selectedRoleList.has(role.id)}
+        />
+      ))}
+    </>
+  );
 };

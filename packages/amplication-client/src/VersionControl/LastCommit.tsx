@@ -12,9 +12,9 @@ import {
 import { ClickableId } from "../Components/ClickableId";
 import BuildSummary from "./BuildSummary";
 import BuildHeader from "./BuildHeader";
-import PendingChangesContext from "./PendingChangesContext";
 import "./LastCommit.scss";
 import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   commits: models.Commit[];
@@ -27,7 +27,7 @@ type Props = {
 const CLASS_NAME = "last-commit";
 
 const LastCommit = ({ resourceId }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const { commitRunning, pendingChangesIsError, } = useContext(AppContext);
   const [error, setError] = useState<Error>();
 
   const { data, loading, error: errorLoading, refetch } = useQuery<TData>(
@@ -44,17 +44,17 @@ const LastCommit = ({ resourceId }: Props) => {
     return () => {
       refetch();
     };
-  }, [pendingChangesContext.isError, refetch]);
+  }, [pendingChangesIsError, refetch]);
 
   const lastCommit = useMemo(() => {
     if (loading || isEmpty(data?.commits)) return null;
-    const [last] = data?.commits;
+    const [last] = data?.commits || [];
     return last;
   }, [loading, data]);
 
   const build = useMemo(() => {
     if (!lastCommit) return null;
-    const [last] = lastCommit.builds;
+    const [last] = lastCommit.builds || [];
     return last;
   }, [lastCommit]);
 
@@ -76,7 +76,7 @@ const LastCommit = ({ resourceId }: Props) => {
     />
   );
 
-  const generating = pendingChangesContext.commitRunning;
+  const generating = commitRunning;
 
   return (
     <div
@@ -106,7 +106,7 @@ const LastCommit = ({ resourceId }: Props) => {
           <SkeletonWrapper showSkeleton={generating}>
             <BuildHeader
               build={build}
-              isError={pendingChangesContext.isError}
+              isError={pendingChangesIsError}
             />
           </SkeletonWrapper>
 
@@ -143,11 +143,11 @@ export const GET_LAST_COMMIT = gql`
         }
       }
       changes {
-        resourceId
+        originId
         action
-        resourceType
+        originType
         versionNumber
-        resource {
+        origin {
           __typename
           ... on Entity {
             id

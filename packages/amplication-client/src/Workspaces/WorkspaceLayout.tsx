@@ -1,7 +1,6 @@
 import React, { lazy } from "react";
 import { match } from "react-router-dom";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
 import { isMobileOnly } from "react-device-detect";
 import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
@@ -14,6 +13,9 @@ import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
 import useResources from "./hooks/useResources";
 import { AppRouteProps } from "../routes/routesUtil";
+import usePendingChanges, { PendingChangeItem } from "./hooks/usePendingChanges";
+import ProjectEmptyState from "../Project/ProjectEmptyState";
+import PendingChanges from "../VersionControl/PendingChanges";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -50,8 +52,20 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     loadingResources,
     errorResources,
     currentResource,
-    setResource
+    setResource,
   } = useResources(currentWorkspace, currentProject);
+
+  const {
+    pendingChanges,
+    commitRunning,
+    pendingChangesIsError,
+    addEntity,
+    addBlock,
+    addChange,
+    resetPendingChanges,
+    setCommitRunning,
+    setPendingChangesError,
+  } = usePendingChanges(currentResource);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -72,6 +86,15 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         createWorkspace,
         createNewWorkspaceError,
         loadingCreateNewWorkspace,
+        pendingChanges,
+        commitRunning,
+        pendingChangesIsError,
+        addEntity,
+        addBlock,
+        addChange,
+        resetPendingChanges,
+        setCommitRunning,
+        setPendingChangesError,
       }}
     >
       {isMobileOnly ? (
@@ -81,9 +104,11 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
           <WorkspaceHeader />
           <CompleteInvitation />
           <div className={`${moduleClass}__page_content`}>
-            <div className={`${moduleClass}__main_content`}>{innerRoutes}</div>
+            <div className={`${moduleClass}__main_content`}>
+              {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+            </div>
             <div className={`${moduleClass}__changes_menu`}>
-              pending changes
+              { currentResource ? <PendingChanges resourceId={currentResource.id} /> : null}
             </div>
           </div>
           <WorkspaceFooter />

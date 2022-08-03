@@ -375,7 +375,7 @@ export class ResourceService {
   }
 
   /**
-   * Gets all the resources changed since the last commit in the resource
+   * Gets all the origins changed since the last commit in the resource
    */
   async getPendingChanges(
     args: FindPendingChangesArgs,
@@ -458,15 +458,13 @@ export class ResourceService {
             },
             entity: {
               connect: {
-                id: change.resourceId
+                id: change.originId
               }
             }
           }
         });
 
-        const releasePromise = this.entityService.releaseLock(
-          change.resourceId
-        );
+        const releasePromise = this.entityService.releaseLock(change.originId);
 
         return [
           versionPromise.then(() => null),
@@ -486,13 +484,13 @@ export class ResourceService {
             },
             block: {
               connect: {
-                id: change.resourceId
+                id: change.originId
               }
             }
           }
         });
 
-        const releasePromise = this.blockService.releaseLock(change.resourceId);
+        const releasePromise = this.blockService.releaseLock(change.originId);
 
         return [
           versionPromise.then(() => null),
@@ -570,13 +568,10 @@ export class ResourceService {
     }
 
     const entityPromises = changedEntities.map(change => {
-      return this.entityService.discardPendingChanges(
-        change.resourceId,
-        userId
-      );
+      return this.entityService.discardPendingChanges(change.originId, userId);
     });
     const blockPromises = changedBlocks.map(change => {
-      return this.blockService.discardPendingChanges(change.resourceId, userId);
+      return this.blockService.discardPendingChanges(change.originId, userId);
     });
 
     await Promise.all(blockPromises);

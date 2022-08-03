@@ -12,7 +12,6 @@ import {
   generatePluralDisplayName,
   generateSingularDisplayName,
 } from "../Components/PluralDisplayNameField";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
@@ -54,14 +53,13 @@ const keyMap = {
 
 const NewEntity = ({ resourceId }: Props) => {
   const { trackEvent } = useTracking();
-  const pendingChangesContext = useContext(PendingChangesContext);
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
 
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(data.createOneEntity.id);
+        addEntity(data.createOneEntity.id);
         trackEvent({
           eventName: "createEntity",
           entityName: data.createOneEntity.displayName,

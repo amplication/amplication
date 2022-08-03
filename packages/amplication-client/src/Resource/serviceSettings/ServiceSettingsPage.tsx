@@ -1,27 +1,18 @@
-import React from "react";
-import { match, Switch } from "react-router-dom";
+import React, { useContext } from "react";
+import { match } from "react-router-dom";
+import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
 import PageContent from "../../Layout/PageContent";
-import RouteWithAnalytics from "../../Layout/RouteWithAnalytics";
-import useNavigationTabs from "../../Layout/UseNavigationTabs";
-import { ApiTokenList } from "../../Settings/ApiTokenList";
-import ApplicationAuthSettingForm from "../ApplicationAuthSettingForm";
-import ApplicationDatabaseSettingsForms from "../ApplicationDatabaseSettingsForms";
-import ResourceForm from "../ResourceForm";
-import GenerationSettingsForm from "./GenerationSettingsForm";
-import DirectoriesSettingsForm from "./DirectoriesSettingsForm";
+import { AppRouteProps } from "../../routes/routesUtil";
 
-type Props = {
+type Props = AppRouteProps & {
   match: match<{ resource: string }>;
 };
 
-const NAVIGATION_KEY = "APP_SETTINGS";
-
-function ServiceSettingsPage({ match }: Props) {
+const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
-  const pageTitle = "App settings";
-
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
+  const pageTitle = "Resource settings";
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   return (
     <PageContent
@@ -30,7 +21,7 @@ function ServiceSettingsPage({ match }: Props) {
         <div>
           <div>
             <InnerTabLink
-              to={`/${resource}/serviceSettings/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/update`}
               icon="settings"
             >
               General
@@ -38,7 +29,7 @@ function ServiceSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${resource}/serviceSettings/generationSettings/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/generationSettings/update`}
               icon="settings"
             >
               APIs & Admin UI
@@ -46,7 +37,7 @@ function ServiceSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${resource}/serviceSettings/directories/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/directories/update`}
               icon="settings"
             >
               Base Directories
@@ -54,7 +45,7 @@ function ServiceSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${resource}/serviceSettings/db/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/db/update`}
               icon="settings"
             >
               Database
@@ -62,7 +53,7 @@ function ServiceSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${resource}/serviceSettings/auth/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/auth/update`}
               icon="settings"
             >
               Authentication
@@ -70,7 +61,7 @@ function ServiceSettingsPage({ match }: Props) {
           </div>
           <div>
             <InnerTabLink
-              to={`/${resource}/serviceSettings/api-tokens`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/api-tokens`}
               icon="id"
             >
               API Tokens
@@ -79,35 +70,10 @@ function ServiceSettingsPage({ match }: Props) {
         </div>
       }
     >
-      <Switch>
-        <RouteWithAnalytics
-          path="/:resource/serviceSettings/api-tokens"
-          component={ApiTokenList}
-        />
-        <RouteWithAnalytics
-          path="/:resource/serviceSettings/update"
-          component={ResourceForm}
-        />
-        <RouteWithAnalytics
-          path="/:resource/serviceSettings/db/update"
-          component={ApplicationDatabaseSettingsForms}
-        />
-        <RouteWithAnalytics
-          path="/:resource/serviceSettings/auth/update"
-          component={ApplicationAuthSettingForm}
-        />
-        <RouteWithAnalytics
-          path="/:resource/serviceSettings/generationSettings/update"
-          component={GenerationSettingsForm}
-        />
-        <RouteWithAnalytics
-          path="/:resource/serviceSettings/directories/update"
-          component={DirectoriesSettingsForm}
-        />
-      </Switch>
+      {innerRoutes}
       {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}
     </PageContent>
   );
-}
+};
 
 export default ServiceSettingsPage;

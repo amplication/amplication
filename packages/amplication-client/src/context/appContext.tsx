@@ -1,6 +1,7 @@
 import { ApolloError } from "@apollo/client";
 import React from "react";
 import * as models from "../models";
+import { PendingChangeItem } from "../Workspaces/hooks/usePendingChanges";
 import { CreateWorkspaceType } from "../Workspaces/hooks/workspace";
 
 export interface AppContextInterface {
@@ -18,8 +19,20 @@ export interface AppContextInterface {
   handleSearchChange: (searchResults: string) => void;
   loadingResources: boolean;
   errorResources: Error | undefined;
-  currentResource: models.Resource | undefined
-  setResource: (resource: models.Resource) => void
+  currentResource: models.Resource | undefined;
+  setResource: (resource: models.Resource) => void;
+  pendingChanges: PendingChangeItem[];
+  commitRunning: boolean;
+  pendingChangesIsError: boolean;
+  addEntity: (entityId: string) => void;
+  addBlock: (blockId: string) => void;
+  addChange: (
+    resourceId: string,
+    resourceType: models.EnumPendingChangeResourceType
+  ) => void;
+  resetPendingChanges: () => void;
+  setCommitRunning: (isRunning: boolean) => void;
+  setPendingChangesError: (onError: boolean) => void;
 }
 
 const initialContext: AppContextInterface = {
@@ -38,7 +51,16 @@ const initialContext: AppContextInterface = {
   loadingResources: true,
   errorResources: undefined,
   currentResource: undefined,
-  setResource: () => {}
+  setResource: () => {},
+  pendingChanges: [],
+  commitRunning: false,
+  pendingChangesIsError: false,
+  addEntity: () => {},
+  addBlock: () => {},
+  addChange: () => {},
+  resetPendingChanges: () => {},
+  setCommitRunning: () => {},
+  setPendingChangesError: () => {}
 };
 
 export const AppContext = React.createContext<AppContextInterface>(

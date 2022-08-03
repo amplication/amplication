@@ -1,13 +1,12 @@
 import React, { useCallback, useContext } from "react";
 import { Snackbar } from "@amplication/design-system";
 import * as models from "../models";
-
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./DiscardChanges.scss";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   resourceId: string;
@@ -18,20 +17,19 @@ type Props = {
 const CLASS_NAME = "discard-changes";
 
 const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+  const { pendingChanges, resetPendingChanges } = useContext(AppContext);
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
       if (!data) return;
 
       //remove entities from cache to reflect discarded changes
-      for (var change of pendingChangesContext.pendingChanges) {
+      for (var change of pendingChanges) {
         if (
-          change.resourceType === models.EnumPendingChangeResourceType.Entity
+          change.originType === models.EnumPendingChangeOriginType.Entity
         ) {
           cache.evict({
             id: cache.identify({
-              id: change.resourceId,
+              id: change.originId,
               __typename: "Entity",
             }),
           });
@@ -39,7 +37,7 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
           /**@todo: handle other types of blocks */
           cache.evict({
             id: cache.identify({
-              id: change.resourceId,
+              id: change.originId,
               __typename: "ServiceSettings",
             }),
           });
@@ -47,7 +45,7 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
       }
     },
     onCompleted: (data) => {
-      pendingChangesContext.reset();
+      resetPendingChanges();
       onComplete();
     },
     refetchQueries: [

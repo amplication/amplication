@@ -13,13 +13,13 @@ import { formatError } from "../../util/error";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 import { match } from "react-router-dom";
-import PendingChangesContext from "../../VersionControl/PendingChangesContext";
 import "./GenerationSettingsForm.scss";
 import useSettingsHook from "../useSettingsHook";
 import {
   GET_RESOURCE_SETTINGS,
   UPDATE_SERVICE_SETTINGS,
 } from "./GenerationSettingsForm";
+import { AppContext } from "../../context/appContext";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -41,16 +41,14 @@ function GenerationSettingsForm({ match }: Props) {
       id: resourceId,
     },
   });
-
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+  const { addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
   const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
     UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
-        pendingChangesContext.addBlock(data.updateServiceSettings.id);
+        addBlock(data.updateServiceSettings.id);
       },
     }
   );

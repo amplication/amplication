@@ -37,7 +37,7 @@ import {
 } from '../environment/environment.service';
 import {
   EnumPendingChangeAction,
-  EnumPendingChangeResourceType,
+  EnumPendingChangeOriginType,
   ResourceCreateInput
 } from './dto';
 import { PendingChange } from './dto/PendingChange';
@@ -158,19 +158,19 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {
-  resourceId: EXAMPLE_ENTITY_ID,
+  originId: EXAMPLE_ENTITY_ID,
   action: EnumPendingChangeAction.Create,
-  resourceType: EnumPendingChangeResourceType.Entity,
+  originType: EnumPendingChangeOriginType.Entity,
   versionNumber: 1,
-  resource: EXAMPLE_ENTITY
+  origin: EXAMPLE_ENTITY
 };
 
 const EXAMPLE_CHANGED_BLOCK: PendingChange = {
-  resourceId: EXAMPLE_BLOCK_ID,
+  originId: EXAMPLE_BLOCK_ID,
   action: EnumPendingChangeAction.Create,
-  resourceType: EnumPendingChangeResourceType.Block,
+  originType: EnumPendingChangeOriginType.Block,
   versionNumber: 1,
-  resource: EXAMPLE_BLOCK
+  origin: EXAMPLE_BLOCK
 };
 
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';

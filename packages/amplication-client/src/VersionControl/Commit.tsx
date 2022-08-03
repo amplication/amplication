@@ -2,7 +2,6 @@ import React, { useContext, useCallback } from "react";
 import { Formik, Form } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
-import PendingChangesContext from "./PendingChangesContext";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { GET_LAST_COMMIT } from "./LastCommit";
@@ -15,6 +14,7 @@ import {
   GET_BUILDS_COMMIT,
 } from "../Resource/code-view/CodeViewExplorer";
 import { SortOrder } from "../models";
+import { AppContext } from "../context/appContext";
 
 type TCommit = {
   message: string;
@@ -35,16 +35,20 @@ const keyMap = {
 };
 
 const Commit = ({ resourceId, noChanges }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const {
+    setCommitRunning,
+    resetPendingChanges,
+    setPendingChangesError,
+  } = useContext(AppContext);
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onError: () => {
-      pendingChangesContext.setCommitRunning(false);
-      pendingChangesContext.setIsError(true);
-      pendingChangesContext.reset();
+      setCommitRunning(false);
+      setPendingChangesError(true);
+      resetPendingChanges();
     },
     onCompleted: () => {
-      pendingChangesContext.setCommitRunning(false);
-      pendingChangesContext.setIsError(false);
+      setCommitRunning(false);
+      setPendingChangesError(false);
     },
     refetchQueries: [
       {
@@ -73,7 +77,7 @@ const Commit = ({ resourceId, noChanges }: Props) => {
 
   const handleSubmit = useCallback(
     (data, { resetForm }) => {
-      pendingChangesContext.setCommitRunning(true);
+      setCommitRunning(true);
       commit({
         variables: {
           message: data.message,
@@ -81,10 +85,16 @@ const Commit = ({ resourceId, noChanges }: Props) => {
         },
       }).catch(console.error);
       resetForm(INITIAL_VALUES);
-      pendingChangesContext.setIsError(false);
-      pendingChangesContext.reset();
+      setPendingChangesError(false);
+      resetPendingChanges();
     },
-    [resourceId, commit, pendingChangesContext]
+    [
+      setCommitRunning,
+      commit,
+      resourceId,
+      setPendingChangesError,
+      resetPendingChanges,
+    ]
   );
 
   const errorMessage = formatError(error);

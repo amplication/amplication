@@ -2,7 +2,6 @@ import React, { useCallback, useContext } from "react";
 import { Switch, match } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Snackbar } from "@amplication/design-system";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
@@ -34,8 +33,7 @@ type UpdateData = {
 const Entity = ({ match }: Props) => {
   const { entityId, resource } = match.params;
   const { trackEvent } = useTracking();
-  const pendingChangesContext = useContext(PendingChangesContext);
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
@@ -51,7 +49,7 @@ const Entity = ({ match }: Props) => {
           eventName: "updateEntity",
           entityName: data.updateEntity.displayName,
         });
-        pendingChangesContext.addEntity(data.updateEntity.id);
+        addEntity(data.updateEntity.id);
       },
     }
   );

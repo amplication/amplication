@@ -3,7 +3,7 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { FindOneArgs } from 'src/dto';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { User } from 'src/models';
 import { ProjectConfigurationSettings } from './dto/ProjectConfigurationSettings';
@@ -16,7 +16,7 @@ export class ProjectConfigurationSettingsResolver {
   constructor(private readonly service: ProjectConfigurationSettingsService) {}
 
   @Mutation(() => ProjectConfigurationSettings, { nullable: true })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async updateProjectConfigurationSettings(
     @Args() args: UpdateProjectConfigurationSettingsArgs,
     @UserEntity() user: User
@@ -25,7 +25,7 @@ export class ProjectConfigurationSettingsResolver {
   }
 
   @Query(() => ProjectConfigurationSettings, { nullable: false })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async projectConfigurationSettings(
     @Args() args: FindOneArgs
   ): Promise<ProjectConfigurationSettings> {

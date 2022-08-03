@@ -46,7 +46,7 @@ export const CommitListItem = ({ commit, resourceId }: Props) => {
           className={`${CLASS_NAME}__title`}
           id={commit.id}
           label=""
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/commit/${commit.id}`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/commits/${commit.id}`}
           eventData={{
             eventName: "commitListCommitIdClick",
           }}
@@ -56,7 +56,7 @@ export const CommitListItem = ({ commit, resourceId }: Props) => {
           <ClickableId
             className={`${CLASS_NAME}__build`}
             label="Build ID"
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/builds/${build.id}`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/commits/builds/${build.id}`}
             id={build.id}
             onClick={handleBuildLinkClick}
             eventData={{

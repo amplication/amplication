@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { GET_RESOURCES } from "../queries/resourcesQueries";
 
@@ -13,13 +13,18 @@ const useResources = (
   currentProject: models.Project | undefined
 ) => {
   const history = useHistory();
-  const resourceMatch: { params: { resource: string } } | null = useRouteMatch<{
+  const resourceMatch:
+    | (match & {
+        params: { workspace: string; project: string; resource: string };
+      })
+    | null = useRouteMatch<{
+    workspace: string;
+    project: string;
     resource: string;
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
   );
   const [currentResource, setCurrentResource] = useState<models.Resource>();
-  console.log(resourceMatch); // will be using next issue
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [
     projectConfigurationResource,
@@ -41,6 +46,19 @@ const useResources = (
     },
     skip: !currentProject,
   });
+
+  useEffect(() => {
+    if (!resourceMatch || !resources.length || !projectConfigurationResource)
+      return;
+
+    const urlResource =
+      resourceMatch && resourceMatch.params && resourceMatch.params.resource;
+    const resource = [...resources, projectConfigurationResource].find(
+      (resource: models.Resource) => resource.id === urlResource
+    );
+
+    setCurrentResource(resource);
+  }, [resourceMatch, resources, projectConfigurationResource]);
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;

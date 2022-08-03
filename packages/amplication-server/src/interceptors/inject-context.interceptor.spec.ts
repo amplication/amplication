@@ -6,12 +6,12 @@ import {
   INJECT_CONTEXT_VALUE
 } from './inject-context.interceptor';
 import { Reflector } from '@nestjs/core';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 
 const EXAMPLE_HANDLER = () => null;
 const EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS: InjectContextValueParameters = {
   parameterPath: 'data.workspace.connect.id',
-  parameterType: InjectableResourceParameter.WorkspaceId
+  parameterType: InjectableOriginParameter.WorkspaceId
 };
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 

@@ -17,6 +17,16 @@ export const GET_RESOURCES = gql`
         version
         createdAt
         status
+        commit {
+          user {
+            account {
+              id
+              lastName
+              firstName
+              email
+            }
+          }
+        }
         action {
           id
           createdAt

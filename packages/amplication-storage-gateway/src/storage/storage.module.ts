@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { QueueModule } from "src/queue/queue.module";
+import { QueueModule } from "../queue/queue.module";
 import { PaginationModule } from "../pagination/pagination.module";
 import { StorageController } from "./storage.controller";
 import { StorageResolver } from "./storage.resolver";
