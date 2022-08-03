@@ -60,7 +60,7 @@
     "rollup": "2.63.0",
     "rollup-plugin-copy": "3.4.0",
     "rollup-plugin-postcss": "3.1.8",
-    "rollup-plugin-typescript2": "0.30.0",
+    "rollup-plugin-typescript2": "0.32.1",
     "sass": "1.35.2",
     "sass-loader": "12.6.0",
     "style-loader": "3.3.1",
