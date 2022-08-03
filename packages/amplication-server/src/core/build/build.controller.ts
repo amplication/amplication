@@ -35,7 +35,7 @@ export class BuildController {
     private readonly buildService: BuildService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    private readonly actionService: ActionService,
+    private readonly actionService: ActionService
   ) {}
 
   @Get(`/:id.zip`)
@@ -88,16 +88,28 @@ export class BuildController {
           await this.buildService.onBuildInit(buildId, runId);
           break;
         case 'IN_PROGRESS':
-          await this.buildService.updateStateByRunId(runId, EnumBuildStatus.InProgress);
+          await this.buildService.updateStateByRunId(
+            runId,
+            EnumBuildStatus.InProgress
+          );
           break;
         case 'SUCCEEDED':
-          await this.buildService.updateStateByRunId(runId, EnumBuildStatus.Succeeded);
+          await this.buildService.updateStateByRunId(
+            runId,
+            EnumBuildStatus.Succeeded
+          );
           break;
         case 'FAILED':
-          await this.buildService.updateStateByRunId(runId, EnumBuildStatus.Failed);
+          await this.buildService.updateStateByRunId(
+            runId,
+            EnumBuildStatus.Failed
+          );
           break;
         case 'STOPPED':
-          await this.buildService.updateStateByRunId(runId, EnumBuildStatus.Stopped);
+          await this.buildService.updateStateByRunId(
+            runId,
+            EnumBuildStatus.Stopped
+          );
           break;
       }
 

@@ -9,7 +9,7 @@ import {
   GENERATE_STEP_MESSAGE,
   GENERATE_STEP_NAME,
   BuildService,
-  ENTITIES_INCLUDE,
+  ENTITIES_INCLUDE
 } from './build.service';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { EntityService } from '..';
