@@ -18,7 +18,7 @@
     "@mui/base": "5.0.0-alpha.64",
     "@mui/lab": "5.0.0-alpha.79",
     "@mui/material": "5.2.7",
-    "@mui/system": "5.2.8",
+    "@mui/system": "5.9.3",
     "@primer/octicons-react": "16.2.0",
     "@primer/react": "34.1.0",
     "classnames": "2.3.1",
