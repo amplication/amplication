@@ -21,7 +21,7 @@ const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
         <div>
           <div>
             <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/resourceSettings/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/update`}
               icon="settings"
             >
               General
@@ -29,7 +29,7 @@ const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
           </div>
           <div>
             <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/resourceSettings/generationSettings/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/generationSettings/update`}
               icon="settings"
             >
               APIs & Admin UI
@@ -37,7 +37,7 @@ const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
           </div>
           <div>
             <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/resourceSettings/directories/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/directories/update`}
               icon="settings"
             >
               Base Directories
@@ -45,7 +45,7 @@ const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
           </div>
           <div>
             <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/resourceSettings/db/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/db/update`}
               icon="settings"
             >
               Database
@@ -53,7 +53,7 @@ const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
           </div>
           <div>
             <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/resourceSettings/auth/update`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/auth/update`}
               icon="settings"
             >
               Authentication
@@ -61,7 +61,7 @@ const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
           </div>
           <div>
             <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/resourceSettings/api-tokens`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/api-tokens`}
               icon="id"
             >
               API Tokens

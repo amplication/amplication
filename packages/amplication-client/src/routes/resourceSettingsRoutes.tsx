@@ -3,7 +3,7 @@ import { lazy } from "react";
 const resourceSettingsRoutes = [
   {
     path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/resourceSettings/update",
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/update",
     Component: lazy(() => import("../Resource/ResourceForm")),
     moduleName: "",
     routeTrackType: "",
@@ -12,7 +12,7 @@ const resourceSettingsRoutes = [
   },
   {
     path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/resourceSettings/generationSettings/update",
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/generationSettings/update",
     Component: lazy(
       () => import("../Resource/serviceSettings/GenerationSettingsForm")
     ),
@@ -23,7 +23,7 @@ const resourceSettingsRoutes = [
   },
   {
     path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/resourceSettings/directories/update",
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/directories/update",
     Component: lazy(
       () => import("../Resource/serviceSettings/DirectoriesSettingsForm")
     ),
@@ -34,7 +34,7 @@ const resourceSettingsRoutes = [
   },
   {
     path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/resourceSettings/db/update",
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/db/update",
     Component: lazy(
       () => import("../Resource/ApplicationDatabaseSettingsForms")
     ),
@@ -45,7 +45,7 @@ const resourceSettingsRoutes = [
   },
   {
     path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/resourceSettings/auth/update",
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/auth/update",
     Component: lazy(() => import("../Resource/ApplicationAuthSettingForm")),
     moduleName: "",
     routeTrackType: "",
@@ -54,7 +54,7 @@ const resourceSettingsRoutes = [
   },
   {
     path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/resourceSettings/api-tokens",
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/api-tokens",
     Component: lazy(() => import("../Settings/ApiTokenList")),
     moduleName: "",
     routeTrackType: "",

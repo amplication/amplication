@@ -48,7 +48,7 @@ export const linksMap = {
   settings: {
     title: "Settings",
     icon: "settings",
-    to: "/resourceSettings/update",
+    to: "/settings/update",
   },
 };
 
