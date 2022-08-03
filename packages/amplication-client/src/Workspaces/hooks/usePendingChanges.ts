@@ -12,7 +12,8 @@ export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-const usePendingChanges = (currentResource: models.Resource | undefined) => { // TODO: replace currenResource with currentProject
+const usePendingChanges = (currentResource: models.Resource | undefined) => {
+  // TODO: replace currenResource with currentProject
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -26,7 +27,8 @@ const usePendingChanges = (currentResource: models.Resource | undefined) => { //
   });
 
   useEffect(() => {
-    if (!pendingChangesData || !pendingChangesData.pendingChanges.length) return;
+    if (!pendingChangesData || !pendingChangesData.pendingChanges.length)
+      return;
 
     setPendingChanges(pendingChangesData.pendingChanges);
   }, [pendingChangesData, setPendingChanges]);
@@ -99,8 +101,8 @@ const usePendingChanges = (currentResource: models.Resource | undefined) => { //
     addChange,
     resetPendingChanges,
     setCommitRunning: setCommitRunningCallback,
-    setPendingChangesError
-  }
-}
+    setPendingChangesError,
+  };
+};
 
-export default usePendingChanges
+export default usePendingChanges;
