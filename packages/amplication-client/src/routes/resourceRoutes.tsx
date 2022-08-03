@@ -62,13 +62,14 @@ const resourceRoutes = [
     routes: [],
   },
   {
-    path: "/:workspace/:project/:resource/appSettings",
+    path:
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/resourceSettings",
     Component: lazy(
       () => import("../Resource/serviceSettings/ServiceSettingsPage")
     ),
     moduleName: "",
     routeTrackType: "",
-    exactPath: true,
+    exactPath: false,
     routes: resourceSettingsRoutes,
   },
 ];
