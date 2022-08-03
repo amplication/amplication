@@ -209,7 +209,7 @@ jobs:
             ~/.npm
             node_modules
             */*/node_modules
-          key: PUSH-${{ runner.os }}-${{matrix.node-version}}-lerna5-${{ hashFiles(format('package-lock.json')) }}
+          key: PUSH-${{ runner.os }}-${{matrix.node-version}}-lerna5-${{ hashFiles('**/package-lock.json')) }}
           restore-keys: |
             PUSH-${{ runner.os }}-${{matrix.node-version}}-
             PUSH-${{ runner.os }}-${{matrix.node-version}}-
