@@ -25,6 +25,7 @@ import {
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { FindOneArgs } from 'src/dto';
 import { CompleteInvitationArgs } from '../workspace/dto';
+import { ProjectService } from '../project/project.service';
 
 export type AuthUser = User & {
   account: Account;
@@ -55,8 +56,9 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
     private readonly userService: UserService,
-    @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService: WorkspaceService,
+    @Inject(forwardRef(() => ProjectService))
+    private readonly projectService: ProjectService
   ) {}
 
   async createGitHubUser(
@@ -68,16 +70,12 @@ export class AuthService {
         email,
         firstName: email,
         lastName: '',
-        /** @todo store null */
         password: '',
         githubId: payload.id
       }
     });
 
-    const workspace = await this.createWorkspace(payload.id, account);
-    const [user] = workspace.users;
-
-    await this.accountService.setCurrentUser(account.id, user.id);
+    const user = await this.bootstrapUser(account, payload.id);
 
     return user;
   }
@@ -110,34 +108,37 @@ export class AuthService {
           firstName: payload.firstName,
           lastName: payload.lastName,
           password: hashedPassword
-          //role: 'USER'
         }
       });
-
-      const workspace = await this.createWorkspace(
-        payload.workspaceName,
-        account
-      );
-
-      await this.prismaService.project.create({
-        data: {
-          name: 'My project',
-          workspace: {
-            connect: {
-              id: workspace.id
-            }
-          }
-        }
-      });
-
-      const [user] = workspace.users;
-
-      await this.accountService.setCurrentUser(account.id, user.id);
+      const user = await this.bootstrapUser(account, payload.workspaceName);
 
       return this.prepareToken(user);
     } catch (error) {
       throw new ConflictException(error);
     }
+  }
+
+  async bootstrapUser(
+    account: Account,
+    workspaceName: string
+  ): Promise<AuthUser> {
+    const workspace = await this.createWorkspace(workspaceName, account);
+
+    const [user] = workspace.users;
+
+    await this.accountService.setCurrentUser(account.id, user.id);
+
+    await this.projectService.createProject(
+      {
+        data: {
+          name: 'My project',
+          workspace: { connect: { id: workspace.id } }
+        }
+      },
+      user.id
+    );
+
+    return user;
   }
 
   async login(email: string, password: string): Promise<string> {
