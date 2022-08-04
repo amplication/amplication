@@ -30,7 +30,7 @@
     "skeleton-screen-css": "1.0.1"
   },
   "devDependencies": {
-    "@babel/core": "7.17.9",
+    "@babel/core": "7.18.10",
     "@storybook/addon-actions": "6.4.22",
     "@storybook/addon-essentials": "6.4.22",
     "@storybook/addon-interactions": "6.4.22",
