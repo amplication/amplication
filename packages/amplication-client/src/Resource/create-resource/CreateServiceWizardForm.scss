@@ -8,6 +8,7 @@ $max-width: 700px;
   align-items: center;
   justify-content: center;
   height: 100%;
+  color: var(--black100);
 
   &__generationSettings {
     width: 180px;
@@ -43,5 +44,4 @@ $max-width: 700px;
   .toggle-field label .input-label-value {
     font-size: var(--normal-font-size);
   }
-
 }
