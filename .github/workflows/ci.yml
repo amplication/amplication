@@ -9,7 +9,7 @@ on:
       - "renovate.json"
       - ".all-contributorsrc"
   pull_request_target:
-    branches: ["master", "release/*"]
+    branches: ["master", "release/*", "dependabot"]
     types: [opened, reopened]
     paths-ignore:
       - "**.md"
@@ -81,13 +81,6 @@ jobs:
 
       - name: Get the output time
         run: echo "The step output ${{ steps.service-hashes.outputs.service_hashes }}"
-
-      - name: Discord notification
-        if: failure()
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
 
   docker-build:
     runs-on: ubuntu-20.04
@@ -180,13 +173,6 @@ jobs:
           export MANIFEST=$(aws ecr batch-get-image --repository-name $REPOSITORY_NAME --image-ids imageTag=$IMAGE_HASH --output json | jq --raw-output --join-output '.images[0].imageManifest')
           echo "MANIFEST: $MANIFEST"
           sh .github/workflows/scripts/ecr_retag.sh
-
-      - name: Discord notification
-        if: failure()
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ env.BRANCH_NAME }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"}]}]'
   tests:
     runs-on: ubuntu-20.04
     needs: [changes]
@@ -234,9 +220,3 @@ jobs:
       - name: Run tests
         id: test
         run: lerna run --scope=${{matrix.package}} --loglevel=silent test
-      - name: Discord notification
-        if: failure()
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Push Validation Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","fields":[{"name":"Package","value":"${{matrix.package}}"},{"name":"Commiter","value":"${{ github.event.pusher.name }}"},{"name":"Commit","value":"${{ github.event.head_commit.id }}"},{"name":"Install","value":"${{ steps.install.outcome }}","inline":true},{"name":"Build","value":"${{ steps.build.outcome }}","inline":true},{"name":"Test","value":"${{ steps.test.outcome }}","inline":true},{"name":"Format","value":"${{ steps.format.outcome }}","inline":true},{"name":"Lint","value":"${{ steps.lint.outcome }}","inline":true}]}]'
