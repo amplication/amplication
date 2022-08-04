@@ -101,21 +101,17 @@ export class AuthService {
       payload.password
     );
 
-    try {
-      const account = await this.accountService.createAccount({
-        data: {
-          email: payload.email,
-          firstName: payload.firstName,
-          lastName: payload.lastName,
-          password: hashedPassword
-        }
-      });
-      const user = await this.bootstrapUser(account, payload.workspaceName);
+    const account = await this.accountService.createAccount({
+      data: {
+        email: payload.email,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        password: hashedPassword
+      }
+    });
+    const user = await this.bootstrapUser(account, payload.workspaceName);
 
-      return this.prepareToken(user);
-    } catch (error) {
-      throw new ConflictException(error);
-    }
+    return this.prepareToken(user);
   }
 
   private async bootstrapUser(
