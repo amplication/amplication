@@ -49,7 +49,7 @@
   "types": "lib/index.d.ts",
   "dependencies": {
     "@apollo/client": "3.3.8",
-    "@oclif/command": "1.8.0",
+    "@oclif/command": "1.8.16",
     "@oclif/config": "1.17.0",
     "@oclif/plugin-help": "3.2.2",
     "cli-ux": "5.5.1",
