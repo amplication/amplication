@@ -25,7 +25,7 @@
     "date-fns": "2.25.0",
     "lodash": "4.17.21",
     "react-animate-height": "2.0.23",
-    "react-select": "5.2.1",
+    "react-select": "5.4.0",
     "react-transition-group": "4.4.2",
     "skeleton-screen-css": "1.0.1"
   },
