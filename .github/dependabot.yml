@@ -7,7 +7,7 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-    open-pull-requests-limit: 30
+    open-pull-requests-limit: 5
     target-branch: dependabot
 
   - package-ecosystem: "docker"
