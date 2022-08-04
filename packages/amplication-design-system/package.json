@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@emotion/react": "11.7.1",
-    "@emotion/styled": "11.6.0",
+    "@emotion/styled": "11.10.0",
     "@mui/base": "5.0.0-alpha.64",
     "@mui/lab": "5.0.0-alpha.79",
     "@mui/material": "5.2.7",
