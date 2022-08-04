@@ -6,10 +6,10 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { CodeAccessGuard } from "src/auth/codeAccessGuard.guard";
-import { DefaultAuthGuard } from "src/auth/defaultAuth.guard";
-import { PaginationQuery, PaginationResult } from "src/pagination";
-import { PaginationService } from "src/pagination/pagination.service";
+import { CodeAccessGuard } from "../auth/codeAccessGuard.guard";
+import { DefaultAuthGuard } from "../auth/defaultAuth.guard";
+import { PaginationQuery, PaginationResult } from "../pagination";
+import { PaginationService } from "../pagination/pagination.service";
 import { FileMeta } from "./dto/FileMeta";
 import { StorageService } from "./storage.service";
 

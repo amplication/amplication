@@ -10,39 +10,40 @@ on:
         options:
           - staging
           - prod
-          - custom
           - shimi
           - mor
           - amit
           - ariel
+          - alex
+
       confirm-env:
-          type: string
-          description: Confirm the environment to deploy
-          required: true
-          default: staging
+        type: string
+        description: Confirm the environment to deploy
+        required: true
+        default: staging
 jobs:
   validate-image:
-      runs-on: ubuntu-18.04
-      if: github.event.inputs.target-env == github.event.inputs.confirm-env
-      outputs: 
-        valid_image: ${{ steps.check-image.outputs.image_exist }}
-      steps:  
-        - uses: actions/checkout@v2
-          with:
-            fetch-depth: 1
-        - name: configure AWS credentials
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-1
-        - name: set branch-name
-          run: |
-            echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
-        - name: check if image exists for the branch name
-          id: check-image
-          run: |
-            bash ./.github/workflows/scripts/deploy-image.sh
+    runs-on: ubuntu-18.04
+    if: github.event.inputs.target-env == github.event.inputs.confirm-env
+    outputs:
+      valid_image: ${{ steps.check-image.outputs.image_exist }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: set branch-name
+        run: |
+          echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
+      - name: check if image exists for the branch name
+        id: check-image
+        run: |
+          bash ./.github/workflows/scripts/deploy-image.sh
   prepare:
     runs-on: ubuntu-18.04
     needs: [validate-image]

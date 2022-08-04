@@ -25,11 +25,11 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
       //remove entities from cache to reflect discarded changes
       for (var change of pendingChanges) {
         if (
-          change.resourceType === models.EnumPendingChangeResourceType.Entity
+          change.originType === models.EnumPendingChangeOriginType.Entity
         ) {
           cache.evict({
             id: cache.identify({
-              id: change.resourceId,
+              id: change.originId,
               __typename: "Entity",
             }),
           });
@@ -37,7 +37,7 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
           /**@todo: handle other types of blocks */
           cache.evict({
             id: cache.identify({
-              id: change.resourceId,
+              id: change.originId,
               __typename: "ServiceSettings",
             }),
           });

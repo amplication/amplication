@@ -26,11 +26,6 @@ jobs:
           project_id: ${{ env.ISSUE_PROJECT_ID }}
           resource_node_id: ${{ github.event.issue.node_id }}
           status_value: ${{ env.OPENED_REOPEND_STATUS }}
-      - name: 'Discord notification'
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_GITHUB_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":3447003,"title":"${{ github.event.issue.title}} #${{github.event.issue.number}}","url":"${{ github.event.issue.html_url }}","author":{"name":"${{ github.event.issue.user.login }}","icon_url":"${{ github.event.issue.user.avatar_url }}","url":"${{ github.event.issue.user.html_url }}"},"description":"Issue - ${{ github.event.action }}"}]'
 
   issue_closed:
     name: issue_closed

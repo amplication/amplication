@@ -5,7 +5,7 @@ import { GET_PENDING_CHANGES_STATUS } from "../queries/projectQueries";
 
 export type PendingChangeItem = Pick<
   models.PendingChange,
-  "resourceId" | "resourceType"
+  "originId" | "originType"
 >;
 
 export type PendingChangeStatusData = {
@@ -13,7 +13,7 @@ export type PendingChangeStatusData = {
 };
 
 const usePendingChanges = (currentResource: models.Resource | undefined) => {
-  // TODO: replace currenResource with currentProject
+  // TODO: replace currentResource with currentProject
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -34,14 +34,11 @@ const usePendingChanges = (currentResource: models.Resource | undefined) => {
   }, [pendingChangesData, setPendingChanges]);
 
   const addChange = useCallback(
-    (
-      resourceId: string,
-      resourceType: models.EnumPendingChangeResourceType
-    ) => {
+    (originId: string, originType: models.EnumPendingChangeOriginType) => {
       const existingChange = pendingChanges.find(
         (changeItem) =>
-          changeItem.resourceId === resourceId &&
-          changeItem.resourceType === resourceType
+          changeItem.originId === originId &&
+          changeItem.originType === originType
       );
       if (existingChange) {
         //reassign pending changes to trigger refresh
@@ -50,8 +47,8 @@ const usePendingChanges = (currentResource: models.Resource | undefined) => {
         setPendingChanges(
           pendingChanges.concat([
             {
-              resourceId,
-              resourceType,
+              originId,
+              originType,
             },
           ])
         );
@@ -62,14 +59,14 @@ const usePendingChanges = (currentResource: models.Resource | undefined) => {
 
   const addEntity = useCallback(
     (entityId: string) => {
-      addChange(entityId, models.EnumPendingChangeResourceType.Entity);
+      addChange(entityId, models.EnumPendingChangeOriginType.Entity);
     },
     [addChange]
   );
 
   const addBlock = useCallback(
     (blockId: string) => {
-      addChange(blockId, models.EnumPendingChangeResourceType.Block);
+      addChange(blockId, models.EnumPendingChangeOriginType.Block);
     },
     [addChange]
   );

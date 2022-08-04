@@ -12,13 +12,13 @@ import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { ProjectService } from './project.service';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 import { Roles } from 'src/decorators/roles.decorator';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { ResourceService } from '../resource/resource.service';
 
@@ -34,7 +34,7 @@ export class ProjectResolver {
   @Query(() => [Project], { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
   @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
+    InjectableOriginParameter.WorkspaceId,
     'where.workspace.id'
   )
   async projects(@Args() args: ProjectFindManyArgs): Promise<Project[]> {
@@ -43,7 +43,7 @@ export class ProjectResolver {
 
   @Query(() => Project, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
-  @AuthorizeContext(AuthorizableResourceParameter.ProjectId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, 'where.id')
   async project(@Args() args: FindOneArgs): Promise<Project | null> {
     return this.projectService.findProject(args);
   }
@@ -51,7 +51,7 @@ export class ProjectResolver {
   @Mutation(() => Project, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
   @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
+    InjectableOriginParameter.WorkspaceId,
     'data.workspace.connect.id'
   )
   async createProject(
