@@ -2,6 +2,7 @@ import {
   Button,
   EnumButtonStyle,
   EnumIconPosition,
+  Modal,
   Snackbar,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
@@ -117,7 +118,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
   };
 
   return (
-    <div className={moduleClass}>
+    <Modal open fullScreen css={moduleClass}>
       {loading ? (
         <div className={`${moduleClass}__processing`}>
           <div className={`${moduleClass}__processing__title`}>
@@ -169,7 +170,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
         </Button>
       </div>
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </div>
+    </Modal>
   );
 };
 
