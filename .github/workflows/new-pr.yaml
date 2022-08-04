@@ -11,8 +11,5 @@ jobs:
     runs-on: ubuntu-18.04
     if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'reopened'
     steps:
-      - name: 'Discord notification'
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_GITHUB_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":3447003,"title":"${{ github.event.pull_request.title}} #${{github.event.pull_request.number}}","url":"${{ github.event.pull_request.html_url }}","author":{"name":"${{ github.event.pull_request.user.login }}","icon_url":"${{ github.event.pull_request.user.avatar_url }}","url":"${{ github.event.pull_request.user.html_url }}"},"description":"Pull-Request - ${{ github.event.action }}"}]'
+      - name: "Ntification"
+        run: echo "placeholder"
