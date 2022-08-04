@@ -119,11 +119,9 @@ export class AuthService {
     workspaceName: string
   ): Promise<AuthUser> {
     const workspace = await this.createWorkspace(workspaceName, account);
-
     const [user] = workspace.users;
-
+    
     await this.accountService.setCurrentUser(account.id, user.id);
-
     await this.projectService.createProject(
       {
         data: {
