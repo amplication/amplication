@@ -15,6 +15,7 @@ import { UserService } from '../user/user.service';
 import { AuthService, AuthUser } from './auth.service';
 import { WorkspaceService } from '../workspace/workspace.service';
 import { EnumTokenType } from './dto';
+import { ProjectService } from '../project/project.service';
 const EXAMPLE_TOKEN = 'EXAMPLE TOKEN';
 
 const EXAMPLE_ACCOUNT: Account = {
@@ -202,6 +203,12 @@ describe('AuthService', () => {
           provide: JwtService,
           useClass: jest.fn(() => ({
             sign: signMock
+          }))
+        },
+        {
+          provide: ProjectService,
+          useClass: jest.fn(() => ({
+            createProject: jest.fn()
           }))
         },
         {
