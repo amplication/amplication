@@ -104,7 +104,7 @@
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.0",
     "ra-data-graphql-amplication": "0.0.13",
-    "react-admin": "3.17.0",
+    "react-admin": "3.19.11",
     "reflect-metadata": "0.1.13",
     "sleep-promise": "9.1.0",
     "ts-jest": "27.0.3",
