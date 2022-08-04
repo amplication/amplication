@@ -93,17 +93,7 @@ export class BuildController {
         case BuildStatus.Init:
           await this.buildService.onBuildInit(buildId, runId);
           break;
-        case BuildStatus.Succeeded:
-          await this.buildService.updateStateByRunId(runId, BuildStatus.Succeeded);
-          const build = await this.buildService.findByRunId(runId);
-          const body = { ...message.value, buildId: build.id, status: BuildStatus.Unpacking };
-          this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(body));
-          break;
-        case BuildStatus.InProgress:
-        case BuildStatus.Unpacking:
-        case BuildStatus.Failed:
-        case BuildStatus.Stopped:
-        case BuildStatus.Ready:
+        default:
           await this.buildService.updateStateByRunId(runId, status);
           break;
       }

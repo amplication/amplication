@@ -216,7 +216,6 @@ enum BuildStatus {
   InProgress
   Failed
   Succeeded
-  Unpacking
   Stopped
   Ready
 }

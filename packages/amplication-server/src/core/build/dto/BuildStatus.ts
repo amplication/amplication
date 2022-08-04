@@ -5,7 +5,6 @@ export enum BuildStatus {
   InProgress = 'InProgress',
   Failed = 'Failed',
   Succeeded = 'Succeeded',
-  Unpacking = 'Unpacking',
   Stopped = 'Stopped',
   Ready = 'Ready'
 }

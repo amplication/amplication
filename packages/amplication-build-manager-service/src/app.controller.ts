@@ -82,7 +82,7 @@ export class AppController {
     try {
       const event = queueMessage.value as BuildStatusEvent;
       switch (event.status) {
-        case BuildStatus.Unpacking:
+        case BuildStatus.Succeeded:
           await this.buildStorage.unpackArtifact(event);
           break;
       }
