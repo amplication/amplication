@@ -7,6 +7,8 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 30
+    target-branch: version-updates
 
   - package-ecosystem: "docker"
     directory: "/"
