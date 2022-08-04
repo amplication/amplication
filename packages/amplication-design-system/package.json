@@ -38,7 +38,7 @@
     "@storybook/builder-webpack5": "6.4.22",
     "@storybook/manager-webpack5": "6.4.22",
     "@storybook/preset-scss": "1.0.3",
-    "@storybook/react": "6.4.22",
+    "@storybook/react": "6.5.10",
     "@storybook/testing-library": "0.0.11",
     "@types/classnames": "2.3.1",
     "@types/lodash": "4.14.178",
