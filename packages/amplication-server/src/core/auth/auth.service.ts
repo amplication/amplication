@@ -118,7 +118,7 @@ export class AuthService {
     }
   }
 
-  async bootstrapUser(
+  private async bootstrapUser(
     account: Account,
     workspaceName: string
   ): Promise<AuthUser> {
