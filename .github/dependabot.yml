@@ -8,6 +8,7 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
     open-pull-requests-limit: 30
+    target-branch: dependabot
 
   - package-ecosystem: "docker"
     directory: "/"
