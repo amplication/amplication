@@ -1,7 +1,7 @@
 import { EnvironmentVariables } from '@amplication/kafka';
 import { Controller, Inject, LoggerService } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
-import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
+import { BuildStorageService } from './buildStorage/buildStorage.service';
 import { BuildService } from './codeBuild/build.service';
 import { CODE_BUILD_SERVICE } from './codeBuild/codeBuild.module';
 import {
@@ -27,7 +27,7 @@ export class AppController {
     @Inject(CODE_BUILD_SERVICE) private readonly buildService: BuildService,
     private readonly queueService: QueueService,
     private readonly configService: ConfigService,
-    private readonly buildContextStorage: BuildContextStorageService,
+    private readonly buildStorage: BuildStorageService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
   ) {
@@ -40,7 +40,7 @@ export class AppController {
   async receiveCodeGenRequest(@Payload() message: any) {
     const generateResource: GenerateResource = message.value || {};
     try {
-      const path = await this.buildContextStorage.saveBuildContextSource(
+      const path = await this.buildStorage.saveBuildContextSource(
         generateResource,
       );
       const runResponse = await this.buildService.runBuild(path);
@@ -73,6 +73,23 @@ export class AppController {
       this.logger.error(
         `Failed to convert code build message to status event. message: ${queueMessage} error: ${error}`,
         { error, message: queueMessage },
+      );
+    }
+  }
+
+  @EventPattern(EnvironmentVariables.instance.get(BUILD_STATUS_TOPIC, true))
+  async receiveBuildStatus(@Payload() queueMessage: any) {
+    try {
+      const event = queueMessage.value as BuildStatusEvent;
+      switch (event.status) {
+        case BuildStatus.Unpacking:
+          await this.buildStorage.unpackArtifact(event);
+          break;
+      }
+    } catch (err) {
+      this.logger.error(
+        `Failed to process build status event. message: ${queueMessage} error: ${err}`,
+        { error: err, message: queueMessage },
       );
     }
   }

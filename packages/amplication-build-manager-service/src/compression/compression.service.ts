@@ -13,4 +13,15 @@ export class CompressionService {
     });
     return await zip.generateAsync({ type: 'uint8array' });
   }
+
+  async unpackZipArchive(archive: Buffer): Promise<File[]> {
+    const zip = await JSZip.loadAsync(archive);
+    const files: File[] = [];
+    Object.entries(zip.files).map(async ([path, file]) => {
+      const encData = await file.async('uint8array');
+      const data = Buffer.from(encData);
+      files.push({ path, data });
+    });
+    return files;
+  }
 }

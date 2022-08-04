@@ -1,12 +1,12 @@
 import { CodeBuildService } from './codeBuild.service';
 import { Module } from '@nestjs/common';
-import { BuildContextStorageModule } from '../buildContextStorage/buildContextStorage.module';
+import { BuildStorageModule } from '../buildStorage/buildStorage.module';
 import { QueueModule } from '../queue/queue.module';
 
 export const CODE_BUILD_SERVICE = 'CODE_BUILD_SERVICE';
 
 @Module({
-  imports: [BuildContextStorageModule, QueueModule],
+  imports: [BuildStorageModule, QueueModule],
   providers: [
     {
       provide: CODE_BUILD_SERVICE,
