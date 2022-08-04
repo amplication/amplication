@@ -20,7 +20,7 @@
     "@mui/material": "5.2.7",
     "@mui/system": "5.2.8",
     "@primer/octicons-react": "16.2.0",
-    "@primer/react": "34.1.0",
+    "@primer/react": "34.7.1",
     "classnames": "2.3.1",
     "date-fns": "2.25.0",
     "lodash": "4.17.21",
