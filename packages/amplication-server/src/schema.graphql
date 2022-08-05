@@ -336,6 +336,7 @@ type PendingChange {
   originId: String!
   origin: PendingChangeOrigin!
   versionNumber: Int!
+  resource: Resource!
 }
 
 enum EnumPendingChangeAction {
@@ -704,7 +705,7 @@ input ResourceOrderByInput {
 }
 
 input PendingChangesFindInput {
-  resource: WhereUniqueInput!
+  project: WhereUniqueInput!
 }
 
 type ServiceSettings implements IBlock {
@@ -1160,7 +1161,7 @@ input CommitCreateInput {
 }
 
 input PendingChangesDiscardInput {
-  resource: WhereParentIdInput!
+  project: WhereParentIdInput!
 }
 
 input EntityCreateInput {

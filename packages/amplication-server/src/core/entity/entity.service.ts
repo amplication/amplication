@@ -47,7 +47,8 @@ import {
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
-  PendingChange
+  PendingChange,
+  ResourceWhereInput
 } from '../resource/dto';
 
 import {
@@ -112,6 +113,8 @@ export type EntityPendingChange = {
   versionNumber: number;
   /** The entity */
   origin: Entity;
+
+  resource: ResourceWhereInput;
 };
 
 /**
@@ -503,7 +506,10 @@ export class EntityService {
         action: action,
         originType: EnumPendingChangeOriginType.Entity,
         versionNumber: lastVersion.versionNumber + 1,
-        origin: entity
+        origin: entity,
+        resource: {
+          id: entity.resourceId
+        }
       };
     });
   }
@@ -547,7 +553,10 @@ export class EntityService {
         action: action,
         originType: EnumPendingChangeOriginType.Entity,
         versionNumber: changedVersion.versionNumber,
-        origin: entity
+        origin: entity,
+        resource: {
+          id: entity.resourceId
+        }
       };
     });
   }

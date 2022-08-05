@@ -34,7 +34,8 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
-  PendingChange
+  PendingChange,
+  ResourceWhereInput
 } from '../resource/dto';
 
 const CURRENT_VERSION_NUMBER = 0;
@@ -57,6 +58,8 @@ export type BlockPendingChange = {
   versionNumber: number;
   /** The block */
   origin: Block;
+
+  resource: ResourceWhereInput;
 };
 
 @Injectable()
@@ -625,7 +628,10 @@ export class BlockService {
         action: action,
         originType: EnumPendingChangeOriginType.Block,
         versionNumber: lastVersion.versionNumber + 1,
-        origin: block
+        origin: block,
+        resource: {
+          id: block.resourceId
+        }
       };
     });
   }
@@ -667,7 +673,10 @@ export class BlockService {
         action: action,
         originType: EnumPendingChangeOriginType.Block,
         versionNumber: changedVersion.versionNumber,
-        origin: block
+        origin: block,
+        resource: {
+          id: block.resourceId
+        }
       };
     });
   }

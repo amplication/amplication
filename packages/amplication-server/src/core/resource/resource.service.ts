@@ -400,7 +400,7 @@ export class ResourceService {
     });
 
     if (isEmpty(resource)) {
-      throw new Error(`Invalid userId or resourceId`);
+      throw new Error(`Invalid userId or projectId`);
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
