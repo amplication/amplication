@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from './User'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { PendingChange } from '../core/resource/dto/PendingChange'; // eslint-disable-line import/no-cycle
-import { Project } from './Project'; 
+import { Project } from './Project';
 
 @ObjectType({
   isAbstract: true

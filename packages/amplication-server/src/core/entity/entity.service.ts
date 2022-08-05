@@ -447,7 +447,7 @@ export class EntityService {
 
   /**
    * Gets all the entities changed since the last resource commit
-   * @param resourceId the resource ID to find changes to
+   * @param projectId the resource ID to find changes to
    * @param userId the user ID the resource ID relates to
    */
   async getChangedEntities(

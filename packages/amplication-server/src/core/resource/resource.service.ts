@@ -381,11 +381,11 @@ export class ResourceService {
     args: FindPendingChangesArgs,
     user: User
   ): Promise<PendingChange[]> {
-    const resourceId = args.where.resource.id;
+    const projectId = args.where.project.id;
 
     const resource = await this.prisma.resource.findMany({
       where: {
-        id: resourceId,
+        projectId: projectId,
         deletedAt: null,
         project: {
           workspace: {
@@ -404,8 +404,8 @@ export class ResourceService {
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(resourceId, user.id),
-      this.blockService.getChangedBlocks(resourceId, user.id)
+      this.entityService.getChangedEntities(projectId, user.id),
+      this.blockService.getChangedBlocks(projectId, user.id)
     ]);
 
     return [...changedEntities, ...changedBlocks];
@@ -506,10 +506,7 @@ export class ResourceService {
       {
         data: {
           resource: {
-            connect: {
-              // TODO: change it
-              id: resources[0].id 
-            }
+            connect: { id: resources[0].id } /** @todo change this */
           },
           commit: {
             connect: {
@@ -534,11 +531,11 @@ export class ResourceService {
     args: DiscardPendingChangesArgs
   ): Promise<boolean | null> {
     const userId = args.data.user.connect.id;
-    const resourceId = args.data.resource.connect.id;
+    const projectId = args.data.project.connect.id;
 
     const resource = await this.prisma.resource.findMany({
       where: {
-        id: resourceId,
+        projectId: projectId,
         deletedAt: null,
         project: {
           workspace: {
@@ -557,13 +554,13 @@ export class ResourceService {
     }
 
     const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(resourceId, userId),
-      this.blockService.getChangedBlocks(resourceId, userId)
+      this.entityService.getChangedEntities(projectId, userId),
+      this.blockService.getChangedBlocks(projectId, userId)
     ]);
 
     if (isEmpty(changedEntities) && isEmpty(changedBlocks)) {
       throw new Error(
-        `There are no pending changes for user ${userId} in resource ${resourceId}`
+        `There are no pending changes for user ${userId} in resource ${projectId}`
       );
     }
 

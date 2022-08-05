@@ -8,5 +8,5 @@ export class PendingChangesFindInput {
   @Field(() => WhereUniqueInput, {
     nullable: false
   })
-  resource!: WhereUniqueInput;
+  project!: WhereUniqueInput;
 }

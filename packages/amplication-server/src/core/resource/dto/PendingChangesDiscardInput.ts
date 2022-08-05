@@ -8,7 +8,7 @@ export class PendingChangesDiscardInput {
   @Field(() => WhereParentIdInput, {
     nullable: false
   })
-  resource!: WhereParentIdInput;
+  project!: WhereParentIdInput;
 
   /**do not expose to GraphQL - This field should be injected from context  */
   user!: WhereParentIdInput;
