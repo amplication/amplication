@@ -502,26 +502,28 @@ export class ResourceService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    await this.buildService.create(
-      {
-        data: {
-          resource: {
-            connect: { id: resources[0].id } /** @todo change this */
-          },
-          commit: {
-            connect: {
-              id: commit.id
-            }
-          },
-          createdBy: {
-            connect: {
-              id: userId
-            }
-          },
-          message: args.data.message
-        }
-      },
-      skipPublish
+    resources.forEach((resource: Resource) =>
+      this.buildService.create(
+        {
+          data: {
+            resource: {
+              connect: { id: resource.id }
+            },
+            commit: {
+              connect: {
+                id: commit.id
+              }
+            },
+            createdBy: {
+              connect: {
+                id: userId
+              }
+            },
+            message: args.data.message
+          }
+        },
+        skipPublish
+      )
     );
 
     return commit;
