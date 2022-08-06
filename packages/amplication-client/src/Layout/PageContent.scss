@@ -11,6 +11,7 @@ $tabs-width: 300px;
   box-sizing: border-box;
   flex: 1;
   overflow: hidden;
+  height: calc(100vh - var(--header-height));
 
   &__tabs {
     @include scrollbars(10px, var(--black60), transparent);
