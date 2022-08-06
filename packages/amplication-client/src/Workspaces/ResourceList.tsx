@@ -36,6 +36,7 @@ function ResourceList() {
     errorResources,
     currentWorkspace,
     currentProject,
+    setResource,
   } = useContext(AppContext);
 
   const linkToCreateResource = `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`;
@@ -61,6 +62,16 @@ function ResourceList() {
       });
     },
   });
+
+  const handleSelect = useCallback(
+    (resource) => {
+      setResource(resource);
+      trackEvent({
+        eventName: "selectResource",
+      });
+    },
+    [trackEvent, setResource]
+  );
 
   const handleDelete = useCallback(
     (resource) => {
@@ -127,6 +138,7 @@ function ResourceList() {
               key={resource.id}
               resource={resource}
               onDelete={handleDelete}
+              onSelectResource={handleSelect}
             />
           );
         })
