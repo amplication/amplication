@@ -56,9 +56,6 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     currentResource,
     setResource,
   } = useResources(currentWorkspace, currentProject);
-  
-
-  console.log({ currentResource });
 
   const {
     pendingChanges,
