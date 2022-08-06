@@ -36,6 +36,7 @@ const useResources = (
     data: resourcesData,
     loading: loadingResources,
     error: errorResources,
+    refetch,
   } = useQuery<TData>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
@@ -46,6 +47,21 @@ const useResources = (
     },
     skip: !currentProject,
   });
+
+  const resourceRedirect = useCallback(
+    (resourceId: string) =>
+      history.push({
+        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`,
+      }),
+    [currentWorkspace, history, currentProject]
+  );
+
+  const onNewResourceCompleted = useCallback(
+    (data: models.Resource) => {
+      refetch().then(() => resourceRedirect(data.id));
+    },
+    [refetch, resourceRedirect]
+  );
 
   useEffect(() => {
     if (!resourceMatch || !resources.length || !projectConfigurationResource)
@@ -79,7 +95,6 @@ const useResources = (
     },
     [setSearchPhrase]
   );
-
   const setResource = useCallback(
     (resource: models.Resource) => {
       setCurrentResource(resource);
@@ -100,6 +115,7 @@ const useResources = (
     errorResources,
     currentResource,
     setResource,
+    onNewResourceCompleted,
   };
 };
 

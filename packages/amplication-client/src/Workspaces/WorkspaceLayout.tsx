@@ -55,6 +55,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     errorResources,
     currentResource,
     setResource,
+    onNewResourceCompleted,
   } = useResources(currentWorkspace, currentProject);
 
   const {
@@ -79,6 +80,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         onNewProjectCompleted,
         handleSetCurrentWorkspace,
         resources,
+        onNewResourceCompleted,
         projectConfigurationResource,
         handleSearchChange,
         loadingResources,

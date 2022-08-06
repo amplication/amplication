@@ -6,8 +6,13 @@ import {
   Snackbar,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
-import React, { MutableRefObject, useCallback, useEffect, useRef } from "react";
-import { match, useHistory } from "react-router-dom";
+import React, {
+  MutableRefObject,
+  useCallback,
+  useContext,
+  useRef,
+} from "react";
+import { match } from "react-router-dom";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
@@ -22,6 +27,7 @@ import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
 import { AppRouteProps } from "../../routes/routesUtil";
+import { AppContext } from "../../context/appContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -34,36 +40,41 @@ type TData = {
   createResourceWithEntities: models.Resource;
 };
 
-const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
-  const { workspace, project } = match.params;
+const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
+  const { currentProject, onNewResourceCompleted } = useContext(AppContext);
+
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
   );
 
   const { trackEvent } = useTracking();
-  const history = useHistory();
-  const [createResourceWithEntities, { loading, data, error }] = useMutation<
-    TData
-  >(CREATE_RESOURCE_WITH_ENTITIES, {
-    update(cache, { data }) {
-      if (!data) return;
-
-      const queryData = cache.readQuery<{ resources: Array<models.Resource> }>({
-        query: GET_RESOURCES,
-      });
-      if (queryData === null) {
-        return;
-      }
-      cache.writeQuery({
-        query: GET_RESOURCES,
-        data: {
-          resources: queryData.resources.concat([
-            data.createResourceWithEntities,
-          ]),
-        },
-      });
-    },
-  });
+  const [createResourceWithEntities, { loading, error }] = useMutation<TData>(
+    CREATE_RESOURCE_WITH_ENTITIES,
+    {
+      onCompleted: (data) => {
+        onNewResourceCompleted(data.createResourceWithEntities);
+      },
+      update(cache, { data }) {
+        if (!data) return;
+        const queryData = cache.readQuery<{
+          resources: Array<models.Resource>;
+        }>({
+          query: GET_RESOURCES,
+        });
+        if (queryData === null) {
+          return;
+        }
+        cache.writeQuery({
+          query: GET_RESOURCES,
+          data: {
+            resources: queryData.resources.concat([
+              data.createResourceWithEntities,
+            ]),
+          },
+        });
+      },
+    }
+  );
 
   const errorMessage = formatError(error);
 
@@ -78,13 +89,6 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
     },
     [createResourceWithEntities, trackEvent]
   );
-
-  useEffect(() => {
-    if (data) {
-      const resource = data.createResourceWithEntities;
-      history.push(`/${workspace}/${project}/${resource.id}`);
-    }
-  }, [history, data, project, workspace]);
 
   const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
     serviceSettingsFields.current = currentServiceSettings;
@@ -101,20 +105,22 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
     const isResourceWithEntities =
       serviceSettingsFields.current.resourceType === "sample";
 
-    const resource = createResource(
-      project,
-      isResourceWithEntities,
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi
-    );
+    if (currentProject) {
+      const resource = createResource(
+        currentProject?.id,
+        isResourceWithEntities,
+        generateAdminUI,
+        generateGraphQL,
+        generateRestApi
+      );
 
-    createStarterResource(
-      resource,
-      isResourceWithEntities
-        ? "createResourceFromSample"
-        : "createResourceFromScratch"
-    );
+      createStarterResource(
+        resource,
+        isResourceWithEntities
+          ? "createResourceFromSample"
+          : "createResourceFromScratch"
+      );
+    }
   };
 
   return (

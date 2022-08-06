@@ -21,6 +21,7 @@ export interface AppContextInterface {
   errorResources: Error | undefined;
   currentResource: models.Resource | undefined;
   setResource: (resource: models.Resource) => void;
+  onNewResourceCompleted: (resource: models.Resource) => void;
   pendingChanges: PendingChangeItem[];
   commitRunning: boolean;
   pendingChangesIsError: boolean;
@@ -46,6 +47,7 @@ const initialContext: AppContextInterface = {
   setNewProject: () => {},
   onNewProjectCompleted: () => {},
   resources: [],
+  onNewResourceCompleted: () => {},
   projectConfigurationResource: undefined,
   handleSearchChange: () => {},
   loadingResources: true,
@@ -60,7 +62,7 @@ const initialContext: AppContextInterface = {
   addChange: () => {},
   resetPendingChanges: () => {},
   setCommitRunning: () => {},
-  setPendingChangesError: () => {}
+  setPendingChangesError: () => {},
 };
 
 export const AppContext = React.createContext<AppContextInterface>(
