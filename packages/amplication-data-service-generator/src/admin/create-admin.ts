@@ -3,11 +3,16 @@ import * as winston from "winston";
 import { paramCase } from "param-case";
 import { get } from "lodash";
 import { plural } from "pluralize";
-import { Entity, Role, AppInfo, Module } from "@amplication/code-gen-types";
+import {
+  Entity,
+  Role,
+  AppInfo,
+  Module,
+  DTOs,
+} from "@amplication/code-gen-types";
 import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
 import { updatePackageJSONs } from "../update-package-jsons";
-import { DTOs } from "../server/resource/create-dtos";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";

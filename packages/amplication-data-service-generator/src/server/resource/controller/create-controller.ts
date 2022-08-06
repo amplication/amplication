@@ -7,6 +7,8 @@ import {
   EntityLookupField,
   Module,
   AppInfo,
+  NamedClassDeclaration,
+  DTOs,
 } from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
@@ -21,11 +23,10 @@ import {
   removeESLintComments,
   importContainedIdentifiers,
   getMethods,
-  NamedClassDeclaration,
   removeTSIgnoreComments,
 } from "../../../util/ast";
 import { isToManyRelationField } from "../../../util/field";
-import { DTOs, getDTONameToPath } from "../create-dtos";
+import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
   createServiceId,

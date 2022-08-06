@@ -6,6 +6,7 @@ import {
   EnumDataType,
   Module,
   types,
+  DTOs,
 } from "@amplication/code-gen-types";
 import { readFile } from "../../util/module";
 import {
@@ -22,7 +23,7 @@ import {
   USER_PASSWORD_FIELD,
   USER_ROLES_FIELD,
 } from "../user-entity";
-import { DTOs, getDTONameToPath } from "../resource/create-dtos";
+import { getDTONameToPath } from "../resource/create-dtos";
 import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
 import { createEnumName } from "../prisma/create-prisma-schema";

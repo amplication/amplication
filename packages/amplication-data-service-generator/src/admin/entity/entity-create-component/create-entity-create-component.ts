@@ -1,12 +1,12 @@
 import { builders, namedTypes } from "ast-types";
 import { isEmpty } from "lodash";
 import * as path from "path";
-import { DTOs } from "../../../server/resource/create-dtos";
 import {
   Entity,
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
+  DTOs,
 } from "@amplication/code-gen-types";
 import {
   addImports,

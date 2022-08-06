@@ -1,5 +1,6 @@
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
+import { namedTypes } from "ast-types";
 
 export {
   EnumEntityPermissionType,
@@ -143,3 +144,48 @@ export type Module = {
   path: string;
   code: string;
 };
+
+export type ClassDeclaration = namedTypes.ClassDeclaration & {
+  decorators: namedTypes.Decorator[];
+};
+
+export type NamedClassDeclaration = ClassDeclaration & {
+  id: namedTypes.Identifier;
+};
+
+export type NamedClassProperty = namedTypes.ClassProperty & {
+  key: namedTypes.Identifier;
+  typeAnnotation: namedTypes.TSTypeAnnotation;
+  optional?: boolean;
+};
+
+export type EntityDTOs = {
+  entity: NamedClassDeclaration;
+  createInput: NamedClassDeclaration;
+  updateInput: NamedClassDeclaration;
+  whereInput: NamedClassDeclaration;
+  whereUniqueInput: NamedClassDeclaration;
+  deleteArgs: NamedClassDeclaration;
+  findManyArgs: NamedClassDeclaration;
+  findOneArgs: NamedClassDeclaration;
+  createArgs?: NamedClassDeclaration;
+  updateArgs?: NamedClassDeclaration;
+  orderByInput: NamedClassDeclaration;
+  listRelationFilter: NamedClassDeclaration;
+};
+
+export type EntityEnumDTOs = {
+  [dto: string]: namedTypes.TSEnumDeclaration;
+};
+
+export type DTOs = {
+  [entity: string]: EntityEnumDTOs & EntityDTOs;
+};
+
+export interface DsgContext {
+  appInfo: AppInfo;
+  entities: Entity[];
+  roles: Role[];
+  modules: Module[];
+  DTOs: DTOs;
+}

@@ -43,5 +43,8 @@
     "dsg",
     "code generation",
     "low code"
-  ]
+  ],
+  "dependencies": {
+    "ast-types": "^0.14.2"
+  }
 }
