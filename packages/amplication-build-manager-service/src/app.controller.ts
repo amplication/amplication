@@ -43,12 +43,12 @@ export class AppController {
       const path = await this.buildStorage.saveBuildContextSource(
         generateResource,
       );
-      const runResponse = await this.buildService.runBuild(path);
-      this.emitInitMessage(
+      const runId = await this.buildService.runBuild(
+        path,
+        generateResource.resourceId,
         generateResource.buildId,
-        runResponse.build.arn,
-        'Generating code',
       );
+      this.emitInitMessage(generateResource.buildId, runId, 'Generating code');
     } catch (error) {
       this.logger.error(
         `Failed to run code build: message: ${message} error: ${error}`,
@@ -83,7 +83,17 @@ export class AppController {
       const event = queueMessage.value as BuildStatusEvent;
       switch (event.status) {
         case BuildStatus.Succeeded:
-          await this.buildStorage.unpackArtifact(event);
+          const build = await this.buildService.getBuild(event.runId);
+          await this.buildStorage.unpackArtifact(
+            event.artifact,
+            build.id,
+            build.resourceId,
+          );
+          const readyEvent = { ...event, status: BuildStatus.Ready };
+          this.queueService.emitMessage(
+            this.buildStatusTopic,
+            JSON.stringify(readyEvent),
+          );
           break;
       }
     } catch (err) {

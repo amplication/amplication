@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { promises as fsPromises } from 'fs';
+import fs from 'fs';
 import {
   BuildStatusEvent,
   FileLocation,
   GenerateResource,
 } from '@amplication/build-types';
-import { join } from 'path';
+import path, { join } from 'path';
 import { timeFormatYearMonthDay } from '../utils/timeFormat';
 import { StorageService } from '../storage/storage.service';
 import { CompressionService } from '../compression/compression.service';
@@ -39,7 +39,7 @@ export class BuildStorageService {
     generateResource: GenerateResource,
   ): Promise<string> {
     try {
-      const buffer = await fsPromises.readFile(
+      const buffer = await fs.promises.readFile(
         generateResource.contextFileLocation.path,
       );
       const archive = await this.compressionService.createZipArchive([
@@ -71,10 +71,11 @@ export class BuildStorageService {
 
   public async getBuildArtifact(fileLocation: FileLocation): Promise<Buffer> {
     try {
-      const buffer = await this.storageService.getFile(
-        fileLocation.bucket,
-        fileLocation.path,
-      );
+      const absolutePath = fileLocation.path.split(':::')[1];
+      const absolutePathParts = absolutePath.split('/');
+      const bucket = absolutePathParts[0];
+      const path = absolutePathParts.slice(1).join('/');
+      const buffer = await this.storageService.getFile(bucket, path);
       return buffer;
     } catch (err) {
       throw new Error(
@@ -83,14 +84,23 @@ export class BuildStorageService {
     }
   }
 
-  public async unpackArtifact(event: BuildStatusEvent): Promise<void> {
-    const buffer = await this.getBuildArtifact(event.artifact);
+  public async unpackArtifact(
+    artifact: FileLocation,
+    buildId: string,
+    resourceId: string,
+  ): Promise<void> {
+    const buffer = await this.getBuildArtifact(artifact);
     const files = await this.compressionService.unpackZipArchive(buffer);
-    const writeFilePromises = files.map((file) => {
-      return fsPromises.writeFile(
-        join(this.BUILD_ARTIFACT_FS_LOCATION, event.buildId, file.path),
-        file.data,
+    const writeFilePromises = files.map(async (file) => {
+      const savePath = join(
+        this.BUILD_ARTIFACT_FS_LOCATION,
+        buildId,
+        resourceId,
+        file.path,
       );
+      const dirname = path.dirname(savePath);
+      await fs.promises.mkdir(dirname, { recursive: true });
+      return fs.promises.writeFile(savePath, file.data);
     });
     await Promise.all(writeFilePromises);
   }

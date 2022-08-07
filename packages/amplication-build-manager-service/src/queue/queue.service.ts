@@ -1,17 +1,35 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  LoggerService,
+  OnModuleInit,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ClientKafka } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { GET_BUILD_BY_RUN_ID_TOPIC } from 'src/constants';
 
 export const KAFKA_CLIENT = 'KAFKA_CLIENT';
 
 @Injectable()
-export class QueueService {
+export class QueueService implements OnModuleInit {
+  private readonly getBuildByRunIdTopic: string;
+
   constructor(
     @Inject(KAFKA_CLIENT)
     private readonly kafkaClient: ClientKafka,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.getBuildByRunIdTopic = this.configService.get<string>(
+      GET_BUILD_BY_RUN_ID_TOPIC,
+    );
+  }
+
+  onModuleInit() {
+    this.kafkaClient.subscribeToResponseOf(this.getBuildByRunIdTopic);
+  }
 
   emitMessage(topic: string, message: string): void {
     const logger = this.logger;
@@ -26,5 +44,13 @@ export class QueueService {
 
     const response = this.kafkaClient.emit(topic, message);
     response.subscribe(observer);
+  }
+
+  sendMessage(topic: string, message: string) {
+    return new Promise((resolve) => {
+      this.kafkaClient.send(topic, message).subscribe((response) => {
+        resolve(response);
+      });
+    });
   }
 }
