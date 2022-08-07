@@ -1,3 +1,4 @@
+import { EnumResourceType } from '@amplication/prisma-db';
 import { Field, InputType } from '@nestjs/graphql';
 import { DateTimeFilter, StringFilter, WhereUniqueInput } from 'src/dto';
 
@@ -35,4 +36,7 @@ export class ResourceWhereInput {
     description: undefined
   })
   project?: WhereUniqueInput | null;
+
+  @Field(() => EnumResourceType, { nullable: true })
+  resourceType?: keyof typeof EnumResourceType | null;
 }
