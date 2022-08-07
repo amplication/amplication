@@ -316,7 +316,7 @@ describe('ProjectResolver', () => {
             builds: [
               {
                 ...EXAMPLE_BUILD,
-                createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
+                createdAt: EXAMPLE_ENTITY.createdAt.toISOString()
               }
             ],
             environments: [

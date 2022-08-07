@@ -602,7 +602,7 @@ describe('ResourceService', () => {
             name: true
           }
         }
-      ],
+      ]
     ]);
 
     expect(entityServiceCreateOneEntityMock).toBeCalledTimes(1);
@@ -616,7 +616,6 @@ describe('ResourceService', () => {
       createFieldByDisplayNameArgs,
       EXAMPLE_USER
     );
-    
   });
 
   it('should find a resource', async () => {
