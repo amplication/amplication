@@ -14,7 +14,7 @@ import {
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
 import { createServerModules } from "./server/create-server";
-
+import { DsgContext } from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
 
@@ -38,8 +38,14 @@ export async function createDataServiceImpl(
 
   const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
 
+  const context = DsgContext.getInstance;
+  context.appInfo = appInfo;
+  context.roles = roles;
+  context.entities = normalizedEntities;
+
   logger.info("Creating DTOs...");
   const dtos = await createDTOs(normalizedEntities);
+  context.DTOs = dtos;
 
   logger.info("Copying static modules...");
 
