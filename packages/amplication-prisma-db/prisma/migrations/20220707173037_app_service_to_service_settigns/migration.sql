@@ -1,6 +1,5 @@
 -- Adding the enum value
-BEGIN;
-ALTER TYPE public."EnumBlockType" ADD VALUE IF NOT EXISTS 'ServiceSettings';
+ALTER TYPE "EnumBlockType" ADD VALUE IF NOT EXISTS 'ServiceSettings';
 COMMIT;
 
 -- Update the existing values to ServiceSettings
