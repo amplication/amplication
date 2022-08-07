@@ -13,20 +13,6 @@ env:
   CLOSED_STATUS: Closed
 
 jobs:
-  issue_opened_and_reopened:
-    name: issue_opened_and_reopened
-    runs-on: ubuntu-18.04
-    if: github.event_name == 'issues' && github.event.action == 'opened' || github.event.action == 'reopened'
-    steps:
-      - name: 'Move issue to "New"'
-        uses: leonsteinhaeuser/project-beta-automations@v1.0.2
-        with:
-          gh_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          organization: ${{ env.ORG }}
-          project_id: ${{ env.ISSUE_PROJECT_ID }}
-          resource_node_id: ${{ github.event.issue.node_id }}
-          status_value: ${{ env.OPENED_REOPEND_STATUS }}
-
   issue_closed:
     name: issue_closed
     runs-on: ubuntu-18.04
