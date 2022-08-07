@@ -10,22 +10,16 @@ import pluralize from 'pluralize';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { Commit, Project, Resource, User } from 'src/models';
+import { Project, Resource, User } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
-import { BlockService } from '../block/block.service';
-import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
 import {
-  CreateCommitArgs,
   CreateOneResourceArgs,
-  DiscardPendingChangesArgs,
   FindManyResourceArgs,
-  FindPendingChangesArgs,
-  PendingChange,
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs
 } from './dto';

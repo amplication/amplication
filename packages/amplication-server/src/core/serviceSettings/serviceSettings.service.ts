@@ -12,7 +12,7 @@ import { User } from 'src/models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 import { ResourceGenSettingsCreateInput } from '../resource/dto/ResourceGenSettingsCreateInput';
 
-export const isStringBool = (val: any) =>
+export const isStringBool = (val: string | boolean): boolean =>
   typeof val === 'boolean' || typeof val === 'string';
 
 @Injectable()

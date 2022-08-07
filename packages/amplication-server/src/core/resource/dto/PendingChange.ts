@@ -4,7 +4,6 @@ import { Entity } from 'src/models/Entity'; // eslint-disable-line import/no-cyc
 import { Block } from 'src/models/Block'; // eslint-disable-line import/no-cycle
 import { EnumPendingChangeOriginType } from './EnumPendingChangeOriginType';
 import { PendingChangeOrigin } from './PendingChangeOrigin'; // eslint-disable-line import/no-cycle
-import { ResourceWhereInput } from './ResourceWhereInput';
 import { Resource } from 'src/models';
 
 @ObjectType({

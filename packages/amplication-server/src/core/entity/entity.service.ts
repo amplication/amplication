@@ -48,8 +48,7 @@ import {
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
-  PendingChange,
-  ResourceWhereInput
+  PendingChange
 } from '../resource/dto';
 
 import {

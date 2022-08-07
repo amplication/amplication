@@ -35,8 +35,7 @@ import { EnumBlockType } from 'src/enums/EnumBlockType';
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
-  PendingChange,
-  ResourceWhereInput
+  PendingChange
 } from '../resource/dto';
 
 const CURRENT_VERSION_NUMBER = 0;
@@ -525,7 +524,7 @@ export class BlockService {
   }
 
   /**
-   * Higher order function responsible for encapsulating the locking behaviour.
+   * Higher order function responsible for encapsulating the locking behavior.
    * It will lock a block, execute some provided operations on it then update
    * the lock (unlock it or keep it locked).
    * @param blockId The block on which the locking and operations are performed
