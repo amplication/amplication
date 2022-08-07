@@ -7,23 +7,20 @@ $modal-menu-width: 220px;
 $modal-menu-top: 30px;
 
 .workspace-header {
+  @include flexFullRowWithSpacing;
   height: var(--header-height);
-  display: flex;
+  min-height: var(--header-height);
   background: var(--black2);
   border-bottom: $border-black5;
-  align-items: center;
+
+  &__left,
+  &__right {
+    flex: 1;
+  }
 
   &__logo {
-    width: $logo-header-width;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     border-right: $border-black70;
-
-    i {
-      width: var(--double-spacing);
-      height: var(--double-spacing);
-    }
+    width: var(--menu-width);
   }
   &__breadcrumbs {
     flex-grow: 1;
@@ -88,11 +85,16 @@ $modal-menu-top: 30px;
       }
     }
   }
+  &__right {
+    @include flexFullRowWithSpacing;
+    padding: var(--default-spacing);
+    justify-content: flex-end;
+  }
+
+  .user-avatar {
+    margin-right: var(--default-spacing);
+  }
   &__links {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
     &__link {
       @include regular-12();
       color: var(--black80);
@@ -100,24 +102,11 @@ $modal-menu-top: 30px;
       margin-right: var(--large-spacing);
     }
   }
-  &__search {
-    width: $search-header-width;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-  }
-  &__user {
-    width: $user-header-width;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    cursor: pointer;
-  }
   &__vertical_border {
     width: 0px;
     height: var(--large-spacing);
     border: $border-black70;
+    margin: 0;
   }
   &__resources_modal {
     top: $modal-menu-top;
