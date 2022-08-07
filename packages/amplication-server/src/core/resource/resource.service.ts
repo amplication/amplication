@@ -278,25 +278,25 @@ export class ResourceService {
       }
     }
     // do not commit if there are no entities
-    if (!isEmpty(data.entities)) {
-      try {
-        await this.commit({
-          data: {
-            project: {
-              connect: {
-                id: resource.projectId
-              }
-            },
-            message: data.commitMessage,
-            user: {
-              connect: {
-                id: user.id
-              }
-            }
-          }
-        });
-      } catch {} //ignore - return the new resource and the message will be available on the build log
-    }
+    // if (!isEmpty(data.entities)) {
+    //   try {
+    //     await this.commit({
+    //       data: {
+    //         project: {
+    //           connect: {
+    //             id: resource.projectId
+    //           }
+    //         },
+    //         message: data.commitMessage,
+    //         user: {
+    //           connect: {
+    //             id: user.id
+    //           }
+    //         }
+    //       }
+    //     });
+    //   } catch {} //ignore - return the new resource and the message will be available on the build log
+    // }
 
     return resource;
   }
