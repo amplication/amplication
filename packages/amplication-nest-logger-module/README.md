@@ -1,9 +1,10 @@
-# Amplication nestjs logger module
+# Amplication NestJS Logger Module
 
-Amplication NestJs logger module is a standards wrapper for nest-Winston that it is a wrapper for Winston logger.
-We need this library to ensure that all relevant metadata is included in every log.
+The Amplication NestJS Logger Module is our official logger module. Currently, it is a wrapper around the `nest-winston` package.
 
-## How to consomme
+All services at Amplication must use this library to ensure consistent logging. This will enable us to trace and observe our systems reliably.
+
+## How to consume
 
 We did an example in pr [#3285](https://github.com/amplication/amplication/pull/3285) with all the details.
 In short, to consomme this package, you need to add it to the [package.json](https://github.com/amplication/amplication/blob/master/packages/amplication-git-pull-request-service/package.json#L23) and the package have three main exports
