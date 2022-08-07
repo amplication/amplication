@@ -34,7 +34,7 @@ import {
 export class ProjectResolver {
   constructor(
     private projectService: ProjectService,
-    private resourceService: ResourceService,
+    private resourceService: ResourceService
   ) {}
 
   @Query(() => [Project], { nullable: false })
