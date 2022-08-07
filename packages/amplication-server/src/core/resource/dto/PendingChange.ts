@@ -37,5 +37,5 @@ export class PendingChange {
   versionNumber!: number;
 
   @Field(() => Resource, { nullable: false })
-  resource!: ResourceWhereInput;
+  resource!: Resource;
 }

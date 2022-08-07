@@ -19,7 +19,8 @@ import {
   Commit,
   User,
   EntityPermission,
-  EntityPermissionField
+  EntityPermissionField,
+  Resource
 } from 'src/models';
 import { JsonObject } from 'type-fest';
 import { getSchemaForDataType, types } from '@amplication/code-gen-types';
@@ -114,7 +115,7 @@ export type EntityPendingChange = {
   /** The entity */
   origin: Entity;
 
-  resource: ResourceWhereInput;
+  resource: Resource;
 };
 
 /**
@@ -468,6 +469,7 @@ export class EntityService {
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           orderBy: {
             versionNumber: Prisma.SortOrder.desc
@@ -507,9 +509,7 @@ export class EntityService {
         originType: EnumPendingChangeOriginType.Entity,
         versionNumber: lastVersion.versionNumber + 1,
         origin: entity,
-        resource: {
-          id: entity.resourceId
-        }
+        resource: entity.resource
       };
     });
   }
@@ -525,6 +525,7 @@ export class EntityService {
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           where: {
             commitId: commitId
@@ -554,9 +555,7 @@ export class EntityService {
         originType: EnumPendingChangeOriginType.Entity,
         versionNumber: changedVersion.versionNumber,
         origin: entity,
-        resource: {
-          id: entity.resourceId
-        }
+        resource: entity.resource
       };
     });
   }

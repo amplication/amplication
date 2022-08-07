@@ -17,7 +17,8 @@ import {
   BlockVersion,
   IBlock,
   BlockInputOutput,
-  User
+  User,
+  Resource
 } from 'src/models';
 import { revertDeletedItemName } from 'src/util/softDelete';
 import {
@@ -59,7 +60,7 @@ export type BlockPendingChange = {
   /** The block */
   origin: Block;
 
-  resource: ResourceWhereInput;
+  resource: Resource;
 };
 
 @Injectable()
@@ -598,6 +599,7 @@ export class BlockService {
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           orderBy: {
             versionNumber: Prisma.SortOrder.desc
@@ -629,9 +631,7 @@ export class BlockService {
         originType: EnumPendingChangeOriginType.Block,
         versionNumber: lastVersion.versionNumber + 1,
         origin: block,
-        resource: {
-          id: block.resourceId
-        }
+        resource: block.resource
       };
     });
   }
@@ -647,6 +647,7 @@ export class BlockService {
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           where: {
             commitId: commitId
@@ -674,9 +675,7 @@ export class BlockService {
         originType: EnumPendingChangeOriginType.Block,
         versionNumber: changedVersion.versionNumber,
         origin: block,
-        resource: {
-          id: block.resourceId
-        }
+        resource: block.resource
       };
     });
   }
