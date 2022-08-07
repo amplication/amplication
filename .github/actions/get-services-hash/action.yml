@@ -10,4 +10,4 @@ outputs:
     description: 'list of services hashes'
 runs:
   using: 'node16'
-  main: 'scripts/run-action.js'
+  main: 'dist/index.js'
