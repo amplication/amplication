@@ -22,6 +22,7 @@ const ResourceMenu: React.FC<{}> = () => {
       <MenuItem
         className={`${CLASS_NAME}__app-icon`}
         title="Dashboard"
+        disableHover
         to={setResourceUrlLink(
           currentWorkspace.id,
           currentProject.id,
