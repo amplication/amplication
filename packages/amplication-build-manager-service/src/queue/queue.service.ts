@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ClientKafka } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { GET_BUILD_BY_RUN_ID_TOPIC } from 'src/constants';
+import { GET_BUILD_BY_RUN_ID_TOPIC } from '../constants';
 
 export const KAFKA_CLIENT = 'KAFKA_CLIENT';
 
