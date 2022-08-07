@@ -292,6 +292,12 @@ $bullet-size: 6px;
     text-align: center;
   }
 
+  .text-input {
+    input {
+      max-width: none;
+    }
+  }
+
   form {
     width: 100%;
   }
