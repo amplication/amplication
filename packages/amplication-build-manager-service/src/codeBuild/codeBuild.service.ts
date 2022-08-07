@@ -19,9 +19,9 @@ import {
   BUILD_IMAGE_VERSION,
   CODE_BUILD_PROJECT_NAME,
   GET_BUILD_BY_RUN_ID_TOPIC,
-} from 'src/constants';
-import { QueueService } from 'src/queue/queue.service';
-import { timeFormatYearMonthDay } from 'src/utils/timeFormat';
+} from '../constants';
+import { QueueService } from '../queue/queue.service';
+import { timeFormatYearMonthDay } from '../utils/timeFormat';
 import { BuildService } from './build.service';
 import {
   BuildStateChangeDetail,
