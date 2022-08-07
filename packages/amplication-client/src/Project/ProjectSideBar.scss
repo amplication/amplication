@@ -2,10 +2,7 @@
 
 .project-sidebar {
   @include flexColumn;
-  padding: var(--large-spacing);
-  border: $border-black70;
-  border-radius: var(--default-spacing-small);
-  width: 256px;
+  height: 100%;
 
   &__project-wrapper {
     flex-grow: 1;
