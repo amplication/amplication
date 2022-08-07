@@ -12,4 +12,8 @@ export class DsgContext implements types.DsgContext {
   public static get getInstance(): DsgContext {
     return this.instance || (this.instance = new this());
   }
+
+  private constructor() {
+    //prevent external code from creating instances of the context
+  }
 }
