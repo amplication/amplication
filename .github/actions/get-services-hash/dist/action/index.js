@@ -5992,6 +5992,7 @@ try {
     console.log(`OS_PATH: ${OS_PATH}`);
     console.log(`WORKING_DIRECTORY: ${WORKING_DIRECTORY}`);
     console.log(`HASH_IGNORE: ${HASH_IGNORE}`);
+    console.log(`FOLDERS_TO_HASH: ${FOLDERS_TO_HASH}`);
     const hashingService = new hashing_service_1.default(HASH_IGNORE);
     const main_logic = new main_logic_service_1.default(hashingService);
     const packages = main_logic.getPackages(WORKING_DIRECTORY, OS_PATH)
