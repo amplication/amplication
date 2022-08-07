@@ -83,7 +83,6 @@ const useResources = (
     data: models.ResourceCreateWithEntitiesInput,
     eventName: string
   ) => {
-    console.log(data);
     trackEvent({
       eventName: eventName,
     });
