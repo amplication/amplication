@@ -7,19 +7,16 @@ import {ServiceHash} from "../entities/service-hash";
 export default class MainLogicService{
     constructor(private hashingService:HashingService) {
     }
-    public getCharts:(workingDirectory:string)=>string[] = (workingDirectory:string):string[]=>fs.readdirSync(`${workingDirectory}/helm/charts/services`)
 
-    public  getServices:(workingDirectory:string,charts:string[],path:string)=>ServiceDetails[] = (workingDirectory:string,charts:string[],path:string):ServiceDetails[]=> {
-        return charts.map(service => {
-            const packageFolderPath = `${workingDirectory}/${path}/${service}`
-            const packageJsonPath = `${packageFolderPath}/package.json`
+    public  getServices:(workingDirectory:string,services:string[])=>ServiceDetails[] = (workingDirectory:string,services:string[]):ServiceDetails[]=> {
+        return services.map(service => {
+            const packageJsonPath = `${workingDirectory}/${service}/package.json`
             if (fs.existsSync(packageJsonPath)) {
                 const packageJson = require(packageJsonPath)
                 const dependencies = Object.keys(packageJson.dependencies).filter(v => v.startsWith("@amplication"))
                 const packageName = packageJson.name
                 return new ServiceDetails(
                     service,
-                    packageFolderPath,
                     packageName,
                     dependencies
                 );
@@ -64,7 +61,7 @@ export default class MainLogicService{
             })
             const hashes: string[] = [serviceHash].concat(dependenciesHashes)
 
-            return new ServiceHash(service.pkg,service.name,service.folder, this.hashingService.getHash(hashes.join("")),service.dependencies);
+            return new ServiceHash(service.pkg,service.folder,this.hashingService.getHash(hashes.join("")),service.dependencies);
         })
     }
 }

@@ -1,5 +1,10 @@
 name: 'Create services hash'
 description: 'Create services hash code hash signatures for change in code detection'
+inputs:
+  folders-to-hash:
+    description: 'list of folders tp hash'
+  hash-ignore:
+    description: 'list of files and folders that dont need to be included in the hash'
 outputs:
   service_hashes:
     description: 'list of services hashes'
