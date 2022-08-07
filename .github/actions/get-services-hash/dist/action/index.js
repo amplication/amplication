@@ -5983,15 +5983,13 @@ try {
     const EE_PATH = `ee/packages`;
     const OS_PATH = `packages`;
     const WORKING_DIRECTORY = process.env.GITHUB_WORKSPACE || `${process.cwd()}/../../../..`;
-    const HASH_IGNORE = core.getInput('hash-ignore') || ["node_modules/**", "lib/**", "dist/**", "**/*.spec.ts", "__tests__/**", "__mocks__/**", "test/**", "tests/**"];
-    const FOLDERS_TO_HASH = core.getInput('folders-to-hash') || ["ee/packages/amplication-git-pull-service", "ee/packages/amplication-git-push-webhook-service", "packages/amplication-client",
-        "packages/amplication-data-service-generator", "packages/amplication-git-pull-request-service",
-        "packages/amplication-scheduler", "packages/amplication-server", "packages/amplication-storage-gateway"];
+    const HASH_IGNORE = JSON.parse(core.getInput('hash-ignore'));
+    const FOLDERS_TO_HASH = JSON.parse(core.getInput('folders-to-hash'));
     console.log(`Start creating services hashes`);
     console.log(`EE_PATH: ${EE_PATH}`);
     console.log(`OS_PATH: ${OS_PATH}`);
     console.log(`WORKING_DIRECTORY: ${WORKING_DIRECTORY}`);
-    console.log(`HASH_IGNORE: ${HASH_IGNORE}`);
+    console.log(`HASH_IGNORE:`, HASH_IGNORE);
     console.log(`FOLDERS_TO_HASH: ${FOLDERS_TO_HASH}`);
     const hashingService = new hashing_service_1.default(HASH_IGNORE);
     const main_logic = new main_logic_service_1.default(hashingService);
