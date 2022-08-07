@@ -54,7 +54,7 @@ export class AppController {
         `Failed to run code build: message: ${message} error: ${error}`,
         { error, class: QueueService.name, message },
       );
-      this.emitFailureMessage(generateResource.buildId, error.message);
+      this.emitFailureMessage(generateResource.buildId, '', error.message);
     }
   }
 
@@ -79,8 +79,8 @@ export class AppController {
 
   @EventPattern(EnvironmentVariables.instance.get(BUILD_STATUS_TOPIC, true))
   async receiveBuildStatus(@Payload() queueMessage: any) {
+    const event = queueMessage.value as BuildStatusEvent;
     try {
-      const event = queueMessage.value as BuildStatusEvent;
       switch (event.status) {
         case BuildStatus.Succeeded:
           const build = await this.buildService.getBuild(event.runId);
@@ -101,6 +101,7 @@ export class AppController {
         `Failed to process build status event. message: ${queueMessage} error: ${err}`,
         { error: err, message: queueMessage },
       );
+      this.emitFailureMessage(event.buildId, event.runId, err.message);
     }
   }
 
@@ -115,7 +116,7 @@ export class AppController {
     this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
   }
 
-  emitFailureMessage(buildId: string, message: string) {
+  emitFailureMessage(buildId: string, runId: string, message: string) {
     const event: BuildStatusEvent = {
       buildId,
       status: BuildStatus.Failed,
