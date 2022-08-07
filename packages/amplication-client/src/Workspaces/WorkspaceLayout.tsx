@@ -13,7 +13,9 @@ import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
 import useResources from "./hooks/useResources";
 import { AppRouteProps } from "../routes/routesUtil";
-import usePendingChanges, { PendingChangeItem } from "./hooks/usePendingChanges";
+import usePendingChanges, {
+  PendingChangeItem,
+} from "./hooks/usePendingChanges";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import PendingChanges from "../VersionControl/PendingChanges";
 
@@ -53,6 +55,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     errorResources,
     currentResource,
     setResource,
+    createResource,
+    loadingCreateResource,
+    errorCreateResource,
   } = useResources(currentWorkspace, currentProject);
 
   const {
@@ -71,21 +76,24 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     <AppContextProvider
       newVal={{
         currentWorkspace,
+        handleSetCurrentWorkspace,
+        createWorkspace,
+        createNewWorkspaceError,
+        loadingCreateNewWorkspace,
         currentProject,
         projectsList,
         setNewProject: createProject,
         onNewProjectCompleted,
-        handleSetCurrentWorkspace,
         resources,
+        setNewResource: createResource,
         projectConfigurationResource,
         handleSearchChange,
         loadingResources,
         errorResources,
+        loadingCreateResource,
+        errorCreateResource,
         currentResource,
         setResource,
-        createWorkspace,
-        createNewWorkspaceError,
-        loadingCreateNewWorkspace,
         pendingChanges,
         commitRunning,
         pendingChangesIsError,
@@ -108,7 +116,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
               {projectsList.length ? innerRoutes : <ProjectEmptyState />}
             </div>
             <div className={`${moduleClass}__changes_menu`}>
-              { currentResource ? <PendingChanges resourceId={currentResource.id} /> : null}
+              {currentResource ? (
+                <PendingChanges resourceId={currentResource.id} />
+              ) : null}
             </div>
           </div>
           <WorkspaceFooter />

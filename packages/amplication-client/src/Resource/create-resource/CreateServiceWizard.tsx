@@ -5,10 +5,13 @@ import {
   Modal,
   Snackbar,
 } from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
-import React, { MutableRefObject, useCallback, useEffect, useRef } from "react";
-import { match, useHistory } from "react-router-dom";
-import { useTracking } from "../../util/analytics";
+import React, {
+  MutableRefObject,
+  useCallback,
+  useContext,
+  useRef,
+} from "react";
+import { match } from "react-router-dom";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
 import {
@@ -20,8 +23,8 @@ import { createResource, serviceSettingsFieldsInitValues } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
-import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
 import { AppRouteProps } from "../../routes/routesUtil";
+import { AppContext } from "../../context/appContext";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -30,61 +33,26 @@ type Props = AppRouteProps & {
   }>;
 };
 
-type TData = {
-  createResourceWithEntities: models.Resource;
-};
+const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
+  const {
+    currentProject,
+    setNewResource,
+    errorCreateResource,
+    loadingCreateResource,
+  } = useContext(AppContext);
 
-const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
-  const { workspace, project } = match.params;
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
   );
 
-  const { trackEvent } = useTracking();
-  const history = useHistory();
-  const [createResourceWithEntities, { loading, data, error }] = useMutation<
-    TData
-  >(CREATE_RESOURCE_WITH_ENTITIES, {
-    update(cache, { data }) {
-      if (!data) return;
-
-      const queryData = cache.readQuery<{ resources: Array<models.Resource> }>({
-        query: GET_RESOURCES,
-      });
-      if (queryData === null) {
-        return;
-      }
-      cache.writeQuery({
-        query: GET_RESOURCES,
-        data: {
-          resources: queryData.resources.concat([
-            data.createResourceWithEntities,
-          ]),
-        },
-      });
-    },
-  });
-
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(errorCreateResource);
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
-      trackEvent({
-        eventName: eventName,
-      });
-      createResourceWithEntities({
-        variables: { data: data },
-      }).catch(console.error);
+      setNewResource(data, eventName);
     },
-    [createResourceWithEntities, trackEvent]
+    [setNewResource]
   );
-
-  useEffect(() => {
-    if (data) {
-      const resource = data.createResourceWithEntities;
-      history.push(`/${workspace}/${project}/${resource.id}`);
-    }
-  }, [history, data, project, workspace]);
 
   const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
     serviceSettingsFields.current = currentServiceSettings;
@@ -101,25 +69,27 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
     const isResourceWithEntities =
       serviceSettingsFields.current.resourceType === "sample";
 
-    const resource = createResource(
-      project,
-      isResourceWithEntities,
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi
-    );
+    if (currentProject) {
+      const resource = createResource(
+        currentProject?.id,
+        isResourceWithEntities,
+        generateAdminUI,
+        generateGraphQL,
+        generateRestApi
+      );
 
-    createStarterResource(
-      resource,
-      isResourceWithEntities
-        ? "createResourceFromSample"
-        : "createResourceFromScratch"
-    );
+      createStarterResource(
+        resource,
+        isResourceWithEntities
+          ? "createResourceFromSample"
+          : "createResourceFromScratch"
+      );
+    }
   };
 
   return (
     <Modal open fullScreen css={moduleClass}>
-      {loading ? (
+      {loadingCreateResource ? (
         <div className={`${moduleClass}__processing`}>
           <div className={`${moduleClass}__processing__title`}>
             All set! We’re currently generating your service.
@@ -169,22 +139,9 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, match }) => {
           <label>Create Service</label>
         </Button>
       </div>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(errorCreateResource)} message={errorMessage} />
     </Modal>
   );
 };
 
 export default CreateServiceWizard;
-
-const CREATE_RESOURCE_WITH_ENTITIES = gql`
-  mutation createResourceWithEntities($data: ResourceCreateWithEntitiesInput!) {
-    createResourceWithEntities(data: $data) {
-      id
-      name
-      description
-      builds(orderBy: { createdAt: Desc }, take: 1) {
-        id
-      }
-    }
-  }
-`;

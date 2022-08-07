@@ -1,11 +1,16 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
-import { GET_RESOURCES } from "../queries/resourcesQueries";
+import { useTracking } from "../../util/analytics";
+import {
+  CREATE_RESOURCE_WITH_ENTITIES,
+  GET_RESOURCES,
+} from "../queries/resourcesQueries";
 
 type TData = {
   resources: models.Resource[];
+  createResourceWithEntities: models.Resource;
 };
 
 const useResources = (
@@ -13,6 +18,7 @@ const useResources = (
   currentProject: models.Project | undefined
 ) => {
   const history = useHistory();
+  const { trackEvent } = useTracking();
   const resourceMatch:
     | (match & {
         params: { workspace: string; project: string; resource: string };
@@ -24,6 +30,7 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
   );
+
   const [currentResource, setCurrentResource] = useState<models.Resource>();
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [
@@ -36,6 +43,7 @@ const useResources = (
     data: resourcesData,
     loading: loadingResources,
     error: errorResources,
+    refetch,
   } = useQuery<TData>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
@@ -44,8 +52,42 @@ const useResources = (
           ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
           : undefined,
     },
-    skip: !currentProject,
+    skip: !currentProject?.id,
   });
+
+  const resourceRedirect = useCallback(
+    (resourceId: string) =>
+      history.push({
+        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`,
+      }),
+    [currentWorkspace, history, currentProject]
+  );
+
+  const onNewResourceCompleted = useCallback(
+    (data: models.Resource) => {
+      refetch().then(() => resourceRedirect(data.id));
+    },
+    [refetch, resourceRedirect]
+  );
+
+  const [
+    createResourceWithEntities,
+    { loading: loadingCreateResource, error: errorCreateResource },
+  ] = useMutation<TData>(CREATE_RESOURCE_WITH_ENTITIES, {
+    onCompleted: (data) => {
+      onNewResourceCompleted(data.createResourceWithEntities);
+    },
+  });
+
+  const createResource = (
+    data: models.ResourceCreateWithEntitiesInput,
+    eventName: string
+  ) => {
+    trackEvent({
+      eventName: eventName,
+    });
+    createResourceWithEntities({ variables: { data: data } });
+  };
 
   useEffect(() => {
     if (!resourceMatch || !resources.length || !projectConfigurationResource)
@@ -79,9 +121,11 @@ const useResources = (
     },
     [setSearchPhrase]
   );
-
   const setResource = useCallback(
     (resource: models.Resource) => {
+      trackEvent({
+        eventName: "resourceCardClick",
+      });
       setCurrentResource(resource);
       currentWorkspace &&
         currentProject &&
@@ -89,7 +133,7 @@ const useResources = (
           `/${currentWorkspace.id}/${currentProject.id}/${resource.id}`
         );
     },
-    [currentProject, currentWorkspace, history]
+    [currentProject, currentWorkspace, history, trackEvent]
   );
 
   return {
@@ -100,6 +144,9 @@ const useResources = (
     errorResources,
     currentResource,
     setResource,
+    createResource,
+    loadingCreateResource,
+    errorCreateResource,
   };
 };
 
