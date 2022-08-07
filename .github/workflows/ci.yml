@@ -145,7 +145,7 @@ jobs:
         id: service-hashes
         uses: ./.github/actions/get-services-hash
         with:
-          folders-to-hash: ${{ steps.find-folders.outputs.folders }}
+          folders-to-hash: ${{ toJson(steps.find-folders.outputs.folders) }}
           hash-ignore: '["node_modules/**", "lib/**", "dist/**", "**/*.spec.ts","__tests__/**","__mocks__/**","test/**","tests/**"]'
 
       - name: Get the output time

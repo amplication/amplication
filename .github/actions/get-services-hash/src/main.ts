@@ -20,6 +20,7 @@ try {
     console.log(`OS_PATH: ${OS_PATH}`)
     console.log(`WORKING_DIRECTORY: ${WORKING_DIRECTORY}`)
     console.log(`HASH_IGNORE: ${HASH_IGNORE}`)
+    console.log(`FOLDERS_TO_HASH: ${FOLDERS_TO_HASH}`)
 
     const hashingService = new HashingService(HASH_IGNORE)
     const main_logic = new MainLogicService(hashingService)
