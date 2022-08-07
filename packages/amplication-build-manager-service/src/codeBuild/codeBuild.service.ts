@@ -27,6 +27,7 @@ import {
   BuildStateChangeDetail,
   CodeGenNotificationMessage,
 } from './dto/CodeBuildNotificationMessage';
+import { CodeBuildStatus } from './dto/CodeBuildStatus';
 
 @Injectable()
 export class CodeBuildService implements BuildService {
@@ -96,15 +97,17 @@ export class CodeBuildService implements BuildService {
     }
   }
 
-  mapCodeBuildStatusToAmplicationBuildStatus(buildStatus: string): BuildStatus {
+  mapCodeBuildStatusToAmplicationBuildStatus(
+    buildStatus: CodeBuildStatus,
+  ): BuildStatus {
     switch (buildStatus) {
-      case 'SUCCEEDED':
+      case CodeBuildStatus.Succeeded:
         return BuildStatus.Succeeded;
-      case 'FAILED':
+      case CodeBuildStatus.Failed:
         return BuildStatus.Failed;
-      case 'IN_PROGRESS':
+      case CodeBuildStatus.InProgress:
         return BuildStatus.InProgress;
-      case 'STOPPED':
+      case CodeBuildStatus.Stopped:
         return BuildStatus.Stopped;
       default:
         throw new Error(`Unknown CodeBuild build status: ${buildStatus}.`);
@@ -117,7 +120,7 @@ export class CodeBuildService implements BuildService {
 
     const buildId = stateChangeDetail['build-id'];
 
-    const buildStatus = stateChangeDetail['build-status'];
+    const buildStatus = stateChangeDetail['build-status'] as CodeBuildStatus;
     const buildStatusEventStatus =
       this.mapCodeBuildStatusToAmplicationBuildStatus(buildStatus);
 
