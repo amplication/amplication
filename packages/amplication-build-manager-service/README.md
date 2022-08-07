@@ -39,6 +39,7 @@ You can also use a more manual step-by-step approach to set up Amplication Build
 | BUILD_STATE_TOPIC | Topic that stores build phase messages from CodeBuild. | `build.external.build-phase.event.0` |
 | BUILD_IMAGE_NAME | Code generator base image name. | `amplication-data-service-generator` |
 | BUILD_IMAGE_VERSION | Code generator base image version. | `0.0.5` |
+| GET_BUILD_BY_RUN_ID_TOPIC | Topic for receiving build from server to build manager. | `build.internal.get-build-by-run-id.message.0` | 
 
 #### Manual one-time set up
 
