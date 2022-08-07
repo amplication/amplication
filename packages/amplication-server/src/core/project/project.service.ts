@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { FindOneArgs } from 'src/dto';
 import { Project } from 'src/models';
 import { ResourceService } from '..';
-import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 @Injectable()
 export class ProjectService {
@@ -21,15 +20,16 @@ export class ProjectService {
   }
 
   async createProject(
-    args: ProjectCreateArgs,
+    name: string,
+    workspaceId: string,
     userId: string
   ): Promise<Project> {
     const project = await this.prisma.project.create({
       data: {
-        ...args.data,
+        name: name,
         workspace: {
           connect: {
-            id: args.data.workspace.connect.id
+            id: workspaceId
           }
         }
       }

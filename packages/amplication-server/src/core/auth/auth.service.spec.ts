@@ -153,7 +153,7 @@ const createWorkspaceMock = jest.fn(() => ({
   users: [EXAMPLE_AUTH_USER]
 }));
 
-const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
+const createProjectMock = jest.fn(() => EXAMPLE_PROJECT);
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -168,7 +168,7 @@ describe('AuthService', () => {
     validatePasswordMock.mockClear();
     findUsersMock.mockClear();
     createWorkspaceMock.mockClear();
-    prismaCreateProjectMock.mockClear();
+    createProjectMock.mockClear();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -216,10 +216,13 @@ describe('AuthService', () => {
           useClass: jest.fn(() => ({
             account: {
               findUnique: prismaAccountFindOneMock
-            },
-            project: {
-              create: prismaCreateProjectMock
             }
+          }))
+        },
+        {
+          provide: ProjectService,
+          useClass: jest.fn(() => ({
+            createProject: createProjectMock
           }))
         },
         AuthService

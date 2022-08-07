@@ -58,7 +58,12 @@ export class ProjectResolver {
     @Args() args: ProjectCreateArgs,
     @UserEntity() user: User
   ): Promise<Project> {
-    return this.projectService.createProject(args, user.id);
+    const { name, workspace } = args.data;
+    return this.projectService.createProject(
+      name,
+      workspace.connect.id,
+      user.id
+    );
   }
 
   @ResolveField(() => [Resource])
