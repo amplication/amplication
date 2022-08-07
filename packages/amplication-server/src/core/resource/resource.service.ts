@@ -129,26 +129,26 @@ export class ResourceService {
       generationSettings
     );
 
-    try {
-      await this.commit(
-        {
-          data: {
-            project: {
-              connect: {
-                id: resource.projectId
-              }
-            },
-            message: INITIAL_COMMIT_MESSAGE,
-            user: {
-              connect: {
-                id: user.id
-              }
-            }
-          }
-        },
-        true
-      );
-    } catch {} //ignore - return the new resource and the message will be available on the build log
+    // try {
+    //   await this.commit(
+    //     {
+    //       data: {
+    //         project: {
+    //           connect: {
+    //             id: resource.projectId
+    //           }
+    //         },
+    //         message: INITIAL_COMMIT_MESSAGE,
+    //         user: {
+    //           connect: {
+    //             id: user.id
+    //           }
+    //         }
+    //       }
+    //     },
+    //     true
+    //   );
+    // } catch {} //ignore - return the new resource and the message will be available on the build log
 
     return resource;
   }
