@@ -9,7 +9,7 @@ type Props = AppRouteProps & {
   match: match<{ resource: string }>;
 };
 
-const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
+const ResourceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
   const pageTitle = "Resource settings";
   const { currentWorkspace, currentProject } = useContext(AppContext);
@@ -76,4 +76,4 @@ const ServiceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
   );
 };
 
-export default ServiceSettingsPage;
+export default ResourceSettingsPage;
