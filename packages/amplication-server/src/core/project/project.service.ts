@@ -2,7 +2,7 @@ import { PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { FindOneArgs } from 'src/dto';
 import { Commit, Project, Resource, User } from 'src/models';
-import { ResourceService, EntityService } from '..';
+import { ResourceService, EntityService } from '../';
 import { BlockService } from '../block/block.service';
 import { BuildService } from '../build/build.service';
 import {

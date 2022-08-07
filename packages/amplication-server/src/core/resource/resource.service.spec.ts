@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
   DEFAULT_SERVICE_DATA,
-  INITIAL_COMMIT_MESSAGE,
   INVALID_RESOURCE_ID,
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService
@@ -162,7 +161,8 @@ const EXAMPLE_CHANGED_ENTITY: PendingChange = {
   action: EnumPendingChangeAction.Create,
   originType: EnumPendingChangeOriginType.Entity,
   versionNumber: 1,
-  origin: EXAMPLE_ENTITY
+  origin: EXAMPLE_ENTITY,
+  resource: EXAMPLE_RESOURCE
 };
 
 const EXAMPLE_CHANGED_BLOCK: PendingChange = {
@@ -170,7 +170,8 @@ const EXAMPLE_CHANGED_BLOCK: PendingChange = {
   action: EnumPendingChangeAction.Create,
   originType: EnumPendingChangeOriginType.Block,
   versionNumber: 1,
-  origin: EXAMPLE_BLOCK
+  origin: EXAMPLE_BLOCK,
+  resource: EXAMPLE_RESOURCE
 };
 
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -454,60 +455,6 @@ describe('ResourceService', () => {
         }
       }
     };
-    const commitArgs = {
-      data: {
-        message: INITIAL_COMMIT_MESSAGE,
-        project: { connect: { id: EXAMPLE_PROJECT_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
-    const findManyArgs = {
-      where: {
-        deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: EXAMPLE_USER_ID
-              }
-            }
-          }
-        }
-      }
-    };
-    const createVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
-        }
-      }
-    };
-    const blockCreateVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        block: {
-          connect: {
-            id: EXAMPLE_BLOCK_ID
-          }
-        }
-      }
-    };
-    const changedEntitiesArgs = {
-      resourceId: EXAMPLE_RESOURCE_ID,
-      userId: EXAMPLE_USER_ID
-    };
     expect(
       await service.createResource(
         createResourceArgs.args,
@@ -527,32 +474,6 @@ describe('ResourceService', () => {
     expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledTimes(1);
     expect(environmentServiceCreateDefaultEnvironmentMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID
-    );
-    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
-    expect(prismaResourceFindManyMock).toHaveBeenCalledWith(findManyArgs);
-    expect(prismaCommitCreateMock).toBeCalledTimes(1);
-    expect(prismaCommitCreateMock).toBeCalledWith(commitArgs);
-    expect(prismaCommitCreateMock).toBeCalledTimes(1);
-    expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
-    expect(blockServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(blockServiceCreateVersionMock).toBeCalledWith(
-      blockCreateVersionArgs
-    );
-
-    expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
-    expect(blockServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(blockServiceReleaseLockMock).toBeCalledWith(EXAMPLE_BLOCK_ID);
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
-      changedEntitiesArgs.resourceId,
-      changedEntitiesArgs.userId
-    );
-    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
-    expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
-      changedEntitiesArgs.resourceId,
-      changedEntitiesArgs.userId
     );
   });
 
@@ -612,65 +533,7 @@ describe('ResourceService', () => {
         }
       }
     };
-    const initialCommitArgs = {
-      data: {
-        message: INITIAL_COMMIT_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
     const commitMessage = 'CreateWithEntitiesCommitMessage';
-    const createSampleEntitiesCommitArgs = {
-      data: {
-        message: commitMessage,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
-    const findManyArgs = {
-      where: {
-        deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: EXAMPLE_USER_ID
-              }
-            }
-          }
-        }
-      }
-    };
-    const createVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
-        }
-      }
-    };
-    const blockCreateVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        block: {
-          connect: {
-            id: EXAMPLE_BLOCK_ID
-          }
-        }
-      }
-    };
-
     const createOneEntityArgs = {
       data: {
         resource: {
@@ -683,7 +546,6 @@ describe('ResourceService', () => {
         pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
       }
     };
-
     const createFieldByDisplayNameArgs = {
       data: {
         entity: {
@@ -693,11 +555,6 @@ describe('ResourceService', () => {
         },
         displayName: EXAMPLE_ENTITY_FIELD_NAME
       }
-    };
-
-    const changesArgs = {
-      resourceId: EXAMPLE_RESOURCE_ID,
-      userId: EXAMPLE_USER_ID
     };
     await expect(
       service.createResourceWithEntities(
@@ -729,7 +586,7 @@ describe('ResourceService', () => {
       prismaResourceCreateResourceArgs
     );
 
-    expect(prismaResourceFindManyMock).toBeCalledTimes(3);
+    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
     expect(prismaResourceFindManyMock.mock.calls).toEqual([
       [
         {
@@ -746,8 +603,6 @@ describe('ResourceService', () => {
           }
         }
       ],
-      [findManyArgs],
-      [findManyArgs]
     ]);
 
     expect(entityServiceCreateOneEntityMock).toBeCalledTimes(1);
@@ -761,42 +616,7 @@ describe('ResourceService', () => {
       createFieldByDisplayNameArgs,
       EXAMPLE_USER
     );
-
-    expect(prismaCommitCreateMock).toBeCalledTimes(2);
-    expect(prismaCommitCreateMock.mock.calls).toEqual([
-      [initialCommitArgs],
-      [createSampleEntitiesCommitArgs]
-    ]);
-    expect(entityServiceCreateVersionMock).toBeCalledTimes(2);
-    expect(entityServiceCreateVersionMock.mock.calls).toEqual([
-      [createVersionArgs],
-      [createVersionArgs]
-    ]);
-    expect(blockServiceCreateVersionMock).toBeCalledTimes(2);
-    expect(blockServiceCreateVersionMock.mock.calls).toEqual([
-      [blockCreateVersionArgs],
-      [blockCreateVersionArgs]
-    ]);
-    expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
-    expect(entityServiceReleaseLockMock.mock.calls).toEqual([
-      [EXAMPLE_ENTITY_ID],
-      [EXAMPLE_ENTITY_ID]
-    ]);
-    expect(blockServiceReleaseLockMock).toBeCalledTimes(2);
-    expect(blockServiceReleaseLockMock.mock.calls).toEqual([
-      [EXAMPLE_BLOCK_ID],
-      [EXAMPLE_BLOCK_ID]
-    ]);
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
-    expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
-      [changesArgs.resourceId, changesArgs.userId],
-      [changesArgs.resourceId, changesArgs.userId]
-    ]);
-    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(2);
-    expect(blockServiceGetChangedBlocksMock.mock.calls).toEqual([
-      [changesArgs.resourceId, changesArgs.userId],
-      [changesArgs.resourceId, changesArgs.userId]
-    ]);
+    
   });
 
   it('should find a resource', async () => {
@@ -852,114 +672,6 @@ describe('ResourceService', () => {
     expect(await service.updateResource(args)).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith(args);
-  });
-
-  it('should commit', async () => {
-    const args = {
-      data: {
-        message: EXAMPLE_MESSAGE,
-        project: { connect: { id: EXAMPLE_PROJECT_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
-    const findManyArgs = {
-      where: {
-        deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: EXAMPLE_USER_ID
-              }
-            }
-          }
-        }
-      }
-    };
-
-    const createVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
-        }
-      }
-    };
-    const blockCreateVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        block: {
-          connect: {
-            id: EXAMPLE_BLOCK_ID
-          }
-        }
-      }
-    };
-    const changesArgs = {
-      resourceId: EXAMPLE_RESOURCE_ID,
-      userId: EXAMPLE_USER_ID
-    };
-    const buildCreateArgs = {
-      data: {
-        resource: {
-          connect: {
-            id: EXAMPLE_RESOURCE_ID
-          }
-        },
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        createdBy: {
-          connect: {
-            id: EXAMPLE_USER_ID
-          }
-        },
-        message: args.data.message
-      }
-    };
-    expect(await service.commit(args, false)).toEqual(EXAMPLE_COMMIT);
-    expect(prismaResourceFindManyMock).toBeCalledTimes(1);
-    expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
-
-    expect(prismaCommitCreateMock).toBeCalledTimes(1);
-    expect(prismaCommitCreateMock).toBeCalledWith(args);
-    expect(entityServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(entityServiceCreateVersionMock).toBeCalledWith(createVersionArgs);
-    expect(blockServiceCreateVersionMock).toBeCalledTimes(1);
-    expect(blockServiceCreateVersionMock).toBeCalledWith(
-      blockCreateVersionArgs
-    );
-    expect(entityServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(entityServiceReleaseLockMock).toBeCalledWith(EXAMPLE_ENTITY_ID);
-
-    expect(blockServiceReleaseLockMock).toBeCalledTimes(1);
-    expect(blockServiceReleaseLockMock).toBeCalledWith(EXAMPLE_BLOCK_ID);
-
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(1);
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledWith(
-      changesArgs.resourceId,
-      changesArgs.userId
-    );
-    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(1);
-    expect(blockServiceGetChangedBlocksMock).toBeCalledWith(
-      changesArgs.resourceId,
-      changesArgs.userId
-    );
-    expect(buildServiceCreateMock).toBeCalledTimes(1);
-    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs, false);
   });
 
   describe('deleted resources', () => {
