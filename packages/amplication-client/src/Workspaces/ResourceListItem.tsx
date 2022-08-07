@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useTracking } from "../util/analytics";
 
 import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -20,17 +19,17 @@ import { AppContext } from "../context/appContext";
 type Props = {
   resource: models.Resource;
   onDelete?: (resource: models.Resource) => void;
-  onSelectResource?: (resource: models.Resource) => void;
 };
 
 const CLASS_NAME = "resource-list-item";
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
-function ResourceListItem({ resource, onDelete, onSelectResource }: Props) {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+function ResourceListItem({ resource, onDelete }: Props) {
+  const { currentWorkspace, currentProject, setResource } = useContext(
+    AppContext
+  );
   const { id, name, description } = resource;
-  const { trackEvent } = useTracking();
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const handleDelete = useCallback(
@@ -53,11 +52,8 @@ function ResourceListItem({ resource, onDelete, onSelectResource }: Props) {
   }, [onDelete, resource]);
 
   const handleClick = useCallback(() => {
-    onSelectResource && onSelectResource(resource);
-    trackEvent({
-      eventName: "resourceCardClick",
-    });
-  }, [onSelectResource, resource, trackEvent]);
+    setResource(resource);
+  }, [resource, setResource]);
 
   const lastBuild = resource.builds[0];
 

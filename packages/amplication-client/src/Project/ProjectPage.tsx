@@ -16,7 +16,7 @@ const ProjectPage: React.FC<Props> = ({ innerRoutes, match, moduleClass }) => {
   return (
     <div className={moduleClass}>
       {match.isExact ? (
-        <>
+        <> 
           <div className={`${moduleClass}__sidebar`}>
             <div className={`${moduleClass}__sidebar-content`}>
               <ProjectSideBar />

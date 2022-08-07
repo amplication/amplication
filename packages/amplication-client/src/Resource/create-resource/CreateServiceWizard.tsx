@@ -5,7 +5,6 @@ import {
   Modal,
   Snackbar,
 } from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
 import React, {
   MutableRefObject,
   useCallback,
@@ -13,7 +12,6 @@ import React, {
   useRef,
 } from "react";
 import { match } from "react-router-dom";
-import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
 import {
@@ -25,7 +23,6 @@ import { createResource, serviceSettingsFieldsInitValues } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
-import { GET_RESOURCES } from "../../Workspaces/queries/resourcesQueries";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
 
@@ -36,58 +33,25 @@ type Props = AppRouteProps & {
   }>;
 };
 
-type TData = {
-  createResourceWithEntities: models.Resource;
-};
-
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
-  const { currentProject, onNewResourceCompleted } = useContext(AppContext);
+  const {
+    currentProject,
+    setNewResource,
+    errorCreateResource,
+    loadingCreateResource,
+  } = useContext(AppContext);
 
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
   );
 
-  const { trackEvent } = useTracking();
-  const [createResourceWithEntities, { loading, error }] = useMutation<TData>(
-    CREATE_RESOURCE_WITH_ENTITIES,
-    {
-      onCompleted: (data) => {
-        onNewResourceCompleted(data.createResourceWithEntities);
-      },
-      update(cache, { data }) {
-        if (!data) return;
-        const queryData = cache.readQuery<{
-          resources: Array<models.Resource>;
-        }>({
-          query: GET_RESOURCES,
-        });
-        if (queryData === null) {
-          return;
-        }
-        cache.writeQuery({
-          query: GET_RESOURCES,
-          data: {
-            resources: queryData.resources.concat([
-              data.createResourceWithEntities,
-            ]),
-          },
-        });
-      },
-    }
-  );
-
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(errorCreateResource);
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
-      trackEvent({
-        eventName: eventName,
-      });
-      createResourceWithEntities({
-        variables: { data: data },
-      }).catch(console.error);
+      setNewResource(data, eventName);
     },
-    [createResourceWithEntities, trackEvent]
+    [setNewResource]
   );
 
   const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
@@ -125,7 +89,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
 
   return (
     <Modal open fullScreen css={moduleClass}>
-      {loading ? (
+      {loadingCreateResource ? (
         <div className={`${moduleClass}__processing`}>
           <div className={`${moduleClass}__processing__title`}>
             All set! We’re currently generating your service.
@@ -175,22 +139,9 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
           <label>Create Service</label>
         </Button>
       </div>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(errorCreateResource)} message={errorMessage} />
     </Modal>
   );
 };
 
 export default CreateServiceWizard;
-
-const CREATE_RESOURCE_WITH_ENTITIES = gql`
-  mutation createResourceWithEntities($data: ResourceCreateWithEntitiesInput!) {
-    createResourceWithEntities(data: $data) {
-      id
-      name
-      description
-      builds(orderBy: { createdAt: Desc }, take: 1) {
-        id
-      }
-    }
-  }
-`;
