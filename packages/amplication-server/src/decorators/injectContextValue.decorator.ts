@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 import {
   INJECT_CONTEXT_VALUE,
   InjectContextValueParameters
@@ -12,7 +12,7 @@ import {
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const InjectContextValue = (
-  parameterType: InjectableResourceParameter,
+  parameterType: InjectableOriginParameter,
   parameterPath: string
 ) =>
   SetMetadata<string, InjectContextValueParameters>(INJECT_CONTEXT_VALUE, {

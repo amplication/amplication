@@ -32,7 +32,7 @@ import {
 import { FindOneArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import {
-  EnumPendingChangeResourceType,
+  EnumPendingChangeOriginType,
   EnumPendingChangeAction,
   PendingChange
 } from '../app/dto';
@@ -49,14 +49,14 @@ const NON_COMPARABLE_PROPERTIES = [
 
 export type BlockPendingChange = {
   /** The id of the changed block */
-  resourceId: string;
+  originId: string;
   /** The type of change */
   action: EnumPendingChangeAction;
-  resourceType: EnumPendingChangeResourceType.Block;
+  originType: EnumPendingChangeOriginType.Block;
   /** The block version number */
   versionNumber: number;
   /** The block */
-  resource: Block;
+  origin: Block;
 };
 
 @Injectable()
@@ -615,11 +615,11 @@ export class BlockService {
       }
 
       return {
-        resourceId: block.id,
+        originId: block.id,
         action: action,
-        resourceType: EnumPendingChangeResourceType.Block,
+        originType: EnumPendingChangeOriginType.Block,
         versionNumber: lastVersion.versionNumber + 1,
-        resource: block
+        origin: block
       };
     });
   }
@@ -657,11 +657,11 @@ export class BlockService {
       }
 
       return {
-        resourceId: block.id,
+        originId: block.id,
         action: action,
-        resourceType: EnumPendingChangeResourceType.Block,
+        originType: EnumPendingChangeOriginType.Block,
         versionNumber: changedVersion.versionNumber,
-        resource: block
+        origin: block
       };
     });
   }

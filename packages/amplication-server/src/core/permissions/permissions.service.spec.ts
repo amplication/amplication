@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionsService } from './permissions.service';
 import { PrismaService } from '@amplication/prisma-db';
 import { User, Workspace } from 'src/models';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 
-const UNEXPECTED_RESOURCE_TYPE = -1;
-const UNEXPECTED_RESOURCE_ID = 'unexpectedResourceId';
+const UNEXPECTED_ORIGIN_TYPE = -1;
+const UNEXPECTED_ORIGIN_ID = 'unexpectedOriginId';
 
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
@@ -70,56 +70,48 @@ describe('PermissionsService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return true when resourceType is an authorized workspace id', async () => {
+  it('should return true when originType is an authorized workspace id', async () => {
     const args = {
       user: EXAMPLE_USER,
-      resourceType: AuthorizableResourceParameter.WorkspaceId,
-      resourceId: EXAMPLE_WORKSPACE_ID
+      originType: AuthorizableOriginParameter.WorkspaceId,
+      originId: EXAMPLE_WORKSPACE_ID
     };
     expect(
-      await service.validateAccess(
-        args.user,
-        args.resourceType,
-        args.resourceId
-      )
+      await service.validateAccess(args.user, args.originType, args.originId)
     ).toEqual(true);
   });
 
-  it('should return true when resourceType is an authorized app id', async () => {
+  it('should return true when originType is an authorized app id', async () => {
     const args = {
       user: EXAMPLE_USER,
-      resourceType: AuthorizableResourceParameter.AppId,
-      resourceId: EXAMPLE_APP_ID
+      originType: AuthorizableOriginParameter.AppId,
+      originId: EXAMPLE_APP_ID
     };
     const countArgs = {
       where: {
         deletedAt: null,
-        id: args.resourceId,
+        id: args.originId,
         workspace: {
           id: EXAMPLE_WORKSPACE_ID
         }
       }
     };
     expect(
-      await service.validateAccess(
-        args.user,
-        args.resourceType,
-        args.resourceId
-      )
+      await service.validateAccess(args.user, args.originType, args.originId)
     ).toEqual(true);
     expect(prismaAppCountMock).toBeCalledTimes(1);
     expect(prismaAppCountMock).toBeCalledWith(countArgs);
   });
 
-  it('should return true if resourceType is an authorized instance of AuthorizableResourceParameter', async () => {
+  it('should return true if originType is an authorized instance of AuthorizableOriginParameter', async () => {
     const args = {
       user: EXAMPLE_USER,
-      resourceType: AuthorizableResourceParameter.AppRoleId,
-      resourceId: EXAMPLE_APP_ROLE_ID
+      originType: AuthorizableOriginParameter.AppRoleId,
+      originId: EXAMPLE_APP_ROLE_ID
     };
     const countArgs = {
       where: {
-        id: args.resourceId,
+        id: args.originId,
         app: {
           deletedAt: null,
           workspace: {
@@ -129,11 +121,7 @@ describe('PermissionsService', () => {
       }
     };
     expect(
-      await service.validateAccess(
-        args.user,
-        args.resourceType,
-        args.resourceId
-      )
+      await service.validateAccess(args.user, args.originType, args.originId)
     ).toEqual(true);
     expect(prismaAppRoleCountMock).toBeCalledTimes(1);
     expect(prismaAppRoleCountMock).toBeCalledWith(countArgs);
@@ -142,11 +130,11 @@ describe('PermissionsService', () => {
   it('should throw an error', async () => {
     const args = {
       user: EXAMPLE_USER,
-      resourceType: UNEXPECTED_RESOURCE_TYPE,
-      resourceId: UNEXPECTED_RESOURCE_ID
+      originType: UNEXPECTED_ORIGIN_TYPE,
+      originId: UNEXPECTED_ORIGIN_ID
     };
     await expect(
-      service.validateAccess(args.user, args.resourceType, args.resourceId)
-    ).rejects.toThrow(`Unexpected resource type ${args.resourceType}`);
+      service.validateAccess(args.user, args.originType, args.originId)
+    ).rejects.toThrow(`Unexpected origin type ${args.originType}`);
   });
 });

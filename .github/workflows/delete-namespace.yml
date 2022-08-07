@@ -7,14 +7,23 @@ on:
         description: Select the namespace you wish to delete
         default: shimi
         required: true
-        options: 
-        - shimi
-        - mor
-        - amit
+        options:
+          - shimi
+          - mor
+          - amit
+          - ariel
+          - alex
+          - next
 
+      confirm-namespace:
+        type: string
+        description: Confirm the namespace to delete
+        required: true
+        default: shimi
 jobs:
   delete-namespace:
     runs-on: ubuntu-18.04
+    if: github.event.inputs.namespace == github.event.inputs.confirm-namespace
     steps:
       - name: install argocd
         id: install-argocd
@@ -22,7 +31,7 @@ jobs:
           curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x /usr/local/bin/argocd
       - name: argocd login
-        env: 
+        env:
           ARGO_CD_PASSWORD: ${{ secrets.AWS_STAGING_ARGOCD }}
         run: |
           ARGO_CD_URL="argocd.staging.amplication-dev.com"

@@ -70,7 +70,7 @@ const PendingChangeDiffEntity = ({
     TData
   >(GET_ENTITY_VERSION, {
     variables: {
-      id: change.resourceId,
+      id: change.originId,
       whereVersion:
         compareType === EnumCompareType.Pending
           ? {
@@ -87,7 +87,7 @@ const PendingChangeDiffEntity = ({
     TData
   >(GET_ENTITY_VERSION, {
     variables: {
-      id: change.resourceId,
+      id: change.originId,
       whereVersion:
         compareType === EnumCompareType.Pending
           ? {

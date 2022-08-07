@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseFilters } from '@nestjs/common';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import {
   CreateAppRoleArgs,
   FindManyAppRoleArgs,
@@ -21,7 +21,7 @@ export class AppRoleResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.BlockId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
   async appRole(@Args() args: FindOneAppRoleArgs): Promise<AppRole | null> {
     return this.appRoleService.getAppRole(args);
   }
@@ -30,7 +30,7 @@ export class AppRoleResolver {
     nullable: false,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.app.id')
+  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.app.id')
   async appRoles(@Args() args: FindManyAppRoleArgs): Promise<AppRole[]> {
     return this.appRoleService.getAppRoles(args);
   }
@@ -39,7 +39,7 @@ export class AppRoleResolver {
     nullable: false,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'data.app.connect.id')
+  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'data.app.connect.id')
   async createAppRole(@Args() args: CreateAppRoleArgs): Promise<AppRole> {
     return this.appRoleService.createAppRole(args);
   }
@@ -48,7 +48,7 @@ export class AppRoleResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.AppRoleId, 'where.id')
   async deleteAppRole(
     @Args() args: DeleteAppRoleArgs
   ): Promise<AppRole | null> {
@@ -59,7 +59,7 @@ export class AppRoleResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppRoleId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.AppRoleId, 'where.id')
   async updateAppRole(
     @Args() args: UpdateOneAppRoleArgs
   ): Promise<AppRole | null> {

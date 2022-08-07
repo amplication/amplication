@@ -2,7 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AppSettingsService } from './appSettings.service';
 import { AppSettings, UpdateAppSettingsArgs } from './dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { FindOneArgs } from 'src/dto';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { User } from 'src/models';
@@ -18,7 +18,7 @@ export class AppSettingsResolver {
     nullable: true,
     description: undefined
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.id')
   async updateAppSettings(
     @Args() args: UpdateAppSettingsArgs,
     @UserEntity() user: User
@@ -29,7 +29,7 @@ export class AppSettingsResolver {
   @Query(() => AppSettings, {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableResourceParameter.AppId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.id')
   async appSettings(
     @Args() args: FindOneArgs,
     @UserEntity() user: User

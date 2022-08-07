@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import assert from "assert";
 import { readFileSync } from "fs";
 import { sync } from "glob";
 import { join } from "path";
-import { BASE_BUILDS_FOLDER } from "src/constants";
+import { BASE_BUILDS_FOLDER, DEFAULT_BUILDS_FOLDER } from "../constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 
@@ -15,9 +14,7 @@ export class StorageService {
   private buildsFolder: string;
   constructor(configService: ConfigService) {
     const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
-    assert(buildsFolder);
-    console.log(`BASE_BUILDS_FOLDER ENV is ${buildsFolder}`);
-    this.buildsFolder = buildsFolder;
+    this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
   }
 
   private static buildFolder(

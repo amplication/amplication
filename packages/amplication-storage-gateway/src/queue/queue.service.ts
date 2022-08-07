@@ -2,7 +2,7 @@ import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientKafka } from "@nestjs/microservices";
 import assert from "assert";
-import { CHECK_USER_ACCESS_TOPIC } from "src/constants";
+import { CHECK_USER_ACCESS_TOPIC } from "../constants";
 
 export const QUEUE_SERVICE_NAME = "QUEUE_SERVICE";
 

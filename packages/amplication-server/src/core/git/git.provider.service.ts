@@ -50,7 +50,8 @@ export class GitProviderService {
       args.gitProvider,
       EnumGitOrganizationType[organization.type],
       organization.name,
-      organization.installationId
+      organization.installationId,
+      args.public
     );
 
     if (!repository) {

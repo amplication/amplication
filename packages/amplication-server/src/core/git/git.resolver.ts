@@ -3,8 +3,8 @@ import { Args, Mutation, Query } from '@nestjs/graphql';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { FindOneArgs } from 'src/dto';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 import { App } from 'src/models/App';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
@@ -27,7 +27,7 @@ export class GitResolver {
   constructor(private readonly gitService: GitProviderService) {}
   @Mutation(() => App)
   @AuthorizeContext(
-    AuthorizableResourceParameter.GitOrganizationId,
+    AuthorizableOriginParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
   async createGitRepository(
@@ -37,14 +37,14 @@ export class GitResolver {
   }
 
   @Query(() => GitOrganization)
-  @AuthorizeContext(AuthorizableResourceParameter.GitOrganizationId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.GitOrganizationId, 'where.id')
   async gitOrganization(@Args() args: FindOneArgs): Promise<GitOrganization> {
     return this.gitService.getGitOrganization(args);
   }
 
   @Mutation(() => App)
   @AuthorizeContext(
-    AuthorizableResourceParameter.GitOrganizationId,
+    AuthorizableOriginParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
   async connectAppGitRepository(
@@ -54,10 +54,7 @@ export class GitResolver {
   }
 
   @Mutation(() => GitOrganization)
-  @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
-    'data.workspaceId'
-  )
+  @InjectContextValue(InjectableOriginParameter.WorkspaceId, 'data.workspaceId')
   async createOrganization(
     @Args() args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
@@ -66,7 +63,7 @@ export class GitResolver {
 
   @Mutation(() => App)
   @AuthorizeContext(
-    AuthorizableResourceParameter.GitRepositoryId,
+    AuthorizableOriginParameter.GitRepositoryId,
     'gitRepositoryId'
   )
   async deleteGitRepository(
@@ -77,7 +74,7 @@ export class GitResolver {
 
   @Mutation(() => Boolean)
   @AuthorizeContext(
-    AuthorizableResourceParameter.GitOrganizationId,
+    AuthorizableOriginParameter.GitOrganizationId,
     'gitOrganizationId'
   )
   async deleteGitOrganization(
@@ -87,10 +84,7 @@ export class GitResolver {
   }
 
   @Mutation(() => AuthorizeAppWithGitResult)
-  @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
-    'data.workspaceId'
-  )
+  @InjectContextValue(InjectableOriginParameter.WorkspaceId, 'data.workspaceId')
   async getGitAppInstallationUrl(
     @Args() args: GetGitInstallationUrlArgs
   ): Promise<AuthorizeAppWithGitResult> {
@@ -101,7 +95,7 @@ export class GitResolver {
 
   @Query(() => [RemoteGitRepository])
   @AuthorizeContext(
-    AuthorizableResourceParameter.GitOrganizationId,
+    AuthorizableOriginParameter.GitOrganizationId,
     'where.gitOrganizationId'
   )
   async remoteGitRepositories(
@@ -112,7 +106,7 @@ export class GitResolver {
 
   @Query(() => [GitOrganization])
   @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
+    InjectableOriginParameter.WorkspaceId,
     'where.workspaceId'
   )
   async gitOrganizations(
