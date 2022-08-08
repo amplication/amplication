@@ -35,7 +35,7 @@ function GenerationSettingsForm({ match }: Props) {
   const { addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
-  const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
+  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
     UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
@@ -44,9 +44,9 @@ function GenerationSettingsForm({ match }: Props) {
     }
   );
 
-  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+  const { handleSubmit, SERVICE_CONFIG_FORM_SCHEMA } = useSettingsHook({
     trackEvent,
-    updateServiceSettings,
+    updateResourceSettings,
     resourceId,
   });
 
@@ -56,7 +56,7 @@ function GenerationSettingsForm({ match }: Props) {
         <Formik
           initialValues={data.serviceSettings}
           validate={(values: models.ServiceSettings) =>
-            validate(values, FORM_SCHEMA)
+            validate(values, SERVICE_CONFIG_FORM_SCHEMA)
           }
           enableReinitialize
           onSubmit={handleSubmit}

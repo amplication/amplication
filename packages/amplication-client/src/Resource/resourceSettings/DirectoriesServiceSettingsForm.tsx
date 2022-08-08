@@ -6,13 +6,12 @@ import {
 } from "@amplication/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
-import { match } from "react-router-dom";
 import "./GenerationSettingsForm.scss";
 import useSettingsHook from "../useSettingsHook";
 import {
@@ -21,27 +20,21 @@ import {
 } from "./GenerationSettingsForm";
 import { AppContext } from "../../context/appContext";
 
-type Props = {
-  match: match<{ resource: string }>;
-};
-
 type TData = {
   updateServiceSettings: models.ServiceSettings;
 };
 
 const CLASS_NAME = "generation-settings-form";
 
-function GenerationSettingsForm({ match }: Props) {
-  const resourceId = match.params.resource;
-
+const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
+  const { currentResource, addBlock } = useContext(AppContext);
   const { data, error } = useQuery<{
     serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
-      id: resourceId,
+      id: currentResource?.id,
     },
   });
-  const { addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
   const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
@@ -52,8 +45,15 @@ function GenerationSettingsForm({ match }: Props) {
       },
     }
   );
+  const resourceId = currentResource?.id;
 
-  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+  useEffect(() => {
+    if (!currentResource || !resourceId) {
+      return;
+    }
+  }, [currentResource, resourceId]);
+
+  const { handleSubmit, SERVICE_CONFIG_FORM_SCHEMA } = useSettingsHook({
     trackEvent,
     updateServiceSettings,
     resourceId,
@@ -65,7 +65,7 @@ function GenerationSettingsForm({ match }: Props) {
         <Formik
           initialValues={data.serviceSettings}
           validate={(values: models.ServiceSettings) =>
-            validate(values, FORM_SCHEMA)
+            validate(values, SERVICE_CONFIG_FORM_SCHEMA)
           }
           enableReinitialize
           onSubmit={handleSubmit}
@@ -119,6 +119,6 @@ function GenerationSettingsForm({ match }: Props) {
       />
     </div>
   );
-}
+};
 
-export default GenerationSettingsForm;
+export default DirectoriesServiceSettingsForm;
