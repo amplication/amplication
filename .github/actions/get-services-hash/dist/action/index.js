@@ -5771,7 +5771,7 @@ class MainLogicService {
                     const packageJson = require(packageJsonPath);
                     const dependencies = Object.keys(packageJson.dependencies).filter(v => v.startsWith("@amplication"));
                     const packageName = packageJson.name;
-                    return new service_details_1.ServiceDetails((0, path_1.dirname)(path), path, packageName, dependencies);
+                    return new service_details_1.ServiceDetails((0, path_1.basename)(path), path, packageName, dependencies);
                 }
                 else {
                     console.warn(`Service package.json not found: ${packageJsonPath}`);
