@@ -29,6 +29,7 @@ You can also use a more manual step-by-step approach to set up Amplication Build
 | GENERATE_RESOURCE_TOPIC | From this topic the service obtains requests for code build process.  | `build.internal.generate-resource.event.0` |
 | BUILD_STATUS_TOPIC | Topic for code build statuses. The service issue init or failed status. | `build.internal.build-status.event.0` |
 | BUILD_CONTEXT_FS_LOCATION | Provides location of build contexts in file system. | `/home/build-manager/build-contexts` |
+| BUILD_ARTIFACT_FS_LOCATION | Path to build artifacts in file system. | `/home/build-manager/build-artifacts` |
 | BUILD_CONTEXT_S3_BUCKET | S3 bucket that stores build contexts required by CodeBuild. | `amplication-dsg-dev` |
 | BUILD_CONTEXT_S3_LOCATION | Base location of build contexts in the bucket. | `build-contexts` |
 | BUILD_ARTIFACT_S3_BUCKET | S3 bucket that stores artifacts that produced by CodeBuild. | `amplication-dsg-dev` |
@@ -36,6 +37,9 @@ You can also use a more manual step-by-step approach to set up Amplication Build
 | CODE_BUILD_PROJECT_NAME | CodeBuild Project Name that the service uses for code build process. | `code-generator-dev` |
 | BUILD_STATE_TOPIC | Topic that stores build status messages from CodeBuild. | `build.external.build-state.event.0` |
 | BUILD_STATE_TOPIC | Topic that stores build phase messages from CodeBuild. | `build.external.build-phase.event.0` |
+| BUILD_IMAGE_NAME | Code generator base image name. | `amplication-data-service-generator` |
+| BUILD_IMAGE_VERSION | Code generator base image version. | `0.0.5` |
+| GET_BUILD_BY_RUN_ID_TOPIC | Topic for receiving build from server to build manager. | `build.internal.get-build-by-run-id.message.0` | 
 
 #### Manual one-time set up
 

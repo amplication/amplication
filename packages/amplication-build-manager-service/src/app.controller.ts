@@ -1,11 +1,10 @@
 import { EnvironmentVariables } from '@amplication/kafka';
 import { Controller, Inject, LoggerService } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
-import { BuildContextStorageService } from './buildContextStorage/buildContextStorage.service';
+import { BuildStorageService } from './buildStorage/buildStorage.service';
 import { BuildService } from './codeBuild/build.service';
 import { CODE_BUILD_SERVICE } from './codeBuild/codeBuild.module';
 import {
-  BUILD_PHASE_TOPIC,
   BUILD_STATE_TOPIC,
   BUILD_STATUS_TOPIC,
   GENERATE_RESOURCE_TOPIC,
@@ -15,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   GenerateResource,
   BuildStatusEvent,
-  BuildStatusEnum,
+  BuildStatus,
 } from '@amplication/build-types';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { CodeGenNotification } from './codeBuild/dto/CodeBuildNotificationMessage';
@@ -28,7 +27,7 @@ export class AppController {
     @Inject(CODE_BUILD_SERVICE) private readonly buildService: BuildService,
     private readonly queueService: QueueService,
     private readonly configService: ConfigService,
-    private readonly buildContextStorage: BuildContextStorageService,
+    private readonly buildStorage: BuildStorageService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
   ) {
@@ -41,21 +40,21 @@ export class AppController {
   async receiveCodeGenRequest(@Payload() message: any) {
     const generateResource: GenerateResource = message.value || {};
     try {
-      const path = await this.buildContextStorage.saveBuildContextSource(
+      const path = await this.buildStorage.saveBuildContextSource(
         generateResource,
       );
-      const runResponse = await this.buildService.runBuild(path);
-      this.emitInitMessage(
+      const runId = await this.buildService.runBuild(
+        path,
+        generateResource.resourceId,
         generateResource.buildId,
-        runResponse.build.arn,
-        'Generating code',
       );
+      this.emitInitMessage(generateResource.buildId, runId, 'Generating code');
     } catch (error) {
       this.logger.error(
         `Failed to run code build: message: ${message} error: ${error}`,
         { error, class: QueueService.name, message },
       );
-      this.emitFailureMessage(generateResource.buildId, error.message);
+      this.emitFailureMessage(generateResource.buildId, '', error.message);
     }
   }
 
@@ -78,21 +77,49 @@ export class AppController {
     }
   }
 
+  @EventPattern(EnvironmentVariables.instance.get(BUILD_STATUS_TOPIC, true))
+  async receiveBuildStatus(@Payload() queueMessage: any) {
+    const event = queueMessage.value as BuildStatusEvent;
+    try {
+      switch (event.status) {
+        case BuildStatus.Succeeded:
+          const build = await this.buildService.getBuild(event.runId);
+          await this.buildStorage.unpackArtifact(
+            event.artifact,
+            build.id,
+            build.resourceId,
+          );
+          const readyEvent = { ...event, status: BuildStatus.Ready };
+          this.queueService.emitMessage(
+            this.buildStatusTopic,
+            JSON.stringify(readyEvent),
+          );
+          break;
+      }
+    } catch (err) {
+      this.logger.error(
+        `Failed to process build status event. message: ${queueMessage} error: ${err}`,
+        { error: err, message: queueMessage },
+      );
+      this.emitFailureMessage(event.buildId, event.runId, err.message);
+    }
+  }
+
   emitInitMessage(buildId: string, runId: string, message: string) {
     const event: BuildStatusEvent = {
       buildId,
       runId,
-      status: BuildStatusEnum.Init,
+      status: BuildStatus.Init,
       timestamp: new Date().toISOString(),
       message,
     };
     this.queueService.emitMessage(this.buildStatusTopic, JSON.stringify(event));
   }
 
-  emitFailureMessage(buildId: string, message: string) {
+  emitFailureMessage(buildId: string, runId: string, message: string) {
     const event: BuildStatusEvent = {
       buildId,
-      status: BuildStatusEnum.Failed,
+      status: BuildStatus.Failed,
       timestamp: new Date().toISOString(),
       message,
     };

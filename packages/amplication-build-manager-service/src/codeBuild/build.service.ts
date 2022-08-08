@@ -1,6 +1,11 @@
 import { BuildStatusEvent } from '@amplication/build-types';
 
 export interface BuildService {
-  runBuild(contextArchivePath: string);
+  runBuild(
+    contextPath: string,
+    resourceId: string,
+    buildId: string,
+  ): Promise<string>;
   mapBuildStateMessageToBuildStatusEvent(message: string): BuildStatusEvent;
+  getBuild(runId: string);
 }

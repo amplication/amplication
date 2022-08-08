@@ -201,7 +201,7 @@ type Build {
   resourceId: String!
   createdBy: User!
   userId: String!
-  status: EnumBuildStatus
+  status: BuildStatus
   archiveURI: String!
   version: String!
   message: String!
@@ -211,12 +211,13 @@ type Build {
   commitId: String!
 }
 
-enum EnumBuildStatus {
+enum BuildStatus {
   Init
   InProgress
-  Succeeded
   Failed
+  Succeeded
   Stopped
+  Ready
 }
 
 type Action {

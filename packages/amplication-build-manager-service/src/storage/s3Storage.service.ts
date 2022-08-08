@@ -1,4 +1,5 @@
 import {
+  GetObjectCommand,
   PutObjectCommand,
   PutObjectCommandInput,
   S3Client,
@@ -26,5 +27,27 @@ export class S3StorageService implements StorageService {
     };
 
     await this.storageClient.send(new PutObjectCommand(uploadParams));
+  }
+
+  async getFile(bucket: string, location: string): Promise<Buffer> {
+    const params = {
+      Bucket: bucket,
+      Key: location,
+    };
+
+    const goc = new GetObjectCommand(params);
+    const data = await this.storageClient.send(goc);
+
+    const bodyContents = await this.streamToBuffer(data.Body);
+    return bodyContents;
+  }
+
+  private streamToBuffer(stream): Promise<Buffer> {
+    return new Promise<Buffer>((resolve, reject) => {
+      const chunks = [];
+      stream.on('data', (chunk) => chunks.push(chunk));
+      stream.on('error', reject);
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+    });
   }
 }

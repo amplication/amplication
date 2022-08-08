@@ -1,4 +1,4 @@
-CREATE TYPE "BuildStatus" AS ENUM ('Init', 'InProgress', 'Succeeded', 'Failed', 'Stopped');
+CREATE TYPE "BuildStatus" AS ENUM ('Init', 'InProgress', 'Succeeded', 'Failed', 'Stopped', 'Ready');
 
 ALTER TABLE "Build" ADD COLUMN "status" "BuildStatus";
 
