@@ -95,7 +95,8 @@ export class CodeBuildService implements BuildService {
       return response.build.arn;
     } catch (err) {
       throw new Error(
-        `Failed to trigger CodeBuild job run. Input: contextArchivePath: ${contextPath}. Source error: ${err}`,
+        `Failed to trigger CodeBuild job run. Input: contextArchivePath: ${contextPath}.`,
+        { cause: err },
       );
     }
   }
