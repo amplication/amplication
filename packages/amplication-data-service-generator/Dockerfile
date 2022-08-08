@@ -21,4 +21,4 @@ COPY packages/amplication-data-service-generator/src/admin/static/package.json p
 
 # Install dependencies
 RUN cd server; npm ci --silent;
-RUN cd admin; npm ci --silent;
+# RUN cd admin; npm ci --silent;
