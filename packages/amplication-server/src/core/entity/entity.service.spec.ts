@@ -20,22 +20,22 @@ import {
   User,
   Commit,
   Resource
-} from 'src/models';
-import { EnumDataType } from 'src/enums/EnumDataType';
+} from '../../models';
+import { EnumDataType } from '../../enums/EnumDataType';
 import { FindManyEntityArgs } from './dto';
 import {
   CURRENT_VERSION_NUMBER,
   DEFAULT_PERMISSIONS,
   USER_ENTITY_NAME
 } from './constants';
-import { JsonSchemaValidationModule } from 'src/services/jsonSchemaValidation.module';
-import { DiffModule } from 'src/services/diff.module';
-import { prepareDeletedItemName } from 'src/util/softDelete';
+import { JsonSchemaValidationModule } from '../../services/jsonSchemaValidation.module';
+import { DiffModule } from '../../services/diff.module';
+import { prepareDeletedItemName } from '../../util/softDelete';
 import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType
 } from '../resource/dto';
-import { DiffService } from 'src/services/diff.service';
+import { DiffService } from '../../services/diff.service';
 import { isReservedName } from './reservedNames';
 import { ReservedNameError } from '../resource/ReservedNameError';
 import { EnumResourceType } from '@amplication/code-gen-types/dist/models';

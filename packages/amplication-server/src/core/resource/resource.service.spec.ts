@@ -14,15 +14,15 @@ import {
   PrismaService,
   Prisma
 } from '@amplication/prisma-db';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { QueryMode } from 'src/enums/QueryMode';
-import { BlockVersion, Commit, EntityVersion } from 'src/models';
-import { Block } from 'src/models/Block';
-import { Entity } from 'src/models/Entity';
-import { EntityField } from 'src/models/EntityField';
-import { Resource } from 'src/models/Resource';
-import { User } from 'src/models/User';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { EnumDataType } from '../../enums/EnumDataType';
+import { QueryMode } from '../../enums/QueryMode';
+import { BlockVersion, Commit, EntityVersion } from '../../models';
+import { Block } from '../../models/Block';
+import { Entity } from '../../models/Entity';
+import { EntityField } from '../../models/EntityField';
+import { Resource } from '../../models/Resource';
+import { User } from '../../models/User';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { BlockService } from '../block/block.service';
 import { BuildService } from '../build/build.service';

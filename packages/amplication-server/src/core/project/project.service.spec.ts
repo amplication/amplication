@@ -20,7 +20,7 @@ import { PendingChange } from '../resource/dto/PendingChange';
 import { ResourceService } from '../resource/resource.service';
 import { BuildService } from '../build/build.service';
 import { EntityService } from '../entity/entity.service';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import { CURRENT_VERSION_NUMBER } from '../entity/constants';
 import { BlockService } from '../block/block.service';
 

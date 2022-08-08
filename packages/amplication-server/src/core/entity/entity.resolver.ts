@@ -14,15 +14,15 @@ import {
   EntityPermission,
   EntityPermissionField,
   User
-} from 'src/models';
-import { FindOneArgs } from 'src/dto';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
-import { UserEntity } from 'src/decorators/user.decorator';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
-import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
+} from '../../models';
+import { FindOneArgs } from '../../dto';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { InjectContextValue } from '../../decorators/injectContextValue.decorator';
+import { UserEntity } from '../../decorators/user.decorator';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { InjectableOriginParameter } from '../../enums/InjectableOriginParameter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { UserService } from '../user/user.service';
 import {
   CreateOneEntityArgs,

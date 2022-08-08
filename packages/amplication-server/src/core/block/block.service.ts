@@ -11,7 +11,7 @@ import {
   Prisma,
   PrismaService
 } from '@amplication/prisma-db';
-import { DiffService } from 'src/services/diff.service';
+import { DiffService } from '../../services/diff.service';
 import {
   Block,
   BlockVersion,
@@ -19,8 +19,8 @@ import {
   BlockInputOutput,
   User,
   Resource
-} from 'src/models';
-import { revertDeletedItemName } from 'src/util/softDelete';
+} from '../../models';
+import { revertDeletedItemName } from '../../util/softDelete';
 import {
   CreateBlockArgs,
   UpdateBlockArgs,
@@ -30,8 +30,8 @@ import {
   FindManyBlockVersionArgs,
   LockBlockArgs
 } from './dto';
-import { FindOneArgs } from 'src/dto';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { FindOneArgs } from '../../dto';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,

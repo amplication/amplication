@@ -6,9 +6,9 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
-import { DataConflictError } from 'src/errors/DataConflictError';
+import { DataConflictError } from '../../errors/DataConflictError';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { AmplicationError } from '../../errors/AmplicationError';
 import { camelCase } from 'camel-case';
 import difference from '@extra-set/difference';
 import { isEmpty, pick, last, head, omit } from 'lodash';
@@ -21,14 +21,14 @@ import {
   EntityPermission,
   EntityPermissionField,
   Resource
-} from 'src/models';
+} from '../../models';
 import { JsonObject } from 'type-fest';
 import { getSchemaForDataType, types } from '@amplication/code-gen-types';
-import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
-import { DiffService } from 'src/services/diff.service';
-import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { JsonSchemaValidationService } from '../../services/jsonSchemaValidation.service';
+import { DiffService } from '../../services/diff.service';
+import { SchemaValidationResult } from '../../dto/schemaValidationResult';
+import { EnumDataType } from '../../enums/EnumDataType';
+import { EnumEntityAction } from '../../enums/EnumEntityAction';
 import { isReservedName } from './reservedNames';
 import {
   CURRENT_VERSION_NUMBER,
@@ -43,7 +43,7 @@ import {
 import {
   prepareDeletedItemName,
   revertDeletedItemName
-} from 'src/util/softDelete';
+} from '../../util/softDelete';
 
 import {
   EnumPendingChangeOriginType,

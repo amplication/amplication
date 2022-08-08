@@ -8,18 +8,18 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { ResourceResolver } from './resource.resolver';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ResourceService } from './resource.service';
-import { Resource } from 'src/models/Resource';
+import { Resource } from '../../models/Resource';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import { Entity } from 'src/models/Entity';
+import { Entity } from '../../models/Entity';
 import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto/Environment';
-import { User } from 'src/models/User';
+import { User } from '../../models/User';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
 import { ResourceCreateInput } from './dto';

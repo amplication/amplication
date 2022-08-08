@@ -1,14 +1,14 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ServiceSettings, UpdateServiceSettingsArgs } from './dto';
-import { FindOneArgs } from 'src/dto';
+import { FindOneArgs } from '../../dto';
 import { BlockService } from '../block/block.service';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import {
   DEFAULT_SERVICE_SETTINGS,
   ServiceSettingsValues,
   ServiceSettingsValuesExtended
 } from './constants';
-import { User } from 'src/models';
+import { User } from '../../models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 import { ResourceGenSettingsCreateInput } from '../resource/dto/ResourceGenSettingsCreateInput';
 

@@ -6,7 +6,7 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { Commit, Entity, Resource, User } from '../../models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { Environment } from '../environment/dto';

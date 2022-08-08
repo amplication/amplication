@@ -7,15 +7,15 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { Roles } from 'src/decorators/roles.decorator';
-import { UserEntity } from 'src/decorators/user.decorator';
-import { FindOneArgs } from 'src/dto';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { Resource, Entity, User, Project } from 'src/models';
-import { GitRepository } from 'src/models/GitRepository';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { Roles } from '../../decorators/roles.decorator';
+import { UserEntity } from '../../decorators/user.decorator';
+import { FindOneArgs } from '../../dto';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { Resource, Entity, User, Project } from '../../models';
+import { GitRepository } from '../../models/GitRepository';
 import { ResourceService, EntityService } from '..';
 import { BuildService } from '../build/build.service';
 import { Build } from '../build/dto/Build';
