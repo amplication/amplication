@@ -47,9 +47,23 @@ export class QueueService implements OnModuleInit {
   }
 
   sendMessage(topic: string, message: string) {
-    return new Promise((resolve) => {
-      this.kafkaClient.send(topic, message).subscribe((response) => {
-        resolve(response);
+    const logger = this.logger;
+    let result;
+    return new Promise((resolve, reject) => {
+      this.kafkaClient.send(topic, message).subscribe({
+        next: (data) => {
+          result = data;
+        },
+        complete: () => {
+          resolve(result);
+        },
+        error(error: Error): void {
+          logger.error(
+            `failed to push message to kafka: method: sendMessage topic: ${topic}, message: ${message} error: ${error}`,
+            { error, class: QueueService.name, topic, message },
+          );
+          reject(error);
+        },
       });
     });
   }
