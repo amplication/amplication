@@ -16,8 +16,8 @@ RUN npm i -g npm@7.3.0
 WORKDIR /app
 
 # Copy files specifying dependencies
-COPY packages/amplicatio-data-service-generator/src/server/static/package.json src/server/static/package-lock.json ./server/
-COPY packages/amplicatio-data-service-generator/src/admin/static/package.json src/admin/static/package-lock.json ./admin/
+COPY packages/amplication-data-service-generator/src/server/static/package.json src/server/static/package-lock.json ./server/
+COPY packages/amplication-data-service-generator/src/admin/static/package.json src/admin/static/package-lock.json ./admin/
 
 # Install dependencies
 RUN cd server; npm ci --silent;
