@@ -67,6 +67,10 @@ $inverted-border-radius: 6px;
     left: calc(50% - #{$select-item-width * 0.5});
   }
 
+  &--no-hover:before {
+    display: none;
+  }
+
   &--with-fixed-panel {
     &:before,
     &:hover:before {

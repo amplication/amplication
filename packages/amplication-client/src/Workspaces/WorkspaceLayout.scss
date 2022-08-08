@@ -19,6 +19,7 @@
 
   &__changes_menu {
     width: var(--changes-menu-width);
+    min-width: var(--changes-menu-width);
     background: var(--menu-background-color);
     border-left: $border-black10;
   }

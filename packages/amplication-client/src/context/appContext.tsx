@@ -15,12 +15,18 @@ export interface AppContextInterface {
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
   resources: models.Resource[];
+  setNewResource: (
+    data: models.ResourceCreateWithEntitiesInput,
+    eventName: string
+  ) => void;
+  setResource: (resource: models.Resource) => void;
   projectConfigurationResource: models.Resource | undefined;
   handleSearchChange: (searchResults: string) => void;
   loadingResources: boolean;
   errorResources: Error | undefined;
+  loadingCreateResource: boolean;
+  errorCreateResource: Error | undefined;
   currentResource: models.Resource | undefined;
-  setResource: (resource: models.Resource) => void;
   pendingChanges: PendingChangeItem[];
   commitRunning: boolean;
   pendingChangesIsError: boolean;
@@ -46,12 +52,15 @@ const initialContext: AppContextInterface = {
   setNewProject: () => {},
   onNewProjectCompleted: () => {},
   resources: [],
+  setNewResource: () => {},
+  setResource: () => {},
   projectConfigurationResource: undefined,
   handleSearchChange: () => {},
   loadingResources: true,
   errorResources: undefined,
+  loadingCreateResource: true,
+  errorCreateResource: undefined,
   currentResource: undefined,
-  setResource: () => {},
   pendingChanges: [],
   commitRunning: false,
   pendingChangesIsError: false,
@@ -60,7 +69,7 @@ const initialContext: AppContextInterface = {
   addChange: () => {},
   resetPendingChanges: () => {},
   setCommitRunning: () => {},
-  setPendingChangesError: () => {}
+  setPendingChangesError: () => {},
 };
 
 export const AppContext = React.createContext<AppContextInterface>(

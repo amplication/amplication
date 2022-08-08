@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useTracking } from "../util/analytics";
 
 import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -27,9 +26,10 @@ const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 function ResourceListItem({ resource, onDelete }: Props) {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentWorkspace, currentProject, setResource } = useContext(
+    AppContext
+  );
   const { id, name, description } = resource;
-  const { trackEvent } = useTracking();
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const handleDelete = useCallback(
@@ -52,10 +52,8 @@ function ResourceListItem({ resource, onDelete }: Props) {
   }, [onDelete, resource]);
 
   const handleClick = useCallback(() => {
-    trackEvent({
-      eventName: "resourceCardClick",
-    });
-  }, [trackEvent]);
+    setResource(resource);
+  }, [resource, setResource]);
 
   const lastBuild = resource.builds[0];
 

@@ -50,3 +50,16 @@ export const GET_RESOURCES = gql`
     }
   }
 `;
+
+export const CREATE_RESOURCE_WITH_ENTITIES = gql`
+  mutation createResourceWithEntities($data: ResourceCreateWithEntitiesInput!) {
+    createResourceWithEntities(data: $data) {
+      id
+      name
+      description
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        id
+      }
+    }
+  }
+`;

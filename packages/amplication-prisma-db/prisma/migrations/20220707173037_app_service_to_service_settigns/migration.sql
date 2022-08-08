@@ -1,8 +1,3 @@
--- Adding the enum value
-BEGIN;
-ALTER TYPE public."EnumBlockType" ADD VALUE IF NOT EXISTS 'ServiceSettings';
-COMMIT;
-
 -- Update the existing values to ServiceSettings
 UPDATE "Block" SET "blockType" = 'ServiceSettings' WHERE "blockType" = 'AppSettings'::text::"EnumBlockType";
 
