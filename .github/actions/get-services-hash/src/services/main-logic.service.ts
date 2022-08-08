@@ -1,5 +1,5 @@
 import {existsSync,readdirSync} from "fs";
-import {dirname} from "path";
+import {basename} from "path";
 import HashingService from "./hashing.service";
 import {Package} from "../entities/package";
 import {ServiceDetails} from "../entities/service-details";
@@ -17,7 +17,7 @@ export default class MainLogicService {
                 const dependencies = Object.keys(packageJson.dependencies).filter(v => v.startsWith("@amplication"))
                 const packageName = packageJson.name
                 return new ServiceDetails(
-                    dirname(path),
+                    basename(path),
                     path,
                     packageName,
                     dependencies
