@@ -5675,33 +5675,14 @@ function wrappy (fn, cb) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.ServiceDetails = void 0;
 class ServiceDetails {
-    constructor(folder, pkg, dependencies) {
+    constructor(folder, path, pkg, dependencies) {
         this.folder = folder;
+        this.path = path;
         this.pkg = pkg;
         this.dependencies = dependencies;
     }
 }
 exports.ServiceDetails = ServiceDetails;
-
-
-/***/ }),
-
-/***/ 871:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ServiceHash = void 0;
-class ServiceHash {
-    constructor(pkg, folder, hash, dependencies) {
-        this.pkg = pkg;
-        this.folder = folder;
-        this.hash = hash;
-        this.dependencies = dependencies;
-    }
-}
-exports.ServiceHash = ServiceHash;
 
 
 /***/ }),
@@ -5777,21 +5758,20 @@ exports["default"] = HashingService;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const tslib_1 = __nccwpck_require__(351);
-const fs_1 = tslib_1.__importDefault(__nccwpck_require__(147));
+const fs_1 = __nccwpck_require__(147);
+const path_1 = __nccwpck_require__(17);
 const service_details_1 = __nccwpck_require__(735);
-const service_hash_1 = __nccwpck_require__(871);
 class MainLogicService {
     constructor(hashingService) {
         this.hashingService = hashingService;
-        this.getServices = (workingDirectory, services) => {
-            return services.map(service => {
-                const packageJsonPath = `${workingDirectory}/${service}/package.json`;
-                if (fs_1.default.existsSync(packageJsonPath)) {
+        this.getServices = (workingDirectory, paths) => {
+            return paths.map(path => {
+                const packageJsonPath = `${workingDirectory}/${path}/package.json`;
+                if ((0, fs_1.existsSync)(packageJsonPath)) {
                     const packageJson = require(packageJsonPath);
                     const dependencies = Object.keys(packageJson.dependencies).filter(v => v.startsWith("@amplication"));
                     const packageName = packageJson.name;
-                    return new service_details_1.ServiceDetails(service, packageName, dependencies);
+                    return new service_details_1.ServiceDetails((0, path_1.dirname)(path), path, packageName, dependencies);
                 }
                 else {
                     console.warn(`Service package.json not found: ${packageJsonPath}`);
@@ -5801,11 +5781,11 @@ class MainLogicService {
         };
         this.getPackages = (workingDirectory, path) => {
             const targetPath = `${workingDirectory}/${path}`;
-            return fs_1.default.readdirSync(`${targetPath}`).map(pkg => {
+            return (0, fs_1.readdirSync)(`${targetPath}`).map(pkg => {
                 try {
                     const folder = `${targetPath}/${pkg}`;
                     const packageJson = `${folder}/package.json`;
-                    if (fs_1.default.existsSync(packageJson)) {
+                    if ((0, fs_1.existsSync)(packageJson)) {
                         return {
                             serviceFolder: `${path}/${pkg}`,
                             name: require(packageJson).name,
@@ -5832,7 +5812,7 @@ class MainLogicService {
                     return ((_a = packages.find(pkg => pkg.name == dependencyPackageName)) === null || _a === void 0 ? void 0 : _a.hash) || "";
                 });
                 const hashes = [serviceHash].concat(dependenciesHashes);
-                return new service_hash_1.ServiceHash(service.pkg, service.folder, this.hashingService.getHash(hashes.join("")), service.dependencies);
+                return Object.assign(Object.assign({}, service), { hash: this.hashingService.getHash(hashes.join("")) });
             });
         };
     }
