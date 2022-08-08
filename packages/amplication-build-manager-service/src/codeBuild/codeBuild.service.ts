@@ -39,6 +39,7 @@ export class CodeBuildService implements BuildService {
   private readonly buildImageName: string;
   private readonly buildImageVersion: string;
   private readonly getBuildByRunIdTopic: string;
+  private readonly buildImage: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -58,6 +59,8 @@ export class CodeBuildService implements BuildService {
     this.getBuildByRunIdTopic = this.configService.get<string>(
       GET_BUILD_BY_RUN_ID_TOPIC,
     );
+
+    this.buildImage = `${this.buildImageName}:${this.buildImageVersion}`;
   }
 
   async runBuild(
@@ -82,7 +85,7 @@ export class CodeBuildService implements BuildService {
         namespaceType: 'NONE',
         packaging: 'ZIP',
       },
-      imageOverride: `${this.buildImageName}:${this.buildImageVersion}`,
+      imageOverride: this.buildImage,
     };
 
     const command = new StartBuildCommand(input);
