@@ -1,22 +1,24 @@
-import fs from "fs";
+import {existsSync,readdirSync} from "fs";
+import {dirname} from "path";
 import HashingService from "./hashing.service";
 import {Package} from "../entities/package";
 import {ServiceDetails} from "../entities/service-details";
 import {ServiceHash} from "../entities/service-hash";
 
-export default class MainLogicService{
-    constructor(private hashingService:HashingService) {
+export default class MainLogicService {
+    constructor(private hashingService: HashingService) {
     }
 
-    public  getServices:(workingDirectory:string,services:string[])=>ServiceDetails[] = (workingDirectory:string,services:string[]):ServiceDetails[]=> {
-        return services.map(service => {
-            const packageJsonPath = `${workingDirectory}/${service}/package.json`
-            if (fs.existsSync(packageJsonPath)) {
+    public getServices: (workingDirectory: string, paths: string[]) => ServiceDetails[] = (workingDirectory: string, paths: string[]): ServiceDetails[] => {
+        return paths.map(path => {
+            const packageJsonPath = `${workingDirectory}/${path}/package.json`
+            if (existsSync(packageJsonPath)) {
                 const packageJson = require(packageJsonPath)
                 const dependencies = Object.keys(packageJson.dependencies).filter(v => v.startsWith("@amplication"))
                 const packageName = packageJson.name
                 return new ServiceDetails(
-                    service,
+                    dirname(path),
+                    path,
                     packageName,
                     dependencies
                 );
@@ -28,14 +30,14 @@ export default class MainLogicService{
     }
 
 
-    public  getPackages:(workingDirectory:string,path:string)=>Package[] =(workingDirectory:string,path:string):Package[]=> {
+    public getPackages: (workingDirectory: string, path: string) => Package[] = (workingDirectory: string, path: string): Package[] => {
         const targetPath = `${workingDirectory}/${path}`
 
-        return fs.readdirSync(`${targetPath}`).map(pkg => {
+        return readdirSync(`${targetPath}`).map(pkg => {
             try {
                 const folder = `${targetPath}/${pkg}`
-                const packageJson =`${folder}/package.json`
-                if(fs.existsSync(packageJson)){
+                const packageJson = `${folder}/package.json`
+                if (existsSync(packageJson)) {
                     return {
                         serviceFolder: `${path}/${pkg}`,
                         name: require(packageJson).name,
@@ -53,7 +55,7 @@ export default class MainLogicService{
     }
 
 
-    public  getServiceHash:(packages:Package[],services:ServiceDetails[])=>ServiceHash[] = (packages:Package[],services:ServiceDetails[]):ServiceHash[] => {
+    public getServiceHash: (packages: Package[], services: ServiceDetails[]) => ServiceHash[] = (packages: Package[], services: ServiceDetails[]): ServiceHash[] => {
         return services.map(service => {
             const serviceHash = packages.find(pkg => pkg.name == service.pkg)?.hash || ""
             const dependenciesHashes = service.dependencies.map(dependencyPackageName => {
@@ -61,7 +63,10 @@ export default class MainLogicService{
             })
             const hashes: string[] = [serviceHash].concat(dependenciesHashes)
 
-            return new ServiceHash(service.pkg,service.folder,this.hashingService.getHash(hashes.join("")),service.dependencies);
+            return {
+                ...service,
+                hash: this.hashingService.getHash(hashes.join(""))
+            };
         })
     }
 }
