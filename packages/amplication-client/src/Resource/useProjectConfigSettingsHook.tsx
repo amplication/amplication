@@ -1,12 +1,12 @@
 import * as models from "../models";
-import { useCallback } from "react";
-import { gql } from "@apollo/client";
+import { useCallback, useContext } from "react";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { useTracking } from "../util/analytics";
+import { AppContext } from "../context/appContext";
 
-interface ProjectSettingsHookParams {
-  resourceId: string;
-  updateResourceSettings: any;
-}
+type TData = {
+  updateProjectConfigurationSettings: models.ProjectConfigurationSettings;
+};
 
 const PROJECT_CONFIG_FORM_SCHEMA = {
   properties: {
@@ -17,11 +17,33 @@ const PROJECT_CONFIG_FORM_SCHEMA = {
   required: ["baseDirectory"],
 };
 
-const useProjectConfigSettingsHook = ({
-  resourceId,
-  updateResourceSettings,
-}: ProjectSettingsHookParams) => {
+const useProjectConfigSettingsHook = () => {
   const { trackEvent } = useTracking();
+  const { currentResource, addBlock } = useContext(AppContext);
+  const resourceId = currentResource?.id;
+
+  const [
+    updateResourceSettings,
+    { error: ProjectConfigurationUpdateError },
+  ] = useMutation<TData>(UPDATE_PROJECT_CONFIG_SETTINGS, {
+    onCompleted: (data) => {
+      refetch();
+      addBlock(data.updateProjectConfigurationSettings.id);
+    },
+  });
+
+  const {
+    data: projectConfigurationData,
+    error: projectConfigurationError,
+    refetch,
+  } = useQuery<{
+    projectConfigurationSettings: models.ProjectConfigurationSettings;
+  }>(GET_PROJECT_CONFIG_SETTINGS, {
+    variables: {
+      id: currentResource?.id,
+    },
+    skip: !currentResource?.id,
+  });
 
   const handleSubmit = useCallback(
     (data: models.ProjectConfigurationSettings) => {
@@ -44,6 +66,9 @@ const useProjectConfigSettingsHook = ({
   return {
     handleSubmit,
     PROJECT_CONFIG_FORM_SCHEMA,
+    ProjectConfigurationUpdateError,
+    projectConfigurationData,
+    projectConfigurationError,
   };
 };
 

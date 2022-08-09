@@ -1,76 +1,32 @@
 import React, { useContext } from "react";
-import { match } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
-import InnerTabLink from "../../Layout/InnerTabLink";
 import PageContent from "../../Layout/PageContent";
+import { EnumResourceType } from "../../models";
 import { AppRouteProps } from "../../routes/routesUtil";
+import ProjectConfigurationSettingsPage from "./ProjectConfigurationSettingsPage";
+import ServiceSettingsPage from "./ServiceSettingsPage";
 
-type Props = AppRouteProps & {
-  match: match<{ resource: string }>;
-};
+type Props = AppRouteProps & {};
 
-const ResourceSettingsPage: React.FC<Props> = ({ match, innerRoutes }) => {
-  const { resource } = match.params;
-  const pageTitle = "Resource settings";
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+const ResourceSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
+  const { currentResource } = useContext(AppContext);
+  const pageTitle =
+    currentResource?.resourceType === EnumResourceType.Service
+      ? "Service settings"
+      : "Resource settings";
 
   return (
     <PageContent
       pageTitle={pageTitle}
       sideContent={
-        <div>
-          <div>
-            <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/update`}
-              icon="settings"
-            >
-              General
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/generationSettings/update`}
-              icon="settings"
-            >
-              APIs & Admin UI
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/directories/update`}
-              icon="settings"
-            >
-              Base Directories
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/db/update`}
-              icon="settings"
-            >
-              Database
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/auth/update`}
-              icon="settings"
-            >
-              Authentication
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/settings/api-tokens`}
-              icon="id"
-            >
-              API Tokens
-            </InnerTabLink>
-          </div>
-        </div>
+        currentResource?.resourceType === EnumResourceType.Service ? (
+          <ServiceSettingsPage />
+        ) : (
+          <ProjectConfigurationSettingsPage />
+        )
       }
     >
-      {innerRoutes}
+      {innerRoutes}{" "}
       {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}
     </PageContent>
   );

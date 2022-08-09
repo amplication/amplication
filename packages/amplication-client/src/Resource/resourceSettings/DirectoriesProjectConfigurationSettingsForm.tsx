@@ -4,60 +4,31 @@ import {
   EnumPanelStyle,
   TextField,
 } from "@amplication/design-system";
-import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useContext } from "react";
+import React from "react";
 import * as models from "../../models";
 import { formatError } from "../../util/error";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 import "./GenerationSettingsForm.scss";
-import { AppContext } from "../../context/appContext";
-import useProjectConfigSettingsHook, {
-  GET_PROJECT_CONFIG_SETTINGS,
-  UPDATE_PROJECT_CONFIG_SETTINGS,
-} from "../useProjectConfigSettingsHook";
-
-type TData = {
-  updateProjectConfigurationSettings: models.ProjectConfigurationSettings;
-};
+import useProjectConfigSettingsHook from "../useProjectConfigSettingsHook";
 
 const CLASS_NAME = "generation-settings-form";
 
 const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
-  const { currentResource, addBlock } = useContext(AppContext);
-  const resourceId = currentResource?.id;
-  const { data, error } = useQuery<{
-    projectConfigurationSettings: models.ProjectConfigurationSettings;
-  }>(GET_PROJECT_CONFIG_SETTINGS, {
-    variables: {
-      id: currentResource?.id,
-    },
-    skip: !currentResource?.id,
-  });
-
-  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_PROJECT_CONFIG_SETTINGS,
-    {
-      onCompleted: (data) => {
-        addBlock(data.updateProjectConfigurationSettings.id);
-      },
-    }
-  );
-
   const {
     handleSubmit,
     PROJECT_CONFIG_FORM_SCHEMA,
-  } = useProjectConfigSettingsHook({
-    resourceId,
-    updateResourceSettings,
-  });
+    projectConfigurationData,
+    projectConfigurationError,
+    ProjectConfigurationUpdateError,
+  } = useProjectConfigSettingsHook();
 
   return (
     <div className={CLASS_NAME}>
-      {data?.projectConfigurationSettings && (
+      {projectConfigurationData?.projectConfigurationSettings && (
         <Formik
-          initialValues={data.projectConfigurationSettings}
+          initialValues={projectConfigurationData.projectConfigurationSettings}
           validate={(values: models.ProjectConfigurationSettings) =>
             validate(values, PROJECT_CONFIG_FORM_SCHEMA)
           }
@@ -80,9 +51,13 @@ const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
                     placeholder="./"
                     label="Base directory"
                     value={
-                      data?.projectConfigurationSettings.baseDirectory || ""
+                      projectConfigurationData?.projectConfigurationSettings
+                        .baseDirectory || ""
                     }
-                    helpText={data?.projectConfigurationSettings.baseDirectory}
+                    helpText={
+                      projectConfigurationData?.projectConfigurationSettings
+                        .baseDirectory
+                    }
                     labelType="normal"
                   />
                 </Panel>
@@ -92,8 +67,10 @@ const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
         </Formik>
       )}
       <Snackbar
-        open={Boolean(error)}
-        message={formatError(error || updateError)}
+        open={Boolean(projectConfigurationError)}
+        message={formatError(
+          projectConfigurationError || ProjectConfigurationUpdateError
+        )}
       />
     </div>
   );
