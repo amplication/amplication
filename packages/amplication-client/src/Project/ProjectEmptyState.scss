@@ -1,0 +1,32 @@
+@import "../style/index.scss";
+
+.project-empty-state {
+  display: flex;
+  height: 100%;
+  flex: 1 auto;
+
+  &__sidebar {
+    padding: var(--large-spacing);
+  }
+
+  &__sidebar-content {
+    border: var(--border-black5);
+    border-radius: var(--small-border-radius);
+    display: flex;
+    height: 100%;
+  }
+
+  &__content {
+    width: 100%;
+    padding: var(--large-spacing);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    span {
+      display: block;
+      width: 300px;
+      height: 300px;
+    }
+  }
+}

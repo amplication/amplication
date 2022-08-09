@@ -10,7 +10,7 @@ const ARROW_PROPS = {
 };
 
 type EntityRelationsProps = {
-  entities: models.AppCreateWithEntitiesEntityInput[];
+  entities: models.ResourceCreateWithEntitiesEntityInput[];
 };
 
 export function EntitiesDiagramRelations({ entities }: EntityRelationsProps) {

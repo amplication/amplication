@@ -10,7 +10,7 @@ const GET_FIELDS = gql`
   ) {
     entity(where: { id: $entityId }) {
       id
-      appId
+      resourceId
       fields(where: { displayName: $whereName }, orderBy: $orderBy) {
         id
         displayName

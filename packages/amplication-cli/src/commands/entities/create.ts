@@ -6,7 +6,7 @@ import pluralize from 'pluralize';
 import { pascalCase } from 'pascal-case';
 import { createEntity } from '../../api';
 import { format } from '../../flags/format-flag';
-import { app } from '../../flags/app-flag';
+import { resource } from '../../flags/resource-flag';
 import { ENTITY_COLUMNS } from './index';
 import { AMP_CURRENT_ENTITY } from '../../properties';
 
@@ -15,14 +15,14 @@ export default class EntitiesCreate extends ConfiguredCommand {
 
   static examples = [
     'amp entities:create Customer --set-current',
-    'amp entities:create Customer -a ckm1w4vy857869go3nsw4mk2ay',
+    'amp entities:create Customer -r ckm1w4vy857869go3nsw4mk2ay',
     'amp entities:create Customer ',
   ];
 
   static flags = {
     ...cli.table.flags(),
     format: format(),
-    app: app(),
+    resource: resource(),
     name: flags.string({
       required: false,
       description: 'name of the entity',
@@ -53,9 +53,9 @@ export default class EntitiesCreate extends ConfiguredCommand {
     const { args, flags } = this.parse(EntitiesCreate);
 
     const displayName = args.displayName;
-    const { app, name, pluralDisplayName, description } = flags;
-    if (!app) {
-      this.error(`Missing required flag: -a, --app`);
+    const { resource, name, pluralDisplayName, description } = flags;
+    if (!resource) {
+      this.error(`Missing required flag: -r, --resource`);
     } else {
       cli.action.start(`Creating new entity ${chalk.green.bold(displayName)} `);
 
@@ -64,9 +64,9 @@ export default class EntitiesCreate extends ConfiguredCommand {
         pluralDisplayName || pluralize(displayName);
 
       const data = await createEntity(this.client, {
-        app: {
+        resource: {
           connect: {
-            id: app,
+            id: resource,
           },
         },
         name: finalName,

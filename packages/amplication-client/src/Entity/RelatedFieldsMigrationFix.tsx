@@ -9,11 +9,11 @@ import { camelCase } from "camel-case";
 import { keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo } from "react";
 import { match } from "react-router-dom";
+import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import {
   EntityRelationFieldsChart,
   FormValues,
@@ -21,22 +21,22 @@ import {
 import "./RelatedFieldsMigrationFix.scss";
 
 type TData = {
-  app: models.App;
+  resource: models.Resource;
 };
 
 type Props = {
-  match: match<{ application: string }>;
+  match: match<{ resource: string }>;
 };
 
 const CLASS_NAME = "related-fields-migration-fix";
 const NAVIGATION_KEY = "FIX_RELATED_ENTITIES";
 
 export const RelatedFieldsMigrationFix = ({ match }: Props) => {
-  const applicationId = match.params.application;
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const resourceId = match.params.resource;
+  const { addEntity } = useContext(AppContext);
   const pageTitle = "Fix Entity Relations";
   useNavigationTabs(
-    applicationId,
+    resourceId,
     NAVIGATION_KEY,
     match.url,
     pageTitle
@@ -44,7 +44,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
 
   const { data, loading, error, refetch } = useQuery<TData>(GET_LOOKUP_FIELDS, {
     variables: {
-      appId: applicationId,
+      resourceId: resourceId,
     },
   });
 
@@ -53,17 +53,17 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
   }>(CREATE_DEFAULT_RELATED_ENTITY, {
     onCompleted: (createData) => {
       refetch();
-      pendingChangesContext.addEntity(
+      addEntity(
         createData.createDefaultRelatedField.properties.relatedEntityId
       );
 
-      const entity = data?.app.entities.find((entity) =>
+      const entity = data?.resource.entities.find((entity) =>
         entity.fields?.some(
           (field) => field.id === createData.createDefaultRelatedField.id
         )
       );
       if (entity) {
-        pendingChangesContext.addEntity(entity.id);
+        addEntity(entity.id);
       }
     },
   });
@@ -84,12 +84,12 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
   );
 
   const entityDictionary = useMemo(() => {
-    return keyBy(data?.app.entities, (entity) => entity.id);
+    return keyBy(data?.resource.entities, (entity) => entity.id);
   }, [data]);
 
   const fieldDictionary = useMemo(() => {
     const allFields =
-      data?.app.entities.flatMap((entity) => entity.fields || []) || [];
+      data?.resource.entities.flatMap((entity) => entity.fields || []) || [];
 
     const d = keyBy(allFields, (field) => field.permanentId);
     console.log(d);
@@ -105,15 +105,15 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
       <div className={`${CLASS_NAME}__message`}>
         Version 0.3.2 includes big improvements in how we manage related
         entities. The changes require your attention. <br />
-        Following is a list of all the entities in your app, please provide the
-        missing names for each of your existing relation fields.
+        Following is a list of all the entities in your resource, please provide
+        the missing names for each of your existing relation fields.
         <span className={`${CLASS_NAME}__highlight`}>
           {" "}
           It will only take you a minute!
         </span>
       </div>
       {loading && <CircularProgress />}
-      {data?.app.entities?.map((entity) => (
+      {data?.resource.entities?.map((entity) => (
         <Panel className={`${CLASS_NAME}__entity`} key={entity.id}>
           <PanelHeader>{entity.displayName}</PanelHeader>
           <div className={`${CLASS_NAME}__entity__fields`}>
@@ -122,7 +122,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
                   <EntityRelationFieldsChart
                     key={field.id}
                     fixInPlace
-                    applicationId={applicationId}
+                    resourceId={resourceId}
                     entityId={entity.id}
                     entityName={entity.displayName}
                     field={field}
@@ -149,8 +149,8 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
 };
 
 export const GET_LOOKUP_FIELDS = gql`
-  query getAppLookupFields($appId: String!) {
-    app(where: { id: $appId }) {
+  query getResourceLookupFields($resourceId: String!) {
+    resource(where: { id: $resourceId }) {
       id
       name
       entities(orderBy: { displayName: Asc }) {

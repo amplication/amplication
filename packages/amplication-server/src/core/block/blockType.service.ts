@@ -38,7 +38,7 @@ export abstract class BlockTypeService<
           blockType: this.blockType
         }
       },
-      user
+      user.id
     );
   }
 

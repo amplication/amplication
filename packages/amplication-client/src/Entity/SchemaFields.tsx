@@ -5,14 +5,14 @@ import { Schema } from "@amplication/code-gen-types";
 type Props = {
   schema: Schema;
   isDisabled?: boolean;
-  applicationId: string;
+  resourceId: string;
   entityDisplayName: string;
 };
 
 export const SchemaFields = ({
   schema,
   isDisabled,
-  applicationId,
+  resourceId,
   entityDisplayName,
 }: Props) => {
   if (schema === null) {
@@ -35,7 +35,7 @@ export const SchemaFields = ({
               propertyName={name}
               propertySchema={property as Schema}
               isDisabled={isDisabled}
-              applicationId={applicationId}
+              resourceId={resourceId}
               entityDisplayName={entityDisplayName}
             />
           </div>

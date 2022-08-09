@@ -1,7 +1,7 @@
 import { DiffService } from './diff.service';
 import { MOCK_BUILD_PATH_FACTORY } from './utils/BuildPathFactory.mock';
 
-const amplicationAppId = 'appId';
+const resourceId = 'resourceId';
 
 const logger = {
   debug: jest.fn(),
@@ -20,7 +20,7 @@ describe('Testing the diff service', () => {
   });
   it('should throw error if the builds id is the same', () => {
     return expect(
-      diffService.listOfChangedFiles(amplicationAppId, 'same', 'same')
+      diffService.listOfChangedFiles(resourceId, 'same', 'same')
     ).rejects.toThrowError();
   });
 });

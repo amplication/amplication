@@ -12,29 +12,29 @@ import {
 import { ClickableId } from "../Components/ClickableId";
 import BuildSummary from "./BuildSummary";
 import BuildHeader from "./BuildHeader";
-import PendingChangesContext from "./PendingChangesContext";
 import "./LastCommit.scss";
 import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   commits: models.Commit[];
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
 };
 
 const CLASS_NAME = "last-commit";
 
-const LastCommit = ({ applicationId }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
+const LastCommit = ({ resourceId }: Props) => {
+  const { commitRunning, pendingChangesIsError, } = useContext(AppContext);
   const [error, setError] = useState<Error>();
 
   const { data, loading, error: errorLoading, refetch } = useQuery<TData>(
     GET_LAST_COMMIT,
     {
       variables: {
-        applicationId,
+        resourceId,
       },
     }
   );
@@ -44,17 +44,17 @@ const LastCommit = ({ applicationId }: Props) => {
     return () => {
       refetch();
     };
-  }, [pendingChangesContext.isError, refetch]);
+  }, [pendingChangesIsError, refetch]);
 
   const lastCommit = useMemo(() => {
     if (loading || isEmpty(data?.commits)) return null;
-    const [last] = data?.commits;
+    const [last] = data?.commits || [];
     return last;
   }, [loading, data]);
 
   const build = useMemo(() => {
     if (!lastCommit) return null;
-    const [last] = lastCommit.builds;
+    const [last] = lastCommit.builds || [];
     return last;
   }, [lastCommit]);
 
@@ -67,7 +67,7 @@ const LastCommit = ({ applicationId }: Props) => {
 
   const ClickableCommitId = (
     <ClickableId
-      to={`/${build?.appId}/commits/${lastCommit.id}`}
+      to={`/${build?.resourceId}/commits/${lastCommit.id}`}
       id={lastCommit.id}
       label="Last commit"
       eventData={{
@@ -76,7 +76,7 @@ const LastCommit = ({ applicationId }: Props) => {
     />
   );
 
-  const generating = pendingChangesContext.commitRunning;
+  const generating = commitRunning;
 
   return (
     <div
@@ -106,7 +106,7 @@ const LastCommit = ({ applicationId }: Props) => {
           <SkeletonWrapper showSkeleton={generating}>
             <BuildHeader
               build={build}
-              isError={pendingChangesContext.isError}
+              isError={pendingChangesIsError}
             />
           </SkeletonWrapper>
 
@@ -118,7 +118,7 @@ const LastCommit = ({ applicationId }: Props) => {
         </>
       )}
 
-      <PendingChangesMenuItem applicationId={applicationId} />
+      <PendingChangesMenuItem resourceId={resourceId} />
     </div>
   );
 };
@@ -126,9 +126,9 @@ const LastCommit = ({ applicationId }: Props) => {
 export default LastCommit;
 
 export const GET_LAST_COMMIT = gql`
-  query lastCommit($applicationId: String!) {
+  query lastCommit($resourceId: String!) {
     commits(
-      where: { app: { id: $applicationId } }
+      where: { resource: { id: $resourceId } }
       orderBy: { createdAt: Desc }
       take: 1
     ) {
@@ -164,7 +164,7 @@ export const GET_LAST_COMMIT = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

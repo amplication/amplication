@@ -14,13 +14,14 @@ import {
 import { CommitListItem } from "./CommitListItem";
 import PageContent from "../Layout/PageContent";
 import "./CommitList.scss";
+import { AppRouteProps } from "../routes/routesUtil";
 
 type TData = {
   commits: models.Commit[];
 };
 
-type Props = {
-  match: match<{ application: string }>;
+type Props = AppRouteProps & {
+  match: match<{ resource: string }>;
   pageTitle?: string;
 };
 
@@ -29,8 +30,8 @@ const CREATED_AT_FIELD = "createdAt";
 const POLL_INTERVAL = 10000;
 const CLASS_NAME = "commit-list";
 
-export const CommitList = ({ match, pageTitle }: Props) => {
-  const { application } = match.params;
+const CommitList: React.FC<Props> = ({ match, pageTitle, innerRoutes }) => {
+  const { resource } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const handleSearchChange = useCallback(
@@ -44,7 +45,7 @@ export const CommitList = ({ match, pageTitle }: Props) => {
     TData
   >(GET_COMMITS, {
     variables: {
-      appId: application,
+      resourceId: resource,
       orderBy: {
         [CREATED_AT_FIELD]: models.SortOrder.Desc,
       },
@@ -68,38 +69,46 @@ export const CommitList = ({ match, pageTitle }: Props) => {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-      <div className={`${CLASS_NAME}__header`}>
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
-      </div>
-      <div className={`${CLASS_NAME}__title`}>
-        {data?.commits?.length} Commits
-      </div>
-      {loading && <CircularProgress />}
-      {data?.commits.map((commit) => (
-        <CommitListItem
-          key={commit.id}
-          commit={commit}
-          applicationId={application}
-        />
-      ))}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      {match.isExact ? (
+        <>
+          <div className={`${CLASS_NAME}__header`}>
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchChange}
+            />
+          </div>
+          <div className={`${CLASS_NAME}__title`}>
+            {data?.commits?.length} Commits
+          </div>
+          {loading && <CircularProgress />}
+          {data?.commits.map((commit) => (
+            <CommitListItem
+              key={commit.id}
+              commit={commit}
+              resourceId={resource}
+            />
+          ))}
+          <Snackbar open={Boolean(error)} message={errorMessage} />
+        </>
+      ) : (
+        innerRoutes
+      )}
     </PageContent>
   );
 };
 
+export default CommitList;
+
 /**@todo: expand search on other field  */
 export const GET_COMMITS = gql`
   query commits(
-    $appId: String!
+    $resourceId: String!
     $orderBy: CommitOrderByInput
     $whereMessage: StringFilter
   ) {
     commits(
-      where: { app: { id: $appId }, message: $whereMessage }
+      where: { resource: { id: $resourceId }, message: $whereMessage }
       orderBy: $orderBy
     ) {
       id
@@ -115,7 +124,7 @@ export const GET_COMMITS = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

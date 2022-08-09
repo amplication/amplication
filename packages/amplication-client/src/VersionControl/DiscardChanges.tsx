@@ -1,31 +1,29 @@
 import React, { useCallback, useContext } from "react";
 import { Snackbar } from "@amplication/design-system";
 import * as models from "../models";
-
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./DiscardChanges.scss";
+import { AppContext } from "../context/appContext";
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   onComplete: () => void;
   onCancel: () => void;
 };
 
 const CLASS_NAME = "discard-changes";
 
-const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
+  const { pendingChanges, resetPendingChanges } = useContext(AppContext);
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
       if (!data) return;
 
       //remove entities from cache to reflect discarded changes
-      for (var change of pendingChangesContext.pendingChanges) {
+      for (var change of pendingChanges) {
         if (
           change.originType === models.EnumPendingChangeOriginType.Entity
         ) {
@@ -40,21 +38,21 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
           cache.evict({
             id: cache.identify({
               id: change.originId,
-              __typename: "AppSettings",
+              __typename: "ServiceSettings",
             }),
           });
         }
       }
     },
     onCompleted: (data) => {
-      pendingChangesContext.reset();
+      resetPendingChanges();
       onComplete();
     },
     refetchQueries: [
       {
         query: GET_PENDING_CHANGES,
         variables: {
-          applicationId: applicationId,
+          resourceId: resourceId,
         },
       },
     ],
@@ -63,10 +61,10 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
   const handleConfirm = useCallback(() => {
     discardChanges({
       variables: {
-        appId: applicationId,
+        resourceId: resourceId,
       },
     }).catch(console.error);
-  }, [applicationId, discardChanges]);
+  }, [resourceId, discardChanges]);
 
   const errorMessage = formatError(error);
 
@@ -107,7 +105,7 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
 export default DiscardChanges;
 
 const DISCARD_CHANGES = gql`
-  mutation discardChanges($appId: String!) {
-    discardPendingChanges(data: { app: { connect: { id: $appId } } })
+  mutation discardChanges($resourceId: String!) {
+    discardPendingChanges(data: { resource: { connect: { id: $resourceId } } })
   }
 `;

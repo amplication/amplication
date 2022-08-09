@@ -12,13 +12,13 @@ export const SchemaField = ({
   propertyName,
   propertySchema,
   isDisabled,
-  applicationId,
+  resourceId,
   entityDisplayName,
 }: {
   propertyName: string;
   propertySchema: Schema;
   isDisabled?: boolean;
-  applicationId: string;
+  resourceId: string;
   entityDisplayName: string;
 }) => {
   const fieldName = `properties.${propertyName}`;
@@ -87,7 +87,7 @@ export const SchemaField = ({
               label={label}
               name={fieldName}
               disabled={isDisabled}
-              applicationId={applicationId}
+              resourceId={resourceId}
             />
           );
         }

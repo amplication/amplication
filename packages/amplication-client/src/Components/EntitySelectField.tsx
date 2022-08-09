@@ -12,13 +12,13 @@ type TEntities = {
 };
 
 type Props = Omit<SelectFieldProps, "options"> & {
-  applicationId: string;
+  resourceId: string;
 };
 
-const EntitySelectField = ({ applicationId, ...props }: Props) => {
+const EntitySelectField = ({ resourceId, ...props }: Props) => {
   const { data: entityList } = useQuery<TEntities>(GET_ENTITIES, {
     variables: {
-      appId: applicationId,
+      resourceId: resourceId,
     },
   });
 
@@ -37,8 +37,8 @@ const EntitySelectField = ({ applicationId, ...props }: Props) => {
 export default EntitySelectField;
 
 export const GET_ENTITIES = gql`
-  query getEntities($appId: String!) {
-    entities(where: { app: { id: $appId } }) {
+  query getEntities($resourceId: String!) {
+    entities(where: { resource: { id: $resourceId } }) {
       id
       displayName
     }

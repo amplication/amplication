@@ -61,12 +61,12 @@ function getInstructionsAuthentication(
 }
 
 export function getInstructions(authProvider: EnumAuthProviderType): string {
-  return `## Congratulations! Your application is ready.
+  return `## Congratulations! Your service resource is ready.
   
 Please note that all endpoints are secured with ${getInstructionsAuthentication(
     authProvider
   )} authentication.
-By default, your app comes with one user with the username "admin" and password "admin".
+By default, your service resource comes with one user with the username "admin" and password "admin".
 Learn more in [our docs](https://docs.amplication.com)`;
 }
 

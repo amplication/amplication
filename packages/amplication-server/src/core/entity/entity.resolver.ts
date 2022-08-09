@@ -65,7 +65,7 @@ export class EntityResolver {
   @Query(() => [Entity], {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.app.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
     return this.entityService.entities(args);
   }
@@ -73,7 +73,10 @@ export class EntityResolver {
   @Mutation(() => Entity, {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'data.app.connect.id')
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    'data.resource.connect.id'
+  )
   async createOneEntity(
     @UserEntity() user: User,
     @Args() args: CreateOneEntityArgs

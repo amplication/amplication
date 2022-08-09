@@ -3,8 +3,7 @@ import { EnumGitOrganizationType } from 'src/core/git/dto/enums/EnumGitOrganizat
 import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class GitOrganization {
   @Field(() => String, { nullable: false })
