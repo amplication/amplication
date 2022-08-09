@@ -55,7 +55,8 @@ export async function createServiceModules(
   entityType: string,
   entity: Entity,
   dtos: DTOs,
-  srcDirectory: string
+  srcDirectory: string,
+  extraMapping?: {[key: string]: any}
 ): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
   const serviceBaseId = createServiceBaseId(entityType);
@@ -96,6 +97,7 @@ export async function createServiceModules(
         );
       })
     ),
+    ...(extraMapping || {}),
   };
   return [
     await createServiceModule(
