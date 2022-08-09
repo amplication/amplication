@@ -26,24 +26,24 @@ export const STEP_STATUS_TO_STYLE: {
 };
 
 export const BUILD_STATUS_TO_STYLE: {
-  [key in models.EnumBuildStatus]: {
+  [key in models.BuildStatus]: {
     style: EnumCircleIconStyle;
     icon: string;
   };
 } = {
-  [models.EnumBuildStatus.Running]: {
+  [models.BuildStatus.Running]: {
     style: EnumCircleIconStyle.Warning,
     icon: "refresh_cw",
   },
-  [models.EnumBuildStatus.Failed]: {
+  [models.BuildStatus.Failed]: {
     style: EnumCircleIconStyle.Negative,
     icon: "info_i",
   },
-  [models.EnumBuildStatus.Invalid]: {
+  [models.BuildStatus.Invalid]: {
     style: EnumCircleIconStyle.Negative,
     icon: "info_i",
   },
-  [models.EnumBuildStatus.Completed]: {
+  [models.BuildStatus.Completed]: {
     style: EnumCircleIconStyle.Positive,
     icon: "check",
   },

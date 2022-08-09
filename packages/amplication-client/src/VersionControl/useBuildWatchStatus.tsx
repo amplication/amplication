@@ -47,7 +47,7 @@ const useBuildWatchStatus = (
 export default useBuildWatchStatus;
 
 function shouldReload(build: models.Build | undefined): boolean {
-  return (build && build.status === models.EnumBuildStatus.Running) || false;
+  return (build && build.status === models.BuildStatus.Running) || false;
 }
 
 export const GET_BUILD = gql`

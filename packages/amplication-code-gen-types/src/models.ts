@@ -215,7 +215,7 @@ export type Build = {
   message: Scalars["String"];
   resource: Resource;
   resourceId: Scalars["String"];
-  status?: Maybe<EnumBuildStatus>;
+  status?: Maybe<BuildStatus>;
   userId: Scalars["String"];
   version: Scalars["String"];
 };
@@ -234,6 +234,13 @@ export type BuildOrderByInput = {
   userId?: InputMaybe<SortOrder>;
   version?: InputMaybe<SortOrder>;
 };
+
+export enum BuildStatus {
+  Completed = "Completed",
+  Failed = "Failed",
+  Invalid = "Invalid",
+  Running = "Running",
+}
 
 export type BuildWhereInput = {
   commit?: InputMaybe<WhereUniqueInput>;
@@ -822,13 +829,6 @@ export type EnumBlockTypeFilter = {
   not?: InputMaybe<EnumBlockType>;
   notIn?: InputMaybe<Array<EnumBlockType>>;
 };
-
-export enum EnumBuildStatus {
-  Completed = "Completed",
-  Failed = "Failed",
-  Invalid = "Invalid",
-  Running = "Running",
-}
 
 export enum EnumConnectorRestApiAuthenticationType {
   HttpBasicAuthentication = "HttpBasicAuthentication",
