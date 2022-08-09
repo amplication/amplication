@@ -25,6 +25,7 @@ const INITIAL_VALUES: TCommit = {
 };
 
 type Props = {
+  projectId: string;
   resourceId: string;
   noChanges: boolean;
 };
@@ -34,7 +35,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ resourceId, noChanges }: Props) => {
+const Commit = ({ projectId, resourceId, noChanges }: Props) => {
   const {
     setCommitRunning,
     resetPendingChanges,
@@ -54,13 +55,13 @@ const Commit = ({ resourceId, noChanges }: Props) => {
       {
         query: GET_PENDING_CHANGES,
         variables: {
-          resourceId,
+          projectId,
         },
       },
       {
         query: GET_LAST_COMMIT,
         variables: {
-          resourceId,
+          projectId,
         },
       },
       {
@@ -81,7 +82,7 @@ const Commit = ({ resourceId, noChanges }: Props) => {
       commit({
         variables: {
           message: data.message,
-          resourceId,
+          projectId,
         },
       }).catch(console.error);
       resetForm(INITIAL_VALUES);
@@ -91,7 +92,7 @@ const Commit = ({ resourceId, noChanges }: Props) => {
     [
       setCommitRunning,
       commit,
-      resourceId,
+      projectId,
       setPendingChangesError,
       resetPendingChanges,
     ]
@@ -150,9 +151,9 @@ const Commit = ({ resourceId, noChanges }: Props) => {
 export default Commit;
 
 const COMMIT_CHANGES = gql`
-  mutation commit($message: String!, $resourceId: String!) {
+  mutation commit($message: String!, $projectId: String!) {
     commit(
-      data: { message: $message, resource: { connect: { id: $resourceId } } }
+      data: { message: $message, project: { connect: { id: $projectId } } }
     ) {
       id
     }

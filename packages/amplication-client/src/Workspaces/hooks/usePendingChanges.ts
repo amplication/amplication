@@ -12,17 +12,16 @@ export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-const usePendingChanges = (currentResource: models.Resource | undefined) => {
-  // TODO: replace currentResource with currentProject
+const usePendingChanges = (currentProject: models.Project | undefined) => {
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { data: pendingChangesData, refetch } = useQuery<
     PendingChangeStatusData
   >(GET_PENDING_CHANGES_STATUS, {
-    skip: !currentResource,
+    skip: !currentProject,
     variables: {
-      resourceId: currentResource?.id,
+      projectId: currentProject?.id,
     },
   });
 

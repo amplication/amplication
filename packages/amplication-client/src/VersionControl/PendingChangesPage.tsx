@@ -15,7 +15,7 @@ import { MultiStateToggle, Snackbar } from "@amplication/design-system";
 import "./PendingChangesPage.scss";
 
 type Props = {
-  match: match<{ resource: string; commitId: string }>;
+  match: match<{ project: string, resource: string; commitId: string }>;
 };
 
 type TData = {
@@ -33,10 +33,10 @@ const OPTIONS = [
 ];
 
 const PendingChangesPage = ({ match }: Props) => {
-  const { resource } = match.params;
+  const { project } = match.params;
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Pending Changes";
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
+  useNavigationTabs(project, NAVIGATION_KEY, match.url, pageTitle);
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -46,7 +46,7 @@ const PendingChangesPage = ({ match }: Props) => {
   );
   const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
     variables: {
-      resourceId: resource,
+      projectId: project,
     },
   });
 

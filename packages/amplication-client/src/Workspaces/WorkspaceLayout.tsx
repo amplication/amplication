@@ -70,7 +70,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resetPendingChanges,
     setCommitRunning,
     setPendingChangesError,
-  } = usePendingChanges(currentResource);
+  } = usePendingChanges(currentProject);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -116,8 +116,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
               {projectsList.length ? innerRoutes : <ProjectEmptyState />}
             </div>
             <div className={`${moduleClass}__changes_menu`}>
-              {currentResource ? (
-                <PendingChanges resourceId={currentResource.id} />
+              {currentProject ? (
+                <PendingChanges projectId={currentProject.id} />
               ) : null}
             </div>
           </div>

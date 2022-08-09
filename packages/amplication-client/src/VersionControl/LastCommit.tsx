@@ -126,9 +126,9 @@ const LastCommit = ({ resourceId }: Props) => {
 export default LastCommit;
 
 export const GET_LAST_COMMIT = gql`
-  query lastCommit($resourceId: String!) {
+  query lastCommit($projectId: String!) {
     commits(
-      where: { resource: { id: $resourceId } }
+      where: { project: { id: $projectId } }
       orderBy: { createdAt: Desc }
       take: 1
     ) {
