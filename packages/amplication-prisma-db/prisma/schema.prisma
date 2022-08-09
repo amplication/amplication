@@ -356,7 +356,6 @@ model Build {
   createdAt                DateTime        @default(now())
   resourceId               String
   userId                   String
-  status                   BuildStatus
   runId                    String?
   version                  String
   message                  String?
@@ -487,15 +486,6 @@ enum EnumDeploymentStatus {
   Waiting
   Failed
   Removed
-}
-
-enum BuildStatus {
-  Init
-  InProgress
-  Succeeded
-  Failed
-  Stopped
-  Ready
 }
 
 model Invitation {

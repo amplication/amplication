@@ -23,6 +23,7 @@ import { UserService } from '../user/user.service';
 import { Action } from '../action/dto';
 import { ActionService } from '../action/action.service';
 import { CommitService } from '../commit/commit.service';
+import { BuildStatus } from './dto/BuildStatus';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -68,6 +69,11 @@ export class BuildResolver {
   @ResolveField()
   archiveURI(@Parent() build: Build): string {
     return `/generated-apps/${build.id}.zip`;
+  }
+  
+  @ResolveField()
+  status(@Parent() build: Build): Promise<BuildStatus> {
+    return this.service.calcBuildStatus(build.id);
   }
 
   @Mutation(() => Build)
