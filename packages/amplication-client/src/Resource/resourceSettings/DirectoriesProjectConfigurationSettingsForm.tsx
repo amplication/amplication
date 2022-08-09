@@ -4,17 +4,19 @@ import {
   EnumPanelStyle,
   TextField,
 } from "@amplication/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import * as models from "../../models";
-import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 import "./GenerationSettingsForm.scss";
 import { AppContext } from "../../context/appContext";
-import useProjectConfigSettingsHook from "../useProjectConfigSettingsHook";
+import useProjectConfigSettingsHook, {
+  GET_PROJECT_CONFIG_SETTINGS,
+  UPDATE_PROJECT_CONFIG_SETTINGS,
+} from "../useProjectConfigSettingsHook";
 
 type TData = {
   updateProjectConfigurationSettings: models.ProjectConfigurationSettings;
@@ -24,39 +26,31 @@ const CLASS_NAME = "generation-settings-form";
 
 const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
   const { currentResource, addBlock } = useContext(AppContext);
+  const resourceId = currentResource?.id;
   const { data, error } = useQuery<{
     projectConfigurationSettings: models.ProjectConfigurationSettings;
   }>(GET_PROJECT_CONFIG_SETTINGS, {
     variables: {
       id: currentResource?.id,
     },
+    skip: !currentResource?.id,
   });
-  const { trackEvent } = useTracking();
 
   const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
     UPDATE_PROJECT_CONFIG_SETTINGS,
     {
       onCompleted: (data) => {
-        console.log({ data });
         addBlock(data.updateProjectConfigurationSettings.id);
       },
     }
   );
-  const resourceId = currentResource?.id;
-
-  useEffect(() => {
-    if (!currentResource || !resourceId) {
-      return;
-    }
-  }, [currentResource, resourceId]);
 
   const {
     handleSubmit,
     PROJECT_CONFIG_FORM_SCHEMA,
   } = useProjectConfigSettingsHook({
-    trackEvent,
-    updateResourceSettings,
     resourceId,
+    updateResourceSettings,
   });
 
   return (
@@ -77,9 +71,9 @@ const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
                   <h3>Base Directory</h3>
                 </div>
                 <label>some description text</label>
+                <hr />
                 <FormikAutoSave debounceMS={1000} />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>
-                  <h2>Base directory</h2>
                   <TextField
                     className={`${CLASS_NAME}__formWrapper_field`}
                     name="baseDirectory"
@@ -106,27 +100,3 @@ const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
 };
 
 export default DirectoriesProjectConfigurationSettingsForm;
-
-export const UPDATE_PROJECT_CONFIG_SETTINGS = gql`
-  mutation updateProjectConfigurationsSettings(
-    $data: ProjectConfigurationSettingsUpdateInput!
-    $resourceId: String!
-  ) {
-    updateProjectConfigurationSettings(
-      data: $data
-      where: { id: $resourceId }
-    ) {
-      id
-      baseDirectory
-    }
-  }
-`;
-
-export const GET_PROJECT_CONFIG_SETTINGS = gql`
-  query projectConfigurationSettings($id: String!) {
-    projectConfigurationSettings(where: { id: $id }) {
-      id
-      baseDirectory
-    }
-  }
-`;

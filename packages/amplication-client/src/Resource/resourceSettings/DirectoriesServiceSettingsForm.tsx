@@ -6,7 +6,7 @@ import {
 } from "@amplication/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -46,12 +46,6 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
     }
   );
   const resourceId = currentResource?.id;
-
-  useEffect(() => {
-    if (!currentResource || !resourceId) {
-      return;
-    }
-  }, [currentResource, resourceId]);
 
   const { handleSubmit, SERVICE_CONFIG_FORM_SCHEMA } = useSettingsHook({
     trackEvent,
