@@ -26,7 +26,7 @@ const ResourceSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
         )
       }
     >
-      {innerRoutes}{" "}
+      {innerRoutes}
       {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}
     </PageContent>
   );

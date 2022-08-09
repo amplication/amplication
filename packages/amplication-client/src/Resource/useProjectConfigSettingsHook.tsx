@@ -22,16 +22,6 @@ const useProjectConfigSettingsHook = () => {
   const { currentResource, addBlock } = useContext(AppContext);
   const resourceId = currentResource?.id;
 
-  const [
-    updateResourceSettings,
-    { error: ProjectConfigurationUpdateError },
-  ] = useMutation<TData>(UPDATE_PROJECT_CONFIG_SETTINGS, {
-    onCompleted: (data) => {
-      refetch();
-      addBlock(data.updateProjectConfigurationSettings.id);
-    },
-  });
-
   const {
     data: projectConfigurationData,
     error: projectConfigurationError,
@@ -43,6 +33,16 @@ const useProjectConfigSettingsHook = () => {
       id: currentResource?.id,
     },
     skip: !currentResource?.id,
+  });
+
+  const [
+    updateResourceSettings,
+    { error: ProjectConfigurationUpdateError },
+  ] = useMutation<TData>(UPDATE_PROJECT_CONFIG_SETTINGS, {
+    onCompleted: (data) => {
+      refetch();
+      addBlock(data.updateProjectConfigurationSettings.id);
+    },
   });
 
   const handleSubmit = useCallback(
