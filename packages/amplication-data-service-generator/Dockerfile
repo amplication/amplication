@@ -24,7 +24,7 @@ COPY --from=builder /app/packages/amplication-data-service-generator/node_module
 COPY --from=builder /app/packages/amplication-data-service-generator/dist /app/packages/amplication-data-service-generator/dist
 
 
-COPY --from=builder /app/packages/amplication-data/package.json /app/packages/amplication-data/package.json
-COPY --from=builder /app/packages/amplication-data/node_modules /app/packages/amplication-data/node_modules
-COPY --from=builder /app/packages/amplication-data/dist /app/packages/amplication-data/dist
+COPY --from=builder /app/packages/amplication-code-gen-types/package.json /app/packages/amplication-code-gen-types/package.json
+COPY --from=builder /app/packages/amplication-code-gen-types/node_modules /app/packages/amplication-code-gen-types/node_modules
+COPY --from=builder /app/packages/amplication-code-gen-types/dist /app/packages/amplication-code-gen-types/dist
 
