@@ -6,8 +6,8 @@ import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
-  GENERATE_STEP_MESSAGE,
-  GENERATE_STEP_NAME,
+  StepName,
+  StepMessage,
   BuildService,
   ENTITIES_INCLUDE
 } from './build.service';
@@ -94,8 +94,8 @@ const EXAMPLE_COMMIT: Commit = {
 const EXAMPLE_GENERATE_STEP = {
   id: 'ExampleActionStepId',
   createdAt: new Date(),
-  message: GENERATE_STEP_MESSAGE,
-  name: GENERATE_STEP_NAME,
+  message: StepName.Generate,
+  name: StepMessage.Generate,
   status: EnumActionStepStatus.Running
 };
 const EXAMPLE_COMPLETED_GENERATE_STEP = {
@@ -540,8 +540,8 @@ describe('BuildService', () => {
     expect(actionServiceRunMock.mock.calls).toEqual([
       [
         EXAMPLE_BUILD.actionId,
-        GENERATE_STEP_NAME,
-        GENERATE_STEP_MESSAGE,
+        StepName.Generate,
+        StepMessage.Generate,
         expect.any(Function)
       ]
     ]);
@@ -596,7 +596,7 @@ describe('BuildService', () => {
         action: () => ({
           steps: () => [
             {
-              name: GENERATE_STEP_NAME,
+              name: StepName.Generate,
               status: EnumActionStepStatus.Success
             }
           ]

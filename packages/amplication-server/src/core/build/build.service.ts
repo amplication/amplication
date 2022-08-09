@@ -49,12 +49,21 @@ import { BuildContext } from './dto/BuildContext';
 import { BuildContextData } from './dto/BuildContextData';
 import { BuildContextStorageService } from './buildContextStorage.service';
 
+
+export enum StepName {
+  Generate = 'GENERATE_APPLICATION',
+  PushToGitHub = 'PUSH_TO_GITHUB',
+  BuildDockerImage = 'BUILD_DOCKER',
+}
+
+export enum StepMessage {
+  Generate = 'Generating Application',
+  PushToGitHub = 'Push changes to GitHub',
+  BuildDockerImage = 'Building Docker image',
+}
+
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
-export const GENERATE_STEP_MESSAGE = 'Generating Application';
-export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
-export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
-export const BUILD_DOCKER_IMAGE_STEP_NAME = 'BUILD_DOCKER';
 export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
   'Built Docker image successfully';
 export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = 'Build Docker failed';
@@ -63,8 +72,6 @@ export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
   'Starting to build Docker image. It should take a few minutes.';
 
-export const PUSH_TO_GITHUB_STEP_NAME = 'PUSH_TO_GITHUB';
-export const PUSH_TO_GITHUB_STEP_MESSAGE = 'Push changes to GitHub';
 export const PUSH_TO_GITHUB_STEP_START_LOG =
   'Starting to push changes to GitHub.';
 export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
@@ -254,7 +261,7 @@ export class BuildService {
   ): Promise<void> {
     const build = await this.findByRunId(runId);
     const steps = await this.actionService.getSteps(build.actionId);
-    const generateStep = steps.find(step => step.name === GENERATE_STEP_NAME);
+    const generateStep = steps.find(step => step.name === StepName.Generate);
     await this.actionService.logInfo(
       generateStep,
       `Build with id:${build.id} and runId: ${runId} status changed to ${status}`
@@ -273,7 +280,7 @@ export class BuildService {
       .action()
       .steps({
         where: {
-          name: GENERATE_STEP_NAME
+          name: StepName.Generate
         }
       });
 
@@ -314,7 +321,7 @@ export class BuildService {
     await this.prisma.actionStep.updateMany({
       where: {
         actionId: build.actionId,
-        name: GENERATE_STEP_NAME
+        name: StepName.Generate
       },
       data: {
         status: this.mapBuildStatusToActionStepStatus(status)
@@ -352,11 +359,11 @@ export class BuildService {
 
     const generatedCodeStep = await this.getGenerateCodeStepStatus(id);
     if (!generatedCodeStep) {
-      throw new StepNotFoundError(GENERATE_STEP_NAME);
+      throw new StepNotFoundError(StepName.Generate);
     }
     if (generatedCodeStep.status !== EnumActionStepStatus.Success) {
       throw new StepNotCompleteError(
-        GENERATE_STEP_NAME,
+        StepName.Generate,
         EnumActionStepStatus[generatedCodeStep.status]
       );
     }
@@ -379,8 +386,8 @@ export class BuildService {
   private async generate(build: Build, user: User): Promise<void> {
     return this.actionService.run(
       build.actionId,
-      GENERATE_STEP_NAME,
-      GENERATE_STEP_MESSAGE,
+      StepName.Generate,
+      StepMessage.Generate,
       async step => {
         //#region getting all the resource data
         const entities = await this.getOrderedEntities(build.id);
@@ -528,8 +535,8 @@ export class BuildService {
     if (resourceRepository) {
       return this.actionService.run(
         build.actionId,
-        PUSH_TO_GITHUB_STEP_NAME,
-        PUSH_TO_GITHUB_STEP_MESSAGE,
+        StepName.PushToGitHub,
+        StepMessage.PushToGitHub,
         async step => {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           try {
