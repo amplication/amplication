@@ -15,9 +15,9 @@ import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { BuildService } from './build.service';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 import { Commit, User } from 'src/models';
 import { UserService } from '../user/user.service';
 import { Action } from '../action/dto';
@@ -37,16 +37,13 @@ export class BuildResolver {
   ) {}
 
   @Query(() => [Build])
-  @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
-    'where.resource.id'
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async builds(@Args() args: FindManyBuildArgs): Promise<Build[]> {
     return this.service.findMany(args);
   }
 
   @Query(() => Build)
-  @AuthorizeContext(AuthorizableResourceParameter.BuildId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.BuildId, 'where.id')
   async build(@Args() args: FindOneBuildArgs): Promise<Build> {
     return this.service.findOne(args);
   }
@@ -78,11 +75,11 @@ export class BuildResolver {
 
   @Mutation(() => Build)
   @InjectContextValue(
-    InjectableResourceParameter.UserId,
+    InjectableOriginParameter.UserId,
     'data.createdBy.connect.id'
   )
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
   async createBuild(@Args() args: CreateBuildArgs): Promise<Build> {

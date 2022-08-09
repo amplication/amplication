@@ -1,6 +1,6 @@
 import { GitOrganization, PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
-import { GitOrganizationInterface } from 'src/contracts/gitOrganization.interface';
+import { GitOrganizationInterface } from '../contracts/gitOrganization.interface';
 import { EnumProvider } from '../entities/enums/provider';
 
 @Injectable()

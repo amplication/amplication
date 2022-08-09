@@ -1,0 +1,8 @@
+pvc:
+  name: efs-claim
+  storageRequest: 1Gi
+  storageName: efs-sc
+
+pv:
+  name: efs-pv-custom
+  handle: fs-0a87872138ddc7f6d::fsap-0e0ed55af55fbdf11

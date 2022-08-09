@@ -1,3 +1,7 @@
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from '@amplication/nest-logger-module';
 import { Controller, Inject } from '@nestjs/common';
 import {
   Ctx,
@@ -7,9 +11,7 @@ import {
 } from '@nestjs/microservices';
 import { plainToClass } from 'class-transformer';
 import { KafkaMessage } from 'kafkajs';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { EnvironmentVariables } from 'src/services/environmentVariables';
-import { Logger } from 'winston';
 import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
 import { ResultMessage } from './dto/ResultMessage';
 import { SendPullRequestArgs } from './dto/sendPullRequest';
@@ -21,7 +23,8 @@ import { PullRequestService } from './pull-request.service';
 export class PullRequestController {
   constructor(
     private readonly pullRequestService: PullRequestService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {}
   @MessagePattern(EnvironmentVariables.get(GENERATE_PULL_REQUEST_TOPIC, true))
   async generatePullRequest(

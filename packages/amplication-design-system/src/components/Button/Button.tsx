@@ -33,6 +33,7 @@ type ButtonProps = {
   splitValue?: string;
   icon?: string;
   iconSize?: IconSize;
+  iconStyle?: string;
   /** Icon can have left or right position. Default position is right */
   iconPosition?: EnumIconPosition;
 };
@@ -47,6 +48,7 @@ export const Button = ({
   children,
   icon,
   iconSize,
+  iconStyle,
   iconPosition = EnumIconPosition.Right,
   ...rest
 }: Props) => {
@@ -71,7 +73,7 @@ export const Button = ({
         <Icon
           icon={icon as string}
           size={iconSize || "small"}
-          className="amp-button__icon"
+          className={`amp-button__icon ${iconStyle ? ` ${iconStyle}` : ""}`}
         />
       )}
       {iconPosition === EnumIconPosition.Left && children}

@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
-  DEFAULT_RESOURCE_COLOR,
-  DEFAULT_RESOURCE_DATA,
+  DEFAULT_SERVICE_DATA,
   INITIAL_COMMIT_MESSAGE,
   INVALID_RESOURCE_ID,
+  INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService
 } from './resource.service';
 
@@ -13,7 +13,7 @@ import {
   EnumResourceType,
   GitRepository,
   PrismaService,
-  Project
+  Prisma
 } from '@amplication/prisma-db';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { EnumDataType } from 'src/enums/EnumDataType';
@@ -35,21 +35,25 @@ import {
   DEFAULT_ENVIRONMENT_NAME,
   EnvironmentService
 } from '../environment/environment.service';
-import { EnumPendingChangeAction, EnumPendingChangeResourceType } from './dto';
+import {
+  EnumPendingChangeAction,
+  EnumPendingChangeOriginType,
+  ResourceCreateInput
+} from './dto';
 import { PendingChange } from './dto/PendingChange';
 import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
-import {
-  createSampleResourceEntities,
-  CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-  SAMPLE_SERVICE_DATA
-} from './sampleResource';
 import { ServiceSettings } from '../serviceSettings/dto';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
+import { DEFAULT_RESOURCE_COLORS } from './constants';
+import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID =
+  'exampleProjectConfigurationResourceId';
+const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
 const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
 const INVALID_COLOR = 'INVALID_COLOR';
@@ -59,15 +63,15 @@ const EXAMPLE_CUID = 'EXAMPLE_CUID';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
-const EXAMPLE_PROJECT: Project = {
-  id: EXAMPLE_RESOURCE_ID,
-  name: EXAMPLE_RESOURCE_NAME,
-  deletedAt: null,
-  workspaceId: 'exampleWorkspaceId'
+const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
+  description: 'Sample Service for task management',
+  name: 'My sample service',
+  resourceType: EnumResourceType.Service,
+  project: { connect: { id: 'exampleProjectId' } }
 };
 
 const EXAMPLE_RESOURCE: Resource = {
-  ...DEFAULT_RESOURCE_DATA,
+  ...DEFAULT_SERVICE_DATA,
   id: EXAMPLE_RESOURCE_ID,
   resourceType: EnumResourceType.Service,
   createdAt: new Date(),
@@ -77,9 +81,15 @@ const EXAMPLE_RESOURCE: Resource = {
   deletedAt: null
 };
 
-const RESOURCE_WITH_PROJECT = {
-  ...EXAMPLE_RESOURCE,
-  project: () => EXAMPLE_PROJECT
+const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
+  ...DEFAULT_SERVICE_DATA,
+  id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID,
+  resourceType: EnumResourceType.ProjectConfiguration,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_RESOURCE_NAME,
+  description: EXAMPLE_RESOURCE_DESCRIPTION,
+  deletedAt: null
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -148,19 +158,19 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {
-  resourceId: EXAMPLE_ENTITY_ID,
+  originId: EXAMPLE_ENTITY_ID,
   action: EnumPendingChangeAction.Create,
-  resourceType: EnumPendingChangeResourceType.Entity,
+  originType: EnumPendingChangeOriginType.Entity,
   versionNumber: 1,
-  resource: EXAMPLE_ENTITY
+  origin: EXAMPLE_ENTITY
 };
 
 const EXAMPLE_CHANGED_BLOCK: PendingChange = {
-  resourceId: EXAMPLE_BLOCK_ID,
+  originId: EXAMPLE_BLOCK_ID,
   action: EnumPendingChangeAction.Create,
-  resourceType: EnumPendingChangeResourceType.Block,
+  originType: EnumPendingChangeOriginType.Block,
   versionNumber: 1,
-  resource: EXAMPLE_BLOCK
+  origin: EXAMPLE_BLOCK
 };
 
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -253,11 +263,17 @@ const serviceSettingsCreateMock = jest.fn(() => {
 const prismaResourceCreateMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
-const prismaResourceFindOneMock = jest.fn(() => {
-  return RESOURCE_WITH_PROJECT;
-});
+const prismaResourceFindOneMock = jest.fn(
+  (args: Prisma.ResourceFindUniqueArgs) => {
+    if (args.where.id === EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID) {
+      return EXAMPLE_PROJECT_CONFIGURATION_RESOURCE;
+    } else {
+      return EXAMPLE_RESOURCE;
+    }
+  }
+);
 const prismaResourceFindManyMock = jest.fn(() => {
-  return [RESOURCE_WITH_PROJECT];
+  return [EXAMPLE_RESOURCE];
 });
 const prismaResourceDeleteMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
@@ -352,9 +368,6 @@ describe('ResourceService', () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock
-            },
-            project: {
-              update: jest.fn()
             }
           }))
         },
@@ -396,6 +409,10 @@ describe('ResourceService', () => {
             create: serviceSettingsCreateMock,
             createDefaultServiceSettings: serviceSettingsCreateMock
           }))
+        },
+        {
+          provide: ProjectConfigurationSettingsService,
+          useClass: jest.fn(() => ({}))
         }
       ]
     }).compile();
@@ -407,14 +424,19 @@ describe('ResourceService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create an resource', async () => {
+  it('should create a resource', async () => {
     const createResourceArgs = {
       args: {
         data: {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
-          color: DEFAULT_RESOURCE_COLOR,
-          resourceType: EnumResourceType.Service
+          color: DEFAULT_RESOURCE_COLORS.service,
+          resourceType: EnumResourceType.Service,
+          project: {
+            connect: {
+              id: EXAMPLE_PROJECT_ID
+            }
+          }
         }
       },
       user: EXAMPLE_USER
@@ -422,19 +444,13 @@ describe('ResourceService', () => {
     const prismaResourceCreateResourceArgs = {
       data: {
         ...createResourceArgs.args.data,
-        workspace: {
+        project: {
           connect: {
-            id: createResourceArgs.user.workspace?.id
+            id: createResourceArgs.args.data.project.connect.id
           }
         },
         roles: {
           create: EXAMPLE_USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${EXAMPLE_RESOURCE_NAME}`,
-            workspaceId: EXAMPLE_USER.workspace?.id
-          }
         }
       }
     };
@@ -449,10 +465,12 @@ describe('ResourceService', () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
-        workspace: {
-          users: {
-            some: {
-              id: EXAMPLE_USER_ID
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }
@@ -545,7 +563,8 @@ describe('ResourceService', () => {
           name: EXAMPLE_RESOURCE_NAME,
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: INVALID_COLOR,
-          resourceType: EnumResourceType.Service
+          resourceType: EnumResourceType.Service,
+          project: { connect: { id: 'projectId' } }
         }
       },
       user: EXAMPLE_USER
@@ -553,151 +572,6 @@ describe('ResourceService', () => {
     await expect(
       service.createResource(createServiceArgs.args, createServiceArgs.user)
     ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
-  });
-
-  it('should create a sample resource', async () => {
-    const prismaResourceCreateResourceArgs = {
-      data: {
-        ...DEFAULT_RESOURCE_DATA,
-        ...SAMPLE_SERVICE_DATA,
-        workspace: {
-          connect: {
-            id: EXAMPLE_USER.workspace?.id
-          }
-        },
-        roles: {
-          create: EXAMPLE_USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${SAMPLE_SERVICE_DATA.name}`,
-            workspaceId: EXAMPLE_USER.workspace?.id
-          }
-        }
-      }
-    };
-    const initialCommitArgs = {
-      data: {
-        message: INITIAL_COMMIT_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
-    const createSampleEntitiesCommitArgs = {
-      data: {
-        message: CREATE_SAMPLE_ENTITIES_COMMIT_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
-    const findManyArgs = {
-      where: {
-        deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID,
-        workspace: {
-          users: {
-            some: {
-              id: EXAMPLE_USER_ID
-            }
-          }
-        }
-      }
-    };
-    const createVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
-        }
-      }
-    };
-    const blockCreateVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        block: {
-          connect: {
-            id: EXAMPLE_BLOCK_ID
-          }
-        }
-      }
-    };
-    const changesArgs = {
-      resourceId: EXAMPLE_RESOURCE_ID,
-      userId: EXAMPLE_USER_ID
-    };
-    await expect(service.createSampleResource(EXAMPLE_USER)).resolves.toEqual(
-      EXAMPLE_RESOURCE
-    );
-    expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(
-      prismaResourceCreateResourceArgs
-    );
-    expect(entityServiceFindFirstMock).toBeCalledTimes(1);
-    expect(entityServiceFindFirstMock).toBeCalledWith({
-      where: { name: USER_ENTITY_NAME, resourceId: EXAMPLE_RESOURCE_ID },
-      select: { id: true }
-    });
-    expect(entityServiceBulkCreateEntities).toBeCalledWith(
-      EXAMPLE_RESOURCE_ID,
-      EXAMPLE_USER,
-      createSampleResourceEntities(USER_ENTITY_MOCK.id).entities
-    );
-    expect(entityServiceBulkCreateFields).toBeCalledWith(
-      EXAMPLE_USER,
-      USER_ENTITY_MOCK.id,
-      createSampleResourceEntities(USER_ENTITY_MOCK.id).userEntityFields
-    );
-    expect(prismaResourceFindManyMock).toBeCalledTimes(2);
-    expect(prismaResourceFindManyMock.mock.calls).toEqual([
-      [findManyArgs],
-      [findManyArgs]
-    ]);
-
-    expect(prismaCommitCreateMock).toBeCalledTimes(2);
-    expect(prismaCommitCreateMock.mock.calls).toEqual([
-      [initialCommitArgs],
-      [createSampleEntitiesCommitArgs]
-    ]);
-    expect(entityServiceCreateVersionMock).toBeCalledTimes(2);
-    expect(entityServiceCreateVersionMock.mock.calls).toEqual([
-      [createVersionArgs],
-      [createVersionArgs]
-    ]);
-    expect(blockServiceCreateVersionMock).toBeCalledTimes(2);
-    expect(blockServiceCreateVersionMock.mock.calls).toEqual([
-      [blockCreateVersionArgs],
-      [blockCreateVersionArgs]
-    ]);
-    expect(entityServiceReleaseLockMock).toBeCalledTimes(2);
-    expect(entityServiceReleaseLockMock.mock.calls).toEqual([
-      [EXAMPLE_ENTITY_ID],
-      [EXAMPLE_ENTITY_ID]
-    ]);
-    expect(blockServiceReleaseLockMock).toBeCalledTimes(2);
-    expect(blockServiceReleaseLockMock.mock.calls).toEqual([
-      [EXAMPLE_BLOCK_ID],
-      [EXAMPLE_BLOCK_ID]
-    ]);
-    expect(entityServiceGetChangedEntitiesMock).toBeCalledTimes(2);
-    expect(entityServiceGetChangedEntitiesMock.mock.calls).toEqual([
-      [changesArgs.resourceId, changesArgs.userId],
-      [changesArgs.resourceId, changesArgs.userId]
-    ]);
-    expect(blockServiceGetChangedBlocksMock).toBeCalledTimes(2);
-    expect(blockServiceGetChangedBlocksMock.mock.calls).toEqual([
-      [changesArgs.resourceId, changesArgs.userId],
-      [changesArgs.resourceId, changesArgs.userId]
-    ]);
   });
 
   it('should fail to create resource with entities with a reserved name', async () => {
@@ -715,7 +589,12 @@ describe('ResourceService', () => {
                 }
               ]
             }
-          ]
+          ],
+          generationSettings: {
+            generateAdminUI: true,
+            generateGraphQL: true,
+            generateRestApi: true
+          }
         },
 
         EXAMPLE_USER
@@ -726,21 +605,10 @@ describe('ResourceService', () => {
   it('should create resource with entities', async () => {
     const prismaResourceCreateResourceArgs = {
       data: {
-        ...DEFAULT_RESOURCE_DATA,
+        ...DEFAULT_SERVICE_DATA,
         ...SAMPLE_SERVICE_DATA,
-        workspace: {
-          connect: {
-            id: EXAMPLE_USER.workspace?.id
-          }
-        },
         roles: {
           create: EXAMPLE_USER_RESOURCE_ROLE
-        },
-        project: {
-          create: {
-            name: `project-${SAMPLE_SERVICE_DATA.name}`,
-            workspaceId: EXAMPLE_USER.workspace?.id
-          }
         }
       }
     };
@@ -763,10 +631,12 @@ describe('ResourceService', () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
-        workspace: {
-          users: {
-            some: {
-              id: EXAMPLE_USER_ID
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }
@@ -843,7 +713,12 @@ describe('ResourceService', () => {
                 }
               ]
             }
-          ]
+          ],
+          generationSettings: {
+            generateAdminUI: true,
+            generateGraphQL: true,
+            generateRestApi: true
+          }
         },
 
         EXAMPLE_USER
@@ -864,7 +739,7 @@ describe('ResourceService', () => {
               mode: QueryMode.Insensitive,
               startsWith: SAMPLE_SERVICE_DATA.name
             },
-            workspaceId: EXAMPLE_WORKSPACE_ID
+            projectId: EXAMPLE_PROJECT_ID
           },
           select: {
             name: true
@@ -924,14 +799,14 @@ describe('ResourceService', () => {
     ]);
   });
 
-  it('should find an resource', async () => {
+  it('should find a resource', async () => {
     const args = {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID
       }
     };
-    expect(await service.resource(args)).toEqual(RESOURCE_WITH_PROJECT);
+    expect(await service.resource(args)).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceFindOneMock).toBeCalledTimes(1);
     expect(prismaResourceFindOneMock).toBeCalledWith(args);
   });
@@ -943,12 +818,12 @@ describe('ResourceService', () => {
         id: EXAMPLE_RESOURCE_ID
       }
     };
-    expect(await service.resources(args)).toEqual([RESOURCE_WITH_PROJECT]);
+    expect(await service.resources(args)).toEqual([EXAMPLE_RESOURCE]);
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);
     expect(prismaResourceFindManyMock).toBeCalledWith(args);
   });
 
-  it('should delete an resource', async () => {
+  it('should delete a resource', async () => {
     const args = { where: { id: EXAMPLE_RESOURCE_ID } };
     const dateSpy = jest.spyOn(global, 'Date');
     expect(await service.deleteResource(args)).toEqual(EXAMPLE_RESOURCE);
@@ -960,6 +835,13 @@ describe('ResourceService', () => {
         name: prepareDeletedItemName(EXAMPLE_RESOURCE.name, EXAMPLE_RESOURCE.id)
       }
     });
+  });
+
+  it('should not delete a resource of Project configuration', async () => {
+    const args = { where: { id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID } };
+    await expect(service.deleteResource(args)).rejects.toThrow(
+      new Error(INVALID_DELETE_PROJECT_CONFIGURATION)
+    );
   });
 
   it('should update an resource', async () => {
@@ -984,10 +866,12 @@ describe('ResourceService', () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
-        workspace: {
-          users: {
-            some: {
-              id: EXAMPLE_USER_ID
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: EXAMPLE_USER_ID
+              }
             }
           }
         }

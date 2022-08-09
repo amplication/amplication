@@ -72,7 +72,7 @@ const PendingChangesPage = ({ match }: Props) => {
         <div className={`${CLASS_NAME}__changes`}>
           {data?.pendingChanges.map((change) => (
             <PendingChangeWithCompare
-              key={change.resourceId}
+              key={change.originId}
               change={change}
               compareType={EnumCompareType.Pending}
               splitView={splitView}
@@ -101,11 +101,11 @@ export const GET_COMMIT = gql`
         }
       }
       changes {
-        resourceId
+        originId
         action
-        resourceType
+        originType
         versionNumber
-        resource {
+        origin {
           __typename
           ... on Entity {
             id

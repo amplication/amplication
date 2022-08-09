@@ -24,10 +24,11 @@ import { Commit } from 'src/models/Commit';
 import { PendingChange } from './dto/PendingChange';
 import {
   EnumPendingChangeAction,
-  EnumPendingChangeResourceType
+  EnumPendingChangeOriginType
 } from '@amplication/code-gen-types/dist/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
+import { ResourceCreateInput } from './dto';
 
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_NAME = 'exampleName';
@@ -48,8 +49,10 @@ const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 
-const EXAMPLE_BLOCK_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_ORIGIN_ID = 'exampleOriginId';
 const EXAMPLE_VERSION_NUMBER = 1;
+
+const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
@@ -101,9 +104,9 @@ const EXAMPLE_RESOURCE: Resource = {
 
 const EXAMPLE_PENDING_CHANGE: PendingChange = {
   action: EnumPendingChangeAction.Create,
-  resourceType: EnumPendingChangeResourceType.Entity,
-  resourceId: EXAMPLE_BLOCK_RESOURCE_ID,
-  resource: EXAMPLE_ENTITY,
+  originType: EnumPendingChangeOriginType.Entity,
+  originId: EXAMPLE_ORIGIN_ID,
+  origin: EXAMPLE_ENTITY,
   versionNumber: EXAMPLE_VERSION_NUMBER
 };
 
@@ -338,10 +341,10 @@ const PENDING_CHANGE_QUERY = gql`
   query($resourceId: String!) {
     pendingChanges(where: { resource: { id: $resourceId } }) {
       action
-      resourceType
-      resourceId
+      originType
+      originId
       versionNumber
-      resource {
+      origin {
         ... on Entity {
           id
           createdAt
@@ -580,15 +583,17 @@ describe('ResourceResolver', () => {
     });
   });
 
-  it('should create an resource', async () => {
+  it('should create a resource', async () => {
+    const resourceCreateInput: ResourceCreateInput = {
+      name: EXAMPLE_NAME,
+      description: EXAMPLE_DESCRIPTION,
+      resourceType: EnumResourceType.Service,
+      project: { connect: { id: EXAMPLE_PROJECT_ID } }
+    };
     const res = await apolloClient.query({
       query: CREATE_RESOURCE_MUTATION,
       variables: {
-        data: {
-          name: EXAMPLE_NAME,
-          description: EXAMPLE_DESCRIPTION,
-          resourceType: EnumResourceType.Service
-        }
+        data: resourceCreateInput
       }
     });
     expect(res.errors).toBeUndefined();
@@ -623,11 +628,7 @@ describe('ResourceResolver', () => {
     expect(createResourceMock).toBeCalledTimes(1);
     expect(createResourceMock).toBeCalledWith(
       {
-        data: {
-          name: EXAMPLE_NAME,
-          description: EXAMPLE_DESCRIPTION,
-          resourceType: EnumResourceType.Service
-        }
+        data: resourceCreateInput
       },
       EXAMPLE_USER
     );
@@ -763,7 +764,7 @@ describe('ResourceResolver', () => {
       pendingChanges: [
         {
           ...EXAMPLE_PENDING_CHANGE,
-          resource: {
+          origin: {
             ...EXAMPLE_ENTITY,
             createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
             updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()

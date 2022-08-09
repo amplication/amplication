@@ -1,0 +1,114 @@
+@import "../style/index.scss";
+
+$logo-header-width: 50px;
+$search-header-width: 52px;
+$user-header-width: 90px; // 64px after remove signout
+$modal-menu-width: 220px;
+$modal-menu-top: 30px;
+
+.workspace-header {
+  @include flexFullRowWithSpacing;
+  height: var(--header-height);
+  min-height: var(--header-height);
+  background: var(--black2);
+  border-bottom: $border-black5;
+
+  &__left,
+  &__right {
+    flex: 1;
+  }
+
+  &__logo {
+    border-right: $border-black70;
+    width: var(--menu-width);
+  }
+  &__breadcrumbs {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &__project {
+      @include regular-12();
+      color: var(--black80);
+      margin-right: var(--default-spacing);
+    }
+    &__resource {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: var(--default-spacing);
+      .select-menu__modal {
+        width: $modal-menu-width;
+        background-color: var(--black2);
+        border: $border-black30;
+        box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
+        border-radius: var(--default-spacing-small);
+        right: 45%;
+      }
+      .select-menu__modal > div {
+        border: none;
+        width: $modal-menu-width;
+        display: flex;
+        flex-direction: column;
+      }
+      .select-menu__list {
+        width: $modal-menu-width;
+        display: flex;
+        padding: 5px 0px;
+        flex-direction: column;
+        border: none;
+      }
+      .select-menu__item {
+        padding: 5px;
+        margin-bottom: var(--icon-spacing);
+      }
+      &__title {
+        @include regular-12();
+
+        &__not_selected {
+          @include regular-12();
+          color: var(--black80);
+        }
+      }
+      &__item {
+        margin-left: var(--text-field-label-font-size);
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+      &__text {
+        margin-left: var(--default-spacing-small);
+        @include regular-12();
+        &__desc {
+          color: var(--black80);
+        }
+      }
+    }
+  }
+  &__right {
+    @include flexFullRowWithSpacing;
+    padding: var(--default-spacing);
+    justify-content: flex-end;
+  }
+
+  .user-avatar {
+    margin-right: var(--default-spacing);
+  }
+  &__links {
+    &__link {
+      @include regular-12();
+      color: var(--black80);
+      margin: 0px;
+      margin-right: var(--large-spacing);
+    }
+  }
+  &__vertical_border {
+    width: 0px;
+    height: var(--large-spacing);
+    border: $border-black70;
+    margin: 0;
+  }
+  &__resources_modal {
+    top: $modal-menu-top;
+  }
+}

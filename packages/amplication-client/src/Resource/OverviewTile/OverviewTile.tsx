@@ -3,7 +3,7 @@ import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
 import { ServiceSettings, EnumAuthProviderType } from "../../models";
-import { GET_RESOURCE_SETTINGS } from "../serviceSettings/GenerationSettingsForm";
+import { GET_RESOURCE_SETTINGS } from "../resourceSettings/GenerationSettingsForm";
 
 type Props = {
   resourceId: string;

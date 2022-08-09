@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import * as models from "../models";
 import { useHistory } from "react-router-dom";
 
@@ -8,6 +8,7 @@ import { ClickableId } from "../Components/ClickableId";
 
 import "./CommitListItem.scss";
 import { BuildStatusIcons } from "./BuildStatusIcons";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   resourceId: string;
@@ -19,14 +20,17 @@ export const CLASS_NAME = "commit-list-item";
 export const CommitListItem = ({ commit, resourceId }: Props) => {
   const [build] = commit.builds;
   const history = useHistory();
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const handleBuildLinkClick = useCallback((event) => {
     event.stopPropagation();
   }, []);
 
   const handleRowClick = useCallback(() => {
-    history.push(`/${resourceId}/commits/${commit.id}`);
-  }, [history, resourceId, commit]);
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/commits/${commit.id}`
+    );
+  }, [history, resourceId, commit, currentWorkspace, currentProject]);
 
   const account = commit.user?.account;
 
@@ -42,7 +46,7 @@ export const CommitListItem = ({ commit, resourceId }: Props) => {
           className={`${CLASS_NAME}__title`}
           id={commit.id}
           label=""
-          to={`/${resourceId}/commit/${commit.id}`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/commits/${commit.id}`}
           eventData={{
             eventName: "commitListCommitIdClick",
           }}
@@ -52,7 +56,7 @@ export const CommitListItem = ({ commit, resourceId }: Props) => {
           <ClickableId
             className={`${CLASS_NAME}__build`}
             label="Build ID"
-            to={`/${resourceId}/builds/${build.id}`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/commits/builds/${build.id}`}
             id={build.id}
             onClick={handleBuildLinkClick}
             eventData={{

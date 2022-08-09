@@ -1,7 +1,8 @@
+import { AmplicationLoggerModule } from '@amplication/nest-logger-module';
 import { Module, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { SERVICE_NAME } from './constants';
 import { CoreModule } from './core';
-import { RootWinstonModule } from './services';
 
 @Module({
   imports: [
@@ -10,7 +11,9 @@ import { RootWinstonModule } from './services';
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
-    RootWinstonModule,
+    AmplicationLoggerModule.register({
+      metadata: { service: SERVICE_NAME },
+    }),
   ],
 })
 export class AppModule implements OnApplicationShutdown {

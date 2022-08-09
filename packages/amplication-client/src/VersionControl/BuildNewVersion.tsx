@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useContext } from "react";
 import { Formik, Form } from "formik";
 import semver, { ReleaseType } from "semver";
 import { useHistory } from "react-router-dom";
@@ -16,6 +16,7 @@ import * as models from "../models";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./BuildNewVersion.scss";
 import { validate } from "../util/formikValidateJsonSchema";
+import { AppContext } from "../context/appContext";
 
 type BuildType = {
   message: string;
@@ -76,12 +77,13 @@ const BuildNewVersion = ({
   );
   const [version, setVersion] = useState<string | null>(null);
   const history = useHistory();
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const [createBuild, { loading, error }] = useMutation<{
     createBuild: models.Build;
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
-      const url = `/${resourceId}/builds/${data.createBuild.id}`;
+      const url = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/builds/${data.createBuild.id}`;
       history.push(url);
 
       onComplete();

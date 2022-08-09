@@ -4,7 +4,8 @@ import {
   Workspace,
   User,
   UserRole,
-  PrismaService
+  PrismaService,
+  Project
 } from '@amplication/prisma-db';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/enums/Role';
@@ -14,6 +15,7 @@ import { UserService } from '../user/user.service';
 import { AuthService, AuthUser } from './auth.service';
 import { WorkspaceService } from '../workspace/workspace.service';
 import { EnumTokenType } from './dto';
+import { ProjectService } from '../project/project.service';
 const EXAMPLE_TOKEN = 'EXAMPLE TOKEN';
 
 const EXAMPLE_ACCOUNT: Account = {
@@ -26,6 +28,15 @@ const EXAMPLE_ACCOUNT: Account = {
   updatedAt: new Date(),
   currentUserId: null,
   githubId: null
+};
+
+const EXAMPLE_PROJECT: Project = {
+  id: 'exampleId',
+  name: 'Example name',
+  workspaceId: 'ExampleWorkspaceId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  deletedAt: undefined
 };
 
 const EXAMPLE_HASHED_PASSWORD = 'HASHED PASSWORD';
@@ -142,6 +153,8 @@ const createWorkspaceMock = jest.fn(() => ({
   users: [EXAMPLE_AUTH_USER]
 }));
 
+const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
+
 describe('AuthService', () => {
   let service: AuthService;
 
@@ -155,6 +168,7 @@ describe('AuthService', () => {
     validatePasswordMock.mockClear();
     findUsersMock.mockClear();
     createWorkspaceMock.mockClear();
+    prismaCreateProjectMock.mockClear();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -192,10 +206,19 @@ describe('AuthService', () => {
           }))
         },
         {
+          provide: ProjectService,
+          useClass: jest.fn(() => ({
+            createProject: jest.fn()
+          }))
+        },
+        {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             account: {
               findUnique: prismaAccountFindOneMock
+            },
+            project: {
+              create: prismaCreateProjectMock
             }
           }))
         },

@@ -2,17 +2,16 @@ name: Generated App Tests
 on:
   workflow_dispatch:
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
     paths:
       - "packages/**"
 
 jobs:
-
   test-generated-app:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node-version: [ 14.x, 16.x ]
+        node-version: [14.x, 16.x]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
@@ -53,14 +52,6 @@ jobs:
 
       - name: Run test data services tests
         run: lerna run test --scope=@amplication/data-service-generator
-
-      - name: Discord notification
-        if: failure()
-        uses: Ilshidur/action-discord@0.3.2
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_BUILD_NOTIFICATIONS_CHANNEL_WEBHOOK }}
-          DISCORD_EMBEDS: '[{"color":15734528,"title":"Generated App Tests Failed - ${{ github.ref_name }}","url":"https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}","description":"Job ${{ github.job }} in workflow ${{ github.workflow }} failed!","author":{"name":"${{ github.event.sender.login }}","icon_url":"${{ github.event.sender.avatar_url }}","url":"${{ github.event.sender.html_url }}"},"fields":[{"name":"Node version","value":"${{ matrix.node-version }}"}]}]'
-
 #      TODO:Review @amplication/data-service-generator test:e2e
 #      - name: Run Data Service Generator E2E test
 #        run: lerna run test:e2e --scope=@amplication/data-service-generator

@@ -1,78 +1,112 @@
 @import "../style/index.scss";
 
 @mixin workspaceItem {
-  @include sectionTitle;
-  margin-bottom: 0;
-  padding: var(--default-spacing-small);
-  border-radius: var(--default-border-radius);
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  align-items: center;
   justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  padding: var(--default-spacing);
+  width: 100%;
 
   .circle-badge {
     margin-left: 0;
     margin-right: var(--default-spacing);
   }
-  &:hover,
-  &--active {
-    background-color: var(--black2);
-  }
 
   &__name {
+    @include regular-12;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
   &__plan {
-    @include body2;
+    font-size: 10px;
     color: var(--black60);
   }
 
   &__details {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    @include flexColumn;
+    font-weight: 400;
+    margin-right: auto;
   }
 }
 
 .workspaces-selector {
-  margin: var(--large-spacing);
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: var(--surface);
+  border: $border-black5;
+  border-top-left-radius: var(--default-spacing-small);
+  border-top-right-radius: var(--default-spacing-small);
+  width: 100%;
+  margin-bottom: var(--large-spacing);
 
   &__current {
     @include workspaceItem;
-    margin-bottom: var(--default-spacing);
 
     .amp-icon {
-      margin-left: var(--default-spacing);
-      transform: rotate(90deg);
+      justify-self: flex-end;
     }
   }
 
   &__list {
-    padding: var(--default-spacing-small);
-    border: $border-black20;
-    border-radius: var(--default-border-radius);
+    position: absolute;
+    top: 57px;
+    left: -1px;
+    width: calc(100% - var(--double-spacing));
+    border: $border-black30;
+    border-bottom-left-radius: var(--default-spacing-small);
+    border-bottom-right-radius: var(--default-spacing-small);
+    background-color: var(--black2);
+    width: 100%;
+    z-index: 1;
 
     &__item {
       @include workspaceItem;
-      @include title1;
-      margin-bottom: var(--default-spacing-small);
+      width: calc(100% - var(--double-spacing));
+      margin-bottom: var(--icon-spacing);
+      &__icon {
+        color: var(--positive-default);
+      }
+    }
+
+    &__item:hover {
+      background-color: var(--black10);
+    }
+
+    &__button {
+      margin-left: var(--default-spacing);
+      margin-top: var(--default-spacing-small);
     }
 
     &__new {
-      margin-top: var(--default-spacing);
-      border-top: $border-black20;
-      padding-top: var(--default-spacing);
+      height: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    &__divider {
+      width: calc(100% - var(--double-spacing));
+      border: 1px solid var(--black30);
     }
   }
+}
+
+.workspaces-selector:hover {
+  background-color: var(--black2);
+  border: $border-black30;
+}
+
+.workspaces-selector__close {
+  border-bottom-left-radius: var(--default-spacing-small);
+  border-bottom-right-radius: var(--default-spacing-small);
+}
+.workspaces-selector__open {
+  background-color: var(--black2);
+  border: $border-black30;
 }

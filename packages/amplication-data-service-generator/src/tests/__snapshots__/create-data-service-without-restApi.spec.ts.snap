@@ -15,6 +15,10 @@ import { UserList } from \\"./user/UserList\\";
 import { UserCreate } from \\"./user/UserCreate\\";
 import { UserEdit } from \\"./user/UserEdit\\";
 import { UserShow } from \\"./user/UserShow\\";
+import { ProfileList } from \\"./profile/ProfileList\\";
+import { ProfileCreate } from \\"./profile/ProfileCreate\\";
+import { ProfileEdit } from \\"./profile/ProfileEdit\\";
+import { ProfileShow } from \\"./profile/ProfileShow\\";
 import { OrderList } from \\"./order/OrderList\\";
 import { OrderCreate } from \\"./order/OrderCreate\\";
 import { OrderEdit } from \\"./order/OrderEdit\\";
@@ -63,6 +67,13 @@ const App = (): React.ReactElement => {
           edit={UserEdit}
           create={UserCreate}
           show={UserShow}
+        />
+        <Resource
+          name=\\"Profile\\"
+          list={ProfileList}
+          edit={ProfileEdit}
+          create={ProfileCreate}
+          show={ProfileShow}
         />
         <Resource
           name=\\"Order\\"
@@ -125,6 +136,7 @@ const Login = ({ theme }: { theme?: object }) => {
   const [password, setPassword] = useState(\\"\\");
   const login = useLogin();
   const notify = useNotify();
+  const BASE_URI = process.env.REACT_APP_SERVER_URL;
   const submit = (e: any) => {
     e.preventDefault();
     login({ username, password }).catch(() =>
@@ -150,7 +162,7 @@ const Login = ({ theme }: { theme?: object }) => {
               type=\\"button\\"
               variant=\\"contained\\"
               color=\\"primary\\"
-              href=\\"/graphql\\"
+              href={\`\${BASE_URI}/graphql\`}
             >
               Continue
             </Button>
@@ -205,7 +217,7 @@ const Login = ({ theme }: { theme?: object }) => {
               type=\\"button\\"
               variant=\\"contained\\"
               color=\\"primary\\"
-              href=\\"/api\\"
+              href={\`\${BASE_URI}/api\`}
             >
               Continue
             </Button>
@@ -719,6 +731,100 @@ export type UserUpdateManyWithoutOrganizationsInput = {
   set?: Array<UserWhereUniqueInput>;
 };
 ",
+  "admin-ui/src/api/profile/CreateProfileArgs.ts": "import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
+
+export type CreateProfileArgs = {
+  data: ProfileCreateInput;
+};
+",
+  "admin-ui/src/api/profile/DeleteProfileArgs.ts": "import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+
+export type DeleteProfileArgs = {
+  where: ProfileWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/profile/Profile.ts": "import { User } from \\"../user/User\\";
+
+export type Profile = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  user?: User | null;
+};
+",
+  "admin-ui/src/api/profile/ProfileCreateInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
+
+export type ProfileCreateInput = {
+  email: string;
+  user?: UserWhereUniqueInput | null;
+};
+",
+  "admin-ui/src/api/profile/ProfileFindManyArgs.ts": "import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
+import { ProfileOrderByInput } from \\"./ProfileOrderByInput\\";
+
+export type ProfileFindManyArgs = {
+  where?: ProfileWhereInput;
+  orderBy?: Array<ProfileOrderByInput>;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/profile/ProfileFindUniqueArgs.ts": "import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+
+export type ProfileFindUniqueArgs = {
+  where: ProfileWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/profile/ProfileListRelationFilter.ts": "import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
+
+export type ProfileListRelationFilter = {
+  every?: ProfileWhereInput;
+  some?: ProfileWhereInput;
+  none?: ProfileWhereInput;
+};
+",
+  "admin-ui/src/api/profile/ProfileOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
+
+export type ProfileOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
+  email?: SortOrder;
+  userId?: SortOrder;
+};
+",
+  "admin-ui/src/api/profile/ProfileUpdateInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
+
+export type ProfileUpdateInput = {
+  email?: string;
+  user?: UserWhereUniqueInput | null;
+};
+",
+  "admin-ui/src/api/profile/ProfileWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
+
+export type ProfileWhereInput = {
+  id?: StringFilter;
+  createdAt?: DateTimeFilter;
+  updatedAt?: DateTimeFilter;
+  email?: StringFilter;
+  user?: UserWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/profile/ProfileWhereUniqueInput.ts": "export type ProfileWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin-ui/src/api/profile/UpdateProfileArgs.ts": "import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+import { ProfileUpdateInput } from \\"./ProfileUpdateInput\\";
+
+export type UpdateProfileArgs = {
+  where: ProfileWhereUniqueInput;
+  data: ProfileUpdateInput;
+};
+",
   "admin-ui/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from \\"./UserCreateInput\\";
 
 export type CreateUserArgs = {
@@ -766,6 +872,7 @@ export type UpdateUserArgs = {
 ",
   "admin-ui/src/api/user/User.ts": "import { Organization } from \\"../organization/Organization\\";
 import { JsonValue } from \\"type-fest\\";
+import { Profile } from \\"../profile/Profile\\";
 
 export type User = {
   username: string;
@@ -785,12 +892,14 @@ export type User = {
   isCurious: boolean;
   location: string;
   extendedProperties: JsonValue;
+  profile?: Profile | null;
 };
 ",
   "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { InputJsonValue } from \\"../../types\\";
+import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserCreateInput = {
   username: string;
@@ -810,6 +919,7 @@ export type UserCreateInput = {
   isCurious: boolean;
   location: string;
   extendedProperties: InputJsonValue;
+  profile?: ProfileWhereUniqueInput | null;
 };
 ",
   "admin-ui/src/api/user/UserCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -861,12 +971,14 @@ export type UserOrderByInput = {
   isCurious?: SortOrder;
   location?: SortOrder;
   extendedProperties?: SortOrder;
+  profileId?: SortOrder;
 };
 ",
   "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { InputJsonValue } from \\"../../types\\";
+import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserUpdateInput = {
   username?: string;
@@ -886,6 +998,7 @@ export type UserUpdateInput = {
   isCurious?: boolean;
   location?: string;
   extendedProperties?: InputJsonValue;
+  profile?: ProfileWhereUniqueInput | null;
 };
 ",
   "admin-ui/src/api/user/UserUpdateManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -903,6 +1016,7 @@ import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationListRelationFilter } from \\"../organization/OrganizationListRelationFilter\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
+import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserWhereInput = {
   id?: StringFilter;
@@ -916,6 +1030,7 @@ export type UserWhereInput = {
   isCurious?: BooleanFilter;
   location?: StringFilter;
   extendedProperties?: JsonFilter;
+  profile?: ProfileWhereUniqueInput;
 };
 ",
   "admin-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
@@ -2012,6 +2127,123 @@ const Dashboard = () => (
 
 export default Dashboard;
 ",
+  "admin-ui/src/profile/ProfileCreate.tsx": "import * as React from \\"react\\";
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { UserTitle } from \\"../user/UserTitle\\";
+
+export const ProfileCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"User\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/profile/ProfileEdit.tsx": "import * as React from \\"react\\";
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  ReferenceInput,
+  SelectInput,
+} from \\"react-admin\\";
+import { UserTitle } from \\"../user/UserTitle\\";
+
+export const ProfileEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
+        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"User\\">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/profile/ProfileList.tsx": "import * as React from \\"react\\";
+import {
+  List,
+  Datagrid,
+  ListProps,
+  TextField,
+  DateField,
+  ReferenceField,
+} from \\"react-admin\\";
+import Pagination from \\"../Components/Pagination\\";
+import { USER_TITLE_FIELD } from \\"../user/UserTitle\\";
+
+export const ProfileList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={\\"Profiles\\"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick=\\"show\\">
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <TextField label=\\"Email\\" source=\\"email\\" />
+        <ReferenceField label=\\"User\\" source=\\"user.id\\" reference=\\"User\\">
+          <TextField source={USER_TITLE_FIELD} />
+        </ReferenceField>
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/profile/ProfileShow.tsx": "import * as React from \\"react\\";
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  DateField,
+  ReferenceField,
+} from \\"react-admin\\";
+import { USER_TITLE_FIELD } from \\"../user/UserTitle\\";
+
+export const ProfileShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label=\\"Id\\" source=\\"id\\" />
+        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
+        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <TextField label=\\"Email\\" source=\\"email\\" />
+        <ReferenceField label=\\"User\\" source=\\"user.id\\" reference=\\"User\\">
+          <TextField source={USER_TITLE_FIELD} />
+        </ReferenceField>
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/profile/ProfileTitle.ts": "import { Profile as TProfile } from \\"../api/profile/Profile\\";
+
+export const PROFILE_TITLE_FIELD = \\"id\\";
+
+export const ProfileTitle = (record: TProfile): string => {
+  return record.id || record.id;
+};
+",
   "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
 const reportWebVitals = (onPerfEntry?: ReportHandler) => {
@@ -2120,6 +2352,7 @@ import {
 
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { ProfileTitle } from \\"../profile/ProfileTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
@@ -2183,6 +2416,9 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
         <TextInput label=\\"Location\\" source=\\"location\\" />
         <div />
+        <ReferenceInput source=\\"profile.id\\" reference=\\"Profile\\" label=\\"Profile\\">
+          <SelectInput optionText={ProfileTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Create>
   );
@@ -2207,6 +2443,7 @@ import {
 
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
+import { ProfileTitle } from \\"../profile/ProfileTitle\\";
 import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
@@ -2270,6 +2507,9 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <BooleanInput label=\\"Is Curious\\" source=\\"isCurious\\" />
         <TextInput label=\\"Location\\" source=\\"location\\" />
         <div />
+        <ReferenceInput source=\\"profile.id\\" reference=\\"Profile\\" label=\\"Profile\\">
+          <SelectInput optionText={ProfileTitle} />
+        </ReferenceInput>
       </SimpleForm>
     </Edit>
   );
@@ -2286,6 +2526,7 @@ import {
 } from \\"react-admin\\";
 import Pagination from \\"../Components/Pagination\\";
 import { USER_TITLE_FIELD } from \\"./UserTitle\\";
+import { PROFILE_TITLE_FIELD } from \\"../profile/ProfileTitle\\";
 
 export const UserList = (props: ListProps): React.ReactElement => {
   return (
@@ -2314,6 +2555,9 @@ export const UserList = (props: ListProps): React.ReactElement => {
         <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
         <TextField label=\\"Location\\" source=\\"location\\" />
         <TextField label=\\"Extended Properties\\" source=\\"extendedProperties\\" />
+        <ReferenceField label=\\"Profile\\" source=\\"profile.id\\" reference=\\"Profile\\">
+          <TextField source={PROFILE_TITLE_FIELD} />
+        </ReferenceField>
       </Datagrid>
     </List>
   );
@@ -2329,6 +2573,7 @@ import {
   BooleanField,
 } from \\"react-admin\\";
 import { USER_TITLE_FIELD } from \\"./UserTitle\\";
+import { PROFILE_TITLE_FIELD } from \\"../profile/ProfileTitle\\";
 
 export const UserShow = (props: ShowProps): React.ReactElement => {
   return (
@@ -2351,6 +2596,9 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
         <BooleanField label=\\"Is Curious\\" source=\\"isCurious\\" />
         <TextField label=\\"Location\\" source=\\"location\\" />
         <TextField label=\\"Extended Properties\\" source=\\"extendedProperties\\" />
+        <ReferenceField label=\\"Profile\\" source=\\"profile.id\\" reference=\\"Profile\\">
+          <TextField source={PROFILE_TITLE_FIELD} />
+        </ReferenceField>
       </SimpleShowLayout>
     </Show>
   );
@@ -2620,6 +2868,16 @@ model User {
   isCurious          Boolean
   location           String
   extendedProperties Json
+  profile            Profile?            @relation(fields: [profileId], references: [id])
+  profileId          String?             @unique
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String
+  user      User?
 }
 
 model Order {
@@ -2841,6 +3099,7 @@ async function seed(bcryptSalt: Salt) {
 import { APP_INTERCEPTOR } from \\"@nestjs/core\\";
 import { MorganInterceptor, MorganModule } from \\"nest-morgan\\";
 import { UserModule } from \\"./user/user.module\\";
+import { ProfileModule } from \\"./profile/profile.module\\";
 import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
@@ -2858,6 +3117,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
   controllers: [],
   imports: [
     UserModule,
+    ProfileModule,
     OrderModule,
     OrganizationModule,
     CustomerModule,
@@ -3077,9 +3337,6 @@ export class AuthResolver {
 }
 ",
   "server/src/auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from \\"src/user/base/User\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { UserService } from \\"../user/user.service\\";
@@ -8309,6 +8566,837 @@ export async function transformStringFieldUpdateInput<
   return input;
 }
 ",
+  "server/src/profile/base/CreateProfileArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
+
+@ArgsType()
+class CreateProfileArgs {
+  @Field(() => ProfileCreateInput, { nullable: false })
+  data!: ProfileCreateInput;
+}
+
+export { CreateProfileArgs };
+",
+  "server/src/profile/base/DeleteProfileArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+
+@ArgsType()
+class DeleteProfileArgs {
+  @Field(() => ProfileWhereUniqueInput, { nullable: false })
+  where!: ProfileWhereUniqueInput;
+}
+
+export { DeleteProfileArgs };
+",
+  "server/src/profile/base/Profile.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { User } from \\"../../user/base/User\\";
+@ObjectType()
+class Profile {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  email!: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => User,
+  })
+  @ValidateNested()
+  @Type(() => User)
+  @IsOptional()
+  user?: User | null;
+}
+export { Profile };
+",
+  "server/src/profile/base/ProfileCreateInput.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
+@InputType()
+class ProfileCreateInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  email!: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
+  user?: UserWhereUniqueInput | null;
+}
+export { ProfileCreateInput };
+",
+  "server/src/profile/base/ProfileFindManyArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
+import { Type } from \\"class-transformer\\";
+import { ProfileOrderByInput } from \\"./ProfileOrderByInput\\";
+
+@ArgsType()
+class ProfileFindManyArgs {
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereInput,
+  })
+  @Field(() => ProfileWhereInput, { nullable: true })
+  @Type(() => ProfileWhereInput)
+  where?: ProfileWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: [ProfileOrderByInput],
+  })
+  @Field(() => [ProfileOrderByInput], { nullable: true })
+  @Type(() => ProfileOrderByInput)
+  orderBy?: Array<ProfileOrderByInput>;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  skip?: number;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @Field(() => Number, { nullable: true })
+  @Type(() => Number)
+  take?: number;
+}
+
+export { ProfileFindManyArgs };
+",
+  "server/src/profile/base/ProfileFindUniqueArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+
+@ArgsType()
+class ProfileFindUniqueArgs {
+  @Field(() => ProfileWhereUniqueInput, { nullable: false })
+  where!: ProfileWhereUniqueInput;
+}
+
+export { ProfileFindUniqueArgs };
+",
+  "server/src/profile/base/ProfileListRelationFilter.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
+import { ValidateNested, IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+
+@InputType()
+class ProfileListRelationFilter {
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereInput)
+  @IsOptional()
+  @Field(() => ProfileWhereInput, {
+    nullable: true,
+  })
+  every?: ProfileWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereInput)
+  @IsOptional()
+  @Field(() => ProfileWhereInput, {
+    nullable: true,
+  })
+  some?: ProfileWhereInput;
+
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereInput)
+  @IsOptional()
+  @Field(() => ProfileWhereInput, {
+    nullable: true,
+  })
+  none?: ProfileWhereInput;
+}
+export { ProfileListRelationFilter };
+",
+  "server/src/profile/base/ProfileOrderByInput.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { SortOrder } from \\"../../util/SortOrder\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+class ProfileOrderByInput {
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  id?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  email?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  userId?: SortOrder;
+}
+
+export { ProfileOrderByInput };
+",
+  "server/src/profile/base/ProfileUpdateInput.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { Type } from \\"class-transformer\\";
+@InputType()
+class ProfileUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  email?: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
+  user?: UserWhereUniqueInput | null;
+}
+export { ProfileUpdateInput };
+",
+  "server/src/profile/base/ProfileWhereInput.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
+import { Type } from \\"class-transformer\\";
+import { IsOptional, ValidateNested } from \\"class-validator\\";
+import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+@InputType()
+class ProfileWhereInput {
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  createdAt?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedAt?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  email?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
+  @IsOptional()
+  @Field(() => UserWhereUniqueInput, {
+    nullable: true,
+  })
+  user?: UserWhereUniqueInput;
+}
+export { ProfileWhereInput };
+",
+  "server/src/profile/base/ProfileWhereUniqueInput.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { InputType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsString } from \\"class-validator\\";
+@InputType()
+class ProfileWhereUniqueInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+}
+export { ProfileWhereUniqueInput };
+",
+  "server/src/profile/base/UpdateProfileArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+import { ProfileUpdateInput } from \\"./ProfileUpdateInput\\";
+
+@ArgsType()
+class UpdateProfileArgs {
+  @Field(() => ProfileWhereUniqueInput, { nullable: false })
+  where!: ProfileWhereUniqueInput;
+  @Field(() => ProfileUpdateInput, { nullable: false })
+  data!: ProfileUpdateInput;
+}
+
+export { UpdateProfileArgs };
+",
+  "server/src/profile/base/profile.module.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { Module, forwardRef } from \\"@nestjs/common\\";
+import { MorganModule } from \\"nest-morgan\\";
+import { PrismaModule } from \\"nestjs-prisma\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AuthModule } from \\"../../auth/auth.module\\";
+
+@Module({
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    MorganModule,
+    PrismaModule,
+  ],
+
+  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+})
+export class ProfileModuleBase {}
+",
+  "server/src/profile/base/profile.resolver.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as apollo from \\"apollo-server-express\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
+import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
+import { isRecordNotFoundError } from \\"../../prisma.util\\";
+import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { CreateProfileArgs } from \\"./CreateProfileArgs\\";
+import { UpdateProfileArgs } from \\"./UpdateProfileArgs\\";
+import { DeleteProfileArgs } from \\"./DeleteProfileArgs\\";
+import { ProfileFindManyArgs } from \\"./ProfileFindManyArgs\\";
+import { ProfileFindUniqueArgs } from \\"./ProfileFindUniqueArgs\\";
+import { Profile } from \\"./Profile\\";
+import { User } from \\"../../user/base/User\\";
+import { ProfileService } from \\"../profile.service\\";
+
+@graphql.Resolver(() => Profile)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+export class ProfileResolverBase {
+  constructor(
+    protected readonly service: ProfileService,
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {}
+
+  @graphql.Query(() => MetaQueryPayload)
+  @nestAccessControl.UseRoles({
+    resource: \\"Profile\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async _profilesMeta(
+    @graphql.Args() args: ProfileFindManyArgs
+  ): Promise<MetaQueryPayload> {
+    const results = await this.service.count({
+      ...args,
+      skip: undefined,
+      take: undefined,
+    });
+    return {
+      count: results,
+    };
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.Query(() => [Profile])
+  @nestAccessControl.UseRoles({
+    resource: \\"Profile\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async profiles(
+    @graphql.Args() args: ProfileFindManyArgs
+  ): Promise<Profile[]> {
+    return this.service.findMany(args);
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.Query(() => Profile, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Profile\\",
+    action: \\"read\\",
+    possession: \\"own\\",
+  })
+  async profile(
+    @graphql.Args() args: ProfileFindUniqueArgs
+  ): Promise<Profile | null> {
+    const result = await this.service.findOne(args);
+    if (result === null) {
+      return null;
+    }
+    return result;
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Profile)
+  @nestAccessControl.UseRoles({
+    resource: \\"Profile\\",
+    action: \\"create\\",
+    possession: \\"any\\",
+  })
+  async createProfile(
+    @graphql.Args() args: CreateProfileArgs
+  ): Promise<Profile> {
+    return await this.service.create({
+      ...args,
+      data: {
+        ...args.data,
+
+        user: args.data.user
+          ? {
+              connect: args.data.user,
+            }
+          : undefined,
+      },
+    });
+  }
+
+  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @graphql.Mutation(() => Profile)
+  @nestAccessControl.UseRoles({
+    resource: \\"Profile\\",
+    action: \\"update\\",
+    possession: \\"any\\",
+  })
+  async updateProfile(
+    @graphql.Args() args: UpdateProfileArgs
+  ): Promise<Profile | null> {
+    try {
+      return await this.service.update({
+        ...args,
+        data: {
+          ...args.data,
+
+          user: args.data.user
+            ? {
+                connect: args.data.user,
+              }
+            : undefined,
+        },
+      });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @graphql.Mutation(() => Profile)
+  @nestAccessControl.UseRoles({
+    resource: \\"Profile\\",
+    action: \\"delete\\",
+    possession: \\"any\\",
+  })
+  async deleteProfile(
+    @graphql.Args() args: DeleteProfileArgs
+  ): Promise<Profile | null> {
+    try {
+      return await this.service.delete(args);
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new apollo.ApolloError(
+          \`No resource was found for \${JSON.stringify(args.where)}\`
+        );
+      }
+      throw error;
+    }
+  }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => User, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"User\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async user(@graphql.Parent() parent: Profile): Promise<User | null> {
+    const result = await this.service.getUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
+  }
+}
+",
+  "server/src/profile/base/profile.service.base.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/docs/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { PrismaService } from \\"nestjs-prisma\\";
+import { Prisma, Profile, User } from \\"@prisma/client\\";
+
+export class ProfileServiceBase {
+  constructor(protected readonly prisma: PrismaService) {}
+
+  async count<T extends Prisma.ProfileFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
+  ): Promise<number> {
+    return this.prisma.profile.count(args);
+  }
+
+  async findMany<T extends Prisma.ProfileFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
+  ): Promise<Profile[]> {
+    return this.prisma.profile.findMany(args);
+  }
+  async findOne<T extends Prisma.ProfileFindUniqueArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
+  ): Promise<Profile | null> {
+    return this.prisma.profile.findUnique(args);
+  }
+  async create<T extends Prisma.ProfileCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
+  ): Promise<Profile> {
+    return this.prisma.profile.create<T>(args);
+  }
+  async update<T extends Prisma.ProfileUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
+  ): Promise<Profile> {
+    return this.prisma.profile.update<T>(args);
+  }
+  async delete<T extends Prisma.ProfileDeleteArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
+  ): Promise<Profile> {
+    return this.prisma.profile.delete(args);
+  }
+
+  async getUser(parentId: string): Promise<User | null> {
+    return this.prisma.profile
+      .findUnique({
+        where: { id: parentId },
+      })
+      .user();
+  }
+}
+",
+  "server/src/profile/profile.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { ProfileModuleBase } from \\"./base/profile.module.base\\";
+import { ProfileService } from \\"./profile.service\\";
+import { ProfileResolver } from \\"./profile.resolver\\";
+
+@Module({
+  imports: [ProfileModuleBase],
+  providers: [ProfileService, ProfileResolver],
+  exports: [ProfileService],
+})
+export class ProfileModule {}
+",
+  "server/src/profile/profile.resolver.ts": "import * as common from \\"@nestjs/common\\";
+import * as graphql from \\"@nestjs/graphql\\";
+import * as nestAccessControl from \\"nest-access-control\\";
+import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
+import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
+import { ProfileResolverBase } from \\"./base/profile.resolver.base\\";
+import { Profile } from \\"./base/Profile\\";
+import { ProfileService } from \\"./profile.service\\";
+
+@graphql.Resolver(() => Profile)
+@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+export class ProfileResolver extends ProfileResolverBase {
+  constructor(
+    protected readonly service: ProfileService,
+    @nestAccessControl.InjectRolesBuilder()
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+  ) {
+    super(service, rolesBuilder);
+  }
+}
+",
+  "server/src/profile/profile.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { PrismaService } from \\"nestjs-prisma\\";
+import { ProfileServiceBase } from \\"./base/profile.service.base\\";
+
+@Injectable()
+export class ProfileService extends ProfileServiceBase {
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
+  }
+}
+",
   "server/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
 import { mock } from \\"jest-mock-extended\\";
 import { SecretsManagerServiceBase } from \\"./secretsManager.service.base\\";
@@ -8823,6 +9911,7 @@ import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
 import { JsonValue } from \\"type-fest\\";
+import { Profile } from \\"../../profile/base/Profile\\";
 @ObjectType()
 class User {
   @ApiProperty({
@@ -8972,6 +10061,15 @@ class User {
   @IsJSON()
   @Field(() => GraphQLJSONObject)
   extendedProperties!: JsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => Profile,
+  })
+  @ValidateNested()
+  @Type(() => Profile)
+  @IsOptional()
+  profile?: Profile | null;
 }
 export { User };
 ",
@@ -9009,6 +10107,7 @@ import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
+import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 @InputType()
 class UserCreateInput {
   @ApiProperty({
@@ -9165,6 +10264,18 @@ class UserCreateInput {
   @IsJSON()
   @Field(() => GraphQLJSONObject)
   extendedProperties!: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ProfileWhereUniqueInput, {
+    nullable: true,
+  })
+  profile?: ProfileWhereUniqueInput | null;
 }
 export { UserCreateInput };
 ",
@@ -9491,6 +10602,15 @@ class UserOrderByInput {
     nullable: true,
   })
   extendedProperties?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  profileId?: SortOrder;
 }
 
 export { UserOrderByInput };
@@ -9529,6 +10649,7 @@ import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { GraphQLJSONObject } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
+import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 @InputType()
 class UserUpdateInput {
   @ApiProperty({
@@ -9724,6 +10845,18 @@ class UserUpdateInput {
     nullable: true,
   })
   extendedProperties?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ProfileWhereUniqueInput, {
+    nullable: true,
+  })
+  profile?: ProfileWhereUniqueInput | null;
 }
 export { UserUpdateInput };
 ",
@@ -9795,6 +10928,7 @@ import { OrganizationListRelationFilter } from \\"../../organization/base/Organi
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
+import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 @InputType()
 class UserWhereInput {
   @ApiProperty({
@@ -9919,6 +11053,18 @@ class UserWhereInput {
     nullable: true,
   })
   extendedProperties?: JsonFilter;
+
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereUniqueInput)
+  @IsOptional()
+  @Field(() => ProfileWhereUniqueInput, {
+    nullable: true,
+  })
+  profile?: ProfileWhereUniqueInput;
 }
 export { UserWhereInput };
 ",
@@ -10006,6 +11152,7 @@ import { UserFindUniqueArgs } from \\"./UserFindUniqueArgs\\";
 import { User } from \\"./User\\";
 import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
+import { Profile } from \\"../../profile/base/Profile\\";
 import { UserService } from \\"../user.service\\";
 
 @graphql.Resolver(() => User)
@@ -10079,6 +11226,12 @@ export class UserResolverBase {
               connect: args.data.manager,
             }
           : undefined,
+
+        profile: args.data.profile
+          ? {
+              connect: args.data.profile,
+            }
+          : undefined,
       },
     });
   }
@@ -10100,6 +11253,12 @@ export class UserResolverBase {
           manager: args.data.manager
             ? {
                 connect: args.data.manager,
+              }
+            : undefined,
+
+          profile: args.data.profile
+            ? {
+                connect: args.data.profile,
               }
             : undefined,
         },
@@ -10188,6 +11347,22 @@ export class UserResolverBase {
     }
     return result;
   }
+
+  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @graphql.ResolveField(() => Profile, { nullable: true })
+  @nestAccessControl.UseRoles({
+    resource: \\"Profile\\",
+    action: \\"read\\",
+    possession: \\"any\\",
+  })
+  async profile(@graphql.Parent() parent: User): Promise<Profile | null> {
+    const result = await this.service.getProfile(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
+  }
 }
 ",
   "server/src/user/base/user.service.base.ts": "/*
@@ -10202,7 +11377,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, User, Organization } from \\"@prisma/client\\";
+import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
 import { PasswordService } from \\"../../auth/password.service\\";
 import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
@@ -10292,6 +11467,14 @@ export class UserServiceBase {
         where: { id: parentId },
       })
       .manager();
+  }
+
+  async getProfile(parentId: string): Promise<Profile | null> {
+    return this.prisma.user
+      .findUnique({
+        where: { id: parentId },
+      })
+      .profile();
   }
 }
 ",

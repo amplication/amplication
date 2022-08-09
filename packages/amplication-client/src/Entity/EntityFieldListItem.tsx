@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { isEmpty } from "lodash";
 import * as models from "../models";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
@@ -6,6 +6,7 @@ import { Link, useHistory } from "react-router-dom";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityFieldListItem.scss";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   resourceId: string;
@@ -27,6 +28,7 @@ export const EntityFieldListItem = ({
   onError,
 }: Props) => {
   const history = useHistory();
+  const {currentWorkspace, currentProject} = useContext(AppContext); 
 
   const handleNavigateToRelatedEntity = useCallback(
     (event) => {
@@ -34,19 +36,19 @@ export const EntityFieldListItem = ({
       event.preventDefault();
 
       history.push(
-        `/${resourceId}/entities/${entityField.properties.relatedEntityId}`
+        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityField.properties.relatedEntityId}`
       );
     },
-    [history, resourceId, entityField]
+    [history, resourceId, entityField, currentWorkspace, currentProject]
   );
 
   const handleRowClick = useCallback(() => {
     history.push(
-      `/${resourceId}/entities/${entity.id}/fields/${entityField.id}`
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}/fields/${entityField.id}`
     );
-  }, [history, resourceId, entityField, entity]);
+  }, [history, resourceId, entityField, entity, currentWorkspace, currentProject]);
 
-  const fieldUrl = `/${resourceId}/entities/${entity.id}/fields/${entityField.id}`;
+  const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}/fields/${entityField.id}`;
 
   return (
     <Panel
@@ -90,7 +92,7 @@ export const EntityFieldListItem = ({
           entityIdToName ? (
             <Link
               title={DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].label}
-              to={`/${resourceId}/entities/${entityField.properties.relatedEntityId}`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityField.properties.relatedEntityId}`}
               onClick={handleNavigateToRelatedEntity}
             >
               {entityIdToName[entityField.properties.relatedEntityId]}{" "}

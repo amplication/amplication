@@ -205,7 +205,7 @@ describe('EntityPageService', () => {
       EXAMPLE_SINGLE_RECORD_ENTITY_PAGE
     );
     expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith(args, EXAMPLE_USER);
+    expect(createMock).toBeCalledWith(args, EXAMPLE_USER.id);
   });
 
   it('should create list entity page', async () => {
@@ -216,7 +216,7 @@ describe('EntityPageService', () => {
       EXAMPLE_LIST_ENTITY_PAGE
     );
     expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith(args, EXAMPLE_USER);
+    expect(createMock).toBeCalledWith(args, EXAMPLE_USER.id);
   });
 
   it('should update an entity page', async () => {

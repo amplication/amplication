@@ -18,7 +18,7 @@ import { UserEntity } from 'src/decorators/user.decorator';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { FindOneArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
@@ -80,7 +80,7 @@ export class AuthResolver {
 
   @Mutation(() => ApiToken)
   @UseGuards(GqlAuthGuard)
-  @AuthorizeContext(AuthorizableResourceParameter.ApiTokenId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ApiTokenId, 'where.id')
   async deleteApiToken(
     @UserEntity() user: User,
     @Args() args: FindOneArgs

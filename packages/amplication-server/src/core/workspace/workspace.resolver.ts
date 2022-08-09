@@ -18,30 +18,31 @@ import {
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
-import { Workspace, Resource, User } from 'src/models';
-import { ResourceService } from 'src/core/resource/resource.service';
+import { Workspace, User, Project } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { WorkspaceService } from './workspace.service';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { Subscription } from '../subscription/dto/Subscription';
+import { ProjectService } from '../project/project.service';
+
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly resourceService: ResourceService
+    private readonly projectService: ProjectService
   ) {}
 
   @Query(() => Workspace, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async workspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.getWorkspace(args);
   }
@@ -55,9 +56,9 @@ export class WorkspaceResolver {
     return currentUser.workspace;
   }
 
-  @ResolveField(() => [Resource])
-  async resources(@Parent() workspace: Workspace): Promise<Resource[]> {
-    return this.resourceService.resources({
+  @ResolveField(() => [Project])
+  async projects(@Parent() workspace: Workspace): Promise<Project[]> {
+    return this.projectService.findProjects({
       where: { workspace: { id: workspace.id } }
     });
   }
@@ -65,7 +66,7 @@ export class WorkspaceResolver {
   @Mutation(() => Workspace, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.deleteWorkspace(args);
   }
@@ -73,7 +74,7 @@ export class WorkspaceResolver {
   @Mutation(() => Workspace, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.WorkspaceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async updateWorkspace(
     @Args() args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
@@ -103,7 +104,7 @@ export class WorkspaceResolver {
   @Mutation(() => Invitation, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, 'where.id')
   async revokeInvitation(
     @Args() args: RevokeInvitationArgs
   ): Promise<Invitation> {
@@ -113,7 +114,7 @@ export class WorkspaceResolver {
   @Mutation(() => Invitation, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.InvitationId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, 'where.id')
   async resendInvitation(
     @Args() args: ResendInvitationArgs
   ): Promise<Invitation> {

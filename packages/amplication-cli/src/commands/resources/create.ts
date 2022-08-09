@@ -35,6 +35,11 @@ export default class ResourcesCreate extends ConfiguredCommand {
       required: false,
       description: 'description of resource to create',
     },
+    {
+      name: 'projectId',
+      required: true,
+      description: 'project id of the created resource',
+    },
   ];
 
   async command() {
@@ -42,6 +47,7 @@ export default class ResourcesCreate extends ConfiguredCommand {
 
     const name = args.name;
     const description = args.description;
+    const projectId = args.projectId;
 
     cli.action.start(`Creating new resource ${chalk.green.bold(name)} `);
 
@@ -49,7 +55,8 @@ export default class ResourcesCreate extends ConfiguredCommand {
       this.client,
       name,
       description || '',
-      EnumResourceType.Service //TODO change to get input from the user
+      EnumResourceType.Service, //TODO change to get input from the user
+      projectId
     );
 
     if (flags['set-current'] === true) {

@@ -6,7 +6,7 @@ import {
   AUTHORIZE_CONTEXT,
   AuthorizeContextParameters
 } from './gql-auth.guard';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { User } from 'src/models/User';
 import { UserRole } from 'src/models/UserRole';
 import { Workspace } from 'src/models/Workspace';
@@ -16,7 +16,7 @@ const EXAMPLE_ROLE = 'Example Role';
 const EXAMPLE_ROLES: string[] = [EXAMPLE_ROLE];
 const EXAMPLE_AUTHORIZE_CONTEXT_PARAMETERS: AuthorizeContextParameters = {
   parameterPath: 'where.workspace.id',
-  parameterType: AuthorizableResourceParameter.WorkspaceId
+  parameterType: AuthorizableOriginParameter.WorkspaceId
 };
 const EXAMPLE_HANDLER = () => null;
 
@@ -36,10 +36,10 @@ const EXAMPLE_FIND_REQUEST_ARGS = {
   }
 };
 
-const validateAccessMock = jest.fn((user, resourceType, resourceId) => {
+const validateAccessMock = jest.fn((user, originType, originId) => {
   return (
-    resourceType === AuthorizableResourceParameter.WorkspaceId &&
-    resourceId === EXAMPLE_WORKSPACE_ID
+    originType === AuthorizableOriginParameter.WorkspaceId &&
+    originId === EXAMPLE_WORKSPACE_ID
   );
 });
 

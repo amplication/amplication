@@ -14,12 +14,13 @@ import {
 import { CommitListItem } from "./CommitListItem";
 import PageContent from "../Layout/PageContent";
 import "./CommitList.scss";
+import { AppRouteProps } from "../routes/routesUtil";
 
 type TData = {
   commits: models.Commit[];
 };
 
-type Props = {
+type Props = AppRouteProps & {
   match: match<{ resource: string }>;
   pageTitle?: string;
 };
@@ -29,7 +30,7 @@ const CREATED_AT_FIELD = "createdAt";
 const POLL_INTERVAL = 10000;
 const CLASS_NAME = "commit-list";
 
-export const CommitList = ({ match, pageTitle }: Props) => {
+const CommitList: React.FC<Props> = ({ match, pageTitle, innerRoutes }) => {
   const { resource } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
@@ -68,24 +69,36 @@ export const CommitList = ({ match, pageTitle }: Props) => {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-      <div className={`${CLASS_NAME}__header`}>
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
-      </div>
-      <div className={`${CLASS_NAME}__title`}>
-        {data?.commits?.length} Commits
-      </div>
-      {loading && <CircularProgress />}
-      {data?.commits.map((commit) => (
-        <CommitListItem key={commit.id} commit={commit} resourceId={resource} />
-      ))}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      {match.isExact ? (
+        <>
+          <div className={`${CLASS_NAME}__header`}>
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchChange}
+            />
+          </div>
+          <div className={`${CLASS_NAME}__title`}>
+            {data?.commits?.length} Commits
+          </div>
+          {loading && <CircularProgress />}
+          {data?.commits.map((commit) => (
+            <CommitListItem
+              key={commit.id}
+              commit={commit}
+              resourceId={resource}
+            />
+          ))}
+          <Snackbar open={Boolean(error)} message={errorMessage} />
+        </>
+      ) : (
+        innerRoutes
+      )}
     </PageContent>
   );
 };
+
+export default CommitList;
 
 /**@todo: expand search on other field  */
 export const GET_COMMITS = gql`

@@ -15,7 +15,7 @@ const Role = () => {
   const match = useRouteMatch<{
     resource: string;
     roleId: string;
-  }>("/:resource/roles/:roleId");
+  }>("/:workspace/:project/:resource/roles/:roleId");
 
   const { roleId } = match?.params ?? {};
 

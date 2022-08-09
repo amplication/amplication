@@ -1,7 +1,8 @@
 import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { AppContext } from "../../context/appContext";
 import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
@@ -32,8 +33,10 @@ type Props = {
 export const CLASS_NAME = "auth-app-with-github";
 
 function AuthResourceWithGit({ resource, onDone }: Props) {
-  const { workspace, gitRepository } = resource;
-  const { gitOrganizations } = workspace;
+  const { gitRepository } = resource;
+  const { currentWorkspace } = useContext(AppContext);
+  const  gitOrganizations  = currentWorkspace?.gitOrganizations;
+
   const [
     gitOrganization,
     setGitOrganization,
@@ -42,7 +45,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   useEffect(() => {
     if (gitRepository?.gitOrganization) {
       setGitOrganization(gitRepository?.gitOrganization);
-    } else if (gitOrganizations.length === 1) {
+    } else if (gitOrganizations?.length === 1) {
       setGitOrganization(gitOrganizations[0]);
     }
   }, [gitOrganizations, gitRepository?.gitOrganization]);

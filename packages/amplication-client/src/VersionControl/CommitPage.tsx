@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from "react";
+import React, { useMemo, useCallback, useState, useContext } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
@@ -11,7 +11,6 @@ import {
   Snackbar,
 } from "@amplication/design-system";
 
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { TruncatedId } from "../Components/TruncatedId";
@@ -19,12 +18,12 @@ import { ClickableId } from "../Components/ClickableId";
 import { truncateId } from "../util/truncatedId";
 
 import "./CommitPage.scss";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   match: match<{ resource: string; commitId: string }>;
 };
 const CLASS_NAME = "commit-page";
-const NAVIGATION_KEY = "COMMITS";
 
 const SPLIT = "Split";
 const UNIFIED = "Unified";
@@ -34,7 +33,7 @@ const OPTIONS = [
   { value: SPLIT, label: SPLIT },
 ];
 
-const CommitPage = ({ match }: Props) => {
+const CommitPage: React.FC<Props> = ({ match }) => {
   const { resource, commitId } = match.params;
   const [splitView, setSplitView] = useState<boolean>(false);
 
@@ -48,13 +47,6 @@ const CommitPage = ({ match }: Props) => {
   const truncatedId = useMemo(() => {
     return truncateId(commitId);
   }, [commitId]);
-
-  useNavigationTabs(
-    resource,
-    `${NAVIGATION_KEY}_${commitId}`,
-    match.url,
-    `Commit ${truncatedId}`
-  );
 
   const { data, error } = useQuery<{
     commit: models.Commit;
@@ -70,6 +62,8 @@ const CommitPage = ({ match }: Props) => {
     null;
 
   const errorMessage = formatError(error);
+
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   return (
     <>
       <PageContent className={CLASS_NAME} pageTitle={`Commit ${truncatedId}`}>
@@ -89,7 +83,7 @@ const CommitPage = ({ match }: Props) => {
               {build && (
                 <ClickableId
                   label="Build"
-                  to={`/${resource}/builds/${build.id}`}
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/commits/builds/${build.id}`}
                   id={build.id}
                   eventData={{
                     eventName: "buildHeaderIdClick",
@@ -120,7 +114,7 @@ const CommitPage = ({ match }: Props) => {
             </div>
             {data.commit.changes.map((change) => (
               <PendingChangeWithCompare
-                key={change.resourceId}
+                key={change.originId}
                 change={change}
                 compareType={EnumCompareType.Previous}
                 splitView={splitView}
@@ -150,11 +144,11 @@ export const GET_COMMIT = gql`
         }
       }
       changes {
-        resourceId
+        originId
         action
-        resourceType
+        originType
         versionNumber
-        resource {
+        origin {
           __typename
           ... on Entity {
             id

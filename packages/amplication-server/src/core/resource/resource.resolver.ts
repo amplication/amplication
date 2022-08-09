@@ -12,11 +12,11 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { Roles } from 'src/decorators/roles.decorator';
 import { UserEntity } from 'src/decorators/user.decorator';
 import { FindOneArgs } from 'src/dto';
-import { AuthorizableResourceParameter } from 'src/enums/AuthorizableResourceParameter';
-import { InjectableResourceParameter } from 'src/enums/InjectableResourceParameter';
+import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { Resource, Commit, Entity, User, Workspace } from 'src/models';
+import { Resource, Commit, Entity, User, Project } from 'src/models';
 import { GitRepository } from 'src/models/GitRepository';
 import { ResourceService, EntityService } from '..';
 import { BuildService } from '../build/build.service';
@@ -49,7 +49,7 @@ export class ResourceResolver {
 
   @Query(() => Resource, { nullable: true })
   @Roles('ORGANIZATION_ADMIN')
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async resource(@Args() args: FindOneArgs): Promise<Resource | null> {
     return this.resourceService.resource(args);
   }
@@ -58,10 +58,7 @@ export class ResourceResolver {
     nullable: false
   })
   @Roles('ORGANIZATION_ADMIN')
-  @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
-    'where.workspace.id'
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, 'where.project.id')
   async resources(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources(args);
   }
@@ -97,9 +94,9 @@ export class ResourceResolver {
 
   @Mutation(() => Resource, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
-  @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
-    'data.workspace.connect.id'
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    'data.project.connect.id'
   )
   async createResource(
     @Args() args: CreateOneResourceArgs,
@@ -110,9 +107,9 @@ export class ResourceResolver {
 
   @Mutation(() => Resource, { nullable: false })
   @Roles('ORGANIZATION_ADMIN')
-  @InjectContextValue(
-    InjectableResourceParameter.WorkspaceId,
-    'data.resource.workspace.connect.id'
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    'data.resource.project.connect.id'
   )
   async createResourceWithEntities(
     @Args() args: CreateResourceWithEntitiesArgs,
@@ -124,7 +121,7 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async deleteResource(@Args() args: FindOneArgs): Promise<Resource | null> {
     return this.resourceService.deleteResource(args);
   }
@@ -132,7 +129,7 @@ export class ResourceResolver {
   @Mutation(() => Resource, {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableResourceParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async updateResource(
     @Args() args: UpdateOneResourceArgs
   ): Promise<Resource | null> {
@@ -143,13 +140,10 @@ export class ResourceResolver {
     nullable: true
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
-  @InjectContextValue(
-    InjectableResourceParameter.UserId,
-    'data.user.connect.id'
-  )
+  @InjectContextValue(InjectableOriginParameter.UserId, 'data.user.connect.id')
   async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
     return this.resourceService.commit(args);
   }
@@ -158,13 +152,10 @@ export class ResourceResolver {
     nullable: true
   })
   @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
+    AuthorizableOriginParameter.ResourceId,
     'data.resource.connect.id'
   )
-  @InjectContextValue(
-    InjectableResourceParameter.UserId,
-    'data.user.connect.id'
-  )
+  @InjectContextValue(InjectableOriginParameter.UserId, 'data.user.connect.id')
   async discardPendingChanges(
     @Args() args: DiscardPendingChangesArgs
   ): Promise<boolean | null> {
@@ -174,10 +165,7 @@ export class ResourceResolver {
   @Query(() => [PendingChange], {
     nullable: false
   })
-  @AuthorizeContext(
-    AuthorizableResourceParameter.ResourceId,
-    'where.resource.id'
-  )
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async pendingChanges(
     @Args() args: FindPendingChangesArgs,
     @UserEntity() user: User
@@ -192,8 +180,8 @@ export class ResourceResolver {
     return await this.resourceService.gitRepository(resource.id);
   }
 
-  @ResolveField(() => Workspace)
-  async workspace(@Parent() resource: Resource): Promise<Workspace> {
-    return this.resourceService.workspace(resource.id);
+  @ResolveField(() => Project)
+  async project(@Parent() resource: Resource): Promise<Project> {
+    return this.resourceService.project(resource.id);
   }
 }

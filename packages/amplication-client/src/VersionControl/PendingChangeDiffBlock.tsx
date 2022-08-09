@@ -35,7 +35,7 @@ const PendingChangeDiffBlock = ({
     TData
   >(GET_BLOCK_VERSION, {
     variables: {
-      id: change.resourceId,
+      id: change.originId,
       whereVersion:
         compareType === EnumCompareType.Pending
           ? {
@@ -52,7 +52,7 @@ const PendingChangeDiffBlock = ({
     TData
   >(GET_BLOCK_VERSION, {
     variables: {
-      id: change.resourceId,
+      id: change.originId,
       whereVersion:
         compareType === EnumCompareType.Pending
           ? {

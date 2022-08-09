@@ -32,7 +32,7 @@ import {
 import { FindOneArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import {
-  EnumPendingChangeResourceType,
+  EnumPendingChangeOriginType,
   EnumPendingChangeAction,
   PendingChange
 } from '../resource/dto';
@@ -49,14 +49,14 @@ const NON_COMPARABLE_PROPERTIES = [
 
 export type BlockPendingChange = {
   /** The id of the changed block */
-  resourceId: string;
+  originId: string;
   /** The type of change */
   action: EnumPendingChangeAction;
-  resourceType: EnumPendingChangeResourceType.Block;
+  originType: EnumPendingChangeOriginType.Block;
   /** The block version number */
   versionNumber: number;
   /** The block */
-  resource: Block;
+  origin: Block;
 };
 
 @Injectable()
@@ -75,6 +75,7 @@ export class BlockService {
     ]),
     [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.Flow, null]),
     [EnumBlockType.ServiceSettings]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.ProjectConfigurationSettings]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Flow]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorSoapApi]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorFile]: ALLOW_NO_PARENT_ONLY,
@@ -102,6 +103,7 @@ export class BlockService {
     }
     if (matchingBlocks.length === 1) {
       const [block] = matchingBlocks;
+
       return block;
     }
     throw new Error('Unexpected length of matchingBlocks');
@@ -128,7 +130,7 @@ export class BlockService {
     args: CreateBlockArgs & {
       data: CreateBlockArgs['data'] & { blockType: keyof typeof EnumBlockType };
     },
-    user: User
+    userId: string
   ): Promise<T> {
     const {
       displayName,
@@ -175,7 +177,7 @@ export class BlockService {
       lockedAt: new Date(),
       lockedByUser: {
         connect: {
-          id: user.id
+          id: userId
         }
       }
     };
@@ -615,11 +617,11 @@ export class BlockService {
       }
 
       return {
-        resourceId: block.id,
+        originId: block.id,
         action: action,
-        resourceType: EnumPendingChangeResourceType.Block,
+        originType: EnumPendingChangeOriginType.Block,
         versionNumber: lastVersion.versionNumber + 1,
-        resource: block
+        origin: block
       };
     });
   }
@@ -657,11 +659,11 @@ export class BlockService {
       }
 
       return {
-        resourceId: block.id,
+        originId: block.id,
         action: action,
-        resourceType: EnumPendingChangeResourceType.Block,
+        originType: EnumPendingChangeOriginType.Block,
         versionNumber: changedVersion.versionNumber,
-        resource: block
+        origin: block
       };
     });
   }

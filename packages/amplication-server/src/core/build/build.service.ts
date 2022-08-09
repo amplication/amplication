@@ -23,7 +23,7 @@ import {
 import { BuildStatus as BuildStatusDto } from './dto/BuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { EntityService } from '..';
+import { EntityService } from '../entity/entity.service';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { ResourceRoleService } from '../resourceRole/resourceRole.service';
@@ -287,7 +287,7 @@ export class BuildService {
     return generateStep;
   }
 
-  async calcBuildStatus(buildId): Promise<BuildStatusDto> {
+  async calcBuildStatus(buildId: string): Promise<BuildStatusDto> {
     const build = await this.prisma.build.findUnique({
       where: {
         id: buildId
@@ -551,7 +551,6 @@ export class BuildService {
                 newBuildId: build.id,
                 oldBuildId,
                 commit: {
-                  base: 'main',
                   head: `amplication-build-${build.id}`,
                   title: commitMessage,
                   body: `Amplication build # ${build.id}.
