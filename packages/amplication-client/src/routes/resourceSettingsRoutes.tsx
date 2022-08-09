@@ -14,7 +14,7 @@ const resourceSettingsRoutes = [
     path:
       "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/generationSettings/update",
     Component: lazy(
-      () => import("../Resource/serviceSettings/GenerationSettingsForm")
+      () => import("../Resource/resourceSettings/GenerationSettingsForm")
     ),
     moduleName: "",
     routeTrackType: "",
@@ -25,7 +25,7 @@ const resourceSettingsRoutes = [
     path:
       "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/directories/update",
     Component: lazy(
-      () => import("../Resource/serviceSettings/DirectoriesSettingsForm")
+      () => import("../Resource/resourceSettings/DirectoriesSettingsForm")
     ),
     moduleName: "",
     routeTrackType: "",

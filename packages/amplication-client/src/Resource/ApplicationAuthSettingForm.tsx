@@ -13,7 +13,7 @@ import "./ApplicationAuthSettingForm.scss";
 import {
   GET_RESOURCE_SETTINGS,
   UPDATE_SERVICE_SETTINGS,
-} from "./serviceSettings/GenerationSettingsForm";
+} from "./resourceSettings/GenerationSettingsForm";
 import useSettingsHook from "./useSettingsHook";
 
 type Props = {
@@ -38,7 +38,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
   const { addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
-  const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
+  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
     UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
@@ -47,10 +47,10 @@ function ApplicationAuthSettingForm({ match }: Props) {
     }
   );
 
-  const { handleSubmit, FORM_SCHEMA } = useSettingsHook({
+  const { handleSubmit, SERVICE_CONFIG_FORM_SCHEMA } = useSettingsHook({
     trackEvent,
     resourceId,
-    updateServiceSettings,
+    updateResourceSettings,
   });
 
   const errorMessage = formatError(error || updateError);
@@ -61,7 +61,7 @@ function ApplicationAuthSettingForm({ match }: Props) {
         <Formik
           initialValues={data.serviceSettings}
           validate={(values: models.ServiceSettings) =>
-            validate(values, FORM_SCHEMA)
+            validate(values, SERVICE_CONFIG_FORM_SCHEMA)
           }
           enableReinitialize
           onSubmit={handleSubmit}
