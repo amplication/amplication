@@ -1,13 +1,13 @@
 import * as models from "../models";
 import { useCallback } from "react";
 
-interface SettingsHookParams {
+export interface SettingsHookParams {
   trackEvent: (event: { eventName: string; [key: string]: any }) => void;
   resourceId: string;
-  updateServiceSettings: any;
+  updateResourceSettings: any;
 }
 
-const FORM_SCHEMA = {
+const SERVICE_CONFIG_FORM_SCHEMA = {
   properties: {
     dbHost: {
       type: "string",
@@ -68,7 +68,7 @@ const FORM_SCHEMA = {
 const useSettingsHook = ({
   trackEvent,
   resourceId,
-  updateServiceSettings,
+  updateResourceSettings,
 }: SettingsHookParams) => {
   const handleSubmit = useCallback(
     (data: models.ServiceSettings) => {
@@ -85,7 +85,7 @@ const useSettingsHook = ({
       trackEvent({
         eventName: "updateServiceSettings",
       });
-      updateServiceSettings({
+      updateResourceSettings({
         variables: {
           data: {
             adminUISettings: {
@@ -108,12 +108,12 @@ const useSettingsHook = ({
         },
       }).catch(console.error);
     },
-    [updateServiceSettings, resourceId, trackEvent]
+    [updateResourceSettings, resourceId, trackEvent]
   );
 
   return {
     handleSubmit,
-    FORM_SCHEMA,
+    SERVICE_CONFIG_FORM_SCHEMA,
   };
 };
 
