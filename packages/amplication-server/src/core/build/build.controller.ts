@@ -19,8 +19,8 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { plainToInstance } from 'class-transformer';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
-import { BUILD_STATUS_TOPIC, CHECK_USER_ACCESS_TOPIC } from '../../constants';
 import { KafkaMessage } from 'kafkajs';
+import { BUILD_STATUS_TOPIC, CHECK_USER_ACCESS_TOPIC, GET_BUILD_BY_RUN_ID_TOPIC } from '../../constants';
 import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';
 import { EnvironmentVariables } from '@amplication/kafka';
@@ -28,6 +28,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { BuildStatus } from '@amplication/build-types';
 import { QueueService } from '../queue/queue.service';
 import { ConfigService } from '@nestjs/config';
+import { Build } from './dto/Build';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
@@ -83,6 +84,17 @@ export class BuildController {
     return {
       value: { error: null, status: StatusEnum.Success, value: isUserCanAccess }
     };
+  }
+
+  @MessagePattern(EnvironmentVariables.instance.get(GET_BUILD_BY_RUN_ID_TOPIC, true))
+  async getBuildByRunId(@Payload() message): Promise<Build> {
+    const runId = message.value;
+    try {
+      const build = await this.buildService.findByRunId(runId);
+      return build;
+    } catch (error) {
+      this.logger.error(`Failed to get build by runId. runId: ${runId}, error: ${error}`);
+    }
   }
 
   @EventPattern(EnvironmentVariables.instance.get(BUILD_STATUS_TOPIC, true))
