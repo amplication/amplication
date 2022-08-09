@@ -15,7 +15,12 @@ import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
 import { getBuildZipFilePath, getBuildTarGzFilePath } from './storage';
-import { BuildStatus, GenerateResource, StorageTypeEnum } from '@amplication/build-types';
+import {
+  BuildStatus,
+  GenerateResource,
+  StorageTypeEnum
+} from '@amplication/build-types';
+import { BuildStatus as BuildStatusDto } from './dto/BuildStatus';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { EntityService } from '..';
@@ -196,7 +201,6 @@ export class BuildService {
         ...args.data,
         version,
         createdAt: new Date(),
-        status: BuildStatus.Init,
         blockVersions: {
           connect: []
         },
@@ -276,23 +280,64 @@ export class BuildService {
     return generateStep;
   }
 
-  async onBuildInit(buildId: string, runId: string): Promise<void> {
+  async calcBuildStatus(buildId): Promise<BuildStatusDto> {
+    const build = await this.prisma.build.findUnique({
+      where: {
+        id: buildId
+      },
+      include: ACTION_INCLUDE
+    });
+
+    if (!build.action?.steps?.length) return BuildStatusDto.Invalid;
+    const steps = build.action.steps;
+
+    if (steps.every(step => step.status === EnumActionStepStatus.Success))
+      return BuildStatusDto.Completed;
+
+    if (steps.some(step => step.status === EnumActionStepStatus.Failed))
+      return BuildStatusDto.Failed;
+
+    return BuildStatusDto.Running;
+  }
+
+  async updateRunId(buildId: string, runId: string): Promise<void> {
     await this.prisma.build.update({
       where: { id: buildId },
       data: {
-        runId: runId,
-        status: BuildStatus.Init
+        runId: runId
       }
     });
   }
 
   async updateStateByRunId(runId: string, status: BuildStatus): Promise<void> {
-    await this.prisma.build.updateMany({
-      where: { runId: runId },
-      data: { status: status }
+    const build = await this.findByRunId(runId);
+    await this.prisma.actionStep.updateMany({
+      where: {
+        actionId: build.actionId,
+        name: GENERATE_STEP_NAME
+      },
+      data: {
+        status: this.mapBuildStatusToActionStepStatus(status)
+      }
     });
   }
 
+  private mapBuildStatusToActionStepStatus(status: BuildStatus): EnumActionStepStatus {
+    switch (status) {
+      case BuildStatus.Init:
+        return EnumActionStepStatus.Running;
+      case BuildStatus.InProgress:
+        return EnumActionStepStatus.Running;
+      case BuildStatus.Succeeded:
+        return EnumActionStepStatus.Running;
+      case BuildStatus.Failed:
+        return EnumActionStepStatus.Failed;
+      case BuildStatus.Stopped:
+        return EnumActionStepStatus.Failed;
+      case BuildStatus.Ready:
+        return EnumActionStepStatus.Success;
+    }
+  }
   /**
    *
    * Give the ReadableStream of the build zip file

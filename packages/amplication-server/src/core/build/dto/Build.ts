@@ -4,7 +4,7 @@ import { BlockVersion } from 'src/models/BlockVersion'; // eslint-disable-line i
 import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line import/no-cycle
 import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
 import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
-import { BuildStatus } from '../dto/BuildStatus';
+import { BuildStatus } from './BuildStatus';
 
 @ObjectType({
   isAbstract: true

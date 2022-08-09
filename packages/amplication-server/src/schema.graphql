@@ -94,7 +94,7 @@ type Resource {
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   githubLastMessage: String
   githubLastSync: DateTime
-  type: EnumResourceType!
+  resourceType: EnumResourceType!
   workspace: Workspace!
 }
 
@@ -212,12 +212,10 @@ type Build {
 }
 
 enum BuildStatus {
-  Init
-  InProgress
+  Running
+  Completed
   Failed
-  Succeeded
-  Stopped
-  Ready
+  Invalid
 }
 
 type Action {

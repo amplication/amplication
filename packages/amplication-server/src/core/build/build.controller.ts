@@ -20,7 +20,11 @@ import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { plainToInstance } from 'class-transformer';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { KafkaMessage } from 'kafkajs';
-import { BUILD_STATUS_TOPIC, CHECK_USER_ACCESS_TOPIC, GET_BUILD_BY_RUN_ID_TOPIC } from '../../constants';
+import {
+  BUILD_STATUS_TOPIC,
+  CHECK_USER_ACCESS_TOPIC,
+  GET_BUILD_BY_RUN_ID_TOPIC
+} from '../../constants';
 import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';
 import { EnvironmentVariables } from '@amplication/kafka';
@@ -86,14 +90,18 @@ export class BuildController {
     };
   }
 
-  @MessagePattern(EnvironmentVariables.instance.get(GET_BUILD_BY_RUN_ID_TOPIC, true))
+  @MessagePattern(
+    EnvironmentVariables.instance.get(GET_BUILD_BY_RUN_ID_TOPIC, true)
+  )
   async getBuildByRunId(@Payload() message): Promise<Build> {
     const runId = message.value;
     try {
       const build = await this.buildService.findByRunId(runId);
       return build;
     } catch (error) {
-      this.logger.error(`Failed to get build by runId. runId: ${runId}, error: ${error}`);
+      this.logger.error(
+        `Failed to get build by runId. runId: ${runId}, error: ${error}`
+      );
     }
   }
 
@@ -103,7 +111,7 @@ export class BuildController {
     try {
       switch (status) {
         case BuildStatus.Init:
-          await this.buildService.onBuildInit(buildId, runId);
+          await this.buildService.updateRunId(buildId, runId);
           break;
         default:
           await this.buildService.updateStateByRunId(runId, status);
