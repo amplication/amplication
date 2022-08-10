@@ -9,11 +9,9 @@ export interface DsgContext {
   plugins: PluginMap;
 }
 
-export type PluginWrapper = (args: any[], func: () => void) => any
+export type PluginWrapper = (args: any[], func: () => void) => any;
 
-export interface EventParams {
-
-}
+export interface EventParams {}
 
 export interface DsgPlugin {
   id?: string;
@@ -22,7 +20,9 @@ export interface DsgPlugin {
   packageName: string;
 }
 
-export type PluginMap = { [K in EventsName]?: { before: () => void[]; after: () => void[] } };
+export type PluginMap = {
+  [K in EventsName]?: { before: () => void[]; after: () => void[] };
+};
 
 export interface CreateServiceModulesParams extends EventParams {
   before: {
@@ -30,9 +30,9 @@ export interface CreateServiceModulesParams extends EventParams {
     entityType: string;
     entity: Entity;
     srcDirectory: string;
-    extraMapping: {[key: string]: any};
+    extraMapping: { [key: string]: any };
   };
-  after: Module[]
+  after: Module[];
 }
 
 export interface CreateControllerModulesParams extends EventParams {
@@ -43,23 +43,35 @@ export interface CreateControllerModulesParams extends EventParams {
     entityServiceModule: string;
     entity: Entity;
     srcDirectory: string;
-    extraMapping: {[key: string]: any};
+    extraMapping: { [key: string]: any };
   };
-  after: Module[]
+  after: Module[];
 }
 
-export type EventsName = "createServiceModules" | "createControllerModules"
+export type EventsName = "createServiceModules" | "createControllerModules";
 
 export type Events = {
   createServiceModules?: {
-    before?: (dsgContext: DsgContext, eventParams: CreateServiceModulesParams["before"]) => CreateServiceModulesParams["before"];
-    after?: (dsgContext: DsgContext, eventParams: CreateServiceModulesParams["after"]) => CreateServiceModulesParams["after"];
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateServiceModulesParams["before"]
+    ) => CreateServiceModulesParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      eventParams: CreateServiceModulesParams["after"]
+    ) => CreateServiceModulesParams["after"];
   };
   createControllerModules?: {
-    before?: (dsgContext: DsgContext, eventParams: CreateControllerModulesParams["before"]) => CreateControllerModulesParams["before"];
-    after?: (dsgContext: DsgContext, eventParams: CreateControllerModulesParams["after"]) => CreateControllerModulesParams["after"];
-  }
-}
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateControllerModulesParams["before"]
+    ) => CreateControllerModulesParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      eventParams: CreateControllerModulesParams["after"]
+    ) => CreateControllerModulesParams["after"];
+  };
+};
 
 export interface AmplicationPlugin {
   init?: (name: string, version: string) => void;
