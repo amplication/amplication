@@ -337,20 +337,6 @@ export class ResourceService {
       throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
     }
 
-    const gitRepo = await this.prisma.gitRepository.findUnique({
-      where: {
-        resourceId: resource.id
-      }
-    });
-
-    if (gitRepo) {
-      await this.prisma.gitRepository.delete({
-        where: {
-          id: gitRepo.id
-        }
-      });
-    }
-
     return this.prisma.resource.update({
       where: args.where,
       data: {
@@ -609,14 +595,12 @@ export class ResourceService {
   }
 
   async gitRepository(resourceId: string): Promise<GitRepository | null> {
-    return await this.prisma.gitRepository.findUnique({
-      where: {
-        resourceId
-      },
-      include: {
-        gitOrganization: true
-      }
-    });
+    return (
+      await this.prisma.resource.findUnique({
+        where: { id: resourceId },
+        include: { gitRepository: { include: { gitOrganization: true } } }
+      })
+    ).gitRepository;
   }
 
   async project(resourceId: string): Promise<Project> {
