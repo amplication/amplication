@@ -9,12 +9,11 @@ import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
 import path from 'path';
-import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { Entity, ResourceRole, User } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { getBuildZipFilePath, getBuildTarGzFilePath } from './storage';
+import { getBuildZipFilePath } from './storage';
 import {
   BuildStatus,
   GenerateResource,
@@ -37,12 +36,10 @@ import { UserService } from '../user/user.service'; // eslint-disable-line impor
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
 
-import { createZipFileFromModules } from './zip';
 import { LocalDiskService } from '../storage/local.disk.service';
-import { createTarGzFileFromModules } from './tar';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
-import { BuildFilesSaver } from './utils';
+import { BuildFilesSaver, previousBuild } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { BuildContext } from './dto/BuildContext';
@@ -487,26 +484,16 @@ export class BuildService {
     ];
   }
 
-  /**
-   * Saves given modules for given build as a Zip archive and tarball.
-   * @param build the build to save the modules for
-   * @param modules the modules to save
-   * @returns created tarball URL
-   */
-  private async save(
-    build: Build,
-    modules: DataServiceGenerator.Module[]
-  ): Promise<string> {
-    const zipFilePath = getBuildZipFilePath(build.id);
-    const tarFilePath = getBuildTarGzFilePath(build.id);
-    const disk = this.storageService.getDisk();
-    await Promise.all([
-      createZipFileFromModules(modules).then(zip => disk.put(zipFilePath, zip)),
-      createTarGzFileFromModules(modules).then(tar =>
-        disk.put(tarFilePath, tar)
-      )
-    ]);
-    return this.getFileURL(disk, tarFilePath);
+  async createPR(runId: string): Promise<void> {
+    const build = await this.findByRunId(runId);
+    const oldBuild = await previousBuild(
+      this.prisma,
+      build.resourceId,
+      build.id,
+      build.createdAt
+    );
+
+    await this.saveToGitHub(build, oldBuild.id);
   }
 
   private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {

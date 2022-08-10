@@ -102,8 +102,13 @@ export class BuildController {
   async onBuildStatus(@Payload() message): Promise<void> {
     const { buildId, runId, status } = message.value;
     try {
-      if (status === BuildStatus.Init) {  
-        await this.buildService.updateRunId(buildId, runId);
+      switch (status) {
+        case BuildStatus.Init:  
+          await this.buildService.updateRunId(buildId, runId);
+          break;
+        case BuildStatus.Ready:
+          await this.buildService.createPR(runId);
+          break;
       }
       await this.buildService.updateStateByRunId(runId, status);
         
