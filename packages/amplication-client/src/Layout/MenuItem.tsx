@@ -24,7 +24,7 @@ type Props = {
 
 const NON_URL = "non-url";
 const DIRECTION = "e";
-const ICON_SIZE = "xlarge";
+const ICON_SIZE = "medium";
 
 /**
  *
