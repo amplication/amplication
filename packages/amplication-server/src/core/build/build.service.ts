@@ -40,6 +40,7 @@ import { QueueService } from '../queue/queue.service';
 import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
+import { GitProviderService } from '../git/git.provider.service';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -154,6 +155,7 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
+    private readonly gitRepositoryService: GitProviderService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -435,14 +437,12 @@ export class BuildService {
   private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
     const resource = build.resource;
 
-    const resourceRepository = await this.prisma.gitRepository.findUnique({
-      where: {
-        resourceId: resource.id
-      },
-      include: {
-        gitOrganization: true
-      }
-    });
+    const resourceRepository = await this.resourceService.gitRepository(
+      resource.id
+    );
+    const gitOrganization = await this.gitRepositoryService.getGitOrganizationByRepository(
+      { where: { id: resourceRepository.id } }
+    );
 
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
@@ -465,12 +465,11 @@ export class BuildService {
           try {
             const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
               {
-                gitOrganizationName: resourceRepository.gitOrganization.name,
+                gitOrganizationName: gitOrganization.name,
                 gitRepositoryName: resourceRepository.name,
                 resourceId: resource.id,
                 gitProvider: EnumGitProvider.Github,
-                installationId:
-                  resourceRepository.gitOrganization.installationId,
+                installationId: gitOrganization.installationId,
                 newBuildId: build.id,
                 oldBuildId,
                 commit: {

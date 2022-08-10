@@ -166,6 +166,11 @@ export class GitProviderService {
   async getGitOrganization(args: FindOneArgs): Promise<GitOrganization> {
     return await this.prisma.gitOrganization.findUnique(args);
   }
+  async getGitOrganizationByRepository(
+    args: FindOneArgs
+  ): Promise<GitOrganization> {
+    return await this.prisma.gitRepository.findUnique(args).gitOrganization();
+  }
 
   async getGitInstallationUrl(
     args: GetGitInstallationUrlArgs
