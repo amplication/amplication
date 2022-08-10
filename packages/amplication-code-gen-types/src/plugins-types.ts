@@ -21,7 +21,10 @@ export interface DsgPlugin {
 }
 
 export type PluginMap = {
-  [K in EventsName]?: { before: () => void[]; after: () => void[] };
+  [K in EventsName]?: {
+    before: (<T>(context: DsgContext, params: any) => T)[];
+    after: (<T>(context: DsgContext, params: any) => T)[];
+  };
 };
 
 export interface CreateServiceModulesParams extends EventParams {
