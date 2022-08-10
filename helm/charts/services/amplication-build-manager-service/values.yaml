@@ -13,6 +13,10 @@ image:
   tag: 0.0.1
   imagePullSecrets: []
 
+volume:
+  name: amplication-data
+  path: /amplication-data
+  
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 

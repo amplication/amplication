@@ -30,11 +30,15 @@ amplication-server:
       CLIENT_HOST: "https://app-eugene.amplication-dev.com"
 
       #KAFKA
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_RESOURCE_TOPIC: 'build.internal.generate-resource.event.0'
+      BUILD_STATUS_TOPIC: 'build.internal.build-status.event.0'
+
+      GET_BUILD_BY_RUN_ID_TOPIC: build.internal.get-build-by-run-id.message.0
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
 
@@ -113,3 +117,32 @@ amplication-storage-gateway:
       KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "227239"
+
+amplication-build-manager-service:
+  config:
+    env:
+      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_GROUP_ID: build-manager
+      KAFKA_CLIENT_ID: build-manager
+
+      GENERATE_RESOURCE_TOPIC: build.internal.generate-resource.event.0
+      BUILD_STATUS_TOPIC: build.internal.build-status.event.0
+
+      BUILD_CONTEXT_FS_LOCATION: /amplication-data/build-contexts
+      BUILD_ARTIFACT_FS_LOCATION: /amplication-data/build-data
+
+      BUILD_CONTEXT_S3_BUCKET: amplication-dsg-dev
+      BUILD_CONTEXT_S3_LOCATION: build-contexts
+
+      BUILD_ARTIFACT_S3_BUCKET: amplication-dsg-dev
+      BUILD_ARTIFACT_S3_LOCATION: build-artifacts
+
+      CODE_BUILD_PROJECT_NAME: code-generator-dev
+
+      BUILD_STATE_TOPIC: build.external.build-state.event.0
+      BUILD_PHASE_TOPIC: build.external.build-phase.event.0
+
+      BUILD_IMAGE_NAME: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator
+      BUILD_IMAGE_VERSION: 0.0.5
+
+      GET_BUILD_BY_RUN_ID_TOPIC: build.internal.get-build-by-run-id.message.0
