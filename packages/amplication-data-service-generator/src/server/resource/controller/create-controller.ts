@@ -39,7 +39,6 @@ import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 import DsgContext from "../../../dsg-context";
 
-
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
   action: EnumEntityAction;
@@ -62,7 +61,7 @@ export async function createControllerModules(
   entityServiceModule: string,
   entity: Entity,
   srcDirectory: string,
-  extraMapping?: {[key: string]: any}
+  extraMapping?: { [key: string]: any }
 ): Promise<Module[]> {
   const context = DsgContext.getInstance;
   const { settings } = context.appInfo;
@@ -114,7 +113,7 @@ export async function createControllerModules(
     WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
 
     SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
-    ...(extraMapping || {})
+    ...(extraMapping || {}),
   };
   return [
     await createControllerModule(

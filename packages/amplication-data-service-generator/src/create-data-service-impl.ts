@@ -43,9 +43,11 @@ export async function createDataServiceImpl(
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
-  const plugins = await pluginManager([{
-    packageName: "amplication-plugin-example"
-  }])
+  const plugins = await pluginManager([
+    {
+      packageName: "amplication-plugin-example",
+    },
+  ]);
   context.plugins = plugins;
 
   logger.info("Creating DTOs...");
