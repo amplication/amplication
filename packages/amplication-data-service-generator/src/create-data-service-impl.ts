@@ -44,9 +44,9 @@ export async function createDataServiceImpl(
   context.roles = roles;
   context.entities = normalizedEntities;
   const plugins = await pluginManager([
-    {
-      packageName: "amplication-plugin-example",
-    },
+    // {
+    //   packageName: "amplication-plugin-example",
+    // },
   ]);
   context.plugins = plugins;
 
