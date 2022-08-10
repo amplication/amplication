@@ -6,6 +6,7 @@ export interface DsgContext {
   roles: Role[];
   modules: Module[];
   DTOs: DTOs;
+  plugins: PluginMap;
 }
 
 export type PluginWrapper = (args: any[], func: () => void) => any
@@ -14,12 +15,20 @@ export interface EventParams {
 
 }
 
+export interface DsgPlugin {
+  id?: string;
+  name?: string;
+  description?: string;
+  packageName: string;
+}
+
+export type PluginMap = { [K in EventsName]?: { before: () => void[]; after: () => void[] } };
+
 export interface CreateServiceModulesParams extends EventParams {
   before: {
     entityName: string;
     entityType: string;
     entity: Entity;
-    dtos: DTOs;
     srcDirectory: string;
     extraMapping: {[key: string]: any};
   };
@@ -28,25 +37,25 @@ export interface CreateServiceModulesParams extends EventParams {
 
 export interface CreateControllerModulesParams extends EventParams {
   before: {
-    appInfo: AppInfo;
     resource: string;
     entityName: string;
     entityType: string;
     entityServiceModule: string;
     entity: Entity;
-    dtos: DTOs;
     srcDirectory: string;
     extraMapping: {[key: string]: any};
   };
   after: Module[]
 }
 
+export type EventsName = "createServiceModules" | "createControllerModules"
+
 export type Events = {
-  createServiceModules: {
+  createServiceModules?: {
     before?: (dsgContext: DsgContext, eventParams: CreateServiceModulesParams["before"]) => CreateServiceModulesParams["before"];
     after?: (dsgContext: DsgContext, eventParams: CreateServiceModulesParams["after"]) => CreateServiceModulesParams["after"];
   };
-  createControllerModules: {
+  createControllerModules?: {
     before?: (dsgContext: DsgContext, eventParams: CreateControllerModulesParams["before"]) => CreateControllerModulesParams["before"];
     after?: (dsgContext: DsgContext, eventParams: CreateControllerModulesParams["after"]) => CreateControllerModulesParams["after"];
   }

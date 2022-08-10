@@ -14,9 +14,10 @@ import {
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
 import { createServerModules } from "./server/create-server";
-import { DsgContext } from "./dsg-context";
+import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
+import pluginManager from "./plugin-manager";
 
 export async function createDataServiceImpl(
   entities: Entity[],
@@ -42,6 +43,10 @@ export async function createDataServiceImpl(
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
+  const plugins = await pluginManager([{
+    packageName: "amplication-plugin-example"
+  }])
+  context.plugins = plugins;
 
   logger.info("Creating DTOs...");
   const dtos = await createDTOs(normalizedEntities);
