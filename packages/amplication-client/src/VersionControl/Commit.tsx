@@ -26,8 +26,8 @@ const INITIAL_VALUES: TCommit = {
 
 type Props = {
   projectId: string;
-  resourceId: string;
   noChanges: boolean;
+  resourceId?: string;
 };
 const CLASS_NAME = "commit";
 
