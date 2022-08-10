@@ -1152,6 +1152,7 @@ input ResourceUpdateInput {
   name: String
   description: String
   color: String
+  gitRepositoryOverride: Boolean
 }
 
 input CommitCreateInput {
