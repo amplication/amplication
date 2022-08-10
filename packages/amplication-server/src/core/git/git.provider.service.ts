@@ -39,14 +39,16 @@ export class GitProviderService {
     );
   }
 
-  async createGitRepository(args: CreateGitRepositoryInput): Promise<Resource> {
+  async createRemoteGitRepository(
+    args: CreateGitRepositoryInput
+  ): Promise<Resource> {
     const organization = await this.getGitOrganization({
       where: {
         id: args.gitOrganizationId
       }
     });
 
-    const repository = await this.gitService.createGitRepository(
+    const remoteRepository = await this.gitService.createGitRepository(
       args.name,
       args.gitProvider,
       EnumGitOrganizationType[organization.type],
@@ -55,9 +57,9 @@ export class GitProviderService {
       args.public
     );
 
-    if (!repository) {
+    if (!remoteRepository) {
       throw new AmplicationError(
-        `Failed to create repository ${organization.name}\\${args.name}`
+        `Failed to create ${args.gitProvider} repository ${organization.name}\\${args.name}`
       );
     }
 

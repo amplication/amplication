@@ -129,7 +129,7 @@ describe('GitService', () => {
           gitOrganizationType: EnumGitOrganizationType.Organization
         };
         expect(
-          await gitService.createGitRepository(createGitRepositoryInput)
+          await gitService.createRemoteGitRepository(createGitRepositoryInput)
         ).toEqual(EXAMPLE_SERVICE_RESOURCE);
         expect(prismaResourceCreateMock).toBeCalledTimes(1);
       });

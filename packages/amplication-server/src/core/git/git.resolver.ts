@@ -33,7 +33,7 @@ export class GitResolver {
   async createGitRepository(
     @Args() args: CreateGitRepositoryArgs
   ): Promise<Resource> {
-    return this.gitService.createGitRepository(args.data);
+    return this.gitService.createRemoteGitRepository(args.data);
   }
 
   @Query(() => GitOrganization)
