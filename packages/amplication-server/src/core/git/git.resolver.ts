@@ -68,7 +68,7 @@ export class GitResolver {
   )
   async deleteGitRepository(
     @Args() args: DeleteGitRepositoryArgs
-  ): Promise<Resource> {
+  ): Promise<boolean> {
     return this.gitService.deleteGitRepository(args);
   }
 

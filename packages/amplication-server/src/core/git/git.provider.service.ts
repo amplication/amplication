@@ -64,7 +64,7 @@ export class GitProviderService {
     return await this.connectResourceGitRepository({ ...args });
   }
 
-  async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<Resource> {
+  async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
     const gitRepository = await this.prisma.gitRepository.findUnique({
       where: {
         id: args.gitRepositoryId
@@ -78,9 +78,7 @@ export class GitProviderService {
         id: args.gitRepositoryId
       }
     });
-    return await this.prisma.resource.findUnique({
-      where: { id: gitRepository.resourceId }
-    });
+    return true;
   }
 
   async connectResourceGitRepository({
