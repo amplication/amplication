@@ -181,3 +181,9 @@ export type EntityEnumDTOs = {
 export type DTOs = {
   [entity: string]: EntityEnumDTOs & EntityDTOs;
 };
+
+export type ResourceGenerationConfig = {
+  dataServiceGeneratorVersion: string;
+  appInfo: AppInfo;
+
+};

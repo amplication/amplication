@@ -62,11 +62,12 @@ export class ProjectConfigurationSettingsService {
     const projectConfigurationSettings = await this.findOne({
       where: args.where
     });
+
     return this.blockService.update<ProjectConfigurationSettings>(
       {
+        ...args,
         where: { id: projectConfigurationSettings.id },
-        ...projectConfigurationSettings,
-        ...args
+        ...projectConfigurationSettings
       },
       user
     );
