@@ -86,18 +86,18 @@ export class GitProviderService {
     name,
     gitOrganizationId
   }: ConnectGitRepositoryInput): Promise<Resource> {
-    const gitRepo = await this.prisma.gitRepository.findUnique({
-      where: { resourceId }
+    const gitRepository = await this.prisma.gitRepository.findFirst({
+      where: { resources: { some: { id: resourceId } } }
     });
 
-    if (gitRepo) {
+    if (gitRepository) {
       throw new AmplicationError(GIT_REPOSITORY_EXIST);
     }
 
     await this.prisma.gitRepository.create({
       data: {
         name: name,
-        resource: { connect: { id: resourceId } },
+        resources: { connect: { id: resourceId } },
         gitOrganization: { connect: { id: gitOrganizationId } }
       }
     });
