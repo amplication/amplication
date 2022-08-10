@@ -189,3 +189,9 @@ export interface DsgContext {
   modules: Module[];
   DTOs: DTOs;
 }
+
+export type ResourceGenerationConfig = {
+  dataServiceGeneratorVersion: string;
+  appInfo: AppInfo;
+
+};
