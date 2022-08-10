@@ -10,7 +10,7 @@ import pluralize from 'pluralize';
 import { FindOneArgs } from 'src/dto';
 import { EnumDataType } from 'src/enums/EnumDataType';
 import { QueryMode } from 'src/enums/QueryMode';
-import { Commit, Project, Resource, User } from 'src/models';
+import { Commit, Project, Resource, User, GitOrganization } from 'src/models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
@@ -601,6 +601,17 @@ export class ResourceService {
         include: { gitRepository: { include: { gitOrganization: true } } }
       })
     ).gitRepository;
+  }
+
+  async gitOrganizationByResource(
+    args: FindOneArgs
+  ): Promise<GitOrganization | null> {
+    return (
+      await this.prisma.resource.findUnique({
+        ...args,
+        include: { gitRepository: { include: { gitOrganization: true } } }
+      })
+    ).gitRepository.gitOrganization;
   }
 
   async project(resourceId: string): Promise<Project> {

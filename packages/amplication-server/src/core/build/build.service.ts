@@ -155,7 +155,6 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
-    private readonly gitRepositoryService: GitProviderService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -440,8 +439,10 @@ export class BuildService {
     const resourceRepository = await this.resourceService.gitRepository(
       resource.id
     );
-    const gitOrganization = await this.gitRepositoryService.getGitOrganizationByRepository(
-      { where: { id: resourceRepository.id } }
+    const gitOrganization = await this.resourceService.gitOrganizationByResource(
+      {
+        where: { id: resourceRepository.id }
+      }
     );
 
     const commit = build.commit;
