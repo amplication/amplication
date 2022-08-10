@@ -5,10 +5,10 @@ import classNames from "classnames";
 import { TextField, Snackbar } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import * as models from "../models";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { useTracking } from "../util/analytics";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./NewEntityField.scss";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   entity: models.Entity;
@@ -27,8 +27,7 @@ const CLASS_NAME = "new-entity-field";
 
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
   const { trackEvent } = useTracking();
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+  const { addEntity } = useContext(AppContext);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
@@ -72,7 +71,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
         });
       },
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(entity.id);
+        addEntity(entity.id);
         trackEvent({
           eventName: "createEntityField",
           entityFieldName: data.createEntityFieldByDisplayName.displayName,

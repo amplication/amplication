@@ -4,7 +4,7 @@ import * as models from "../models";
 import { ConfirmationDialog } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { SYSTEM_DATA_TYPES } from "./constants";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { AppContext } from "../context/appContext";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -31,7 +31,7 @@ export const DeleteEntityField = ({
   onError,
 }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const { addEntity, } = useContext(AppContext);
 
   const [deleteEntityField, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY_FIELD,
@@ -60,7 +60,7 @@ export const DeleteEntityField = ({
         });
       },
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(entityId);
+        addEntity(entityId);
         onDelete && onDelete();
       },
     }

@@ -5,11 +5,11 @@ import { InjectContextValue } from 'src/decorators/injectContextValue.decorator'
 import { FindOneArgs } from 'src/dto';
 import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
-import { App } from 'src/models/App';
+import { Resource } from 'src/models/Resource';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { AuthorizeAppWithGitResult } from '../app/dto/AuthorizeAppWithGitResult';
+import { AuthorizeResourceWithGitResult } from '../resource/dto/AuthorizeResourceWithGitResult';
 import { ConnectGitRepositoryArgs } from './dto/args/ConnectGitRepositoryArgs';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
@@ -25,14 +25,14 @@ import { GitProviderService } from './git.provider.service';
 @UseGuards(GqlAuthGuard)
 export class GitResolver {
   constructor(private readonly gitService: GitProviderService) {}
-  @Mutation(() => App)
+  @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
   async createGitRepository(
     @Args() args: CreateGitRepositoryArgs
-  ): Promise<App> {
+  ): Promise<Resource> {
     return this.gitService.createGitRepository(args.data);
   }
 
@@ -42,15 +42,15 @@ export class GitResolver {
     return this.gitService.getGitOrganization(args);
   }
 
-  @Mutation(() => App)
+  @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
     'data.gitOrganizationId'
   )
-  async connectAppGitRepository(
+  async connectResourceGitRepository(
     @Args() args: ConnectGitRepositoryArgs
-  ): Promise<App> {
-    return await this.gitService.connectAppGitRepository(args.data);
+  ): Promise<Resource> {
+    return await this.gitService.connectResourceGitRepository(args.data);
   }
 
   @Mutation(() => GitOrganization)
@@ -61,14 +61,14 @@ export class GitResolver {
     return await this.gitService.createGitOrganization(args);
   }
 
-  @Mutation(() => App)
+  @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitRepositoryId,
     'gitRepositoryId'
   )
   async deleteGitRepository(
     @Args() args: DeleteGitRepositoryArgs
-  ): Promise<App> {
+  ): Promise<Resource> {
     return this.gitService.deleteGitRepository(args);
   }
 
@@ -83,11 +83,11 @@ export class GitResolver {
     return this.gitService.deleteGitOrganization(args);
   }
 
-  @Mutation(() => AuthorizeAppWithGitResult)
+  @Mutation(() => AuthorizeResourceWithGitResult)
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, 'data.workspaceId')
-  async getGitAppInstallationUrl(
+  async getGitResourceInstallationUrl(
     @Args() args: GetGitInstallationUrlArgs
-  ): Promise<AuthorizeAppWithGitResult> {
+  ): Promise<AuthorizeResourceWithGitResult> {
     return {
       url: await this.gitService.getGitInstallationUrl(args)
     };

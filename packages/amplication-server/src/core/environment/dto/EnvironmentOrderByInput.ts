@@ -2,8 +2,7 @@ import { SortOrder } from 'src/enums/SortOrder';
 import { InputType, Field } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EnvironmentOrderByInput {
   @Field(() => SortOrder, {

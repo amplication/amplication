@@ -19,7 +19,7 @@ export class PullRequestService {
     private readonly logger: AmplicationLogger
   ) {}
   async createPullRequest({
-    amplicationAppId,
+    resourceId,
     oldBuildId,
     newBuildId,
     gitOrganizationName,
@@ -29,7 +29,7 @@ export class PullRequestService {
     gitProvider,
   }: SendPullRequestArgs): Promise<ResultMessage<SendPullRequestResponse>> {
     const changedFiles = await this.diffService.listOfChangedFiles(
-      amplicationAppId,
+      resourceId,
       oldBuildId,
       newBuildId
     );

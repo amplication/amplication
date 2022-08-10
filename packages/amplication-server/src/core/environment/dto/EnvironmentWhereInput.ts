@@ -21,7 +21,7 @@ export class EnvironmentWhereInput {
   updatedAt?: DateTimeFilter | null | undefined;
 
   @Field(() => WhereUniqueInput)
-  app?: WhereUniqueInput;
+  resource?: WhereUniqueInput;
 
   @Field(() => StringFilter, {
     nullable: true

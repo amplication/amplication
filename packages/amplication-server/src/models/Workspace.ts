@@ -1,39 +1,34 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from './User'; // eslint-disable-line import/no-cycle
-import { App } from './App'; // eslint-disable-line import/no-cycle
 import { GitOrganization } from './GitOrganization';
+import { Project } from './Project'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Workspace {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
-  @Field(() => [App])
-  apps?: App[];
+  @Field(() => [Project])
+  projects?: Project[];
 
   @Field(() => [GitOrganization], { nullable: true })
   gitOrganizations?: GitOrganization[];

@@ -2,12 +2,9 @@ import React, { useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
-
 import PageContent from "../Layout/PageContent";
 import { Snackbar } from "@amplication/design-system";
 import { formatError } from "../util/error";
-
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 import BuildSteps from "./BuildSteps";
 import { TruncatedId } from "../Components/TruncatedId";
 import ActionLog from "./ActionLog";
@@ -24,24 +21,15 @@ type LogData = {
 };
 
 type Props = {
-  match: match<{ application: string; buildId: string }>;
+  match: match<{ resource: string; buildId: string }>;
 };
 const CLASS_NAME = "build-page";
-const NAVIGATION_KEY = "BUILDS";
 
 const BuildPage = ({ match }: Props) => {
-  const { application, buildId } = match.params;
-
+  const { resource, buildId } = match.params;
   const truncatedId = useMemo(() => {
     return truncateId(buildId);
   }, [buildId]);
-
-  useNavigationTabs(
-    application,
-    `${NAVIGATION_KEY}_${buildId}`,
-    match.url,
-    `Build ${truncatedId}`
-  );
 
   const [error, setError] = useState<Error>();
 
@@ -89,7 +77,7 @@ const BuildPage = ({ match }: Props) => {
               {commitData && (
                 <ClickableId
                   label="Commit"
-                  to={`/${application}/commits/${commitData.commit.id}`}
+                  to={`/${resource}/commits/${commitData.commit.id}`}
                   id={commitData.commit.id}
                   eventData={{
                     eventName: "commitHeaderIdClick",

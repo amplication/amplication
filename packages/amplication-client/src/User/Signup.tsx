@@ -58,9 +58,10 @@ const Signup = () => {
   useEffect(() => {
     if (data) {
       setToken(data.signup.token);
-      // @ts-ignore
-      const { from } = location.state || { from: { pathname: "/create-app" } };
-      history.replace(from);
+      history.push({
+        pathname: '/',
+        search: '?route=create-resource'
+      })
     }
   }, [data, history, location]);
 
