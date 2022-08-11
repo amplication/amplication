@@ -16,6 +16,11 @@ export const GET_CURRENT_WORKSPACE = gql`
         price
         cancellationEffectiveDate
       }
+      gitOrganizations {
+        id
+        name
+        installationId
+      }
     }
   }
 `;
