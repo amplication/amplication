@@ -27,6 +27,9 @@ dependencies:
 - name: infra
   version: "0.1.0"
   repository: "file://../infra"
+- name: amplication-build-manager-service
+  version: "0.1.0"
+  repository: "file://../services/amplication-build-manager-service"
   
 - name: postgresql
   alias: postgres

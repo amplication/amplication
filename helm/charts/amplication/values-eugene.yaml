@@ -10,6 +10,13 @@ postgres:
       annotations:
         external-dns.alpha.kubernetes.io/hostname: postgres-eugene.amplication-dev.com
 
+cp-helm-charts:
+  enabled: false
+  cp-kafka:
+    enabled: false
+  cp-zookeeper:
+    enabled: false
+
 amplication-client:
   service:
     hostname: app-eugene.amplication-dev.com
@@ -30,7 +37,7 @@ amplication-server:
       CLIENT_HOST: "https://app-eugene.amplication-dev.com"
 
       #KAFKA
-      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: '["b-2.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
@@ -74,7 +81,7 @@ amplication-git-push-webhook-service:
     hostname: webhook-eugene.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: '["b-2.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
@@ -93,7 +100,7 @@ amplication-git-pull-service:
       GITHUB_APP_CLIENT_ID: "Iv1.67a34bd44a1938fb"
       GIT_DEFAULT_ORIGIN_NAME: origin
 
-      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: '["b-2.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
@@ -102,7 +109,7 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: '["b-2.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
@@ -114,14 +121,14 @@ amplication-storage-gateway:
     hostname: server-eugene.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: '["b-2.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092"]'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "227239"
 
 amplication-build-manager-service:
   config:
     env:
-      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: '["b-2.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1sta.8g5s9j.c22.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_GROUP_ID: build-manager
       KAFKA_CLIENT_ID: build-manager
 
