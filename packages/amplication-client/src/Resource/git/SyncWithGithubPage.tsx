@@ -3,9 +3,10 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
-import { EnumGitOrganizationType } from "../../models";
+import { EnumGitOrganizationType, EnumResourceType } from "../../models";
 import { formatError } from "../../util/error";
 import AuthResourceWithGit from "./AuthResourceWithGit";
+import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import "./SyncWithGithubPage.scss";
 
 const CLASS_NAME = "sync-with-github-page";
@@ -31,6 +32,7 @@ export type GitRepositoryWithGitOrganization = {
 };
 export type ResourceWithGitRepository = {
   id: string;
+  resourceType: EnumResourceType;
   gitRepository: null | GitRepositoryWithGitOrganization;
 };
 
@@ -47,8 +49,11 @@ function SyncWithGithubPage({ match }: Props) {
       resourceId: resource,
     },
   });
+
   const pageTitle = "GitHub";
   const errorMessage = formatError(error);
+  const isServiceResource =
+    data?.resource.resourceType === EnumResourceType.Service;
 
   return (
     <PageContent pageTitle={pageTitle}>
@@ -62,10 +67,12 @@ function SyncWithGithubPage({ match }: Props) {
           your resource and create a Pull Request in your GitHub repository
           every time you commit your changes.
         </div>
-        {data?.resource && (
+        {data?.resource && !isServiceResource && (
           <AuthResourceWithGit resource={data.resource} onDone={refetch} />
         )}
-
+        {isServiceResource && (
+          <ProjectConfigurationGitSettings resource={data.resource} onDone={refetch}/>
+        )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>
     </PageContent>
@@ -81,6 +88,7 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
       name
       color
       githubLastSync
+      resourceType
       gitRepository {
         id
         name
