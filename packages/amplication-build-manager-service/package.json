@@ -34,7 +34,8 @@
     "winston-cloud-logging": "1.0.2",
     "jszip": "^3.10.0",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "webpack": "5.65.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
