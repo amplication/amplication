@@ -9,14 +9,14 @@ import "./DiscardChanges.scss";
 import { AppContext } from "../context/appContext";
 
 type Props = {
-  resourceId: string;
+  projectId: string;
   onComplete: () => void;
   onCancel: () => void;
 };
 
 const CLASS_NAME = "discard-changes";
 
-const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
+const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
   const { pendingChanges, resetPendingChanges } = useContext(AppContext);
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
@@ -24,9 +24,7 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
 
       //remove entities from cache to reflect discarded changes
       for (var change of pendingChanges) {
-        if (
-          change.originType === models.EnumPendingChangeOriginType.Entity
-        ) {
+        if (change.originType === models.EnumPendingChangeOriginType.Entity) {
           cache.evict({
             id: cache.identify({
               id: change.originId,
@@ -52,7 +50,7 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
       {
         query: GET_PENDING_CHANGES,
         variables: {
-          resourceId: resourceId,
+          projectId,
         },
       },
     ],
@@ -61,10 +59,10 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
   const handleConfirm = useCallback(() => {
     discardChanges({
       variables: {
-        resourceId: resourceId,
+        projectId,
       },
     }).catch(console.error);
-  }, [resourceId, discardChanges]);
+  }, [projectId, discardChanges]);
 
   const errorMessage = formatError(error);
 
@@ -105,7 +103,7 @@ const DiscardChanges = ({ resourceId, onComplete, onCancel }: Props) => {
 export default DiscardChanges;
 
 const DISCARD_CHANGES = gql`
-  mutation discardChanges($resourceId: String!) {
-    discardPendingChanges(data: { resource: { connect: { id: $resourceId } } })
+  mutation discardChanges($projectId: String!) {
+    discardPendingChanges(data: { project: { connect: { id: $projectId } } })
   }
 `;

@@ -22,18 +22,20 @@ type TData = {
 };
 
 type Props = {
-  resourceId: string;
+  projectId: string;
 };
 
-const PendingChanges = ({ resourceId }: Props) => {
+const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
-  const { currentWorkspace, currentProject, pendingChanges } = useContext(AppContext);
+  const { currentWorkspace, currentProject, pendingChanges } = useContext(
+    AppContext
+  );
 
   const { data, loading, error, refetch } = useQuery<TData>(
     GET_PENDING_CHANGES,
     {
       variables: {
-        resourceId,
+        projectId,
       },
     }
   );
@@ -57,7 +59,7 @@ const PendingChanges = ({ resourceId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <Commit resourceId={resourceId} noChanges={noChanges} />
+      <Commit projectId={projectId} noChanges={noChanges} />
       <div className={`${CLASS_NAME}__changes-header`}>
         <span>Changes</span>
         <span
@@ -72,7 +74,7 @@ const PendingChanges = ({ resourceId }: Props) => {
         <div className="spacer" />
         <Tooltip aria-label={"Compare Changes"} direction="sw">
           <Link
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/pending-changes`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectId}/pending-changes`}
           >
             <Button
               buttonStyle={EnumButtonStyle.Text}
@@ -106,7 +108,7 @@ const PendingChanges = ({ resourceId }: Props) => {
             title="Discard Changes"
           >
             <DiscardChanges
-              resourceId={resourceId}
+              projectId={projectId}
               onComplete={handleDiscardDialogCompleted}
               onCancel={handleToggleDiscardDialog}
             />
@@ -120,7 +122,7 @@ const PendingChanges = ({ resourceId }: Props) => {
                 <PendingChange
                   key={change.originId}
                   change={change}
-                  resourceId={resourceId}
+                  resourceId={projectId}
                   linkToOrigin
                 />
               ))}
@@ -136,8 +138,8 @@ const PendingChanges = ({ resourceId }: Props) => {
 export default PendingChanges;
 
 export const GET_PENDING_CHANGES = gql`
-  query pendingChanges($resourceId: String!) {
-    pendingChanges(where: { resource: { id: $resourceId } }) {
+  query pendingChanges($projectId: String!) {
+    pendingChanges(where: { project: { id: $projectId } }) {
       originId
       action
       originType
@@ -160,6 +162,11 @@ export const GET_PENDING_CHANGES = gql`
           displayName
           updatedAt
         }
+      }
+      resource {
+        id
+        name
+        resourceType
       }
     }
   }

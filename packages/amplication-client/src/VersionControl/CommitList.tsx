@@ -21,7 +21,7 @@ type TData = {
 };
 
 type Props = AppRouteProps & {
-  match: match<{ resource: string }>;
+  match: match<{ project: string, resource: string }>;
   pageTitle?: string;
 };
 
@@ -31,7 +31,7 @@ const POLL_INTERVAL = 10000;
 const CLASS_NAME = "commit-list";
 
 const CommitList: React.FC<Props> = ({ match, pageTitle, innerRoutes }) => {
-  const { resource } = match.params;
+  const { project, resource } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const handleSearchChange = useCallback(
@@ -45,7 +45,7 @@ const CommitList: React.FC<Props> = ({ match, pageTitle, innerRoutes }) => {
     TData
   >(GET_COMMITS, {
     variables: {
-      resourceId: resource,
+      projectId: project,
       orderBy: {
         [CREATED_AT_FIELD]: models.SortOrder.Desc,
       },
@@ -103,12 +103,12 @@ export default CommitList;
 /**@todo: expand search on other field  */
 export const GET_COMMITS = gql`
   query commits(
-    $resourceId: String!
+    $projectId: String!
     $orderBy: CommitOrderByInput
     $whereMessage: StringFilter
   ) {
     commits(
-      where: { resource: { id: $resourceId }, message: $whereMessage }
+      where: { project: { id: $projectId }, message: $whereMessage }
       orderBy: $orderBy
     ) {
       id
