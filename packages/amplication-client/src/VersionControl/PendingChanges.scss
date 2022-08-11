@@ -5,6 +5,13 @@ $counter-height: 18px;
 
 .pending-changes {
   padding: var(--default-spacing);
+  display: flex;
+  flex-direction: column;
+
+  &__divider {
+    border: 1px solid var(--black5);
+    width: 99%;
+  }
 
   &__header {
     @include flexFullRowWithSpacing;
@@ -31,7 +38,6 @@ $counter-height: 18px;
 
   %__changes-count {
     height: $counter-height;
-    border-radius: $counter-height * 0.5;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -45,8 +51,7 @@ $counter-height: 18px;
 
   &__changes-count-warning {
     @extend %__changes-count;
-    background-color: var(--warning-default);
-    color: var(--static-black);
+    color: var(--warning-default);
   }
 
   &__changes-count {
@@ -71,14 +76,31 @@ $counter-height: 18px;
     }
   }
 
+  &__changes-wrapper {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--black10);
+    padding: var(--default-spacing);
+    border-radius: var(--small-border-radius);
+    height: 100%;
+  }
+
   &__changes {
     margin-top: var(--default-spacing);
     position: relative;
     margin-bottom: var(--default-spacing);
+
+    &__resource {
+      margin-bottom: var(--double-spacing);
+      .circle-badge {
+        margin-right: var(--default-spacing);
+      }
+    }
   }
 
   .amp-button__icon {
     color: var(--black100);
+    font-size: var(--icon-font-size);
     cursor: pointer;
   }
 }

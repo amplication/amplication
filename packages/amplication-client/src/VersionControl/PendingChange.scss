@@ -4,14 +4,20 @@
   margin-left: 0;
   margin-right: 0;
   margin-bottom: var(--default-spacing);
+  position: relative;
   @include flexFullRow;
+
+  &:last-child {
+    margin-bottom: var(--double-spacing);
+  }
 
   &__spacer {
     flex: 1;
   }
   &__action {
-    height: var(--double-spacing);
-    width: var(--double-spacing);
+    height: var(--large-spacing);
+    width: var(--large-spacing);
+    font-size: var(--text-field-label-font-size);
     min-width: var(--double-spacing);
     min-height: var(--double-spacing);
     border-radius: 2px;
@@ -22,6 +28,16 @@
     margin-bottom: 0;
     margin-left: var(--double-spacing);
     margin-right: var(--default-spacing);
+
+    &::before {
+      content: "";
+      position: absolute;
+      display: block;
+      left: 10px;
+      border-right: 1px solid var(--black30);
+      top: -6px;
+      bottom: -6px;
+    }
 
     &.update {
       background-color: var(--secondary-light-blue);
