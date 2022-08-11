@@ -24,9 +24,7 @@ const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
 
       //remove entities from cache to reflect discarded changes
       for (var change of pendingChanges) {
-        if (
-          change.originType === models.EnumPendingChangeOriginType.Entity
-        ) {
+        if (change.originType === models.EnumPendingChangeOriginType.Entity) {
           cache.evict({
             id: cache.identify({
               id: change.originId,
@@ -52,7 +50,7 @@ const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
       {
         query: GET_PENDING_CHANGES,
         variables: {
-          projectId: projectId,
+          projectId,
         },
       },
     ],
@@ -61,7 +59,7 @@ const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
   const handleConfirm = useCallback(() => {
     discardChanges({
       variables: {
-        projectId: projectId,
+        projectId,
       },
     }).catch(console.error);
   }, [projectId, discardChanges]);

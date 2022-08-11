@@ -166,6 +166,7 @@ export const GET_PENDING_CHANGES = gql`
       resource {
         id
         name
+        resourceType
       }
     }
   }
