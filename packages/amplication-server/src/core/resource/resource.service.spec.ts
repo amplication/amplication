@@ -93,10 +93,6 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_USER_RESOURCE_ROLE = {
-  name: 'user',
-  displayName: 'User'
-};
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
