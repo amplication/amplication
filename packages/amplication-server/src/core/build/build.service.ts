@@ -439,6 +439,11 @@ export class BuildService {
     const resourceRepository = await this.resourceService.gitRepository(
       resource.id
     );
+
+    if (!resourceRepository) {
+      return;
+    }
+
     const gitOrganization = await this.resourceService.gitOrganizationByResource(
       {
         where: { id: resourceRepository.id }
@@ -456,70 +461,62 @@ export class BuildService {
     const clientHost = this.configService.get(CLIENT_HOST_VAR);
     const url = `${clientHost}/${build.resourceId}/builds/${build.id}`;
 
-    if (resourceRepository) {
-      return this.actionService.run(
-        build.actionId,
-        PUSH_TO_GITHUB_STEP_NAME,
-        PUSH_TO_GITHUB_STEP_MESSAGE,
-        async step => {
-          await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
-          try {
-            const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
-              {
-                gitOrganizationName: gitOrganization.name,
-                gitRepositoryName: resourceRepository.name,
-                resourceId: resource.id,
-                gitProvider: EnumGitProvider.Github,
-                installationId: gitOrganization.installationId,
-                newBuildId: build.id,
-                oldBuildId,
-                commit: {
-                  head: `amplication-build-${build.id}`,
-                  title: commitMessage,
-                  body: `Amplication build # ${build.id}.
+    return this.actionService.run(
+      build.actionId,
+      PUSH_TO_GITHUB_STEP_NAME,
+      PUSH_TO_GITHUB_STEP_MESSAGE,
+      async step => {
+        await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
+        try {
+          const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
+            {
+              gitOrganizationName: gitOrganization.name,
+              gitRepositoryName: resourceRepository.name,
+              resourceId: resource.id,
+              gitProvider: EnumGitProvider.Github,
+              installationId: gitOrganization.installationId,
+              newBuildId: build.id,
+              oldBuildId,
+              commit: {
+                head: `amplication-build-${build.id}`,
+                title: commitMessage,
+                body: `Amplication build # ${build.id}.
                 Commit message: ${commit.message}
                 
                 ${url}
                 `
-                }
               }
-            );
+            }
+          );
 
-            await this.resourceService.reportSyncMessage(
-              build.resourceId,
-              'Sync Completed Successfully'
-            );
-            await this.actionService.logInfo(step, pullRequestResponse.url, {
-              githubUrl: pullRequestResponse.url
-            });
-            await this.actionService.logInfo(
-              step,
-              PUSH_TO_GITHUB_STEP_FINISH_LOG
-            );
+          await this.resourceService.reportSyncMessage(
+            build.resourceId,
+            'Sync Completed Successfully'
+          );
+          await this.actionService.logInfo(step, pullRequestResponse.url, {
+            githubUrl: pullRequestResponse.url
+          });
+          await this.actionService.logInfo(
+            step,
+            PUSH_TO_GITHUB_STEP_FINISH_LOG
+          );
 
-            await this.actionService.complete(
-              step,
-              EnumActionStepStatus.Success
-            );
-          } catch (error) {
-            await this.actionService.logInfo(
-              step,
-              PUSH_TO_GITHUB_STEP_FAILED_LOG
-            );
-            await this.actionService.logInfo(step, error);
-            await this.actionService.complete(
-              step,
-              EnumActionStepStatus.Failed
-            );
-            await this.resourceService.reportSyncMessage(
-              build.resourceId,
-              `Error: ${error}`
-            );
-          }
-        },
-        true
-      );
-    }
+          await this.actionService.complete(step, EnumActionStepStatus.Success);
+        } catch (error) {
+          await this.actionService.logInfo(
+            step,
+            PUSH_TO_GITHUB_STEP_FAILED_LOG
+          );
+          await this.actionService.logInfo(step, error);
+          await this.actionService.complete(step, EnumActionStepStatus.Failed);
+          await this.resourceService.reportSyncMessage(
+            build.resourceId,
+            `Error: ${error}`
+          );
+        }
+      },
+      true
+    );
   }
 
   /** @todo move */

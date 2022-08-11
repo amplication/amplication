@@ -229,7 +229,6 @@ const EXAMPLE_BUILD: Build = {
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: 'exampleGitRepositoryId',
   name: 'repositoryTest',
-  resourceId: 'exampleResourceId',
   gitOrganizationId: 'exampleGitOrganizationId',
   createdAt: new Date(),
   updatedAt: new Date()
@@ -441,19 +440,6 @@ describe('ResourceService', () => {
       },
       user: EXAMPLE_USER
     };
-    const prismaResourceCreateResourceArgs = {
-      data: {
-        ...createResourceArgs.args.data,
-        project: {
-          connect: {
-            id: createResourceArgs.args.data.project.connect.id
-          }
-        },
-        roles: {
-          create: EXAMPLE_USER_RESOURCE_ROLE
-        }
-      }
-    };
     const commitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
@@ -515,9 +501,6 @@ describe('ResourceService', () => {
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(
-      prismaResourceCreateResourceArgs
-    );
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(1);
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID,
@@ -603,15 +586,6 @@ describe('ResourceService', () => {
   });
 
   it('should create resource with entities', async () => {
-    const prismaResourceCreateResourceArgs = {
-      data: {
-        ...DEFAULT_SERVICE_DATA,
-        ...SAMPLE_SERVICE_DATA,
-        roles: {
-          create: EXAMPLE_USER_RESOURCE_ROLE
-        }
-      }
-    };
     const initialCommitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
@@ -725,9 +699,6 @@ describe('ResourceService', () => {
       )
     ).resolves.toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(
-      prismaResourceCreateResourceArgs
-    );
 
     expect(prismaResourceFindManyMock).toBeCalledTimes(3);
     expect(prismaResourceFindManyMock.mock.calls).toEqual([
