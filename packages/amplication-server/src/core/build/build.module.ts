@@ -18,7 +18,6 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
 import { BuildFilesSaver } from './utils';
 import { QueueModule } from '../queue/queue.module';
 import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
-import { GitProviderModule } from '../git/git.provider.module';
 
 @Module({
   imports: [
@@ -36,8 +35,7 @@ import { GitProviderModule } from '../git/git.provider.module';
     forwardRef(() => ResourceModule),
     ServiceSettingsModule,
     QueueModule,
-    forwardRef(() => CommitModule),
-    GitProviderModule
+    forwardRef(() => CommitModule)
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],
