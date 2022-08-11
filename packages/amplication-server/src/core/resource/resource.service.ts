@@ -615,6 +615,8 @@ export class ResourceService {
   }
 
   async project(resourceId: string): Promise<Project> {
-    return this.prisma.project.findUnique({ where: { id: resourceId } });
+    return this.prisma.resource
+      .findUnique({ where: { id: resourceId } })
+      .project();
   }
 }
