@@ -34,6 +34,7 @@ import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
 import { DEFAULT_RESOURCE_COLORS } from './constants';
+import { AmplicationError } from 'src/errors/AmplicationError';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -109,10 +110,23 @@ export class ResourceService {
       throw new InvalidColorError(color);
     }
 
+    if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
+      throw new AmplicationError(
+        'Try to create project configuration from createResource function'
+      );
+    }
+
+    const projectId = args.data.project.connect.id;
+
+    const projectConfiguration = await this.projectConfiguration(projectId);
+
     const resource = await this.prisma.resource.create({
       data: {
         ...DEFAULT_SERVICE_DATA,
         ...args.data,
+        gitRepository: {
+          connect: { id: projectConfiguration.gitRepositoryId }
+        },
         roles: {
           create: USER_RESOURCE_ROLE
         }
@@ -618,5 +632,14 @@ export class ResourceService {
     return this.prisma.resource
       .findUnique({ where: { id: resourceId } })
       .project();
+  }
+
+  async projectConfiguration(projectId: string): Promise<Resource> {
+    return await this.prisma.resource.findFirst({
+      where: {
+        resourceType: EnumResourceType.ProjectConfiguration,
+        project: { id: projectId }
+      }
+    });
   }
 }

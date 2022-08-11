@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
-import { PrismaService } from '@amplication/prisma-db';
+import {
+  EnumResourceType,
+  Prisma,
+  PrismaService
+} from '@amplication/prisma-db';
 import { FindOneArgs } from 'src/dto';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { Resource } from 'src/models/Resource';
@@ -15,6 +19,7 @@ import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput'
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
+import { ResourceService } from '../resource/resource.service';
 
 const GIT_REPOSITORY_EXIST =
   'Git Repository already connected to an other Resource';
@@ -24,7 +29,8 @@ const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
 export class GitProviderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly gitService: GitService
+    private readonly gitService: GitService,
+    private readonly resourceService: ResourceService
   ) {}
 
   async getReposOfOrganization(
@@ -96,10 +102,39 @@ export class GitProviderService {
       throw new AmplicationError(GIT_REPOSITORY_EXIST);
     }
 
+    const resource = await this.resourceService.resource({
+      where: {
+        id: resourceId
+      }
+    });
+
+    let resourcesToConnect: Prisma.ResourceWhereUniqueInput[];
+
+    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
+      const resources = await this.prisma.resource.findMany({
+        where: {
+          projectId: resource.projectId,
+          gitRepositoryOverride: false,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          OR: {
+            id: resourceId
+          }
+        }
+      });
+
+      resourcesToConnect = resources.map(r => ({ id: r.id }));
+    } else {
+      resourcesToConnect = [
+        {
+          id: resourceId
+        }
+      ];
+    }
+
     await this.prisma.gitRepository.create({
       data: {
         name: name,
-        resources: { connect: { id: resourceId } },
+        resources: { connect: resourcesToConnect },
         gitOrganization: { connect: { id: gitOrganizationId } }
       }
     });
