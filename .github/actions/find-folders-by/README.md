@@ -21,7 +21,7 @@ jobs:
   find_folders_job:
     runs-on: ubuntu-18.04
     steps:
-      - name: 'Find folders that containing Dockerfile'
+      - name: 'Find folders that contain a Dockerfile'
         id: find-folders
         uses: ./.github/actions/find-folders
         with:
