@@ -26,7 +26,6 @@ export default class HashingService {
                 cwd: path,
                 mark: true,
                 nodir: true,
-                // realpath: true,
                 absolute: true,
                 nosort: false,
             })
