@@ -7,10 +7,12 @@ $counter-height: 18px;
   padding: var(--default-spacing);
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   &__divider {
     border: 1px solid var(--black5);
     width: 99%;
+    margin-top: auto;
   }
 
   &__header {
@@ -83,6 +85,7 @@ $counter-height: 18px;
     padding: var(--default-spacing);
     border-radius: var(--small-border-radius);
     height: 100%;
+    margin-bottom: var(--double-spacing);
   }
 
   &__changes {
