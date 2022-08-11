@@ -14,6 +14,7 @@ on:
           - ariel
           - alex
           - next
+          - eugene
 
       confirm-namespace:
         type: string
