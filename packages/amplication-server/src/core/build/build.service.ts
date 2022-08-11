@@ -46,17 +46,16 @@ import { BuildContext } from './dto/BuildContext';
 import { BuildContextData } from './dto/BuildContextData';
 import { BuildContextStorageService } from './buildContextStorage.service';
 
-
 export enum StepName {
   Generate = 'GENERATE_APPLICATION',
   PushToGitHub = 'PUSH_TO_GITHUB',
-  BuildDockerImage = 'BUILD_DOCKER',
+  BuildDockerImage = 'BUILD_DOCKER'
 }
 
 export enum StepMessage {
   Generate = 'Generating Application',
   PushToGitHub = 'Push changes to GitHub',
-  BuildDockerImage = 'Building Docker image',
+  BuildDockerImage = 'Building Docker image'
 }
 
 export const HOST_VAR = 'HOST';
@@ -326,7 +325,9 @@ export class BuildService {
     });
   }
 
-  private mapBuildStatusToActionStepStatus(status: BuildStatus): EnumActionStepStatus {
+  private mapBuildStatusToActionStepStatus(
+    status: BuildStatus
+  ): EnumActionStepStatus {
     switch (status) {
       case BuildStatus.Init:
         return EnumActionStepStatus.Running;

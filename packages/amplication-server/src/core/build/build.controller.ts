@@ -35,11 +35,10 @@ import { Build } from './dto/Build';
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
-
   constructor(
     private readonly buildService: BuildService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
+    private readonly logger: LoggerService
   ) {}
 
   @Get(`/:id.zip`)
@@ -103,7 +102,7 @@ export class BuildController {
     const { buildId, runId, status } = message.value;
     try {
       switch (status) {
-        case BuildStatus.Init:  
+        case BuildStatus.Init:
           await this.buildService.updateRunId(buildId, runId);
           break;
         case BuildStatus.Ready:
@@ -111,7 +110,7 @@ export class BuildController {
           break;
       }
       await this.buildService.updateStateByRunId(runId, status);
-        
+
       await this.buildService.logGenerateStatusByRunId(runId, status);
     } catch (error) {
       this.logger.error(
