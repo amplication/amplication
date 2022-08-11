@@ -274,7 +274,6 @@ model EntityField {
   @@unique([entityVersionId, displayName], map: "EntityField.entityVersionId_displayName_unique")
   @@unique([entityVersionId, name], map: "EntityField.entityVersionId_name_unique")
   @@unique([entityVersionId, permanentId], map: "EntityField.entityVersionId_permanentId_unique")
-  @@unique([permanentId, entityVersionId])
 }
 
 model Block {
