@@ -693,6 +693,7 @@ input ResourceWhereInput {
   name: StringFilter
   description: StringFilter
   project: WhereUniqueInput
+  projectId: String
 }
 
 input ResourceOrderByInput {
