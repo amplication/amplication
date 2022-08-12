@@ -1,7 +1,0 @@
-{
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "ee/packages/amplication-git-pull-service/src",
-  "projectType": "application",
-  "targets": {},
-  "tags": []
-}

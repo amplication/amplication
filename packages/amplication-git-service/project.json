@@ -1,7 +1,0 @@
-{
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/amplication-git-service/src",
-  "projectType": "application",
-  "targets": {},
-  "tags": []
-}
