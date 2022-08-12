@@ -62,8 +62,8 @@
     "nx": "14.5.4",
     "prettier": "^2.6.2",
     "ts-jest": "27.1.4",
-    "ts-node": "9.1.1",
-    "typescript": "4.5.4"
+    "ts-node": "~10.8.0",
+    "typescript": "~4.7.2"
   },
   "engines": {
     "node": "^16.3.0 || ^14.0.0",

@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import { satisfies } from "semver";
 import { createLogger, format, Logger, transports } from "winston";
-import * as ora from "ora";
+import ora from "ora";
 
 const { combine, colorize, simple } = format;
 
@@ -41,7 +41,7 @@ function preValidate() {
   const currentNpmVersionArray = npm_config_user_agent?.match(
     /npm\/[\^*\~*]*[\d\.]+/
   );
-  const currentNpmVersion = currentNpmVersionArray[0]?.slice(4);
+  const currentNpmVersion = currentNpmVersionArray![0]?.slice(4);
   if (!currentNpmVersionArray || !currentNpmVersion) {
     logger.error(
       "Mmmmm... it seems like you don't have permission to run the script. Try to run it as an administrator."
@@ -153,7 +153,7 @@ if (require.main === module) {
       );
       logger.info("Link to our docs: 'https://docs.amplication.com/docs/' 📜");
     } catch (error) {
-      spinner.fail(error.message);
+      spinner.fail((error as Error).message);
     }
   })();
 }
