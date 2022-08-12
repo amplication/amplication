@@ -1,13 +1,42 @@
-node_modules/
+# Lerna-era gitignore statements
 terraform/envs/production/.terraform.lock.hcl
 terraform/envs/dev/.terraform.lock.hcl
 lerna-debug.log
 terraform/envs/*/.terraform.lock.hcl
-.DS_Store
-.idea/
 secrets/
 lib/
+dist
 *.tgz
 values-secret*
-dist/
 packages/.server-id
+
+# Added by Nx
+/dist
+/tmp
+/out-tsc
+
+# dependencies
+node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
