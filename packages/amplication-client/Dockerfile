@@ -3,7 +3,6 @@ ARG NGINX_VERSION=1.20-alpine
 
 FROM node:$NODE_VERSION AS build
 
-ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
 
 RUN npm config set fund false
