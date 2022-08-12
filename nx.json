@@ -2,7 +2,7 @@
   "extends": "nx/presets/npm.json",
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx/tasks-runners/default",
+      "runner": "@nrwl/nx-cloud",
       "options": {
         "cacheableOperations": [
           "build",
@@ -51,7 +51,8 @@
           "build:generate-help",
           "generate-graphql-schema",
           "check-graphql-schema"
-        ]
+        ],
+        "accessToken": "Yzg3OGIyZDMtNTJhYS00NWYzLWE2MDMtZjM1ZDIwZDA4NDM2fHJlYWQtd3JpdGU="
       }
     }
   },
