@@ -15,7 +15,6 @@ RUN npm ci --production
 
 FROM base AS build
 WORKDIR /app
-COPY workspace.json /app/
 # Copy amplication/storage-gateway and the its dependent packages
 COPY packages/amplication-storage-gateway packages/amplication-storage-gateway
 COPY packages/amplication-kafka packages/amplication-kafka
