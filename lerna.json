@@ -1,4 +1,5 @@
 {
+  "useNx": true,
   "packages": [
     "packages/*",
     "ee/packages/*",
@@ -8,10 +9,7 @@
   "version": "0.14.11",
   "command": {
     "bootstrap": {
-      "ignore": [
-        "admin-template",
-        "server-template"
-      ]
+      "ignore": ["admin-template", "server-template"]
     }
   }
 }
