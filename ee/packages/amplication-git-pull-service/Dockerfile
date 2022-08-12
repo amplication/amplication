@@ -18,6 +18,7 @@ RUN npm ci --production
 FROM base AS build
 WORKDIR /app
 # Copy amplication/git-pull-service and the its dependent packages
+COPY workspace.json /app/
 COPY ee/packages/amplication-git-pull-service ee/packages/amplication-git-pull-service
 COPY packages/amplication-kafka packages/amplication-kafka
 
