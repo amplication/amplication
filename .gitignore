@@ -15,6 +15,7 @@ lib/
 values-secret*
 dist/
 packages/.server-id
+package.json.lerna_backup
 
 ########################
 # Nx Workspace ignores #
