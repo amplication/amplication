@@ -15,6 +15,7 @@ RUN npm ci --production
 
 FROM base AS build
 WORKDIR /app
+COPY workspace.json /app/
 # Copy amplication-git-push-webhook-service  and the its dependent packages
 COPY ee/packages/amplication-git-push-webhook-service ee/packages/amplication-git-push-webhook-service
 COPY packages/amplication-prisma-db packages/amplication-prisma-db

@@ -13,6 +13,7 @@ COPY package*.json /app/
 RUN npm ci --production
 
 COPY packages packages
+COPY workspace.json /app/
 RUN npm run bootstrap -- --scope @amplication/client --include-dependencies
 RUN npm run build -- --scope @amplication/client --include-dependencies
 

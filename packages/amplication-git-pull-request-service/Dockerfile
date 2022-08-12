@@ -16,6 +16,7 @@ RUN npm ci --production
 FROM base AS build
 
 WORKDIR /app
+COPY workspace.json /app/
 # Copy amplication/git-pull-request-service and the its dependent packages
 COPY packages/amplication-git-pull-request-service packages/amplication-git-pull-request-service
 COPY packages/amplication-git-service packages/amplication-git-service

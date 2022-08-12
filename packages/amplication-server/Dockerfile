@@ -12,6 +12,7 @@ RUN npm ci --production
 
 FROM base AS build
 WORKDIR /app
+COPY workspace.json /app/
 # Copy amplication/server and the its dependent packages
 COPY packages/amplication-server packages/amplication-server
 COPY packages/amplication-code-gen-types packages/amplication-code-gen-types
