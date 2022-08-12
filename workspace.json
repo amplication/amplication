@@ -16,6 +16,6 @@
     "@amplication/scheduler": "packages/amplication-scheduler",
     "@amplication/server": "packages/amplication-server",
     "@amplication/storage-gateway": "packages/amplication-storage-gateway",
-    "@amplication/nest-logger-module": "packages/amplication/nest-logger-module"
+    "@amplication/nest-logger-module": "packages/amplication-nest-logger-module"
   }
 }
