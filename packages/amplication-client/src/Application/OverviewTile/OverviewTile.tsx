@@ -51,7 +51,7 @@ const OverviewTile: React.FC<Props> = ({ applicationId }: Props) => {
               </span>
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>
-              Next JS
+              Nest JS
               <span className={`${CLASS_NAME}__content__item__text--blue`}>
                 8.2.3
               </span>
