@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+//add gitRepository
 export const GET_RESOURCES = gql`
   query getResources($projectId: String!, $whereName: StringFilter) {
     resources(
@@ -12,6 +13,15 @@ export const GET_RESOURCES = gql`
       color
       updatedAt
       resourceType
+      gitRepository {
+        id
+        name
+        gitOrganization {
+          id
+          name
+          type
+        }
+      }
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         version
