@@ -10,8 +10,8 @@ $counter-height: 18px;
   height: calc(100% - 200px);
 
   &__divider {
-    border: 1px solid var(--black5);
-    width: 99%;
+    border: $border-black5;
+    width: 100%;
     margin-top: auto;
   }
 
@@ -81,7 +81,7 @@ $counter-height: 18px;
   &__changes-wrapper {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--black10);
+    border: $border-black10;
     padding: var(--default-spacing);
     border-radius: var(--small-border-radius);
     height: 100%;
