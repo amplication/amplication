@@ -24,6 +24,7 @@ import { isEmpty } from 'lodash';
 import { EnumWorkspaceMemberType } from './dto/EnumWorkspaceMemberType';
 import { Subscription } from '../subscription/dto/Subscription';
 import { GitOrganization } from 'src/models/GitOrganization';
+import { HubSpotAnalyticsService } from 'src/services/hub-spot-analytics/hub-spot-analytics.service'
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -33,8 +34,9 @@ export class WorkspaceService {
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
     private readonly mailService: MailService,
-    private readonly subscriptionService: SubscriptionService
-  ) {}
+    private readonly subscriptionService: SubscriptionService,
+    private readonly hubspotService: HubSpotAnalyticsService
+  ) { }
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
     return this.prisma.workspace.findUnique(args);
@@ -45,6 +47,13 @@ export class WorkspaceService {
   }
 
   async deleteWorkspace(args: FindOneArgs): Promise<Workspace | null> {
+    const members = await this.findMembers(args);
+    for (const member of members) {
+      const user = member.member as User;
+      if (!user.account) continue;
+      await this.hubspotService.removeWorkspace(user.account.email, args.where.id);
+    }
+
     return this.prisma.workspace.delete(args);
   }
 
@@ -89,6 +98,9 @@ export class WorkspaceService {
         users: args?.include?.users || true
       }
     });
+
+    const user = await this.userService.getAccount(accountId);
+    await this.hubspotService.addWorkspace(user.email, workspace.id);
 
     return workspace;
   }
@@ -230,6 +242,8 @@ export class WorkspaceService {
       }
     });
 
+    await this.hubspotService.addWorkspace(account.email, workspace.id);
+
     const [newUser] = workspace.users;
 
     await this.prisma.invitation.update({
@@ -311,6 +325,9 @@ export class WorkspaceService {
     const users = await this.userService.findUsers({
       where: {
         workspaceId: args.where.id
+      },
+      include: {
+        account: true
       }
     });
 
@@ -346,7 +363,8 @@ export class WorkspaceService {
     const user = await this.userService.findUser({
       ...args,
       include: {
-        workspace: true
+        workspace: true,
+        account: true
       }
     });
 
@@ -362,6 +380,8 @@ export class WorkspaceService {
         `The requested user is not in the current user's workspace`
       );
     }
+
+    await this.hubspotService.addWorkspace(user.account.email, user.workspace.id);
 
     return this.userService.delete(args.where.id);
   }
