@@ -6,7 +6,7 @@ import PageContent from "../../Layout/PageContent";
 import { EnumGitOrganizationType, EnumResourceType } from "../../models";
 import { formatError } from "../../util/error";
 import AuthResourceWithGit from "./AuthResourceWithGit";
-import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
+import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
 import "./SyncWithGithubPage.scss";
 
 const CLASS_NAME = "sync-with-github-page";
@@ -71,7 +71,7 @@ function SyncWithGithubPage({ match }: Props) {
           <AuthResourceWithGit resource={data.resource} onDone={refetch} />
         )}
         {isServiceResource && (
-          <ProjectConfigurationGitSettings resource={data.resource} onDone={refetch}/>
+          <ServiceConfigurationGitSettings resource={data.resource} onDone={refetch}/>
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>

@@ -1,0 +1,68 @@
+@import "../../style/index.scss";
+
+.service-configuration-github-settings {
+ 
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 1078px;
+  height: 475px;
+  margin: var(--double-spacing) 0;
+
+
+  &__panelWarper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 1078px;
+    height: 98px;
+  }
+
+  &__gitSettingsPanel {
+    padding: 12px 16px;
+    gap: 12px;
+    width: 1078px;
+    background: var(--black5);
+    border-radius: var(--default-border-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: var(--black5);
+    border-radius: 8px;
+    margin: var(--double-spacing) 0;
+  }
+
+  &__gitSettingsFromProject {
+    width: 1077px;
+    height: 72px;
+    border: 1px solid var(--black10);
+    margin: var(--double-spacing) 0;
+    min-height: var(--min-height-of-banner);
+    display: flex;
+  }
+
+  &__toggle {
+    left: 828px;
+  }
+
+  &__defaultSettings {
+    font-size: 14px;
+    align-items: center;
+    padding: 13px 0px;
+    display: flex;
+    flex-direction: row;
+  }
+
+  &__AuthWithGit{
+      width: 100%;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--black10);
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+}

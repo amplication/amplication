@@ -1,32 +1,24 @@
-import { EnumPanelStyle, Panel, Toggle } from "@amplication/design-system";
-import React, { useContext, useState } from "react";
+import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import React, { useContext } from "react";
 import "./SyncWithGithubPage.scss";
 import "./ProjectConfigurationGitSettings.scss";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
-import { ResourceWithGitRepository } from "./SyncWithGithubPage";
-import AuthResourceWithGit from "./AuthResourceWithGit";
 import GithubSyncDetails from "./GitActions/RepositoryActions/GithubSyncDetails";
 import classNames from "classnames";
 
 const CLASS_NAME = "project-configuration-github-settings";
 
-type Props = {
-  resource: ResourceWithGitRepository;
-  onDone: () => void;
-};
-
-const ProjectConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
+const ProjectConfigurationGitSettings: React.FC<{}> = () => {
   const {
     currentWorkspace,
     currentProject,
+    //currentResource,
     projectConfigurationResource,
   } = useContext(AppContext);
 
-  const [isOverride, setIsOverride] = useState<boolean>(false);
-  const settingsClassName = isOverride
-    ? "gitSettingsPanel"
-    : "gitSettingsFromProject";
+
+  const isOverride = false; //currentResource?.isOverride; need to get from the server 
 
   const gitStatusPanelClassName = isOverride
     ? "overrideGitStatusPanel"
@@ -46,13 +38,8 @@ const ProjectConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
     );
   };
 
-  const handleToggleChange = () => {
-    setIsOverride(!isOverride);
-  };
-
   return (
-    <div className={`${CLASS_NAME}`}>
-      <div className={`${CLASS_NAME}__panelWarper`}>
+      <div className={CLASS_NAME}> 
         <div className={`${CLASS_NAME}__settingsLink`}> 
           <p className= {isOverride ? `${CLASS_NAME}__disabled_color` : ""}>
             These settings are inherited from the project
@@ -75,29 +62,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
             <div>not connected to git repository</div>
           )}
         </Panel>
-        <Panel
-          className={`${CLASS_NAME}__${settingsClassName}`}
-          panelStyle={EnumPanelStyle.Transparent}
-        >
-          <div className={`${CLASS_NAME}__defaultSettings`}>
-            <label>Override default settings</label>
-            <Toggle
-              className={`${CLASS_NAME}__toggle`}
-              onChange={handleToggleChange}
-            />
-          </div>
-          {isOverride && (
-            <div className={`${CLASS_NAME}__AuthWithGit`}>
-              <hr />
-              <AuthResourceWithGit
-                resource={resource.resource}
-                onDone={onDone}
-              />
-            </div>
-          )}
-        </Panel>
       </div>
-    </div>
   );
 };
 

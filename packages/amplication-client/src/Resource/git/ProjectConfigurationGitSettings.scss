@@ -1,14 +1,6 @@
 @import "../../style/index.scss";
 
 .project-configuration-github-settings {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  width: 1078px;
-  height: 475px;
-  margin: var(--double-spacing) 0;
-
   &__link {
     text-decoration: underline;
   }
@@ -22,82 +14,31 @@
   }
 
   &__settingsLink {
-    margin: var(--default-spacing) calc(var(--default-spacing) * -1);
     display: flex;
     justify-content: space-between;
     width: 400px;
   }
 
-  &__panelWarper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    width: 1078px;
-    height: 98px;
-  }
-
   &__gitStatusPanel {
     width: 1077px;
     height: 72px;
-    border: 1px solid #444b66;
-    background: #2C3249;
+    border: 1px solid var(--black20);
+    background: var(--black5);
+    margin: var(--double-spacing) 0;
+    min-height: var(--min-height-of-banner);
+    display: flex;
   }
 
   &__overrideGitStatusPanel {
-    border: 1px solid #444b66;
+    border: 1px solid var(--black20);
     display: flex;
     flex-direction: row;
     width: 1077px;
     height: 72px;
-  }
-
-  &__gitSettingsPanel {
-    padding: 12px 16px;
-    gap: 12px;
-    width: 1078px;
-    background: #2c3249;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    background: #2c3249;
-    border-radius: 8px;
+    margin: var(--double-spacing) 0;
   }
 
   &__githubSync {
     color: var(--black40);
-  }
-
-  &__gitSettingsFromProject {
-    width: 1077px;
-    height: 72px;
-    border: 1px solid var(--black10);
-    border-radius: var(--default-border-radius);
-    box-sizing: border-box;
-    padding: 12px 16px;
-  }
-
-  &__toggle {
-    left: 829px;
-  }
-
-  &__defaultSettings {
-    font-size: 14px;
-    align-items: center;
-    padding: 13px 0px;
-    display: flex;
-    flex-direction: row;
-  }
-
-  &__AuthWithGit{
-      width: 100%;
-  }
-
-  hr {
-    border: none;
-    border-top: 1px solid var(--black10);
-    margin-top: var(--double-spacing);
-    margin-bottom: var(--double-spacing);
   }
 }
