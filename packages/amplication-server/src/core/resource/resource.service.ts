@@ -123,6 +123,10 @@ export class ResourceService {
 
     const projectConfiguration = await this.projectConfiguration(projectId);
 
+    if (isEmpty(projectConfiguration)) {
+      throw new AmplicationError('Project configuration missing from project');
+    }
+
     const resource = await this.prisma.resource.create({
       data: {
         ...DEFAULT_SERVICE_DATA,
@@ -637,7 +641,7 @@ export class ResourceService {
     });
   }
 
-  async projectConfiguration(projectId: string): Promise<Resource> {
+  async projectConfiguration(projectId: string): Promise<Resource | null> {
     return await this.prisma.resource.findFirst({
       where: {
         resourceType: EnumResourceType.ProjectConfiguration,
