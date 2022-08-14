@@ -52,7 +52,7 @@ const PendingChange = ({ change, resourceId, linkToOrigin = false }: Props) => {
     }
     if (linkToOrigin) {
       return (
-        <Link to={url} style={{ fontSize: "12px" }}>
+        <Link to={url} className={`${CLASS_NAME}__link`}>
           {change.origin.displayName}
         </Link>
       );
