@@ -1,5 +1,8 @@
 @import "../style/index.scss";
 
+$before-spacing-left: 10px;
+$before-spacing: -6px;
+
 .pending-change {
   margin-left: 0;
   margin-right: 0;
@@ -15,8 +18,8 @@
     flex: 1;
   }
   &__action {
-    height: var(--large-spacing);
-    width: var(--large-spacing);
+    height: var(--medium-spacing);
+    width: var(--medium-spacing);
     font-size: var(--text-field-label-font-size);
     min-width: var(--double-spacing);
     min-height: var(--double-spacing);
@@ -33,10 +36,10 @@
       content: "";
       position: absolute;
       display: block;
-      left: 10px;
+      left: $before-spacing-left;
       border-right: 1px solid var(--black30);
-      top: -6px;
-      bottom: -6px;
+      top: $before-spacing;
+      bottom: $before-spacing;
     }
 
     &.update {
