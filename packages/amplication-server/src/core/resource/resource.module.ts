@@ -12,6 +12,7 @@ import { CommitModule } from '../commit/commit.module'; // eslint-disable-line i
 import { GitModule } from '@amplication/git-service';
 import { ServiceSettingsModule } from '../serviceSettings/serviceSettings.module';
 import { ProjectConfigurationSettingsModule } from '../projectConfigurationSettings/projectConfigurationSettings.module';
+import { ProjectModule } from '../project/project.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { ProjectConfigurationSettingsModule } from '../projectConfigurationSetti
     CommitModule,
     BlockModule,
     GitModule,
-    ProjectConfigurationSettingsModule
+    ProjectConfigurationSettingsModule,
+    forwardRef(() => ProjectModule)
   ],
   providers: [ResourceService, ResourceResolver],
   exports: [ResourceService, ResourceResolver]

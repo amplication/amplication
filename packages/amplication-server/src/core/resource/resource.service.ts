@@ -3,7 +3,7 @@ import {
   GitRepository,
   PrismaService
 } from '@amplication/prisma-db';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
@@ -52,6 +52,7 @@ export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   'The resource of type `ProjectConfiguration` cannot be deleted';
 import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
+import { ProjectService } from '../project/project.service';
 
 const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
@@ -66,7 +67,9 @@ export class ResourceService {
     private environmentService: EnvironmentService,
     private buildService: BuildService,
     private serviceSettingsService: ServiceSettingsService,
-    private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService
+    private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
+    @Inject(forwardRef(() => ProjectService))
+    private readonly projectService: ProjectService
   ) {}
 
   async createProjectConfiguration(
@@ -112,7 +115,7 @@ export class ResourceService {
 
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
-        'Try to create project configuration from createResource function'
+        'Resource of type ProjectConnfiguration cannot be created manually'
       );
     }
 
@@ -629,9 +632,9 @@ export class ResourceService {
   }
 
   async project(resourceId: string): Promise<Project> {
-    return this.prisma.resource
-      .findUnique({ where: { id: resourceId } })
-      .project();
+    return this.projectService.findFirst({
+      where: { resources: { some: { id: resourceId } } }
+    });
   }
 
   async projectConfiguration(projectId: string): Promise<Resource> {
