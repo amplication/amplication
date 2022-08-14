@@ -15,6 +15,7 @@ FROM base AS build
 WORKDIR /app
 # Copy amplication/server and the its dependent packages
 COPY packages/amplication-server packages/amplication-server
+COPY packages/amplication-build-types packages/amplication-build-types
 COPY packages/amplication-code-gen-types packages/amplication-code-gen-types
 COPY packages/amplication-data-service-generator packages/amplication-data-service-generator
 COPY packages/amplication-git-service packages/amplication-git-service
@@ -43,6 +44,9 @@ COPY --from=build /app/packages/amplication-server/dist /app/packages/amplicatio
 
 COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
 
+COPY --from=build /app/packages/amplication-build-types/package.json /app/packages/amplication-build-types/package.json
+COPY --from=build /app/packages/amplication-build-types/node_modules /app/packages/amplication-build-types/node_modules
+COPY --from=build /app/packages/amplication-build-types/dist /app/packages/amplication-build-types/dist
 
 COPY --from=build /app/packages/amplication-code-gen-types/package.json /app/packages/amplication-code-gen-types/package.json
 COPY --from=build /app/packages/amplication-code-gen-types/node_modules /app/packages/amplication-code-gen-types/node_modules
@@ -66,9 +70,6 @@ COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amp
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
 
-COPY --from=build /app/packages/amplication-build-types/package.json /app/packages/amplication-build-types/package.json
-COPY --from=build /app/packages/amplication-build-types/node_modules /app/packages/amplication-build-types/node_modules
-COPY --from=build /app/packages/amplication-build-types/dist /app/packages/amplication-build-types/dist
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]

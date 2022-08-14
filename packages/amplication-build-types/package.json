@@ -9,6 +9,7 @@
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
   "devDependencies": {
+    "typescript": "4.7.3",
     "prettier": "2.1.1"
   }
 }
