@@ -14,15 +14,19 @@ $before-spacing: -6px;
     margin-bottom: var(--double-spacing);
   }
 
+  &__link {
+    font-size: var(--title2-font-size);
+  }
+
   &__spacer {
     flex: 1;
   }
   &__action {
-    height: var(--medium-spacing);
-    width: var(--medium-spacing);
+    height: var(--large-spacing);
+    width: var(--large-spacing);
     font-size: var(--text-field-label-font-size);
-    min-width: var(--double-spacing);
-    min-height: var(--double-spacing);
+    min-width: var(--medium-spacing);
+    min-height: var(--medium-spacing);
     border-radius: 2px;
     display: flex;
     align-items: center;
