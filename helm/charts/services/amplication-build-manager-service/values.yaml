@@ -9,7 +9,7 @@ autoscaling:
   targetMemoryUtilizationPercentage: 80
 image:
   pullPolicy: Always
-  repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-build-manager-service-dev
+  repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-build-manager-service
   tag: 0.0.1
   imagePullSecrets: []
 
