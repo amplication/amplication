@@ -29,7 +29,7 @@ import Commits from "../VersionControl/Commits";
 import NavigationTabs from "../Layout/NavigationTabs";
 import SyncWithGithubPage from "./git/SyncWithGithubPage";
 import CodeViewPage from "./code-view/CodeViewPage";
-import ServiceSettingsPage from "./serviceSettings/ServiceSettingsPage";
+import ServiceSettingsPage from "./resourceSettings/ResourceSettingsPage";
 
 export type ResourceData = {
   resource: models.Resource;
@@ -77,10 +77,7 @@ function ResourceLayout({ match }: Props) {
   }, [pendingChangesData, setPendingChanges]);
 
   const addChange = useCallback(
-    (
-      originId: string,
-      originType: models.EnumPendingChangeOriginType
-    ) => {
+    (originId: string, originType: models.EnumPendingChangeOriginType) => {
       const existingChange = pendingChanges.find(
         (changeItem) =>
           changeItem.originId === originId &&
