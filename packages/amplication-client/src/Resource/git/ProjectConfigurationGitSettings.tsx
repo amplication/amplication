@@ -17,21 +17,23 @@ const ProjectConfigurationGitSettings: React.FC<{}> = () => {
     projectConfigurationResource,
   } = useContext(AppContext);
 
-
-  const isOverride = false; //currentResource?.isOverride; need to get from the server 
+  const isOverride = true; //currentResource?.isOverride; need to get from the server
 
   const gitStatusPanelClassName = isOverride
     ? "overrideGitStatusPanel"
     : "gitStatusPanel";
 
-    const linkFontClass = isOverride ? "disabled_color" : "inherit_color"; 
+  const linkFontClass = isOverride ? "disabled_color" : "inherit_color";
 
   const projectSettingsLink = () => {
     return (
       <Link
         title={"Go to project settings"}
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/settings/update`}
-        className= { classNames(`${CLASS_NAME}__link`,`${CLASS_NAME}__${linkFontClass}`) }
+        className={classNames(
+          `${CLASS_NAME}__link`,
+          `${CLASS_NAME}__${linkFontClass}`
+        )}
       >
         Go to project settings
       </Link>
@@ -39,30 +41,30 @@ const ProjectConfigurationGitSettings: React.FC<{}> = () => {
   };
 
   return (
-      <div className={CLASS_NAME}> 
-        <div className={`${CLASS_NAME}__settingsLink`}> 
-          <p className= {isOverride ? `${CLASS_NAME}__disabled_color` : ""}>
-            These settings are inherited from the project
-          </p>
-          <p>{projectSettingsLink()}</p>
-        </div>
-        <Panel
-          className={`${CLASS_NAME}__${gitStatusPanelClassName}`}
-          panelStyle={EnumPanelStyle.Transparent}
-        >
-          {projectConfigurationResource?.gitRepository ? (
-            <GithubSyncDetails
-              showGitRepositoryBtn={false}
-              className={isOverride ? `${CLASS_NAME}__githubSync` : ""}
-              gitRepositoryWithOrganization={
-                projectConfigurationResource.gitRepository
-              }
-            />
-          ) : (
-            <div>not connected to git repository</div>
-          )}
-        </Panel>
+    <div className={CLASS_NAME}>
+      <div className={`${CLASS_NAME}__settingsLink`}>
+        <p className={isOverride ? `${CLASS_NAME}__disabled_color` : ""}>
+          These settings are inherited from the project
+        </p>
+        <p>{projectSettingsLink()}</p>
       </div>
+      <Panel
+        className={`${CLASS_NAME}__${gitStatusPanelClassName}`}
+        panelStyle={EnumPanelStyle.Transparent}
+      >
+        {projectConfigurationResource?.gitRepository ? (
+          <GithubSyncDetails
+            showGitRepositoryBtn={false}
+            className={isOverride ? `${CLASS_NAME}__githubSync` : ""}
+            gitRepositoryWithOrganization={
+              projectConfigurationResource.gitRepository
+            }
+          />
+        ) : (
+          <div>not connected to git repository</div>
+        )}
+      </Panel>
+    </div>
   );
 };
 

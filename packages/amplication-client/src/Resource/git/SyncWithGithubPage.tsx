@@ -71,7 +71,10 @@ function SyncWithGithubPage({ match }: Props) {
           <AuthResourceWithGit resource={data.resource} onDone={refetch} />
         )}
         {isServiceResource && (
-          <ServiceConfigurationGitSettings resource={data.resource} onDone={refetch}/>
+          <ServiceConfigurationGitSettings
+            resource={data.resource}
+            onDone={refetch}
+          />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>

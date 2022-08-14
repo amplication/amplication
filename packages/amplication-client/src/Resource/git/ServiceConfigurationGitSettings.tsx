@@ -14,12 +14,10 @@ type Props = {
 };
 
 const ServiceConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
-
-  const [isOverride, setIsOverride] = useState<boolean>(false); //get from AppContext and update when status changed 
+  const [isOverride, setIsOverride] = useState<boolean>(false); //get from AppContext and update when status changed
   const settingsClassName = isOverride
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
-
 
   const handleToggleChange = () => {
     setIsOverride(!isOverride);
@@ -28,17 +26,17 @@ const ServiceConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__panelWarper`}>
-          <ProjectConfigurationGitSettings />
+        <ProjectConfigurationGitSettings />
         <Panel
           className={`${CLASS_NAME}__${settingsClassName}`}
           panelStyle={EnumPanelStyle.Transparent}
         >
           <div className={`${CLASS_NAME}__defaultSettings`}>
-            <label>Override default settings</label>
-            <Toggle
-              className={`${CLASS_NAME}__toggle`}
-              onChange={handleToggleChange}
-            />
+            <div>Override default settings</div>
+
+            <div>
+              <Toggle onChange={handleToggleChange} />
+            </div>
           </div>
           {isOverride && (
             <div className={`${CLASS_NAME}__AuthWithGit`}>
