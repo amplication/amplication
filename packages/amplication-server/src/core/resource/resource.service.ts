@@ -358,6 +358,22 @@ export class ResourceService {
       throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
     }
 
+    if (resource.gitRepositoryOverride) {
+      const gitRepo = await this.prisma.gitRepository.findFirst({
+        where: {
+          resources: { every: { id: resource.id } }
+        }
+      });
+
+      if (gitRepo) {
+        await this.prisma.gitRepository.delete({
+          where: {
+            id: gitRepo.id
+          }
+        });
+      }
+    }
+
     return this.prisma.resource.update({
       where: args.where,
       data: {
