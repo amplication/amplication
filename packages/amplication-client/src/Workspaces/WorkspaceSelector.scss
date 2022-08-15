@@ -2,12 +2,12 @@
 
 @mixin workspaceItem {
   display: flex;
+  flex: 1;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   cursor: pointer;
   padding: var(--default-spacing);
-  width: 100%;
 
   .circle-badge {
     margin-left: 0;
@@ -49,8 +49,12 @@
   &__current {
     @include workspaceItem;
 
-    .amp-icon {
-      justify-self: flex-end;
+    .amp-button {
+      min-width: 16px;
+
+      .amp-icon {
+        margin: 0;
+      }
     }
   }
 
@@ -73,10 +77,10 @@
       &__icon {
         color: var(--positive-default);
       }
-    }
 
-    &__item:hover {
-      background-color: var(--black10);
+      &:hover {
+        background-color: var(--black10);
+      }
     }
 
     &__button {
