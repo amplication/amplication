@@ -1,6 +1,12 @@
-import React, { useState, useCallback, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useContext,
+  useMemo,
+} from "react";
 import { gql, useQuery } from "@apollo/client";
-import { isEmpty } from "lodash";
+import { groupBy, isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 
 import { formatError } from "../util/error";
@@ -14,6 +20,7 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import "./PendingChanges.scss";
 import { AppContext } from "../context/appContext";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 
 const CLASS_NAME = "pending-changes";
 
@@ -57,41 +64,24 @@ const PendingChanges = ({ projectId }: Props) => {
 
   const noChanges = isEmpty(data?.pendingChanges);
 
+  const pendingChangesByResource = useMemo(() => {
+    const groupedChanges = groupBy(
+      data?.pendingChanges,
+      (change) => change.resource.id
+    );
+
+    return Object.entries(groupedChanges).map(([resourceId, changes]) => {
+      return {
+        resource: changes[0].resource,
+        changes: changes,
+      };
+    });
+  }, [data]);
+
   return (
     <div className={CLASS_NAME}>
       <Commit projectId={projectId} noChanges={noChanges} />
-      <div className={`${CLASS_NAME}__changes-header`}>
-        <span>Changes</span>
-        <span
-          className={
-            data?.pendingChanges.length
-              ? `${CLASS_NAME}__changes-count-warning`
-              : `${CLASS_NAME}__changes-count`
-          }
-        >
-          {data?.pendingChanges.length}
-        </span>
-        <div className="spacer" />
-        <Tooltip aria-label={"Compare Changes"} direction="sw">
-          <Link
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectId}/pending-changes`}
-          >
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              disabled={loading || noChanges}
-              icon="compare"
-            />
-          </Link>
-        </Tooltip>
-        <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
-          <Button
-            buttonStyle={EnumButtonStyle.Text}
-            onClick={handleToggleDiscardDialog}
-            disabled={loading || noChanges}
-            icon="trash_2"
-          />
-        </Tooltip>
-      </div>
+
       {isEmpty(data?.pendingChanges) && !loading ? (
         <div className={`${CLASS_NAME}__empty-state`}>
           <SvgThemeImage image={EnumImages.NoChanges} />
@@ -114,20 +104,66 @@ const PendingChanges = ({ projectId }: Props) => {
             />
           </Dialog>
 
-          {loading ? (
-            <span>Loading...</span>
-          ) : (
-            <div className={`${CLASS_NAME}__changes`}>
-              {data?.pendingChanges.map((change) => (
-                <PendingChange
-                  key={change.originId}
-                  change={change}
-                  resourceId={projectId}
-                  linkToOrigin
+          <div className={`${CLASS_NAME}__changes-wrapper`}>
+            {loading ? (
+              <span>Loading...</span>
+            ) : (
+              <div className={`${CLASS_NAME}__changes`}>
+                {pendingChangesByResource.map((group) => (
+                  <div key={group.resource.id}>
+                    <div className={`${CLASS_NAME}__changes__resource`}>
+                      <ResourceCircleBadge
+                        type={group.resource.resourceType}
+                        size="xsmall"
+                      />
+                      <span>{group.resource.name}</span>
+                    </div>
+                    {group.changes.map((change) => (
+                      <PendingChange
+                        key={change.originId}
+                        change={change}
+                        resourceId={projectId}
+                        linkToOrigin
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+            <hr className={`${CLASS_NAME}__divider`} />
+            <div className={`${CLASS_NAME}__changes-header`}>
+              <span>Changes</span>
+              <span
+                className={
+                  data?.pendingChanges.length
+                    ? `${CLASS_NAME}__changes-count-warning`
+                    : `${CLASS_NAME}__changes-count`
+                }
+              >
+                {data?.pendingChanges.length}
+              </span>
+              <div className="spacer" />
+              <Tooltip aria-label={"Compare Changes"} direction="sw">
+                <Link
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
+                >
+                  <Button
+                    buttonStyle={EnumButtonStyle.Text}
+                    disabled={loading || noChanges}
+                    icon="compare"
+                  />
+                </Link>
+              </Tooltip>
+              <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  onClick={handleToggleDiscardDialog}
+                  disabled={loading || noChanges}
+                  icon="trash_2"
                 />
-              ))}
+              </Tooltip>
             </div>
-          )}
+          </div>
         </>
       )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
