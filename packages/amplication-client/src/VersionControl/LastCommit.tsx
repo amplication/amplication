@@ -67,7 +67,7 @@ const LastCommit = ({ projectId }: Props) => {
 
   const ClickableCommitId = (
     <ClickableId
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${build?.resourceId}/commits/${lastCommit.id}`}
+      to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
       id={lastCommit.id}
       label="Commit"
       eventData={{
