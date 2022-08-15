@@ -27,7 +27,12 @@ type Props = {
 const CLASS_NAME = "last-commit";
 
 const LastCommit = ({ projectId }: Props) => {
-  const { commitRunning, pendingChangesIsError } = useContext(AppContext);
+  const {
+    currentWorkspace,
+    currentProject,
+    commitRunning,
+    pendingChangesIsError,
+  } = useContext(AppContext);
 
   const { data, loading, refetch } = useQuery<TData>(GET_LAST_COMMIT, {
     variables: {
@@ -62,7 +67,7 @@ const LastCommit = ({ projectId }: Props) => {
 
   const ClickableCommitId = (
     <ClickableId
-      to={`/${build?.resourceId}/commits/${lastCommit.id}`}
+      to={`/${currentWorkspace?.id}/${currentProject?.id}/${build?.resourceId}/commits/${lastCommit.id}`}
       id={lastCommit.id}
       label="Commit"
       eventData={{
@@ -98,7 +103,7 @@ const LastCommit = ({ projectId }: Props) => {
         </SkeletonWrapper>
         {build && (
           <Link
-            to={`/${build.resourceId}/code-view`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/code-view`}
             className={`${CLASS_NAME}__view-code`}
           >
             <Button
