@@ -31,6 +31,12 @@ $modal-menu-top: 30px;
       @include regular-12();
       color: var(--black80);
       margin-right: var(--default-spacing);
+
+      &.highlight {
+        a {
+          color: var(--black100);
+        }
+      }
     }
     &__resource {
       display: flex;
@@ -64,10 +70,10 @@ $modal-menu-top: 30px;
       }
       &__title {
         @include regular-12();
+        color: var(--black80);
 
-        &__not_selected {
-          @include regular-12();
-          color: var(--black80);
+        &.highlight {
+          color: var(--black100);
         }
       }
       &__item {
