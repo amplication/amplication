@@ -1,10 +1,10 @@
-import { EventsName } from "@amplication/code-gen-types";
+import { EventName } from "@amplication/code-gen-types";
 import DsgContext from "./dsg-context";
 
 export type PluginWrapper = (
   args: any[],
   func: (...args: any) => any,
-  event: EventsName
+  event: EventName
 ) => any;
 
 const pipe = (...fns: (<T>(context: DsgContext, res: any) => T)[]) => (
@@ -12,7 +12,13 @@ const pipe = (...fns: (<T>(context: DsgContext, res: any) => T)[]) => (
   x: any
 ) => fns.reduce((res, fn) => fn(context, res), x);
 
-const pluginWrapper: PluginWrapper = (args, func, event) => {
+/**
+ * this function can wrap all dsg function in order to assign before and after plugin logic
+ * @param args => original DSG arguments
+ * @param func => DSG function
+ * @param event => event name to find the specific plugin
+ */
+const pluginWrapper: PluginWrapper = (args, func, event): any => {
   try {
     const context = DsgContext.getInstance;
     if (!context.plugins.hasOwnProperty(event)) return func(args);

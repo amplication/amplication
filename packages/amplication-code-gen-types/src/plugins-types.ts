@@ -51,7 +51,12 @@ export interface CreateControllerModulesParams extends EventParams {
   after: Module[];
 }
 
-export type EventsName = "createServiceModules" | "createControllerModules";
+export enum EventsName {
+  CreateServiceModules = "createServiceModules",
+  CreateControllerModules = "createControllerModules"
+}
+
+export type EventName = EventsName;
 
 export type Events = {
   createServiceModules?: {

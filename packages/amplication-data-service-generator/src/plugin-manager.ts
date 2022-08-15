@@ -5,15 +5,14 @@ import {
   PluginMap,
 } from "@amplication/code-gen-types";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const emptyFunction = () => {};
+class EmptyClass {}
 
 /**
  * generator function that import the plugin requested by user
  * @param pluginList
  * @returns Plugin class
  */
-async function* getPluginFuncGenerator(pluginList: DsgPlugin[]) {
+async function* getPluginFuncGenerator(pluginList: DsgPlugin[]): AsyncGenerator<new () => any> {
   try {
     const pluginListLength = pluginList.length;
     let index = 0;
@@ -23,23 +22,21 @@ async function* getPluginFuncGenerator(pluginList: DsgPlugin[]) {
       const func = await import(packageName);
 
       ++index;
-      if (!func.hasOwnProperty("default")) yield emptyFunction;
+      if (!func.hasOwnProperty("default")) yield EmptyClass;
 
       yield func.default;
     } while (pluginListLength > index);
   } catch (error) {
     console.log(error); /// log error
-    return emptyFunction;
+    return EmptyClass;
   }
 }
 
 /**
  * loop through all plugin list and set the plugin under each event
- * @param pluginList
- * @returns Array: Events[]
  */
-const getAllPlugins = async (pluginList: DsgPlugin[]) => {
-  if (!pluginList.length) return {};
+const getAllPlugins = async (pluginList: DsgPlugin[]): Promise<Events[]> => {
+  if (!pluginList.length) return [];
   const pluginFuncsArr: Events[] = [];
 
   for await (const pluginFunc of getPluginFuncGenerator(pluginList)) {
@@ -58,8 +55,6 @@ const getAllPlugins = async (pluginList: DsgPlugin[]) => {
 
 /**
  * main plugin manger function. it trigger plugin import and set the structure for plugin context
- * @param pluginList
- * @returns Map: Events
  */
 const pluginManager = async (
   pluginList: DsgPlugin[]
