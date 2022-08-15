@@ -43,4 +43,14 @@
   &__githubSync {
     color: var(--black40);
   }
+
+  &__select-repo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .amp-icon {
+      margin-right: var(--default-spacing-small);
+      color: var(--negative);
+    }
+  }
 }

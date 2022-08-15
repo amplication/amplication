@@ -15,8 +15,8 @@
 
   &__notice {
     &__title {
-      @include title1;
-      @include bold;
+      @include body2;
+      color: var(--black100);
     }
     text-align: left;
     margin-top: var(--double-spacing);

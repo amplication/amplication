@@ -45,36 +45,37 @@ export default function ExistingConnectionsMenu({
       icon="chevron_down"
     >
       <SelectMenuModal>
-        <SelectMenuList>
-          <>
-            {gitOrganizations.map((gitOrganization) => (
-              <SelectMenuItem
-                closeAfterSelectionChange
-                selected={selectedGitOrganization?.id === gitOrganization.id}
-                key={gitOrganization.id}
-                onSelectionChange={() => {
-                  onSelectGitOrganization(gitOrganization);
-                }}
-              >
-                <GitOrganizationMenuItemContent
-                  gitOrganization={gitOrganization}
+        <div className={`${CLASS_NAME}__select-menu`}>
+          <SelectMenuList>
+            <>
+              {gitOrganizations.map((gitOrganization) => (
+                <SelectMenuItem
+                  closeAfterSelectionChange
+                  selected={selectedGitOrganization?.id === gitOrganization.id}
+                  key={gitOrganization.id}
+                  onSelectionChange={() => {
+                    onSelectGitOrganization(gitOrganization);
+                  }}
+                >
+                  <GitOrganizationMenuItemContent
+                    gitOrganization={gitOrganization}
+                  />
+                </SelectMenuItem>
+              ))}
+              <div className={`select-menu_item ${CLASS_NAME}__hr`}>
+                <hr />
+              </div>
+              <SelectMenuItem onSelectionChange={onAddGitOrganization}>
+                <span>Add another organization</span>
+                <Icon
+                  icon="plus"
+                  className={`${CLASS_NAME}__add-icon`}
+                  size="xsmall"
                 />
               </SelectMenuItem>
-            ))}
-            <div className={`select-menu_item ${CLASS_NAME}__hr`}>
-              <hr />
-            </div>
-
-            <SelectMenuItem onSelectionChange={onAddGitOrganization}>
-              <span>Add another organization</span>
-              <Icon
-                icon="plus"
-                className={`${CLASS_NAME}__add-icon`}
-                size="xsmall"
-              />
-            </SelectMenuItem>
-          </>
-        </SelectMenuList>
+            </>
+          </SelectMenuList>
+        </div>
       </SelectMenuModal>
     </SelectMenu>
   );

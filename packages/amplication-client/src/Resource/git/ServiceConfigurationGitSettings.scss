@@ -28,7 +28,6 @@
     flex-direction: column;
     align-items: flex-start;
     margin: 8px 0;
-    background: var(--black5);
     border-radius: 8px;
     transition-timing-function: ease-in(0.35); //not working from here
   }
@@ -48,7 +47,7 @@
 
   &__defaultSettings {
     font-size: 14px;
-    padding: 13px 0px;
+    padding: 12px 0px;
     display: flex;
     width: 100%;
     align-items: center;
@@ -62,7 +61,5 @@
   hr {
     border: none;
     border-top: 1px solid var(--black10);
-    margin-top: var(--double-spacing);
-    margin-bottom: var(--double-spacing);
   }
 }

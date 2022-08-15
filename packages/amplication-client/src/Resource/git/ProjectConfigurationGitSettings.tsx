@@ -1,4 +1,4 @@
-import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import { EnumPanelStyle, Icon, Panel } from "@amplication/design-system";
 import React, { useContext } from "react";
 import "./SyncWithGithubPage.scss";
 import "./ProjectConfigurationGitSettings.scss";
@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
 import GithubSyncDetails from "./GitActions/RepositoryActions/GithubSyncDetails";
 import classNames from "classnames";
+import { isEmpty } from "lodash";
 
 const CLASS_NAME = "project-configuration-github-settings";
 
@@ -17,7 +18,8 @@ const ProjectConfigurationGitSettings: React.FC<{}> = () => {
     projectConfigurationResource,
   } = useContext(AppContext);
 
-  const isOverride = true; //currentResource?.isOverride; need to get from the server
+  const isOverride = false; //currentResource?.isOverride; need to get from the server
+  const gitOrganizations = currentWorkspace?.gitOrganizations;
 
   const gitStatusPanelClassName = isOverride
     ? "overrideGitStatusPanel"
@@ -52,7 +54,7 @@ const ProjectConfigurationGitSettings: React.FC<{}> = () => {
         className={`${CLASS_NAME}__${gitStatusPanelClassName}`}
         panelStyle={EnumPanelStyle.Transparent}
       >
-        {projectConfigurationResource?.gitRepository ? (
+        {projectConfigurationResource?.gitRepository && (
           <GithubSyncDetails
             showGitRepositoryBtn={false}
             className={isOverride ? `${CLASS_NAME}__githubSync` : ""}
@@ -60,9 +62,20 @@ const ProjectConfigurationGitSettings: React.FC<{}> = () => {
               projectConfigurationResource.gitRepository
             }
           />
-        ) : (
-          <div>not connected to git repository</div>
         )}
+        {isEmpty(gitOrganizations) && (
+          <div className={`${CLASS_NAME}__select-repo`}>
+            <Icon icon="info_circle" />
+            No organization was selected
+          </div>
+        )}
+        {!isEmpty(gitOrganizations) &&
+          isEmpty(projectConfigurationResource?.gitRepository) && (
+            <div className={`${CLASS_NAME}__select-repo`}>
+              <Icon icon="info_circle" />
+              No repository was selected
+            </div>
+          )}
       </Panel>
     </div>
   );
