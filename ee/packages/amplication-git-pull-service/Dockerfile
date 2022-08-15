@@ -5,7 +5,6 @@ RUN apk --no-cache add git
 RUN git config --global --add safe.directory '*'
 
 ARG NPM_VERSION=8.1.2
-ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
 
 RUN npm install --global npm@$NPM_VERSION
