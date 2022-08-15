@@ -145,7 +145,7 @@ const PendingChanges = ({ projectId }: Props) => {
               <div className="spacer" />
               <Tooltip aria-label={"Compare Changes"} direction="sw">
                 <Link
-                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectId}/pending-changes`}
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
                 >
                   <Button
                     buttonStyle={EnumButtonStyle.Text}
