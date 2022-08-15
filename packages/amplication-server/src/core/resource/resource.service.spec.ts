@@ -228,8 +228,7 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   name: 'repositoryTest',
   gitOrganizationId: 'exampleGitOrganizationId',
   createdAt: new Date(),
-  updatedAt: new Date(),
-  resourceId: EXAMPLE_RESOURCE_ID
+  updatedAt: new Date()
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
