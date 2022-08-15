@@ -8,7 +8,7 @@ import { AppModule } from '../app/app.module';
 import { MailModule } from '../mail/mail.module';
 import { UserModule } from '../user/user.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
-import { HubSpotAnalyticsModule } from 'src/services/hub-spot-analytics/hub-spot-analytics.module'
+import { HubSpotAnalyticsModule } from 'src/services/hub-spot-analytics/hub-spot-analytics.module';
 
 @Module({
   imports: [
@@ -24,4 +24,4 @@ import { HubSpotAnalyticsModule } from 'src/services/hub-spot-analytics/hub-spot
   providers: [WorkspaceService, WorkspaceResolver],
   exports: [WorkspaceService, WorkspaceResolver]
 })
-export class WorkspaceModule { }
+export class WorkspaceModule {}

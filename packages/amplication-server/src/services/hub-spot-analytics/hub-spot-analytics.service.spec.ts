@@ -6,7 +6,7 @@ describe('HubSpotAnalyticsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HubSpotAnalyticsService],
+      providers: [HubSpotAnalyticsService]
     }).compile();
 
     service = module.get<HubSpotAnalyticsService>(HubSpotAnalyticsService);
