@@ -11,7 +11,6 @@
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "prisma:generate": "prisma generate",
-    "postinstall": "npm run build",
     "migrate:save": "prisma migrate dev",
     "migrate:up": "prisma migrate deploy",
     "migrate:rollback": "prisma migrate resolve --rolled-back",
