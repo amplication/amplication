@@ -18,5 +18,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist", "builds"]
+  "exclude": ["node_modules", "dist", "builds"],
+  "include": ["src/index.ts"]
 }
