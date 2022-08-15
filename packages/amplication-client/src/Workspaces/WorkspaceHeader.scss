@@ -86,20 +86,16 @@ $modal-menu-top: 30px;
     }
   }
   &__right {
-    @include flexFullRowWithSpacing;
+    @include flexFullRowWithSpacingBothSides;
     padding: var(--default-spacing);
     justify-content: flex-end;
   }
 
-  .user-avatar {
-    margin-right: var(--default-spacing);
-  }
   &__links {
+    @include flexFullRowWithSpacingBothSides;
     &__link {
       @include regular-12();
       color: var(--black80);
-      margin: 0px;
-      margin-right: var(--large-spacing);
     }
   }
   &__vertical_border {
