@@ -6,7 +6,6 @@
   "scripts": {
     "build": "tsc",
     "prebuild": "rimraf lib",
-    "prepare": "npm run build",
     "test": "jest"
   },
   "keywords": [],
