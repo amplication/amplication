@@ -48,6 +48,7 @@ import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationP
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { DEFAULT_RESOURCE_COLORS } from './constants';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
+import { ProjectService } from '../project/project.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
@@ -227,7 +228,8 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   name: 'repositoryTest',
   gitOrganizationId: 'exampleGitOrganizationId',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
@@ -407,6 +409,10 @@ describe('ResourceService', () => {
         },
         {
           provide: ProjectConfigurationSettingsService,
+          useClass: jest.fn(() => ({}))
+        },
+        {
+          provide: ProjectService,
           useClass: jest.fn(() => ({}))
         }
       ]
