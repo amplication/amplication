@@ -59,7 +59,7 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
     RootStorageModule,
 
     MorganModule,
-    HubSpotAnalyticsModule,
+    HubSpotAnalyticsModule.forRoot(),
     SegmentAnalyticsModule.registerAsync({
       useClass: SegmentAnalyticsOptionsService
     }),
