@@ -20,7 +20,7 @@ function InnerTabLink({ children, icon, to, className }: Props) {
       exact
       className={classNames(CLASS_NAME, className)}
     >
-      <Icon icon={icon} size="medium" />
+      <Icon icon={icon} size="small" />
       <span>{children}</span>
     </NavLink>
   );
