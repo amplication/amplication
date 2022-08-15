@@ -99,7 +99,7 @@ export class WorkspaceService {
       }
     });
 
-    const user = await this.userService.getAccount(accountId);
+    const user = await this.userService.getAccount(workspace.users[0].id);
     await this.hubspotService.addWorkspace(user.email, workspace.id);
 
     return workspace;
