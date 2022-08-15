@@ -5,7 +5,7 @@ class DsgContext implements types.DsgContext {
   public entities: types.Entity[] = [];
   public roles: types.Role[] = [];
   public modules: types.Module[] = [];
-  public DTOs: types.DTOs = {};
+  public Dtos: types.Dtos = {};
   public plugins: types.PluginMap = {};
 
   private static instance: DsgContext;
