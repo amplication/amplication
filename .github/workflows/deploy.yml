@@ -16,6 +16,7 @@ on:
           - amit
           - ariel
           - alex
+          - eugene
 
       confirm-env:
         type: string
