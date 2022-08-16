@@ -50,7 +50,7 @@
     @include workspaceItem;
 
     .amp-button {
-      min-width: 16px;
+      min-width: var(--button-min-width);
 
       .amp-icon {
         margin: 0;
