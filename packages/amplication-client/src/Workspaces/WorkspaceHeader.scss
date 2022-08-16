@@ -32,7 +32,8 @@ $modal-menu-top: 30px;
       color: var(--black80);
       margin-right: var(--default-spacing);
 
-      &.highlight {
+      &.highlight,
+      &:hover {
         a {
           color: var(--black100);
         }
@@ -43,6 +44,16 @@ $modal-menu-top: 30px;
       justify-content: center;
       align-items: center;
       margin-left: var(--default-spacing);
+      
+      .select-menu__summary.amp-button.amp-button--text {
+        color: var(--black80);
+        &.highlight,
+        &:hover,
+        &:focus,
+        &:active {
+          color: var(--black100);
+        }
+      }
       .select-menu__modal {
         width: $modal-menu-width;
         background-color: var(--black2);
@@ -67,14 +78,6 @@ $modal-menu-top: 30px;
       .select-menu__item {
         padding: 5px;
         margin-bottom: var(--icon-spacing);
-      }
-      &__title {
-        @include regular-12();
-        color: var(--black80);
-
-        &.highlight {
-          color: var(--black100);
-        }
       }
       &__item {
         margin-left: var(--text-field-label-font-size);
