@@ -1,6 +1,7 @@
 import {
   EnumResourceType,
   GitRepository,
+  Prisma,
   PrismaService
 } from '@amplication/prisma-db';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
@@ -127,13 +128,20 @@ export class ResourceService {
       throw new AmplicationError('Project configuration missing from project');
     }
 
+    let gitRepository:
+      | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
+      | undefined = undefined;
+    if (projectConfiguration.gitRepositoryId) {
+      gitRepository = {
+        connect: { id: projectConfiguration.gitRepositoryId || '' }
+      };
+    }
+
     const resource = await this.prisma.resource.create({
       data: {
         ...DEFAULT_SERVICE_DATA,
         ...args.data,
-        gitRepository: {
-          connect: { id: projectConfiguration.gitRepositoryId }
-        },
+        gitRepository,
         roles: {
           create: USER_RESOURCE_ROLE
         }
