@@ -1,6 +1,16 @@
 @import "../style/index.scss";
 
 .build-selector {
+  &__label-title {
+    padding-bottom: 4px;
+    color: #a3a8b8;
+  }
+
+  &__hour {
+    font-size: 10px;
+    color: #a3a8b8;
+  }
+
   .select-menu {
     margin-left: 0;
     .select-menu__modal > div {

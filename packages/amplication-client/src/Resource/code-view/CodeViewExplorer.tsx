@@ -1,6 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import BuildSelector from "../../Components/BuildSelector";
+import ResourceSelector from "../../Components/ResourceSelector";
+import { AppContext } from "../../context/appContext";
 import { Build, Resource, SortOrder } from "../../models";
 import "./CodeViewBar.scss";
 import CodeViewExplorerTree from "./CodeViewExplorerTree";
@@ -29,12 +31,19 @@ type TData = {
 
 const CodeViewExplorer: React.FC<Props> = ({ resource, onFileSelected }) => {
   const [selectedBuild, setSelectedBuild] = useState<Build | null>(null);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(
+    null
+  );
+  const { resources } = useContext(AppContext);
 
   const handleSelectedBuild = (build: Build) => {
     setSelectedBuild(build);
     onFileSelected(null);
   };
-console.log({resource});
+
+  const handleSelectedResource = (resource: Resource) => {
+    setSelectedResource(resource);
+  };
 
   const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
     variables: {
@@ -45,6 +54,7 @@ console.log({resource});
     },
     onCompleted: async (data) => {
       handleSelectedBuild(data.builds[0]);
+      handleSelectedResource(resources[0]);
     },
   });
 
@@ -59,8 +69,14 @@ console.log({resource});
           selectedBuild={selectedBuild}
           onSelectBuild={handleSelectedBuild}
         />
+        <ResourceSelector
+          resource={resource}
+          resources={resources}
+          selectedResource={selectedResource}
+          onSelectResource={handleSelectedResource}
+        />
       </div>
-      {selectedBuild && (
+      {selectedBuild && selectedResource && (
         <CodeViewExplorerTree
           selectedBuild={selectedBuild}
           onFileSelected={onFileSelected}
