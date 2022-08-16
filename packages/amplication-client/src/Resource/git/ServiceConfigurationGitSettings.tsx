@@ -1,10 +1,11 @@
 import { EnumPanelStyle, Panel, Toggle } from "@amplication/design-system";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./SyncWithGithubPage.scss";
 import "./ServiceConfigurationGitSettings.scss";
 import { ResourceWithGitRepository } from "./SyncWithGithubPage";
 import AuthResourceWithGit from "./AuthResourceWithGit";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
+import { AppContext } from "../../context/appContext";
 
 const CLASS_NAME = "service-configuration-github-settings";
 
@@ -14,6 +15,7 @@ type Props = {
 };
 
 const ServiceConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
+  const { currentWorkspace } = useContext(AppContext);
   const [isOverride, setIsOverride] = useState<boolean>(false); //get from AppContext and update when status changed
   const settingsClassName = isOverride
     ? "gitSettingsPanel"
@@ -22,6 +24,8 @@ const ServiceConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
   const handleToggleChange = () => {
     setIsOverride(!isOverride);
   };
+
+  const isToggleDisable = currentWorkspace?.gitOrganizations?.length === 0;
 
   return (
     <div className={CLASS_NAME}>
@@ -35,7 +39,10 @@ const ServiceConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
             <div>Override default settings</div>
 
             <div>
-              <Toggle onChange={handleToggleChange} />
+              <Toggle
+                disabled={isToggleDisable}
+                onChange={handleToggleChange}
+              />
             </div>
           </div>
           {isOverride && (

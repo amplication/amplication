@@ -31,7 +31,7 @@ const ProjectConfigurationGitSettings: React.FC<{}> = () => {
     return (
       <Link
         title={"Go to project settings"}
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/settings/update`}
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/github`}
         className={classNames(
           `${CLASS_NAME}__link`,
           `${CLASS_NAME}__${linkFontClass}`
