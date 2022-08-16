@@ -44,10 +44,11 @@ export async function createDataServiceImpl(
   context.roles = roles;
   context.entities = normalizedEntities;
   const plugins = await pluginManager([
-    // {
-    //   packageName: "amplication-plugin-example",
-    // },
+    {
+      packageName: "jwt-auth-plugin",
+    },
   ]);
+
   context.plugins = plugins;
 
   logger.info("Creating DTOs...");

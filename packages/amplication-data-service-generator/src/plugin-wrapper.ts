@@ -18,10 +18,10 @@ const pipe = (...fns: (<T>(context: DsgContext, res: any) => T)[]) => (
  * @param func => DSG function
  * @param event => event name to find the specific plugin
  */
-const pluginWrapper: PluginWrapper = (args, func, event): any => {
+const pluginWrapper: PluginWrapper = async (args, func, event): Promise<any> => {
   try {
     const context = DsgContext.getInstance;
-    if (!context.plugins.hasOwnProperty(event)) return func(args);
+    if (!context.plugins.hasOwnProperty(event)) return func(...args);
 
     const beforePlugins = context.plugins[event]?.before;
     const afterPlugins = context.plugins[event]?.after;
@@ -29,7 +29,7 @@ const pluginWrapper: PluginWrapper = (args, func, event): any => {
     const beforeFuncResults = beforePlugins
       ? pipe(...beforePlugins)(context, args)
       : args;
-    const funcResults = func(beforeFuncResults);
+    const funcResults = Object.prototype.toString.call(func) === "[object AsyncFunction]" ? await func(...beforeFuncResults) : func(...beforeFuncResults);
     const afterFuncResults = afterPlugins
       ? pipe(...afterPlugins)(context, funcResults)
       : funcResults;

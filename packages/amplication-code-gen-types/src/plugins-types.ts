@@ -51,15 +51,21 @@ export interface CreateControllerModulesParams extends EventParams {
   after: Module[];
 }
 
+export interface CreateAuthModulesParams extends EventParams {
+  before: [srcDir: string, templatePath?: string];
+  after: Module[];
+}
+
 export enum EventsName {
   CreateServiceModules = "createServiceModules",
-  CreateControllerModules = "createControllerModules"
+  CreateControllerModules = "createControllerModules",
+  CreateAuthModules = "createAuthModules",
 }
 
 export type EventName = EventsName;
 
 export type Events = {
-  createServiceModules?: {
+  [EventsName.CreateServiceModules]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateServiceModulesParams["before"]
@@ -69,7 +75,7 @@ export type Events = {
       eventParams: CreateServiceModulesParams["after"]
     ) => CreateServiceModulesParams["after"];
   };
-  createControllerModules?: {
+  [EventsName.CreateControllerModules]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateControllerModulesParams["before"]
@@ -78,6 +84,16 @@ export type Events = {
       dsgContext: DsgContext,
       eventParams: CreateControllerModulesParams["after"]
     ) => CreateControllerModulesParams["after"];
+  };
+  [EventsName.CreateAuthModules]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateAuthModulesParams["before"]
+    ) => CreateAuthModulesParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      eventParams: CreateAuthModulesParams["after"]
+    ) => Promise<CreateAuthModulesParams["after"]>;
   };
 };
 

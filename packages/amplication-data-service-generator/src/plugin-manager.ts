@@ -7,6 +7,8 @@ import {
 
 class EmptyClass {}
 
+const functionsObject = ["[object Function]", "[object AsyncFunction]"];
+
 /**
  * generator function that import the plugin requested by user
  * @param pluginList
@@ -71,9 +73,9 @@ const pluginManager = async (
           pluginContext[eventKey as EventsName] = { before: [], after: [] };
 
         const { before, after } = plugin[eventKey as keyof Events] || {};
-        Object.prototype.toString.call(before) === "[object Function]" &&
+        functionsObject.includes(Object.prototype.toString.call(before)) &&
           pluginContext[eventKey].before.push(before);
-        Object.prototype.toString.call(after) === "[object Function]" &&
+        functionsObject.includes(Object.prototype.toString.call(after)) &&
           pluginContext[eventKey].after.push(after);
       });
       return pluginContext;
