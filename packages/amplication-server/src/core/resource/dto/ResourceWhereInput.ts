@@ -35,4 +35,7 @@ export class ResourceWhereInput {
     description: undefined
   })
   project?: WhereUniqueInput | null;
+
+  @Field(() => String, { nullable: true })
+  projectId?: string | null;
 }

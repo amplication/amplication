@@ -31,6 +31,12 @@ $modal-menu-top: 30px;
       @include regular-12();
       color: var(--black80);
       margin-right: var(--default-spacing);
+
+      &.highlight {
+        a {
+          color: var(--black100);
+        }
+      }
     }
     &__resource {
       display: flex;
@@ -64,10 +70,10 @@ $modal-menu-top: 30px;
       }
       &__title {
         @include regular-12();
+        color: var(--black80);
 
-        &__not_selected {
-          @include regular-12();
-          color: var(--black80);
+        &.highlight {
+          color: var(--black100);
         }
       }
       &__item {
@@ -86,20 +92,16 @@ $modal-menu-top: 30px;
     }
   }
   &__right {
-    @include flexFullRowWithSpacing;
+    @include flexFullRowWithSpacingBothSides;
     padding: var(--default-spacing);
     justify-content: flex-end;
   }
 
-  .user-avatar {
-    margin-right: var(--default-spacing);
-  }
   &__links {
+    @include flexFullRowWithSpacingBothSides;
     &__link {
       @include regular-12();
       color: var(--black80);
-      margin: 0px;
-      margin-right: var(--large-spacing);
     }
   }
   &__vertical_border {

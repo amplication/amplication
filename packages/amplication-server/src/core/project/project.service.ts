@@ -4,6 +4,7 @@ import { FindOneArgs } from 'src/dto';
 import { Project } from 'src/models';
 import { ResourceService } from '..';
 import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
+import { ProjectFindFirstArgs } from './dto/ProjectFindFirstArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 @Injectable()
 export class ProjectService {
@@ -16,8 +17,12 @@ export class ProjectService {
     return this.prisma.project.findMany(args);
   }
 
-  async findProject(args: FindOneArgs): Promise<Project> {
+  async findUnique(args: FindOneArgs): Promise<Project> {
     return this.prisma.project.findUnique(args);
+  }
+
+  async findFirst(args: ProjectFindFirstArgs): Promise<Project> {
+    return this.prisma.project.findFirst(args);
   }
 
   async createProject(
