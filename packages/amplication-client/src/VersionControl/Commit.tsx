@@ -27,7 +27,6 @@ const INITIAL_VALUES: TCommit = {
 type Props = {
   projectId: string;
   noChanges: boolean;
-  resourceId?: string;
 };
 const CLASS_NAME = "commit";
 
@@ -35,7 +34,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ projectId, resourceId, noChanges }: Props) => {
+const Commit = ({ projectId, noChanges }: Props) => {
   const {
     setCommitRunning,
     resetPendingChanges,
@@ -67,7 +66,7 @@ const Commit = ({ projectId, resourceId, noChanges }: Props) => {
       {
         query: GET_BUILDS_COMMIT,
         variables: {
-          resourceId,
+          resourceId: "",
           orderBy: {
             [CREATED_AT_FIELD]: SortOrder.Desc,
           },
