@@ -33,6 +33,7 @@ export type GitRepositoryWithGitOrganization = {
 export type ResourceWithGitRepository = {
   id: string;
   resourceType: EnumResourceType;
+  gitRepositoryOverride: boolean;
   gitRepository: null | GitRepositoryWithGitOrganization;
 };
 
@@ -92,6 +93,7 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
       color
       githubLastSync
       resourceType
+      gitRepositoryOverride
       gitRepository {
         id
         name

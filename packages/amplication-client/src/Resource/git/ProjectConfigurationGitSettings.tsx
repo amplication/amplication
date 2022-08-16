@@ -8,17 +8,19 @@ import GithubSyncDetails from "./GitActions/RepositoryActions/GithubSyncDetails"
 import classNames from "classnames";
 import { isEmpty } from "lodash";
 
+type Props = {
+  isOverride: boolean;
+};
+
 const CLASS_NAME = "project-configuration-github-settings";
 
-const ProjectConfigurationGitSettings: React.FC<{}> = () => {
+const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
   const {
     currentWorkspace,
     currentProject,
-    //currentResource,
     projectConfigurationResource,
   } = useContext(AppContext);
 
-  const isOverride = false; //currentResource?.isOverride; need to get from the server
   const gitOrganizations = currentWorkspace?.gitOrganizations;
 
   const gitStatusPanelClassName = isOverride

@@ -14,15 +14,21 @@ type Props = {
   onDone: () => void;
 };
 
-const ServiceConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
+const ServiceConfigurationGitSettings: React.FC<Props> = ({
+  resource,
+  onDone,
+}) => {
   const { currentWorkspace } = useContext(AppContext);
-  const [isOverride, setIsOverride] = useState<boolean>(false); //get from AppContext and update when status changed
+  const [isOverride, setIsOverride] = useState<boolean>(
+    resource.gitRepositoryOverride
+  );
   const settingsClassName = isOverride
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
 
   const handleToggleChange = () => {
     setIsOverride(!isOverride);
+    
   };
 
   const isToggleDisable = currentWorkspace?.gitOrganizations?.length === 0;
@@ -30,7 +36,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__panelWarper`}>
-        <ProjectConfigurationGitSettings />
+        <ProjectConfigurationGitSettings isOverride={isOverride} />
         <Panel
           className={`${CLASS_NAME}__${settingsClassName}`}
           panelStyle={EnumPanelStyle.Transparent}
@@ -48,10 +54,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = (resource, onDone) => {
           {isOverride && (
             <div className={`${CLASS_NAME}__AuthWithGit`}>
               <hr />
-              <AuthResourceWithGit
-                resource={resource.resource}
-                onDone={onDone}
-              />
+              <AuthResourceWithGit resource={resource} onDone={onDone} />
             </div>
           )}
         </Panel>
