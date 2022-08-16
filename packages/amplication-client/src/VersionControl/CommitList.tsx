@@ -1,58 +1,38 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { match } from "react-router-dom";
+import React, { useEffect, useContext } from "react";
 import { gql, useQuery } from "@apollo/client";
 
 import { formatError } from "../util/error";
 import * as models from "../models";
 
-import {
-  SearchField,
-  Snackbar,
-  CircularProgress,
-} from "@amplication/design-system";
-
-import { CommitListItem } from "./CommitListItem";
-import PageContent from "../Layout/PageContent";
+import { Snackbar, CircularProgress } from "@amplication/design-system";
 import "./CommitList.scss";
-import { AppRouteProps } from "../routes/routesUtil";
-
+import { AppContext } from "../context/appContext";
+import { CommitListItem } from "./CommitListItem";
+import { useHistory } from "react-router-dom";
 type TData = {
   commits: models.Commit[];
-};
-
-type Props = AppRouteProps & {
-  match: match<{ project: string, resource: string }>;
-  pageTitle?: string;
 };
 
 const CREATED_AT_FIELD = "createdAt";
 
 const POLL_INTERVAL = 10000;
-const CLASS_NAME = "commit-list";
+// const CLASS_NAME = "commit-list";
 
-const CommitList: React.FC<Props> = ({ match, pageTitle, innerRoutes }) => {
-  const { project, resource } = match.params;
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
+type Props = {
+  commitId: string;
+};
 
-  const handleSearchChange = useCallback(
-    (value) => {
-      setSearchPhrase(value);
-    },
-    [setSearchPhrase]
-  );
-
+const CommitList = ({ commitId }: Props) => {
+  const history = useHistory();
+  const { currentProject, currentWorkspace } = useContext(AppContext);
   const { data, loading, error, refetch, stopPolling, startPolling } = useQuery<
     TData
   >(GET_COMMITS, {
     variables: {
-      projectId: project,
+      projectId: currentProject?.id,
       orderBy: {
         [CREATED_AT_FIELD]: models.SortOrder.Desc,
       },
-      whereMessage:
-        searchPhrase !== ""
-          ? { contains: searchPhrase, mode: models.QueryMode.Insensitive }
-          : undefined,
     },
   });
 
@@ -65,36 +45,28 @@ const CommitList: React.FC<Props> = ({ match, pageTitle, innerRoutes }) => {
     };
   }, [refetch, stopPolling, startPolling]);
 
+  useEffect(() => {
+    if (commitId) return;
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/commits/${data?.commits[0].id}`
+    );
+  }, [commitId, currentProject?.id, currentWorkspace?.id, data?.commits, history]);
+
   const errorMessage = formatError(error);
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-      {match.isExact ? (
-        <>
-          <div className={`${CLASS_NAME}__header`}>
-            <SearchField
-              label="search"
-              placeholder="search"
-              onChange={handleSearchChange}
-            />
-          </div>
-          <div className={`${CLASS_NAME}__title`}>
-            {data?.commits?.length} Commits
-          </div>
-          {loading && <CircularProgress />}
-          {data?.commits.map((commit) => (
-            <CommitListItem
-              key={commit.id}
-              commit={commit}
-              resourceId={resource}
-            />
-          ))}
-          <Snackbar open={Boolean(error)} message={errorMessage} />
-        </>
-      ) : (
-        innerRoutes
-      )}
-    </PageContent>
+    <>
+      {loading && <CircularProgress />}
+      {currentProject &&
+        data?.commits.map((commit) => (
+          <CommitListItem
+            key={commit.id}
+            commit={commit}
+            projectId={currentProject.id}
+          />
+        ))}
+      <Snackbar open={Boolean(error)} message={errorMessage} />
+    </>
   );
 };
 
@@ -102,15 +74,8 @@ export default CommitList;
 
 /**@todo: expand search on other field  */
 export const GET_COMMITS = gql`
-  query commits(
-    $projectId: String!
-    $orderBy: CommitOrderByInput
-    $whereMessage: StringFilter
-  ) {
-    commits(
-      where: { project: { id: $projectId }, message: $whereMessage }
-      orderBy: $orderBy
-    ) {
+  query commits($projectId: String!, $orderBy: CommitOrderByInput) {
+    commits(where: { project: { id: $projectId } }, orderBy: $orderBy) {
       id
       message
       createdAt

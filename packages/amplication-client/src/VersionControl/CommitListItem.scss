@@ -1,8 +1,18 @@
 @import "../style/index.scss";
 
 .commit-list-item {
-  margin: 0;
-  margin-bottom: var(--default-spacing);
+  &__data {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__metadata {
+    display: flex;
+    flex-direction: column;
+    width: 130px;
+    padding: 0 10px
+  }
 
   &__row {
     @include flexFullRowWithSpacing;

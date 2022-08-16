@@ -1,8 +1,8 @@
 import React from "react";
 import { Switch, match } from "react-router-dom";
 
-import { CommitList } from "./CommitList";
-import CommitPage from "./CommitPage";
+import CommitList from "./CommitList";
+import CommitsPage from "./CommitsPage";
 
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
@@ -27,7 +27,7 @@ function Entities({ match }: Props) {
       />
       <RouteWithAnalytics
         path="/:resource/commits/:commitId"
-        component={CommitPage}
+        component={CommitsPage}
       />
     </Switch>
   );

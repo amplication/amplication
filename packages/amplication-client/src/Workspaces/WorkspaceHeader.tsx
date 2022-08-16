@@ -18,6 +18,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { Link, useHistory } from "react-router-dom";
 import { unsetToken } from "../authentication/authentication";
 import MenuItem from "../Layout/MenuItem";
+import { matchPath } from "react-router";
 
 const CLASS_NAME = "workspace-header";
 
@@ -39,6 +40,15 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
     history.replace("/login");
   }, [history, apolloClient]);
+
+  const match = matchPath(
+    `/${currentWorkspace?.id}/${currentProject?.id}/commits`,
+    {
+      path: "/:workspace/:project/commits",
+      exact: true,
+      strict: false,
+    }
+  );
 
   return (
     <div className={CLASS_NAME}>
@@ -120,6 +130,23 @@ const WorkspaceHeader: React.FC<{}> = () => {
                         </SelectMenuItem>
                       ))}
                     </SelectMenuList>
+                    <hr className={`${CLASS_NAME}__divider`}/>
+                    <SelectMenuItem
+                      css={null}
+                      closeAfterSelectionChange
+                      selected={
+                        match?.path ===
+                        `/${currentWorkspace?.id}/${currentProject.id}/commits`
+                      }
+                      key="1"
+                      onSelectionChange={() => {
+                        history.push(
+                          `/${currentWorkspace?.id}/${currentProject.id}/commits`
+                        );
+                      }}
+                    >
+                      <span>Commits</span>
+                    </SelectMenuItem>
                   </SelectMenuModal>
                 </SelectMenu>
               </div>

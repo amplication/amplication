@@ -91,6 +91,11 @@ $modal-menu-top: 30px;
     justify-content: flex-end;
   }
 
+  &__divider {
+    border: $border-black5;
+    margin: var(--form-field-spacing) 0;
+  }
+
   .user-avatar {
     margin-right: var(--default-spacing);
   }
