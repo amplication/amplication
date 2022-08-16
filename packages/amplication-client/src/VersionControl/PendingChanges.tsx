@@ -1,16 +1,8 @@
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useContext,
-  useMemo,
-} from "react";
-import { gql, useQuery } from "@apollo/client";
+import React, { useState, useCallback, useContext, useMemo } from "react";
+import { ApolloError } from "@apollo/client";
 import { groupBy, isEmpty } from "lodash";
 import { Link } from "react-router-dom";
-
 import { formatError } from "../util/error";
-import * as models from "../models";
 import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog, Snackbar, Tooltip } from "@amplication/design-system";
@@ -24,33 +16,17 @@ import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 
 const CLASS_NAME = "pending-changes";
 
-type TData = {
-  pendingChanges: models.PendingChange[];
-};
-
 type Props = {
   projectId: string;
+  error: ApolloError | undefined;
+  loading: boolean;
 };
 
-const PendingChanges = ({ projectId }: Props) => {
+const PendingChanges = ({ projectId, error, loading }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const { currentWorkspace, currentProject, pendingChanges } = useContext(
     AppContext
   );
-
-  const { data, loading, error, refetch } = useQuery<TData>(
-    GET_PENDING_CHANGES,
-    {
-      variables: {
-        projectId,
-      },
-    }
-  );
-
-  //refetch when pending changes object change
-  useEffect(() => {
-    refetch().catch(console.error);
-  }, [refetch, pendingChanges]);
 
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
@@ -62,11 +38,11 @@ const PendingChanges = ({ projectId }: Props) => {
 
   const errorMessage = formatError(error);
 
-  const noChanges = isEmpty(data?.pendingChanges);
+  const noChanges = isEmpty(pendingChanges);
 
   const pendingChangesByResource = useMemo(() => {
     const groupedChanges = groupBy(
-      data?.pendingChanges,
+      pendingChanges,
       (change) => change.resource.id
     );
 
@@ -76,13 +52,13 @@ const PendingChanges = ({ projectId }: Props) => {
         changes: changes,
       };
     });
-  }, [data]);
+  }, [pendingChanges]);
 
   return (
     <div className={CLASS_NAME}>
       <Commit projectId={projectId} noChanges={noChanges} />
 
-      {isEmpty(data?.pendingChanges) && !loading ? (
+      {isEmpty(pendingChanges) && !loading ? (
         <div className={`${CLASS_NAME}__empty-state`}>
           <SvgThemeImage image={EnumImages.NoChanges} />
           <div className={`${CLASS_NAME}__empty-state__title`}>
@@ -135,12 +111,12 @@ const PendingChanges = ({ projectId }: Props) => {
               <span>Changes</span>
               <span
                 className={
-                  data?.pendingChanges.length
+                  pendingChanges.length
                     ? `${CLASS_NAME}__changes-count-warning`
                     : `${CLASS_NAME}__changes-count`
                 }
               >
-                {data?.pendingChanges.length}
+                {pendingChanges.length}
               </span>
               <div className="spacer" />
               <Tooltip aria-label={"Compare Changes"} direction="sw">
@@ -172,38 +148,3 @@ const PendingChanges = ({ projectId }: Props) => {
 };
 
 export default PendingChanges;
-
-export const GET_PENDING_CHANGES = gql`
-  query pendingChanges($projectId: String!) {
-    pendingChanges(where: { project: { id: $projectId } }) {
-      originId
-      action
-      originType
-      versionNumber
-      origin {
-        __typename
-        ... on Entity {
-          id
-          displayName
-          updatedAt
-          lockedByUser {
-            account {
-              firstName
-              lastName
-            }
-          }
-        }
-        ... on Block {
-          id
-          displayName
-          updatedAt
-        }
-      }
-      resource {
-        id
-        name
-        resourceType
-      }
-    }
-  }
-`;
