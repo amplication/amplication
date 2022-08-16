@@ -11,7 +11,7 @@ export type PendingChangeStatusData = {
 };
 
 const usePendingChanges = (currentProject: models.Project | undefined) => {
-  const [pendingChangesMap, setPendingChangesMap] = useState<string[]>([])
+  const [pendingChangesMap, setPendingChangesMap] = useState<string[]>([]);
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -32,22 +32,29 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
       return;
 
     setPendingChanges(pendingChangesData.pendingChanges);
-    setPendingChangesMap(pendingChangesData.pendingChanges.map((change) => change.originId))
+    setPendingChangesMap(
+      pendingChangesData.pendingChanges.map((change) => change.originId)
+    );
   }, [pendingChangesData, setPendingChanges]);
 
   useEffect(() => {
     if (!pendingChanges.length) return;
 
-    const pendingChangesDataMap = pendingChanges.map((change) => change.originId)
+    const pendingChangesDataMap = pendingChanges.map(
+      (change) => change.originId
+    );
     if (isEqual(pendingChangesMap, pendingChangesDataMap)) return;
-    console.log("refetch")
-    refetch()
-  }, [pendingChanges, pendingChangesMap, refetch])
+    console.log("refetch");
+    refetch();
+  }, [pendingChanges, pendingChangesMap, refetch]);
 
-  const addChange = useCallback((originId: string) => {
-    console.log("addChang", originId)
-    setPendingChangesMap([...pendingChangesMap, originId])
-  }, [pendingChangesMap]);
+  const addChange = useCallback(
+    (originId: string) => {
+      console.log("addChang", originId);
+      setPendingChangesMap([...pendingChangesMap, originId]);
+    },
+    [pendingChangesMap]
+  );
 
   const addEntity = useCallback(
     (entityId: string) => {
@@ -65,7 +72,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
 
   const resetPendingChanges = useCallback(() => {
     setPendingChanges([]);
-    setPendingChangesMap([])
+    setPendingChangesMap([]);
     refetch();
   }, [refetch]);
 
