@@ -33,7 +33,7 @@ export class GitResolver {
   async createGitRepository(
     @Args() args: CreateGitRepositoryArgs
   ): Promise<Resource> {
-    return this.gitService.createGitRepository(args.data);
+    return this.gitService.createRemoteGitRepository(args.data);
   }
 
   @Query(() => GitOrganization)
@@ -68,7 +68,7 @@ export class GitResolver {
   )
   async deleteGitRepository(
     @Args() args: DeleteGitRepositoryArgs
-  ): Promise<Resource> {
+  ): Promise<boolean> {
     return this.gitService.deleteGitRepository(args);
   }
 
