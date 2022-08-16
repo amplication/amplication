@@ -6,6 +6,7 @@ import {
   SelectMenuModal,
   Label,
   formatTimeToNow,
+  CircleBadge,
 } from "@amplication/design-system";
 import React from "react";
 import { Resource } from "../models";
@@ -32,9 +33,9 @@ const ResourceSelector = ({
     : null;
 
   console.log({ createdAtHour });
-  //   const createdHourStyle = () => (
-  //     <label className={`${CLASS_NAME}__hour`}>{createdAtHour}</label>
-  //   );
+  const createdHourStyle = () => (
+    <label className={`${CLASS_NAME}__hour`}>{createdAtHour}</label>
+  );
 
   return (
     <div className={CLASS_NAME}>
@@ -43,10 +44,16 @@ const ResourceSelector = ({
       </div>
       <SelectMenu
         title={
-          <BuildSelectorItem
-            title={selectedResource?.name}
-            resource={resource}
-          />
+          <div className="build-selector-item">
+            <CircleBadge
+              name={selectedResource?.name}
+              color={selectedResource?.color}
+            />
+            <div className={"title_2"}>
+              {selectedResource?.name}
+              <div>{createdHourStyle()}</div>
+            </div>
+          </div>
         }
         buttonStyle={EnumButtonStyle.Secondary}
         className={`${CLASS_NAME}__menu`}

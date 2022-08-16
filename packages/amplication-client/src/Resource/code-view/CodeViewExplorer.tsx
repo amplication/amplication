@@ -79,6 +79,7 @@ const CodeViewExplorer: React.FC<Props> = ({ resource, onFileSelected }) => {
       {selectedBuild && selectedResource && (
         <CodeViewExplorerTree
           selectedBuild={selectedBuild}
+          resourceId={selectedResource.id}
           onFileSelected={onFileSelected}
         />
       )}
