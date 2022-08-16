@@ -21,7 +21,6 @@ interface ButtonProps {
   title: string | Element;
   icon?: string;
   openIcon?: string;
-  buttonClassName?: string;
 }
 
 export type Props = SelectMenuProps & ButtonProps;
@@ -32,14 +31,13 @@ const SelectButton: React.FC<ButtonProps> = ({
   title,
   icon,
   openIcon,
-  buttonClassName,
 }) => {
   const menuContext = useContext(PrimerSelectMenu.MenuContext);
-  const className = `select-menu__summary ${buttonClassName}`;
+
   return (
     <Button
       {...(disabled ? { disabled } : { as: "summary" })}
-      className={className}
+      className="select-menu__summary"
       buttonStyle={buttonStyle}
       icon={openIcon ? (menuContext.open ? openIcon : icon) : icon}
       iconSize={"xsmall"}
@@ -54,7 +52,6 @@ export const SelectMenu = ({
   children,
   className,
   buttonStyle,
-  buttonClassName,
   title,
   icon,
   openIcon,
@@ -66,7 +63,6 @@ export const SelectMenu = ({
         <SelectButton
           disabled={disabled}
           buttonStyle={buttonStyle}
-          buttonClassName={buttonClassName}
           icon={icon}
           openIcon={openIcon}
           title={title}
@@ -82,7 +78,6 @@ export const SelectMenu = ({
         <SelectButton
           disabled={disabled}
           buttonStyle={buttonStyle}
-          buttonClassName={buttonClassName}
           icon={icon}
           openIcon={openIcon}
           title={title}

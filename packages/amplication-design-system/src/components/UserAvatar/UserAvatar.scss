@@ -1,8 +1,10 @@
 @import "../../style/index.scss";
 .user-avatar {
-  height: var(--small-menu-item-height);
+  height: var(--menu-item-width);
+  margin: 0;
+  padding: 0;
   position: relative;
-  width: var(--small-menu-item-width);
+  width: var(--menu-item-width);
 
   & &__initials {
     box-sizing: border-box;
@@ -12,9 +14,9 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: var(--small-menu-item-height);
+    height: var(--menu-item-width);
     text-align: center;
-    width: var(--small-menu-item-width);
+    width: var(--menu-item-width);
     color: var(--static-white);
     font-size: var(--title2-font-size);
     text-transform: capitalize;

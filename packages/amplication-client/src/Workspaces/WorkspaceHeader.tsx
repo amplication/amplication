@@ -71,12 +71,11 @@ const WorkspaceHeader: React.FC<{}> = () => {
                 <SelectMenu
                   css={undefined}
                   title={
-                    <p className={`${CLASS_NAME}__breadcrumbs__resource__title`}>
-                      {isResourceRoute && currentResource ? currentResource.name : "Resource List"}
+                    <p className={`${CLASS_NAME}__breadcrumbs__resource__title ${isResourceRoute ? "highlight" : ""}`}>
+                      {currentResource ? currentResource.name : "Resource List"}
                     </p>
                   }
                   buttonStyle={EnumButtonStyle.Text}
-                  buttonClassName={isResourceRoute ? "highlight" : ""}
                   icon="chevron_down"
                   openIcon="chevron_up"
                   className={`${CLASS_NAME}__breadcrumbs__menu`}
@@ -159,7 +158,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="search"
-                iconSize="xsmall"
+                iconSize="medium"
               />
             </Tooltip>
           }
