@@ -54,7 +54,7 @@ const LastCommit = ({ projectId }: Props) => {
   }, [loading, data]);
 
   const formattedTime = useMemo(() => {
-    return formatTimeToNow(lastCommit?.createdAt);
+    return removeFirstWord(formatTimeToNow(lastCommit?.createdAt));
   }, [lastCommit?.createdAt]);
 
   const build = useMemo(() => {
@@ -98,7 +98,7 @@ const LastCommit = ({ projectId }: Props) => {
             <Tooltip aria-label={lastCommit?.message} direction="ne">
               {ClickableCommitId}
             </Tooltip>
-          )}{" "}
+          )}
           <span className={classNames("clickable-id")}>{formattedTime}</span>
         </SkeletonWrapper>
         {build && (
@@ -129,6 +129,13 @@ function formatTimeToNow(time: Date | null): string | null {
       addSuffix: true,
     })
   );
+}
+
+// formatTimeToNow returns "about x time ago and I want to remove the word /about/"
+function removeFirstWord(str: string | null) {
+  if (!str) return null;
+  const indexOfSpace = str.indexOf(" ");
+  return str.substring(indexOfSpace + 1);
 }
 
 export default LastCommit;

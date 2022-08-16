@@ -30,7 +30,7 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
             <span>{commit.message || "initial commit"}</span>
             <span>{new Date(commit.createdAt).toDateString()}</span>
           </div>
-          <BuildStatusIcons build={build} />
+          <BuildStatusIcons build={build} showIcon={false}/>
         </div>
       </InnerTabLink>
     </div>

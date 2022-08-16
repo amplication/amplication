@@ -15,9 +15,6 @@
 
   &__skeleton {
     margin: var(--form-field-spacing) 0;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
 
     .clickable-id {
       margin: 0 var(--icon-spacing);
