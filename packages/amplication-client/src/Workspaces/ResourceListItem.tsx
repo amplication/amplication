@@ -95,7 +95,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <div className={`${CLASS_NAME}__row`}>
             <div className={`${CLASS_NAME}__recently-used`}>
-              <span>Last build </span>
+              <span className={`${CLASS_NAME}__last-build`}>Last build:</span>
               {lastBuild && (
                 <UserAndTime
                   account={lastBuild.commit.user?.account || {}}
