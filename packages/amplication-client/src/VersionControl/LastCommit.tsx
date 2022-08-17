@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from "react";
+import React, { useMemo, useContext, useCallback } from "react";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
@@ -53,9 +53,16 @@ const LastCommit = ({ projectId }: Props) => {
     return last;
   }, [loading, data]);
 
+  // formatTimeToNow returns "about x time ago and I want to remove the word /about/"
+  const removeFirstWord = useCallback((str: string | null) => {
+    if (!str) return null;
+    const indexOfSpace = str.indexOf(" ");
+    return str.substring(indexOfSpace + 1);
+  }, []);
+
   const formattedTime = useMemo(() => {
-    return formatTimeToNow(lastCommit?.createdAt);
-  }, [lastCommit?.createdAt]);
+    return removeFirstWord(formatTimeToNow(lastCommit?.createdAt));
+  }, [lastCommit?.createdAt, removeFirstWord]);
 
   const build = useMemo(() => {
     if (!lastCommit) return null;
@@ -98,7 +105,7 @@ const LastCommit = ({ projectId }: Props) => {
             <Tooltip aria-label={lastCommit?.message} direction="ne">
               {ClickableCommitId}
             </Tooltip>
-          )}{" "}
+          )}
           <span className={classNames("clickable-id")}>{formattedTime}</span>
         </SkeletonWrapper>
         {build && (

@@ -8,11 +8,6 @@ import { TextField, Snackbar } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./Commit.scss";
-import {
-  CREATED_AT_FIELD,
-  GET_BUILDS_COMMIT,
-} from "../Resource/code-view/CodeViewExplorer";
-import { SortOrder } from "../models";
 import { AppContext } from "../context/appContext";
 
 type TCommit = {
@@ -26,7 +21,6 @@ const INITIAL_VALUES: TCommit = {
 type Props = {
   projectId: string;
   noChanges: boolean;
-  resourceId?: string;
 };
 const CLASS_NAME = "commit";
 
@@ -34,7 +28,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ projectId, resourceId, noChanges }: Props) => {
+const Commit = ({ projectId, noChanges }: Props) => {
   const {
     setCommitRunning,
     resetPendingChanges,
@@ -57,15 +51,6 @@ const Commit = ({ projectId, resourceId, noChanges }: Props) => {
         query: GET_LAST_COMMIT,
         variables: {
           projectId,
-        },
-      },
-      {
-        query: GET_BUILDS_COMMIT,
-        variables: {
-          resourceId,
-          orderBy: {
-            [CREATED_AT_FIELD]: SortOrder.Desc,
-          },
         },
       },
     ],

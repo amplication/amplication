@@ -1,0 +1,46 @@
+@import "../style/index.scss";
+
+.commit-resource-list-item {
+  &__divider {
+    border: $border-black10;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: var(--default-spacing);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .clickable-id {
+      color: var(--black80);
+      a {
+        color: var(--black100);
+        margin-left: var(--default-spacing-small);
+      }
+    }
+
+    .build-status-icons__status {
+      margin-left: 0;
+    }
+  }
+
+  &__title {
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+
+    p {
+      padding: 0 var(--default-spacing-small);
+    }
+  }
+
+  &__changes-count {
+    margin-right: auto;
+  }
+}

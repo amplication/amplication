@@ -34,7 +34,6 @@ const CodeViewExplorer: React.FC<Props> = ({ resource, onFileSelected }) => {
     setSelectedBuild(build);
     onFileSelected(null);
   };
-
   const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
     variables: {
       resourceId: resource.id,

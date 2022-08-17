@@ -5,7 +5,7 @@ import MuiTreeView, {
 import MuiTreeItem, {
   TreeItemProps as MuiTreeItemProps,
 } from "@mui/lab/TreeItem";
-import { Icon } from "../..";
+import { Icon } from "../Icon/Icon";
 import "./TreeView.scss";
 
 const CLASS_NAME = "amp-tree-view";
