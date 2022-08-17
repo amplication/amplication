@@ -1,5 +1,4 @@
 import React from "react";
-import { Build } from "../models";
 import CommitResourceListItem from "./CommitResourceListItem";
 import * as models from "../models";
 
@@ -12,7 +11,7 @@ const CommitResourceList: React.FC<Props> = ({ builds }) => {
     <div>
       {builds &&
         builds.length &&
-        builds.map((build: Build) => (
+        builds.map((build: models.Build) => (
           <CommitResourceListItem key={build.id} build={build} />
         ))}
     </div>
