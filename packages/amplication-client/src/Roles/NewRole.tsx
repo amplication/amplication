@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { isEmpty } from "lodash";
@@ -10,6 +10,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
 import "./NewRole.scss";
+import { AppContext } from "../context/appContext";
 
 const INITIAL_VALUES: Partial<models.ResourceRole> = {
   name: "",
@@ -34,6 +35,7 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "new-role";
 
 const NewRole = ({ onRoleAdd, resourceId }: Props) => {
+  const { addEntity } = useContext(AppContext)
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
     update(cache, { data }) {
       if (!data) return;
@@ -83,12 +85,13 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
           if (onRoleAdd) {
             onRoleAdd(result.data.createResourceRole);
           }
+          addEntity(result.data.createResourceRole.id)
           actions.resetForm();
           inputRef.current?.focus();
         })
         .catch(console.error);
     },
-    [createRole, resourceId, inputRef, onRoleAdd]
+    [createRole, resourceId, onRoleAdd, addEntity]
   );
 
   const errorMessage = formatError(error);

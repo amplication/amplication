@@ -3,7 +3,6 @@ import { Snackbar } from "@amplication/design-system";
 import * as models from "../models";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
-import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./DiscardChanges.scss";
 import { AppContext } from "../context/appContext";
@@ -17,7 +16,9 @@ type Props = {
 const CLASS_NAME = "discard-changes";
 
 const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
-  const { pendingChanges, resetPendingChanges } = useContext(AppContext);
+  const { pendingChanges, resetPendingChanges, addChange } = useContext(
+    AppContext
+  );
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
       if (!data) return;
@@ -45,15 +46,8 @@ const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
     onCompleted: (data) => {
       resetPendingChanges();
       onComplete();
+      addChange(data.project.connect.id);
     },
-    refetchQueries: [
-      {
-        query: GET_PENDING_CHANGES,
-        variables: {
-          projectId,
-        },
-      },
-    ],
   });
 
   const handleConfirm = useCallback(() => {

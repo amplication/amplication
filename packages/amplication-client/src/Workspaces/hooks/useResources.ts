@@ -63,30 +63,27 @@ const useResources = (
     [currentWorkspace, history, currentProject]
   );
 
-  const onNewResourceCompleted = useCallback(
-    (data: models.Resource) => {
-      refetch().then(() => resourceRedirect(data.id));
-    },
-    [refetch, resourceRedirect]
-  );
-
   const [
     createResourceWithEntities,
     { loading: loadingCreateResource, error: errorCreateResource },
-  ] = useMutation<TData>(CREATE_RESOURCE_WITH_ENTITIES, {
-    onCompleted: (data) => {
-      onNewResourceCompleted(data.createResourceWithEntities);
-    },
-  });
+  ] = useMutation<TData>(CREATE_RESOURCE_WITH_ENTITIES);
 
   const createResource = (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: string
+    eventName: string,
+    addEntity: (id: string) => void
   ) => {
     trackEvent({
       eventName: eventName,
     });
-    createResourceWithEntities({ variables: { data: data } });
+    createResourceWithEntities({ variables: { data: data } }).then((result) => {
+      result.data?.createResourceWithEntities.id &&
+        addEntity(result.data?.createResourceWithEntities.id);
+      result.data?.createResourceWithEntities.id &&
+        refetch().then(() =>
+          resourceRedirect(result.data?.createResourceWithEntities.id as string)
+        );
+    });
   };
 
   useEffect(() => {
