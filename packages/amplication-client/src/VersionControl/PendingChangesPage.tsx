@@ -1,25 +1,16 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import { match } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
-import * as models from "../models";
-
 import PageContent from "../Layout/PageContent";
-import { formatError } from "../util/error";
-
 import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
-import { GET_PENDING_CHANGES } from "./PendingChanges";
-import { MultiStateToggle, Snackbar } from "@amplication/design-system";
-
+import { MultiStateToggle } from "@amplication/design-system";
 import "./PendingChangesPage.scss";
+import { AppContext } from "../context/appContext";
+import { gql } from "@apollo/client";
 
 type Props = {
-  match: match<{ resource: string; commitId: string }>;
-};
-
-type TData = {
-  pendingChanges: models.PendingChange[];
+  match: match<{ project: string; resource: string; commitId: string }>;
 };
 
 const CLASS_NAME = "pending-changes-page";
@@ -33,10 +24,11 @@ const OPTIONS = [
 ];
 
 const PendingChangesPage = ({ match }: Props) => {
-  const { resource } = match.params;
+  const { project } = match.params;
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Pending Changes";
-  useNavigationTabs(resource, NAVIGATION_KEY, match.url, pageTitle);
+  useNavigationTabs(project, NAVIGATION_KEY, match.url, pageTitle);
+  const { pendingChanges } = useContext(AppContext);
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -44,18 +36,13 @@ const PendingChangesPage = ({ match }: Props) => {
     },
     [setSplitView]
   );
-  const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
-    variables: {
-      resourceId: resource,
-    },
-  });
 
-  const errorMessage = formatError(error);
+  // const errorMessage = formatError({ message: "", name: "" });
 
   return (
     <>
       <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-        {!data ? (
+        {!pendingChanges.length ? (
           "loading..."
         ) : (
           <div className={`${CLASS_NAME}__header`}>
@@ -70,7 +57,7 @@ const PendingChangesPage = ({ match }: Props) => {
           </div>
         )}
         <div className={`${CLASS_NAME}__changes`}>
-          {data?.pendingChanges.map((change) => (
+          {pendingChanges.map((change) => (
             <PendingChangeWithCompare
               key={change.originId}
               change={change}
@@ -80,7 +67,7 @@ const PendingChangesPage = ({ match }: Props) => {
           ))}
         </div>
       </PageContent>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}
     </>
   );
 };

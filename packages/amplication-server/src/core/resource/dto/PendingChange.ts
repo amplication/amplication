@@ -4,6 +4,7 @@ import { Entity } from 'src/models/Entity'; // eslint-disable-line import/no-cyc
 import { Block } from 'src/models/Block'; // eslint-disable-line import/no-cycle
 import { EnumPendingChangeOriginType } from './EnumPendingChangeOriginType';
 import { PendingChangeOrigin } from './PendingChangeOrigin'; // eslint-disable-line import/no-cycle
+import { Resource } from '../../../models';
 
 @ObjectType({
   isAbstract: true
@@ -33,4 +34,7 @@ export class PendingChange {
     nullable: false
   })
   versionNumber!: number;
+
+  @Field(() => Resource, { nullable: false })
+  resource!: Resource;
 }

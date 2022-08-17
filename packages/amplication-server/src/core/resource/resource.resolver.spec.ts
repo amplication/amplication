@@ -8,24 +8,18 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { ResourceResolver } from './resource.resolver';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ResourceService } from './resource.service';
-import { Resource } from 'src/models/Resource';
+import { Resource } from '../../models/Resource';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import { Entity } from 'src/models/Entity';
+import { Entity } from '../../models/Entity';
 import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto/Environment';
-import { User } from 'src/models/User';
-import { Commit } from 'src/models/Commit';
-import { PendingChange } from './dto/PendingChange';
-import {
-  EnumPendingChangeAction,
-  EnumPendingChangeOriginType
-} from '@amplication/code-gen-types/dist/models';
+import { User } from '../../models/User';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { UserService } from '../user/user.service';
 import { ResourceCreateInput } from './dto';
@@ -45,21 +39,10 @@ const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
 const EXAMPLE_ADDRESS = 'exampleAddress';
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
-const EXAMPLE_MESSAGE = 'exampleMessage';
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
 
-const EXAMPLE_ORIGIN_ID = 'exampleOriginId';
-const EXAMPLE_VERSION_NUMBER = 1;
-
 const EXAMPLE_PROJECT_ID = 'exampleProjectId';
-
-const EXAMPLE_COMMIT: Commit = {
-  id: EXAMPLE_COMMIT_ID,
-  createdAt: new Date(),
-  userId: EXAMPLE_USER_ID,
-  message: EXAMPLE_MESSAGE
-};
 
 const EXAMPLE_ENVIRONMENT: Environment = {
   id: EXAMPLE_ENVIRONMENT_ID,
@@ -100,14 +83,6 @@ const EXAMPLE_RESOURCE: Resource = {
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT]
-};
-
-const EXAMPLE_PENDING_CHANGE: PendingChange = {
-  action: EnumPendingChangeAction.Create,
-  originType: EnumPendingChangeOriginType.Entity,
-  originId: EXAMPLE_ORIGIN_ID,
-  origin: EXAMPLE_ENTITY,
-  versionNumber: EXAMPLE_VERSION_NUMBER
 };
 
 const EXAMPLE_USER: User = {
@@ -318,47 +293,6 @@ const UPDATE_RESOURCE_MUTATION = gql`
   }
 `;
 
-const DISCARD_CHANGES_MUTATION = gql`
-  mutation($resourceId: String!) {
-    discardPendingChanges(data: { resource: { connect: { id: $resourceId } } })
-  }
-`;
-
-const COMMIT_MUTATION = gql`
-  mutation($message: String!, $resourceId: String!) {
-    commit(
-      data: { message: $message, resource: { connect: { id: $resourceId } } }
-    ) {
-      id
-      createdAt
-      userId
-      message
-    }
-  }
-`;
-
-const PENDING_CHANGE_QUERY = gql`
-  query($resourceId: String!) {
-    pendingChanges(where: { resource: { id: $resourceId } }) {
-      action
-      originType
-      originId
-      versionNumber
-      origin {
-        ... on Entity {
-          id
-          createdAt
-          updatedAt
-          resourceId
-          name
-          displayName
-          pluralDisplayName
-        }
-      }
-    }
-  }
-`;
-
 const resourceMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
@@ -370,15 +304,6 @@ const deleteResourceMock = jest.fn(() => {
 });
 const updateResourceMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
-});
-const commitMock = jest.fn(() => {
-  return EXAMPLE_COMMIT;
-});
-const discardPendingChangesMock = jest.fn(() => {
-  return true;
-});
-const getPendingChangesMock = jest.fn(() => {
-  return [EXAMPLE_PENDING_CHANGE];
 });
 const entitiesMock = jest.fn(() => {
   return [EXAMPLE_ENTITY];
@@ -408,10 +333,7 @@ describe('ResourceResolver', () => {
             resource: resourceMock,
             createResource: createResourceMock,
             deleteResource: deleteResourceMock,
-            updateResource: updateResourceMock,
-            commit: commitMock,
-            discardPendingChanges: discardPendingChangesMock,
-            getPendingChanges: getPendingChangesMock
+            updateResource: updateResourceMock
           }))
         },
         {
@@ -716,68 +638,5 @@ describe('ResourceResolver', () => {
       data: { name: EXAMPLE_NAME },
       where: { id: EXAMPLE_RESOURCE_ID }
     });
-  });
-
-  it('should commit', async () => {
-    const res = await apolloClient.query({
-      query: COMMIT_MUTATION,
-      variables: { message: EXAMPLE_MESSAGE, resourceId: EXAMPLE_RESOURCE_ID }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      commit: {
-        ...EXAMPLE_COMMIT,
-        createdAt: EXAMPLE_COMMIT.createdAt.toISOString()
-      }
-    });
-    expect(commitMock).toBeCalledTimes(1);
-    expect(commitMock).toBeCalledWith({
-      data: {
-        message: EXAMPLE_MESSAGE,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } }
-      }
-    });
-  });
-
-  it('should discard pending changes', async () => {
-    const res = await apolloClient.query({
-      query: DISCARD_CHANGES_MUTATION,
-      variables: { resourceId: EXAMPLE_RESOURCE_ID }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      discardPendingChanges: true
-    });
-    expect(discardPendingChangesMock).toBeCalledTimes(1);
-    expect(discardPendingChangesMock).toBeCalledWith({
-      data: { resource: { connect: { id: EXAMPLE_RESOURCE_ID } } }
-    });
-  });
-
-  it('should get a pending change', async () => {
-    const res = await apolloClient.query({
-      query: PENDING_CHANGE_QUERY,
-      variables: { resourceId: EXAMPLE_RESOURCE_ID }
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      pendingChanges: [
-        {
-          ...EXAMPLE_PENDING_CHANGE,
-          origin: {
-            ...EXAMPLE_ENTITY,
-            createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
-          }
-        }
-      ]
-    });
-    expect(getPendingChangesMock).toBeCalledTimes(1);
-    expect(getPendingChangesMock).toBeCalledWith(
-      {
-        where: { resource: { id: EXAMPLE_RESOURCE_ID } }
-      },
-      EXAMPLE_USER
-    );
   });
 });

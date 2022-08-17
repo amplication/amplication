@@ -10,6 +10,7 @@ export const GET_RESOURCES = gql`
       name
       description
       color
+      createdAt
       updatedAt
       resourceType
       builds(orderBy: { createdAt: Desc }, take: 1) {

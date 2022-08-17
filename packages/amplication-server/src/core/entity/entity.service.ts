@@ -6,9 +6,9 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
-import { DataConflictError } from 'src/errors/DataConflictError';
+import { DataConflictError } from '../../errors/DataConflictError';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { AmplicationError } from '../../errors/AmplicationError';
 import { camelCase } from 'camel-case';
 import difference from '@extra-set/difference';
 import { isEmpty, pick, last, head, omit } from 'lodash';
@@ -19,15 +19,16 @@ import {
   Commit,
   User,
   EntityPermission,
-  EntityPermissionField
-} from 'src/models';
+  EntityPermissionField,
+  Resource
+} from '../../models';
 import { JsonObject } from 'type-fest';
 import { getSchemaForDataType, types } from '@amplication/code-gen-types';
-import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
-import { DiffService } from 'src/services/diff.service';
-import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { JsonSchemaValidationService } from '../../services/jsonSchemaValidation.service';
+import { DiffService } from '../../services/diff.service';
+import { SchemaValidationResult } from '../../dto/schemaValidationResult';
+import { EnumDataType } from '../../enums/EnumDataType';
+import { EnumEntityAction } from '../../enums/EnumEntityAction';
 import { isReservedName } from './reservedNames';
 import {
   CURRENT_VERSION_NUMBER,
@@ -42,7 +43,7 @@ import {
 import {
   prepareDeletedItemName,
   revertDeletedItemName
-} from 'src/util/softDelete';
+} from '../../util/softDelete';
 
 import {
   EnumPendingChangeOriginType,
@@ -112,6 +113,8 @@ export type EntityPendingChange = {
   versionNumber: number;
   /** The entity */
   origin: Entity;
+
+  resource: Resource;
 };
 
 /**
@@ -447,20 +450,25 @@ export class EntityService {
 
   /**
    * Gets all the entities changed since the last resource commit
-   * @param resourceId the resource ID to find changes to
+   * @param projectId the resource ID to find changes to
    * @param userId the user ID the resource ID relates to
    */
   async getChangedEntities(
-    resourceId: string,
+    projectId: string,
     userId: string
   ): Promise<EntityPendingChange[]> {
     const changedEntities = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
-        resourceId
+        resource: {
+          project: {
+            id: projectId
+          }
+        }
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           orderBy: {
             versionNumber: Prisma.SortOrder.desc
@@ -499,7 +507,8 @@ export class EntityService {
         action: action,
         originType: EnumPendingChangeOriginType.Entity,
         versionNumber: lastVersion.versionNumber + 1,
-        origin: entity
+        origin: entity,
+        resource: entity.resource
       };
     });
   }
@@ -515,6 +524,7 @@ export class EntityService {
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           where: {
             commitId: commitId
@@ -543,7 +553,8 @@ export class EntityService {
         action: action,
         originType: EnumPendingChangeOriginType.Entity,
         versionNumber: changedVersion.versionNumber,
-        origin: entity
+        origin: entity,
+        resource: entity.resource
       };
     });
   }
@@ -729,7 +740,7 @@ export class EntityService {
   }
 
   /**
-   * Higher order function responsible for encapsulating the locking behaviour.
+   * Higher order function responsible for encapsulating the locking behavior.
    * It will lock an entity, execute some provided operations on it then update the lock
    * (unlock it or keep it locked).
    * @param entityId The entity on which the locking and operations are performed

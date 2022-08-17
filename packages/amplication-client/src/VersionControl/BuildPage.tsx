@@ -9,7 +9,7 @@ import BuildSteps from "./BuildSteps";
 import { TruncatedId } from "../Components/TruncatedId";
 import ActionLog from "./ActionLog";
 import { GET_BUILD } from "./useBuildWatchStatus";
-import { GET_COMMIT } from "./CommitPage";
+import { GET_COMMIT } from "./PendingChangesPage";
 import { truncateId } from "../util/truncatedId";
 import { ClickableId } from "../Components/ClickableId";
 import "./BuildPage.scss";

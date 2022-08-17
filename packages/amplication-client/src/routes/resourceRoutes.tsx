@@ -40,7 +40,7 @@ const resourceRoutes = [
       {
         path:
           "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/commits/:commitId",
-        Component: lazy(() => import("../VersionControl/CommitPage")),
+        Component: lazy(() => import("../VersionControl/CommitsPage")),
         moduleName: "",
         routeTrackType: "",
         exactPath: true,

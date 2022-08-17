@@ -39,6 +39,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
     setNewResource,
     errorCreateResource,
     loadingCreateResource,
+    addEntity
   } = useContext(AppContext);
 
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
@@ -49,9 +50,9 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
-      setNewResource(data, eventName);
+      setNewResource(data, eventName, addEntity);
     },
-    [setNewResource]
+    [setNewResource, addEntity]
   );
 
   const handleSubmitResource = (currentServiceSettings: serviceSettings) => {

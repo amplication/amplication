@@ -9,6 +9,7 @@
     font-size: 10px;
   }
   .title {
+    display: flex;
     max-width: 185px;
     width: 185px;
     white-space: nowrap;
@@ -16,7 +17,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-weight: 400;
-    font-size: 12px;
+    @include regular-12; 
+    justify-content: space-between;
   }
 
   .title-list {
