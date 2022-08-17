@@ -12,6 +12,16 @@
     flex-direction: column;
     width: 130px;
     padding: 0 10px;
+
+    &__message {
+      @include body2;
+      color: var(--black100);
+    }
+
+    &__created {
+      @include regular-10;
+      color: var(--black80);
+    }
   }
 
   &__row {
