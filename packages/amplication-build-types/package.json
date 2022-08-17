@@ -1,6 +1,6 @@
 {
   "name": "@amplication/build-types",
-  "version": "0.14.11",
+  "version": "0.14.12",
   "private": true,
   "main": "dist/index.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
   "devDependencies": {
+    "typescript": "4.7.3",
     "prettier": "2.1.1"
   }
 }

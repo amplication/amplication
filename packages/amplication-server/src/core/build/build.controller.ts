@@ -30,24 +30,16 @@ import { StatusEnum } from '../queue/dto/StatusEnum';
 import { EnvironmentVariables } from '@amplication/kafka';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { BuildStatus } from '@amplication/build-types';
-import { QueueService } from '../queue/queue.service';
-import { ConfigService } from '@nestjs/config';
 import { Build } from './dto/Build';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
-  private readonly buildStatusTopic: string;
-
   constructor(
     private readonly buildService: BuildService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
-    private readonly queueService: QueueService,
-    private readonly configService: ConfigService
-  ) {
-    this.buildStatusTopic = this.configService.get(BUILD_STATUS_TOPIC);
-  }
+    private readonly logger: LoggerService
+  ) {}
 
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
@@ -113,10 +105,11 @@ export class BuildController {
         case BuildStatus.Init:
           await this.buildService.updateRunId(buildId, runId);
           break;
-        default:
-          await this.buildService.updateStateByRunId(runId, status);
+        case BuildStatus.Ready:
+          await this.buildService.createPR(runId);
           break;
       }
+      await this.buildService.updateStateByRunId(runId, status);
 
       await this.buildService.logGenerateStatusByRunId(runId, status);
     } catch (error) {
