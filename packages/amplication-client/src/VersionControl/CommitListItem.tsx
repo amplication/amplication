@@ -17,7 +17,6 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
   const [build] = commit.builds;
   const { currentWorkspace } = useContext(AppContext);
 
-  // const account = commit.user?.account;
   return (
     <div className={CLASS_NAME}>
       <InnerTabLink
@@ -27,10 +26,14 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
         <div className={`${CLASS_NAME}__data`}>
           <UserBadge />
           <div className={`${CLASS_NAME}__metadata`}>
-            <span className={`${CLASS_NAME}__metadata__message`}>{commit.message || "initial commit"}</span>
-            <span className={`${CLASS_NAME}__metadata__created`}>{new Date(commit.createdAt).toDateString()}</span>
+            <span className={`${CLASS_NAME}__metadata__message`}>
+              {commit.message || "initial commit"}
+            </span>
+            <span className={`${CLASS_NAME}__metadata__created`}>
+              {new Date(commit.createdAt).toDateString()}
+            </span>
           </div>
-          <BuildStatusIcons build={build} showIcon={false}/>
+          <BuildStatusIcons build={build} showIcon={false} />
         </div>
       </InnerTabLink>
     </div>

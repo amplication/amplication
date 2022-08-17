@@ -21,7 +21,7 @@
       color: var(--black80);
       a {
         color: var(--black100);
-        margin-left: 8px;
+        margin-left: var(--default-spacing-small);
       }
     }
 
@@ -36,7 +36,7 @@
     align-items: center;
 
     p {
-      padding: 0 8px;
+      padding: 0 var(--default-spacing-small);
     }
   }
 

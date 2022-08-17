@@ -1,4 +1,5 @@
 @import "../style/index.scss";
+$metadata-width: 130px;
 
 .commit-list-item {
   &__data {
@@ -10,8 +11,8 @@
   &__metadata {
     display: flex;
     flex-direction: column;
-    width: 130px;
-    padding: 0 10px;
+    width: $metadata-width;
+    padding: 0 var(--default-spacing-small);
 
     &__message {
       @include body2;

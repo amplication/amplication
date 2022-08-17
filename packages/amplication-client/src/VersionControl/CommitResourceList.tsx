@@ -10,9 +10,11 @@ type Props = {
 const CommitResourceList: React.FC<Props> = ({ builds }) => {
   return (
     <div>
-      {builds && builds.map((build: Build) => (
-        <CommitResourceListItem key={build.id} build={build} />
-      ))}
+      {builds &&
+        builds.length &&
+        builds.map((build: Build) => (
+          <CommitResourceListItem key={build.id} build={build} />
+        ))}
     </div>
   );
 };

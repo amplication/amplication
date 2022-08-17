@@ -38,7 +38,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   return (
     <PageContent
       className={moduleClass}
-      pageTitle={`Commit ${commitId}`}
+      pageTitle={`Commit Page ${commitId ? commitId : ""}`}
       sideContent={
         <CommitList
           commits={commits}
@@ -47,7 +47,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
         />
       }
     >
-      {commits.length && commits[commitIdx].builds && (
+      {commits.length && commitIdx > -1 && commits[commitIdx].builds?.length && (
         <CommitResourceList builds={commits[commitIdx].builds} />
       )}
     </PageContent>
