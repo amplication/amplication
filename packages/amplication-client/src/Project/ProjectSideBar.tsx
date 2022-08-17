@@ -3,8 +3,8 @@ import { AppContext } from "../context/appContext";
 import WorkspaceSelector from "../Workspaces/WorkspaceSelector";
 import AddNewProject from "./AddNewProject";
 import ProjectList from "./ProjectList";
-import "./ProjectSideBar.scss";
 import ProjectSideBarFooter from "./WorkspaceSettingsNavigation";
+import "./ProjectSideBar.scss";
 
 const CLASS_NAME = "project-sidebar";
 

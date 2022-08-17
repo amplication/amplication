@@ -18,6 +18,7 @@ import usePendingChanges, {
 } from "./hooks/usePendingChanges";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import PendingChanges from "../VersionControl/PendingChanges";
+import LastCommit from "../VersionControl/LastCommit";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -70,7 +71,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resetPendingChanges,
     setCommitRunning,
     setPendingChangesError,
-  } = usePendingChanges(currentResource);
+    pendingChangesDataError,
+    pendingChangesDataLoading,
+  } = usePendingChanges(currentProject);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -116,9 +119,10 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
               {projectsList.length ? innerRoutes : <ProjectEmptyState />}
             </div>
             <div className={`${moduleClass}__changes_menu`}>
-              {currentResource ? (
-                <PendingChanges resourceId={currentResource.id} />
+              {currentProject ? (
+                <PendingChanges projectId={currentProject.id} error={pendingChangesDataError} loading={pendingChangesDataLoading} />
               ) : null}
+              {currentProject && <LastCommit projectId={currentProject.id} />}
             </div>
           </div>
           <WorkspaceFooter />

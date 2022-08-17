@@ -11,15 +11,16 @@ import {
   Prisma,
   PrismaService
 } from '@amplication/prisma-db';
-import { DiffService } from 'src/services/diff.service';
+import { DiffService } from '../../services/diff.service';
 import {
   Block,
   BlockVersion,
   IBlock,
   BlockInputOutput,
-  User
-} from 'src/models';
-import { revertDeletedItemName } from 'src/util/softDelete';
+  User,
+  Resource
+} from '../../models';
+import { revertDeletedItemName } from '../../util/softDelete';
 import {
   CreateBlockArgs,
   UpdateBlockArgs,
@@ -29,8 +30,8 @@ import {
   FindManyBlockVersionArgs,
   LockBlockArgs
 } from './dto';
-import { FindOneArgs } from 'src/dto';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { FindOneArgs } from '../../dto';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
@@ -57,6 +58,8 @@ export type BlockPendingChange = {
   versionNumber: number;
   /** The block */
   origin: Block;
+
+  resource: Resource;
 };
 
 @Injectable()
@@ -521,7 +524,7 @@ export class BlockService {
   }
 
   /**
-   * Higher order function responsible for encapsulating the locking behaviour.
+   * Higher order function responsible for encapsulating the locking behavior.
    * It will lock a block, execute some provided operations on it then update
    * the lock (unlock it or keep it locked).
    * @param blockId The block on which the locking and operations are performed
@@ -577,20 +580,25 @@ export class BlockService {
 
   /**
    * Gets all the blocks changed since the last resource commit
-   * @param resourceId the resource ID to find changes to
+   * @param projectId the resource ID to find changes to
    * @param userId the user ID the resource ID relates to
    */
   async getChangedBlocks(
-    resourceId: string,
+    projectId: string,
     userId: string
   ): Promise<BlockPendingChange[]> {
     const changedBlocks = await this.prisma.block.findMany({
       where: {
         lockedByUserId: userId,
-        resourceId: resourceId
+        resource: {
+          project: {
+            id: projectId
+          }
+        }
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           orderBy: {
             versionNumber: Prisma.SortOrder.desc
@@ -621,7 +629,8 @@ export class BlockService {
         action: action,
         originType: EnumPendingChangeOriginType.Block,
         versionNumber: lastVersion.versionNumber + 1,
-        origin: block
+        origin: block,
+        resource: block.resource
       };
     });
   }
@@ -637,6 +646,7 @@ export class BlockService {
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           where: {
             commitId: commitId
@@ -663,7 +673,8 @@ export class BlockService {
         action: action,
         originType: EnumPendingChangeOriginType.Block,
         versionNumber: changedVersion.versionNumber,
-        origin: block
+        origin: block,
+        resource: block.resource
       };
     });
   }

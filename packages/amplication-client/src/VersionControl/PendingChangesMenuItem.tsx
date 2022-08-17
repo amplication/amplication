@@ -8,7 +8,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 
 type Props = {
-  resourceId: string;
+  projectId: string;
 };
 
 const CLASS_NAME = "pending-changes-menu-item";
@@ -16,7 +16,7 @@ const CLASS_NAME = "pending-changes-menu-item";
 const DIRECTION = "nw";
 const ICON_SIZE = "medium";
 
-const PendingChangesMenuItem = ({ resourceId }: Props) => {
+const PendingChangesMenuItem = ({ projectId }: Props) => {
   const [panelOpen, setPanelOpen] = useState<boolean>(true);
   const { pendingChanges } = useContext(AppContext);
 
@@ -52,7 +52,7 @@ const PendingChangesMenuItem = ({ resourceId }: Props) => {
       {panelOpen && (
         <AsidePanel.Source>
           <PendingChangesBar
-            resourceId={resourceId}
+            projectId={projectId}
             handleClick={handleClick}
           />
         </AsidePanel.Source>

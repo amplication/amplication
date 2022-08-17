@@ -1,10 +1,31 @@
 @import "../style/index.scss";
 
 .last-commit {
-  @include flexFullRowWithSpacing;
-  height: var(--app-footer-height);
-  white-space: nowrap;
-  padding: 0 var(--default-spacing);
+  margin-top: auto;
+
+  &__title {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  &__divider {
+    border: $border-black5;
+    margin: var(--form-field-spacing) 0;
+  }
+
+  &__skeleton {
+    margin: var(--form-field-spacing) 0;
+
+    .clickable-id {
+      margin: 0 var(--icon-spacing);
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--default-spacing);
+  }
 
   .clickable-id {
     color: var(--black80);
@@ -26,5 +47,9 @@
 
   &__message {
     color: var(--black60);
+  }
+
+  .amp-button.amp-button--secondary {
+    width: 100%;
   }
 }

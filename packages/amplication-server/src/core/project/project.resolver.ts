@@ -6,21 +6,27 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql';
-import { FindOneArgs } from 'src/dto';
-import { Project, Resource, User } from 'src/models';
+import { FindOneArgs } from '../../dto';
+import { Commit, Project, Resource, User } from '../../models';
 import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { ProjectService } from './project.service';
-import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
-import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
-import { Roles } from 'src/decorators/roles.decorator';
+import { InjectContextValue } from '../../decorators/injectContextValue.decorator';
+import { InjectableOriginParameter } from '../../enums/InjectableOriginParameter';
+import { Roles } from '../../decorators/roles.decorator';
 import { UseFilters, UseGuards } from '@nestjs/common';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
-import { UserEntity } from 'src/decorators/user.decorator';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { UserEntity } from '../../decorators/user.decorator';
 import { ResourceService } from '../resource/resource.service';
+import {
+  CreateCommitArgs,
+  DiscardPendingChangesArgs,
+  FindPendingChangesArgs,
+  PendingChange
+} from '../resource/dto';
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -66,5 +72,44 @@ export class ProjectResolver {
     return this.resourceService.resources({
       where: { project: { id: project.id } }
     });
+  }
+
+  /** pending changes and commit */
+
+  @Mutation(() => Commit, {
+    nullable: true
+  })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    'data.project.connect.id'
+  )
+  @InjectContextValue(InjectableOriginParameter.UserId, 'data.user.connect.id')
+  async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
+    return this.projectService.commit(args);
+  }
+
+  @Mutation(() => Boolean, {
+    nullable: true
+  })
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    'data.project.connect.id'
+  )
+  @InjectContextValue(InjectableOriginParameter.UserId, 'data.user.connect.id')
+  async discardPendingChanges(
+    @Args() args: DiscardPendingChangesArgs
+  ): Promise<boolean | null> {
+    return this.projectService.discardPendingChanges(args);
+  }
+
+  @Query(() => [PendingChange], {
+    nullable: false
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, 'where.project.id')
+  async pendingChanges(
+    @Args() args: FindPendingChangesArgs,
+    @UserEntity() user: User
+  ): Promise<PendingChange[]> {
+    return this.projectService.getPendingChanges(args, user);
   }
 }

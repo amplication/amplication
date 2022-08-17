@@ -6,11 +6,11 @@ import PendingChanges from "./PendingChanges";
 const CLASS_NAME = "pending-changes-bar";
 
 type Props = {
-  resourceId: string;
+  projectId: string;
   handleClick: () => void;
 };
 
-const PendingChangesBar = ({ resourceId, handleClick }: Props) => {
+const PendingChangesBar = ({ projectId, handleClick }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__heading`}>
@@ -22,7 +22,7 @@ const PendingChangesBar = ({ resourceId, handleClick }: Props) => {
         />
         <h2>Pending Changes</h2>
       </div>
-      <PendingChanges resourceId={resourceId} />
+      <PendingChanges projectId={projectId} />
     </div>
   );
 };

@@ -25,11 +25,6 @@ export class StorageController {
     protected readonly paginationService: PaginationService
   ) {}
 
-  @Get()
-  testStorage(): string {
-    return "hello world";
-  }
-
   @Get(`/:${RESOURCE_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/list`)
   getBuildFilesList(
     @Param(RESOURCE_ID_PARAM_KEY) resourceId: string,

@@ -220,9 +220,15 @@ export class PermissionsService {
       return matching === 1;
     }
     if (originType === AuthorizableOriginParameter.CommitId) {
-      const matching = await this.prisma.commit.count(
-        checkByResourceParameters
-      );
+      const matching = await this.prisma.commit.count({
+        where: {
+          id: originId,
+          project: {
+            deletedAt: null,
+            workspaceId: workspace.id
+          }
+        }
+      });
       return matching === 1;
     }
 

@@ -17,7 +17,8 @@ export interface AppContextInterface {
   resources: models.Resource[];
   setNewResource: (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: string
+    eventName: string,
+    addEntity: (id: string) => void
   ) => void;
   setResource: (resource: models.Resource) => void;
   projectConfigurationResource: models.Resource | undefined;
@@ -32,10 +33,7 @@ export interface AppContextInterface {
   pendingChangesIsError: boolean;
   addEntity: (entityId: string) => void;
   addBlock: (blockId: string) => void;
-  addChange: (
-    resourceId: string,
-    resourceType: models.EnumPendingChangeResourceType
-  ) => void;
+  addChange: (originId: string) => void;
   resetPendingChanges: () => void;
   setCommitRunning: (isRunning: boolean) => void;
   setPendingChangesError: (onError: boolean) => void;

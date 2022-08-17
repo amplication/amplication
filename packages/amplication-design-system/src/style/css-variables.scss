@@ -54,10 +54,12 @@
 
   --form-horizontal-width: 700px;
   --form-horizontal-label-width: 300px;
-  --title1-font-size: 15px;
+  --large-icon-font-size: 18px;
+  --title1-font-size: 16px;
   --title2-font-size: 12px;
   --title3-font-size: 18px;
   --title4-font-size: 24px;
+  --icon-font-size: 16px;
   --title5-font-size: 14px;
   --normal-font-size: 12px;
   --text-field-label-font-size: 10px;
@@ -65,13 +67,25 @@
 
   --mdc-typography-body2-font-size: var(--normal-font-size);
 
+  --icon-size-xxsmall: 16px;
+  --icon-size-xsmall: 20px;
+  --icon-size-small: 24px;
+  --icon-size-medium: 32px;
+  --icon-size-large: 44px;
+  --icon-size-xlarge: 54px;
+  --icon-size-xxlarge: 64px;
+
   --icon-spacing: 4px;
   --default-spacing: 12px;
   --default-spacing-small: 8px;
+  --medium-spacing: 14px;
   --large-spacing: 16px;
   --double-spacing: 24px;
   --triple-spacing: 36px;
   --form-field-spacing: 16px;
+
+  --user-badge-spacing: 6px;
+
   --form-field-long: 320px;
   --form-field-normal: 200px;
   --grid-row-gap: 8px;
