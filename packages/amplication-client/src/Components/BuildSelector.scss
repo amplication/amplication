@@ -7,7 +7,7 @@
   }
 
   &__hour {
-    font-size: 10px;
+    @include regular-10; 
     color: var(--black80);
   }
 
