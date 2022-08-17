@@ -3,7 +3,6 @@ import { Formik, Form } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
-import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { GET_LAST_COMMIT } from "./LastCommit";
 import { TextField, Snackbar } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
@@ -39,6 +38,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     setCommitRunning,
     resetPendingChanges,
     setPendingChangesError,
+    addChange,
   } = useContext(AppContext);
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onError: () => {
@@ -46,17 +46,12 @@ const Commit = ({ projectId, noChanges }: Props) => {
       setPendingChangesError(true);
       resetPendingChanges();
     },
-    onCompleted: () => {
+    onCompleted: (commit) => {
       setCommitRunning(false);
       setPendingChangesError(false);
+      addChange(commit.id);
     },
     refetchQueries: [
-      {
-        query: GET_PENDING_CHANGES,
-        variables: {
-          projectId,
-        },
-      },
       {
         query: GET_LAST_COMMIT,
         variables: {
