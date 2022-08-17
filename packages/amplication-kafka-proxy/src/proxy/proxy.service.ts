@@ -1,3 +1,7 @@
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
@@ -8,6 +12,8 @@ export class ProxyService {
   constructor(
     private configService: ConfigService,
     @Inject('KAFKA_CLIENT') private kafkaClient: ClientProxy,
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger,
   ) {
     this.subscribeToSQSQueue();
   }
@@ -24,14 +30,15 @@ export class ProxyService {
     });
 
     subscription.on('error', (err) => {
-      console.error(err.message);
+      this.logger.error(err.message, { err });
     });
 
     subscription.on('processing_error', (err) => {
-      console.error(err.message);
+      this.logger.error(err.message, { err });
     });
 
     subscription.start();
+    this.logger.info('Subscribed to SQS queue');
   }
 
   async forwardMessageToKafka(payload: any) {

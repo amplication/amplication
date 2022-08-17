@@ -18,6 +18,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@amplication/nest-logger-module": "^0.14.12",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "^8.0.0",
