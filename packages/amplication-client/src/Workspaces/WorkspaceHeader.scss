@@ -44,7 +44,7 @@ $modal-menu-top: 30px;
       justify-content: center;
       align-items: center;
       margin-left: var(--default-spacing);
-      
+
       .select-menu__summary.amp-button.amp-button--text {
         color: var(--black80);
         &.highlight,
@@ -108,12 +108,16 @@ $modal-menu-top: 30px;
     }
   }
   &__vertical_border {
-    width: 0px;
+    width: 1px;
     height: var(--large-spacing);
-    border: $border-black70;
+    background: var(--black10);
+    border: none;
     margin: 0;
   }
   &__resources_modal {
     top: $modal-menu-top;
+  }
+  &__user_badge_wrapper {
+    padding: var(--user-badge-spacing);
   }
 }

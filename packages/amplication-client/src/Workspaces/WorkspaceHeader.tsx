@@ -159,21 +159,22 @@ const WorkspaceHeader: React.FC<{}> = () => {
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="search"
-                iconSize="xsmall"
+                iconSize="small"
               />
             </Tooltip>
           }
         />
         <hr className={`${CLASS_NAME}__vertical_border`} />
 
-        <a href="/user/profile">
+        <a className={`${CLASS_NAME}__user_badge_wrapper`} href="/user/profile">
           <UserBadge />
         </a>
+        
         <hr className={`${CLASS_NAME}__vertical_border`} />
 
         <Button
           buttonStyle={EnumButtonStyle.Text}
-          icon="log_out_outline"
+          icon="log_out"
           onClick={handleSignOut}
         />
       </div>
