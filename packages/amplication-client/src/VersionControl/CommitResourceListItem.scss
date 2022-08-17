@@ -16,6 +16,18 @@
     &:last-child {
       margin-bottom: 0;
     }
+
+    .clickable-id {
+      color: var(--black80);
+      a {
+        color: var(--black100);
+        margin-left: 8px;
+      }
+    }
+
+    .build-status-icons__status {
+      margin-left: 0;
+    }
   }
 
   &__title {

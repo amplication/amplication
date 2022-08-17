@@ -1,8 +1,12 @@
-import React from "react";
-import { match } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { match, useHistory } from "react-router-dom";
+import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
+import { Commit } from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import CommitList from "./CommitList";
+import CommitResourceList from "./CommitResourceList";
+import useCommit from "./hooks/useCommits";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -13,16 +17,39 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const CommitsPage: React.FC<Props> = ({ innerRoutes, match, moduleClass }) => {
-  const commitId = match.params.commit
+const getCommitIdx = (commits: Commit[], commitId: string): number =>
+  commits.findIndex((commit) => commit.id === commitId);
+
+const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
+  const commitId = match.params.commit;
+  const history = useHistory();
+  const { currentProject, currentWorkspace } = useContext(AppContext);
+  const { commits, commitsError, commitsLoading } = useCommit();
+  const commitIdx = getCommitIdx(commits, commitId);
+
+  useEffect(() => {
+    if (commitId) return;
+    commits.length &&
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/commits/${commits[0].id}`
+      );
+  }, [commitId, commits, currentProject?.id, currentWorkspace?.id, history]);
 
   return (
     <PageContent
       className={moduleClass}
       pageTitle={`Commit ${commitId}`}
-      sideContent={<CommitList commitId={commitId} />}
+      sideContent={
+        <CommitList
+          commits={commits}
+          error={commitsError}
+          loading={commitsLoading}
+        />
+      }
     >
-      {innerRoutes}
+      {commits.length && commits[commitIdx].builds && (
+        <CommitResourceList builds={commits[commitIdx].builds} />
+      )}
     </PageContent>
   );
 };
