@@ -1,16 +1,17 @@
 import {
   EnumResourceType,
   GitRepository,
+  Prisma,
   PrismaService
 } from '@amplication/prisma-db';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
 import { FindOneArgs } from '../../dto';
 import { EnumDataType } from '../../enums/EnumDataType';
 import { QueryMode } from '../../enums/QueryMode';
-import { Project, Resource, User } from '../../models';
+import { Project, Resource, User, GitOrganization } from '../../models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
@@ -28,6 +29,7 @@ import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
 import { DEFAULT_RESOURCE_COLORS } from './constants';
+import { AmplicationError } from 'src/errors/AmplicationError';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -45,6 +47,7 @@ export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   'The resource of type `ProjectConfiguration` cannot be deleted';
 import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
+import { ProjectService } from '../project/project.service';
 
 const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
@@ -57,7 +60,9 @@ export class ResourceService {
     private entityService: EntityService,
     private environmentService: EnvironmentService,
     private serviceSettingsService: ServiceSettingsService,
-    private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService
+    private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
+    @Inject(forwardRef(() => ProjectService))
+    private readonly projectService: ProjectService
   ) {}
 
   async createProjectConfiguration(
@@ -101,10 +106,34 @@ export class ResourceService {
       throw new InvalidColorError(color);
     }
 
+    if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
+      throw new AmplicationError(
+        'Resource of type ProjectConnfiguration cannot be created manually'
+      );
+    }
+
+    const projectId = args.data.project.connect.id;
+
+    const projectConfiguration = await this.projectConfiguration(projectId);
+
+    if (isEmpty(projectConfiguration)) {
+      throw new AmplicationError('Project configuration missing from project');
+    }
+
+    let gitRepository:
+      | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
+      | undefined = undefined;
+    if (projectConfiguration.gitRepositoryId) {
+      gitRepository = {
+        connect: { id: projectConfiguration.gitRepositoryId || '' }
+      };
+    }
+
     const resource = await this.prisma.resource.create({
       data: {
         ...DEFAULT_SERVICE_DATA,
         ...args.data,
+        gitRepository,
         roles: {
           create: USER_RESOURCE_ROLE
         }
@@ -329,18 +358,20 @@ export class ResourceService {
       throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
     }
 
-    const gitRepo = await this.prisma.gitRepository.findUnique({
-      where: {
-        resourceId: resource.id
-      }
-    });
-
-    if (gitRepo) {
-      await this.prisma.gitRepository.delete({
+    if (resource.gitRepositoryOverride) {
+      const gitRepo = await this.prisma.gitRepository.findFirst({
         where: {
-          id: gitRepo.id
+          resources: { every: { id: resource.id } }
         }
       });
+
+      if (gitRepo) {
+        await this.prisma.gitRepository.delete({
+          where: {
+            id: gitRepo.id
+          }
+        });
+      }
     }
 
     return this.prisma.resource.update({
@@ -393,17 +424,37 @@ export class ResourceService {
   }
 
   async gitRepository(resourceId: string): Promise<GitRepository | null> {
-    return await this.prisma.gitRepository.findUnique({
-      where: {
-        resourceId
-      },
-      include: {
-        gitOrganization: true
-      }
-    });
+    return (
+      await this.prisma.resource.findUnique({
+        where: { id: resourceId },
+        include: { gitRepository: { include: { gitOrganization: true } } }
+      })
+    ).gitRepository;
+  }
+
+  async gitOrganizationByResource(
+    args: FindOneArgs
+  ): Promise<GitOrganization | null> {
+    return (
+      await this.prisma.resource.findUnique({
+        ...args,
+        include: { gitRepository: { include: { gitOrganization: true } } }
+      })
+    ).gitRepository.gitOrganization;
   }
 
   async project(resourceId: string): Promise<Project> {
-    return this.prisma.project.findUnique({ where: { id: resourceId } });
+    return this.projectService.findFirst({
+      where: { resources: { some: { id: resourceId } } }
+    });
+  }
+
+  async projectConfiguration(projectId: string): Promise<Resource | null> {
+    return await this.prisma.resource.findFirst({
+      where: {
+        resourceType: EnumResourceType.ProjectConfiguration,
+        project: { id: projectId }
+      }
+    });
   }
 }

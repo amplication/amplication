@@ -31,12 +31,29 @@ $modal-menu-top: 30px;
       @include regular-12();
       color: var(--black80);
       margin-right: var(--default-spacing);
+
+      &.highlight,
+      &:hover {
+        a {
+          color: var(--black100);
+        }
+      }
     }
     &__resource {
       display: flex;
       justify-content: center;
       align-items: center;
       margin-left: var(--default-spacing);
+
+      .select-menu__summary.amp-button.amp-button--text {
+        color: var(--black80);
+        &.highlight,
+        &:hover,
+        &:focus,
+        &:active {
+          color: var(--black100);
+        }
+      }
       .select-menu__modal {
         width: $modal-menu-width;
         background-color: var(--black2);
@@ -62,14 +79,6 @@ $modal-menu-top: 30px;
         padding: 5px;
         margin-bottom: var(--icon-spacing);
       }
-      &__title {
-        @include regular-12();
-
-        &__not_selected {
-          @include regular-12();
-          color: var(--black80);
-        }
-      }
       &__item {
         margin-left: var(--text-field-label-font-size);
         display: flex;
@@ -86,7 +95,7 @@ $modal-menu-top: 30px;
     }
   }
   &__right {
-    @include flexFullRowWithSpacing;
+    @include flexFullRowWithSpacingBothSides;
     padding: var(--default-spacing);
     justify-content: flex-end;
   }
@@ -100,20 +109,23 @@ $modal-menu-top: 30px;
     margin-right: var(--default-spacing);
   }
   &__links {
+    @include flexFullRowWithSpacingBothSides;
     &__link {
       @include regular-12();
       color: var(--black80);
-      margin: 0px;
-      margin-right: var(--large-spacing);
     }
   }
   &__vertical_border {
-    width: 0px;
+    width: 1px;
     height: var(--large-spacing);
-    border: $border-black70;
+    background: var(--black10);
+    border: none;
     margin: 0;
   }
   &__resources_modal {
     top: $modal-menu-top;
+  }
+  &__user_badge_wrapper {
+    padding: var(--user-badge-spacing);
   }
 }

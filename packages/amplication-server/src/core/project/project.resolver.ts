@@ -51,7 +51,7 @@ export class ProjectResolver {
   @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, 'where.id')
   async project(@Args() args: FindOneArgs): Promise<Project | null> {
-    return this.projectService.findProject(args);
+    return this.projectService.findUnique(args);
   }
 
   @Mutation(() => Project, { nullable: false })

@@ -65,11 +65,10 @@ model GitOrganization {
 model GitRepository {
   id                String          @id @default(cuid())
   name              String
-  resourceId        String          @unique
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   gitOrganizationId String
-  resource          Resource        @relation(fields: [resourceId], references: [id], onDelete: NoAction)
+  resources         Resource[]
   gitOrganization   GitOrganization @relation(fields: [gitOrganizationId], references: [id], onDelete: NoAction)
 }
 
@@ -123,24 +122,26 @@ model ApiToken {
 }
 
 model Resource {
-  id                String           @id @default(cuid())
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  name              String
-  description       String
-  color             String           @default("#20A4F3")
-  githubLastSync    DateTime?
-  githubLastMessage String?
-  deletedAt         DateTime?
-  roles             ResourceRole[]
-  blocks            Block[]
-  builds            Build[]
+  id                    String           @id @default(cuid())
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  name                  String
+  description           String
+  color                 String           @default("#20A4F3")
+  gitRepositoryOverride Boolean          @default(false)
+  githubLastSync        DateTime?
+  githubLastMessage     String?
+  deletedAt             DateTime?
+  gitRepositoryId       String?
+  roles                 ResourceRole[]
+  blocks                Block[]
+  builds                Build[]
   entities          Entity[]
   environments      Environment[]
-  gitRepository     GitRepository?
-  projectId         String
-  project           Project          @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
-  resourceType      EnumResourceType
+  gitRepository     GitRepository?@relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
+  projectId             String
+  project               Project          @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  resourceType          EnumResourceType
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
 }
