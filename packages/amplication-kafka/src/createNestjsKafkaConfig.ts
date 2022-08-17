@@ -1,14 +1,10 @@
 import { KafkaOptions, Transport } from "@nestjs/microservices";
-import { ConsumerConfig } from "@nestjs/microservices/external/kafka.interface";
 import { KafkaEnvironmentVariables } from "./";
 
 export function createNestjsKafkaConfig(envSuffix: string = ""): KafkaOptions {
   const kafkaEnv = new KafkaEnvironmentVariables(envSuffix);
-  const groupId = kafkaEnv.getGroupId();
-  let consumer: ConsumerConfig | undefined;
-  if (groupId) {
-    consumer = { groupId };
-  }
+  const groupId = kafkaEnv.getGroupId() as string;
+
   return {
     transport: Transport.KAFKA,
     options: {
@@ -16,7 +12,13 @@ export function createNestjsKafkaConfig(envSuffix: string = ""): KafkaOptions {
         brokers: kafkaEnv.getBrokers(),
         clientId: kafkaEnv.getClientId(),
       },
-      consumer,
+      consumer: {
+        groupId,
+        rebalanceTimeout: 3000,
+      },
+      producer: {
+        metadataMaxAge: 3000,
+      },
     },
   };
 }
