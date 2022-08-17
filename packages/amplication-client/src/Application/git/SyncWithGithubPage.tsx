@@ -63,9 +63,7 @@ function SyncWithGithubPage({ match }: Props) {
           <h1>Sync with GitHub</h1>
         </div>
         <div className={`${CLASS_NAME}__message`}>
-          Enable sync with GitHub to automatically push the generated code of
-          your application and create a Pull Request in your GitHub repository
-          every time you commit your changes.
+          If you connect to GitHub, every time you commit your changes, it automatically pushes your generated code and creates a Pull Request in your GitHub repository.
         </div>
         {data?.app && <AuthAppWithGit app={data.app} onDone={refetch} />}
 
