@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
   DEFAULT_SERVICE_DATA,
-  INITIAL_COMMIT_MESSAGE,
   INVALID_RESOURCE_ID,
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService
@@ -443,65 +442,6 @@ describe('ResourceService', () => {
       },
       user: EXAMPLE_USER
     };
-    const commitArgs = {
-      data: {
-        ...createResourceArgs.args.data,
-        message: INITIAL_COMMIT_MESSAGE,
-        project: {
-          connect: {
-            id: createResourceArgs.args.data.project.connect.id
-          }
-        },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
-    const findManyArgs = {
-      where: {
-        deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: EXAMPLE_USER_ID
-              }
-            }
-          }
-        }
-      }
-    };
-    const createVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        entity: {
-          connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
-        }
-      }
-    };
-    const blockCreateVersionArgs = {
-      data: {
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        },
-        block: {
-          connect: {
-            id: EXAMPLE_BLOCK_ID
-          }
-        }
-      }
-    };
-    const changedEntitiesArgs = {
-      resourceId: EXAMPLE_RESOURCE_ID,
-      userId: EXAMPLE_USER_ID
-    };
     expect(
       await service.createResource(
         createResourceArgs.args,
@@ -568,22 +508,6 @@ describe('ResourceService', () => {
   });
 
   it('should create resource with entities', async () => {
-    const prismaResourceCreateResourceArgs = {
-      data: {
-        ...DEFAULT_SERVICE_DATA,
-        ...SAMPLE_SERVICE_DATA,
-        roles: {
-          create: EXAMPLE_USER_RESOURCE_ROLE
-        }
-      }
-    };
-    const initialCommitArgs = {
-      data: {
-        message: INITIAL_COMMIT_MESSAGE,
-        project: { connect: { id: EXAMPLE_PROJECT_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
-    };
     const commitMessage = 'CreateWithEntitiesCommitMessage';
     const createOneEntityArgs = {
       data: {
