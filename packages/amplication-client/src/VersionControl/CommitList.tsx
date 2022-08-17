@@ -1,13 +1,11 @@
 import React, { useContext } from "react";
 import { ApolloError } from "@apollo/client";
-
 import { formatError } from "../util/error";
 import * as models from "../models";
-
 import { Snackbar, CircularProgress } from "@amplication/design-system";
-import "./CommitList.scss";
 import { AppContext } from "../context/appContext";
 import { CommitListItem } from "./CommitListItem";
+import "./CommitList.scss";
 
 
 type Props = {
@@ -39,4 +37,3 @@ const CommitList = ({ commits, error, loading }: Props) => {
 };
 
 export default CommitList;
-
