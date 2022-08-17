@@ -6,6 +6,7 @@ $modal-top-position: 20vh;
 .amp-dialog {
   box-shadow: none;
   border-radius: var(--default-border-radius);
+  border: $border-black10;
   width: max-content !important;
   max-width: $modal-max-width;
   min-width: var(--modal-min-width);
