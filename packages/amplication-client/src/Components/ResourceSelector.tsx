@@ -32,7 +32,6 @@ const ResourceSelector = ({
     ? formatTimeToNow(new Date(selectedResource?.createdAt))
     : null;
 
-  console.log({ createdAtHour });
   const createdHourStyle = () => (
     <label className={`${CLASS_NAME}__hour`}>{createdAtHour}</label>
   );
@@ -49,7 +48,7 @@ const ResourceSelector = ({
               name={selectedResource?.name}
               color={selectedResource?.color}
             />
-            <div className={"title_2"}>
+            <div className={"title"}>
               {selectedResource?.name}
               <div>{createdHourStyle()}</div>
             </div>

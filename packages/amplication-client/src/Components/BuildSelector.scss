@@ -3,12 +3,12 @@
 .build-selector {
   &__label-title {
     padding-bottom: 4px;
-    color: #a3a8b8;
+    color: var(--black80);
   }
 
   &__hour {
     font-size: 10px;
-    color: #a3a8b8;
+    color: var(--black80);
   }
 
   .select-menu {
