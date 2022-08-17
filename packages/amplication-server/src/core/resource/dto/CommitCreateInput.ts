@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { WhereParentIdInput } from 'src/dto';
+import { WhereParentIdInput } from '../../../dto';
 
 @InputType({
   isAbstract: true
@@ -13,7 +13,7 @@ export class CommitCreateInput {
   @Field(() => WhereParentIdInput, {
     nullable: false
   })
-  resource!: WhereParentIdInput;
+  project!: WhereParentIdInput;
 
   /**do not expose to GraphQL - This field should be injected from context  */
   user!: WhereParentIdInput;

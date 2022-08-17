@@ -1,28 +1,29 @@
 import { useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
+import { isEqual } from "lodash";
 import * as models from "../../models";
 import { GET_PENDING_CHANGES_STATUS } from "../queries/projectQueries";
 
-export type PendingChangeItem = Pick<
-  models.PendingChange,
-  "originId" | "originType"
->;
+export type PendingChangeItem = models.PendingChange;
 
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-const usePendingChanges = (currentResource: models.Resource | undefined) => {
-  // TODO: replace currentResource with currentProject
+const usePendingChanges = (currentProject: models.Project | undefined) => {
+  const [pendingChangesMap, setPendingChangesMap] = useState<string[]>([]);
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const { data: pendingChangesData, refetch } = useQuery<
-    PendingChangeStatusData
-  >(GET_PENDING_CHANGES_STATUS, {
-    skip: !currentResource,
+  const {
+    data: pendingChangesData,
+    refetch,
+    error: pendingChangesDataError,
+    loading: pendingChangesDataLoading,
+  } = useQuery<PendingChangeStatusData>(GET_PENDING_CHANGES_STATUS, {
+    skip: !currentProject,
     variables: {
-      resourceId: currentResource?.id,
+      projectId: currentProject?.id,
     },
   });
 
@@ -31,48 +32,47 @@ const usePendingChanges = (currentResource: models.Resource | undefined) => {
       return;
 
     setPendingChanges(pendingChangesData.pendingChanges);
+    setPendingChangesMap(
+      pendingChangesData.pendingChanges.map((change) => change.originId)
+    );
   }, [pendingChangesData, setPendingChanges]);
 
+  useEffect(() => {
+    if (!pendingChanges.length) return;
+
+    const pendingChangesDataMap = pendingChanges.map(
+      (change) => change.originId
+    );
+    if (isEqual(pendingChangesMap, pendingChangesDataMap)) return;
+    console.log("refetch");
+    refetch();
+  }, [pendingChanges, pendingChangesMap, refetch]);
+
   const addChange = useCallback(
-    (originId: string, originType: models.EnumPendingChangeOriginType) => {
-      const existingChange = pendingChanges.find(
-        (changeItem) =>
-          changeItem.originId === originId &&
-          changeItem.originType === originType
-      );
-      if (existingChange) {
-        //reassign pending changes to trigger refresh
-        setPendingChanges([...pendingChanges]);
-      } else {
-        setPendingChanges(
-          pendingChanges.concat([
-            {
-              originId,
-              originType,
-            },
-          ])
-        );
-      }
+    (originId: string) => {
+      console.log("addChang", originId);
+      setPendingChangesMap([...pendingChangesMap, originId]);
     },
-    [pendingChanges, setPendingChanges]
+    [pendingChangesMap]
   );
 
   const addEntity = useCallback(
     (entityId: string) => {
-      addChange(entityId, models.EnumPendingChangeOriginType.Entity);
+      addChange(entityId);
     },
     [addChange]
   );
 
   const addBlock = useCallback(
     (blockId: string) => {
-      addChange(blockId, models.EnumPendingChangeOriginType.Block);
+      addChange(blockId);
     },
     [addChange]
   );
 
   const resetPendingChanges = useCallback(() => {
     setPendingChanges([]);
+    setPendingChangesMap([]);
     refetch();
   }, [refetch]);
 
@@ -99,6 +99,8 @@ const usePendingChanges = (currentResource: models.Resource | undefined) => {
     resetPendingChanges,
     setCommitRunning: setCommitRunningCallback,
     setPendingChangesError,
+    pendingChangesDataError,
+    pendingChangesDataLoading,
   };
 };
 
