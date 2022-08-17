@@ -32,4 +32,9 @@
       padding-right: calc(var(--default-spacing-small) / 2);
     }
   }
+  &__connect {
+    &__button {
+      width: 100%;
+    }
+  }
 }
