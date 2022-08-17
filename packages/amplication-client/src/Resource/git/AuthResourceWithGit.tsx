@@ -131,7 +131,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
             setCreateNewRepoOpen(true);
           }}
           onSelectRepository={handleSelectRepoDialogOpen}
-          currentConnectedGitRepository={resource}
+          currentResourceWithGitRepository={resource}
           selectedGitOrganization={gitOrganization}
         />
 

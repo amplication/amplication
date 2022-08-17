@@ -35,7 +35,7 @@ function GithubSyncDetails({
     disconnectGitRepository({
       variables: { resourceId: resourceWithRepository.id },
     }).catch(console.error);
-  }, [disconnectGitRepository, resourceWithRepository]);
+  }, [disconnectGitRepository, resourceWithRepository.id]);
 
   const errorMessage = formatError(disconnectErrorUpdate);
   const repoUrl = `https://github.com/${gitRepositoryFullName}`;

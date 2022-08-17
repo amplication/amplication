@@ -17,7 +17,7 @@ import "./RepositoryActions.scss";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
-  currentConnectedGitRepository: ResourceWithGitRepository | null;
+  currentResourceWithGitRepository: ResourceWithGitRepository;
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
 };
 
@@ -25,9 +25,10 @@ const CLASS_NAME = "repository-actions";
 export default function RepositoryActions({
   onCreateRepository,
   onSelectRepository,
-  currentConnectedGitRepository,
+  currentResourceWithGitRepository,
   selectedGitOrganization,
 }: Props) {
+  const { gitRepository } = currentResourceWithGitRepository;
 
   return (
     <div className={`${CLASS_NAME}`}>
@@ -35,9 +36,9 @@ export default function RepositoryActions({
         className={`${CLASS_NAME}__auth`}
         panelStyle={EnumPanelStyle.Bordered}
       >
-        {currentConnectedGitRepository ? (
+        {gitRepository ? (
           <GithubSyncDetails
-            resourceWithRepository={currentConnectedGitRepository}
+            resourceWithRepository={currentResourceWithGitRepository}
           />
         ) : (
           <div className={`${CLASS_NAME}__select-repo`}>
