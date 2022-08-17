@@ -1,8 +1,9 @@
 import React, { useCallback } from "react";
-import MuiTreeView, {
+import { TreeView as MuiTreeView, TreeItem as MuiTreeItem } from "@mui/lab";
+import {
   TreeViewProps as MuiTreeViewProps,
 } from "@mui/lab/TreeView";
-import MuiTreeItem, {
+import {
   TreeItemProps as MuiTreeItemProps,
 } from "@mui/lab/TreeItem";
 import { Icon } from "../Icon/Icon";
