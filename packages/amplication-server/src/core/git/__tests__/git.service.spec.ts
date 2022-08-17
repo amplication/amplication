@@ -16,6 +16,7 @@ import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput
 import { GitRepository } from 'src/models/GitRepository';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
+import { ResourceService } from 'src/core/resource/resource.service';
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: 'exampleGitRepositoryId',
   name: 'repositoryTest',
@@ -80,7 +81,8 @@ describe('GitService', () => {
           useValue: {
             gitRepository: {
               create: prismaGitRepositoryCreateMock,
-              findUnique: prismaGitRepositoryReturnEmptyMock
+              findUnique: prismaGitRepositoryReturnEmptyMock,
+              findFirst: () => null
             },
             gitOrganization: {
               findUnique: prismaGitOrganizationCreateMock
@@ -93,6 +95,12 @@ describe('GitService', () => {
         {
           provide: GitServiceFactory,
           useValue: MOCK_GIT_SERVICE_FACTORY
+        },
+        {
+          provide: ResourceService,
+          useValue: {
+            resource: () => EXAMPLE_SERVICE_RESOURCE
+          }
         }
       ],
       imports: [GitModule]
@@ -129,7 +137,7 @@ describe('GitService', () => {
           gitOrganizationType: EnumGitOrganizationType.Organization
         };
         expect(
-          await gitService.createGitRepository(createGitRepositoryInput)
+          await gitService.createRemoteGitRepository(createGitRepositoryInput)
         ).toEqual(EXAMPLE_SERVICE_RESOURCE);
         expect(prismaResourceCreateMock).toBeCalledTimes(1);
       });

@@ -15,7 +15,7 @@ import "./WorkspaceHeader.scss";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { unsetToken } from "../authentication/authentication";
 import MenuItem from "../Layout/MenuItem";
 
@@ -40,6 +40,9 @@ const WorkspaceHeader: React.FC<{}> = () => {
     history.replace("/login");
   }, [history, apolloClient]);
 
+  const location = useLocation();
+  const isProjectRoute = location.pathname === `/${currentWorkspace?.id}/${currentProject?.id}`;
+  const isResourceRoute = location.pathname === `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`;
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
@@ -56,7 +59,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
         <div className={`${CLASS_NAME}__breadcrumbs`}>
           {currentProject && (
             <>
-              <div className={`${CLASS_NAME}__breadcrumbs__project`}>
+              <div className={`${CLASS_NAME}__breadcrumbs__project ${isProjectRoute ? "highlight" : ""}`}>
                 <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
                   {currentProject?.name}
                 </Link>
@@ -68,15 +71,12 @@ const WorkspaceHeader: React.FC<{}> = () => {
                 <SelectMenu
                   css={undefined}
                   title={
-                    <p
-                      className={`${CLASS_NAME}__breadcrumbs__resource__title ${CLASS_NAME}__breadcrumbs__resource__title${
-                        currentResource ? "__selected" : "__not_selected"
-                      }`}
-                    >
-                      {currentResource ? currentResource.name : "Resource List"}
+                    <p className={`${CLASS_NAME}__breadcrumbs__resource__title`}>
+                      {isResourceRoute && currentResource ? currentResource.name : "Resource List"}
                     </p>
                   }
                   buttonStyle={EnumButtonStyle.Text}
+                  buttonClassName={isResourceRoute ? "highlight" : ""}
                   icon="chevron_down"
                   openIcon="chevron_up"
                   className={`${CLASS_NAME}__breadcrumbs__menu`}
@@ -159,7 +159,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="search"
-                iconSize="medium"
+                iconSize="xsmall"
               />
             </Tooltip>
           }

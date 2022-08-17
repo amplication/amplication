@@ -310,25 +310,43 @@ $bullet-size: 6px;
 
   > * {
     margin-bottom: var(--large-spacing);
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
+  
   &__instructions {
     @include body2;
     color: var(--black100);
     margin-bottom: var(--double-spacing);
     text-align: center;
+    font-size: var(--title5-font-size);
   }
 
   .text-input {
     input {
       max-width: none;
     }
+
+    label {
+      margin: 0;
+    }
+
+    &.text-input--has-error {
+      .amplication-label__error {
+        margin: var(--default-spacing);
+      }
+    }
   }
 
   form {
     width: 100%;
   }
+
   .amp-button {
-    margin-top: var(--double-spacing);
+    font-size: var(--title3-font-size);
+    font-weight: 600;
+    margin-top: var(--large-spacing);
     margin-bottom: 0;
     width: 100%;
   }
