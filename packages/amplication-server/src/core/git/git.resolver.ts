@@ -20,6 +20,7 @@ import { RemoteGitRepositoriesFindManyArgs } from './dto/args/RemoteGitRepositor
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitProviderService } from './git.provider.service';
+import { DisconnectGitRepositoryArgs } from './dto/args/DisconnectGitRepositoryArgs';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -81,6 +82,14 @@ export class GitResolver {
     @Args() args: DeleteGitOrganizationArgs
   ): Promise<boolean> {
     return this.gitService.deleteGitOrganization(args);
+  }
+
+  @Mutation(() => Resource)
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'resourceId')
+  async disconnectResourceGitRepository(
+    @Args() args: DisconnectGitRepositoryArgs
+  ): Promise<Resource> {
+    return this.gitService.disconnectResourceGitRepository(args.resourceId);
   }
 
   @Mutation(() => AuthorizeResourceWithGitResult)

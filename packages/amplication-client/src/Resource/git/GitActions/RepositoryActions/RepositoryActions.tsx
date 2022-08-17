@@ -10,14 +10,14 @@ import { EnumGitOrganizationType } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
 import {
   GitOrganizationFromGitRepository,
-  GitRepositoryWithGitOrganization,
+  ResourceWithGitRepository,
 } from "../../SyncWithGithubPage";
 import GithubSyncDetails from "./GithubSyncDetails";
 import "./RepositoryActions.scss";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
-  currentConnectedGitRepository: GitRepositoryWithGitOrganization | null;
+  currentConnectedGitRepository: ResourceWithGitRepository | null;
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
 };
 
@@ -28,6 +28,7 @@ export default function RepositoryActions({
   currentConnectedGitRepository,
   selectedGitOrganization,
 }: Props) {
+
   return (
     <div className={`${CLASS_NAME}`}>
       <Panel
@@ -36,7 +37,7 @@ export default function RepositoryActions({
       >
         {currentConnectedGitRepository ? (
           <GithubSyncDetails
-            gitRepositoryWithOrganization={currentConnectedGitRepository}
+            resourceWithRepository={currentConnectedGitRepository}
           />
         ) : (
           <div className={`${CLASS_NAME}__select-repo`}>

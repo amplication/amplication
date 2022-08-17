@@ -34,6 +34,7 @@ export const CLASS_NAME = "auth-app-with-github";
 
 function AuthResourceWithGit({ resource, onDone }: Props) {
   const { gitRepository } = resource;
+
   const { currentWorkspace } = useContext(AppContext);
   const  gitOrganizations  = currentWorkspace?.gitOrganizations;
 
@@ -130,7 +131,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
             setCreateNewRepoOpen(true);
           }}
           onSelectRepository={handleSelectRepoDialogOpen}
-          currentConnectedGitRepository={gitRepository}
+          currentConnectedGitRepository={resource}
           selectedGitOrganization={gitOrganization}
         />
 

@@ -19,7 +19,7 @@ import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput'
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
-import { ResourceService } from '../resource/resource.service';
+import { INVALID_RESOURCE_ID, ResourceService } from '../resource/resource.service';
 
 const GIT_REPOSITORY_EXIST =
   'Git Repository already connected to an other Resource';
@@ -78,16 +78,48 @@ export class GitProviderService {
         id: args.gitRepositoryId
       }
     });
+
     if (isEmpty(gitRepository)) {
       throw new AmplicationError(INVALID_GIT_REPOSITORY_ID);
     }
-    await this.prisma.gitRepository.delete({
-      where: {
-        id: args.gitRepositoryId
-      }
-    });
+
+    try {
+      await this.prisma.gitRepository.delete({
+        where: {
+          id: args.gitRepositoryId
+        }
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+
     return true;
   }
+
+
+  async disconnectResourceGitRepository (resourceId: string ):Promise<Resource> {
+   
+    const resourceGitRepository = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId
+      }
+    }).gitRepository(); 
+
+    if(isEmpty(resourceGitRepository))
+    throw new AmplicationError(INVALID_RESOURCE_ID);
+
+   const resource = await this.prisma.resource.update({
+      where:{
+        id: resourceId
+      },
+      data:{
+        gitRepository : undefined
+      }
+    }); 
+
+    return resource;
+
+  } 
 
   async connectResourceGitRepository({
     resourceId,
