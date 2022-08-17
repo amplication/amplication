@@ -5,42 +5,54 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Label,
+  formatTimeToNow,
+  CircleBadge,
 } from "@amplication/design-system";
 import React from "react";
-import { Resource, Build } from "../models";
+import { Resource } from "../models";
 import { BuildSelectorItem } from "./BuildSelectorItem";
 import "./BuildSelector.scss";
 
 const CLASS_NAME = "build-selector";
 
 type Props = {
-  builds: Build[];
-  selectedBuild: Build | null;
+  resources: Resource[];
+  selectedResource: Resource | null;
   resource: Resource;
-  onSelectBuild: (commit: Build) => void;
+  onSelectResource: (resource: Resource) => void;
 };
 
-const BuildSelector = ({
-  builds,
+const ResourceSelector = ({
+  resources,
   resource,
-  onSelectBuild,
-  selectedBuild,
+  onSelectResource,
+  selectedResource,
 }: Props) => {
+  const createdAtHour = selectedResource
+    ? formatTimeToNow(new Date(selectedResource?.createdAt))
+    : null;
+
+  const createdHourStyle = () => (
+    <label className={`${CLASS_NAME}__hour`}>{createdAtHour}</label>
+  );
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__label-title`}>
-        <Label text="Select build" />
+        <Label text="Select resource" />
       </div>
       <SelectMenu
         title={
-          <BuildSelectorItem
-            title={
-              selectedBuild?.message
-                ? selectedBuild?.message
-                : selectedBuild?.createdAt
-            }
-            resource={resource}
-          />
+          <div className="build-selector-item">
+            <CircleBadge
+              name={selectedResource?.name}
+              color={selectedResource?.color}
+            />
+            <div className={"title"}>
+              {selectedResource?.name}
+              <div>{createdHourStyle()}</div>
+            </div>
+          </div>
         }
         buttonStyle={EnumButtonStyle.Secondary}
         className={`${CLASS_NAME}__menu`}
@@ -49,17 +61,17 @@ const BuildSelector = ({
         <SelectMenuModal css={undefined}>
           <SelectMenuList style={{ width: "264px" }}>
             <>
-              {builds.map((build) => (
+              {resources.map((resource) => (
                 <SelectMenuItem
                   closeAfterSelectionChange
-                  selected={build.id === selectedBuild?.id}
-                  key={build.id}
+                  selected={resource.id === selectedResource?.id}
+                  key={resource.id}
                   onSelectionChange={() => {
-                    onSelectBuild(build);
+                    onSelectResource(resource);
                   }}
                 >
                   <BuildSelectorItem
-                    title={build.message ? build.message : build.createdAt}
+                    title={resource.name}
                     resource={resource}
                     type="list"
                   />
@@ -73,4 +85,4 @@ const BuildSelector = ({
   );
 };
 
-export default BuildSelector;
+export default ResourceSelector;
