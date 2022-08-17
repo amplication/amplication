@@ -80,6 +80,9 @@ const DISCONNECT_GIT_REPOSITORY = gql`
   mutation disconnectGitRepository($resourceId: String!) {
     disconnectResourceGitRepository(resourceId: $resourceId) {
       id
+      gitRepository {
+        id
+      }
     }
   }
 `;

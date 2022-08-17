@@ -59,7 +59,7 @@ const CodeViewExplorer: React.FC<Props> = ({ resource, onFileSelected }) => {
           onSelectBuild={handleSelectedBuild}
         />
       </div>
-      {selectedBuild && (
+      {selectedBuild && (  
         <CodeViewExplorerTree
           selectedBuild={selectedBuild}
           onFileSelected={onFileSelected}
