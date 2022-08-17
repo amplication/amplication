@@ -306,45 +306,6 @@ export class BuildService {
 
     return BuildStatusDto.Running;
   }
-
-  async updateRunId(buildId: string, runId: string): Promise<void> {
-    await this.prisma.build.update({
-      where: { id: buildId },
-      data: {
-        runId: runId
-      }
-    });
-  }
-
-  async updateStateByRunId(runId: string, status: BuildStatus): Promise<void> {
-    const build = await this.findByRunId(runId);
-    await this.prisma.actionStep.updateMany({
-      where: {
-        actionId: build.actionId,
-        name: StepName.Generate
-      },
-      data: {
-        status: this.mapBuildStatusToActionStepStatus(status)
-      }
-    });
-  }
-
-  private mapBuildStatusToActionStepStatus(status: BuildStatus): EnumActionStepStatus {
-    switch (status) {
-      case BuildStatus.Init:
-        return EnumActionStepStatus.Running;
-      case BuildStatus.InProgress:
-        return EnumActionStepStatus.Running;
-      case BuildStatus.Succeeded:
-        return EnumActionStepStatus.Running;
-      case BuildStatus.Failed:
-        return EnumActionStepStatus.Failed;
-      case BuildStatus.Stopped:
-        return EnumActionStepStatus.Failed;
-      case BuildStatus.Ready:
-        return EnumActionStepStatus.Success;
-    }
-  }
   /**
    *
    * Give the ReadableStream of the build zip file
@@ -512,14 +473,19 @@ export class BuildService {
   private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
     const resource = build.resource;
 
-    const resourceRepository = await this.prisma.gitRepository.findUnique({
-      where: {
-        resourceId: resource.id
-      },
-      include: {
-        gitOrganization: true
+    const resourceRepository = await this.resourceService.gitRepository(
+      resource.id
+    );
+
+    if (!resourceRepository) {
+      return;
+    }
+
+    const gitOrganization = await this.resourceService.gitOrganizationByResource(
+      {
+        where: { id: resourceRepository.id }
       }
-    });
+    );
 
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
@@ -542,12 +508,11 @@ export class BuildService {
           try {
             const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
               {
-                gitOrganizationName: resourceRepository.gitOrganization.name,
+                gitOrganizationName: gitOrganization.name,
                 gitRepositoryName: resourceRepository.name,
                 resourceId: resource.id,
                 gitProvider: EnumGitProvider.Github,
-                installationId:
-                  resourceRepository.gitOrganization.installationId,
+                installationId: gitOrganization.installationId,
                 newBuildId: build.id,
                 oldBuildId,
                 commit: {
@@ -558,9 +523,9 @@ export class BuildService {
                 
                 ${url}
                 `
-                }
               }
-            );
+            }
+          );
 
             await this.resourceService.reportSyncMessage(
               build.resourceId,

@@ -48,6 +48,7 @@ import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationP
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { DEFAULT_RESOURCE_COLORS } from './constants';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
+import { ProjectService } from '../project/project.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
@@ -93,10 +94,6 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_USER_RESOURCE_ROLE = {
-  name: 'user',
-  displayName: 'User'
-};
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -229,7 +226,6 @@ const EXAMPLE_BUILD: Build = {
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: 'exampleGitRepositoryId',
   name: 'repositoryTest',
-  resourceId: 'exampleResourceId',
   gitOrganizationId: 'exampleGitOrganizationId',
   createdAt: new Date(),
   updatedAt: new Date()
@@ -413,6 +409,10 @@ describe('ResourceService', () => {
         {
           provide: ProjectConfigurationSettingsService,
           useClass: jest.fn(() => ({}))
+        },
+        {
+          provide: ProjectService,
+          useClass: jest.fn(() => ({}))
         }
       ]
     }).compile();
@@ -440,19 +440,6 @@ describe('ResourceService', () => {
         }
       },
       user: EXAMPLE_USER
-    };
-    const prismaResourceCreateResourceArgs = {
-      data: {
-        ...createResourceArgs.args.data,
-        project: {
-          connect: {
-            id: createResourceArgs.args.data.project.connect.id
-          }
-        },
-        roles: {
-          create: EXAMPLE_USER_RESOURCE_ROLE
-        }
-      }
     };
     const commitArgs = {
       data: {
@@ -515,9 +502,6 @@ describe('ResourceService', () => {
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(
-      prismaResourceCreateResourceArgs
-    );
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledTimes(1);
     expect(entityServiceCreateDefaultEntitiesMock).toBeCalledWith(
       EXAMPLE_RESOURCE_ID,
@@ -603,15 +587,6 @@ describe('ResourceService', () => {
   });
 
   it('should create resource with entities', async () => {
-    const prismaResourceCreateResourceArgs = {
-      data: {
-        ...DEFAULT_SERVICE_DATA,
-        ...SAMPLE_SERVICE_DATA,
-        roles: {
-          create: EXAMPLE_USER_RESOURCE_ROLE
-        }
-      }
-    };
     const initialCommitArgs = {
       data: {
         message: INITIAL_COMMIT_MESSAGE,
@@ -725,9 +700,6 @@ describe('ResourceService', () => {
       )
     ).resolves.toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
-    expect(prismaResourceCreateMock).toBeCalledWith(
-      prismaResourceCreateResourceArgs
-    );
 
     expect(prismaResourceFindManyMock).toBeCalledTimes(3);
     expect(prismaResourceFindManyMock.mock.calls).toEqual([

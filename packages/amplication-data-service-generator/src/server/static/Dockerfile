@@ -1,7 +1,5 @@
 FROM node:16-alpine AS base
 
-# Define how verbose should npm install be
-ARG NPM_LOG_LEVEL=silent
 # Hide Open Collective message from install logs
 ENV OPENCOLLECTIVE_HIDE=1
 # Hiden NPM security message from install logs

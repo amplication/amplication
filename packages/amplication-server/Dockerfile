@@ -1,7 +1,6 @@
 ARG NODE_VERSION=16.16-alpine
 
 FROM node:$NODE_VERSION AS base
-ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
 
 RUN npm config set fund false
