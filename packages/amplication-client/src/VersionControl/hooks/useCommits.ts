@@ -15,20 +15,20 @@ const useCommits = () => {
   } = useQuery(GET_COMMITS, {
     skip: !currentProject?.id && !commits.length,
     variables: {
-      projectId: currentProject?.id
+      projectId: currentProject?.id,
     },
   });
 
   useEffect(() => {
-    if(!commitsData) return;
+    if (!commitsData) return;
     setCommits(commitsData.commits);
-  },[commitsData])
+  }, [commitsData]);
 
   return {
     commits,
     commitsError,
-    commitsLoading
-  }
+    commitsLoading,
+  };
 };
 
 export default useCommits;
