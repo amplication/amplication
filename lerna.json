@@ -1,17 +1,15 @@
 {
+  "useNx": true,
   "packages": [
     "packages/*",
     "ee/packages/*",
     "packages/amplication-data-service-generator/src/admin/static/",
     "packages/amplication-data-service-generator/src/server/static/"
   ],
-  "version": "0.14.11",
+  "version": "0.14.12",
   "command": {
     "bootstrap": {
-      "ignore": [
-        "admin-template",
-        "server-template"
-      ]
+      "ignore": ["admin-template", "server-template"]
     }
   }
 }

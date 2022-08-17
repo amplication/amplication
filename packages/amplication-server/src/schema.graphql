@@ -679,12 +679,13 @@ input ProjectWhereInput {
   id: String
   deletedAt: DateTimeFilter
   name: StringFilter
+  resources: ResourceListRelationFilter
 }
 
-input ProjectOrderByInput {
-  id: SortOrder
-  deletedAt: SortOrder
-  name: SortOrder
+input ResourceListRelationFilter {
+  every: ResourceWhereInput
+  some: ResourceWhereInput
+  none: ResourceWhereInput
 }
 
 input PendingChangesFindInput {
@@ -698,6 +699,13 @@ input ResourceWhereInput {
   name: StringFilter
   description: StringFilter
   project: WhereUniqueInput
+  projectId: String
+}
+
+input ProjectOrderByInput {
+  id: SortOrder
+  deletedAt: SortOrder
+  name: SortOrder
 }
 
 input ResourceOrderByInput {
@@ -1162,6 +1170,7 @@ input ResourceUpdateInput {
   name: String
   description: String
   color: String
+  gitRepositoryOverride: Boolean
 }
 
 input EntityCreateInput {
