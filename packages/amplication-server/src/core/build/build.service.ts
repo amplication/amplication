@@ -500,14 +500,19 @@ export class BuildService {
   private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
     const resource = build.resource;
 
-    const resourceRepository = await this.prisma.gitRepository.findUnique({
-      where: {
-        resourceId: resource.id
-      },
-      include: {
-        gitOrganization: true
+    const resourceRepository = await this.resourceService.gitRepository(
+      resource.id
+    );
+
+    if (!resourceRepository) {
+      return;
+    }
+
+    const gitOrganization = await this.resourceService.gitOrganizationByResource(
+      {
+        where: { id: resourceRepository.id }
       }
-    });
+    );
 
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
@@ -530,12 +535,11 @@ export class BuildService {
           try {
             const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
               {
-                gitOrganizationName: resourceRepository.gitOrganization.name,
+                gitOrganizationName: gitOrganization.name,
                 gitRepositoryName: resourceRepository.name,
                 resourceId: resource.id,
                 gitProvider: EnumGitProvider.Github,
-                installationId:
-                  resourceRepository.gitOrganization.installationId,
+                installationId: gitOrganization.installationId,
                 newBuildId: build.id,
                 oldBuildId,
                 commit: {
@@ -546,9 +550,9 @@ export class BuildService {
                 
                 ${url}
                 `
-                }
               }
-            );
+            }
+          );
 
             await this.resourceService.reportSyncMessage(
               build.resourceId,

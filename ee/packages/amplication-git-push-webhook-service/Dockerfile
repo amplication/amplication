@@ -1,9 +1,8 @@
-ARG NODE_VERSION=16.16-alpine
+ARG NODE_VERSION=16.16
 
 FROM node:$NODE_VERSION AS base
 
 ARG NPM_VERSION=8.1.2
-ENV NPM_CONFIG_LOGLEVEL=silent
 ENV OPENCOLLECTIVE_HIDE=1
  
 RUN npm install --global npm@$NPM_VERSION
@@ -32,7 +31,7 @@ RUN npm run clean -- --yes
 # Rebuild production node_modules
 RUN npm run bootstrap -- -- --production --scope @amplication/git-push-webhook-service --include-dependencies
 
-FROM base as server
+FROM node:$NODE_VERSION-alpine as server
 WORKDIR /app/ee/packages/amplication-git-push-webhook-service
 # Copy all distributions and node_modules for amplication-git-push-webhook-service  and its dependencies
 COPY --from=build /app/ee/packages/amplication-git-push-webhook-service/package.json /app/ee/packages/amplication-git-push-webhook-service/package.json

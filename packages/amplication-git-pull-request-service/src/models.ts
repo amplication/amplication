@@ -1406,6 +1406,7 @@ export type ProjectWhereInput = {
   deletedAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<StringFilter>;
+  resources?: InputMaybe<ResourceListRelationFilter>;
 };
 
 export type PropertySelector = {
@@ -1688,6 +1689,12 @@ export type ResourceGenSettingsCreateInput = {
   generateRestApi: Scalars['Boolean'];
 };
 
+export type ResourceListRelationFilter = {
+  every?: InputMaybe<ResourceWhereInput>;
+  none?: InputMaybe<ResourceWhereInput>;
+  some?: InputMaybe<ResourceWhereInput>;
+};
+
 export type ResourceOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
@@ -1741,6 +1748,7 @@ export type ResourceRoleWhereInput = {
 export type ResourceUpdateInput = {
   color?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
+  gitRepositoryOverride?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;
 };
 
@@ -1750,6 +1758,7 @@ export type ResourceWhereInput = {
   id?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<StringFilter>;
   project?: InputMaybe<WhereUniqueInput>;
+  projectId?: InputMaybe<Scalars['String']>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 

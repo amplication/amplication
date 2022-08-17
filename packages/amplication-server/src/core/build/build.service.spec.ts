@@ -33,6 +33,7 @@ import { GitService } from '@amplication/git-service/';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
+import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
 import { BuildContextStorageService } from './buildContextStorage.service';
 
 jest.mock('winston');
@@ -296,6 +297,9 @@ const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 
 const getServiceSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
 
+const getGitRepository = jest.fn(() => null);
+const getGitOrganization = jest.fn(() => EXAMPLE_GIT_ORGANIZATION);
+
 describe('BuildService', () => {
   let service: BuildService;
 
@@ -356,7 +360,9 @@ describe('BuildService', () => {
         {
           provide: ResourceService,
           useValue: {
-            resource: resourceServiceGetResourceMock
+            resource: resourceServiceGetResourceMock,
+            gitRepository: getGitRepository,
+            gitOrganizationByResource: getGitOrganization
           }
         },
         {
