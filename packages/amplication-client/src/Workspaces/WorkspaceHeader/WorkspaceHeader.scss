@@ -84,6 +84,7 @@ $modal-menu-top: 30px;
         display: flex;
         flex-direction: row;
         justify-content: center;
+        align-items: center;
       }
       &__icon {
         color: var(--black100);
