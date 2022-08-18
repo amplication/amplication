@@ -88,5 +88,23 @@
       "envFile": "${workspaceFolder}/packages/amplication-build-manager-service/.env",
       "cwd": "${workspaceRoot}/packages/amplication-build-manager-service"
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug SQS Kafka Proxy",
+      "args": [
+          "${workspaceFolder}/packages/amplication-kafka-proxy/src/main.ts"
+      ],
+      "runtimeArgs": [
+          "--nolazy",
+          "-r",
+          "ts-node/register",
+          "-r",
+          "tsconfig-paths/register"
+      ],
+      "sourceMaps": true,
+      "envFile": "${workspaceFolder}/packages/amplication-kafka-proxy/.env",
+      "cwd": "${workspaceRoot}/packages/amplication-kafka-proxy"
+    },
   ]
 }
