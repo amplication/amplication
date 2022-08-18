@@ -44,6 +44,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     onCompleted: (commit) => {
       setCommitRunning(false);
       setPendingChangesError(false);
+      resetPendingChanges();
       addChange(commit.id);
     },
     refetchQueries: [
