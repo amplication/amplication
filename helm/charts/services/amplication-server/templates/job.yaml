@@ -3,13 +3,13 @@ kind: Job
 metadata:
   name: "{{ .Values.name }}-migrate"
 spec:
-  ttlSecondsAfterFinished: 30
+  # ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: "{{ .Values.name }}-migrate"
     spec:
       restartPolicy: Never
-      initContainers:
+      containers:
       - name: "{{ .Values.name }}-migrate"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         command: ["/bin/sh"]
