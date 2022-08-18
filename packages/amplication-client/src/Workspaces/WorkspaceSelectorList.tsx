@@ -37,9 +37,11 @@ function WorkspaceSelectorList({
               selected={selectedWorkspace.id === workspace.id}
               key={workspace.id}
             />
-          ))}
+            ))}
+            
+          <hr className={`${CLASS_NAME}__divider`} />
+          
           <div className={`${CLASS_NAME}__new`}>
-            <hr className={`${CLASS_NAME}__divider`} />
             <Button
               buttonStyle={EnumButtonStyle.Text}
               disabled={loading}

@@ -94,10 +94,16 @@ $modal-menu-top: 30px;
       }
     }
   }
+
   &__right {
     @include flexFullRowWithSpacingBothSides;
     padding: var(--default-spacing);
     justify-content: flex-end;
+  }
+
+  &__divider {
+    border: $border-black5;
+    margin: var(--form-field-spacing) 0;
   }
 
   &__links {
@@ -107,6 +113,7 @@ $modal-menu-top: 30px;
       color: var(--black80);
     }
   }
+
   &__vertical_border {
     width: 1px;
     height: var(--large-spacing);
@@ -114,9 +121,11 @@ $modal-menu-top: 30px;
     border: none;
     margin: 0;
   }
+
   &__resources_modal {
     top: $modal-menu-top;
   }
+  
   &__user_badge_wrapper {
     padding: var(--user-badge-spacing);
   }

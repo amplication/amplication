@@ -18,11 +18,12 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
-import { Commit, User } from 'src/models';
+import { Commit, Resource, User } from 'src/models';
 import { UserService } from '../user/user.service';
 import { Action } from '../action/dto';
 import { ActionService } from '../action/action.service';
 import { CommitService } from '../commit/commit.service';
+import { ResourceService } from '../resource/resource.service';
 import { BuildStatus } from './dto/BuildStatus';
 
 @Resolver(() => Build)
@@ -33,7 +34,8 @@ export class BuildResolver {
     private readonly service: BuildService,
     private readonly userService: UserService,
     private readonly actionService: ActionService,
-    private readonly commitService: CommitService
+    private readonly commitService: CommitService,
+    private readonly resourceService: ResourceService
   ) {}
 
   @Query(() => [Build])
@@ -61,6 +63,11 @@ export class BuildResolver {
   @ResolveField()
   async commit(@Parent() build: Build): Promise<Commit> {
     return this.commitService.findOne({ where: { id: build.commitId } });
+  }
+
+  @ResolveField()
+  async resource(@Parent() build: Build): Promise<Resource> {
+    return this.resourceService.resource({ where: { id: build.resourceId } });
   }
 
   @ResolveField()

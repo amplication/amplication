@@ -1,19 +1,32 @@
 @import "../style/index.scss";
 
+$before-spacing-left: 10px;
+$before-spacing: -6px;
+
 .pending-change {
   margin-left: 0;
   margin-right: 0;
   margin-bottom: var(--default-spacing);
+  position: relative;
   @include flexFullRow;
+
+  &:last-child {
+    margin-bottom: var(--double-spacing);
+  }
+
+  &__link {
+    font-size: var(--title2-font-size);
+  }
 
   &__spacer {
     flex: 1;
   }
   &__action {
-    height: var(--double-spacing);
-    width: var(--double-spacing);
-    min-width: var(--double-spacing);
-    min-height: var(--double-spacing);
+    height: var(--large-spacing);
+    width: var(--large-spacing);
+    font-size: var(--text-field-label-font-size);
+    min-width: var(--medium-spacing);
+    min-height: var(--medium-spacing);
     border-radius: 2px;
     display: flex;
     align-items: center;
@@ -22,6 +35,16 @@
     margin-bottom: 0;
     margin-left: var(--double-spacing);
     margin-right: var(--default-spacing);
+
+    &::before {
+      content: "";
+      position: absolute;
+      display: block;
+      left: $before-spacing-left;
+      border-right: 1px solid var(--black30);
+      top: $before-spacing;
+      bottom: $before-spacing;
+    }
 
     &.update {
       background-color: var(--secondary-light-blue);

@@ -13,6 +13,7 @@
         0 !important;
       margin-bottom: var(--default-spacing-small);
     }
+
     input {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
@@ -68,9 +69,9 @@
     textarea {
       border-color: var(--negative);
 
-      &:active,
-      &:hover,
-      &:focus {
+      &:active:not(:disabled),
+      &:hover:not(:disabled),
+      &:focus:not(:disabled) {
         border-color: var(--negative);
       }
     }

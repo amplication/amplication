@@ -3,17 +3,11 @@ import { Formik, Form } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
-import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { GET_LAST_COMMIT } from "./LastCommit";
 import { TextField, Snackbar } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./Commit.scss";
-import {
-  CREATED_AT_FIELD,
-  GET_BUILDS_COMMIT,
-} from "../Resource/code-view/CodeViewExplorer";
-import { SortOrder } from "../models";
 import { AppContext } from "../context/appContext";
 
 type TCommit = {
@@ -25,7 +19,7 @@ const INITIAL_VALUES: TCommit = {
 };
 
 type Props = {
-  resourceId: string;
+  projectId: string;
   noChanges: boolean;
 };
 const CLASS_NAME = "commit";
@@ -34,11 +28,12 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ resourceId, noChanges }: Props) => {
+const Commit = ({ projectId, noChanges }: Props) => {
   const {
     setCommitRunning,
     resetPendingChanges,
     setPendingChangesError,
+    addChange,
   } = useContext(AppContext);
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onError: () => {
@@ -46,30 +41,16 @@ const Commit = ({ resourceId, noChanges }: Props) => {
       setPendingChangesError(true);
       resetPendingChanges();
     },
-    onCompleted: () => {
+    onCompleted: (commit) => {
       setCommitRunning(false);
       setPendingChangesError(false);
+      addChange(commit.id);
     },
     refetchQueries: [
       {
-        query: GET_PENDING_CHANGES,
-        variables: {
-          resourceId,
-        },
-      },
-      {
         query: GET_LAST_COMMIT,
         variables: {
-          resourceId,
-        },
-      },
-      {
-        query: GET_BUILDS_COMMIT,
-        variables: {
-          resourceId,
-          orderBy: {
-            [CREATED_AT_FIELD]: SortOrder.Desc,
-          },
+          projectId,
         },
       },
     ],
@@ -81,7 +62,7 @@ const Commit = ({ resourceId, noChanges }: Props) => {
       commit({
         variables: {
           message: data.message,
-          resourceId,
+          projectId,
         },
       }).catch(console.error);
       resetForm(INITIAL_VALUES);
@@ -91,7 +72,7 @@ const Commit = ({ resourceId, noChanges }: Props) => {
     [
       setCommitRunning,
       commit,
-      resourceId,
+      projectId,
       setPendingChangesError,
       resetPendingChanges,
     ]
@@ -150,9 +131,9 @@ const Commit = ({ resourceId, noChanges }: Props) => {
 export default Commit;
 
 const COMMIT_CHANGES = gql`
-  mutation commit($message: String!, $resourceId: String!) {
+  mutation commit($message: String!, $projectId: String!) {
     commit(
-      data: { message: $message, resource: { connect: { id: $resourceId } } }
+      data: { message: $message, project: { connect: { id: $projectId } } }
     ) {
       id
     }

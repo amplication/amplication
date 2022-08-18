@@ -91,6 +91,7 @@ export {
 
 export {
   UserAndTime,
+  formatTimeToNow,
   Props as UserAndTimeProps,
 } from "./components/UserAndTime/UserAndTime";
 

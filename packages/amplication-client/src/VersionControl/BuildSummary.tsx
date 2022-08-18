@@ -5,7 +5,6 @@ import { isEmpty } from "lodash";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
-import { EnumButtonStyle, Button } from "../Components/Button";
 import { downloadArchive } from "./BuildSteps";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
@@ -14,7 +13,7 @@ import { GET_RESOURCE } from "../Resource/ResourceHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
-import { CircularProgress, Icon, Tooltip } from "@amplication/design-system";
+import { CircularProgress, Icon, Tooltip, Button, EnumButtonStyle } from "@amplication/design-system";
 
 const CLASS_NAME = "build-summary";
 
