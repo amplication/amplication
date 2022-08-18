@@ -498,10 +498,9 @@ export class BuildService {
   }
 
   private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
-    const resource = build.resource;
 
     const resourceRepository = await this.resourceService.gitRepository(
-      resource.id
+      build.resourceId
     );
 
     if (!resourceRepository) {
@@ -537,7 +536,7 @@ export class BuildService {
               {
                 gitOrganizationName: gitOrganization.name,
                 gitRepositoryName: resourceRepository.name,
-                resourceId: resource.id,
+                resourceId: build.resourceId,
                 gitProvider: EnumGitProvider.Github,
                 installationId: gitOrganization.installationId,
                 newBuildId: build.id,
