@@ -25,7 +25,7 @@ cp-helm-charts:
     resources: {}
     heapOptions: "-Xms512M -Xmx512M"
     nodeSelector:
-      app: kafka
+      role: kafka
     tolerations:
       - key: "kafka"
         operator: "Equal"
@@ -43,7 +43,7 @@ cp-helm-charts:
     persistence:
       enabled: true
     nodeSelector:
-      app: kafka
+      role: kafka
     tolerations:
       - key: "kafka"
         operator: "Equal"
