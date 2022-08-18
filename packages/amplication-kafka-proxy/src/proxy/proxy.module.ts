@@ -3,6 +3,8 @@ import { ClientsModule } from '@nestjs/microservices';
 import { ProxyService } from './proxy.service';
 import { ConfigService } from '@nestjs/config';
 import { generateKafkaConfig } from 'src/utils/generate-kafka-config';
+import { AmplicationLoggerModule } from '@amplication/nest-logger-module';
+import { SERVICE_NAME } from 'src/utils/constants';
 
 @Module({
   imports: [
@@ -16,6 +18,9 @@ import { generateKafkaConfig } from 'src/utils/generate-kafka-config';
         },
       },
     ]),
+    AmplicationLoggerModule.register({
+      metadata: { service: SERVICE_NAME },
+    }),
   ],
   providers: [ProxyService, ConfigService],
 })

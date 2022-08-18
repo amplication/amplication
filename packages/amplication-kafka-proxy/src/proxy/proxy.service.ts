@@ -24,7 +24,6 @@ export class ProxyService {
     const subscription = Consumer.create({
       queueUrl,
       handleMessage: async (message) => {
-        console.log('received message', message);
         this.forwardMessageToKafka(message.Body);
       },
     });

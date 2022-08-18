@@ -1,7 +1,6 @@
 import { KafkaOptions, Transport } from '@nestjs/microservices';
 
 export const generateKafkaConfig = (): KafkaOptions => {
-  console.log('env', process.env.KAFKA_BROKERS);
   const brokers = process.env.KAFKA_BROKERS;
 
   return {
