@@ -688,10 +688,6 @@ input ResourceListRelationFilter {
   none: ResourceWhereInput
 }
 
-input PendingChangesFindInput {
-  project: WhereUniqueInput!
-}
-
 input ResourceWhereInput {
   id: String
   createdAt: DateTimeFilter
@@ -706,6 +702,10 @@ input ProjectOrderByInput {
   id: SortOrder
   deletedAt: SortOrder
   name: SortOrder
+}
+
+input PendingChangesFindInput {
+  project: WhereUniqueInput!
 }
 
 input ResourceOrderByInput {
