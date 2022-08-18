@@ -17,8 +17,8 @@ const useCommits = () => {
     variables: {
       projectId: currentProject?.id,
       orderBy: {
-        createdAt : SortOrder.Desc,
-      }
+        createdAt: SortOrder.Desc,
+      },
     },
   });
 

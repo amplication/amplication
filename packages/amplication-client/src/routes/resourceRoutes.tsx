@@ -13,6 +13,23 @@ const resourceRoutes = [
     routes: resourceEntitiesRoutes,
   },
   {
+    path:
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/builds/:build([A-Za-z0-9-]{20,})",
+    Component: lazy(() => import("../VersionControl/BuildPage")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: true,
+  },
+  {
+    path:
+      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/changes",
+    Component: lazy(() => import("../VersionControl/ChangesPage")),
+    moduleName: "ChangesPage",
+    moduleClass: "changes-page",
+    routeTrackType: "",
+    exactPath: true,
+  },
+  {
     path: "/:workspace/:project/:resource/roles",
     Component: lazy(() => import("../Roles/RolesPage")),
     moduleName: "",

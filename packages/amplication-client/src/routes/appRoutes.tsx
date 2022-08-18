@@ -40,6 +40,17 @@ export const Routes: RouteDef[] = [
           },
           {
             path:
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
+            Component: lazy(
+              () => import("../VersionControl/PendingChangesPage")
+            ),
+            moduleName: "PendingChangesPage",
+            moduleClass: "pending-changes-page",
+            routeTrackType: "",
+            exactPath: true,
+          },
+          {
+            path:
               "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
             Component: lazy(
               () => import("../Resource/create-resource/CreateServiceWizard")

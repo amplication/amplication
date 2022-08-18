@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useContext } from "react";
 import { match } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import { MultiStateToggle } from "@amplication/design-system";
@@ -14,7 +13,6 @@ type Props = {
 };
 
 const CLASS_NAME = "pending-changes-page";
-const NAVIGATION_KEY = "PENDING_CHANGES";
 const SPLIT = "Split";
 const UNIFIED = "Unified";
 
@@ -24,10 +22,8 @@ const OPTIONS = [
 ];
 
 const PendingChangesPage = ({ match }: Props) => {
-  const { project } = match.params;
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Pending Changes";
-  useNavigationTabs(project, NAVIGATION_KEY, match.url, pageTitle);
   const { pendingChanges } = useContext(AppContext);
 
   const handleChangeType = useCallback(
@@ -42,20 +38,16 @@ const PendingChangesPage = ({ match }: Props) => {
   return (
     <>
       <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-        {!pendingChanges.length ? (
-          "loading..."
-        ) : (
-          <div className={`${CLASS_NAME}__header`}>
-            <h1>Pending Changes</h1>
-            <MultiStateToggle
-              label=""
-              name="compareMode"
-              options={OPTIONS}
-              onChange={handleChangeType}
-              selectedValue={splitView ? SPLIT : UNIFIED}
-            />
-          </div>
-        )}
+        <div className={`${CLASS_NAME}__header`}>
+          <h1>Pending Changes</h1>
+          <MultiStateToggle
+            label=""
+            name="compareMode"
+            options={OPTIONS}
+            onChange={handleChangeType}
+            selectedValue={splitView ? SPLIT : UNIFIED}
+          />
+        </div>
         <div className={`${CLASS_NAME}__changes`}>
           {pendingChanges.map((change) => (
             <PendingChangeWithCompare

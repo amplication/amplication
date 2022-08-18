@@ -136,14 +136,6 @@ const COMMIT_CHANGES = gql`
       data: { message: $message, project: { connect: { id: $projectId } } }
     ) {
       id
-      builds {
-        id
-        resource {
-          id
-          name
-          resourceType
-        }
-      }
     }
   }
 `;

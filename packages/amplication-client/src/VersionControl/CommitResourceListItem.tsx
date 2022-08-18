@@ -40,7 +40,7 @@ const CommitResourceListItem = ({ build }: Props) => {
 
             <ClickableId
               label="Build ID"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/commits/builds/${build.id}`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/builds/${build.id}`}
               id={build.id}
               onClick={handleBuildLinkClick}
               eventData={{
@@ -53,14 +53,14 @@ const CommitResourceListItem = ({ build }: Props) => {
       <hr className={`${CLASS_NAME}__divider`} />
       <div className={`${CLASS_NAME}__row`}>
         <Link
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/changes`}
           className={`${CLASS_NAME}__changes-count`}
         >
           {pendingChanges.length} changes
         </Link>
 
         <Link
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/commits/builds/${build.id}`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/builds/${build.id}`}
         >
           view log
         </Link>
