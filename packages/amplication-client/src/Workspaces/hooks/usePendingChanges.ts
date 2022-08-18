@@ -59,15 +59,17 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
   const addEntity = useCallback(
     (entityId: string) => {
       addChange(entityId);
+      refetch();
     },
-    [addChange]
+    [addChange, refetch]
   );
 
   const addBlock = useCallback(
     (blockId: string) => {
       addChange(blockId);
+      refetch();
     },
-    [addChange]
+    [addChange, refetch]
   );
 
   const resetPendingChanges = useCallback(() => {
