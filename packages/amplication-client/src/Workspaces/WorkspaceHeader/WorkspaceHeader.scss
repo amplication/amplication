@@ -71,13 +71,13 @@ $modal-menu-top: 30px;
       .select-menu__list {
         width: $modal-menu-width;
         display: flex;
-        padding: 5px 0px;
         flex-direction: column;
         border: none;
       }
       .select-menu__item {
         padding: 5px;
         margin-bottom: var(--icon-spacing);
+        margin-top: var(--icon-spacing);
       }
       &__item {
         margin-left: var(--text-field-label-font-size);
