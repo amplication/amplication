@@ -7,6 +7,6 @@ async function bootstrap() {
   console.log('env', process.env.KAFKA_BROKERS);
   app.connectMicroservice(generateKafkaConfig());
   app.startAllMicroservices();
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
