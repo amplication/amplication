@@ -1,16 +1,15 @@
 import { CircleBadge, CircularProgress } from "@amplication/design-system";
-import classNames from "classnames";
 import React, { useContext } from "react";
 import { AppContext } from "../context/appContext";
 import MenuItem from "../Layout/MenuItem";
 import { EnumResourceType } from "../models";
-import { LEFT_MENU_CLASS_NAME } from "./constants";
 import {
   linksMap,
   MenuItemLinks,
   resourceMenuLayout,
   setResourceUrlLink,
 } from "./resourceMenuUtils";
+import "./ResourceMenu.scss";
 
 const CLASS_NAME = "resource-menu";
 
@@ -20,7 +19,7 @@ const ResourceMenu: React.FC<{}> = () => {
   );
 
   return currentWorkspace && currentProject && currentResource ? (
-    <div className={classNames([CLASS_NAME, LEFT_MENU_CLASS_NAME])}>
+    <div className={CLASS_NAME}>
       <MenuItem
         className={`${CLASS_NAME}__app-icon`}
         title="Dashboard"

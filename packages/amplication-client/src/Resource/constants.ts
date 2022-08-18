@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import * as models from "../models";
-import "./SideMenu.scss";
 
 const YELLOW = "#F5B82E";
 const RED = "#FF6E6E";
@@ -215,5 +214,3 @@ export const GET_APP_SETTINGS = gql`
     }
   }
 `;
-
-export const LEFT_MENU_CLASS_NAME = "left-menu";
