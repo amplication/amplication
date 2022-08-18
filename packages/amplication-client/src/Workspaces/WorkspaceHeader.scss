@@ -111,6 +111,9 @@ $modal-menu-top: 30px;
     &__link {
       @include regular-12();
       color: var(--black80);
+      &:hover {
+        color: var(--black100);
+      }
     }
   }
 
