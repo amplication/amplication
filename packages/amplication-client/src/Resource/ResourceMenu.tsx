@@ -9,6 +9,7 @@ import {
   resourceMenuLayout,
   setResourceUrlLink,
 } from "./resourceMenuUtils";
+import "./ResourceMenu.scss";
 
 const CLASS_NAME = "resource-menu";
 
