@@ -1,6 +1,6 @@
 import { GET_COMMITS } from "./commitQueries";
 import { useContext, useEffect, useState } from "react";
-import { Commit } from "../../models";
+import { Commit, SortOrder } from "../../models";
 import { useQuery } from "@apollo/client";
 import { AppContext } from "../../context/appContext";
 
@@ -16,6 +16,9 @@ const useCommits = () => {
     skip: !currentProject?.id && !commits.length,
     variables: {
       projectId: currentProject?.id,
+      orderBy: {
+        createdAt : SortOrder.Desc,
+      }
     },
   });
 

@@ -27,7 +27,7 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
           <UserBadge />
           <div className={`${CLASS_NAME}__metadata`}>
             <span className={`${CLASS_NAME}__metadata__message`}>
-              {commit.message || "initial commit"}
+              {commit.message || "no commit message"}
             </span>
             <span className={`${CLASS_NAME}__metadata__created`}>
               {new Date(commit.createdAt).toDateString()}
