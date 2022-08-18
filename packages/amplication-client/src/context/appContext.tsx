@@ -11,6 +11,7 @@ export interface AppContextInterface {
   createNewWorkspaceError: ApolloError | undefined;
   loadingCreateNewWorkspace: boolean;
   currentProject: models.Project | undefined;
+  currentProjectConfiguration: models.Resource | undefined;
   projectsList: models.Project[];
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
@@ -46,6 +47,7 @@ const initialContext: AppContextInterface = {
   createNewWorkspaceError: undefined,
   loadingCreateNewWorkspace: false,
   currentProject: undefined,
+  currentProjectConfiguration: undefined,
   projectsList: [],
   setNewProject: () => {},
   onNewProjectCompleted: () => {},

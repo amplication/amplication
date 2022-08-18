@@ -1,4 +1,4 @@
-@import "../style/index.scss";
+@import "../../style/index.scss";
 
 $logo-header-width: 50px;
 $search-header-width: 52px;
@@ -87,7 +87,7 @@ $modal-menu-top: 30px;
       }
       &__text {
         margin-left: var(--default-spacing-small);
-        @include regular-12();
+        @include regular-14();
         &__desc {
           color: var(--black80);
         }
