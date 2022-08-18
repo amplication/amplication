@@ -20,6 +20,8 @@ $tabs-width: 300px;
     border-radius: var(--default-border-radius);
     border: $border-black10;
     padding: var(--large-spacing);
+    margin-top: var(--large-spacing);
+    margin-bottom: var(--large-spacing);
     box-sizing: border-box;
     overflow: auto;
 
@@ -34,7 +36,7 @@ $tabs-width: 300px;
     overflow: auto;
     height: 100%;
     flex: 1;
-    padding: var(--large-spacing);
+    margin: var(--large-spacing);
     position: relative;
     box-sizing: border-box;
     height: 100%;
