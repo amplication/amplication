@@ -59,7 +59,11 @@ export default function HeaderMenuStaticOptions({
             <div
               className={`${WORK_SPACE_HEADER_CLASS_NAME}__breadcrumbs__resource__item`}
             >
-              <Icon icon={option.icon} size={"small"} />
+              <Icon
+                icon={option.icon}
+                size={"small"}
+                className={`${WORK_SPACE_HEADER_CLASS_NAME}__breadcrumbs__resource__icon`}
+              />
               <span
                 className={`${WORK_SPACE_HEADER_CLASS_NAME}__breadcrumbs__resource__text`}
               >

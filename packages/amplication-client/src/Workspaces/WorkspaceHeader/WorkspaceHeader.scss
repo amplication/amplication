@@ -85,9 +85,13 @@ $modal-menu-top: 30px;
         flex-direction: row;
         justify-content: center;
       }
+      &__icon {
+        color: var(--black100);
+      }
       &__text {
         margin-left: var(--default-spacing-small);
         @include regular-14();
+        color: var(--black100);
         &__desc {
           color: var(--black80);
         }
@@ -125,7 +129,7 @@ $modal-menu-top: 30px;
   &__resources_modal {
     top: $modal-menu-top;
   }
-  
+
   &__user_badge_wrapper {
     padding: var(--user-badge-spacing);
   }
