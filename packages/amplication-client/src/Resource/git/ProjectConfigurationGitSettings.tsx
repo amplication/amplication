@@ -60,8 +60,8 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
           <GithubSyncDetails
             showGitRepositoryBtn={false}
             className={isOverride ? `${CLASS_NAME}__githubSync` : ""}
-            gitRepositoryWithOrganization={
-              projectConfigurationResource.gitRepository
+            resourceWithRepository={
+              projectConfigurationResource
             }
           />
         )}

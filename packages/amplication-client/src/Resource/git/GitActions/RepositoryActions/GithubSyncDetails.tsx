@@ -28,7 +28,7 @@ function GithubSyncDetails({
     disconnectGitRepository,
     { error: disconnectErrorUpdate },
   ] = useMutation(DISCONNECT_GIT_REPOSITORY, {
-    variables: { resourceId: resourceWithRepository.id },
+    variables: { resourceId: resourceWithRepository.id }
   });
 
   const handleDisconnectGitRepository = useCallback(() => {

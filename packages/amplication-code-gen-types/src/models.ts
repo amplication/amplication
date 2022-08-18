@@ -1072,6 +1072,7 @@ export type Mutation = {
   deleteUser?: Maybe<User>;
   deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars["Boolean"]>;
+  disconnectResourceGitRepository: Resource;
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
   inviteUser?: Maybe<Invitation>;
   lockEntity?: Maybe<Entity>;
@@ -1227,6 +1228,10 @@ export type MutationDeleteWorkspaceArgs = {
 
 export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
+};
+
+export type MutationDisconnectResourceGitRepositoryArgs = {
+  resourceId: Scalars["String"];
 };
 
 export type MutationGetGitResourceInstallationUrlArgs = {
@@ -1637,6 +1642,7 @@ export type Resource = {
   githubLastSync?: Maybe<Scalars["DateTime"]>;
   gitRepository?: Maybe<GitRepository>;
   gitRepositoryId?: Maybe<Scalars["String"]>;
+  gitRepositoryOverride: Scalars["Boolean"];
   id: Scalars["String"];
   name: Scalars["String"];
   project?: Maybe<Project>;

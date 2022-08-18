@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -372,11 +370,15 @@ export type ConnectorRestApiCreateInput = {
   authenticationType: EnumConnectorRestApiAuthenticationType;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  httpBasicAuthenticationSettings?: InputMaybe<HttpBasicAuthenticationSettingsInput>;
+  httpBasicAuthenticationSettings?: InputMaybe<
+    HttpBasicAuthenticationSettingsInput
+  >;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  privateKeyAuthenticationSettings?: InputMaybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: InputMaybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
   resource: WhereParentIdInput;
 };
 
@@ -1070,6 +1072,7 @@ export type Mutation = {
   deleteUser?: Maybe<User>;
   deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars['Boolean']>;
+  disconnectResourceGitRepository: Resource;
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
   inviteUser?: Maybe<Invitation>;
   lockEntity?: Maybe<Entity>;
@@ -1225,6 +1228,10 @@ export type MutationDeleteWorkspaceArgs = {
 
 export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
+};
+
+export type MutationDisconnectResourceGitRepositoryArgs = {
+  resourceId: Scalars['String'];
 };
 
 export type MutationGetGitResourceInstallationUrlArgs = {
@@ -1635,6 +1642,7 @@ export type Resource = {
   githubLastSync?: Maybe<Scalars['DateTime']>;
   gitRepository?: Maybe<GitRepository>;
   gitRepositoryId?: Maybe<Scalars['String']>;
+  gitRepositoryOverride: Scalars['Boolean'];
   id: Scalars['String'];
   name: Scalars['String'];
   project?: Maybe<Project>;

@@ -86,12 +86,11 @@ export class Resource {
   @Field(() => EnumResourceType, { nullable: false })
   resourceType!: keyof typeof EnumResourceType;
 
-
   @Field(() => Boolean, {
-    nullable: true
+    nullable: false
   })
-  gitRepositoryOverride?: boolean;
-  
+  gitRepositoryOverride!: boolean;
+
   // no need to expose to GraphQL
   deletedAt?: Date;
 }

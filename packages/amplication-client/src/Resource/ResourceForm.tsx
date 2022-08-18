@@ -150,7 +150,7 @@ function ResourceForm({ match }: Props) {
 
 export default ResourceForm;
 
-const UPDATE_RESOURCE = gql`
+export const UPDATE_RESOURCE = gql`
   mutation updateResource($data: ResourceUpdateInput!, $resourceId: String!) {
     updateResource(data: $data, where: { id: $resourceId }) {
       id
@@ -159,6 +159,7 @@ const UPDATE_RESOURCE = gql`
       name
       description
       color
+      gitRepositoryOverride
     }
   }
 `;

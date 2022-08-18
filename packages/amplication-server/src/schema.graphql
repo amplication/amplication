@@ -106,7 +106,7 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   resourceType: EnumResourceType!
-  gitRepositoryOverride: Boolean
+  gitRepositoryOverride: Boolean!
 }
 
 type GitRepository {

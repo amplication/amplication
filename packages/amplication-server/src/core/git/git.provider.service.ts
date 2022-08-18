@@ -166,7 +166,7 @@ export class GitProviderService {
         }
       ];
     }
-
+    
     await this.prisma.gitRepository.create({
       data: {
         name: name,
