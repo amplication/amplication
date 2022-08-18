@@ -108,7 +108,10 @@ $modal-menu-top: 30px;
 
   &__divider {
     border: $border-black5;
-    margin: var(--form-field-spacing) 0;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   &__links {
