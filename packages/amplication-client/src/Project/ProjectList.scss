@@ -2,10 +2,13 @@
 
 .project-list {
   @include flexColumn;
+  display: flex;
+  flex: 1;
+  align-items: stretch;
   padding: var(--large-spacing) 0;
-  width: 100%;
+
 
   &__items {
-    width: 100%;
+    flex: 1;
   }
 }
