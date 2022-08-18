@@ -19,10 +19,12 @@ spec:
             requests:
               cpu:    {{ .Values.minCPU }}
               memory: {{ .Values.maxMemory }}
-          {{- if hasKey .Values "config" }}
           envFrom:
+          {{- if hasKey .Values "config" }}
           - configMapRef:
               name: '{{ .Values.name }}'
+          {{- end }}
+          {{- if hasKey .Values "secrets" }}
           - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}
