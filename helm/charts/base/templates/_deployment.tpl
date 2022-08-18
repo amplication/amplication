@@ -28,7 +28,6 @@ spec:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          {{- if hasKey .Values "config" }}
           envFrom:
           {{- if hasKey .Values "config" }}
           - configMapRef:
