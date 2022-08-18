@@ -1,4 +1,4 @@
-import { Args, Resolver, Parent, ResolveField, Query } from '@nestjs/graphql';
+import { Args, Resolver, Parent, ResolveField } from '@nestjs/graphql';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { FindManyEntityFieldArgs } from './dto';
 import {
