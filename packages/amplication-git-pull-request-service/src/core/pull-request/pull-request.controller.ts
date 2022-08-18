@@ -11,7 +11,7 @@ import {
 } from '@nestjs/microservices';
 import { plainToClass } from 'class-transformer';
 import { KafkaMessage } from 'kafkajs';
-import { EnvironmentVariables } from 'src/services/environmentVariables';
+import { EnvironmentVariables } from '../../services/environmentVariables';
 import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
 import { ResultMessage } from './dto/ResultMessage';
 import { SendPullRequestArgs } from './dto/sendPullRequest';
