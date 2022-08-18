@@ -9,7 +9,7 @@ spec:
       name: "{{ .Values.name }}-migrate"
     spec:
       restartPolicy: Never
-      containers:
+      initContainers:
       - name: "{{ .Values.name }}-migrate"
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         resources:
