@@ -70,7 +70,6 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
                 change={change}
                 compareType={EnumCompareType.Pending}
                 splitView={splitView}
-                resourceId={resourceId}
               />
             ))}
         </div>

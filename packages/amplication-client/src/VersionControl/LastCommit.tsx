@@ -8,13 +8,13 @@ import {
   SkeletonWrapper,
   Button,
   EnumButtonStyle,
-  Icon,
 } from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import { BuildStatusIcons } from "./BuildStatusIcons";
 
 type TData = {
   commits: models.Commit[];
@@ -83,22 +83,24 @@ const LastCommit = ({ projectId }: Props) => {
       <hr className={`${CLASS_NAME}__divider`} />
       <div className={`${CLASS_NAME}__content`}>
         <p className={`${CLASS_NAME}__title`}>Last Commit</p>
-        <SkeletonWrapper
-          showSkeleton={generating}
-          className={`${CLASS_NAME}__skeleton`}
-        >
-          <Icon icon="circle" />
-          {isEmpty(lastCommit?.message) ? (
-            ClickableCommitId
-          ) : (
-            <Tooltip aria-label={lastCommit?.message} direction="ne">
-              {ClickableCommitId}
-            </Tooltip>
-          )}
-          <span className={classNames("clickable-id")}>
-            {formatTimeToNow(lastCommit?.createdAt)}
-          </span>
-        </SkeletonWrapper>
+        <div className={`${CLASS_NAME}__status`}>
+          {build && <BuildStatusIcons build={build} showIcon={false} />}
+          <SkeletonWrapper
+            showSkeleton={generating}
+            className={`${CLASS_NAME}__skeleton`}
+          >
+            {isEmpty(lastCommit?.message) ? (
+              ClickableCommitId
+            ) : (
+              <Tooltip aria-label={lastCommit?.message} direction="ne">
+                {ClickableCommitId}
+              </Tooltip>
+            )}
+            <span className={classNames("clickable-id")}>
+              {formatTimeToNow(lastCommit?.createdAt)}
+            </span>
+          </SkeletonWrapper>
+        </div>
         {build && (
           <Link
             to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/code-view`}
