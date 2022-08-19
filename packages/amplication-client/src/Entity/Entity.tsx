@@ -7,7 +7,7 @@ import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
 import EntityForm from "./EntityForm";
 import { EntityFieldLinkList } from "./EntityFieldLinkList";
-import { EntityFieldList } from "./EntityFieldList";
+import  EntityFieldList  from "./EntityFieldList";
 import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";

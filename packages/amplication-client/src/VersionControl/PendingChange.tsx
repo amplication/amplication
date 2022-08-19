@@ -12,7 +12,8 @@ const TOOLTIP_DIRECTION = "ne";
 
 type Props = {
   change: models.PendingChange;
-  resourceId: string;
+  /**@todo: figure out how to pass this value without too many props drilling down */
+  resourceId?: string; 
   linkToOrigin?: boolean;
 };
 

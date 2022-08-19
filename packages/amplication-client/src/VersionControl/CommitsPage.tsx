@@ -47,9 +47,11 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
         />
       }
     >
-      {commits.length && commitIdx > -1 && commits[commitIdx].builds?.length && (
-        <CommitResourceList builds={commits[commitIdx].builds} changes={commits[commitIdx].changes} />
-      )}
+      {commits.length &&
+        commitIdx > -1 &&
+        commits[commitIdx].builds?.length && (
+          <CommitResourceList builds={commits[commitIdx].builds} />
+        )}
     </PageContent>
   );
 };

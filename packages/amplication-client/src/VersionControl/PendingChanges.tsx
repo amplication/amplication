@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useContext } from "react";
-import { ApolloError } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 import { formatError } from "../util/error";
@@ -19,11 +18,9 @@ const CLASS_NAME = "pending-changes";
 
 type Props = {
   projectId: string;
-  error: ApolloError | undefined;
-  loading: boolean;
 };
 
-const PendingChanges = ({ projectId, error, loading }: Props) => {
+const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const { currentWorkspace, currentProject, pendingChanges } = useContext(
     AppContext
@@ -32,6 +29,7 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
     pendingChangesByResource,
     pendingChangesDataError,
     pendingChangesIsError,
+    pendingChangesDataLoading
   } = usePendingChanges(currentProject);
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
@@ -62,9 +60,9 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
       </Dialog>
 
       <div className={`${CLASS_NAME}__changes-wrapper`}>
-        {loading ? (
+        {pendingChangesDataLoading ? (
           <span>Loading...</span>
-        ) : isEmpty(pendingChanges) && !loading ? (
+        ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
           <div className={`${CLASS_NAME}__empty-state`}>
             <SvgThemeImage image={EnumImages.NoChanges} />
             <div className={`${CLASS_NAME}__empty-state__title`}>
@@ -113,7 +111,7 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
             >
               <Button
                 buttonStyle={EnumButtonStyle.Text}
-                disabled={loading || noChanges}
+                disabled={pendingChangesDataLoading || noChanges}
                 icon="compare"
               />
             </Link>
@@ -122,7 +120,7 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Text}
               onClick={handleToggleDiscardDialog}
-              disabled={loading || noChanges}
+              disabled={pendingChangesDataLoading || noChanges}
               icon="trash_2"
             />
           </Tooltip>
