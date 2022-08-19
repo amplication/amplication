@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useContext, useMemo } from "react";
-import { ApolloError } from "@apollo/client";
-import { groupBy, isEmpty } from "lodash";
+import React, { useState, useCallback, useContext } from "react";
+import { isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 import { formatError } from "../util/error";
 import PendingChange from "./PendingChange";
@@ -13,21 +12,25 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./PendingChanges.scss";
 import { AppContext } from "../context/appContext";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 
 const CLASS_NAME = "pending-changes";
 
 type Props = {
   projectId: string;
-  error: ApolloError | undefined;
-  loading: boolean;
 };
 
-const PendingChanges = ({ projectId, error, loading }: Props) => {
+const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const { currentWorkspace, currentProject, pendingChanges } = useContext(
     AppContext
   );
-
+  const {
+    pendingChangesByResource,
+    pendingChangesDataError,
+    pendingChangesIsError,
+    pendingChangesDataLoading
+  } = usePendingChanges(currentProject);
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
   }, [discardDialogOpen, setDiscardDialogOpen]);
@@ -36,23 +39,9 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
     setDiscardDialogOpen(false);
   }, []);
 
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(pendingChangesDataError);
 
   const noChanges = isEmpty(pendingChanges);
-
-  const pendingChangesByResource = useMemo(() => {
-    const groupedChanges = groupBy(
-      pendingChanges,
-      (change) => change.resource.id
-    );
-
-    return Object.entries(groupedChanges).map(([resourceId, changes]) => {
-      return {
-        resource: changes[0].resource,
-        changes: changes,
-      };
-    });
-  }, [pendingChanges]);
 
   return (
     <div className={CLASS_NAME}>
@@ -71,9 +60,9 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
       </Dialog>
 
       <div className={`${CLASS_NAME}__changes-wrapper`}>
-        {loading ? (
+        {pendingChangesDataLoading ? (
           <span>Loading...</span>
-        ) : isEmpty(pendingChanges) && !loading ? (
+        ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
           <div className={`${CLASS_NAME}__empty-state`}>
             <SvgThemeImage image={EnumImages.NoChanges} />
             <div className={`${CLASS_NAME}__empty-state__title`}>
@@ -122,7 +111,7 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
             >
               <Button
                 buttonStyle={EnumButtonStyle.Text}
-                disabled={loading || noChanges}
+                disabled={pendingChangesDataLoading || noChanges}
                 icon="compare"
               />
             </Link>
@@ -131,13 +120,13 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Text}
               onClick={handleToggleDiscardDialog}
-              disabled={loading || noChanges}
+              disabled={pendingChangesDataLoading || noChanges}
               icon="trash_2"
             />
           </Tooltip>
         </div>
       </div>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
     </div>
   );
 };

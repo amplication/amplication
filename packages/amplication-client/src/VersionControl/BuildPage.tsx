@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
@@ -13,6 +13,7 @@ import { GET_COMMIT } from "./PendingChangesPage";
 import { truncateId } from "../util/truncatedId";
 import { ClickableId } from "../Components/ClickableId";
 import "./BuildPage.scss";
+import { AppContext } from "../context/appContext";
 
 type LogData = {
   action: models.Action;
@@ -21,15 +22,15 @@ type LogData = {
 };
 
 type Props = {
-  match: match<{ resource: string; buildId: string }>;
+  match: match<{ resource: string; build: string }>;
 };
 const CLASS_NAME = "build-page";
 
 const BuildPage = ({ match }: Props) => {
-  const { resource, buildId } = match.params;
+  const { build } = match.params;
   const truncatedId = useMemo(() => {
-    return truncateId(buildId);
-  }, [buildId]);
+    return truncateId(build);
+  }, [build]);
 
   const [error, setError] = useState<Error>();
 
@@ -41,13 +42,14 @@ const BuildPage = ({ match }: Props) => {
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
-      buildId: buildId,
+      buildId: build,
     },
     onCompleted: (data) => {
       getCommit({ variables: { commitId: data.build.commitId } });
     },
   });
 
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;
 
@@ -77,7 +79,7 @@ const BuildPage = ({ match }: Props) => {
               {commitData && (
                 <ClickableId
                   label="Commit"
-                  to={`/${resource}/commits/${commitData.commit.id}`}
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${commitData.commit.id}`}
                   id={commitData.commit.id}
                   eventData={{
                     eventName: "commitHeaderIdClick",
