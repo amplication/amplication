@@ -27,7 +27,7 @@ const PendingChangeWithCompare = ({
     <PanelCollapsible
       initiallyOpen
       className={CLASS_NAME}
-      headerContent={<PendingChange change={change} />}
+      headerContent={<PendingChange change={change}  />}
     >
       {change.originType === models.EnumPendingChangeOriginType.Entity ? (
         <PendingChangeDiffEntity

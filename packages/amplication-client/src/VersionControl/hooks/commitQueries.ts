@@ -65,6 +65,33 @@ export const GET_COMMITS = gql`
           lastName
         }
       }
+      changes {
+        originId
+        action
+        originType
+        versionNumber
+        origin {
+          __typename
+          ... on Entity {
+            id
+            displayName
+            updatedAt
+            resource {
+              id
+              name
+            }
+          }
+          ... on Block {
+            id
+            displayName
+            updatedAt
+            resource {
+              id
+              name
+            }
+          }
+        }
+      }
       builds {
         id
         createdAt

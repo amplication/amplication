@@ -71,8 +71,6 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resetPendingChanges,
     setCommitRunning,
     setPendingChangesError,
-    pendingChangesDataError,
-    pendingChangesDataLoading,
   } = usePendingChanges(currentProject);
 
   return currentWorkspace ? (
@@ -120,7 +118,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
             </div>
             <div className={`${moduleClass}__changes_menu`}>
               {currentProject ? (
-                <PendingChanges projectId={currentProject.id} error={pendingChangesDataError} loading={pendingChangesDataLoading} />
+                <PendingChanges projectId={currentProject.id} />
               ) : null}
               {currentProject && <LastCommit projectId={currentProject.id} />}
             </div>

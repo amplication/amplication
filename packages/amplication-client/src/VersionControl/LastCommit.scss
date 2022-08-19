@@ -8,6 +8,17 @@
     margin: 0;
   }
 
+  &__status {
+    display: flex;
+    align-items: center;
+  }
+
+  .build-status-icons__status {
+    .amp-icon {
+      margin-left: 0;
+    }
+  }
+
   &__divider {
     border: $border-black5;
     margin: var(--form-field-spacing) 0;
