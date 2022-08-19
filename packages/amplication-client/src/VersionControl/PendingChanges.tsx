@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useContext, useMemo } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import { ApolloError } from "@apollo/client";
-import { groupBy, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 import { formatError } from "../util/error";
 import PendingChange from "./PendingChange";
@@ -13,6 +13,7 @@ import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./PendingChanges.scss";
 import { AppContext } from "../context/appContext";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 
 const CLASS_NAME = "pending-changes";
 
@@ -27,7 +28,11 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
   const { currentWorkspace, currentProject, pendingChanges } = useContext(
     AppContext
   );
-
+  const {
+    pendingChangesByResource,
+    pendingChangesDataError,
+    pendingChangesIsError,
+  } = usePendingChanges(currentProject);
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
   }, [discardDialogOpen, setDiscardDialogOpen]);
@@ -36,23 +41,9 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
     setDiscardDialogOpen(false);
   }, []);
 
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(pendingChangesDataError);
 
   const noChanges = isEmpty(pendingChanges);
-
-  const pendingChangesByResource = useMemo(() => {
-    const groupedChanges = groupBy(
-      pendingChanges,
-      (change) => change.resource.id
-    );
-
-    return Object.entries(groupedChanges).map(([resourceId, changes]) => {
-      return {
-        resource: changes[0].resource,
-        changes: changes,
-      };
-    });
-  }, [pendingChanges]);
 
   return (
     <div className={CLASS_NAME}>
@@ -137,7 +128,7 @@ const PendingChanges = ({ projectId, error, loading }: Props) => {
           </Tooltip>
         </div>
       </div>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
     </div>
   );
 };

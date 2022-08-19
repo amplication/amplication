@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
-import { useCallback, useEffect, useState } from "react";
-import { isEqual } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { groupBy, isEqual } from "lodash";
 import * as models from "../../models";
 import { GET_PENDING_CHANGES_STATUS } from "../queries/projectQueries";
 
@@ -91,6 +91,20 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     [setIsError]
   );
 
+  const pendingChangesByResource = useMemo(() => {
+    const groupedChanges = groupBy(
+      pendingChanges,
+      (change) => change.resource.id
+    );
+
+    return Object.entries(groupedChanges).map(([resourceId, changes]) => {
+      return {
+        resource: changes[0].resource,
+        changes: changes,
+      };
+    });
+  }, [pendingChanges]);
+
   return {
     pendingChanges,
     commitRunning,
@@ -103,6 +117,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     setPendingChangesError,
     pendingChangesDataError,
     pendingChangesDataLoading,
+    pendingChangesByResource,
   };
 };
 

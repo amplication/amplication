@@ -1,16 +1,13 @@
 import React, { useState, useCallback, useContext } from "react";
-import { match } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
-import { MultiStateToggle } from "@amplication/design-system";
+import { MultiStateToggle, Snackbar } from "@amplication/design-system";
 import "./PendingChangesPage.scss";
 import { AppContext } from "../context/appContext";
 import { gql } from "@apollo/client";
-
-type Props = {
-  match: match<{ project: string; resource: string; commitId: string }>;
-};
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import { formatError } from "../util/error";
 
 const CLASS_NAME = "pending-changes-page";
 const SPLIT = "Split";
@@ -21,10 +18,15 @@ const OPTIONS = [
   { value: SPLIT, label: SPLIT },
 ];
 
-const PendingChangesPage = ({ match }: Props) => {
+const PendingChangesPage = () => {
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Pending Changes";
-  const { pendingChanges } = useContext(AppContext);
+  const { currentProject } = useContext(AppContext);
+  const {
+    pendingChangesByResource,
+    pendingChangesDataError,
+    pendingChangesIsError,
+  } = usePendingChanges(currentProject);
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -33,7 +35,7 @@ const PendingChangesPage = ({ match }: Props) => {
     [setSplitView]
   );
 
-  // const errorMessage = formatError({ message: "", name: "" });
+  const errorMessage = formatError(pendingChangesDataError);
 
   return (
     <>
@@ -49,17 +51,25 @@ const PendingChangesPage = ({ match }: Props) => {
           />
         </div>
         <div className={`${CLASS_NAME}__changes`}>
-          {pendingChanges.map((change) => (
-            <PendingChangeWithCompare
-              key={change.originId}
-              change={change}
-              compareType={EnumCompareType.Pending}
-              splitView={splitView}
-            />
+          {pendingChangesByResource.map((resourceChanges) => (
+            <div key={resourceChanges.resource.id}>
+              <div className={`${CLASS_NAME}__title`}>
+                {resourceChanges.resource.name}
+              </div>
+              {resourceChanges.changes.map((change) => (
+                <PendingChangeWithCompare
+                  key={change.originId}
+                  change={change}
+                  compareType={EnumCompareType.Pending}
+                  splitView={splitView}
+                />
+              ))}
+            </div>
           ))}
+          <div />
         </div>
       </PageContent>
-      {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}
+      <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
     </>
   );
 };
