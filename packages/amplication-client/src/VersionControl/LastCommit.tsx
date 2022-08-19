@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from "react";
+import React, { useMemo, useContext, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
@@ -40,7 +40,7 @@ const LastCommit = ({ projectId }: Props) => {
     },
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     refetch();
     return () => {
       refetch();

@@ -12,6 +12,7 @@ const useCommits = () => {
     data: commitsData,
     error: commitsError,
     loading: commitsLoading,
+    refetch,
   } = useQuery(GET_COMMITS, {
     skip: !currentProject?.id && !commits.length,
     variables: {
@@ -25,7 +26,8 @@ const useCommits = () => {
   useEffect(() => {
     if (!commitsData) return;
     setCommits(commitsData.commits);
-  }, [commitsData]);
+    refetch();
+  }, [commitsData, refetch]);
 
   return {
     commits,
