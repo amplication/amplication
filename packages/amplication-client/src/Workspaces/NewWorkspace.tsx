@@ -22,12 +22,14 @@ const INITIAL_VALUES: CreateWorkspaceType = {
   name: "",
 };
 
+const NAME_MIN_LENGTH = 2;
+
 const FORM_SCHEMA = {
   required: ["name"],
   properties: {
     name: {
       type: "string",
-      minLength: 2,
+      minLength: NAME_MIN_LENGTH,
     },
   },
 };
@@ -109,7 +111,7 @@ const NewWorkspace = ({ onWorkspaceCreated }: Props) => {
           validate(values, FORM_SCHEMA)
         }
         onSubmit={handleSubmit}
-        validateOnMount
+        validateOnBlur={false}
       >
         {(formik) => {
           const handlers = {
@@ -130,7 +132,11 @@ const NewWorkspace = ({ onWorkspaceCreated }: Props) => {
               <Button
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
+                disabled={
+                  !formik.isValid ||
+                  loading ||
+                  formik.values.name.length < NAME_MIN_LENGTH
+                }
               >
                 Create Workspace
               </Button>
