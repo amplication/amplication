@@ -68,7 +68,7 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
               <PendingChangeWithCompare
                 key={change.originId}
                 change={change}
-                compareType={EnumCompareType.Pending}
+                compareType={EnumCompareType.Previous}
                 splitView={splitView}
               />
             ))}
