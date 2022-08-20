@@ -56,15 +56,6 @@ const resourceRoutes = [
     routes: [
       {
         path:
-          "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/commits/:commitId",
-        Component: lazy(() => import("../VersionControl/CommitsPage")),
-        moduleName: "",
-        routeTrackType: "",
-        exactPath: true,
-        routes: [],
-      },
-      {
-        path:
           "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/commits/builds/:buildId",
         Component: lazy(() => import("../VersionControl/BuildPage")),
         moduleName: "",
@@ -77,14 +68,6 @@ const resourceRoutes = [
   {
     path: "/:workspace/:project/:resource/github",
     Component: lazy(() => import("../Resource/git/SyncWithGithubPage")),
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: true,
-    routes: [],
-  },
-  {
-    path: "/:workspace/:project/:resource/code-view",
-    Component: lazy(() => import("../Resource/code-view/CodeViewPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
