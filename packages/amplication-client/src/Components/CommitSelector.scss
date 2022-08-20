@@ -2,7 +2,7 @@
 
 .commit-selector {
   &__label-title {
-    padding-bottom: 4px;
+    padding-bottom: var(--icon-spacing);
     color: var(--black80);
   }
 

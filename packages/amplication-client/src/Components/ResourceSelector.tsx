@@ -5,13 +5,11 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Label,
-  formatTimeToNow,
-  CircleBadge,
 } from "@amplication/design-system";
 import React from "react";
 import { Resource } from "../models";
-import { CommitSelectorItem } from "./CommitSelectorItem";
 import "./CommitSelector.scss";
+import { ResourceSelectorItem } from "./ResourceSelectorItem";
 
 const CLASS_NAME = "commit-selector";
 
@@ -26,33 +24,13 @@ const ResourceSelector = ({
   onSelectResource,
   selectedResource,
 }: Props) => {
-  const createdAtHour = selectedResource
-    ? formatTimeToNow(new Date(selectedResource?.createdAt))
-    : null;
-
-  const createdHourStyle = () => (
-    <label className={`${CLASS_NAME}__hour`}>{createdAtHour}</label>
-  );
-
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__label-title`}>
         <Label text="Select resource" />
       </div>
       <SelectMenu
-        title={
-          <div className="commit-selector-item">
-            <CircleBadge
-              name={selectedResource?.name}
-              color={selectedResource?.color}
-              size={"xsmall"}
-            />
-            <div className={"commit-selector-item__title"}>
-              {selectedResource?.name}
-              <div>{createdHourStyle()}</div>
-            </div>
-          </div>
-        }
+        title={<ResourceSelectorItem resource={selectedResource} />}
         buttonStyle={EnumButtonStyle.Secondary}
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"
@@ -69,7 +47,7 @@ const ResourceSelector = ({
                     onSelectResource(resource);
                   }}
                 >
-                  <CommitSelectorItem title={resource.name} type="list" />
+                  <ResourceSelectorItem resource={resource} />
                 </SelectMenuItem>
               ))}
             </>
