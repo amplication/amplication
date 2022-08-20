@@ -25,5 +25,7 @@
     min-width: var(--changes-menu-width);
     background: var(--menu-background-color);
     border-left: $border-black10;
+    display: flex;
+    flex-direction: column;
   }
 }
