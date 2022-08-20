@@ -2,16 +2,10 @@
 
 .commit-selector-item {
   @include flexFullRowWithSpacing;
-  .circle-badge {
-    width: 16px;
-    min-width: 16px;
-    height: 16px;
-    font-size: 10px;
-  }
-  .title {
+  flex: 1;
+  &__title {
     display: flex;
-    max-width: 185px;
-    width: 185px;
+    flex: 1;
     white-space: nowrap;
     text-align: left;
     overflow: hidden;
@@ -19,10 +13,5 @@
     font-weight: 400;
     @include regular-12;
     justify-content: space-between;
-  }
-
-  .title-list {
-    max-width: 180px;
-    font-size: 12px;
   }
 }

@@ -45,8 +45,9 @@ const ResourceSelector = ({
             <CircleBadge
               name={selectedResource?.name}
               color={selectedResource?.color}
+              size={"xsmall"}
             />
-            <div className={"title"}>
+            <div className={"commit-selector-item__title"}>
               {selectedResource?.name}
               <div>{createdHourStyle()}</div>
             </div>
@@ -56,8 +57,8 @@ const ResourceSelector = ({
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"
       >
-        <SelectMenuModal css={undefined}>
-          <SelectMenuList style={{ width: "264px" }}>
+        <SelectMenuModal>
+          <SelectMenuList>
             <>
               {resources.map((resource) => (
                 <SelectMenuItem

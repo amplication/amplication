@@ -3,14 +3,13 @@ import "./CommitSelectorItem.scss";
 
 type Props = {
   title: string;
-  type?: "list";
 };
 const CLASS_NAME = "commit-selector-item";
 
-export const CommitSelectorItem = ({ title, type }: Props) => {
+export const CommitSelectorItem = ({ title }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      <div className={`title ${type && " title-list"}`}>{title}</div>
+      <div className={`${CLASS_NAME}__title`}>{title}</div>
     </div>
   );
 };

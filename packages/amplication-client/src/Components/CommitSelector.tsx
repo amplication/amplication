@@ -39,8 +39,8 @@ const CommitSelector = ({ commits, onSelectCommit, selectedCommit }: Props) => {
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"
       >
-        <SelectMenuModal css={undefined}>
-          <SelectMenuList style={{ width: "264px" }}>
+        <SelectMenuModal>
+          <SelectMenuList>
             <>
               {commits.map((commit) => (
                 <SelectMenuItem
