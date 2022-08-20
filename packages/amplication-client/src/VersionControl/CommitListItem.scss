@@ -1,5 +1,5 @@
 @import "../style/index.scss";
-$metadata-width: 130px;
+$metadata-width: 150px;
 
 .commit-list-item {
   &__data {
@@ -15,7 +15,7 @@ $metadata-width: 130px;
     padding: 0 var(--default-spacing-small);
 
     &__message {
-      @include body2;
+      @include regular-12;
       color: var(--black100);
     }
 

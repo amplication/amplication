@@ -104,6 +104,15 @@ export const GET_COMMITS = gql`
         message
         createdAt
         commitId
+        commit {
+          createdAt
+          user {
+            account {
+              firstName
+              lastName
+            }
+          }
+        }
         actionId
         action {
           id
