@@ -99,7 +99,7 @@ function ResourceList() {
             buttonStyle={EnumButtonStyle.Primary}
             icon="plus"
           >
-            New resource
+            New service
           </Button>
         </Link>
       </div>
