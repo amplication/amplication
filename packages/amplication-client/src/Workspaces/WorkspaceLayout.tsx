@@ -5,7 +5,7 @@ import { isMobileOnly } from "react-device-detect";
 import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
 import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
-import WorkspaceFooter from "./WorkspaceFooter";
+// import WorkspaceFooter from "./WorkspaceFooter";
 import useAuthenticated from "../authentication/use-authenticated";
 import useProjectSelector from "./hooks/useProjectSelector";
 import { AppContextProvider } from "../context/appContext";
@@ -125,7 +125,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
               {currentProject && <LastCommit projectId={currentProject.id} />}
             </div>
           </div>
-          <WorkspaceFooter />
+          {/* <WorkspaceFooter /> */}
           <ScreenResolutionMessage />
         </div>
       )}
