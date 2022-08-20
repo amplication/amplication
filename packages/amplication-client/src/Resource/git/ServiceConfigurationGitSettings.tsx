@@ -6,10 +6,11 @@ import { ResourceWithGitRepository } from "./SyncWithGithubPage";
 import AuthResourceWithGit from "./AuthResourceWithGit";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { AppContext } from "../../context/appContext";
-import { useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { UPDATE_RESOURCE } from "../ResourceForm";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
+import { DISCONNECT_GIT_REPOSITORY } from "./GitActions/RepositoryActions/GithubSyncDetails";
 
 const CLASS_NAME = "service-configuration-github-settings";
 
@@ -37,9 +38,42 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
 
+    const [connectResourceToProjectRepository] = useMutation<TData>(CONNECT_RESOURCE_PROJECT_REPO, {
+      variables: { resourceId: resource.id }
+    });
+
+    const [disconnectGitRepository] = useMutation(DISCONNECT_GIT_REPOSITORY, {
+      variables: { resourceId: resource.id }
+    });
+  
+    const handleDisconnectGitRepository = useCallback(() => {
+      disconnectGitRepository({
+        variables: { resourceId: resource.id },
+      }).catch(console.error);
+    }, [disconnectGitRepository, resource.id]);
+
+
+    const handleConnectProjectGitRepository = useCallback(() => {
+      connectResourceToProjectRepository({
+        variables: { resourceId: resource.id },
+      }).catch(console.error);
+    }, [connectResourceToProjectRepository, resource.id]);
+
+    const handleResourceStatusChanged = useCallback(
+      (isOverride: boolean) => {
+      setIsOverride(isOverride);
+      if(isOverride) {
+        handleDisconnectGitRepository()
+      }
+      else {
+        handleConnectProjectGitRepository();
+      }
+    },
+    [handleDisconnectGitRepository,handleConnectProjectGitRepository]); 
+
   const [updateResourceOverrideStatus] = useMutation<TData>(UPDATE_RESOURCE, {
     onCompleted: (data) => {
-      setIsOverride(data.updateResource.gitRepositoryOverride);
+      handleResourceStatusChanged(data.updateResource.gitRepositoryOverride); 
     },
   });
 
@@ -94,3 +128,14 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
 };
 
 export default ServiceConfigurationGitSettings;
+
+export const CONNECT_RESOURCE_PROJECT_REPO = gql`
+  mutation connectResourceToProjectRepository($resourceId: String!) {
+    connectResourceToProjectRepository(resourceId: $resourceId) {
+      id
+      gitRepository {
+        id
+      }
+    }
+  }
+`;

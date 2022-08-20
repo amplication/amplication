@@ -76,7 +76,7 @@ function GithubSyncDetails({
 
 export default GithubSyncDetails;
 
-const DISCONNECT_GIT_REPOSITORY = gql`
+export const DISCONNECT_GIT_REPOSITORY = gql`
   mutation disconnectGitRepository($resourceId: String!) {
     disconnectResourceGitRepository(resourceId: $resourceId) {
       id

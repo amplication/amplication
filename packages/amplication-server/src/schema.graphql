@@ -1094,6 +1094,7 @@ type Mutation {
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
   createGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToProjectRepository(resourceId: String!): Resource!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!

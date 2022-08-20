@@ -1,9 +1,8 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import {  } from '../inputs/ConnectGitRepositoryInput';
+import {} from '../inputs/ConnectGitRepositoryInput';
 
 @ArgsType()
 export class DisconnectGitRepositoryArgs {
-
-    @Field(() => String, { nullable: false })
-    resourceId!: string;
+  @Field(() => String, { nullable: false })
+  resourceId!: string;
 }

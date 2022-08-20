@@ -53,6 +53,15 @@ export class GitResolver {
   ): Promise<Resource> {
     return await this.gitService.connectResourceGitRepository(args.data);
   }
+  @Mutation(() => Resource)
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'resourceId')
+  async connectResourceToProjectRepository(
+    @Args() args: DisconnectGitRepositoryArgs
+  ): Promise<Resource> {
+    return await this.gitService.connectResourceToProjectRepository(
+      args.resourceId
+    );
+  }
 
   @Mutation(() => GitOrganization)
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, 'data.workspaceId')

@@ -100,18 +100,35 @@ export class GitProviderService {
   }
 
   async disconnectResourceGitRepository(resourceId: string): Promise<Resource> {
-    const resourceGitRepository = await this.prisma.resource
-      .findUnique({
-        where: {
-          id: resourceId
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId
+      },
+      include: {
+        gitRepository: true
+      }
+    });
+
+    if (isEmpty(resource)) throw new AmplicationError(INVALID_RESOURCE_ID);
+
+    const resourcesToDisconnectConnect = await this.getResourcesToConnectRepository(
+      resource.projectId,
+      resourceId,
+      resource.resourceType
+    );
+
+    await this.prisma.gitRepository.update({
+      where: {
+        id: resource.gitRepositoryId
+      },
+      data: {
+        resources: {
+          disconnect: resourcesToDisconnectConnect
         }
-      })
-      .gitRepository();
+      }
+    });
 
-    if (isEmpty(resourceGitRepository))
-      throw new AmplicationError(INVALID_RESOURCE_ID);
-
-    const resource = await this.prisma.resource.update({
+    await this.prisma.resource.update({
       where: {
         id: resourceId
       },
@@ -122,7 +139,65 @@ export class GitProviderService {
       }
     });
 
+    const countResourcesConnected = await this.prisma.gitRepository
+      .findUnique({
+        where: {
+          id: resource.gitRepositoryId
+        }
+      })
+      .resources();
+
+    if (countResourcesConnected.length === 0) {
+      await this.prisma.gitRepository.delete({
+        where: {
+          id: resource.gitRepositoryId
+        }
+      });
+    }
+
     return resource;
+  }
+
+  async connectResourceToProjectRepository(
+    resourceId: string
+  ): Promise<Resource> {
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId
+      }
+    });
+
+    if (isEmpty(resource)) throw new AmplicationError(INVALID_RESOURCE_ID);
+
+    if (resource.gitRepositoryId) {
+      await this.disconnectResourceGitRepository(resourceId);
+    }
+
+    const projectConfigurationRepo = await this.prisma.resource
+      .findFirst({
+        where: {
+          projectId: resource.projectId,
+          resourceType: EnumResourceType.ProjectConfiguration
+        }
+      })
+      .gitRepository();
+
+    if (isEmpty(projectConfigurationRepo)) {
+      return resource;
+    }
+    const resourceWithProjectRepository = await this.prisma.resource.update({
+      where: {
+        id: resourceId
+      },
+      data: {
+        gitRepository: {
+          connect: {
+            id: projectConfigurationRepo.id
+          }
+        }
+      }
+    });
+    return resourceWithProjectRepository;
   }
 
   async connectResourceGitRepository({
@@ -149,12 +224,16 @@ export class GitProviderService {
     if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
       const resources = await this.prisma.resource.findMany({
         where: {
-          projectId: resource.projectId,
-          gitRepositoryOverride: false,
           // eslint-disable-next-line @typescript-eslint/naming-convention
-          OR: {
-            id: resourceId
-          }
+          OR: [
+            {
+              projectId: resource.projectId,
+              gitRepositoryOverride: false
+            },
+            {
+              id: resourceId
+            }
+          ]
         }
       });
 
@@ -166,7 +245,7 @@ export class GitProviderService {
         }
       ];
     }
-    
+
     await this.prisma.gitRepository.create({
       data: {
         name: name,
@@ -290,5 +369,39 @@ export class GitProviderService {
         }
       })
     ).installationId;
+  }
+
+  private async getResourcesToConnectRepository(
+    projectId: string,
+    resourceId: string,
+    resourceType: EnumResourceType
+  ): Promise<Prisma.ResourceWhereUniqueInput[]> {
+    let resourcesToConnect: Prisma.ResourceWhereUniqueInput[];
+
+    if (resourceType === EnumResourceType.ProjectConfiguration) {
+      const resources = await this.prisma.resource.findMany({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          OR: [
+            {
+              projectId: projectId,
+              gitRepositoryOverride: false
+            },
+            {
+              id: resourceId
+            }
+          ]
+        }
+      });
+
+      resourcesToConnect = resources.map(r => ({ id: r.id }));
+    } else {
+      resourcesToConnect = [
+        {
+          id: resourceId
+        }
+      ];
+    }
+    return resourcesToConnect;
   }
 }
