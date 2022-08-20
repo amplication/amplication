@@ -1,15 +1,17 @@
-import React, { useState, useCallback } from "react";
-import PageContent from "../Layout/PageContent";
-import PendingChangeWithCompare from "./PendingChangeWithCompare";
-import { EnumCompareType } from "./PendingChangeDiffEntity";
 import { MultiStateToggle, Snackbar } from "@amplication/design-system";
-import "./PendingChangesPage.scss";
 import { gql } from "@apollo/client";
-import { AppRouteProps } from "../routes/routesUtil";
+import React, { useCallback, useContext, useState } from "react";
 import { match } from "react-router-dom";
+import { BackNavigation } from "../Components/BackNavigation";
+import { AppContext } from "../context/appContext";
+import PageContent from "../Layout/PageContent";
 import { PendingChange } from "../models";
+import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import useCommits from "./hooks/useCommits";
+import { EnumCompareType } from "./PendingChangeDiffEntity";
+import "./PendingChangesPage.scss";
+import PendingChangeWithCompare from "./PendingChangeWithCompare";
 
 const CLASS_NAME = "changes-page";
 const SPLIT = "Split";
@@ -35,6 +37,7 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Changes";
   const { commitChangesByResource, commitsError } = useCommits();
+  const { currentProject, currentWorkspace } = useContext(AppContext);
 
   const commitResourceChanges = commitChangesByResource(commitId).find(
     (resource) => resource.resourceId === resourceId
@@ -52,6 +55,11 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
   return (
     <>
       <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
+        <BackNavigation
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${commitId}`}
+          label="Back to Commits"
+        />
+
         <div className={`${CLASS_NAME}__header`}>
           <h1>Changes Page</h1>
           <MultiStateToggle

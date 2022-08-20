@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
@@ -12,6 +12,8 @@ import { GET_COMMIT } from "./PendingChangesPage";
 import { truncateId } from "../util/truncatedId";
 import "./BuildPage.scss";
 import DataPanel, { TitleDataType } from "./DataPanel";
+import { BackNavigation } from "../Components/BackNavigation";
+import { AppContext } from "../context/appContext";
 
 type LogData = {
   action: models.Action;
@@ -31,6 +33,7 @@ const BuildPage = ({ match }: Props) => {
   }, [build]);
 
   const [error, setError] = useState<Error>();
+  const { currentProject, currentWorkspace } = useContext(AppContext);
 
   const [getCommit, { data: commitData }] = useLazyQuery<{
     commit: models.Commit;
@@ -69,6 +72,10 @@ const BuildPage = ({ match }: Props) => {
           "loading..."
         ) : (
           <>
+            <BackNavigation
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
+              label="Back to Commits"
+            />
             {commitData && (
               <DataPanel
                 id={data.build.id}
