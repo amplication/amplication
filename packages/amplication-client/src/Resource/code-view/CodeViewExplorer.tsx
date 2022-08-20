@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import CommitSelector from "../../Components/CommitSelector";
 import ResourceSelector from "../../Components/ResourceSelector";
 import { AppContext } from "../../context/appContext";
@@ -28,11 +28,9 @@ const CodeViewExplorer: React.FC<Props> = ({ onFileSelected }) => {
   const { resources } = useContext(AppContext);
   const { commits } = useCommit();
 
-  const [selectedCommit, setSelectedCommit] = useState<Commit | null>(
-    commits[0]
-  );
+  const [selectedCommit, setSelectedCommit] = useState<Commit | null>(null);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
-    resources[0]
+    null
   );
 
   const handleSelectedCommit = (commit: Commit) => {
@@ -43,6 +41,14 @@ const CodeViewExplorer: React.FC<Props> = ({ onFileSelected }) => {
   const handleSelectedResource = (resource: Resource) => {
     setSelectedResource(resource);
   };
+
+  useEffect(() => {
+    setSelectedCommit(commits[0]);
+  }, [commits]);
+
+  useEffect(() => {
+    setSelectedResource(resources[0]);
+  }, [resources]);
 
   const selectedBuild = useMemo(() => {
     return selectedCommit?.builds?.find(
