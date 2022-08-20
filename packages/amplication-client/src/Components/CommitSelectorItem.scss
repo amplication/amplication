@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-.build-selector-item {
+.commit-selector-item {
   @include flexFullRowWithSpacing;
   .circle-badge {
     width: 16px;
@@ -17,7 +17,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-weight: 400;
-    @include regular-12; 
+    @include regular-12;
     justify-content: space-between;
   }
 

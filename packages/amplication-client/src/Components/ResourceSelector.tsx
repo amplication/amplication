@@ -10,21 +10,19 @@ import {
 } from "@amplication/design-system";
 import React from "react";
 import { Resource } from "../models";
-import { BuildSelectorItem } from "./BuildSelectorItem";
-import "./BuildSelector.scss";
+import { CommitSelectorItem } from "./CommitSelectorItem";
+import "./CommitSelector.scss";
 
-const CLASS_NAME = "build-selector";
+const CLASS_NAME = "commit-selector";
 
 type Props = {
   resources: Resource[];
   selectedResource: Resource | null;
-  resource: Resource;
   onSelectResource: (resource: Resource) => void;
 };
 
 const ResourceSelector = ({
   resources,
-  resource,
   onSelectResource,
   selectedResource,
 }: Props) => {
@@ -43,7 +41,7 @@ const ResourceSelector = ({
       </div>
       <SelectMenu
         title={
-          <div className="build-selector-item">
+          <div className="commit-selector-item">
             <CircleBadge
               name={selectedResource?.name}
               color={selectedResource?.color}
@@ -70,11 +68,7 @@ const ResourceSelector = ({
                     onSelectResource(resource);
                   }}
                 >
-                  <BuildSelectorItem
-                    title={resource.name}
-                    resource={resource}
-                    type="list"
-                  />
+                  <CommitSelectorItem title={resource.name} type="list" />
                 </SelectMenuItem>
               ))}
             </>

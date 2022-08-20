@@ -7,39 +7,32 @@ import {
   Label,
 } from "@amplication/design-system";
 import React from "react";
-import { Resource, Build } from "../models";
-import { BuildSelectorItem } from "./BuildSelectorItem";
-import "./BuildSelector.scss";
+import { Commit } from "../models";
+import { CommitSelectorItem } from "./CommitSelectorItem";
+import "./CommitSelector.scss";
 
-const CLASS_NAME = "build-selector";
+const CLASS_NAME = "commit-selector";
 
 type Props = {
-  builds: Build[];
-  selectedBuild: Build | null;
-  resource: Resource;
-  onSelectBuild: (commit: Build) => void;
+  commits: Commit[];
+  selectedCommit: Commit | null;
+  onSelectCommit: (commit: Commit) => void;
 };
 
-const BuildSelector = ({
-  builds,
-  resource,
-  onSelectBuild,
-  selectedBuild,
-}: Props) => {
+const CommitSelector = ({ commits, onSelectCommit, selectedCommit }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__label-title`}>
-        <Label text="Select build" />
+        <Label text="Select commit" />
       </div>
       <SelectMenu
         title={
-          <BuildSelectorItem
+          <CommitSelectorItem
             title={
-              selectedBuild?.message
-                ? selectedBuild?.message
-                : selectedBuild?.createdAt
+              selectedCommit?.message
+                ? selectedCommit?.message
+                : selectedCommit?.createdAt
             }
-            resource={resource}
           />
         }
         buttonStyle={EnumButtonStyle.Secondary}
@@ -49,18 +42,17 @@ const BuildSelector = ({
         <SelectMenuModal css={undefined}>
           <SelectMenuList style={{ width: "264px" }}>
             <>
-              {builds.map((build) => (
+              {commits.map((commit) => (
                 <SelectMenuItem
                   closeAfterSelectionChange
-                  selected={build.id === selectedBuild?.id}
-                  key={build.id}
+                  selected={commit.id === selectedCommit?.id}
+                  key={commit.id}
                   onSelectionChange={() => {
-                    onSelectBuild(build);
+                    onSelectCommit(commit);
                   }}
                 >
-                  <BuildSelectorItem
-                    title={build.message ? build.message : build.createdAt}
-                    resource={resource}
+                  <CommitSelectorItem
+                    title={commit.message ? commit.message : commit.createdAt}
                     type="list"
                   />
                 </SelectMenuItem>
@@ -73,4 +65,4 @@ const BuildSelector = ({
   );
 };
 
-export default BuildSelector;
+export default CommitSelector;

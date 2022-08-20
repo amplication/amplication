@@ -103,7 +103,7 @@ const LastCommit = ({ projectId }: Props) => {
         </div>
         {build && (
           <Link
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/code-view`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/code-view`}
             className={`${CLASS_NAME}__view-code`}
           >
             <Button
@@ -113,7 +113,7 @@ const LastCommit = ({ projectId }: Props) => {
                 eventName: "LastCommitViewCode",
               }}
             >
-              GO To View Code
+              View Code
             </Button>
           </Link>
         )}

@@ -1,8 +1,5 @@
-import { useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { match } from "react-router-dom";
-import { Resource } from "../../models";
-import { GET_RESOURCE_GIT_REPOSITORY } from "../git/SyncWithGithubPage";
 import CodeViewBar from "./CodeViewBar";
 import CodeViewEditor from "./CodeViewEditor";
 import PageContent from "../../Layout/PageContent";
@@ -31,23 +28,10 @@ function CodeViewPage({ match }: Props) {
   const [fileDetails, setFileDetails] = useState<FileDetails | null>(null);
   const pageTitle = "Code View";
 
-  const { data } = useQuery<{ resource: Resource }>(
-    GET_RESOURCE_GIT_REPOSITORY,
-    {
-      variables: {
-        resourceId,
-      },
-    }
-  );
-  if (!data) {
-    return <div />;
-  }
   return (
     <PageContent
       pageTitle={pageTitle}
-      sideContent={
-        <CodeViewBar resource={data.resource} onFileSelected={setFileDetails} />
-      }
+      sideContent={<CodeViewBar onFileSelected={setFileDetails} />}
     >
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__code-container`}>
