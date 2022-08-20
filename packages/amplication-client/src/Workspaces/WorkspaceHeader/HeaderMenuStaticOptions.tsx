@@ -5,7 +5,6 @@ import { WORK_SPACE_HEADER_CLASS_NAME } from "./WorkspaceHeader";
 
 type Props = {
   currentProjectConfigurationId: string | undefined;
-  currentResourceId: string | undefined;
   currentWorkspaceId: string | undefined;
   currentProjectId: string;
   path: string | undefined;
@@ -14,7 +13,6 @@ type Props = {
 
 export default function HeaderMenuStaticOptions({
   currentProjectConfigurationId,
-  currentResourceId,
   currentProjectId,
   currentWorkspaceId,
   history,
@@ -29,16 +27,16 @@ export default function HeaderMenuStaticOptions({
       },
       {
         title: "Commits",
-        link: `${currentResourceId}/commits`,
+        link: `commits`,
         icon: "history_commit_outline",
       },
       {
         title: "View code",
-        link: `${currentResourceId}/code-view`,
+        link: `code-view`,
         icon: "code1",
       },
     ],
-    [currentProjectConfigurationId, currentResourceId]
+    [currentProjectConfigurationId]
   );
 
   return (

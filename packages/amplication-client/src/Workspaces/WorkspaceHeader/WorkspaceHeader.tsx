@@ -148,7 +148,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
                       currentProjectConfigurationId={
                         currentProjectConfiguration?.id
                       }
-                      currentResourceId={currentResource?.id}
                       currentProjectId={currentProject.id}
                       currentWorkspaceId={currentWorkspace?.id}
                       history={history}
