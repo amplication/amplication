@@ -213,28 +213,11 @@ export class ProjectService {
     return commit;
   }
 
-  async discardPendingChanges(
-    args: DiscardPendingChangesArgs
+  async discardPendingChangesFlow(
+    resource: Resource | Resource[],
+    projectId: string,
+    userId: string
   ): Promise<boolean | null> {
-    const userId = args.data.user.connect.id;
-    const projectId = args.data.project.connect.id;
-
-    const resource = await this.prisma.resource.findMany({
-      where: {
-        projectId: projectId,
-        deletedAt: null,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: userId
-              }
-            }
-          }
-        }
-      }
-    });
-
     if (isEmpty(resource)) {
       throw new Error(`Invalid userId or resourceId`);
     }
@@ -264,5 +247,45 @@ export class ProjectService {
     //await this.prisma.$transaction(allPromises);
 
     return true;
+  }
+
+  async discardResourcePendingChanges(
+    args: DiscardPendingChangesArgs,
+    resourceId: string
+  ): Promise<boolean | null> {
+    const userId = args.data.user.connect.id;
+    const projectId = args.data.project.connect.id;
+
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId
+      }
+    });
+    return this.discardPendingChangesFlow(resource, projectId, userId);
+  }
+
+  async discardPendingChanges(
+    args: DiscardPendingChangesArgs
+  ): Promise<boolean | null> {
+    const userId = args.data.user.connect.id;
+    const projectId = args.data.project.connect.id;
+
+    const resource = await this.prisma.resource.findMany({
+      where: {
+        projectId: projectId,
+        deletedAt: null,
+        project: {
+          workspace: {
+            users: {
+              some: {
+                id: userId
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return this.discardPendingChangesFlow(resource, projectId, userId);
   }
 }

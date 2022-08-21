@@ -29,6 +29,9 @@ import {
   FindManyResourceArgs,
   UpdateOneResourceArgs
 } from './dto';
+import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
+import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
+import { FindOneArgsWithUserId } from 'src/dto/findOneArgsWithUserId';
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -116,7 +119,8 @@ export class ResourceResolver {
     nullable: true
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
-  async deleteResource(@Args() args: FindOneArgs): Promise<Resource | null> {
+  @InjectContextValue(InjectableOriginParameter.UserId, 'userId')
+  async deleteResource(@Args() args: FindOneArgsWithUserId): Promise<Resource | null> {
     return this.resourceService.deleteResource(args);
   }
 

@@ -48,6 +48,7 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
   'The resource of type `ProjectConfiguration` cannot be deleted';
 import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 import { ProjectService } from '../project/project.service';
+import { FindOneArgsWithUserId } from 'src/dto/findOneArgsWithUserId';
 
 const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
@@ -108,7 +109,7 @@ export class ResourceService {
 
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
-        'Resource of type ProjectConnfiguration cannot be created manually'
+        'Resource of type ProjectConfiguration cannot be created manually'
       );
     }
 
@@ -343,7 +344,7 @@ export class ResourceService {
     });
   }
 
-  async deleteResource(args: FindOneArgs): Promise<Resource | null> {
+  async deleteResource(args: FindOneArgsWithUserId): Promise<Resource | null> {
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: args.where.id
@@ -374,13 +375,27 @@ export class ResourceService {
       }
     }
 
-    return this.prisma.resource.update({
+    const deletedResource = await this.prisma.resource.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(resource.name, resource.id),
         deletedAt: new Date()
       }
     });
+
+    if (deletedResource && args.userId) {
+      await this.projectService.discardResourcePendingChanges(
+        {
+          data: {
+            project: { connect: { id: resource.projectId } },
+            user: { connect: { id: args.userId } }
+          }
+        },
+        deletedResource.id
+      );
+    }
+
+    return deletedResource;
   }
 
   async updateResource(args: UpdateOneResourceArgs): Promise<Resource | null> {

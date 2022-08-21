@@ -36,6 +36,7 @@ function ResourceList() {
     errorResources,
     currentWorkspace,
     currentProject,
+    addChange,
   } = useContext(AppContext);
 
   const linkToCreateResource = `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`;
@@ -71,9 +72,14 @@ function ResourceList() {
         variables: {
           resourceId: resource.id,
         },
-      }).catch(setError);
+      })
+        .then((result) => {
+          if (result.data?.deleteResource.id)
+            addChange(result.data?.deleteResource.id);
+        })
+        .catch(setError);
     },
-    [deleteResource, setError, trackEvent]
+    [addChange, deleteResource, trackEvent]
   );
 
   const errorMessage =
