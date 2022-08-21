@@ -64,7 +64,9 @@ export class BuildStorageService {
       return path;
     } catch (err) {
       throw new Error(
-        `Failed to save context file in S3 bucket. Input: generateResource: ${generateResource}. Source error: ${err}`,
+        `Failed to save context file in S3 bucket. Input: generateResource: ${JSON.stringify(
+          generateResource,
+        )}. Source error: ${err}`,
       );
     }
   }
