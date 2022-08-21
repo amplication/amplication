@@ -3,7 +3,11 @@ import { gql, useQuery } from "@apollo/client";
 import React, { useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
-import { EnumGitOrganizationType, EnumResourceType, Resource } from "../../models";
+import {
+  EnumGitOrganizationType,
+  EnumResourceType,
+  Resource,
+} from "../../models";
 import { formatError } from "../../util/error";
 import AuthResourceWithGit from "./AuthResourceWithGit";
 import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
@@ -18,7 +22,7 @@ export type GitOrganizationFromGitRepository = {
 };
 
 function SyncWithGithubPage() {
-  const {currentResource} = useContext(AppContext); 
+  const { currentResource } = useContext(AppContext);
 
   const { data, error, refetch } = useQuery<{
     resource: Resource;
@@ -31,7 +35,7 @@ function SyncWithGithubPage() {
   const pageTitle = "GitHub";
   const errorMessage = formatError(error);
   const isServiceResource =
-  data?.resource.resourceType === EnumResourceType.Service;
+    data?.resource.resourceType === EnumResourceType.Service;
 
   return (
     <PageContent pageTitle={pageTitle}>
