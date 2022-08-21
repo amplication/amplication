@@ -6,18 +6,17 @@ import {
   Panel,
 } from "@amplication/design-system";
 import React from "react";
-import { EnumGitOrganizationType } from "../../../../models";
+import { EnumGitOrganizationType, Resource } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
 import {
   GitOrganizationFromGitRepository,
-  ResourceWithGitRepository,
 } from "../../SyncWithGithubPage";
 import GithubSyncDetails from "./GithubSyncDetails";
 import "./RepositoryActions.scss";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
-  currentResourceWithGitRepository: ResourceWithGitRepository;
+  currentResourceWithGitRepository: Resource;
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
 };
 

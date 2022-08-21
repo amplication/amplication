@@ -13,6 +13,8 @@ export const GET_RESOURCES = gql`
       createdAt
       updatedAt
       resourceType
+      githubLastSync
+      gitRepositoryOverride
       gitRepository {
         id
         name

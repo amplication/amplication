@@ -56,7 +56,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
         className={`${CLASS_NAME}__${gitStatusPanelClassName}`}
         panelStyle={EnumPanelStyle.Transparent}
       >
-        {projectConfigurationResource?.gitRepository && (
+        { projectConfigurationResource?.gitRepository && (
           <GithubSyncDetails
             showGitRepositoryBtn={false}
             className={isOverride ? `${CLASS_NAME}__githubSync` : ""}

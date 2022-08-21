@@ -3,7 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
+import { AuthorizeResourceWithGitResult, EnumGitProvider, Resource } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthResourceWithGit.scss";
@@ -12,10 +12,7 @@ import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
-import {
-  ResourceWithGitRepository,
-  GitOrganizationFromGitRepository,
-} from "./SyncWithGithubPage";
+import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -26,7 +23,7 @@ let triggerOnDone = () => {};
 let triggerAuthFailed = () => {};
 
 type Props = {
-  resource: ResourceWithGitRepository;
+  resource: Resource;
   onDone: () => void;
 };
 

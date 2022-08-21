@@ -2,7 +2,6 @@ import { EnumPanelStyle, Panel, Toggle } from "@amplication/design-system";
 import React, { useCallback, useContext, useState } from "react";
 import "./SyncWithGithubPage.scss";
 import "./ServiceConfigurationGitSettings.scss";
-import { ResourceWithGitRepository } from "./SyncWithGithubPage";
 import AuthResourceWithGit from "./AuthResourceWithGit";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { AppContext } from "../../context/appContext";
@@ -14,7 +13,7 @@ import { CONNECT_RESOURCE_PROJECT_REPO, DISCONNECT_GIT_REPOSITORY, UPDATE_RESOUR
 const CLASS_NAME = "service-configuration-github-settings";
 
 type Props = {
-  resource: ResourceWithGitRepository;
+  resource:  models.Resource;
   onDone: () => void;
 };
 

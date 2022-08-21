@@ -1,9 +1,9 @@
 import { Icon, Snackbar } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
-import { match } from "react-router-dom";
+import React, { useContext } from "react";
+import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
-import { EnumGitOrganizationType, EnumResourceType } from "../../models";
+import { EnumGitOrganizationType, EnumResourceType, Resource } from "../../models";
 import { formatError } from "../../util/error";
 import AuthResourceWithGit from "./AuthResourceWithGit";
 import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
@@ -16,45 +16,22 @@ export type GitOrganizationFromGitRepository = {
   name: string;
   type: EnumGitOrganizationType;
 };
-export type WorkspaceFromResourceWithGitOrganizations = {
-  id: string;
-  name: string;
-  gitOrganizations: {
-    id: string;
-    name: string;
-    type: EnumGitOrganizationType;
-  }[];
-};
-export type GitRepositoryWithGitOrganization = {
-  id: string;
-  name: string;
-  gitOrganization: GitOrganizationFromGitRepository;
-};
-export type ResourceWithGitRepository = {
-  id: string;
-  resourceType: EnumResourceType;
-  gitRepositoryOverride: boolean;
-  gitRepository: null | GitRepositoryWithGitOrganization;
-};
 
-type Props = {
-  match: match<{ resource: string }>;
-};
-function SyncWithGithubPage({ match }: Props) {
-  const { resource } = match.params;
+function SyncWithGithubPage() {
+  const {currentResource} = useContext(AppContext); 
 
   const { data, error, refetch } = useQuery<{
-    resource: ResourceWithGitRepository;
+    resource: Resource;
   }>(GET_RESOURCE_GIT_REPOSITORY, {
     variables: {
-      resourceId: resource,
+      resourceId: currentResource?.id,
     },
   });
 
   const pageTitle = "GitHub";
   const errorMessage = formatError(error);
   const isServiceResource =
-    data?.resource.resourceType === EnumResourceType.Service;
+  data?.resource.resourceType === EnumResourceType.Service;
 
   return (
     <PageContent pageTitle={pageTitle}>
@@ -71,7 +48,7 @@ function SyncWithGithubPage({ match }: Props) {
         {data?.resource && !isServiceResource && (
           <AuthResourceWithGit resource={data.resource} onDone={refetch} />
         )}
-        {isServiceResource && (
+        {isServiceResource && data?.resource && (
           <ServiceConfigurationGitSettings
             resource={data.resource}
             onDone={refetch}

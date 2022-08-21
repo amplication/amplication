@@ -3,15 +3,15 @@ import { useMutation } from "@apollo/client";
 import classNames from "classnames";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
+import { Resource } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
-import { ResourceWithGitRepository } from "../../SyncWithGithubPage";
 import "./GithubSyncDetails.scss";
 
 const CLASS_NAME = "github-repo-details";
 
 type Props = {
-  resourceWithRepository: ResourceWithGitRepository;
+  resourceWithRepository: Resource;
   className?: string;
   showGitRepositoryBtn?: boolean;
 };
