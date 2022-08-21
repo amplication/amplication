@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { sentenceCase } from "sentence-case";
 import { EnumResourceType, Resource } from "../../models";
@@ -15,16 +15,22 @@ export default function WorkspaceHeaderTitle({ resource }: Props) {
   const { pathname } = location;
   const lastPathnameParam = pathname.split("/").at(-1);
   if (!lastPathnameParam) {
-    throw new Error("Didnt found any pathname params");
+    throw new Error("Didn't found any pathname params");
   }
-  let title = "";
-  if (knownPages.some((word) => word === lastPathnameParam)) {
-    title = sentenceCase(lastPathnameParam);
-  } else if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
-    title = "Project configuration";
-  } else {
-    title = resource.name;
-  }
+
+  const title = useMemo(() => {
+    let generatedTitle = "";
+    if (knownPages.some((word) => word === lastPathnameParam)) {
+      generatedTitle = sentenceCase(lastPathnameParam);
+    } else if (
+      resource.resourceType === EnumResourceType.ProjectConfiguration
+    ) {
+      generatedTitle = "Project configuration";
+    } else {
+      generatedTitle = resource.name;
+    }
+    return generatedTitle;
+  }, [lastPathnameParam, resource.name, resource.resourceType]);
 
   return (
     <p
