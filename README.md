@@ -12,7 +12,7 @@
   <a href="https://discord.gg/Z2CG3rUFnu">
     <img src="https://img.shields.io/discord/757179260417867879?label=discord" alt="Discord">
   </a>
-  <a href="code_of_conduct.md">
+  <a href="CODE_OF_CONDUCT.md">
     <img src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg" alt="Contributor Covenant">
   </a>
   <a href="https://opensource.org/licenses/Apache-2.0">
@@ -84,7 +84,6 @@ Amplication is using a mono-repo with multiple packages. To initialize all the p
 ```jsx
 npm install
 npm run setup:dev
-npm run start
 ```
 This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
 
