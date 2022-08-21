@@ -7,6 +7,8 @@ import { formatError } from "../util/error";
 import InviteMember from "./InviteMember";
 import "./MemberList.scss";
 import MemberListItem from "./MemberListItem";
+import PageContent from "../Layout/PageContent";
+import ProjectSideBar from "../Project/ProjectSideBar";
 
 type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
@@ -27,36 +29,41 @@ function MemberList() {
   }, [refetch]);
 
   return (
-    <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__header`}>
-        <h2>Workspace Members</h2>
+    <PageContent pageTitle="workspace members" sideContent={ <ProjectSideBar />}>
+      <div className={CLASS_NAME}>
+        <div className={`${CLASS_NAME}__header`}>
+          <h2>Workspace Members</h2>
 
-        <InviteMember />
-      </div>
-      <div className={`${CLASS_NAME}__title`}>
-        {data?.workspaceMembers.length} Members
-      </div>
-      {loading && <CircularProgress />}
-
-      {isEmpty(data?.workspaceMembers) && !loading ? (
-        <div className={`${CLASS_NAME}__empty-state`}>
-          <div className={`${CLASS_NAME}__empty-state__title`}>
-            There are no members to show
-          </div>
+          <InviteMember />
         </div>
-      ) : (
-        data?.workspaceMembers.map((member, index) => (
-          <MemberListItem
-            member={member}
-            key={index}
-            onDelete={handleDelete}
-            onError={setError}
-          />
-        ))
-      )}
+        <div className={`${CLASS_NAME}__title`}>
+          {data?.workspaceMembers.length} Members
+        </div>
+        {loading && <CircularProgress />}
 
-      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
-    </div>
+        {isEmpty(data?.workspaceMembers) && !loading ? (
+          <div className={`${CLASS_NAME}__empty-state`}>
+            <div className={`${CLASS_NAME}__empty-state__title`}>
+              There are no members to show
+            </div>
+          </div>
+        ) : (
+          data?.workspaceMembers.map((member, index) => (
+            <MemberListItem
+              member={member}
+              key={index}
+              onDelete={handleDelete}
+              onError={setError}
+            />
+          ))
+        )}
+
+        <Snackbar
+          open={Boolean(error || errorLoading)}
+          message={errorMessage}
+        />
+      </div>
+    </PageContent>
   );
 }
 
