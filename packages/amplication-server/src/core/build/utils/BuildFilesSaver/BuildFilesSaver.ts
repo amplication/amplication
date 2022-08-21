@@ -2,20 +2,23 @@ import { Module } from '@amplication/data-service-generator';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { outputFile, remove } from 'fs-extra';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER
+} from '@amplication/nest-logger-module';
 import { join, normalize } from 'path';
 import {
   BASE_BUILDS_FOLDER,
   DEFAULT_BUILDS_FOLDER
 } from '../../../../constants';
 import { AmplicationError } from 'src/errors/AmplicationError';
-import { Logger } from 'winston';
 @Injectable()
 export class BuildFilesSaver {
   private baseBuildsPath: string;
   constructor(
     configService: ConfigService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {
     const envFilePath = configService.get<string>(BASE_BUILDS_FOLDER);
 

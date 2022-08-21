@@ -8,7 +8,7 @@ import {
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { ConfigService } from '@nestjs/config';
 import { ResourceRoleService } from './resourceRole.service';
 import { ResourceRoleResolver } from './resourceRole.resolver';
@@ -144,7 +144,7 @@ describe('ResourceRoleResolver', () => {
           }))
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn()
           }))

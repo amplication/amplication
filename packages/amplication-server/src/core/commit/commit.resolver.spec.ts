@@ -7,7 +7,7 @@ import {
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { ConfigService } from '@nestjs/config';
 import { CommitService } from './commit.service';
 import { Commit, User } from 'src/models';
@@ -104,7 +104,7 @@ describe('CommitService', () => {
           useValue: {}
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn()
           }))

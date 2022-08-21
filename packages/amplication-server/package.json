@@ -28,6 +28,7 @@
     "@amplication/data-service-generator": "^0.15.2",
     "@amplication/git-service": "^0.15.2",
     "@amplication/kafka": "^0.15.2",
+    "@amplication/nest-logger-module": "^0.15.2",
     "@amplication/prisma-db": "^0.15.2",
     "@apollo/gateway": "0.42.3",
     "@codebrew/nestjs-storage": "0.1.6",
@@ -72,7 +73,6 @@
     "kafkajs": "1.16.0",
     "lodash": "4.17.21",
     "nest-morgan": "1.0.1",
-    "nest-winston": "1.6.2",
     "node-fetch": "2.6.7",
     "node-jose": "2.0.0",
     "octokit": "1.7.1",
@@ -90,7 +90,6 @@
     "uuid": "8.3.2",
     "validate-color": "2.2.1",
     "winston": "3.3.4",
-    "winston-cloud-logging": "1.0.2",
     "zlib": "1.0.5"
   },
   "devDependencies": {

@@ -4,7 +4,10 @@ import { Storage, MethodNotSupported } from '@slynova/flydrive';
 import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER
+} from '@amplication/nest-logger-module';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
@@ -156,7 +159,8 @@ export class BuildService {
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
 
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);

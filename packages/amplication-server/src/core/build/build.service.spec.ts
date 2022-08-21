@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { orderBy } from 'lodash';
 import {
   ACTION_JOB_DONE_LOG,
@@ -427,7 +427,7 @@ describe('BuildService', () => {
           useValue: {}
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useValue: {
             error: loggerErrorMock,
             child: loggerChildMock,

@@ -14,7 +14,7 @@ import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ResourceService } from './resource.service';
 import { Resource } from '../../models/Resource';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { ConfigService } from '@nestjs/config';
 import { Entity } from '../../models/Entity';
 import { Build } from '../build/dto/Build';
@@ -360,7 +360,7 @@ describe('ResourceResolver', () => {
           }))
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn()
           }))

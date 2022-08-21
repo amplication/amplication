@@ -7,7 +7,7 @@ import {
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { ConfigService } from '@nestjs/config';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { WorkspaceService } from './workspace.service';
@@ -164,7 +164,7 @@ describe('WorkspaceResolver', () => {
           }))
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn()
           }))

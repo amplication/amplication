@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { TestingModule, Test } from '@nestjs/testing';
 import { Prisma } from '@amplication/prisma-db';
 import { ApolloError } from 'apollo-server-express';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { AmplicationError } from '../errors/AmplicationError';
 import {
   createRequestData,
@@ -54,7 +54,7 @@ describe('GqlResolverExceptionsFilter', () => {
           }
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useValue: {
             error: winstonErrorMock,
             info: winstonInfoMock

@@ -11,7 +11,7 @@ import { EntityService } from './entity.service';
 import { INestApplication } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { GraphQLModule } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { ConfigService } from '@nestjs/config';
 import { Entity } from 'src/models/Entity';
 import { User } from 'src/models/User';
@@ -653,7 +653,7 @@ describe('EntityResolver', () => {
           }))
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn()
           }))

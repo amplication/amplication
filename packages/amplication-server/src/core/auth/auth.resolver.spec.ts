@@ -7,7 +7,7 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { Account, Auth, User } from 'src/models';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
@@ -143,7 +143,7 @@ describe('AuthResolver', () => {
           }))
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn()
           }))
