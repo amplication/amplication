@@ -96,7 +96,7 @@ export default function GitCreateRepo({
             <tr>
               <td>{gitOrganizationName}/</td>
               <td>
-                <TextField name="name" autoComplete="off" showError={false} />
+                <TextField autoFocus name="name" autoComplete="off" showError={false} />
               </td>
             </tr>
           </table>
