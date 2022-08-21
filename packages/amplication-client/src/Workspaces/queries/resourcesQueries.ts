@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 
-//add gitRepository
 export const GET_RESOURCES = gql`
   query getResources($projectId: String!, $whereName: StringFilter) {
     resources(
