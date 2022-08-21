@@ -110,6 +110,7 @@ function ResourceForm({ match }: Props) {
                 <Form>
                   <div className={`${CLASS_NAME}__header`}>
                     <h3>General Settings</h3>
+                    <h5>Enter a name and description for your app, and select a color.</h5>
                   </div>
                   <FormikAutoSave debounceMS={1000} />
                   <TextField name="name" label="Name" />

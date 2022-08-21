@@ -60,7 +60,7 @@ function EntitiesTile({ resourceId }: Props) {
           </>
         )
       }
-      message="Define your own data model. Keep using the Amplication Console. It is here to help you out with its simple and intuitive interface."
+      message="Use Amplication's simple and intuitive user interface to define your data model."
       footer={
         <Button
           buttonStyle={EnumButtonStyle.Secondary}
