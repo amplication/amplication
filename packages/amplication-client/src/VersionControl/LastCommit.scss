@@ -2,10 +2,22 @@
 
 .last-commit {
   margin-top: auto;
+  margin-bottom: var(--default-spacing);
 
   &__title {
     font-size: 14px;
     margin: 0;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+  }
+
+  .build-status-icons__status {
+    .amp-icon {
+      margin-left: 0;
+    }
   }
 
   &__divider {

@@ -41,7 +41,7 @@
       font-size: var(--title3-font-size);
     }
   }
-  
+
   &.medium {
     width: var(--icon-size-medium);
     height: var(--icon-size-medium);
@@ -50,7 +50,7 @@
       font-size: var(--title3-font-size);
     }
   }
-  
+
   &.large {
     width: var(--icon-size-large);
     height: var(--icon-size-large);
@@ -59,7 +59,7 @@
       font-size: var(--large-icon-font-size);
     }
   }
-  
+
   &.xlarge {
     width: var(--icon-size-xlarge);
     height: var(--icon-size-xlarge);
@@ -68,7 +68,7 @@
       font-size: var(--title4-font-size);
     }
   }
-  
+
   &.xxlarge {
     width: var(--icon-size-xxlarge);
     height: var(--icon-size-xxlarge);
@@ -78,5 +78,3 @@
     }
   }
 }
-
-

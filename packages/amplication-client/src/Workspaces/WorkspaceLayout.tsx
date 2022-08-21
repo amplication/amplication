@@ -4,8 +4,8 @@ import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { isMobileOnly } from "react-device-detect";
 import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
-import WorkspaceHeader from "./WorkspaceHeader";
-import WorkspaceFooter from "./WorkspaceFooter";
+import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
+// import WorkspaceFooter from "./WorkspaceFooter";
 import useAuthenticated from "../authentication/use-authenticated";
 import useProjectSelector from "./hooks/useProjectSelector";
 import { AppContextProvider } from "../context/appContext";
@@ -46,6 +46,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createProject,
     projectsList,
     onNewProjectCompleted,
+    currentProjectConfiguration,
   } = useProjectSelector(authenticated, currentWorkspace);
 
   const {
@@ -71,8 +72,6 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resetPendingChanges,
     setCommitRunning,
     setPendingChangesError,
-    pendingChangesDataError,
-    pendingChangesDataLoading,
   } = usePendingChanges(currentProject);
 
   return currentWorkspace ? (
@@ -81,6 +80,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         currentWorkspace,
         handleSetCurrentWorkspace,
         createWorkspace,
+        currentProjectConfiguration,
         createNewWorkspaceError,
         loadingCreateNewWorkspace,
         currentProject,
@@ -120,12 +120,12 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
             </div>
             <div className={`${moduleClass}__changes_menu`}>
               {currentProject ? (
-                <PendingChanges projectId={currentProject.id} error={pendingChangesDataError} loading={pendingChangesDataLoading} />
+                <PendingChanges projectId={currentProject.id} />
               ) : null}
               {currentProject && <LastCommit projectId={currentProject.id} />}
             </div>
           </div>
-          <WorkspaceFooter />
+          {/* <WorkspaceFooter /> */}
           <ScreenResolutionMessage />
         </div>
       )}

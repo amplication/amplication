@@ -1,15 +1,19 @@
-import React, { useState, useCallback, useContext } from "react";
-import PageContent from "../Layout/PageContent";
-import PendingChangeWithCompare from "./PendingChangeWithCompare";
-import { EnumCompareType } from "./PendingChangeDiffEntity";
 import { MultiStateToggle, Snackbar } from "@amplication/design-system";
-import "./PendingChangesPage.scss";
-import { AppContext } from "../context/appContext";
 import { gql } from "@apollo/client";
-import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import React, { useCallback, useContext, useState } from "react";
+import { match } from "react-router-dom";
+import { BackNavigation } from "../Components/BackNavigation";
+import { AppContext } from "../context/appContext";
+import PageContent from "../Layout/PageContent";
+import { PendingChange } from "../models";
+import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
+import useCommits from "./hooks/useCommits";
+import { EnumCompareType } from "./PendingChangeDiffEntity";
+import "./PendingChangesPage.scss";
+import PendingChangeWithCompare from "./PendingChangeWithCompare";
 
-const CLASS_NAME = "pending-changes-page";
+const CLASS_NAME = "changes-page";
 const SPLIT = "Split";
 const UNIFIED = "Unified";
 
@@ -18,15 +22,26 @@ const OPTIONS = [
   { value: SPLIT, label: SPLIT },
 ];
 
-const PendingChangesPage = () => {
+type Props = AppRouteProps & {
+  match: match<{
+    workspace: string;
+    project: string;
+    resource: string;
+    commit: string;
+  }>;
+};
+
+const ChangesPage: React.FC<Props> = ({ match }) => {
+  const commitId = match.params.commit;
+  const resourceId = match.params.resource;
   const [splitView, setSplitView] = useState<boolean>(false);
-  const pageTitle = "Pending Changes";
-  const { currentProject } = useContext(AppContext);
-  const {
-    pendingChangesByResource,
-    pendingChangesDataError,
-    pendingChangesIsError,
-  } = usePendingChanges(currentProject);
+  const pageTitle = "Changes";
+  const { commitChangesByResource, commitsError } = useCommits();
+  const { currentProject, currentWorkspace } = useContext(AppContext);
+
+  const commitResourceChanges = commitChangesByResource(commitId).find(
+    (resource) => resource.resourceId === resourceId
+  )?.changes;
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -35,13 +50,18 @@ const PendingChangesPage = () => {
     [setSplitView]
   );
 
-  const errorMessage = formatError(pendingChangesDataError);
+  const errorMessage = formatError(commitsError);
 
   return (
     <>
       <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
+        <BackNavigation
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${commitId}`}
+          label="Back to Commits"
+        />
+
         <div className={`${CLASS_NAME}__header`}>
-          <h1>Pending Changes</h1>
+          <h1>Changes Page</h1>
           <MultiStateToggle
             label=""
             name="compareMode"
@@ -51,30 +71,23 @@ const PendingChangesPage = () => {
           />
         </div>
         <div className={`${CLASS_NAME}__changes`}>
-          {pendingChangesByResource.map((resourceChanges) => (
-            <div key={resourceChanges.resource.id}>
-              <div className={`${CLASS_NAME}__title`}>
-                {resourceChanges.resource.name}
-              </div>
-              {resourceChanges.changes.map((change) => (
-                <PendingChangeWithCompare
-                  key={change.originId}
-                  change={change}
-                  compareType={EnumCompareType.Pending}
-                  splitView={splitView}
-                />
-              ))}
-            </div>
-          ))}
-          <div />
+          {commitResourceChanges &&
+            commitResourceChanges.map((change: PendingChange) => (
+              <PendingChangeWithCompare
+                key={change.originId}
+                change={change}
+                compareType={EnumCompareType.Previous}
+                splitView={splitView}
+              />
+            ))}
         </div>
       </PageContent>
-      <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
+      <Snackbar open={Boolean(commitsError)} message={errorMessage} />
     </>
   );
 };
 
-export default PendingChangesPage;
+export default ChangesPage;
 
 export const GET_COMMIT = gql`
   query Commit($commitId: String!) {
@@ -100,6 +113,12 @@ export const GET_COMMIT = gql`
             id
             displayName
             updatedAt
+            lockedByUser {
+              account {
+                firstName
+                lastName
+              }
+            }
           }
           ... on Block {
             id

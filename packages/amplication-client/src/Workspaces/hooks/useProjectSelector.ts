@@ -25,16 +25,19 @@ const useProjectSelector = (
     projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
-  const { data: projectListData, loading: loadingList, refetch } = useQuery(
-    GET_PROJECTS,
-    {
-      skip:
-        !workspace || (currentWorkspace && currentWorkspace?.id !== workspace),
-      onError: (error) => {
-        // if error push to ? check with @Yuval
-      },
-    }
-  );
+  const [
+    currentProjectConfiguration,
+    setCurrentProjectConfiguration,
+  ] = useState<models.Resource>();
+  const { data: projectListData, loading: loadingList, refetch } = useQuery<{
+    projects: models.Project[];
+  }>(GET_PROJECTS, {
+    skip:
+      !workspace || (currentWorkspace && currentWorkspace?.id !== workspace),
+    onError: (error) => {
+      // if error push to ? check with @Yuval
+    },
+  });
 
   const projectRedirect = useCallback(
     (projectId: string, search?: string) =>
@@ -95,6 +98,13 @@ const useProjectSelector = (
     if (!selectedProject) projectRedirect(projectsList[0].id);
 
     setCurrentProject(selectedProject);
+
+    setCurrentProjectConfiguration(
+      selectedProject?.resources?.find(
+        (resource) =>
+          resource.resourceType === models.EnumResourceType.ProjectConfiguration
+      )
+    );
   }, [project, projectRedirect, projectsList]);
 
   return {
@@ -102,6 +112,7 @@ const useProjectSelector = (
     projectsList,
     createProject,
     onNewProjectCompleted,
+    currentProjectConfiguration,
   };
 };
 

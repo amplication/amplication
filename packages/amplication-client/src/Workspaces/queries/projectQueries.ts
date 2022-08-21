@@ -21,6 +21,7 @@ export const GET_PROJECTS = gql`
       resources {
         id
         name
+        resourceType
       }
       createdAt
     }

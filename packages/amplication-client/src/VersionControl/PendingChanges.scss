@@ -7,7 +7,7 @@ $counter-height: 18px;
   padding: var(--default-spacing);
   display: flex;
   flex-direction: column;
-  height: calc(100% - 200px);
+  flex: 1;
 
   &__divider {
     border: $border-black5;

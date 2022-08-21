@@ -1,4 +1,4 @@
-import { PrismaService } from '@amplication/prisma-db';
+import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
 import { FindOneArgs } from '../../dto';
 import { Commit, Project, Resource, User } from '../../models';
@@ -184,29 +184,31 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    resources.forEach((resource: Resource) =>
-      this.buildService.create(
-        {
-          data: {
-            resource: {
-              connect: { id: resource.id }
-            },
-            commit: {
-              connect: {
-                id: commit.id
-              }
-            },
-            createdBy: {
-              connect: {
-                id: userId
-              }
-            },
-            message: args.data.message
-          }
-        },
-        skipPublish
-      )
-    );
+    resources
+      .filter(res => res.resourceType !== EnumResourceType.ProjectConfiguration)
+      .forEach((resource: Resource) =>
+        this.buildService.create(
+          {
+            data: {
+              resource: {
+                connect: { id: resource.id }
+              },
+              commit: {
+                connect: {
+                  id: commit.id
+                }
+              },
+              createdBy: {
+                connect: {
+                  id: userId
+                }
+              },
+              message: args.data.message
+            }
+          },
+          skipPublish
+        )
+      );
 
     return commit;
   }

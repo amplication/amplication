@@ -1,18 +1,18 @@
-import { gql, useQuery } from "@apollo/client";
-import React, { useContext, useState } from "react";
-import BuildSelector from "../../Components/BuildSelector";
+import { gql } from "@apollo/client";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import CommitSelector from "../../Components/CommitSelector";
 import ResourceSelector from "../../Components/ResourceSelector";
 import { AppContext } from "../../context/appContext";
-import { Build, Resource, SortOrder } from "../../models";
+import { Commit, Resource } from "../../models";
 import "./CodeViewBar.scss";
 import CodeViewExplorerTree from "./CodeViewExplorerTree";
 import { FileDetails } from "./CodeViewPage";
 import { NodeTypeEnum } from "./NodeTypeEnum";
+import useCommit from "../../VersionControl/hooks/useCommits";
 
 const CLASS_NAME = "code-view-bar";
 
 type Props = {
-  resource: Resource;
   onFileSelected: (selectedFile: FileDetails | null) => void;
 };
 
@@ -24,20 +24,17 @@ export type FileMeta = {
   expanded?: boolean;
 };
 
-export const CREATED_AT_FIELD = "createdAt";
-type TData = {
-  builds: Build[];
-};
+const CodeViewExplorer: React.FC<Props> = ({ onFileSelected }) => {
+  const { resources } = useContext(AppContext);
+  const { commits } = useCommit();
 
-const CodeViewExplorer: React.FC<Props> = ({ resource, onFileSelected }) => {
-  const [selectedBuild, setSelectedBuild] = useState<Build | null>(null);
+  const [selectedCommit, setSelectedCommit] = useState<Commit | null>(null);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
     null
   );
-  const { resources } = useContext(AppContext);
 
-  const handleSelectedBuild = (build: Build) => {
-    setSelectedBuild(build);
+  const handleSelectedCommit = (commit: Commit) => {
+    setSelectedCommit(commit);
     onFileSelected(null);
   };
 
@@ -45,38 +42,35 @@ const CodeViewExplorer: React.FC<Props> = ({ resource, onFileSelected }) => {
     setSelectedResource(resource);
   };
 
-  const { data } = useQuery<TData>(GET_BUILDS_COMMIT, {
-    variables: {
-      resourceId: resource.id,
-      orderBy: {
-        [CREATED_AT_FIELD]: SortOrder.Desc,
-      },
-    },
-    onCompleted: async (data) => {
-      handleSelectedBuild(data.builds[0]);
-      handleSelectedResource(resources[0]);
-    },
-  });
+  useEffect(() => {
+    setSelectedCommit(commits[0]);
+  }, [commits]);
 
-  return !data ? (
-    <div />
-  ) : (
+  useEffect(() => {
+    setSelectedResource(resources[0]);
+  }, [resources]);
+
+  const selectedBuild = useMemo(() => {
+    return selectedCommit?.builds?.find(
+      (b) => b.resource.id === selectedResource?.id
+    );
+  }, [selectedCommit, selectedResource]);
+
+  return (
     <div className={CLASS_NAME}>
       <div>
-        <BuildSelector
-          resource={resource}
-          builds={data.builds}
-          selectedBuild={selectedBuild}
-          onSelectBuild={handleSelectedBuild}
+        <CommitSelector
+          commits={commits}
+          selectedCommit={selectedCommit}
+          onSelectCommit={handleSelectedCommit}
         />
         <ResourceSelector
-          resource={resource}
           resources={resources}
           selectedResource={selectedResource}
           onSelectResource={handleSelectedResource}
         />
       </div>
-      {selectedBuild && selectedResource && (
+      {selectedCommit && selectedResource && selectedBuild && (
         <CodeViewExplorerTree
           selectedBuild={selectedBuild}
           resourceId={selectedResource.id}

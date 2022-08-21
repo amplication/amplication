@@ -1,30 +1,10 @@
 import { EnumResourceType } from "../models";
 
-export type MenuItemLinks =
-  | "entities"
-  | "roles"
-  | "commits"
-  | "github"
-  | "code"
-  | "settings";
+export type MenuItemLinks = "entities" | "roles" | "github" | "settings";
 
 export const resourceMenuLayout: { [key: string]: string[] } = {
-  [EnumResourceType.Service]: [
-    "entities",
-    "roles",
-    "commits",
-    "github",
-    "code",
-    "settings",
-  ],
-  [EnumResourceType.ProjectConfiguration]: [
-    "entities",
-    "roles",
-    "commits",
-    "github",
-    "code",
-    "settings",
-  ],
+  [EnumResourceType.Service]: ["entities", "roles", "github", "settings"],
+  [EnumResourceType.ProjectConfiguration]: ["github", "settings"],
 };
 
 export const linksMap = {
@@ -38,20 +18,10 @@ export const linksMap = {
     icon: "roles_outline",
     to: "/roles",
   },
-  commits: {
-    title: "Commits",
-    icon: "history_commit_outline",
-    to: "/commits",
-  },
   github: {
     title: "Connect to GitHub",
     icon: "github",
     to: "/github",
-  },
-  code: {
-    title: "Code View",
-    icon: "code1",
-    to: "/code-view",
   },
   settings: {
     title: "Settings",

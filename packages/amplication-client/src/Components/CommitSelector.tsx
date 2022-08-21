@@ -7,30 +7,26 @@ import {
   Label,
 } from "@amplication/design-system";
 import React from "react";
-import { Resource } from "../models";
+import { Commit } from "../models";
+import { CommitSelectorItem } from "./CommitSelectorItem";
 import "./CommitSelector.scss";
-import { ResourceSelectorItem } from "./ResourceSelectorItem";
 
 const CLASS_NAME = "commit-selector";
 
 type Props = {
-  resources: Resource[];
-  selectedResource: Resource | null;
-  onSelectResource: (resource: Resource) => void;
+  commits: Commit[];
+  selectedCommit: Commit | null;
+  onSelectCommit: (commit: Commit) => void;
 };
 
-const ResourceSelector = ({
-  resources,
-  onSelectResource,
-  selectedResource,
-}: Props) => {
+const CommitSelector = ({ commits, onSelectCommit, selectedCommit }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__label-title`}>
-        <Label text="Select resource" />
+        <Label text="Select commit" />
       </div>
       <SelectMenu
-        title={<ResourceSelectorItem resource={selectedResource} />}
+        title={<CommitSelectorItem commit={selectedCommit} />}
         buttonStyle={EnumButtonStyle.Secondary}
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"
@@ -38,16 +34,16 @@ const ResourceSelector = ({
         <SelectMenuModal>
           <SelectMenuList>
             <>
-              {resources.map((resource) => (
+              {commits.map((commit) => (
                 <SelectMenuItem
                   closeAfterSelectionChange
-                  selected={resource.id === selectedResource?.id}
-                  key={resource.id}
+                  selected={commit.id === selectedCommit?.id}
+                  key={commit.id}
                   onSelectionChange={() => {
-                    onSelectResource(resource);
+                    onSelectCommit(commit);
                   }}
                 >
-                  <ResourceSelectorItem resource={resource} />
+                  <CommitSelectorItem commit={commit} />
                 </SelectMenuItem>
               ))}
             </>
@@ -58,4 +54,4 @@ const ResourceSelector = ({
   );
 };
 
-export default ResourceSelector;
+export default CommitSelector;
