@@ -128,17 +128,6 @@ export class GitProviderService {
       }
     });
 
-    await this.prisma.resource.update({
-      where: {
-        id: resourceId
-      },
-      data: {
-        gitRepository: {
-          disconnect: true
-        }
-      }
-    });
-
     const countResourcesConnected = await this.prisma.gitRepository
       .findUnique({
         where: {
@@ -219,32 +208,11 @@ export class GitProviderService {
       }
     });
 
-    let resourcesToConnect: Prisma.ResourceWhereUniqueInput[];
-
-    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
-      const resources = await this.prisma.resource.findMany({
-        where: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          OR: [
-            {
-              projectId: resource.projectId,
-              gitRepositoryOverride: false
-            },
-            {
-              id: resourceId
-            }
-          ]
-        }
-      });
-
-      resourcesToConnect = resources.map(r => ({ id: r.id }));
-    } else {
-      resourcesToConnect = [
-        {
-          id: resourceId
-        }
-      ];
-    }
+    const resourcesToConnect = await this.getResourcesToConnectRepository(
+      resource.projectId,
+      resourceId,
+      resource.resourceType
+    );
 
     await this.prisma.gitRepository.create({
       data: {

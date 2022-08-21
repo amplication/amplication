@@ -21,6 +21,7 @@ import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyA
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitProviderService } from './git.provider.service';
 import { DisconnectGitRepositoryArgs } from './dto/args/DisconnectGitRepositoryArgs';
+import { ConnectToProjectGitRepositoryArgs } from './dto/args/ConnectToProjectGitRepositoryArgs';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -56,7 +57,7 @@ export class GitResolver {
   @Mutation(() => Resource)
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'resourceId')
   async connectResourceToProjectRepository(
-    @Args() args: DisconnectGitRepositoryArgs
+    @Args() args: ConnectToProjectGitRepositoryArgs
   ): Promise<Resource> {
     return await this.gitService.connectResourceToProjectRepository(
       args.resourceId
