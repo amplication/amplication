@@ -66,6 +66,7 @@ Set up and run the development environment on your local machine:
 1. You have typescript installed locally on you machine ```npm install -g typescript```
 2. You are using node version: ^16.3.0 || ^14.0.0"
 3. You are using npm version: ^8.1.0 || ^7.3.0"
+4. You have `docker` installed and running on your machine
 
 ```shell
 cd amplication
@@ -74,8 +75,14 @@ npm run setup:dev
 ```
 
 ## Step 4: Create a branch
+Create a new branch for your changes.
+In order to keep branch names uniform and easy-to-understand, please use the following conventions for branch naming.
+Generally speaking, it is a good idea to add a group/type prefix to a branch.
+Here is a list of good examples:
+- for docs change : docs/{ISSUE_NUMBER}-{CUSTOM_NAME} for e.g. docs/2233-update-contributing-docs
+- for new features : feat/{ISSUE_NUMBER}-{CUSTOM_NAME} for e.g. feat/1144-add-plugins
+- for bug fixes : fix/{ISSUE_NUMBER}-{CUSTOM_NAME} for e.g. fix/9878-fix-invite-wrong-url
 
-Create a new branch for your fix.
 
 ```jsx
 git checkout -b branch-name-here
@@ -158,6 +165,6 @@ fix(server): missing entity on init
 
 Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
 
-[Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md)
+[Code of Conduct](https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md)
 
 Our Code of Conduct means that you are responsible for treating everyone on the project with respect and courtesy.

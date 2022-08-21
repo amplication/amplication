@@ -60,6 +60,8 @@ function WorkspaceForm() {
   return (
     <div className={CLASS_NAME}>
       <h2>Workspace Settings</h2>
+      <p>Workspaces help you manage your projects by enabling selected team members to work on specific apps</p>
+      <br/>
       {data?.currentWorkspace && (
         <Formik
           initialValues={data.currentWorkspace}
