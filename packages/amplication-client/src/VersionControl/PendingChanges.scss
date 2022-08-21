@@ -8,6 +8,7 @@ $counter-height: 18px;
   display: flex;
   flex-direction: column;
   flex: 1;
+  background-color: var(--white);
 
   &__divider {
     border: $border-black5;
