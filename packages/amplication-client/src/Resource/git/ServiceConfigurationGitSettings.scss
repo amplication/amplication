@@ -46,7 +46,7 @@
   }
 
   &__defaultSettings {
-    font-size: 14px;
+    @include regular-14; 
     padding: 12px 0px;
     display: flex;
     width: 100%;
