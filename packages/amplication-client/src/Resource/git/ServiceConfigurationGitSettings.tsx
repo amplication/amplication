@@ -6,11 +6,11 @@ import { ResourceWithGitRepository } from "./SyncWithGithubPage";
 import AuthResourceWithGit from "./AuthResourceWithGit";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { AppContext } from "../../context/appContext";
-import { gql, useMutation } from "@apollo/client";
+import {useMutation } from "@apollo/client";
 import { UPDATE_RESOURCE } from "../ResourceForm";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
-import { DISCONNECT_GIT_REPOSITORY } from "./GitActions/RepositoryActions/GithubSyncDetails";
+import { CONNECT_RESOURCE_PROJECT_REPO, DISCONNECT_GIT_REPOSITORY } from "../../Workspaces/queries/resourcesQueries";
 
 const CLASS_NAME = "service-configuration-github-settings";
 
@@ -128,14 +128,3 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
 };
 
 export default ServiceConfigurationGitSettings;
-
-export const CONNECT_RESOURCE_PROJECT_REPO = gql`
-  mutation connectResourceToProjectRepository($resourceId: String!) {
-    connectResourceToProjectRepository(resourceId: $resourceId) {
-      id
-      gitRepository {
-        id
-      }
-    }
-  }
-`;

@@ -73,3 +73,25 @@ export const CREATE_RESOURCE_WITH_ENTITIES = gql`
     }
   }
 `;
+
+export const DISCONNECT_GIT_REPOSITORY = gql`
+  mutation disconnectGitRepository($resourceId: String!) {
+    disconnectResourceGitRepository(resourceId: $resourceId) {
+      id
+      gitRepository {
+        id
+      }
+    }
+  }
+`;
+
+export const CONNECT_RESOURCE_PROJECT_REPO = gql`
+  mutation connectResourceToProjectRepository($resourceId: String!) {
+    connectResourceToProjectRepository(resourceId: $resourceId) {
+      id
+      gitRepository {
+        id
+      }
+    }
+  }
+`;

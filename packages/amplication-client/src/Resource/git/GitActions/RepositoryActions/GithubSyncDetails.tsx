@@ -1,9 +1,10 @@
 import { Snackbar } from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import classNames from "classnames";
 import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import { formatError } from "../../../../util/error";
+import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
 import { ResourceWithGitRepository } from "../../SyncWithGithubPage";
 import "./GithubSyncDetails.scss";
 
@@ -75,14 +76,3 @@ function GithubSyncDetails({
 }
 
 export default GithubSyncDetails;
-
-export const DISCONNECT_GIT_REPOSITORY = gql`
-  mutation disconnectGitRepository($resourceId: String!) {
-    disconnectResourceGitRepository(resourceId: $resourceId) {
-      id
-      gitRepository {
-        id
-      }
-    }
-  }
-`;
