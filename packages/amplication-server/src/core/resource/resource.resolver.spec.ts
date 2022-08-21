@@ -82,7 +82,8 @@ const EXAMPLE_RESOURCE: Resource = {
   description: EXAMPLE_DESCRIPTION,
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
-  environments: [EXAMPLE_ENVIRONMENT]
+  environments: [EXAMPLE_ENVIRONMENT],
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_USER: User = {
@@ -101,6 +102,7 @@ const FIND_ONE_RESOURCE_QUERY = gql`
       name
       description
       resourceType
+      gitRepositoryOverride
       entities {
         id
         createdAt
@@ -187,6 +189,7 @@ const CREATE_RESOURCE_MUTATION = gql`
       name
       description
       resourceType
+      gitRepositoryOverride
       entities {
         id
         createdAt
@@ -225,6 +228,7 @@ const DELETE_RESOURCE_MUTATION = gql`
       name
       description
       resourceType
+      gitRepositoryOverride
       entities {
         id
         createdAt
@@ -263,6 +267,7 @@ const UPDATE_RESOURCE_MUTATION = gql`
       name
       description
       resourceType
+      gitRepositoryOverride
       entities {
         id
         createdAt

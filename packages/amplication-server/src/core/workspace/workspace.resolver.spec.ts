@@ -56,7 +56,8 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   createdAt: timeNow,
-  updatedAt: timeNow
+  updatedAt: timeNow,
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_PROJECT: Project = {

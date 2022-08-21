@@ -1,3 +1,4 @@
+import { Resource } from "@amplication/code-gen-types/dist/models";
 import {
   Button,
   CircularProgress,
@@ -11,13 +12,12 @@ import React, { useCallback } from "react";
 import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
-import { ResourceWithGitRepository } from "../../SyncWithGithubPage";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
 type Props = {
   gitProvider: EnumGitProvider;
-  resource: ResourceWithGitRepository;
+  resource: Resource;
   gitOrganizationId: string;
   onCompleted: Function;
   gitOrganizationName: string;
