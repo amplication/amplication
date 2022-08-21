@@ -78,6 +78,29 @@ export class GithubService implements IGitClient {
       private: !isPublic
     });
 
+    const  response = await octokit.rest.repos.updateBranchProtection({
+      owner:owner,
+      repo:name,
+      branch:"amplication*",
+      required_status_checks:{
+        strict: false,
+        contexts: null
+      },
+      enforce_admins:true,
+      required_pull_request_reviews: {
+
+      },
+      restrictions:{
+        users:[],
+        teams:[],
+        apps:["amplication"],
+      },
+    })
+
+    console.log("MATAN")
+    console.log(response)
+    console.log("MATAN")
+
     return {
       name: repo.name,
       url: repo.html_url,
