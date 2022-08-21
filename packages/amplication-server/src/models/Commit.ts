@@ -1,8 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Resource } from './Resource'; // eslint-disable-line import/no-cycle
 import { User } from './User'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
 import { PendingChange } from '../core/resource/dto/PendingChange'; // eslint-disable-line import/no-cycle
+import { Project } from './Project';
 
 @ObjectType({
   isAbstract: true
@@ -18,7 +18,7 @@ export class Commit {
   })
   createdAt!: Date;
 
-  resource?: Resource;
+  project?: Project;
 
   @Field(() => String, {
     nullable: false

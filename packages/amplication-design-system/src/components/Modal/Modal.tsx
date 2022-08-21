@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { TransitionProps } from "@mui/material/transitions";
-import Slide from "@mui/material/Slide";
-import Dialog from "@mui/material/Dialog";
+import { Slide, Dialog } from "@mui/material";
 
 interface Props {
   onCloseEvent?: () => void;

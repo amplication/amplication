@@ -14,7 +14,7 @@ import { format } from "date-fns";
 import { AppContext } from "../../context/appContext";
 
 type Props = {
-  resource: models.Resource;
+  resource: models.Resource | null;
   showDisconnectedMessage: boolean;
 };
 
@@ -22,28 +22,32 @@ const CLASS_NAME = "app-git-status-panel";
 const DATE_FORMAT = "PP p";
 
 const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
-  const gitRepositoryFullName = `${resource.gitRepository?.gitOrganization.name}/${resource.gitRepository?.name}`;
+  const gitRepositoryFullName = `${resource?.gitRepository?.gitOrganization.name}/${resource?.gitRepository?.name}`;
 
   const repoUrl = `https://github.com/${gitRepositoryFullName}`;
 
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  
-  const lastSync = new Date(resource.githubLastSync);
+
+  const lastSync = new Date(resource?.githubLastSync);
 
   return (
     <div className={CLASS_NAME}>
-      {isEmpty(resource.gitRepository) ? (
+      {isEmpty(resource?.gitRepository) ? (
         <>
           {showDisconnectedMessage && (
             <div className={`${CLASS_NAME}__message`}>
               Connect to GitHub to create a Pull Request with the generated code
             </div>
           )}
-          <Link title={"Connect to GitHub"} to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource.id}/github`}>
+          <Link
+            title={"Connect to GitHub"}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource?.id}/github`}
+          >
             <Button
               buttonStyle={EnumButtonStyle.Secondary}
               icon="github"
               iconPosition={EnumIconPosition.Left}
+              className={`${CLASS_NAME}__connect__button`}
             >
               Connect to GitHub
             </Button>

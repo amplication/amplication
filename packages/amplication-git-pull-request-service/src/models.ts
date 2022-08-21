@@ -272,7 +272,7 @@ export type CommitBuildsArgs = {
 
 export type CommitCreateInput = {
   message: Scalars['String'];
-  resource: WhereParentIdInput;
+  project: WhereParentIdInput;
 };
 
 export type CommitOrderByInput = {
@@ -285,7 +285,7 @@ export type CommitWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
   message?: InputMaybe<StringFilter>;
-  resource: WhereUniqueInput;
+  project: WhereUniqueInput;
   user?: InputMaybe<WhereUniqueInput>;
 };
 
@@ -1339,17 +1339,18 @@ export type PendingChange = {
   origin: PendingChangeOrigin;
   originId: Scalars['String'];
   originType: EnumPendingChangeOriginType;
+  resource: Resource;
   versionNumber: Scalars['Int'];
 };
 
 export type PendingChangeOrigin = Block | Entity;
 
 export type PendingChangesDiscardInput = {
-  resource: WhereParentIdInput;
+  project: WhereParentIdInput;
 };
 
 export type PendingChangesFindInput = {
-  resource: WhereUniqueInput;
+  project: WhereUniqueInput;
 };
 
 export type PrivateKeyAuthenticationSettings = {

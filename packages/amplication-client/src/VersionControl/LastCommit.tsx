@@ -1,45 +1,46 @@
-import React, { useMemo, useState, useContext } from "react";
+import React, { useMemo, useContext, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
-import { formatError } from "../util/error";
 import * as models from "../models";
 import {
-  UserAndTime,
   Tooltip,
   SkeletonWrapper,
+  Button,
+  EnumButtonStyle,
 } from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
-import BuildSummary from "./BuildSummary";
-import BuildHeader from "./BuildHeader";
 import "./LastCommit.scss";
-import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
 import { AppContext } from "../context/appContext";
+import { Link } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import { BuildStatusIcons } from "./BuildStatusIcons";
 
 type TData = {
   commits: models.Commit[];
 };
 
 type Props = {
-  resourceId: string;
+  projectId: string;
 };
 
 const CLASS_NAME = "last-commit";
 
-const LastCommit = ({ resourceId }: Props) => {
-  const { commitRunning, pendingChangesIsError, } = useContext(AppContext);
-  const [error, setError] = useState<Error>();
+const LastCommit = ({ projectId }: Props) => {
+  const {
+    currentWorkspace,
+    currentProject,
+    commitRunning,
+    pendingChangesIsError,
+  } = useContext(AppContext);
 
-  const { data, loading, error: errorLoading, refetch } = useQuery<TData>(
-    GET_LAST_COMMIT,
-    {
-      variables: {
-        resourceId,
-      },
-    }
-  );
+  const { data, loading, refetch } = useQuery<TData>(GET_LAST_COMMIT, {
+    variables: {
+      projectId,
+    },
+  });
 
-  React.useEffect(() => {
+  useEffect(() => {
     refetch();
     return () => {
       refetch();
@@ -58,18 +59,13 @@ const LastCommit = ({ resourceId }: Props) => {
     return last;
   }, [lastCommit]);
 
-  const errorMessage =
-    formatError(errorLoading) || (error && formatError(error));
-
-  const account = lastCommit?.user?.account;
-
   if (!lastCommit) return null;
 
   const ClickableCommitId = (
     <ClickableId
-      to={`/${build?.resourceId}/commits/${lastCommit.id}`}
+      to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
       id={lastCommit.id}
-      label="Last commit"
+      label="Commit"
       eventData={{
         eventName: "lastCommitIdClick",
       }}
@@ -84,51 +80,63 @@ const LastCommit = ({ resourceId }: Props) => {
         [`${CLASS_NAME}__generating`]: generating,
       })}
     >
-      {Boolean(error) && errorMessage}
-
-      <SkeletonWrapper showSkeleton={generating}>
-        {isEmpty(lastCommit?.message) ? (
-          ClickableCommitId
-        ) : (
-          <Tooltip aria-label={lastCommit?.message} direction="ne">
-            {ClickableCommitId}
-          </Tooltip>
-        )}
-      </SkeletonWrapper>
-      <UserAndTime
-        loading={generating}
-        account={account}
-        time={lastCommit.createdAt}
-      />
-
-      {build && (
-        <>
-          <SkeletonWrapper showSkeleton={generating}>
-            <BuildHeader
-              build={build}
-              isError={pendingChangesIsError}
-            />
+      <hr className={`${CLASS_NAME}__divider`} />
+      <div className={`${CLASS_NAME}__content`}>
+        <p className={`${CLASS_NAME}__title`}>Last Commit</p>
+        <div className={`${CLASS_NAME}__status`}>
+          {build && <BuildStatusIcons build={build} showIcon={false} />}
+          <SkeletonWrapper
+            showSkeleton={generating}
+            className={`${CLASS_NAME}__skeleton`}
+          >
+            {isEmpty(lastCommit?.message) ? (
+              ClickableCommitId
+            ) : (
+              <Tooltip aria-label={lastCommit?.message} direction="ne">
+                {ClickableCommitId}
+              </Tooltip>
+            )}
+            <span className={classNames("clickable-id")}>
+              {formatTimeToNow(lastCommit?.createdAt)}
+            </span>
           </SkeletonWrapper>
-
-          <BuildSummary
-            build={build}
-            onError={setError}
-            generating={generating}
-          />
-        </>
-      )}
-
-      <PendingChangesMenuItem resourceId={resourceId} />
+        </div>
+        {build && (
+          <Link
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/code-view`}
+            className={`${CLASS_NAME}__view-code`}
+          >
+            <Button
+              buttonStyle={EnumButtonStyle.Secondary}
+              disabled={generating}
+              eventData={{
+                eventName: "LastCommitViewCode",
+              }}
+            >
+              View Code
+            </Button>
+          </Link>
+        )}
+      </div>
     </div>
   );
 };
 
+function formatTimeToNow(time: Date | null): string | null {
+  return (
+    time &&
+    formatDistanceToNow(new Date(time), {
+      addSuffix: true,
+    })
+  );
+}
+
 export default LastCommit;
 
 export const GET_LAST_COMMIT = gql`
-  query lastCommit($resourceId: String!) {
+  query lastCommit($projectId: String!) {
     commits(
-      where: { resource: { id: $resourceId } }
+      where: { project: { id: $projectId } }
       orderBy: { createdAt: Desc }
       take: 1
     ) {

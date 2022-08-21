@@ -1,5 +1,6 @@
 @import "../style/index.scss";
 
 .resource-menu {
-  border: 1px solid var(--black5);
+  border-right: $border-black5;
+  min-width: var(--menu-width);
 }

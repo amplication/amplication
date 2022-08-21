@@ -12,7 +12,8 @@ const TOOLTIP_DIRECTION = "ne";
 
 type Props = {
   change: models.PendingChange;
-  resourceId: string;
+  /**@todo: figure out how to pass this value without too many props drilling down */
+  resourceId?: string; 
   linkToOrigin?: boolean;
 };
 
@@ -24,13 +25,8 @@ const ACTION_TO_LABEL: {
   [models.EnumPendingChangeAction.Update]: "U",
 };
 
-const PendingChange = ({
-  change,
-  resourceId,
-  linkToOrigin = false,
-}: Props) => {
-
-  const {currentWorkspace, currentProject} = useContext(AppContext);
+const PendingChange = ({ change, resourceId, linkToOrigin = false }: Props) => {
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   /**@todo: update the url for other types of blocks  */
   const url =
     change.originType === models.EnumPendingChangeOriginType.Entity
@@ -56,7 +52,11 @@ const PendingChange = ({
       );
     }
     if (linkToOrigin) {
-      return <Link to={url}>{change.origin.displayName}</Link>;
+      return (
+        <Link to={url} className={`${CLASS_NAME}__link`}>
+          {change.origin.displayName}
+        </Link>
+      );
     }
     return change.origin.displayName;
   };

@@ -1,7 +1,7 @@
 @import "../style/index.scss";
 
 .workspaces-layout {
-  height: calc(100%);
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--surface);
@@ -9,8 +9,11 @@
 
   &__page_content {
     display: flex;
+    flex: 1;
     flex-direction: row;
     flex-grow: 1;
+    height: 100%;
+    overflow: hidden;
   }
 
   &__main_content {
@@ -22,5 +25,7 @@
     min-width: var(--changes-menu-width);
     background: var(--menu-background-color);
     border-left: $border-black10;
+    display: flex;
+    flex-direction: column;
   }
 }

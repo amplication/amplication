@@ -25,7 +25,7 @@ export class CommitResolver {
   ) {}
 
   @ResolveField(() => User)
-  async user(@Parent() commit: Commit) {
+  async user(@Parent() commit: Commit): Promise<User> {
     return this.userService.findUser({
       where: {
         id: commit.userId
@@ -44,7 +44,7 @@ export class CommitResolver {
   @Query(() => [Commit], {
     nullable: true
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, 'where.project.id')
   async commits(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
     return this.commitService.findMany(args);
   }

@@ -11,6 +11,7 @@ export const GET_RESOURCES = gql`
       name
       description
       color
+      createdAt
       updatedAt
       resourceType
       gitRepository {
