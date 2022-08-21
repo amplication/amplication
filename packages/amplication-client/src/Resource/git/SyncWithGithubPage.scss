@@ -16,7 +16,7 @@ $icon-font-size: 40px;
 
   &__message {
     @include body1;
-    font-size: 14px;
+    @include regular-14;
     color: var(--black);
     line-height: 1.5;
     margin-bottom: var(--default-spacing);
