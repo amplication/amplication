@@ -86,15 +86,11 @@ export class GitProviderService {
       throw new AmplicationError(INVALID_GIT_REPOSITORY_ID);
     }
 
-    try {
-      await this.prisma.gitRepository.delete({
-        where: {
-          id: args.gitRepositoryId
-        }
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
+    await this.prisma.gitRepository.delete({
+      where: {
+        id: args.gitRepositoryId
+      }
+    });
 
     return true;
   }
@@ -111,7 +107,7 @@ export class GitProviderService {
 
     if (isEmpty(resource)) throw new AmplicationError(INVALID_RESOURCE_ID);
 
-    const resourcesToDisconnectConnect = await this.getResourcesToConnectRepository(
+    const resourcesToDisconnect = await this.getInheritProjectResources(
       resource.projectId,
       resourceId,
       resource.resourceType
@@ -123,7 +119,7 @@ export class GitProviderService {
       },
       data: {
         resources: {
-          disconnect: resourcesToDisconnectConnect
+          disconnect: resourcesToDisconnect
         }
       }
     });
@@ -162,7 +158,7 @@ export class GitProviderService {
       await this.disconnectResourceGitRepository(resourceId);
     }
 
-    const projectConfigurationRepo = await this.prisma.resource
+    const projectConfigurationRepository = await this.prisma.resource
       .findFirst({
         where: {
           projectId: resource.projectId,
@@ -171,7 +167,7 @@ export class GitProviderService {
       })
       .gitRepository();
 
-    if (isEmpty(projectConfigurationRepo)) {
+    if (isEmpty(projectConfigurationRepository)) {
       return resource;
     }
     const resourceWithProjectRepository = await this.prisma.resource.update({
@@ -181,7 +177,7 @@ export class GitProviderService {
       data: {
         gitRepository: {
           connect: {
-            id: projectConfigurationRepo.id
+            id: projectConfigurationRepository.id
           }
         }
       }
@@ -208,7 +204,7 @@ export class GitProviderService {
       }
     });
 
-    const resourcesToConnect = await this.getResourcesToConnectRepository(
+    const resourcesToConnect = await this.getInheritProjectResources(
       resource.projectId,
       resourceId,
       resource.resourceType
@@ -339,7 +335,7 @@ export class GitProviderService {
     ).installationId;
   }
 
-  private async getResourcesToConnectRepository(
+  private async getInheritProjectResources(
     projectId: string,
     resourceId: string,
     resourceType: EnumResourceType
