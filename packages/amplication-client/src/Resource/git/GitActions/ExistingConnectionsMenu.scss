@@ -11,9 +11,9 @@
     gap: 8px;
     width: 248px;
     height: 28px;
-    background: #2c3249;
-    border: 1px solid #444b66;
-    border-radius: 4px;
+    background: var(--black5);
+    border: $border-black20;
+    border-radius: var(--small-border-radius);
 
     .amp-button.amp-button--text {
       height: 28px;
