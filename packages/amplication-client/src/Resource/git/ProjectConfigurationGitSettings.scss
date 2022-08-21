@@ -24,7 +24,7 @@
   &__gitStatusPanel {
     width: 100%;
     height: 72px;
-    border: 1px solid var(--black20);
+    border: var($border-black20);
     background: var(--black5);
     margin: 8px 0;
     min-height: var(--min-height-of-banner);
@@ -32,7 +32,7 @@
   }
 
   &__overrideGitStatusPanel {
-    border: 1px solid var(--black20);
+    border: var($border-black20);
     display: flex;
     flex-direction: row;
     width: 100%;
