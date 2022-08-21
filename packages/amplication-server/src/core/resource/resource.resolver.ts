@@ -120,7 +120,9 @@ export class ResourceResolver {
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   @InjectContextValue(InjectableOriginParameter.UserId, 'userId')
-  async deleteResource(@Args() args: FindOneArgsWithUserId): Promise<Resource | null> {
+  async deleteResource(
+    @Args() args: FindOneArgsWithUserId
+  ): Promise<Resource | null> {
     return this.resourceService.deleteResource(args);
   }
 
