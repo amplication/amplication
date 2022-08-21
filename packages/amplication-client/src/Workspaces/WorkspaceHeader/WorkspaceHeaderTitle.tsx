@@ -14,14 +14,11 @@ export default function WorkspaceHeaderTitle({ resource }: Props) {
   const location = useLocation();
   const { pathname } = location;
   const lastPathnameParam = pathname.split("/").at(-1);
-  if (!lastPathnameParam) {
-    throw new Error("Didn't found any pathname params");
-  }
 
   const title = useMemo(() => {
     let generatedTitle = "";
     if (knownPages.some((word) => word === lastPathnameParam)) {
-      generatedTitle = sentenceCase(lastPathnameParam);
+      generatedTitle = sentenceCase(lastPathnameParam as string);
     } else if (
       resource.resourceType === EnumResourceType.ProjectConfiguration
     ) {
