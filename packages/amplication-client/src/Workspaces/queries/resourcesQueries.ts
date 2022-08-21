@@ -95,3 +95,17 @@ export const CONNECT_RESOURCE_PROJECT_REPO = gql`
     }
   }
 `;
+
+export const UPDATE_RESOURCE = gql`
+  mutation updateResource($data: ResourceUpdateInput!, $resourceId: String!) {
+    updateResource(data: $data, where: { id: $resourceId }) {
+      id
+      createdAt
+      updatedAt
+      name
+      description
+      color
+      gitRepositoryOverride
+    }
+  }
+`;

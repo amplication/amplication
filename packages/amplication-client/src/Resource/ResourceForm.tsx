@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { match } from "react-router-dom";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
 
@@ -13,6 +13,7 @@ import { ColorSelectButton } from "../Components/ColorSelectButton";
 import { useTracking } from "../util/analytics";
 import { GET_RESOURCE } from "./ResourceHome";
 import "./ResourceForm.scss";
+import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -149,17 +150,3 @@ function ResourceForm({ match }: Props) {
 }
 
 export default ResourceForm;
-
-export const UPDATE_RESOURCE = gql`
-  mutation updateResource($data: ResourceUpdateInput!, $resourceId: String!) {
-    updateResource(data: $data, where: { id: $resourceId }) {
-      id
-      createdAt
-      updatedAt
-      name
-      description
-      color
-      gitRepositoryOverride
-    }
-  }
-`;

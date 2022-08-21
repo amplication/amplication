@@ -7,10 +7,9 @@ import AuthResourceWithGit from "./AuthResourceWithGit";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { AppContext } from "../../context/appContext";
 import {useMutation } from "@apollo/client";
-import { UPDATE_RESOURCE } from "../ResourceForm";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
-import { CONNECT_RESOURCE_PROJECT_REPO, DISCONNECT_GIT_REPOSITORY } from "../../Workspaces/queries/resourcesQueries";
+import { CONNECT_RESOURCE_PROJECT_REPO, DISCONNECT_GIT_REPOSITORY, UPDATE_RESOURCE } from "../../Workspaces/queries/resourcesQueries";
 
 const CLASS_NAME = "service-configuration-github-settings";
 
