@@ -29,7 +29,7 @@ const PendingChanges = ({ projectId }: Props) => {
     pendingChangesByResource,
     pendingChangesDataError,
     pendingChangesIsError,
-    pendingChangesDataLoading
+    pendingChangesDataLoading,
   } = usePendingChanges(currentProject);
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
@@ -45,6 +45,7 @@ const PendingChanges = ({ projectId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
+      <h2>Pending changes</h2>
       <Commit projectId={projectId} noChanges={noChanges} />
       <Dialog
         className="discard-dialog"
