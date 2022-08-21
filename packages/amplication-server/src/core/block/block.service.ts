@@ -578,6 +578,39 @@ export class BlockService {
     );
   }
 
+  async getChangedBlocksFlow(
+    changedBlocks: (PrismaBlock & {
+      resource: Resource;
+      lockedByUser: User;
+      versions: PrismaBlockVersion[];
+    })[]
+  ): Promise<BlockPendingChange[]> {
+    return changedBlocks.map(block => {
+      const [lastVersion] = block.versions;
+      const action = block.deletedAt
+        ? EnumPendingChangeAction.Delete
+        : block.versions.length > 1
+        ? EnumPendingChangeAction.Update
+        : EnumPendingChangeAction.Create;
+
+      block.versions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
+
+      //prepare name fields for display
+      if (action === EnumPendingChangeAction.Delete) {
+        block.displayName = revertDeletedItemName(block.displayName, block.id);
+      }
+
+      return {
+        originId: block.id,
+        action: action,
+        originType: EnumPendingChangeOriginType.Block,
+        versionNumber: lastVersion.versionNumber + 1,
+        origin: block,
+        resource: block.resource
+      };
+    });
+  }
+
   /**
    * Gets all the blocks changed since the last resource commit
    * @param projectId the resource ID to find changes to
@@ -609,30 +642,44 @@ export class BlockService {
       }
     });
 
-    return changedBlocks.map(block => {
-      const [lastVersion] = block.versions;
-      const action = block.deletedAt
-        ? EnumPendingChangeAction.Delete
-        : block.versions.length > 1
-        ? EnumPendingChangeAction.Update
-        : EnumPendingChangeAction.Create;
+    return this.getChangedBlocksFlow(changedBlocks);
+  }
 
-      block.versions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
-
-      //prepare name fields for display
-      if (action === EnumPendingChangeAction.Delete) {
-        block.displayName = revertDeletedItemName(block.displayName, block.id);
+  /**
+   * Gets all the blocks changed since the last resource commit
+   * @param projectId the resource ID to find changes to
+   * @param userId the user ID the resource ID relates to
+   * @param resourceId the resourceId the changes related to
+   */
+  async getChangedResourceBlocks(
+    projectId: string,
+    userId: string,
+    resourceId: string
+  ): Promise<BlockPendingChange[]> {
+    const changedBlocks = await this.prisma.block.findMany({
+      where: {
+        lockedByUserId: userId,
+        resource: {
+          id: resourceId,
+          project: {
+            id: projectId
+          }
+        }
+      },
+      include: {
+        lockedByUser: true,
+        resource: true,
+        versions: {
+          orderBy: {
+            versionNumber: Prisma.SortOrder.desc
+          },
+          /**find the first two versions to decide whether it is an update or a create */
+          take: 2
+        }
       }
-
-      return {
-        originId: block.id,
-        action: action,
-        originType: EnumPendingChangeOriginType.Block,
-        versionNumber: lastVersion.versionNumber + 1,
-        origin: block,
-        resource: block.resource
-      };
     });
+
+    return this.getChangedBlocksFlow(changedBlocks);
   }
 
   async getChangedBlocksByCommit(commitId: string): Promise<PendingChange[]> {

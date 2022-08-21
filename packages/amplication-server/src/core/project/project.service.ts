@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { FindOneArgs } from '../../dto';
 import { Commit, Project, Resource, User } from '../../models';
 import { ResourceService, EntityService } from '../';
-import { BlockService } from '../block/block.service';
+import { BlockPendingChange, BlockService } from '../block/block.service';
 import { BuildService } from '../build/build.service';
 import {
   CreateCommitArgs,
@@ -15,6 +15,7 @@ import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindFirstArgs } from './dto/ProjectFindFirstArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { isEmpty } from 'lodash';
+import { EntityPendingChange } from '../entity/entity.service';
 @Injectable()
 export class ProjectService {
   constructor(
@@ -214,19 +215,11 @@ export class ProjectService {
   }
 
   async discardPendingChangesFlow(
-    resource: Resource | Resource[],
+    changedEntities: EntityPendingChange[],
+    changedBlocks: BlockPendingChange[],
     projectId: string,
     userId: string
   ): Promise<boolean | null> {
-    if (isEmpty(resource)) {
-      throw new Error(`Invalid userId or resourceId`);
-    }
-
-    const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(projectId, userId),
-      this.blockService.getChangedBlocks(projectId, userId)
-    ]);
-
     if (isEmpty(changedEntities) && isEmpty(changedBlocks)) {
       throw new Error(
         `There are no pending changes for user ${userId} in resource ${projectId}`
@@ -261,7 +254,25 @@ export class ProjectService {
         id: resourceId
       }
     });
-    return this.discardPendingChangesFlow(resource, projectId, userId);
+    if (isEmpty(resource)) {
+      throw new Error(`Invalid userId or resourceId`);
+    }
+
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedResourceEntities(
+        projectId,
+        userId,
+        resourceId
+      ),
+      this.blockService.getChangedResourceBlocks(projectId, userId, resourceId)
+    ]);
+
+    return this.discardPendingChangesFlow(
+      changedEntities,
+      changedBlocks,
+      projectId,
+      userId
+    );
   }
 
   async discardPendingChanges(
@@ -286,6 +297,20 @@ export class ProjectService {
       }
     });
 
-    return this.discardPendingChangesFlow(resource, projectId, userId);
+    if (isEmpty(resource)) {
+      throw new Error(`Invalid userId or resourceId`);
+    }
+
+    const [changedEntities, changedBlocks] = await Promise.all([
+      this.entityService.getChangedEntities(projectId, userId),
+      this.blockService.getChangedBlocks(projectId, userId)
+    ]);
+
+    return this.discardPendingChangesFlow(
+      changedEntities,
+      changedBlocks,
+      projectId,
+      userId
+    );
   }
 }

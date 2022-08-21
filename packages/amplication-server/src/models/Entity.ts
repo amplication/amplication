@@ -83,4 +83,6 @@ export class Entity {
     nullable: true
   })
   lockedAt?: Date;
+
+  deletedAt?: Date;
 }

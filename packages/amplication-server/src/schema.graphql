@@ -152,6 +152,7 @@ type Entity {
   lockedByUserId: String
   lockedByUser: User
   lockedAt: DateTime
+  deletedAt: DateTime
 }
 
 type EntityVersion {

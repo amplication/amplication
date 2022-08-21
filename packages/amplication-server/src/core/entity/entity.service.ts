@@ -448,37 +448,13 @@ export class EntityService {
     });
   }
 
-  /**
-   * Gets all the entities changed since the last resource commit
-   * @param projectId the resource ID to find changes to
-   * @param userId the user ID the resource ID relates to
-   */
-  async getChangedEntities(
-    projectId: string,
-    userId: string
+  async getChangedEntitiesFlow(
+    changedEntities: (Entity & {
+      resource: Resource;
+      versions: EntityVersion[];
+      lockedByUser: User;
+    })[]
   ): Promise<EntityPendingChange[]> {
-    const changedEntities = await this.prisma.entity.findMany({
-      where: {
-        lockedByUserId: userId,
-        resource: {
-          project: {
-            id: projectId
-          }
-        }
-      },
-      include: {
-        lockedByUser: true,
-        resource: true,
-        versions: {
-          orderBy: {
-            versionNumber: Prisma.SortOrder.desc
-          },
-          /**find the first two versions to decide whether it is an update or a create */
-          take: 2
-        }
-      }
-    });
-
     return changedEntities.map(entity => {
       const [lastVersion] = entity.versions;
       const action = entity.deletedAt
@@ -511,6 +487,76 @@ export class EntityService {
         resource: entity.resource
       };
     });
+  }
+
+  /**
+   * Gets all the entities changed since the last resource commit
+   * @param projectId the resource ID to find changes to
+   * @param userId the user ID the resource ID relates to
+   */
+  async getChangedEntities(
+    projectId: string,
+    userId: string
+  ): Promise<EntityPendingChange[]> {
+    const changedEntities = await this.prisma.entity.findMany({
+      where: {
+        lockedByUserId: userId,
+        resource: {
+          project: {
+            id: projectId
+          }
+        }
+      },
+      include: {
+        lockedByUser: true,
+        resource: true,
+        versions: {
+          orderBy: {
+            versionNumber: Prisma.SortOrder.desc
+          },
+          /**find the first two versions to decide whether it is an update or a create */
+          take: 2
+        }
+      }
+    });
+    return this.getChangedEntitiesFlow(changedEntities);
+  }
+
+  /**
+   * Gets all the entities changed since the last resource commit
+   * @param projectId the resource ID to find changes to
+   * @param userId the user ID the resource ID relates to
+   * @param resourceId the resourceId the changes related to
+   */
+  async getChangedResourceEntities(
+    projectId: string,
+    userId: string,
+    resourceId?: string
+  ): Promise<EntityPendingChange[]> {
+    const changedEntities = await this.prisma.entity.findMany({
+      where: {
+        lockedByUserId: userId,
+        resource: {
+          id: resourceId,
+          project: {
+            id: projectId
+          }
+        }
+      },
+      include: {
+        lockedByUser: true,
+        resource: true,
+        versions: {
+          orderBy: {
+            versionNumber: Prisma.SortOrder.desc
+          },
+          /**find the first two versions to decide whether it is an update or a create */
+          take: 2
+        }
+      }
+    });
+
+    return this.getChangedEntitiesFlow(changedEntities);
   }
 
   async getChangedEntitiesByCommit(commitId: string): Promise<PendingChange[]> {
