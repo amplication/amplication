@@ -8,8 +8,7 @@ import {
 import { useApolloClient } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
 import { isMacOs } from "react-device-detect";
-import { matchPath } from "react-router";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { unsetToken } from "../../authentication/authentication";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
@@ -34,6 +33,19 @@ const WorkspaceHeader: React.FC<{}> = () => {
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
+  const isProjectRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})");
+  const isResourceRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})");
+  const isCommitsRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?");
+  const isCodeViewRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view");
+
+  const getSelectedEntities = useCallback(() => {
+    if (isResourceRoute && currentResource) return currentResource.name;
+  
+    if (isCommitsRoute) return "Commits";
+
+    if (isCodeViewRoute) return "View Code";
+
+  }, [currentResource, isCodeViewRoute, isCommitsRoute, isResourceRoute])
 
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
@@ -42,21 +54,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
     history.replace("/login");
   }, [history, apolloClient]);
-
-  const location = useLocation();
-  const isProjectRoute =
-    location.pathname === `/${currentWorkspace?.id}/${currentProject?.id}`;
-  const isResourceRoute =
-    location.pathname ===
-    `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`;
-  const match = matchPath(
-    `/${currentWorkspace?.id}/${currentProject?.id}/commits`,
-    {
-      path: "/:workspace/:project/commits",
-      exact: true,
-      strict: false,
-    }
-  );
 
   return (
     <div className={CLASS_NAME}>
@@ -93,9 +90,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
                     <p
                       className={`${CLASS_NAME}__breadcrumbs__resource__title`}
                     >
-                      {isResourceRoute && currentResource
-                        ? currentResource.name
-                        : "Resource List"}
+                      {getSelectedEntities() || "Resource List"}
                     </p>
                   }
                   buttonStyle={EnumButtonStyle.Text}
@@ -151,7 +146,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
                       currentProjectId={currentProject.id}
                       currentWorkspaceId={currentWorkspace?.id}
                       history={history}
-                      path={match?.path}
+                      path={isCommitsRoute?.url}
                     />
                   </SelectMenuModal>
                 </SelectMenu>
