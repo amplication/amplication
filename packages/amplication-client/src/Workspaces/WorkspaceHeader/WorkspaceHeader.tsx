@@ -6,7 +6,8 @@ import {
   Tooltip,
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
-import React, { useCallback, useContext } from "react";
+import { normalize } from "path";
+import React, { useCallback, useContext, useMemo } from "react";
 import { isMacOs } from "react-device-detect";
 import { matchPath } from "react-router";
 import { Link, useHistory, useLocation } from "react-router-dom";
@@ -20,9 +21,11 @@ import MenuItem from "../../Layout/MenuItem";
 import * as models from "../../models";
 import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
 import "./WorkspaceHeader.scss";
+import WorkspaceHeaderTitle from "./WorkspaceHeaderTitle";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
+
 const WorkspaceHeader: React.FC<{}> = () => {
   const {
     currentWorkspace,
@@ -46,9 +49,21 @@ const WorkspaceHeader: React.FC<{}> = () => {
   const location = useLocation();
   const isProjectRoute =
     location.pathname === `/${currentWorkspace?.id}/${currentProject?.id}`;
-  const isResourceRoute =
-    location.pathname ===
-    `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`;
+
+  const isResourceRoute = useMemo(
+    () =>
+      normalize(location.pathname) ===
+      normalize(
+        `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/`
+      ),
+    [
+      currentProject?.id,
+      currentResource?.id,
+      currentWorkspace?.id,
+      location.pathname,
+    ]
+  );
+
   const match = matchPath(
     `/${currentWorkspace?.id}/${currentProject?.id}/commits`,
     {
@@ -90,13 +105,9 @@ const WorkspaceHeader: React.FC<{}> = () => {
                 <SelectMenu
                   css={undefined}
                   title={
-                    <p
-                      className={`${CLASS_NAME}__breadcrumbs__resource__title`}
-                    >
-                      {isResourceRoute && currentResource
-                        ? currentResource.name
-                        : "Resource List"}
-                    </p>
+                    currentResource && (
+                      <WorkspaceHeaderTitle resource={currentResource} />
+                    )
                   }
                   buttonStyle={EnumButtonStyle.Text}
                   buttonClassName={isResourceRoute ? "highlight" : ""}
