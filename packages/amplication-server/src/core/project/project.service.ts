@@ -267,12 +267,14 @@ export class ProjectService {
       this.blockService.getChangedResourceBlocks(projectId, userId, resourceId)
     ]);
 
-    return this.discardPendingChangesFlow(
-      changedEntities,
-      changedBlocks,
-      projectId,
-      userId
-    );
+    if (changedEntities.length && changedBlocks.length) {
+      return this.discardPendingChangesFlow(
+        changedEntities,
+        changedBlocks,
+        projectId,
+        userId
+      );
+    }
   }
 
   async discardPendingChanges(
