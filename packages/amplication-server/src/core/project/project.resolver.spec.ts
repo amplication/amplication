@@ -95,7 +95,8 @@ const EXAMPLE_RESOURCE: Resource = {
   description: EXAMPLE_DESCRIPTION,
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
-  environments: [EXAMPLE_ENVIRONMENT]
+  environments: [EXAMPLE_ENVIRONMENT],
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_PENDING_CHANGE: PendingChange = {
@@ -157,6 +158,7 @@ const PENDING_CHANGE_QUERY = gql`
         updatedAt
         name
         description
+        gitRepositoryOverride
         entities {
           id
           createdAt

@@ -156,7 +156,8 @@ const EXAMPLE_RESOURCE: Resource = {
   description: EXAMPLE_DESCRIPTION,
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
-  environments: [EXAMPLE_ENVIRONMENT]
+  environments: [EXAMPLE_ENVIRONMENT],
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_ENTITY_PENDING_CHANGE_DELETE: EntityPendingChange = {
