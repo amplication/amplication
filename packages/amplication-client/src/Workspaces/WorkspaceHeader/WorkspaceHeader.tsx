@@ -6,8 +6,7 @@ import {
   Tooltip,
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
-import { normalize } from "path";
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext } from "react";
 import { isMacOs } from "react-device-detect";
 import { matchPath } from "react-router";
 import { Link, useHistory, useLocation } from "react-router-dom";
@@ -25,7 +24,6 @@ import WorkspaceHeaderTitle from "./WorkspaceHeaderTitle";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
-
 const WorkspaceHeader: React.FC<{}> = () => {
   const {
     currentWorkspace,
@@ -49,21 +47,9 @@ const WorkspaceHeader: React.FC<{}> = () => {
   const location = useLocation();
   const isProjectRoute =
     location.pathname === `/${currentWorkspace?.id}/${currentProject?.id}`;
-
-  const isResourceRoute = useMemo(
-    () =>
-      normalize(location.pathname) ===
-      normalize(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/`
-      ),
-    [
-      currentProject?.id,
-      currentResource?.id,
-      currentWorkspace?.id,
-      location.pathname,
-    ]
-  );
-
+  const isResourceRoute =
+    location.pathname ===
+    `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`;
   const match = matchPath(
     `/${currentWorkspace?.id}/${currentProject?.id}/commits`,
     {
