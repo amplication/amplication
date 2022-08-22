@@ -213,7 +213,7 @@ export type Build = {
   createdBy: User;
   id: Scalars['String'];
   message: Scalars['String'];
-  resource: Resource;
+  resource?: Maybe<Resource>;
   resourceId: Scalars['String'];
   status?: Maybe<EnumBuildStatus>;
   userId: Scalars['String'];
@@ -1045,6 +1045,7 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   completeInvitation: Auth;
   connectResourceGitRepository: Resource;
+  connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
   createConnectorRestApi: ConnectorRestApi;
@@ -1115,6 +1116,10 @@ export type MutationCompleteInvitationArgs = {
 
 export type MutationConnectResourceGitRepositoryArgs = {
   data: ConnectGitRepositoryInput;
+};
+
+export type MutationConnectResourceToProjectRepositoryArgs = {
+  resourceId: Scalars['String'];
 };
 
 export type MutationCreateApiTokenArgs = {

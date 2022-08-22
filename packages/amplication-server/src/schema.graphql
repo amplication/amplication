@@ -208,7 +208,7 @@ enum Role {
 type Build {
   id: String!
   createdAt: DateTime!
-  resource: Resource!
+  resource: Resource
   resourceId: String!
   createdBy: User!
   userId: String!
