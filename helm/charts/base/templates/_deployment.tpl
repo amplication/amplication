@@ -32,6 +32,7 @@ spec:
           envFrom:
           - configMapRef:
               name: '{{ .Values.name }}'
+          {{ if ne .Values.config.secrets "false" }}
           - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}
