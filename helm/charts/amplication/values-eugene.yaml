@@ -162,3 +162,17 @@ amplication-build-manager-service:
 
       AWS_DEFAULT_REGION: us-east-1
       AWS_REGION: us-east-1
+
+amplication-kafka-proxy:
+  config:
+    secrets: "false"
+
+    env: 
+      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: kafka-proxy
+      
+      AWS_REGION: us-east-1
+
+      SOURCE_SQS_QUEUE_URL: "https://sqs.us-east-1.amazonaws.com/407256539111/build_state_queue_eugene"
+      TARGET_KAFKA_TOPIC: "build.external.build-state.event.0"
+
