@@ -44,13 +44,11 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
       (change) => change.originId
     );
     if (isEqual(pendingChangesMap, pendingChangesDataMap)) return;
-    console.log("refetch");
     refetch();
   }, [pendingChanges, pendingChangesMap, refetch]);
 
   const addChange = useCallback(
     (originId: string) => {
-      console.log("addChang", originId);
       setPendingChangesMap([...pendingChangesMap, originId]);
     },
     [pendingChangesMap]
