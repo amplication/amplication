@@ -9,6 +9,8 @@ cp-helm-charts:
   enabled: true
   cp-kafka:
     enabled: true
+    nodeport: 
+      enabled: true
     image: confluentinc/cp-enterprise-kafka
     imageTag: 6.1.0
     prometheus:
