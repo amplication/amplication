@@ -1,3 +1,0 @@
-{{ include "base.job" (list . "amplication-server.job") -}}
-{{- define "amplication-server.job" -}}
-{{- end }}
