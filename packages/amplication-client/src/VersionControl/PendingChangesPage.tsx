@@ -1,20 +1,15 @@
 import React, { useState, useCallback, useContext } from "react";
-import { match } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
-import { MultiStateToggle } from "@amplication/design-system";
+import { MultiStateToggle, Snackbar } from "@amplication/design-system";
 import "./PendingChangesPage.scss";
 import { AppContext } from "../context/appContext";
 import { gql } from "@apollo/client";
-
-type Props = {
-  match: match<{ project: string; resource: string; commitId: string }>;
-};
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import { formatError } from "../util/error";
 
 const CLASS_NAME = "pending-changes-page";
-const NAVIGATION_KEY = "PENDING_CHANGES";
 const SPLIT = "Split";
 const UNIFIED = "Unified";
 
@@ -23,12 +18,15 @@ const OPTIONS = [
   { value: SPLIT, label: SPLIT },
 ];
 
-const PendingChangesPage = ({ match }: Props) => {
-  const { project } = match.params;
+const PendingChangesPage = () => {
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Pending Changes";
-  useNavigationTabs(project, NAVIGATION_KEY, match.url, pageTitle);
-  const { pendingChanges } = useContext(AppContext);
+  const { currentProject } = useContext(AppContext);
+  const {
+    pendingChangesByResource,
+    pendingChangesDataError,
+    pendingChangesIsError,
+  } = usePendingChanges(currentProject);
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -37,37 +35,41 @@ const PendingChangesPage = ({ match }: Props) => {
     [setSplitView]
   );
 
-  // const errorMessage = formatError({ message: "", name: "" });
+  const errorMessage = formatError(pendingChangesDataError);
 
   return (
     <>
       <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-        {!pendingChanges.length ? (
-          "loading..."
-        ) : (
-          <div className={`${CLASS_NAME}__header`}>
-            <h1>Pending Changes</h1>
-            <MultiStateToggle
-              label=""
-              name="compareMode"
-              options={OPTIONS}
-              onChange={handleChangeType}
-              selectedValue={splitView ? SPLIT : UNIFIED}
-            />
-          </div>
-        )}
+        <div className={`${CLASS_NAME}__header`}>
+          <h1>Pending Changes</h1>
+          <MultiStateToggle
+            label=""
+            name="compareMode"
+            options={OPTIONS}
+            onChange={handleChangeType}
+            selectedValue={splitView ? SPLIT : UNIFIED}
+          />
+        </div>
         <div className={`${CLASS_NAME}__changes`}>
-          {pendingChanges.map((change) => (
-            <PendingChangeWithCompare
-              key={change.originId}
-              change={change}
-              compareType={EnumCompareType.Pending}
-              splitView={splitView}
-            />
+          {pendingChangesByResource.map((resourceChanges) => (
+            <div key={resourceChanges.resource.id}>
+              <div className={`${CLASS_NAME}__title`}>
+                {resourceChanges.resource.name}
+              </div>
+              {resourceChanges.changes.map((change) => (
+                <PendingChangeWithCompare
+                  key={change.originId}
+                  change={change}
+                  compareType={EnumCompareType.Pending}
+                  splitView={splitView}
+                />
+              ))}
+            </div>
           ))}
+          <div />
         </div>
       </PageContent>
-      {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}
+      <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
     </>
   );
 };

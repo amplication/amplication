@@ -9,6 +9,8 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./Commit.scss";
 import { AppContext } from "../context/appContext";
+import { GET_COMMITS } from "./hooks/commitQueries";
+import { SortOrder } from "../models";
 
 type TCommit = {
   message: string;
@@ -44,6 +46,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     onCompleted: (commit) => {
       setCommitRunning(false);
       setPendingChangesError(false);
+      resetPendingChanges();
       addChange(commit.id);
     },
     refetchQueries: [
@@ -51,6 +54,15 @@ const Commit = ({ projectId, noChanges }: Props) => {
         query: GET_LAST_COMMIT,
         variables: {
           projectId,
+        },
+      },
+      {
+        query: GET_COMMITS,
+        variables: {
+          projectId,
+          orderBy: {
+            createdAt: SortOrder.Desc,
+          },
         },
       },
     ],

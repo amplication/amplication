@@ -5,61 +5,38 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Label,
-  formatTimeToNow,
-  CircleBadge,
 } from "@amplication/design-system";
 import React from "react";
 import { Resource } from "../models";
-import { BuildSelectorItem } from "./BuildSelectorItem";
-import "./BuildSelector.scss";
+import "./CommitSelector.scss";
+import { ResourceSelectorItem } from "./ResourceSelectorItem";
 
-const CLASS_NAME = "build-selector";
+const CLASS_NAME = "commit-selector";
 
 type Props = {
   resources: Resource[];
   selectedResource: Resource | null;
-  resource: Resource;
   onSelectResource: (resource: Resource) => void;
 };
 
 const ResourceSelector = ({
   resources,
-  resource,
   onSelectResource,
   selectedResource,
 }: Props) => {
-  const createdAtHour = selectedResource
-    ? formatTimeToNow(new Date(selectedResource?.createdAt))
-    : null;
-
-  const createdHourStyle = () => (
-    <label className={`${CLASS_NAME}__hour`}>{createdAtHour}</label>
-  );
-
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__label-title`}>
         <Label text="Select resource" />
       </div>
       <SelectMenu
-        title={
-          <div className="build-selector-item">
-            <CircleBadge
-              name={selectedResource?.name}
-              color={selectedResource?.color}
-            />
-            <div className={"title"}>
-              {selectedResource?.name}
-              <div>{createdHourStyle()}</div>
-            </div>
-          </div>
-        }
+        title={<ResourceSelectorItem resource={selectedResource} />}
         buttonStyle={EnumButtonStyle.Secondary}
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"
       >
-        <SelectMenuModal css={undefined}>
-          <SelectMenuList style={{ width: "264px" }}>
+        <SelectMenuModal>
+          <SelectMenuList>
             <>
               {resources.map((resource) => (
                 <SelectMenuItem
@@ -70,11 +47,7 @@ const ResourceSelector = ({
                     onSelectResource(resource);
                   }}
                 >
-                  <BuildSelectorItem
-                    title={resource.name}
-                    resource={resource}
-                    type="list"
-                  />
+                  <ResourceSelectorItem resource={resource} />
                 </SelectMenuItem>
               ))}
             </>

@@ -7,7 +7,9 @@ $counter-height: 18px;
   padding: var(--default-spacing);
   display: flex;
   flex-direction: column;
-  height: calc(100% - 200px);
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   &__divider {
     border: $border-black5;
@@ -85,12 +87,16 @@ $counter-height: 18px;
     padding: var(--default-spacing);
     border-radius: var(--small-border-radius);
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   &__changes {
     margin-top: var(--default-spacing);
     position: relative;
     margin-bottom: var(--default-spacing);
+    overflow-y: scroll;
+    overflow-x: hidden;
 
     &__resource {
       margin-bottom: var(--double-spacing);

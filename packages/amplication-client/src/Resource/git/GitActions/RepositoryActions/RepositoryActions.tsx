@@ -6,18 +6,17 @@ import {
   Panel,
 } from "@amplication/design-system";
 import React from "react";
-import { EnumGitOrganizationType } from "../../../../models";
+import { EnumGitOrganizationType, Resource } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
 import {
   GitOrganizationFromGitRepository,
-  GitRepositoryWithGitOrganization,
 } from "../../SyncWithGithubPage";
 import GithubSyncDetails from "./GithubSyncDetails";
 import "./RepositoryActions.scss";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
-  currentConnectedGitRepository: GitRepositoryWithGitOrganization | null;
+  currentResourceWithGitRepository: Resource;
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
 };
 
@@ -25,18 +24,20 @@ const CLASS_NAME = "repository-actions";
 export default function RepositoryActions({
   onCreateRepository,
   onSelectRepository,
-  currentConnectedGitRepository,
+  currentResourceWithGitRepository,
   selectedGitOrganization,
 }: Props) {
+  const { gitRepository } = currentResourceWithGitRepository;
+
   return (
     <div className={`${CLASS_NAME}`}>
       <Panel
         className={`${CLASS_NAME}__auth`}
         panelStyle={EnumPanelStyle.Bordered}
       >
-        {currentConnectedGitRepository ? (
+        {gitRepository ? (
           <GithubSyncDetails
-            gitRepositoryWithOrganization={currentConnectedGitRepository}
+            resourceWithRepository={currentResourceWithGitRepository}
           />
         ) : (
           <div className={`${CLASS_NAME}__select-repo`}>

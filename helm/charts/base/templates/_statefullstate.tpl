@@ -39,12 +39,10 @@ spec:
                   - echo "$GCP" >> /var/gcp-secret
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          envFrom:
           {{- if hasKey .Values "config" }}
+          envFrom:
           - configMapRef:
               name: '{{ .Values.name }}'
-          {{- end }}
-          {{- if hasKey .Values "secrets" }}
           - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}

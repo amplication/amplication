@@ -84,7 +84,6 @@ Amplication is using a mono-repo with multiple packages. To initialize all the p
 ```jsx
 npm install
 npm run setup:dev
-npm run start
 ```
 This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
 

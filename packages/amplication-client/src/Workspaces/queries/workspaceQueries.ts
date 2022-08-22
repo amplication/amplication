@@ -20,6 +20,7 @@ export const GET_CURRENT_WORKSPACE = gql`
         id
         name
         installationId
+        type
       }
     }
   }

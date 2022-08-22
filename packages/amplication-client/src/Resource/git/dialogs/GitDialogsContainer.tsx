@@ -1,12 +1,12 @@
+import { Resource } from "@amplication/code-gen-types/dist/models";
 import { Dialog } from "@amplication/design-system";
 import React from "react";
 import { EnumGitProvider } from "../../../models";
-import { ResourceWithGitRepository } from "../SyncWithGithubPage";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import GitRepos from "./GitRepos/GithubRepos";
 
 type Props = {
-  resource: ResourceWithGitRepository;
+  resource: Resource;
   gitOrganizationId: string;
   isSelectRepositoryOpen: boolean;
   isPopupFailed: boolean;

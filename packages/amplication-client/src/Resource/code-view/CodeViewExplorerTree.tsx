@@ -68,6 +68,7 @@ const CodeViewExplorerTree = ({
         [NodeTypeEnum.File]: () => {
           onFileSelected({
             buildId: selectedBuild.id,
+            resourceId: resourceId,
             filePath: file.path,
             isFile: true,
             fileName: file.name,
@@ -90,7 +91,7 @@ const CodeViewExplorerTree = ({
       };
       fileTypeMap[file.type]();
     },
-    [selectedBuild, onFileSelected, expandedFolders]
+    [selectedBuild, onFileSelected, expandedFolders, resourceId]
   );
 
   return (

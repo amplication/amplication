@@ -30,7 +30,8 @@ const EXAMPLE_RESOURCE: Resource = {
   createdAt: NOW,
   updatedAt: NOW,
   name: 'Example Resource',
-  description: 'Example Resource Description'
+  description: 'Example Resource Description',
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_USER: User = {

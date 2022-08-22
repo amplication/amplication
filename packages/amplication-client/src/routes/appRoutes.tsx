@@ -31,12 +31,32 @@ export const Routes: RouteDef[] = [
         routes: [
           {
             path:
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view",
+            Component: lazy(() => import("../Resource/code-view/CodeViewPage")),
+            moduleName: "CodeViewPage",
+            moduleClass: "code-view-page",
+            routeTrackType: "",
+            exactPath: false,
+          },
+          {
+            path:
               "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?",
             Component: lazy(() => import("../VersionControl/CommitsPage")),
             moduleName: "CommitsPage",
             moduleClass: "commits-page",
             routeTrackType: "",
             exactPath: false,
+          },
+          {
+            path:
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
+            Component: lazy(
+              () => import("../VersionControl/PendingChangesPage")
+            ),
+            moduleName: "PendingChangesPage",
+            moduleClass: "pending-changes-page",
+            routeTrackType: "",
+            exactPath: true,
           },
           {
             path:

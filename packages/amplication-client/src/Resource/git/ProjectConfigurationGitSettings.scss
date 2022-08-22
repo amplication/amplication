@@ -1,0 +1,56 @@
+@import "../../style/index.scss";
+
+.project-configuration-github-settings {
+  width: 100%;
+
+  &__link {
+    text-decoration: underline;
+  }
+
+  &__inherit_color {
+    color: var(--dark-secondary-turquoise);
+  }
+
+  &__disabled_color {
+    color: var(--black40);
+  }
+
+  &__settingsLink {
+    display: flex;
+    justify-content: space-between;
+    width: 400px;
+  }
+
+  &__gitStatusPanel {
+    width: 100%;
+    height: 72px;
+    border: $border-black20;
+    background: var(--black5);
+    margin: 8px 0;
+    min-height: var(--min-height-of-banner);
+    display: flex;
+  }
+
+  &__overrideGitStatusPanel {
+    border: $border-black20;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 72px;
+    margin: 8px 0;
+  }
+
+  &__githubSync {
+    color: var(--black40);
+  }
+
+  &__select-repo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .amp-icon {
+      margin-right: var(--default-spacing-small);
+      color: var(--negative);
+    }
+  }
+}
