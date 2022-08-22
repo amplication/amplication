@@ -19,7 +19,7 @@ spec:
               cpu: {{ .Values.minCPU }}
               memory: {{ .Values.maxMemory }}
           command: ["/bin/sh"]
-          args: ["sh", "-c", "npm run migrate:up --scope=@amplication/server"]
+          args: ["sh", "-c", "npm run migrate:up --scope=@amplication/server;", "exit"]
           env:
           - name: POSTGRESQL_URL
             valueFrom:
