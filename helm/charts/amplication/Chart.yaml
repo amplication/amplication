@@ -30,6 +30,9 @@ dependencies:
 - name: amplication-build-manager-service
   version: "0.1.0"
   repository: "file://../services/amplication-build-manager-service"
+- name: amplication-kafka-proxy
+  version: "0.1.0"
+  repository: "file://../services/amplication-kafka-proxy"
   
 - name: postgresql
   alias: postgres
