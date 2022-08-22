@@ -25,4 +25,4 @@ Issue Number: N/A
 - [ ] Tests for the changes have been added
 - [ ] `npm test` doesn't throw any error
 
-IMPORTANT: Please review the [CONTRIBUTING.md](https://github.com/amplication/amplication/blob/master/code_of_conduct.md) file for detailed contributing guidelines.
+IMPORTANT: Please review the [CONTRIBUTING.md](https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md) file for detailed contributing guidelines.

@@ -165,6 +165,6 @@ fix(server): missing entity on init
 
 Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
 
-[Code of Conduct](https://github.com/amplication/amplication/blob/master/code_of_conduct.md)
+[Code of Conduct](https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md)
 
 Our Code of Conduct means that you are responsible for treating everyone on the project with respect and courtesy.
