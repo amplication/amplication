@@ -168,7 +168,7 @@ amplication-kafka-proxy:
     secrets: "false"
 
     env: 
-      KAFKA_BROKERS: '["amplication-eugene-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: "amplication-eugene-cp-kafka-headless:9092"
       KAFKA_CLIENT_ID: kafka-proxy
       
       AWS_REGION: us-east-1
