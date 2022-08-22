@@ -15,6 +15,10 @@ const useProjectSelector = (
   } | null = useRouteMatch<{ workspace: string }>(
     "/:workspace([A-Za-z0-9-]{20,})"
   );
+  const workspaceUtil = useRouteMatch([
+    "/:workspace([A-Za-z0-9-]{20,})/settings",
+    "/:workspace([A-Za-z0-9-]{20,})/members",
+  ]);
   const projectMatch: {
     params: { workspace: string; project: string };
   } | null = useRouteMatch<{ workspace: string; project: string }>(
@@ -73,11 +77,12 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("route=create-resource");
-    history.push(
-      `/${currentWorkspace?.id}/${projectsList[0].id}${
-        isFromSignup ? "/create-resource" : ""
-      }`
-    );
+    !workspaceUtil &&
+      history.push(
+        `/${currentWorkspace?.id}/${projectsList[0].id}${
+          isFromSignup ? "/create-resource" : ""
+        }`
+      );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
