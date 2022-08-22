@@ -69,9 +69,6 @@ export class WorkspaceService {
     // Create workspace
     // Create a new user and link it to the account
     // Assign the user an "ORGANIZATION_ADMIN" role
-    const [user] = await this.userService.findUsers({
-      where: { accountId: accountId }
-    });
     const workspace = await this.prisma.workspace.create({
       ...args,
       data: {
@@ -95,6 +92,8 @@ export class WorkspaceService {
       }
     });
 
+    const currentUserId = workspace.users.shift().id;
+
     await this.projectService.createProject(
       {
         data: {
@@ -102,7 +101,7 @@ export class WorkspaceService {
           workspace: { connect: { id: workspace.id } }
         }
       },
-      user.id
+      currentUserId
     );
 
     return workspace;
