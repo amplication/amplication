@@ -26,11 +26,14 @@ dependencies:
 - name: amplication-build-manager-service
   repository: file://../services/amplication-build-manager-service
   version: 0.1.0
+- name: amplication-kafka-proxy
+  repository: file://../services/amplication-kafka-proxy
+  version: 0.1.0
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 10.16.2
 - name: cp-helm-charts
   repository: https://confluentinc.github.io/cp-helm-charts/
   version: 0.6.1
-digest: sha256:2a81c2a8f1339fe4b861759b11ee642a68caea29f5c74e9fda6e095c43911951
-generated: "2022-08-11T15:14:33.000381362+02:00"
+digest: sha256:5be0652f82fdd9a6f02e26fd75e71d397551882b26f3235d2e881c38085b9e2b
+generated: "2022-08-22T11:50:50.988022588+02:00"
