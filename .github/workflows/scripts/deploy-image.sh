@@ -11,12 +11,12 @@ do
     REPO_NAME="$SERVICE_NAME"
     echo "SERVICE_NAME: $SERVICE_NAME"
     echo "REPO_NAME: $REPO_NAME"
-    set +e
     cmd="$(aws ecr describe-images --repository-name=$REPO_NAME --image-ids=imageTag=$IMAGE_TAG_ANCHOR)"
     if [ -z "$cmd" ]
     then
         echo "This branch name doesn't exist in the repository - $REPO_NAME"
         echo "::set-output name=image_exist::false"
+        exit 1
     else
         echo "tag already exists in the repository - $REPO_NAME"
         echo "::set-output name=image_exist::true"

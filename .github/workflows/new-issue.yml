@@ -15,7 +15,7 @@ env:
 jobs:
   issue_closed:
     name: issue_closed
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     if: github.event_name == 'issues' && github.event.action == 'closed'
     steps:
       - name: 'Moved issue to "Closed"'
