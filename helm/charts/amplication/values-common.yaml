@@ -9,8 +9,6 @@ cp-helm-charts:
   enabled: true
   cp-kafka:
     enabled: true
-    nodeport: 
-      enabled: true
     image: confluentinc/cp-enterprise-kafka
     imageTag: 6.1.0
     prometheus:
@@ -52,6 +50,13 @@ cp-helm-charts:
     enabled: false
   cp-ksql-server:
     enabled: false
+
+kafka-ui:
+  enabled: true
+  envs:
+    config:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: amplication-eugene-cp-kafka:9092
 
 postgres:
   install: true

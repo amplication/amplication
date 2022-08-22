@@ -44,6 +44,11 @@ dependencies:
   version: "0.6.1"
   repository: "https://confluentinc.github.io/cp-helm-charts/"
   condition: cp-helm-charts.enabled
+
+- name: kafka-ui
+  version: "0.4.1"
+  repository: "https://provectus.github.io/kafka-ui"
+  condition: kafka-ui.enabled
 type: application
 
 version: 0.1.0
