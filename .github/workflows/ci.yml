@@ -18,7 +18,7 @@ on:
 
 jobs:
   changes:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     outputs:
       packages: ${{ steps.build_list.outputs.package_build_list }}
     steps:
@@ -68,7 +68,7 @@ jobs:
           echo "::set-output name=package_build_list::$package_build_list"
 
   hashes:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     outputs:
       hashes: ${{ steps.service-hashes.outputs.service_hashes }}
     steps:
