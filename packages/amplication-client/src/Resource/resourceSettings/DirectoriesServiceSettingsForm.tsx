@@ -37,7 +37,7 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
   });
   const { trackEvent } = useTracking();
 
-  const [updateServiceSettings, { error: updateError }] = useMutation<TData>(
+  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
     UPDATE_SERVICE_SETTINGS,
     {
       onCompleted: (data) => {
@@ -46,11 +46,10 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
     }
   );
   const resourceId = currentResource?.id;
-
   const { handleSubmit, SERVICE_CONFIG_FORM_SCHEMA } = useSettingsHook({
     trackEvent,
-    updateServiceSettings,
     resourceId,
+    updateResourceSettings,
   });
 
   return (
