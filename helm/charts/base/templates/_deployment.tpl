@@ -61,6 +61,16 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.global.pvc.name }}
       {{- end }}
+      {{- if hasKey .Values.global "nodeSelector"}}
+      nodeSelector:
+      {{- with .Values.global.nodeSelector -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.global.tolerations -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
 {{- end -}}
 {{- define "base.deployment" -}}
 {{- include "base.util.merge" (append . "base.deployment.tpl") -}}
