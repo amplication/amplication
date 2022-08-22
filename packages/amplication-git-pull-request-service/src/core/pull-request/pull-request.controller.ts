@@ -31,13 +31,15 @@ export class PullRequestController {
     @Payload() message: KafkaMessage,
     @Ctx() context: KafkaContext
   ): Promise<{ value: ResultMessage<SendPullRequestResponse> }> {
+    const validArgs = plainToClass(SendPullRequestArgs, message.value);
     this.logger.info(`Got a new generate pull request item from queue.`, {
       topic: context.getTopic(),
       partition: context.getPartition(),
       offset: message.offset,
       class: this.constructor.name,
+      args: validArgs,
     });
-    const validArgs = plainToClass(SendPullRequestArgs, message.value);
+
     try {
       const pullRequest = await this.pullRequestService.createPullRequest(
         validArgs
