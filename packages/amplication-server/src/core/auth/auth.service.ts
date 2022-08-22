@@ -51,6 +51,7 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
     private readonly userService: UserService,
+    @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     @Inject(forwardRef(() => ProjectService))
     private readonly projectService: ProjectService
