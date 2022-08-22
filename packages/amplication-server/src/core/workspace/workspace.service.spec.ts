@@ -89,6 +89,9 @@ const prismaUserCreateMock = jest.fn(() => {
 const userServiceFindUserMock = jest.fn(() => {
   return EXAMPLE_USER;
 });
+const userServiceFindUsersMock = jest.fn(() => {
+  return [EXAMPLE_USER];
+});
 const userServiceDeleteMock = jest.fn(() => {
   return EXAMPLE_USER;
 });
@@ -122,6 +125,7 @@ describe('WorkspaceService', () => {
           provide: UserService,
           useClass: jest.fn().mockImplementation(() => ({
             findUser: userServiceFindUserMock,
+            findUsers: userServiceFindUsersMock,
             delete: userServiceDeleteMock
           }))
         },
