@@ -4,8 +4,8 @@ import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import { isMobileOnly } from "react-device-detect";
 import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
-import WorkspaceHeader from "./WorkspaceHeader";
-import WorkspaceFooter from "./WorkspaceFooter";
+import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
+// import WorkspaceFooter from "./WorkspaceFooter";
 import useAuthenticated from "../authentication/use-authenticated";
 import useProjectSelector from "./hooks/useProjectSelector";
 import { AppContextProvider } from "../context/appContext";
@@ -18,6 +18,7 @@ import usePendingChanges, {
 } from "./hooks/usePendingChanges";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import PendingChanges from "../VersionControl/PendingChanges";
+import LastCommit from "../VersionControl/LastCommit";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -45,6 +46,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createProject,
     projectsList,
     onNewProjectCompleted,
+    currentProjectConfiguration,
   } = useProjectSelector(authenticated, currentWorkspace);
 
   const {
@@ -70,7 +72,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resetPendingChanges,
     setCommitRunning,
     setPendingChangesError,
-  } = usePendingChanges(currentResource);
+  } = usePendingChanges(currentProject);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -78,6 +80,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         currentWorkspace,
         handleSetCurrentWorkspace,
         createWorkspace,
+        currentProjectConfiguration,
         createNewWorkspaceError,
         loadingCreateNewWorkspace,
         currentProject,
@@ -116,12 +119,13 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
               {projectsList.length ? innerRoutes : <ProjectEmptyState />}
             </div>
             <div className={`${moduleClass}__changes_menu`}>
-              {currentResource ? (
-                <PendingChanges resourceId={currentResource.id} />
+              {currentProject ? (
+                <PendingChanges projectId={currentProject.id} />
               ) : null}
+              {currentProject && <LastCommit projectId={currentProject.id} />}
             </div>
           </div>
-          <WorkspaceFooter />
+          {/* <WorkspaceFooter /> */}
           <ScreenResolutionMessage />
         </div>
       )}

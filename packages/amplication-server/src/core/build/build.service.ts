@@ -434,7 +434,6 @@ export class BuildService {
 
   private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
     const resource = build.resource;
-
     const resourceRepository = await this.resourceService.gitRepository(
       resource.id
     );
@@ -445,7 +444,7 @@ export class BuildService {
 
     const gitOrganization = await this.resourceService.gitOrganizationByResource(
       {
-        where: { id: resourceRepository.id }
+        where: { id: resource.id }
       }
     );
 

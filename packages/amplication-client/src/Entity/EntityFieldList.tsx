@@ -23,7 +23,7 @@ type Props = {
   entityId: string;
 };
 
-export const EntityFieldList = React.memo(({ entityId }: Props) => {
+const EntityFieldList = React.memo(({ entityId }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 
@@ -95,6 +95,8 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     </>
   );
 });
+
+export default EntityFieldList;
 
 /**@todo: expand search on other field  */
 export const GET_FIELDS = gql`

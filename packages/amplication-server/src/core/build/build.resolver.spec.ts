@@ -14,10 +14,12 @@ import { BuildService } from './build.service';
 import { ActionService } from '../action/action.service';
 import { UserService } from '../user/user.service';
 import { Build } from './dto/Build';
-import { Commit, User } from 'src/models/';
+import { Commit, Resource, User } from 'src/models/';
 import { Action } from '../action/dto';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { CommitService } from '../commit/commit.service';
+import { EnumResourceType } from '@amplication/code-gen-types/dist/models';
+import { ResourceService } from '../resource/resource.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
@@ -54,6 +56,17 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
   commitId: EXAMPLE_COMMIT_ID
+};
+
+const EXAMPLE_RESOURCE: Resource = {
+  id: EXAMPLE_RESOURCE_ID,
+  resourceType: EnumResourceType.Service,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: 'exampleName',
+  description: 'exampleDescription',
+  builds: [EXAMPLE_BUILD],
+  gitRepositoryOverride: false
 };
 
 const FIND_MANY_BUILDS_QUERY = gql`
@@ -150,6 +163,7 @@ const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
+const resourceServiceFindOneMock = jest.fn(() => EXAMPLE_RESOURCE);
 
 const buildServiceCalcBuildStatusMock = jest.fn(() => {
   return EnumBuildStatus.Completed;
@@ -191,6 +205,12 @@ describe('BuildResolver', () => {
           provide: CommitService,
           useClass: jest.fn(() => ({
             findOne: commitServiceFindOneMock
+          }))
+        },
+        {
+          provide: ResourceService,
+          useClass: jest.fn(() => ({
+            findOne: resourceServiceFindOneMock
           }))
         },
         {

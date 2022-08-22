@@ -1,4 +1,4 @@
-@import "../style/index.scss";
+@import "../../style/index.scss";
 
 $logo-header-width: 50px;
 $search-header-width: 52px;
@@ -32,7 +32,8 @@ $modal-menu-top: 30px;
       color: var(--black80);
       margin-right: var(--default-spacing);
 
-      &.highlight {
+      &.highlight,
+      &:hover {
         a {
           color: var(--black100);
         }
@@ -43,6 +44,16 @@ $modal-menu-top: 30px;
       justify-content: center;
       align-items: center;
       margin-left: var(--default-spacing);
+
+      .select-menu__summary.amp-button.amp-button--text {
+        color: var(--black80);
+        &.highlight,
+        &:hover,
+        &:focus,
+        &:active {
+          color: var(--black100);
+        }
+      }
       .select-menu__modal {
         width: $modal-menu-width;
         background-color: var(--black2);
@@ -60,41 +71,47 @@ $modal-menu-top: 30px;
       .select-menu__list {
         width: $modal-menu-width;
         display: flex;
-        padding: 5px 0px;
         flex-direction: column;
         border: none;
       }
       .select-menu__item {
         padding: 5px;
         margin-bottom: var(--icon-spacing);
-      }
-      &__title {
-        @include regular-12();
-        color: var(--black80);
-
-        &.highlight {
-          color: var(--black100);
-        }
+        margin-top: var(--icon-spacing);
       }
       &__item {
         margin-left: var(--text-field-label-font-size);
         display: flex;
         flex-direction: row;
         justify-content: center;
+        align-items: center;
+      }
+      &__icon {
+        color: var(--black100);
       }
       &__text {
         margin-left: var(--default-spacing-small);
-        @include regular-12();
+        @include regular-14();
+        color: var(--black100);
         &__desc {
           color: var(--black80);
         }
       }
     }
   }
+
   &__right {
     @include flexFullRowWithSpacingBothSides;
     padding: var(--default-spacing);
     justify-content: flex-end;
+  }
+
+  &__divider {
+    border: $border-black5;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   &__links {
@@ -102,15 +119,25 @@ $modal-menu-top: 30px;
     &__link {
       @include regular-12();
       color: var(--black80);
+      &:hover {
+        color: var(--black100);
+      }
     }
   }
+
   &__vertical_border {
-    width: 0px;
+    width: 1px;
     height: var(--large-spacing);
-    border: $border-black70;
+    background: var(--black10);
+    border: none;
     margin: 0;
   }
+
   &__resources_modal {
     top: $modal-menu-top;
+  }
+
+  &__user_badge_wrapper {
+    padding: var(--user-badge-spacing);
   }
 }

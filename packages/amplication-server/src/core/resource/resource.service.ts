@@ -8,25 +8,19 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
-import { FindOneArgs } from 'src/dto';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { QueryMode } from 'src/enums/QueryMode';
-import { Commit, Project, Resource, User, GitOrganization } from 'src/models';
+import { FindOneArgs } from '../../dto';
+import { EnumDataType } from '../../enums/EnumDataType';
+import { QueryMode } from '../../enums/QueryMode';
+import { Project, Resource, User, GitOrganization } from '../../models';
 import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
-import { BlockService } from '../block/block.service';
-import { BuildService } from '../build/build.service'; // eslint-disable-line import/no-cycle
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
 import {
-  CreateCommitArgs,
   CreateOneResourceArgs,
-  DiscardPendingChangesArgs,
   FindManyResourceArgs,
-  FindPendingChangesArgs,
-  PendingChange,
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs
 } from './dto';
@@ -64,9 +58,7 @@ export class ResourceService {
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
-    private blockService: BlockService,
     private environmentService: EnvironmentService,
-    private buildService: BuildService,
     private serviceSettingsService: ServiceSettingsService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
@@ -116,7 +108,7 @@ export class ResourceService {
 
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
-        'Resource of type ProjectConnfiguration cannot be created manually'
+        'Resource of type Project Configuration cannot be created manually'
       );
     }
 
@@ -158,26 +150,26 @@ export class ResourceService {
       generationSettings
     );
 
-    try {
-      await this.commit(
-        {
-          data: {
-            resource: {
-              connect: {
-                id: resource.id
-              }
-            },
-            message: INITIAL_COMMIT_MESSAGE,
-            user: {
-              connect: {
-                id: user.id
-              }
-            }
-          }
-        },
-        true
-      );
-    } catch {} //ignore - return the new resource and the message will be available on the build log
+    // try {
+    //   await this.commit(
+    //     {
+    //       data: {
+    //         project: {
+    //           connect: {
+    //             id: resource.projectId
+    //           }
+    //         },
+    //         message: INITIAL_COMMIT_MESSAGE,
+    //         user: {
+    //           connect: {
+    //             id: user.id
+    //           }
+    //         }
+    //       }
+    //     },
+    //     true
+    //   );
+    // } catch {} //ignore - return the new resource and the message will be available on the build log
 
     return resource;
   }
@@ -309,25 +301,25 @@ export class ResourceService {
       }
     }
     // do not commit if there are no entities
-    if (!isEmpty(data.entities)) {
-      try {
-        await this.commit({
-          data: {
-            resource: {
-              connect: {
-                id: resource.id
-              }
-            },
-            message: data.commitMessage,
-            user: {
-              connect: {
-                id: user.id
-              }
-            }
-          }
-        });
-      } catch {} //ignore - return the new resource and the message will be available on the build log
-    }
+    // if (!isEmpty(data.entities)) {
+    //   try {
+    //     await this.commit({
+    //       data: {
+    //         project: {
+    //           connect: {
+    //             id: resource.projectId
+    //           }
+    //         },
+    //         message: data.commitMessage,
+    //         user: {
+    //           connect: {
+    //             id: user.id
+    //           }
+    //         }
+    //       }
+    //     });
+    //   } catch {} //ignore - return the new resource and the message will be available on the build log
+    // }
 
     return resource;
   }
@@ -403,214 +395,6 @@ export class ResourceService {
     }
 
     return this.prisma.resource.update(args);
-  }
-
-  /**
-   * Gets all the origins changed since the last commit in the resource
-   */
-  async getPendingChanges(
-    args: FindPendingChangesArgs,
-    user: User
-  ): Promise<PendingChange[]> {
-    const resourceId = args.where.resource.id;
-
-    const resource = await this.prisma.resource.findMany({
-      where: {
-        id: resourceId,
-        deletedAt: null,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: user.id
-              }
-            }
-          }
-        }
-      }
-    });
-
-    if (isEmpty(resource)) {
-      throw new Error(`Invalid userId or resourceId`);
-    }
-
-    const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(resourceId, user.id),
-      this.blockService.getChangedBlocks(resourceId, user.id)
-    ]);
-
-    return [...changedEntities, ...changedBlocks];
-  }
-
-  async commit(
-    args: CreateCommitArgs,
-    skipPublish?: boolean
-  ): Promise<Commit | null> {
-    const userId = args.data.user.connect.id;
-    const resourceId = args.data.resource.connect.id;
-
-    const resource = await this.prisma.resource.findMany({
-      where: {
-        id: resourceId,
-        deletedAt: null,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: userId
-              }
-            }
-          }
-        }
-      }
-    });
-
-    if (isEmpty(resource)) {
-      throw new Error(`Invalid userId or resourceId`);
-    }
-
-    const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(resourceId, userId),
-      this.blockService.getChangedBlocks(resourceId, userId)
-    ]);
-
-    /**@todo: consider discarding locked objects that have no actual changes */
-
-    const commit = await this.prisma.commit.create(args);
-
-    await Promise.all(
-      changedEntities.flatMap(change => {
-        const versionPromise = this.entityService.createVersion({
-          data: {
-            commit: {
-              connect: {
-                id: commit.id
-              }
-            },
-            entity: {
-              connect: {
-                id: change.originId
-              }
-            }
-          }
-        });
-
-        const releasePromise = this.entityService.releaseLock(change.originId);
-
-        return [
-          versionPromise.then(() => null),
-          releasePromise.then(() => null)
-        ];
-      })
-    );
-
-    await Promise.all(
-      changedBlocks.flatMap(change => {
-        const versionPromise = this.blockService.createVersion({
-          data: {
-            commit: {
-              connect: {
-                id: commit.id
-              }
-            },
-            block: {
-              connect: {
-                id: change.originId
-              }
-            }
-          }
-        });
-
-        const releasePromise = this.blockService.releaseLock(change.originId);
-
-        return [
-          versionPromise.then(() => null),
-          releasePromise.then(() => null)
-        ];
-      })
-    );
-
-    /**@todo: use a transaction for all data updates  */
-    //await this.prisma.$transaction(allPromises);
-
-    await this.buildService.create(
-      {
-        data: {
-          resource: {
-            connect: {
-              id: resourceId
-            }
-          },
-          commit: {
-            connect: {
-              id: commit.id
-            }
-          },
-          createdBy: {
-            connect: {
-              id: userId
-            }
-          },
-          message: args.data.message
-        }
-      },
-      skipPublish
-    );
-
-    return commit;
-  }
-
-  async discardPendingChanges(
-    args: DiscardPendingChangesArgs
-  ): Promise<boolean | null> {
-    const userId = args.data.user.connect.id;
-    const resourceId = args.data.resource.connect.id;
-
-    const resource = await this.prisma.resource.findMany({
-      where: {
-        id: resourceId,
-        deletedAt: null,
-        project: {
-          workspace: {
-            users: {
-              some: {
-                id: userId
-              }
-            }
-          }
-        }
-      }
-    });
-
-    if (isEmpty(resource)) {
-      throw new Error(`Invalid userId or resourceId`);
-    }
-
-    const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(resourceId, userId),
-      this.blockService.getChangedBlocks(resourceId, userId)
-    ]);
-
-    if (isEmpty(changedEntities) && isEmpty(changedBlocks)) {
-      throw new Error(
-        `There are no pending changes for user ${userId} in resource ${resourceId}`
-      );
-    }
-
-    const entityPromises = changedEntities.map(change => {
-      return this.entityService.discardPendingChanges(change.originId, userId);
-    });
-    const blockPromises = changedBlocks.map(change => {
-      return this.blockService.discardPendingChanges(change.originId, userId);
-    });
-
-    await Promise.all(blockPromises);
-    await Promise.all(entityPromises);
-
-    /**@todo: use a transaction for all data updates  */
-    //await this.prisma.$transaction(allPromises);
-
-    return true;
   }
 
   async reportSyncMessage(

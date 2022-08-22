@@ -15,6 +15,7 @@ const CLASS_NAME = "code-view-bar";
 
 type Props = {
   selectedBuild: Build;
+  resourceId: string;
   onFileSelected: (selectedFile: FileDetails) => void;
 };
 
@@ -28,7 +29,11 @@ const INITIAL_ROOT_NODE: FileMeta = {
   expanded: false,
 };
 
-const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
+const CodeViewExplorerTree = ({
+  selectedBuild,
+  resourceId,
+  onFileSelected,
+}: Props) => {
   const [rootFile, setRootFile] = useState<FileMeta>(INITIAL_ROOT_NODE);
   const [selectedFolder, setSelectedFolder] = useState<FileMeta>(rootFile);
   const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
@@ -37,7 +42,7 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
     ["storage-folderList", selectedBuild.id, selectedFolder?.path],
     async () => {
       return await StorageBaseAxios.instance.folderList(
-        selectedBuild.resourceId,
+        resourceId,
         selectedBuild.id,
         selectedFolder?.path
       );
@@ -63,6 +68,7 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
         [NodeTypeEnum.File]: () => {
           onFileSelected({
             buildId: selectedBuild.id,
+            resourceId: resourceId,
             filePath: file.path,
             isFile: true,
             fileName: file.name,
@@ -85,7 +91,7 @@ const CodeViewExplorerTree = ({ selectedBuild, onFileSelected }: Props) => {
       };
       fileTypeMap[file.type]();
     },
-    [selectedBuild, onFileSelected, expandedFolders]
+    [selectedBuild, onFileSelected, expandedFolders, resourceId]
   );
 
   return (

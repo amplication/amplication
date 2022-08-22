@@ -1,10 +1,11 @@
 import React from "react";
 import ResourceList from "../Workspaces/ResourceList";
-import "./ProjectPage.scss";
 import ProjectSideBar from "./ProjectSideBar";
 import { AppRouteProps } from "../routes/routesUtil";
 import { match } from "react-router-dom";
-import PageContent from "../Layout/PageContent";
+import classNames from "classnames";
+import { Helmet } from "react-helmet";
+import "./ProjectPage.scss";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -18,9 +19,19 @@ const ProjectPage: React.FC<Props> = ({ innerRoutes, match, moduleClass }) => {
   return (
     <div className={moduleClass}>
       {match.isExact ? (
-        <PageContent pageTitle={pageTitle} sideContent={<ProjectSideBar />}>
-          <ResourceList />
-        </PageContent>
+        <>
+          <Helmet>
+            <title>{`Amplication${pageTitle ? ` | ${pageTitle}` : ""}`}</title>
+          </Helmet>
+          <div className={classNames("amp-page-content", moduleClass)}>
+            <div className={`amp-page-content__tabs`}>
+              <ProjectSideBar />
+            </div>
+            <main className={`amp-page-content__main`}>
+              <ResourceList />
+            </main>
+          </div>
+        </>
       ) : (
         innerRoutes
       )}

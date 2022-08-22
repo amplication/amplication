@@ -58,7 +58,7 @@ export function UserAndTime({ loading, account, time }: Props) {
   );
 }
 
-function formatTimeToNow(time: Date | null): string | null {
+export function formatTimeToNow(time: Date | null): string | null {
   return (
     time &&
     formatDistanceToNow(new Date(time), {

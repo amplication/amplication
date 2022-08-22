@@ -213,7 +213,7 @@ export type Build = {
   createdBy: User;
   id: Scalars['String'];
   message: Scalars['String'];
-  resource: Resource;
+  resource?: Maybe<Resource>;
   resourceId: Scalars['String'];
   status?: Maybe<EnumBuildStatus>;
   userId: Scalars['String'];
@@ -270,7 +270,7 @@ export type CommitBuildsArgs = {
 
 export type CommitCreateInput = {
   message: Scalars['String'];
-  resource: WhereParentIdInput;
+  project: WhereParentIdInput;
 };
 
 export type CommitOrderByInput = {
@@ -283,7 +283,7 @@ export type CommitWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
   id?: InputMaybe<StringFilter>;
   message?: InputMaybe<StringFilter>;
-  resource: WhereUniqueInput;
+  project: WhereUniqueInput;
   user?: InputMaybe<WhereUniqueInput>;
 };
 
@@ -1045,6 +1045,7 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   completeInvitation: Auth;
   connectResourceGitRepository: Resource;
+  connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
   createConnectorRestApi: ConnectorRestApi;
@@ -1072,6 +1073,7 @@ export type Mutation = {
   deleteUser?: Maybe<User>;
   deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars['Boolean']>;
+  disconnectResourceGitRepository: Resource;
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
   inviteUser?: Maybe<Invitation>;
   lockEntity?: Maybe<Entity>;
@@ -1114,6 +1116,10 @@ export type MutationCompleteInvitationArgs = {
 
 export type MutationConnectResourceGitRepositoryArgs = {
   data: ConnectGitRepositoryInput;
+};
+
+export type MutationConnectResourceToProjectRepositoryArgs = {
+  resourceId: Scalars['String'];
 };
 
 export type MutationCreateApiTokenArgs = {
@@ -1229,6 +1235,10 @@ export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
 };
 
+export type MutationDisconnectResourceGitRepositoryArgs = {
+  resourceId: Scalars['String'];
+};
+
 export type MutationGetGitResourceInstallationUrlArgs = {
   data: GitGetInstallationUrlInput;
 };
@@ -1336,17 +1346,18 @@ export type PendingChange = {
   origin: PendingChangeOrigin;
   originId: Scalars['String'];
   originType: EnumPendingChangeOriginType;
+  resource: Resource;
   versionNumber: Scalars['Int'];
 };
 
 export type PendingChangeOrigin = Block | Entity;
 
 export type PendingChangesDiscardInput = {
-  resource: WhereParentIdInput;
+  project: WhereParentIdInput;
 };
 
 export type PendingChangesFindInput = {
-  resource: WhereUniqueInput;
+  project: WhereUniqueInput;
 };
 
 export type PrivateKeyAuthenticationSettings = {
@@ -1637,6 +1648,7 @@ export type Resource = {
   githubLastSync?: Maybe<Scalars['DateTime']>;
   gitRepository?: Maybe<GitRepository>;
   gitRepositoryId?: Maybe<Scalars['String']>;
+  gitRepositoryOverride: Scalars['Boolean'];
   id: Scalars['String'];
   name: Scalars['String'];
   project?: Maybe<Project>;

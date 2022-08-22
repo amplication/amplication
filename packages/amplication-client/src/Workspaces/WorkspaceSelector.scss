@@ -2,12 +2,12 @@
 
 @mixin workspaceItem {
   display: flex;
+  flex: 1;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   cursor: pointer;
   padding: var(--default-spacing);
-  width: 100%;
 
   .circle-badge {
     margin-left: 0;
@@ -49,16 +49,21 @@
   &__current {
     @include workspaceItem;
 
-    .amp-icon {
-      justify-self: flex-end;
+    .amp-button {
+      min-width: var(--button-min-width);
+
+      .amp-icon {
+        margin: 0;
+      }
     }
   }
 
   &__list {
+    display: flex;
+    flex-direction: column;
     position: absolute;
     top: 57px;
     left: -1px;
-    width: calc(100% - var(--double-spacing));
     border: $border-black30;
     border-bottom-left-radius: var(--default-spacing-small);
     border-bottom-right-radius: var(--default-spacing-small);
@@ -73,40 +78,44 @@
       &__icon {
         color: var(--positive-default);
       }
-    }
 
-    &__item:hover {
-      background-color: var(--black10);
+      &:hover {
+        background-color: var(--black10);
+      }
     }
 
     &__button {
-      margin-left: var(--default-spacing);
-      margin-top: var(--default-spacing-small);
+      i {
+        padding: 2px;
+      }
     }
 
     &__new {
-      height: 72px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+      flex: 1;
+      padding: var(--default-spacing);
     }
+
     &__divider {
-      width: calc(100% - var(--double-spacing));
-      border: 1px solid var(--black30);
+      flex-grow: 1;
+      height: 1px;
+      margin: 0 var(--default-spacing) var(--icon-spacing);
+      background-color: var(--black30);
+      border: none;
     }
   }
-}
 
-.workspaces-selector:hover {
-  background-color: var(--black2);
-  border: $border-black30;
-}
+  &:hover {
+    background-color: var(--black2);
+    border: $border-black30;
+  }
 
-.workspaces-selector__close {
-  border-bottom-left-radius: var(--default-spacing-small);
-  border-bottom-right-radius: var(--default-spacing-small);
-}
-.workspaces-selector__open {
-  background-color: var(--black2);
-  border: $border-black30;
+  &__close {
+    border-bottom-left-radius: var(--default-spacing-small);
+    border-bottom-right-radius: var(--default-spacing-small);
+  }
+
+  &__open {
+    background-color: var(--black2);
+    border: $border-black30;
+  }
 }

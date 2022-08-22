@@ -7,20 +7,21 @@ import {
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
-import * as models from "../models";
-import UserBadge from "../Components/UserBadge";
-import { AppContext } from "../context/appContext";
 import { isMacOs } from "react-device-detect";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { unsetToken } from "../../authentication/authentication";
+import CommandPalette from "../../CommandPalette/CommandPalette";
+import { Button, EnumButtonStyle } from "../../Components/Button";
+import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import UserBadge from "../../Components/UserBadge";
+import { AppContext } from "../../context/appContext";
+import MenuItem from "../../Layout/MenuItem";
+import * as models from "../../models";
+import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
 import "./WorkspaceHeader.scss";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import CommandPalette from "../CommandPalette/CommandPalette";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { Link, useHistory, useLocation } from "react-router-dom";
-import { unsetToken } from "../authentication/authentication";
-import MenuItem from "../Layout/MenuItem";
 
 const CLASS_NAME = "workspace-header";
-
+export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 const WorkspaceHeader: React.FC<{}> = () => {
   const {
     currentWorkspace,
@@ -28,9 +29,23 @@ const WorkspaceHeader: React.FC<{}> = () => {
     currentResource,
     setResource,
     resources,
+    currentProjectConfiguration,
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
+  const isProjectRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})");
+  const isResourceRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})");
+  const isCommitsRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?");
+  const isCodeViewRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view");
+
+  const getSelectedEntities = useCallback(() => {
+    if (isResourceRoute && currentResource) return currentResource.name;
+  
+    if (isCommitsRoute) return "Commits";
+
+    if (isCodeViewRoute) return "View Code";
+
+  }, [currentResource, isCodeViewRoute, isCommitsRoute, isResourceRoute])
 
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
@@ -40,9 +55,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
     history.replace("/login");
   }, [history, apolloClient]);
 
-  const location = useLocation();
-  const isProjectRoute = location.pathname === `/${currentWorkspace?.id}/${currentProject?.id}`;
-  const isResourceRoute = location.pathname === `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}`;
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
@@ -59,7 +71,11 @@ const WorkspaceHeader: React.FC<{}> = () => {
         <div className={`${CLASS_NAME}__breadcrumbs`}>
           {currentProject && (
             <>
-              <div className={`${CLASS_NAME}__breadcrumbs__project ${isProjectRoute ? "highlight" : ""}`}>
+              <div
+                className={`${CLASS_NAME}__breadcrumbs__project ${
+                  isProjectRoute ? "highlight" : ""
+                }`}
+              >
                 <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
                   {currentProject?.name}
                 </Link>
@@ -71,20 +87,22 @@ const WorkspaceHeader: React.FC<{}> = () => {
                 <SelectMenu
                   css={undefined}
                   title={
-                    <p className={`${CLASS_NAME}__breadcrumbs__resource__title ${isResourceRoute ? "highlight" : ""}`}>
-                      {currentResource ? currentResource.name : "Resource List"}
+                    <p
+                      className={`${CLASS_NAME}__breadcrumbs__resource__title`}
+                    >
+                      {getSelectedEntities() || "Resource List"}
                     </p>
                   }
                   buttonStyle={EnumButtonStyle.Text}
+                  buttonClassName={isResourceRoute ? "highlight" : ""}
                   icon="chevron_down"
                   openIcon="chevron_up"
                   className={`${CLASS_NAME}__breadcrumbs__menu`}
                 >
-                  <SelectMenuModal css={undefined}>
+                  <SelectMenuModal>
                     <SelectMenuList>
                       {resources.map((resource: models.Resource) => (
                         <SelectMenuItem
-                          css={null}
                           closeAfterSelectionChange
                           selected={currentResource?.id === resource.id}
                           key={resource.id}
@@ -99,7 +117,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
                               type={
                                 resource.resourceType as models.EnumResourceType
                               }
-                              size="xsmall"
+                              size="medium"
                             />
                             <div
                               className={`${CLASS_NAME}__breadcrumbs__resource__text`}
@@ -119,6 +137,17 @@ const WorkspaceHeader: React.FC<{}> = () => {
                         </SelectMenuItem>
                       ))}
                     </SelectMenuList>
+                    <hr className={`${CLASS_NAME}__divider`} />
+
+                    <HeaderMenuStaticOptions
+                      currentProjectConfigurationId={
+                        currentProjectConfiguration?.id
+                      }
+                      currentProjectId={currentProject.id}
+                      currentWorkspaceId={currentWorkspace?.id}
+                      history={history}
+                      path={isCommitsRoute?.url}
+                    />
                   </SelectMenuModal>
                 </SelectMenu>
               </div>
@@ -158,21 +187,22 @@ const WorkspaceHeader: React.FC<{}> = () => {
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="search"
-                iconSize="medium"
+                iconSize="small"
               />
             </Tooltip>
           }
         />
         <hr className={`${CLASS_NAME}__vertical_border`} />
 
-        <a href="/user/profile">
+        <a className={`${CLASS_NAME}__user_badge_wrapper`} href="/user/profile">
           <UserBadge />
         </a>
+
         <hr className={`${CLASS_NAME}__vertical_border`} />
 
         <Button
           buttonStyle={EnumButtonStyle.Text}
-          icon="log_out_outline"
+          icon="log_out"
           onClick={handleSignOut}
         />
       </div>

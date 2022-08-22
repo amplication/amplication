@@ -25,9 +25,9 @@ type Query {
   workspaceMembers: [WorkspaceMember!]
   projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
   project(where: WhereUniqueInput!): Project
+  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   resource(where: WhereUniqueInput!): Resource
   resources(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, take: Int): [Resource!]!
-  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
@@ -106,6 +106,7 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   resourceType: EnumResourceType!
+  gitRepositoryOverride: Boolean!
 }
 
 type GitRepository {
@@ -207,7 +208,7 @@ enum Role {
 type Build {
   id: String!
   createdAt: DateTime!
-  resource: Resource!
+  resource: Resource
   resourceId: String!
   createdBy: User!
   userId: String!
@@ -336,6 +337,7 @@ type PendingChange {
   originId: String!
   origin: PendingChangeOrigin!
   versionNumber: Int!
+  resource: Resource!
 }
 
 enum EnumPendingChangeAction {
@@ -703,16 +705,16 @@ input ProjectOrderByInput {
   name: SortOrder
 }
 
+input PendingChangesFindInput {
+  project: WhereUniqueInput!
+}
+
 input ResourceOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
   name: SortOrder
   description: SortOrder
-}
-
-input PendingChangesFindInput {
-  resource: WhereUniqueInput!
 }
 
 type ServiceSettings implements IBlock {
@@ -832,7 +834,7 @@ input CommitWhereUniqueInput {
 input CommitWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
-  resource: WhereUniqueInput!
+  project: WhereUniqueInput!
   user: WhereUniqueInput
   message: StringFilter
 }
@@ -1052,12 +1054,12 @@ type Mutation {
   resendInvitation(where: WhereUniqueInput!): Invitation
   deleteUser(where: WhereUniqueInput!): User
   createProject(data: ProjectCreateInput!): Project!
+  commit(data: CommitCreateInput!): Commit
+  discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   createResource(data: ResourceCreateInput!): Resource!
   createResourceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
-  commit(data: CommitCreateInput!): Commit
-  discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
@@ -1093,9 +1095,11 @@ type Mutation {
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
   createGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToProjectRepository(resourceId: String!): Resource!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  disconnectResourceGitRepository(resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
 }
 
@@ -1120,16 +1124,25 @@ input ProjectCreateInput {
   name: String!
 }
 
+input CommitCreateInput {
+  message: String!
+  project: WhereParentIdInput!
+}
+
+input WhereParentIdInput {
+  connect: WhereUniqueInput!
+}
+
+input PendingChangesDiscardInput {
+  project: WhereParentIdInput!
+}
+
 input ResourceCreateInput {
   name: String!
   description: String!
   color: String
   resourceType: EnumResourceType!
   project: WhereParentIdInput!
-}
-
-input WhereParentIdInput {
-  connect: WhereUniqueInput!
 }
 
 input ResourceCreateWithEntitiesInput {
@@ -1161,15 +1174,6 @@ input ResourceUpdateInput {
   description: String
   color: String
   gitRepositoryOverride: Boolean
-}
-
-input CommitCreateInput {
-  message: String!
-  resource: WhereParentIdInput!
-}
-
-input PendingChangesDiscardInput {
-  resource: WhereParentIdInput!
 }
 
 input EntityCreateInput {

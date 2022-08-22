@@ -92,16 +92,18 @@ export const RoleList = React.memo(
           {data?.resourceRoles.length} Roles
         </div>
         {loading && <CircularProgress />}
-        {data?.resourceRoles?.map((role) => (
-          <div key={role.id}>
-            <InnerTabLink
-              icon="roles"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`}
-            >
-              <span>{role.displayName}</span>
-            </InnerTabLink>
-          </div>
-        ))}
+        <div className={`${CLASS_NAME}__list`}>
+          {data?.resourceRoles?.map((role) => (
+            <div key={role.id} className={`${CLASS_NAME}__list__item`}>
+              <InnerTabLink
+                icon="roles"
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`}
+              >
+                <span>{role.displayName}</span>
+              </InnerTabLink>
+            </div>
+          ))}
+        </div>
         {data?.resourceRoles && (
           <NewRole onRoleAdd={handleRoleChange} resourceId={resourceId} />
         )}

@@ -7,10 +7,11 @@ import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';
 import { ResourceService } from '../resource/resource.service';
 import { MailService } from '../mail/mail.service';
-import { Workspace, Account, User } from 'src/models';
+import { Workspace, Account, User, Project } from '../../models';
 import { Role } from 'src/enums/Role';
 import { DeleteUserArgs } from './dto';
 import { SubscriptionService } from '../subscription/subscription.service';
+import { ProjectService } from '../project/project.service';
 
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
@@ -53,6 +54,15 @@ const EXAMPLE_WORKSPACE: Workspace = {
   users: [EXAMPLE_USER]
 };
 
+const EXAMPLE_PROJECT: Project = {
+  id: 'exampleId',
+  name: 'Example name',
+  workspaceId: 'ExampleWorkspaceId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  deletedAt: undefined
+};
+
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
 
 const prismaWorkspaceFindOneMock = jest.fn(() => {
@@ -93,6 +103,9 @@ const passwordServiceGeneratePasswordMock = jest.fn(() => {
 });
 const passwordServiceHashPasswordMock = jest.fn(() => {
   return EXAMPLE_NEW_PASSWORD;
+});
+const createProjectMock = jest.fn(() => {
+  return EXAMPLE_PROJECT;
 });
 
 const resourceCreateSampleResourceMock = jest.fn();
@@ -156,6 +169,12 @@ describe('WorkspaceService', () => {
         {
           provide: SubscriptionService,
           useClass: jest.fn().mockImplementation(() => ({}))
+        },
+        {
+          provide: ProjectService,
+          useClass: jest.fn().mockImplementation(() => ({
+            createProject: createProjectMock
+          }))
         }
       ]
     }).compile();
