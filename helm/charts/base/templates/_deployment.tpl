@@ -28,10 +28,12 @@ spec:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          {{- if hasKey .Values "config" }}
           envFrom:
+          {{- if hasKey .Values "config" }}
           - configMapRef:
               name: '{{ .Values.name }}'
+          {{- end }}
+          {{- if hasKey .Values "secrets" }}
           - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}
@@ -58,6 +60,16 @@ spec:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.global.pvc.name }}
+      {{- end }}
+      {{- if hasKey .Values.global "nodeSelector"}}
+      nodeSelector:
+      {{- with .Values.global.nodeSelector -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.global.tolerations -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
 {{- end -}}
 {{- define "base.deployment" -}}
