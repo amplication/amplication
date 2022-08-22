@@ -28,8 +28,12 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-eugene.amplication-dev.com
 
 amplication-server:
+  autoscaling:
+    minReplicas: 1
+
   ingress:
     hostname: server-eugene.amplication-dev.com
+
   config:
     env:
 
