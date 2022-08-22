@@ -20,6 +20,8 @@ import { RemoteGitRepositoriesFindManyArgs } from './dto/args/RemoteGitRepositor
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
 import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
 import { GitProviderService } from './git.provider.service';
+import { DisconnectGitRepositoryArgs } from './dto/args/DisconnectGitRepositoryArgs';
+import { ConnectToProjectGitRepositoryArgs } from './dto/args/ConnectToProjectGitRepositoryArgs';
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -52,6 +54,15 @@ export class GitResolver {
   ): Promise<Resource> {
     return await this.gitService.connectResourceGitRepository(args.data);
   }
+  @Mutation(() => Resource)
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'resourceId')
+  async connectResourceToProjectRepository(
+    @Args() args: ConnectToProjectGitRepositoryArgs
+  ): Promise<Resource> {
+    return await this.gitService.connectResourceToProjectRepository(
+      args.resourceId
+    );
+  }
 
   @Mutation(() => GitOrganization)
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, 'data.workspaceId')
@@ -81,6 +92,14 @@ export class GitResolver {
     @Args() args: DeleteGitOrganizationArgs
   ): Promise<boolean> {
     return this.gitService.deleteGitOrganization(args);
+  }
+
+  @Mutation(() => Resource)
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'resourceId')
+  async disconnectResourceGitRepository(
+    @Args() args: DisconnectGitRepositoryArgs
+  ): Promise<Resource> {
+    return this.gitService.disconnectResourceGitRepository(args.resourceId);
   }
 
   @Mutation(() => AuthorizeResourceWithGitResult)

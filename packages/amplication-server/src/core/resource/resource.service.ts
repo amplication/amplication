@@ -108,7 +108,7 @@ export class ResourceService {
 
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
-        'Resource of type ProjectConnfiguration cannot be created manually'
+        'Resource of type Project Configuration cannot be created manually'
       );
     }
 

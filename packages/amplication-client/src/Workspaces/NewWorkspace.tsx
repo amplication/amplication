@@ -42,6 +42,7 @@ const NewWorkspace = () => {
         }
         onSubmit={createWorkspace}
         validateOnMount
+        validateOnBlur={false}
       >
         {(formik) => {
           const handlers = {

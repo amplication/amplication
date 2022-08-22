@@ -107,7 +107,8 @@ const EXAMPLE_RESOURCE: Resource = {
   description: EXAMPLE_DESCRIPTION,
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
-  environments: [EXAMPLE_ENVIRONMENT]
+  environments: [EXAMPLE_ENVIRONMENT],
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {

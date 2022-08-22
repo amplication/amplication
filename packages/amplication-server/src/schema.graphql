@@ -106,6 +106,7 @@ type Resource {
   githubLastMessage: String
   githubLastSync: DateTime
   resourceType: EnumResourceType!
+  gitRepositoryOverride: Boolean!
 }
 
 type GitRepository {
@@ -1094,9 +1095,11 @@ type Mutation {
   updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
   createGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToProjectRepository(resourceId: String!): Resource!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  disconnectResourceGitRepository(resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
 }
 
