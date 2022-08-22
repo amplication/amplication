@@ -31,7 +31,11 @@
     white-space: nowrap;
 
     .user-and-time {
-      padding-left: var(--default-spacing-small);
+      margin-left: var(--default-spacing-small);
     }
+  }
+
+  &__last-build {
+    font-weight: normal;
   }
 }
