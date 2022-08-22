@@ -25,7 +25,7 @@ on:
         default: staging
 jobs:
   validate-image:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     if: github.event.inputs.target-env == github.event.inputs.confirm-env
     outputs:
       valid_image: ${{ steps.check-image.outputs.image_exist }}
@@ -47,7 +47,7 @@ jobs:
         run: |
           bash ./.github/workflows/scripts/deploy-image.sh
   prepare:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: [validate-image]
     if: ${{ needs.validate-image.outputs.valid_image == 'true' }}
     outputs:
@@ -65,7 +65,7 @@ jobs:
         env:
           TARGET_ENV: ${{ github.event.inputs.target-env }}
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs:
       - prepare
     env:
