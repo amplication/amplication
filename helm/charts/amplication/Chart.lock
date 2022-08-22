@@ -35,5 +35,8 @@ dependencies:
 - name: cp-helm-charts
   repository: https://confluentinc.github.io/cp-helm-charts/
   version: 0.6.1
-digest: sha256:5be0652f82fdd9a6f02e26fd75e71d397551882b26f3235d2e881c38085b9e2b
-generated: "2022-08-22T11:50:50.988022588+02:00"
+- name: kafka-ui
+  repository: https://provectus.github.io/kafka-ui
+  version: v0.4.1
+digest: sha256:ff89e6897aa4fc33629f68fad79097789aeddcba0a9e64236c7a474da7d0a6a6
+generated: "2022-08-22T18:22:22.237289408+02:00"
