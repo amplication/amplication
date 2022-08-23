@@ -1,6 +1,5 @@
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import React from "react";
-import "./GitStatusConnectedDetails.scss";
 
 type Props = {
   gitRepositoryFullName: string;
