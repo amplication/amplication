@@ -19,6 +19,7 @@ import usePendingChanges, {
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import PendingChanges from "../VersionControl/PendingChanges";
 import LastCommit from "../VersionControl/LastCommit";
+import WorkspaceFooter from "./WorkspaceFooter";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -127,7 +128,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
               {currentProject && <LastCommit projectId={currentProject.id} />}
             </div>
           </div>
-          {/* <WorkspaceFooter /> */}
+          <WorkspaceFooter />
           <ScreenResolutionMessage />
         </div>
       )}

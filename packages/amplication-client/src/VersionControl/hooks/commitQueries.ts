@@ -1,5 +1,83 @@
 import { gql } from "@apollo/client";
 
+export const GET_LAST_COMMIT = gql`
+  query lastCommit($projectId: String!) {
+    commits(
+      where: { project: { id: $projectId } }
+      orderBy: { createdAt: Desc }
+      take: 1
+    ) {
+      id
+      message
+      createdAt
+      user {
+        id
+        account {
+          firstName
+          lastName
+        }
+      }
+      changes {
+        originId
+        action
+        originType
+        versionNumber
+        origin {
+          __typename
+          ... on Entity {
+            id
+            displayName
+            updatedAt
+          }
+          ... on Block {
+            id
+            displayName
+            updatedAt
+          }
+        }
+      }
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        id
+        createdAt
+        resourceId
+        version
+        message
+        createdAt
+        commitId
+        actionId
+        action {
+          id
+          createdAt
+          steps {
+            id
+            name
+            createdAt
+            message
+            status
+            completedAt
+            logs {
+              id
+              createdAt
+              message
+              meta
+              level
+            }
+          }
+        }
+        createdBy {
+          id
+          account {
+            firstName
+            lastName
+          }
+        }
+        status
+        archiveURI
+      }
+    }
+  }
+`;
+
 export const GET_COMMIT_RESOURCES = gql`
   query Commit($commitId: String!) {
     commit(where: { id: $commitId }) {
@@ -95,6 +173,7 @@ export const GET_COMMITS = gql`
       builds {
         id
         createdAt
+        resourceId
         resource {
           id
           name

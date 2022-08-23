@@ -26,9 +26,9 @@ const CommitResourceListItem = ({ build }: Props) => {
   const resourceChangesCount = useMemo(() => {
     const resourcesChanges = commitChangesByResource(build.commitId);
     return resourcesChanges.find(
-      (resourceChanges) => resourceChanges.resourceId === build.resource.id
+      (resourceChanges) => resourceChanges.resourceId === build.resourceId
     )?.changes.length;
-  }, [build.commitId, build.resource.id, commitChangesByResource]);
+  }, [build.commitId, build.resourceId, commitChangesByResource]);
 
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
@@ -36,10 +36,12 @@ const CommitResourceListItem = ({ build }: Props) => {
         {build && (
           <>
             <div className={`${CLASS_NAME}__title`}>
-              <ResourceCircleBadge type={build.resource.resourceType} />
-              <p>{build.resource.name}</p>
+              {build.resource && (
+                <ResourceCircleBadge type={build.resource.resourceType} />
+              )}
+              <p>{build.resource?.name}</p>
               <Link
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}`}
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}`}
               >
                 <Icon icon="link" size="xsmall" />
               </Link>
@@ -47,7 +49,7 @@ const CommitResourceListItem = ({ build }: Props) => {
 
             <ClickableId
               label="Build ID"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/builds/${build.id}`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
               id={build.id}
               onClick={handleBuildLinkClick}
               eventData={{
@@ -60,7 +62,7 @@ const CommitResourceListItem = ({ build }: Props) => {
       <hr className={`${CLASS_NAME}__divider`} />
       <div className={`${CLASS_NAME}__row`}>
         <Link
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/changes/${build.commitId}`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
           className={`${CLASS_NAME}__changes-count`}
         >
           {resourceChangesCount && resourceChangesCount > 0
@@ -70,7 +72,7 @@ const CommitResourceListItem = ({ build }: Props) => {
         </Link>
 
         <Link
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/builds/${build.id}`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
         >
           view log
         </Link>

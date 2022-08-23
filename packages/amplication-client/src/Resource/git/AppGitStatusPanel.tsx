@@ -12,6 +12,7 @@ import { isEmpty } from "lodash";
 import "./AppGitStatusPanel.scss";
 import { format } from "date-fns";
 import { AppContext } from "../../context/appContext";
+import GitStatusConnectedDetails from "./GitStatusConnectedDetails";
 
 type Props = {
   resource: models.Resource | null;
@@ -57,16 +58,10 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
         <div className={`${CLASS_NAME}__connected`}>
           <Label text="connected to:" />
           <div className={`${CLASS_NAME}__connected__details`}>
-            {gitRepositoryFullName}
-            <a href={repoUrl} target="github">
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="external_link"
-                eventData={{
-                  eventName: "openGithubCodeView",
-                }}
-              />
-            </a>
+            <GitStatusConnectedDetails
+              gitRepositoryFullName={gitRepositoryFullName}
+              repoUrl={repoUrl}
+            />
           </div>
           {lastSync && (
             <div className={`${CLASS_NAME}__last-sync`}>
