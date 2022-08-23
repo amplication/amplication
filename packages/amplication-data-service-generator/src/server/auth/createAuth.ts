@@ -12,6 +12,7 @@ async function innerCreateAuthModules(
   const context = DsgContext.getInstance;
   const authDir = `${srcDir}/auth`;
   const authTestsDir = `${srcDir}/tests/auth`;
+  console.log("*** innerCreateAuthModules ****", srcDir, templatePath)
   const {
     settings: { authProvider },
   } = context.appInfo;
@@ -33,7 +34,8 @@ async function innerCreateAuthModules(
 
 export const createAuthModules = (srcDir: string, templatePath = ""): Module[] =>
   pluginWrapper(
-    [srcDir, templatePath],
     innerCreateAuthModules,
-    EventsName.CreateAuthModules
+    EventsName.CreateAuthModules,
+    srcDir,
+    templatePath,
   );

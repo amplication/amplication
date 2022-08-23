@@ -1,4 +1,5 @@
 import * as types from "@amplication/code-gen-types";
+import winston from "winston";
 
 class DsgContext implements types.DsgContext {
   public appInfo!: types.AppInfo;
@@ -8,6 +9,7 @@ class DsgContext implements types.DsgContext {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public DTOs: types.DTOs = {};
   public plugins: types.PluginMap = {};
+  public logger: winston.Logger = winston.createLogger()
 
   private static instance: DsgContext;
 
