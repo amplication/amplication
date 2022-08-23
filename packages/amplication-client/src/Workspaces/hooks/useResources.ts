@@ -87,7 +87,7 @@ const useResources = (
   };
 
   useEffect(() => {
-    if (!resourceMatch || !resources.length || !projectConfigurationResource)
+    if (!resourceMatch || !projectConfigurationResource)
       return;
 
     const urlResource =
