@@ -23,18 +23,17 @@ export type GitOrganizationFromGitRepository = {
 
 
 const SyncWithGithubPage: React.FC = () => {
-  const { currentResource, currentProjectConfiguration,refreshCurrentWorkspace } = useContext(
+  const { currentResource, refreshCurrentWorkspace } = useContext(
     AppContext
   );
-  const currentResourceType = currentResource || currentProjectConfiguration;
 
   const { data, error, refetch } = useQuery<{
     resource: Resource;
   }>(GET_RESOURCE_GIT_REPOSITORY, {
     variables: {
-      resourceId: currentResourceType?.id,
+      resourceId: currentResource?.id,
     },
-    skip: !currentResourceType?.id,
+    skip: !currentResource?.id,
   });
 
   const handleOnDone = useCallback(()=> {

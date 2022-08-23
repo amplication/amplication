@@ -18,14 +18,11 @@ const ResourceMenu: React.FC<{}> = () => {
     currentWorkspace,
     currentProject,
     currentResource,
-    currentProjectConfiguration,
   } = useContext(AppContext);
-
-  const currentEntity = currentResource || currentProjectConfiguration;
 
   return (
     <div className={CLASS_NAME}>
-      {currentWorkspace && currentProject && currentEntity && (
+      {currentWorkspace && currentProject && currentResource && (
         <>
           <MenuItem
             className={`${CLASS_NAME}__app-icon`}
@@ -34,16 +31,16 @@ const ResourceMenu: React.FC<{}> = () => {
             to={setResourceUrlLink(
               currentWorkspace.id,
               currentProject.id,
-              currentEntity.id,
+              currentResource.id,
               "/"
             )}
           >
             <CircleBadge
-              name={currentEntity.name || ""}
-              color={currentEntity.color}
+              name={currentResource.name || ""}
+              color={currentResource.color}
             />
           </MenuItem>
-          {resourceMenuLayout[EnumResourceType[currentEntity.resourceType]].map(
+          {resourceMenuLayout[EnumResourceType[currentResource.resourceType]].map(
             (menuItem: string) => {
               const menuParams = linksMap[menuItem as MenuItemLinks];
               return (
@@ -53,7 +50,7 @@ const ResourceMenu: React.FC<{}> = () => {
                   to={setResourceUrlLink(
                     currentWorkspace.id,
                     currentProject.id,
-                    currentEntity.id,
+                    currentResource.id,
                     menuParams.to
                   )}
                   icon={menuParams.icon}
