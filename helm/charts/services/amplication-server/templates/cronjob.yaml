@@ -1,3 +1,0 @@
-{{ include "base.cronjob" (list . "amplication-server.cronjob") -}}
-{{- define "amplication-server.cronjob" -}}
-{{- end }}

@@ -1,3 +1,0 @@
-{{ include "base.cronjob" (list . "amplication-git-pull-service.cronjob") -}}
-{{- define "amplication-git-pull-service.cronjob" -}}
-{{- end }}
