@@ -1,6 +1,6 @@
 import { Icon, Snackbar } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
 import {
@@ -22,7 +22,7 @@ export type GitOrganizationFromGitRepository = {
 };
 
 function SyncWithGithubPage() {
-  const { currentResource } = useContext(AppContext);
+  const { currentResource ,refreshCurrentWorkspace} = useContext(AppContext);
 
   const { data, error, refetch } = useQuery<{
     resource: Resource;
@@ -31,6 +31,11 @@ function SyncWithGithubPage() {
       resourceId: currentResource?.id,
     },
   });
+
+  const handleOnDone = useCallback(()=> {
+    refreshCurrentWorkspace();
+    refetch(); 
+  },[refreshCurrentWorkspace, refetch]); 
 
   const pageTitle = "GitHub";
   const errorMessage = formatError(error);
@@ -50,12 +55,12 @@ function SyncWithGithubPage() {
           your GitHub repository.
         </div>
         {data?.resource && !isServiceResource && (
-          <AuthResourceWithGit resource={data.resource} onDone={refetch} />
+          <AuthResourceWithGit resource={data.resource} onDone={handleOnDone} />
         )}
         {isServiceResource && data?.resource && (
           <ServiceConfigurationGitSettings
             resource={data.resource}
-            onDone={refetch}
+            onDone={handleOnDone}
           />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />

@@ -33,19 +33,36 @@ const WorkspaceHeader: React.FC<{}> = () => {
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
-  const isProjectRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})");
-  const isResourceRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})");
-  const isCommitsRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?");
-  const isCodeViewRoute = useRouteMatch("/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view");
+  const isProjectRoute = useRouteMatch(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
+  );
+  const isResourceRoute = useRouteMatch(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
+  );
+  const isCommitsRoute = useRouteMatch(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?"
+  );
+  const isCodeViewRoute = useRouteMatch(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view"
+  );
 
   const getSelectedEntities = useCallback(() => {
-    if (isResourceRoute && currentResource) return currentResource.name;
-  
+    if (
+      (isResourceRoute && currentResource) ||
+      (isResourceRoute && currentProjectConfiguration)
+    )
+      return currentResource?.name || currentProjectConfiguration?.name;
+
     if (isCommitsRoute) return "Commits";
 
     if (isCodeViewRoute) return "View Code";
-
-  }, [currentResource, isCodeViewRoute, isCommitsRoute, isResourceRoute])
+  }, [
+    currentResource,
+    isCodeViewRoute,
+    isCommitsRoute,
+    isResourceRoute,
+    currentProjectConfiguration,
+  ]);
 
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
