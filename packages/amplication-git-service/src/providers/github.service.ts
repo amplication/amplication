@@ -290,12 +290,11 @@ export class GithubService implements IGitClient {
   private async getInstallationAuthToken(
     installationId: string
   ): Promise<string> {
-    const auth = createAppAuth({
-      appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
-      privateKey: this.configService
-        .get(GITHUB_APP_PRIVATE_KEY_VAR)
-        .replace(/\\n/g, '\n')
-    });
+    const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
+    const privateKey = this.configService
+      .get(GITHUB_APP_PRIVATE_KEY_VAR)
+      .replace(/\\n/g, '\n');
+    const auth = createAppAuth({ appId, privateKey });
     // Retrieve installation access token
     return (
       await auth({
