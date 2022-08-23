@@ -83,7 +83,7 @@ export class ActionService {
    */
   async complete(
     step: ActionStep,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+    status: EnumActionStepStatus
   ): Promise<void> {
     await this.prisma.actionStep.update({
       where: {

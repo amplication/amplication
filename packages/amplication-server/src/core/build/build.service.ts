@@ -450,7 +450,10 @@ export class BuildService {
         await Promise.all(logPromises);
 
         dataServiceGeneratorLogger.destroy();
-      }
+
+        await this.actionService.complete(step, EnumActionStepStatus.Running);
+      },
+      true
     );
   }
 
