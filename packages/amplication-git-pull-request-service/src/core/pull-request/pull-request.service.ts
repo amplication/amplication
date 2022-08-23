@@ -27,6 +27,7 @@ export class PullRequestService {
     installationId,
     commit,
     gitProvider,
+    gitResourceMeta,
   }: SendPullRequestArgs): Promise<ResultMessage<SendPullRequestResponse>> {
     const changedFiles = await this.diffService.listOfChangedFiles(
       resourceId,
@@ -49,6 +50,7 @@ export class PullRequestService {
       body,
       installationId,
       newBuildId,
+      gitResourceMeta,
       base
     );
     this.logger.info('Opened a new pull request', { prUrl });
