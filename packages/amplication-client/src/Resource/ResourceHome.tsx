@@ -1,11 +1,9 @@
-import { CircleBadge, Snackbar } from "@amplication/design-system";
-import { gql, useQuery } from "@apollo/client";
+import { CircleBadge } from "@amplication/design-system";
+import { gql } from "@apollo/client";
 import classNames from "classnames";
-import React from "react";
+import React, { useContext } from "react";
 import { match } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
-import * as models from "../models";
-import { formatError } from "../util/error";
 import "./ResourceHome.scss";
 import { COLOR_TO_NAME } from "./constants";
 import DocsTile from "./DocsTile";
@@ -18,6 +16,8 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { AppRouteProps } from "../routes/routesUtil";
 import ResourceMenu from "./ResourceMenu";
+import { AppContext } from "../context/appContext";
+import { EnumResourceType } from "@amplication/code-gen-types/dist/models";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -31,53 +31,47 @@ const CLASS_NAME = "resource-home";
 
 const ResourceHome = ({ match, innerRoutes }: Props) => {
   const resourceId = match.params.resource;
-
-  const { data, error } = useQuery<{
-    resource: models.Resource;
-  }>(GET_RESOURCE, {
-    variables: {
-      id: resourceId,
-    },
-  });
-
-  const errorMessage = formatError(error);
+  const { currentResource } = useContext(
+    AppContext
+  );
 
   return (
     <>
       <ResourceMenu />
-      {match.isExact ? (
-        <PageContent
-          className={CLASS_NAME}
-          sideContent=""
-          pageTitle={data?.resource.name}
-        >
-          <div
-            className={classNames(
-              `${CLASS_NAME}__header`,
-              `theme-${data && COLOR_TO_NAME[data.resource.color]}`
-            )}
-          >
-            {data?.resource.name}
-            <CircleBadge
-              name={data?.resource.name || ""}
-              color={data?.resource.color || "transparent"}
-            />
-          </div>
-          <div className={`${CLASS_NAME}__tiles`}>
-            <NewVersionTile resourceId={resourceId} />
-            <OverviewTile resourceId={resourceId} />
-            <SyncWithGithubTile resourceId={resourceId} />
-            <ViewCodeViewTile resourceId={resourceId} />
-            <EntitiesTile resourceId={resourceId} />
-            <RolesTile resourceId={resourceId} />
-            <DocsTile />
-            <FeatureRequestTile />
-          </div>
-          <Snackbar open={Boolean(error)} message={errorMessage} />
-        </PageContent>
-      ) : (
-        innerRoutes
-      )}
+      {match.isExact
+        ? currentResource && (
+            <PageContent
+              className={CLASS_NAME}
+              sideContent=""
+              pageTitle={currentResource?.name}
+            >
+              <div
+                className={classNames(
+                  `${CLASS_NAME}__header`,
+                  `theme-${
+                    currentResource && COLOR_TO_NAME[currentResource?.color]
+                  }`
+                )}
+              >
+                {currentResource?.name}
+                <CircleBadge
+                  name={currentResource?.name || ""}
+                  color={currentResource?.color || "transparent"}
+                />
+              </div>
+              <div className={`${CLASS_NAME}__tiles`}>
+                <NewVersionTile resourceId={resourceId} />
+                {currentResource?.resourceType !== EnumResourceType.ProjectConfiguration && <OverviewTile resourceId={resourceId} />}
+                <SyncWithGithubTile resourceId={resourceId} />
+                <ViewCodeViewTile resourceId={resourceId} />
+                {currentResource?.resourceType !== EnumResourceType.ProjectConfiguration && <EntitiesTile resourceId={resourceId} />}
+                {currentResource?.resourceType !== EnumResourceType.ProjectConfiguration && <RolesTile resourceId={resourceId} />}
+                <DocsTile />
+                <FeatureRequestTile />
+              </div>
+            </PageContent>
+          )
+        : innerRoutes}
     </>
   );
 };
