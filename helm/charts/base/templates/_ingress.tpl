@@ -5,6 +5,7 @@ metadata:
   name: {{ .Values.name }}
   annotations:
     kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.ingress.hostname }}
 spec:
   rules:
   - host: {{ .Values.ingress.hostname }}  
