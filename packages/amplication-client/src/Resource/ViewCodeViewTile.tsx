@@ -23,10 +23,10 @@ function ViewCodeViewTile({ resourceId }: Props) {
     (event) => {
       trackEvent(EVENT_DATA);
       history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/code-view`
+        `/${currentWorkspace?.id}/${currentProject?.id}/code-view`
       );
     },
-    [history, trackEvent, resourceId, currentWorkspace, currentProject]
+    [history, trackEvent, currentWorkspace, currentProject]
   );
 
   return (
