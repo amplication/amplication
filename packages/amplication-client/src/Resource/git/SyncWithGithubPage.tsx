@@ -1,7 +1,7 @@
 import { Icon, Snackbar } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
-import React, { useContext } from "react";
-import { AppContext } from "../../context/appContext";
+import React from "react";
+import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
 import {
   EnumGitOrganizationType,
@@ -20,15 +20,21 @@ export type GitOrganizationFromGitRepository = {
   name: string;
   type: EnumGitOrganizationType;
 };
-
-function SyncWithGithubPage() {
-  const { currentResource } = useContext(AppContext);
+type Props = {
+  match: match<{
+    workspace: string;
+    project: string;
+    resource: string;
+  }>;
+};
+const SyncWithGithubPage: React.FC<Props> = ({ match }) => {
+  const resourceId = match.params.resource;
 
   const { data, error, refetch } = useQuery<{
     resource: Resource;
   }>(GET_RESOURCE_GIT_REPOSITORY, {
     variables: {
-      resourceId: currentResource?.id,
+      resourceId: resourceId,
     },
   });
 
@@ -62,7 +68,7 @@ function SyncWithGithubPage() {
       </div>
     </PageContent>
   );
-}
+};
 
 export default SyncWithGithubPage;
 
