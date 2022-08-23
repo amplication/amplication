@@ -14,6 +14,8 @@ cp-helm-charts:
     prometheus:
       jmx:
         enabled: true
+    nodeSelector:
+      role: kafka
     podAnnotations:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     configurationOverrides:
