@@ -4,10 +4,9 @@ import {
 } from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
 import assert from 'assert';
-import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
-import { join, normalize } from 'path';
+import { normalize } from 'path';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 
 @Injectable()
