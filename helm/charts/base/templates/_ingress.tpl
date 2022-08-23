@@ -5,8 +5,6 @@ metadata:
   name: {{ .Values.name }}
   annotations:
     kubernetes.io/ingress.class: nginx
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-    alb.ingress.kubernetes.io/scheme: internet-facing
 spec:
   rules:
   - host: {{ .Values.ingress.hostname }}  
