@@ -14,6 +14,8 @@ cp-helm-charts:
     prometheus:
       jmx:
         enabled: true
+    nodeSelector:
+      role: kafka
     podAnnotations:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     configurationOverrides:
@@ -40,6 +42,12 @@ cp-helm-charts:
     heapOptions: "-Xms512M -Xmx512M"
     persistence:
       enabled: true
+    nodeSelector:
+      role: kafka
+    tolerations:
+      - key: "kafka"
+        operator: "Equal"
+        value: "true"
   cp-schema-registry:
     enabled: false
   cp-kafka-rest:
