@@ -14,7 +14,7 @@ spec:
               cpu: {{ .Values.minCPU }}
               memory: {{ .Values.maxMemory }}
           command: ["/bin/sh"]
-          args: ["-c", "npm run migrate:up --scope=@amplication/git-pull-service;", "exit"]
+          args: ["-c", "npm run migrate:up", ";", "exit"]
           env:
           - name: POSTGRESQL_URL
             valueFrom:
