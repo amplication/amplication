@@ -18,8 +18,8 @@ podAnnotations:
 
 maxMemory: "2Gi"
 minMemory: "2Gi"
-maxCPU: 2
-minCPU: 2
+maxCPU: 1
+minCPU: 1
 
 service:
   type: ClusterIP
