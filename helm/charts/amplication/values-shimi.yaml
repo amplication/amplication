@@ -3,6 +3,12 @@ global:
     name: shimi-efs-claim
   pv:
     name: efs-pv-shimi
+  nodeSelector:
+    role: custom-envs
+  tolerations:
+    - key: "custom-envs"
+      operator: "Equal"
+      value: "true"
 
 postgres:
   primary:

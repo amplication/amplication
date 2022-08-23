@@ -8,21 +8,35 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: default
-      containers:
-        - name: '{{ .Values.name }}'
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+      initContainers:
+        - name: "{{ .Values.name }}-migrate"
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           resources:
             limits:
               cpu: {{ .Values.maxCPU }}
               memory: {{ .Values.minMemory }}
             requests:
-              cpu:    {{ .Values.minCPU }}
+              cpu: {{ .Values.minCPU }}
               memory: {{ .Values.maxMemory }}
-          {{- if hasKey .Values "config" }}
+          command: ["/bin/sh"]
+          args: ["-c", "npm run migrate:up", ";", "exit"]
+          env:
+          - name: POSTGRESQL_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.name }}
+                key: POSTGRESQL_URL
+                optional: false
+      containers:
+        - name: '{{ .Values.name }}'
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           envFrom:
+          {{- if hasKey .Values "config" }}
           - configMapRef:
               name: '{{ .Values.name }}'
+          {{- end }}
+          {{- if hasKey .Values "secrets" }}
           - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}
@@ -37,8 +51,6 @@ spec:
           {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           {{- if  hasKey .Values "service" }}
           ports:
             - containerPort: {{ .Values.service.port.target }}

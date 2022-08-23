@@ -21,15 +21,20 @@ export type GitOrganizationFromGitRepository = {
   type: EnumGitOrganizationType;
 };
 
-function SyncWithGithubPage() {
-  const { currentResource ,refreshCurrentWorkspace} = useContext(AppContext);
+
+const SyncWithGithubPage: React.FC = () => {
+  const { currentResource, currentProjectConfiguration,refreshCurrentWorkspace } = useContext(
+    AppContext
+  );
+  const currentResourceType = currentResource || currentProjectConfiguration;
 
   const { data, error, refetch } = useQuery<{
     resource: Resource;
   }>(GET_RESOURCE_GIT_REPOSITORY, {
     variables: {
-      resourceId: currentResource?.id,
+      resourceId: currentResourceType?.id,
     },
+    skip: !currentResourceType?.id,
   });
 
   const handleOnDone = useCallback(()=> {
@@ -67,7 +72,7 @@ function SyncWithGithubPage() {
       </div>
     </PageContent>
   );
-}
+};
 
 export default SyncWithGithubPage;
 

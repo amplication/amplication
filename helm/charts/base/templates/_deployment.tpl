@@ -35,7 +35,7 @@ spec:
           - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}
-          env: 
+          env:
             - name: ENVIRONMENT
               valueFrom:
                 fieldRef:
@@ -58,6 +58,16 @@ spec:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.global.pvc.name }}
+      {{- end }}
+      {{- if hasKey .Values.global "nodeSelector"}}
+      nodeSelector:
+      {{- with .Values.global.nodeSelector -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.global.tolerations -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
 {{- end -}}
 {{- define "base.deployment" -}}
