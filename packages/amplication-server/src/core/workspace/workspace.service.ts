@@ -92,7 +92,7 @@ export class WorkspaceService {
       }
     });
 
-    const currentUserId = workspace.users.shift().id;
+    const [user] = workspace.users;
 
     await this.projectService.createProject(
       {
@@ -101,7 +101,7 @@ export class WorkspaceService {
           workspace: { connect: { id: workspace.id } }
         }
       },
-      currentUserId
+      user.id
     );
 
     return workspace;
