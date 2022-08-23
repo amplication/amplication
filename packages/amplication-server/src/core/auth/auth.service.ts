@@ -105,6 +105,7 @@ export class AuthService {
         password: hashedPassword
       }
     });
+
     const user = await this.bootstrapUser(account, payload.workspaceName);
 
     return this.prepareToken(user);
@@ -116,17 +117,7 @@ export class AuthService {
   ): Promise<AuthUser> {
     const workspace = await this.createWorkspace(workspaceName, account);
     const [user] = workspace.users;
-
     await this.accountService.setCurrentUser(account.id, user.id);
-    await this.projectService.createProject(
-      {
-        data: {
-          name: 'My project',
-          workspace: { connect: { id: workspace.id } }
-        }
-      },
-      user.id
-    );
 
     return user;
   }
@@ -383,6 +374,7 @@ export class AuthService {
       },
       include: WORKSPACE_INCLUDE
     });
+
     return (workspace as unknown) as Workspace & { users: AuthUser[] };
   }
 
