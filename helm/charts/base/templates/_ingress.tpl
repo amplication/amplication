@@ -1,5 +1,5 @@
 {{- define "base.ingress.tpl" -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.name }}
@@ -10,30 +10,38 @@ spec:
   - host: {{ .Values.ingress.hostname }}  
     http:
       paths:
-      - backend:
-          serviceName: {{ .Values.name }}
-          servicePort: http
-        path: {{ .Values.ingress.path }}
+      - path: {{ .Values.ingress.path }}
         pathType: Prefix
-      - backend:
-          serviceName: {{ .Values.name }}
-          servicePort: https
-        path: {{ .Values.ingress.path }}
+        backend:
+          service:
+            name: {{ .Values.name }}
+            port:
+              number: 80
+      - path: {{ .Values.ingress.path }}
         pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.name }}
+            port:
+              number: 443
   {{- if hasKey .Values.ingress "hostname_production" }}
   - host: {{ .Values.ingress.hostname_production }}  
     http:
       paths:
-      - backend:
-          serviceName: {{ .Values.name }}
-          servicePort: http
-        path: {{ .Values.ingress.path }}
+      - path: {{ .Values.ingress.path }}
         pathType: Prefix
-      - backend:
-          serviceName: {{ .Values.name }}
-          servicePort: https
-        path: {{ .Values.ingress.path }}
+        backend:
+          service:
+            name: {{ .Values.name }}
+            port:
+              number: 80
+      - path: {{ .Values.ingress.path }}
         pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.name }}
+            port:
+              number: 443
   {{- end }}
 {{- end }}
 {{- define "base.ingress" -}}
