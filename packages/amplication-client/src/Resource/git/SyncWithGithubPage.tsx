@@ -1,6 +1,6 @@
 import { Icon, Snackbar } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
 import {
@@ -21,11 +21,13 @@ export type GitOrganizationFromGitRepository = {
   type: EnumGitOrganizationType;
 };
 
+
 const SyncWithGithubPage: React.FC = () => {
-  const { currentResource, currentProjectConfiguration } = useContext(
+  const { currentResource, currentProjectConfiguration,refreshCurrentWorkspace } = useContext(
     AppContext
   );
   const currentResourceType = currentResource || currentProjectConfiguration;
+
   const { data, error, refetch } = useQuery<{
     resource: Resource;
   }>(GET_RESOURCE_GIT_REPOSITORY, {
@@ -34,6 +36,11 @@ const SyncWithGithubPage: React.FC = () => {
     },
     skip: !currentResourceType?.id,
   });
+
+  const handleOnDone = useCallback(()=> {
+    refreshCurrentWorkspace();
+    refetch(); 
+  },[refreshCurrentWorkspace, refetch]); 
 
   const pageTitle = "GitHub";
   const errorMessage = formatError(error);
@@ -53,12 +60,12 @@ const SyncWithGithubPage: React.FC = () => {
           your GitHub repository.
         </div>
         {data?.resource && !isServiceResource && (
-          <AuthResourceWithGit resource={data.resource} onDone={refetch} />
+          <AuthResourceWithGit resource={data.resource} onDone={handleOnDone} />
         )}
         {isServiceResource && data?.resource && (
           <ServiceConfigurationGitSettings
             resource={data.resource}
-            onDone={refetch}
+            onDone={handleOnDone}
           />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />

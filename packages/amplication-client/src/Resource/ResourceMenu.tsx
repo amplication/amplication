@@ -14,13 +14,18 @@ import "./ResourceMenu.scss";
 const CLASS_NAME = "resource-menu";
 
 const ResourceMenu: React.FC<{}> = () => {
-  const { currentWorkspace, currentProject, currentResource } = useContext(
-    AppContext
-  );
+  const {
+    currentWorkspace,
+    currentProject,
+    currentResource,
+    currentProjectConfiguration,
+  } = useContext(AppContext);
+
+  const currentEntity = currentResource || currentProjectConfiguration;
 
   return (
     <div className={CLASS_NAME}>
-      {currentWorkspace && currentProject && currentResource && (
+      {currentWorkspace && currentProject && currentEntity && (
         <>
           <MenuItem
             className={`${CLASS_NAME}__app-icon`}
@@ -29,33 +34,33 @@ const ResourceMenu: React.FC<{}> = () => {
             to={setResourceUrlLink(
               currentWorkspace.id,
               currentProject.id,
-              currentResource.id,
+              currentEntity.id,
               "/"
             )}
           >
             <CircleBadge
-              name={currentResource.name || ""}
-              color={currentResource.color}
+              name={currentEntity.name || ""}
+              color={currentEntity.color}
             />
           </MenuItem>
-          {resourceMenuLayout[
-            EnumResourceType[currentResource.resourceType]
-          ].map((menuItem: string) => {
-            const menuParams = linksMap[menuItem as MenuItemLinks];
-            return (
-              <MenuItem
-                key={menuParams.title}
-                title={menuParams.title}
-                to={setResourceUrlLink(
-                  currentWorkspace.id,
-                  currentProject.id,
-                  currentResource.id,
-                  menuParams.to
-                )}
-                icon={menuParams.icon}
-              />
-            );
-          })}
+          {resourceMenuLayout[EnumResourceType[currentEntity.resourceType]].map(
+            (menuItem: string) => {
+              const menuParams = linksMap[menuItem as MenuItemLinks];
+              return (
+                <MenuItem
+                  key={menuParams.title}
+                  title={menuParams.title}
+                  to={setResourceUrlLink(
+                    currentWorkspace.id,
+                    currentProject.id,
+                    currentEntity.id,
+                    menuParams.to
+                  )}
+                  icon={menuParams.icon}
+                />
+              );
+            }
+          )}
         </>
       )}
     </div>

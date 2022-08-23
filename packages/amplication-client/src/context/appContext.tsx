@@ -38,6 +38,7 @@ export interface AppContextInterface {
   resetPendingChanges: () => void;
   setCommitRunning: (isRunning: boolean) => void;
   setPendingChangesError: (onError: boolean) => void;
+  refreshCurrentWorkspace: () => void;
 }
 
 const initialContext: AppContextInterface = {
@@ -70,6 +71,8 @@ const initialContext: AppContextInterface = {
   resetPendingChanges: () => {},
   setCommitRunning: () => {},
   setPendingChangesError: () => {},
+  refreshCurrentWorkspace: () => {},
+
 };
 
 export const AppContext = React.createContext<AppContextInterface>(

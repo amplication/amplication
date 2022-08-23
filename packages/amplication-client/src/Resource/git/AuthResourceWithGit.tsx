@@ -3,7 +3,11 @@ import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import { AuthorizeResourceWithGitResult, EnumGitProvider, Resource } from "../../models";
+import {
+  AuthorizeResourceWithGitResult,
+  EnumGitProvider,
+  Resource,
+} from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import "./AuthResourceWithGit.scss";
@@ -33,7 +37,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   const { gitRepository } = resource;
 
   const { currentWorkspace } = useContext(AppContext);
-  const  gitOrganizations  = currentWorkspace?.gitOrganizations;
+  const gitOrganizations = currentWorkspace?.gitOrganizations;
 
   const [
     gitOrganization,
@@ -58,7 +62,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
       onCompleted: (data) => {
         openSignInWindow(
           data.getGitResourceInstallationUrl.url,
-          "auth with git"
+          "auth with git",
         );
       },
     }
@@ -150,7 +154,9 @@ const START_AUTH_APP_WITH_GITHUB = gql`
   }
 `;
 
-const receiveMessage = (event: any) => {
+const receiveMessage =(
+  event: any
+) => {
   const { data } = event;
   if (data.completed) {
     triggerOnDone();
@@ -159,7 +165,10 @@ const receiveMessage = (event: any) => {
 
 let windowObjectReference: any = null;
 
-const openSignInWindow = (url: string, name: string) => {
+const openSignInWindow = (
+  url: string,
+  name: string,
+) => {
   // remove any existing event listeners
   window.removeEventListener("message", receiveMessage);
 
@@ -180,5 +189,9 @@ const openSignInWindow = (url: string, name: string) => {
   }
 
   // add the listener for receiving a message from the popup
-  window.addEventListener("message", (event) => receiveMessage(event), false);
+  window.addEventListener(
+    "message",
+    (event) => receiveMessage(event),
+    false
+  );
 };

@@ -27,7 +27,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   const [currentWorkspace, setCurrentWorkspace] = useState<models.Workspace>();
   const [
     getCurrentWorkspace,
-    { loading: loadingCurrentWorkspace, data },
+    { loading: loadingCurrentWorkspace, data, refetch },
   ] = useLazyQuery<TData>(GET_CURRENT_WORKSPACE, {
     onError: (error) => {
       if (error.message === "Unauthorized") {
@@ -36,6 +36,12 @@ const useWorkspaceSelector = (authenticated: boolean) => {
       }
     },
   });
+
+  useEffect(() => {}, [currentWorkspace]);
+
+  const refreshCurrentWorkspace = useCallback(() => {
+    data && refetch && refetch();
+  }, [refetch, data]);
 
   const [setServerCurrentWorkspace, { data: setCurrentData }] = useMutation<
     TSetData
@@ -149,6 +155,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     createWorkspace,
     createNewWorkspaceError,
     loadingCreateNewWorkspace,
+    refreshCurrentWorkspace,
   };
 };
 

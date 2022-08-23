@@ -40,6 +40,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createWorkspace,
     createNewWorkspaceError,
     loadingCreateNewWorkspace,
+    refreshCurrentWorkspace,
   } = useWorkspaceSelector(authenticated);
   const {
     currentProject,
@@ -106,6 +107,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         resetPendingChanges,
         setCommitRunning,
         setPendingChangesError,
+        refreshCurrentWorkspace,
       }}
     >
       {isMobileOnly ? (
