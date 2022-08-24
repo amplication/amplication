@@ -40,6 +40,7 @@ import { QueueService } from '../queue/queue.service';
 import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
+import { GitResourceMeta } from './dto/GitResourceMeta';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -313,7 +314,7 @@ export class BuildService {
   private async generate(
     build: Build,
     user: User,
-    oldBuildId: string
+    oldBuildId: string | undefined
   ): Promise<string> {
     return this.actionService.run(
       build.actionId,
@@ -370,7 +371,10 @@ export class BuildService {
           modules
         );
 
-        await this.saveToGitHub(build, oldBuildId);
+        await this.saveToGitHub(build, oldBuildId, {
+          adminUIPath: serviceSettings.adminUISettings.adminUIPath,
+          serverPath: serviceSettings.serverSettings.serverPath
+        });
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
@@ -432,7 +436,11 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
+  private async saveToGitHub(
+    build: Build,
+    oldBuildId: string,
+    gitResourceMeta: GitResourceMeta
+  ): Promise<void> {
     const resource = build.resource;
     const resourceRepository = await this.resourceService.gitRepository(
       resource.id
@@ -483,7 +491,8 @@ export class BuildService {
                 
                 ${url}
                 `
-              }
+              },
+              gitResourceMeta
             }
           );
 

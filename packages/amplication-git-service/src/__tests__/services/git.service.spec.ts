@@ -127,6 +127,8 @@ describe('GitService', () => {
         const commitMessage = 'exampleCommitMessage';
         const commitDescription = 'exampleCommitDescription';
         const baseBranchName = 'exampleBaseBranchName';
+        const buildId = 'buildId';
+        const basePath = 'packages';
         const remoteGitOrganization = await gitService.createPullRequest(
           gitProvider,
           userName,
@@ -135,8 +137,13 @@ describe('GitService', () => {
           commitName,
           commitMessage,
           commitDescription,
-          baseBranchName,
-          installationId
+          installationId,
+          buildId,
+          {
+            adminUIPath: basePath + 'admin-ui',
+            serverPath: basePath + 'server'
+          },
+          baseBranchName
         );
         expect(remoteGitOrganization).toEqual(PR_HTML_URL);
       });

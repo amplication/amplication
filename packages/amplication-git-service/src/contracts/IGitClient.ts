@@ -1,6 +1,7 @@
 import { GithubFile } from '../Dto/entities/GithubFile';
 import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
 import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
+import { GitResourceMeta } from './GitResourceMeta';
 
 export interface IGitClient {
   createUserRepository(
@@ -46,6 +47,7 @@ export interface IGitClient {
     commitDescription: string,
     baseBranchName: string,
     installationId: string,
-    amplicationBuildId: string
+    amplicationBuildId: string,
+    meta: GitResourceMeta
   ): Promise<string>;
 }

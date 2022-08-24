@@ -72,7 +72,11 @@ export class GitProviderService {
       );
     }
 
-    return await this.connectResourceGitRepository(args);
+    return await this.connectResourceGitRepository({
+      name: remoteRepository.name,
+      gitOrganizationId: args.gitOrganizationId,
+      resourceId: args.resourceId
+    });
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
