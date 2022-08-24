@@ -39,6 +39,7 @@ const LastCommit = ({ projectId }: Props) => {
     variables: {
       projectId,
     },
+    skip: !projectId,
   });
 
   useEffect(() => {
