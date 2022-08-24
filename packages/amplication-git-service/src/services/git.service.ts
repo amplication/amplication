@@ -28,7 +28,6 @@ export class GitService {
     isPublic: boolean
   ): Promise<RemoteGitRepository> {
     const provider = this.gitServiceFactory.getService(gitProvider);
-    //const trimRepoName = repoName.trim().replace(/ /g, '-');
     return await (gitOrganizationType === EnumGitOrganizationType.Organization
       ? provider.createOrganizationRepository(
           installationId,
