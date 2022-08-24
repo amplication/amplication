@@ -36,7 +36,7 @@ export const GET_LAST_COMMIT = gql`
           }
         }
       }
-      builds(orderBy: { createdAt: Desc }, take: 1) {
+      builds {
         id
         createdAt
         resourceId

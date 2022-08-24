@@ -62,6 +62,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createResource,
     loadingCreateResource,
     errorCreateResource,
+    gitRepositoryFullName,
   } = useResources(currentWorkspace, currentProject);
 
   const {
@@ -109,6 +110,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         setCommitRunning,
         setPendingChangesError,
         refreshCurrentWorkspace,
+        gitRepositoryFullName
       }}
     >
       {isMobileOnly ? (

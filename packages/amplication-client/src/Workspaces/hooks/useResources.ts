@@ -13,6 +13,16 @@ type TData = {
   createResourceWithEntities: models.Resource;
 };
 
+const createGitRepositoryFullName = (
+  gitRepository: models.Maybe<models.GitRepository> | undefined
+) => {
+  return (
+    (gitRepository &&
+      `${gitRepository.gitOrganization.name}/${gitRepository.name}`) ||
+    "connect to GH"
+  );
+};
+
 const useResources = (
   currentWorkspace: models.Workspace | undefined,
   currentProject: models.Project | undefined
@@ -38,6 +48,9 @@ const useResources = (
     setProjectConfigurationResource,
   ] = useState<models.Resource | undefined>(undefined);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
+    createGitRepositoryFullName(currentResource?.gitRepository)
+  );
 
   const {
     data: resourcesData,
@@ -87,6 +100,16 @@ const useResources = (
   };
 
   useEffect(() => {
+    if (resourceMatch) return;
+
+    currentResource && setCurrentResource(undefined);
+    projectConfigurationResource &&
+      setGitRepositoryFullName(
+        createGitRepositoryFullName(projectConfigurationResource.gitRepository)
+      );
+  }, [resourceMatch, currentResource, projectConfigurationResource]);
+
+  useEffect(() => {
     if (!resourceMatch || !projectConfigurationResource) return;
 
     const urlResource =
@@ -96,6 +119,9 @@ const useResources = (
     );
 
     setCurrentResource(resource);
+    setGitRepositoryFullName(
+      createGitRepositoryFullName(resource?.gitRepository)
+    );
   }, [resourceMatch, resources, projectConfigurationResource]);
 
   useEffect(() => {
@@ -143,6 +169,7 @@ const useResources = (
     createResource,
     loadingCreateResource,
     errorCreateResource,
+    gitRepositoryFullName,
   };
 };
 

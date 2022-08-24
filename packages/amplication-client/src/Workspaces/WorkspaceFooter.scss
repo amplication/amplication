@@ -10,6 +10,19 @@
   height: var(--footer-height);
   min-height: var(--footer-height);
 
+  &__skeleton {
+    display: flex;
+    align-items: center;
+  }
+
+  &__vertical_border {
+    width: 1px;
+    height: var(--large-spacing);
+    background: var(--black60);
+    border: none;
+    margin: 0 var(--default-spacing-small);
+  }
+
   &__right,
   &__left {
     display: flex;
@@ -25,7 +38,7 @@
 
     .clickable-id {
       color: var(--black80);
-      margin-left: var(--default-spacing-small);
+      // margin-left: var(--default-spacing-small);
       a {
         color: var(--black100);
       }

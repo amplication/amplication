@@ -16,13 +16,15 @@ const GitStatusConnectedDetails: React.FC<Props> = ({
     <div className={`${CLASS_NAME}`}>
       {gitRepositoryFullName}
       <a href={repoUrl} target="github">
-        <Button
-          buttonStyle={EnumButtonStyle.Text}
-          icon="external_link"
-          eventData={{
-            eventName: "openGithubCodeView",
-          }}
-        />
+        {gitRepositoryFullName.includes("/") && (
+          <Button
+            buttonStyle={EnumButtonStyle.Text}
+            icon="external_link"
+            eventData={{
+              eventName: "openGithubCodeView",
+            }}
+          />
+        )}
       </a>
     </div>
   );

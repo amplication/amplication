@@ -9,6 +9,7 @@ import GitStatusConnectedDetails from "../Resource/git/GitStatusConnectedDetails
 import "./WorkspaceFooter.scss";
 import * as models from "../models";
 import { useQuery } from "@apollo/client";
+import { Link } from "react-router-dom";
 
 type TData = {
   commits: models.Commit[];
@@ -22,31 +23,35 @@ const WorkspaceFooter: React.FC<{}> = () => {
     currentProject,
     currentResource,
     commitRunning,
+    gitRepositoryFullName,
+    projectConfigurationResource,
   } = useContext(AppContext);
-  const gitRepositoryFullName = `${currentResource?.gitRepository?.gitOrganization.name}/${currentResource?.gitRepository?.name}`;
+
   const repoUrl = `https://github.com/${gitRepositoryFullName}`;
 
-  const { data, loading, refetch } = useQuery<TData>(GET_LAST_COMMIT, {
+  const { data, loading } = useQuery<TData>(GET_LAST_COMMIT, {
     variables: {
       projectId: currentProject?.id,
-      skip: !currentProject?.id,
     },
   });
 
   const lastCommit = useMemo(() => {
     if (loading || isEmpty(data?.commits)) return null;
     const [last] = data?.commits || [];
-    refetch();
     return last;
-  }, [loading, data?.commits, refetch]);
+  }, [loading, data?.commits]);
 
-  const lastBuild = useMemo(() => {
+  const lastResourceBuild = useMemo(() => {
     if (!lastCommit) return null;
-    const [last] = lastCommit.builds || [];
-    refetch();
-    return last;
-  }, [lastCommit, refetch]);
+    const lastCommitResourceBuild =
+      currentResource?.id &&
+      lastCommit.builds?.find(
+        (lastCommitBuild) => lastCommitBuild.resourceId === currentResource.id
+      );
+    return lastCommitResourceBuild;
+  }, [currentResource?.id, lastCommit]);
 
+  console.log(currentResource, "resource");
   const handleBuildLinkClick = useCallback((event) => {
     event.stopPropagation();
   }, []);
@@ -56,20 +61,21 @@ const WorkspaceFooter: React.FC<{}> = () => {
       to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
       id={lastCommit.id}
       label="Commit ID"
+      onClick={handleBuildLinkClick}
       eventData={{
         eventName: "lastCommitIdClick",
       }}
     />
   );
 
-  const ClickableBuildId = lastBuild && (
+  const ClickableBuildId = lastResourceBuild && (
     <ClickableId
       label="Build ID"
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${lastBuild.resourceId}/builds/${lastBuild.id}`}
-      id={lastBuild.id}
+      to={`/${currentWorkspace?.id}/${currentProject?.id}/${lastResourceBuild.resourceId}/builds/${lastResourceBuild.id}`}
+      id={lastResourceBuild.id}
       onClick={handleBuildLinkClick}
       eventData={{
-        eventName: "commitListBuildIdClick",
+        eventName: "lastBuildIdClick",
       }}
     />
   );
@@ -82,10 +88,19 @@ const WorkspaceFooter: React.FC<{}> = () => {
           size="small"
           className={`${CLASS_NAME}__github-icon`}
         />
-        <GitStatusConnectedDetails
-          gitRepositoryFullName={gitRepositoryFullName}
-          repoUrl={repoUrl}
-        />
+        {gitRepositoryFullName.includes("/") ? (
+          <GitStatusConnectedDetails
+            gitRepositoryFullName={gitRepositoryFullName}
+            repoUrl={repoUrl}
+          />
+        ) : (
+          <Link
+            title={"Connect to GitHub"}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/github`}
+          >
+            Connect to GitHub
+          </Link>
+        )}
       </div>
       <div className={`${CLASS_NAME}__right`}>
         <SkeletonWrapper
@@ -95,6 +110,9 @@ const WorkspaceFooter: React.FC<{}> = () => {
           <span className={`${CLASS_NAME}__commit-id`}>
             {ClickableCommitId}
           </span>
+          {lastResourceBuild && (
+            <hr className={`${CLASS_NAME}__vertical_border`} />
+          )}
           <span className={`${CLASS_NAME}__build-id`}>{ClickableBuildId}</span>
         </SkeletonWrapper>
       </div>
