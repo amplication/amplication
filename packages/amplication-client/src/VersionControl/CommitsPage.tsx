@@ -50,7 +50,10 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
       {commits.length > 0 &&
         commitIdx > -1 &&
         commits[commitIdx].builds?.length && (
-          <CommitResourceList builds={commits[commitIdx].builds} commitId={commitId} />
+          <CommitResourceList
+            builds={commits[commitIdx].builds}
+            commitId={commitId}
+          />
         )}
     </PageContent>
   );
