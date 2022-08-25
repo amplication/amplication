@@ -1,6 +1,7 @@
 import { formatTimeToNow } from "@amplication/design-system";
 import React from "react";
 import { Commit } from "../models";
+import { truncateWithEllipsis } from "../util/truncatedWithEllipsis";
 import "./CommitSelectorItem.scss";
 import UserBadge from "./UserBadge";
 
@@ -18,15 +19,16 @@ export const CommitSelectorItem = ({ commit }: Props) => {
     <label className={`commit-selector__hour`}>{createdAtHour}</label>
   );
 
-  const truncateCommitMessage = (input: string) =>
-    input.length && input.length < 15 ? input : `${input.substring(0, 15)}...`;
+  const truncateCommitMessage = truncateWithEllipsis(
+    commit?.message.trim(),
+    15,
+    "No commit message"
+  );
 
   return (
     <div className={CLASS_NAME}>
       <UserBadge />
-      <div className={`${CLASS_NAME}__title`}>
-        {truncateCommitMessage(commit?.message.trim() || "No commit message")}
-      </div>
+      <div className={`${CLASS_NAME}__title`}>{truncateCommitMessage}</div>
       <div className={`${CLASS_NAME}__createdAt`}>{createdHourStyle()}</div>
     </div>
   );
