@@ -1,17 +1,11 @@
 @import "../style/index.scss";
 
 .commit-selector-item {
-  @include flexFullRowWithSpacing;
-  flex: 1;
+  display: flex;
+  align-items: center;
+  margin-right: auto;
   &__title {
-    display: flex;
-    flex: 1;
-    white-space: nowrap;
-    text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 400;
     @include regular-12;
-    justify-content: space-between;
+    margin: 0 var(--icon-spacing);
   }
 }
