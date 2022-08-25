@@ -12,9 +12,7 @@ const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME =
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION =
   'This block is used to store project configuration settings.';
 
-const blockVersionSettings = `{
-  "baseDirectory": "/"
-}`;
+const blockVersionSettings = '{"baseDirectory":"/"}';
 
 
 async function main() {
@@ -58,8 +56,8 @@ async function main() {
         versionNumber: 0,
         displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
         description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
-        inputParameters: `{}`,
-        outputParameters: `{}`,
+        inputParameters: '{}',
+        outputParameters: '{}',
         settings: blockVersionSettings,
         block: { connect: { id: block.id } },
       }
