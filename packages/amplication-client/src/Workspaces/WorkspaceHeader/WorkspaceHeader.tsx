@@ -117,44 +117,49 @@ const WorkspaceHeader: React.FC<{}> = () => {
                   className={`${CLASS_NAME}__breadcrumbs__menu`}
                 >
                   <SelectMenuModal>
-                    <SelectMenuList>
-                      {resources.map((resource: models.Resource) => (
-                        <SelectMenuItem
-                          closeAfterSelectionChange
-                          selected={currentResource?.id === resource.id}
-                          key={resource.id}
-                          onSelectionChange={() => {
-                            setResource(resource);
-                          }}
-                        >
-                          <div
-                            className={`${CLASS_NAME}__breadcrumbs__resource__item`}
-                          >
-                            <ResourceCircleBadge
-                              type={
-                                resource.resourceType as models.EnumResourceType
-                              }
-                              size="medium"
-                            />
-                            <div
-                              className={`${CLASS_NAME}__breadcrumbs__resource__text`}
-                            >
-                              <div
-                                className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                    {resources.length > 0 && (
+                      <>
+                        <SelectMenuList>
+                          {resources.length &&
+                            resources.map((resource: models.Resource) => (
+                              <SelectMenuItem
+                                closeAfterSelectionChange
+                                selected={currentResource?.id === resource.id}
+                                key={resource.id}
+                                onSelectionChange={() => {
+                                  setResource(resource);
+                                }}
                               >
-                                {resource.name}
-                              </div>
-                              <div
-                                className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
-                              >
-                                {resource.description}
-                              </div>
-                            </div>
-                          </div>
-                        </SelectMenuItem>
-                      ))}
-                    </SelectMenuList>
-                    <hr className={`${CLASS_NAME}__divider`} />
+                                <div
+                                  className={`${CLASS_NAME}__breadcrumbs__resource__item`}
+                                >
+                                  <ResourceCircleBadge
+                                    type={
+                                      resource.resourceType as models.EnumResourceType
+                                    }
+                                    size="medium"
+                                  />
+                                  <div
+                                    className={`${CLASS_NAME}__breadcrumbs__resource__text`}
+                                  >
+                                    <div
+                                      className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                                    >
+                                      {resource.name}
+                                    </div>
+                                    <div
+                                      className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
+                                    >
+                                      {resource.description}
+                                    </div>
+                                  </div>
+                                </div>
+                              </SelectMenuItem>
+                            ))}
+                        </SelectMenuList>
+                        <hr className={`${CLASS_NAME}__divider`} />
+                      </>
+                    )}
 
                     <HeaderMenuStaticOptions
                       currentProjectConfigurationId={
