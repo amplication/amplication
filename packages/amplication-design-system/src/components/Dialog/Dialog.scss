@@ -1,18 +1,19 @@
 @import "../../style/index.scss";
 
-$modal-header-height: 42px;
 $modal-max-width: 50vw;
 $modal-top-position: 20vh;
 
 .amp-dialog {
   box-shadow: none;
   border-radius: var(--default-border-radius);
+  border: $border-black10;
   width: max-content !important;
   max-width: $modal-max-width;
   min-width: var(--modal-min-width);
   margin-top: $modal-top-position !important;
   margin-bottom: 0 !important;
   background-color: var(--black2) !important;
+  padding: var(--double-spacing);
 
   //mobile
   @media only screen and (max-width: $breakpoint-tablet) {
@@ -29,9 +30,7 @@ $modal-top-position: 20vh;
     @include semiBold;
     color: var(--black100);
     background-color: transparent;
-    height: $modal-header-height;
     box-sizing: border-box;
-    padding: var(--default-spacing) var(--large-spacing);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -40,13 +39,13 @@ $modal-top-position: 20vh;
 
     h3 {
       margin: 0;
-      color: var(--black80);
+      font-weight: 600;
+      font-size: var(--title3-font-size);
     }
   }
   & &__body {
     background-color: transparent;
     box-sizing: border-box;
-    padding: var(--large-spacing);
   }
 
   &--warning {

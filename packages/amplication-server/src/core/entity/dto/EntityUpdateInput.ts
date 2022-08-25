@@ -1,31 +1,26 @@
 import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityUpdateInput {
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: string | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   displayName?: string | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   pluralDisplayName?: string | null;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string | null;
 }

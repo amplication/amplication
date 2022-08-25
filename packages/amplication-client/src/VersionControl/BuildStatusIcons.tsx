@@ -10,8 +10,13 @@ const TOOLTIP_DIRECTION = "nw";
 
 type BuildStatusIconsProps = {
   build: models.Build;
+  showIcon?: boolean;
 };
-export const BuildStatusIcons = ({ build }: BuildStatusIconsProps) => {
+export const BuildStatusIcons = ({
+  build,
+  showIcon = true,
+}: BuildStatusIconsProps) => {
+
   const stepGenerateCode = useMemo(() => {
     if (!build?.action?.steps?.length) {
       return EMPTY_STEP;
@@ -30,7 +35,7 @@ export const BuildStatusIcons = ({ build }: BuildStatusIconsProps) => {
       className={`${CLASS_NAME}__status`}
     >
       <BuildStepsStatus status={stepGenerateCode.status} />
-      <Icon icon="code1" />
+      {showIcon && <Icon icon="code1" />}
     </Tooltip>
   );
 };

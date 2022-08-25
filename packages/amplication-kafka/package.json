@@ -6,9 +6,7 @@
   "scripts": {
     "build": "tsc",
     "prebuild": "rimraf lib",
-    "prepare": "npm run build",
-    "test": "jest",
-    "postinstall": "npm run build"
+    "test": "jest"
   },
   "keywords": [],
   "author": "tupe12334",

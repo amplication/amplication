@@ -1,43 +1,37 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { App } from './App'; // eslint-disable-line import/no-cycle
 import { User } from './User'; // eslint-disable-line import/no-cycle
 import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
-import { PendingChange } from '../core/app/dto/PendingChange'; // eslint-disable-line import/no-cycle
+import { PendingChange } from '../core/resource/dto/PendingChange'; // eslint-disable-line import/no-cycle
+import { Project } from './Project';
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Commit {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
-  app?: App;
+  project?: Project;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   userId!: string;
 
   @Field(() => User, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   user?: User;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   message!: string;
 

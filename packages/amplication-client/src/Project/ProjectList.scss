@@ -1,0 +1,14 @@
+@import "../style/index.scss";
+
+.project-list {
+  @include flexColumn;
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  padding: var(--large-spacing) 0;
+
+
+  &__items {
+    flex: 1;
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useContext } from "react";
 import { Formik, Form } from "formik";
 import semver, { ReleaseType } from "semver";
 import { useHistory } from "react-router-dom";
@@ -16,6 +16,7 @@ import * as models from "../models";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./BuildNewVersion.scss";
 import { validate } from "../util/formikValidateJsonSchema";
+import { AppContext } from "../context/appContext";
 
 type BuildType = {
   message: string;
@@ -45,7 +46,7 @@ const OPTIONS = [
 ];
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   lastBuildVersion?: string;
   suggestedCommitMessage?: string;
   onComplete: () => void;
@@ -66,7 +67,7 @@ const keyMap = {
 };
 
 const BuildNewVersion = ({
-  applicationId,
+  resourceId,
   lastBuildVersion,
   suggestedCommitMessage = "",
   onComplete,
@@ -76,19 +77,20 @@ const BuildNewVersion = ({
   );
   const [version, setVersion] = useState<string | null>(null);
   const history = useHistory();
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const [createBuild, { loading, error }] = useMutation<{
     createBuild: models.Build;
   }>(CREATE_BUILD, {
     onCompleted: (data) => {
-      const url = `/${applicationId}/builds/${data.createBuild.id}`;
+      const url = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/builds/${data.createBuild.id}`;
       history.push(url);
 
       onComplete();
     },
 
     variables: {
-      appId: applicationId,
+      resourceId: resourceId,
     },
   });
 
@@ -98,11 +100,11 @@ const BuildNewVersion = ({
         variables: {
           message: data.message,
           version: version,
-          appId: applicationId,
+          resourceId: resourceId,
         },
       }).catch(console.error);
     },
-    [createBuild, applicationId, version]
+    [createBuild, resourceId, version]
   );
   const errorMessage = error && formatError(error);
 
@@ -167,7 +169,7 @@ const BuildNewVersion = ({
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
-                  eventName: "buildApp",
+                  eventName: "buildResource",
                 }}
               >
                 Build New Version
@@ -184,17 +186,17 @@ const BuildNewVersion = ({
 export default BuildNewVersion;
 
 const CREATE_BUILD = gql`
-  mutation($appId: String!, $version: String!, $message: String!) {
+  mutation($resourceId: String!, $version: String!, $message: String!) {
     createBuild(
       data: {
-        app: { connect: { id: $appId } }
+        resource: { connect: { id: $resourceId } }
         version: $version
         message: $message
       }
     ) {
       id
       createdAt
-      appId
+      resourceId
       version
       message
       createdAt

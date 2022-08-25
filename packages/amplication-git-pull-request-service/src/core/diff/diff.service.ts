@@ -4,10 +4,9 @@ import {
 } from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
 import assert from 'assert';
-import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
-import { join, normalize } from 'path';
+import { normalize } from 'path';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 
 @Injectable()
@@ -18,74 +17,74 @@ export class DiffService {
     private readonly logger: AmplicationLogger
   ) {}
   async listOfChangedFiles(
-    amplicationAppId: string,
+    resourceId: string,
     previousAmplicationBuildId: string,
     newAmplicationBuildId: string
   ): Promise<{ path: string; code: string }[]> {
-    const oldBuildPath = this.buildsPathFactory.get(
-      amplicationAppId,
-      previousAmplicationBuildId
-    );
+    // const oldBuildPath = this.buildsPathFactory.get(
+    //   resourceId,
+    //   previousAmplicationBuildId
+    // );
     const newBuildPath = this.buildsPathFactory.get(
-      amplicationAppId,
+      resourceId,
       newAmplicationBuildId
     );
     this.logger.info('List of the paths', {
-      appId: amplicationAppId,
+      resourceId,
       previousAmplicationBuildId,
       newAmplicationBuildId,
     });
-    assert.notStrictEqual(
-      oldBuildPath,
-      newBuildPath,
-      'Cant get the same build id'
-    );
+    // assert.notStrictEqual(
+    //   oldBuildPath,
+    //   newBuildPath,
+    //   'Cant get the same build id'
+    // );
 
     //This line added as a hotfix to https://github.com/amplication/amplication/issues/2878
     return this.firstBuild(newBuildPath);
 
-    // return all the new files if an old build folder dont exist
-    if (existsSync(oldBuildPath) === false) {
-      return this.firstBuild(newBuildPath);
-    }
+    // // return all the new files if an old build folder dont exist
+    // if (existsSync(oldBuildPath) === false) {
+    //   return this.firstBuild(newBuildPath);
+    // }
 
-    DiffService.assertBuildExist(newBuildPath);
+    // DiffService.assertBuildExist(newBuildPath);
 
-    this.logger.info({ oldBuildPath, newBuildPath });
+    // this.logger.info({ oldBuildPath, newBuildPath });
 
-    const res = await compare(oldBuildPath, newBuildPath, {
-      compareContent: true,
-      compareDate: false,
-      compareSize: false,
-      compareSymlink: false,
-    });
+    // const res = await compare(oldBuildPath, newBuildPath, {
+    //   compareContent: true,
+    //   compareDate: false,
+    //   compareSize: false,
+    //   compareSymlink: false,
+    // });
 
-    this.logger.debug('Finish the dir-compare lib process');
+    // this.logger.debug('Finish the dir-compare lib process');
 
-    const changedFiles = res.diffSet.filter((diff) => {
-      if (diff.state !== 'equal' && diff.type2 === 'file') {
-        //make sure that only new files enter and ignore old files
-        if (diff.state !== 'left') {
-          return true;
-        }
-      }
-      return false;
-    });
+    // const changedFiles = res.diffSet.filter((diff) => {
+    //   if (diff.state !== 'equal' && diff.type2 === 'file') {
+    //     //make sure that only new files enter and ignore old files
+    //     if (diff.state !== 'left') {
+    //       return true;
+    //     }
+    //   }
+    //   return false;
+    // });
 
-    this.logger.info('The list of the changed files', { changedFiles });
+    // this.logger.info('The list of the changed files', { changedFiles });
 
-    const modules = changedFiles.map(async (diff) => {
-      const path = join(diff.relativePath, diff.name2);
-      const code = await readFileSync(join(diff.path2, diff.name2)).toString(
-        'utf8'
-      );
-      return {
-        path,
-        code,
-      };
-    });
+    // const modules = changedFiles.map(async (diff) => {
+    //   const path = join(diff.relativePath, diff.name2);
+    //   const code = await readFileSync(join(diff.path2, diff.name2)).toString(
+    //     'utf8'
+    //   );
+    //   return {
+    //     path,
+    //     code,
+    //   };
+    // });
 
-    return await Promise.all(modules);
+    // return await Promise.all(modules);
   }
 
   private async firstBuild(newBuildPath: string) {

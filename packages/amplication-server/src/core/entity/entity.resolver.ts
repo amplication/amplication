@@ -14,15 +14,15 @@ import {
   EntityPermission,
   EntityPermissionField,
   User
-} from 'src/models';
-import { FindOneArgs } from 'src/dto';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
-import { UserEntity } from 'src/decorators/user.decorator';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
-import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
+} from '../../models';
+import { FindOneArgs } from '../../dto';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { InjectContextValue } from '../../decorators/injectContextValue.decorator';
+import { UserEntity } from '../../decorators/user.decorator';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { InjectableOriginParameter } from '../../enums/InjectableOriginParameter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { UserService } from '../user/user.service';
 import {
   CreateOneEntityArgs,
@@ -65,7 +65,7 @@ export class EntityResolver {
   @Query(() => [Entity], {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.app.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
     return this.entityService.entities(args);
   }
@@ -73,7 +73,10 @@ export class EntityResolver {
   @Mutation(() => Entity, {
     nullable: false
   })
-  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'data.app.connect.id')
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    'data.resource.connect.id'
+  )
   async createOneEntity(
     @UserEntity() user: User,
     @Args() args: CreateOneEntityArgs
@@ -119,13 +122,13 @@ export class EntityResolver {
   async fields(
     @Parent() entity: Entity,
     @Args() args: FindManyEntityFieldArgs
-  ) {
+  ): Promise<EntityField[]> {
     //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
     return this.entityService.getFields(entity.id, args);
   }
 
   @ResolveField(() => [EntityPermission])
-  async permissions(@Parent() entity: Entity) {
+  async permissions(@Parent() entity: Entity): Promise<EntityPermission[]> {
     //the fields property on the Entity always returns the fields of the current version (versionNumber=0)
     return this.entityService.getPermissions(entity.id);
   }
@@ -134,7 +137,7 @@ export class EntityResolver {
   async versions(
     @Parent() entity: Entity,
     @Args() args: FindManyEntityVersionArgs
-  ) {
+  ): Promise<EntityVersion[]> {
     return this.entityService.getVersions({
       ...args,
       where: {

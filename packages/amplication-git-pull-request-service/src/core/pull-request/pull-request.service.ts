@@ -19,7 +19,7 @@ export class PullRequestService {
     private readonly logger: AmplicationLogger
   ) {}
   async createPullRequest({
-    amplicationAppId,
+    resourceId,
     oldBuildId,
     newBuildId,
     gitOrganizationName,
@@ -27,9 +27,10 @@ export class PullRequestService {
     installationId,
     commit,
     gitProvider,
+    gitResourceMeta,
   }: SendPullRequestArgs): Promise<ResultMessage<SendPullRequestResponse>> {
     const changedFiles = await this.diffService.listOfChangedFiles(
-      amplicationAppId,
+      resourceId,
       oldBuildId,
       newBuildId
     );
@@ -49,6 +50,7 @@ export class PullRequestService {
       body,
       installationId,
       newBuildId,
+      gitResourceMeta,
       base
     );
     this.logger.info('Opened a new pull request', { prUrl });

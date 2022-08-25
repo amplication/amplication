@@ -2767,7 +2767,7 @@ POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
 POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
 BCRYPT_SALT=10
-COMPOSE_PROJECT_NAME=amp_\${appId}
+COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
 SERVER_PORT = 3000",
@@ -3027,7 +3027,7 @@ export async function customSeed() {
   const username = \\"admin\\";
 
   //replace this sample code to populate your database
-  //with data that is required for your application to start
+  //with data that is required for your service to start
   await client.user.update({
     where: { username: username },
     data: {
@@ -9523,7 +9523,7 @@ export const swaggerPath = \\"api\\";
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle(\\"Sample Application\\")
   .setDescription(
-    'Sample application for testing\\\\n\\\\n## Congratulations! Your application is ready.\\\\n  \\\\nPlease note that all endpoints are secured with HTTP Basic authentication.\\\\nBy default, your app comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
+    'Sample application for testing\\\\n\\\\n## Congratulations! Your service resource is ready.\\\\n  \\\\nPlease note that all endpoints are secured with HTTP Basic authentication.\\\\nBy default, your service resource comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
   )
   .setVersion(\\"0.1.3\\")
   .addBasicAuth()

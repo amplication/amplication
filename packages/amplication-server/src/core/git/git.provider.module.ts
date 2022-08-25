@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PrismaModule, PrismaService } from '@amplication/prisma-db';
-import { AppModule } from '../app/app.module';
+import { ResourceModule } from '../resource/resource.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { GitResolver } from './git.resolver';
 import {
@@ -11,7 +11,12 @@ import {
 } from '@amplication/git-service';
 import { GitProviderService } from './git.provider.service';
 @Module({
-  imports: [PermissionsModule, AppModule, PrismaModule, GitModule],
+  imports: [
+    PermissionsModule,
+    forwardRef(() => ResourceModule),
+    PrismaModule,
+    GitModule
+  ],
   providers: [
     GitProviderService,
     GitResolver,

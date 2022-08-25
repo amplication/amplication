@@ -8,6 +8,5 @@ export enum EnumSubscriptionStatus {
   Deleted = 'Deleted'
 }
 registerEnumType(EnumSubscriptionStatus, {
-  name: 'EnumSubscriptionStatus',
-  description: undefined
+  name: 'EnumSubscriptionStatus'
 });

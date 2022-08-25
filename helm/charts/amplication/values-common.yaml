@@ -26,6 +26,8 @@ cp-helm-charts:
       "confluent.metrics.reporter.topic.replicas": "1"
     resources: {}
     heapOptions: "-Xms512M -Xmx512M"
+    nodeSelector:
+      role: kafka
     tolerations:
       - key: "kafka"
         operator: "Equal"
@@ -95,7 +97,7 @@ amplication-server:
     hostname: server.staging.amplication-dev.com
   config:
     env:
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       GITHUB_APP_AUTH_SCOPE: "user:email,repo,read:org"
       GITHUB_SCOPE: "user:email"
       GOOGLE_APPLICATION_CREDENTIALS: "/var/secrets/gcp-account-service"
@@ -186,7 +188,7 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 
@@ -203,4 +205,3 @@ amplication-storage-gateway:
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
-

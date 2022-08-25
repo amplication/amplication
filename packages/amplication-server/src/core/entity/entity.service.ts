@@ -6,9 +6,9 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
-import { DataConflictError } from 'src/errors/DataConflictError';
+import { DataConflictError } from '../../errors/DataConflictError';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { AmplicationError } from '../../errors/AmplicationError';
 import { camelCase } from 'camel-case';
 import difference from '@extra-set/difference';
 import { isEmpty, pick, last, head, omit } from 'lodash';
@@ -19,15 +19,16 @@ import {
   Commit,
   User,
   EntityPermission,
-  EntityPermissionField
-} from 'src/models';
+  EntityPermissionField,
+  Resource
+} from '../../models';
 import { JsonObject } from 'type-fest';
 import { getSchemaForDataType, types } from '@amplication/code-gen-types';
-import { JsonSchemaValidationService } from 'src/services/jsonSchemaValidation.service';
-import { DiffService } from 'src/services/diff.service';
-import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { EnumDataType } from 'src/enums/EnumDataType';
-import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { JsonSchemaValidationService } from '../../services/jsonSchemaValidation.service';
+import { DiffService } from '../../services/diff.service';
+import { SchemaValidationResult } from '../../dto/schemaValidationResult';
+import { EnumDataType } from '../../enums/EnumDataType';
+import { EnumEntityAction } from '../../enums/EnumEntityAction';
 import { isReservedName } from './reservedNames';
 import {
   CURRENT_VERSION_NUMBER,
@@ -42,13 +43,13 @@ import {
 import {
   prepareDeletedItemName,
   revertDeletedItemName
-} from 'src/util/softDelete';
+} from '../../util/softDelete';
 
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
   PendingChange
-} from '../app/dto';
+} from '../resource/dto';
 
 import {
   CreateOneEntityFieldArgs,
@@ -71,7 +72,7 @@ import {
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs
 } from './dto';
-import { ReservedNameError } from '../app/ReservedNameError';
+import { ReservedNameError } from '../resource/ReservedNameError';
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -96,7 +97,7 @@ export type BulkEntityFieldData = Omit<
 
 export type BulkEntityData = Omit<
   Entity,
-  'id' | 'createdAt' | 'updatedAt' | 'appId' | 'app' | 'fields'
+  'id' | 'createdAt' | 'updatedAt' | 'resourceId' | 'resource' | 'fields'
 > & {
   id?: string;
   fields: BulkEntityFieldData[];
@@ -112,6 +113,8 @@ export type EntityPendingChange = {
   versionNumber: number;
   /** The entity */
   origin: Entity;
+
+  resource: Resource;
 };
 
 /**
@@ -150,7 +153,7 @@ const NON_COMPARABLE_PROPERTIES = [
   'commitId',
   'permissionId',
   'entityVersionId',
-  'appRoleId'
+  'resourceRoleId'
 ];
 
 @Injectable()
@@ -311,18 +314,18 @@ export class EntityService {
     return newEntity;
   }
 
-  async createDefaultEntities(appId: string, user: User): Promise<void> {
-    return this.bulkCreateEntities(appId, user, DEFAULT_ENTITIES);
+  async createDefaultEntities(resourceId: string, user: User): Promise<void> {
+    return this.bulkCreateEntities(resourceId, user, DEFAULT_ENTITIES);
   }
 
   /**
    * Bulk creates entities
-   * @param appId the app to bulk create entities for
+   * @param resourceId the resource to bulk create entities for
    * @param user the user to associate with the entities creation
    * @param entities the entities to create
    */
   async bulkCreateEntities(
-    appId: string,
+    resourceId: string,
     user: User,
     entities: BulkEntityData[]
   ): Promise<void> {
@@ -338,7 +341,7 @@ export class EntityService {
           data: {
             id: entity.id, //when id is provided (not undefined) we use it, otherwise prisma will generate an ID
             ...names,
-            app: { connect: { id: appId } },
+            resource: { connect: { id: resourceId } },
             lockedAt: new Date(),
             lockedByUser: {
               connect: {
@@ -446,21 +449,26 @@ export class EntityService {
   }
 
   /**
-   * Gets all the entities changed since the last app commit
-   * @param appId the app ID to find changes to
-   * @param userId the user ID the app ID relates to
+   * Gets all the entities changed since the last resource commit
+   * @param projectId the resource ID to find changes to
+   * @param userId the user ID the resource ID relates to
    */
   async getChangedEntities(
-    appId: string,
+    projectId: string,
     userId: string
   ): Promise<EntityPendingChange[]> {
     const changedEntities = await this.prisma.entity.findMany({
       where: {
         lockedByUserId: userId,
-        appId
+        resource: {
+          project: {
+            id: projectId
+          }
+        }
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           orderBy: {
             versionNumber: Prisma.SortOrder.desc
@@ -499,7 +507,8 @@ export class EntityService {
         action: action,
         originType: EnumPendingChangeOriginType.Entity,
         versionNumber: lastVersion.versionNumber + 1,
-        origin: entity
+        origin: entity,
+        resource: entity.resource
       };
     });
   }
@@ -515,6 +524,7 @@ export class EntityService {
       },
       include: {
         lockedByUser: true,
+        resource: true,
         versions: {
           where: {
             commitId: commitId
@@ -543,7 +553,8 @@ export class EntityService {
         action: action,
         originType: EnumPendingChangeOriginType.Entity,
         versionNumber: changedVersion.versionNumber,
-        origin: entity
+        origin: entity,
+        resource: entity.resource
       };
     });
   }
@@ -680,17 +691,17 @@ export class EntityService {
               include: {
                 permissionRoles: {
                   orderBy: {
-                    appRoleId: Prisma.SortOrder.asc
+                    resourceRoleId: Prisma.SortOrder.asc
                   }
                 }
               }
             },
             permissionRoles: {
               orderBy: {
-                appRoleId: Prisma.SortOrder.asc
+                resourceRoleId: Prisma.SortOrder.asc
               },
               include: {
-                appRole: true
+                resourceRole: true
               }
             }
           }
@@ -729,7 +740,7 @@ export class EntityService {
   }
 
   /**
-   * Higher order function responsible for encapsulating the locking behaviour.
+   * Higher order function responsible for encapsulating the locking behavior.
    * It will lock an entity, execute some provided operations on it then update the lock
    * (unlock it or keep it locked).
    * @param entityId The entity on which the locking and operations are performed
@@ -1007,9 +1018,9 @@ export class EntityService {
           permissionRoles: {
             create: permission.permissionRoles.map(permissionRole => {
               return {
-                appRole: {
+                resourceRole: {
                   connect: {
-                    id: permissionRole.appRoleId
+                    id: permissionRole.resourceRoleId
                   }
                 }
               };
@@ -1055,10 +1066,10 @@ export class EntityService {
                     connect: permissionField.permissionRoles.map(fieldRole => {
                       return {
                         // eslint-disable-next-line @typescript-eslint/naming-convention
-                        entityVersionId_action_appRoleId: {
+                        entityVersionId_action_resourceRoleId: {
                           action: fieldRole.action,
                           entityVersionId: targetVersionId,
-                          appRoleId: fieldRole.appRoleId
+                          resourceRoleId: fieldRole.resourceRoleId
                         }
                       };
                     })
@@ -1085,7 +1096,7 @@ export class EntityService {
     const entities = await this.prisma.entity.findMany({
       where: {
         ...args.where,
-        appId: args.where.app.id,
+        resourceId: args.where.resource.id,
         deletedAt: null
       },
       select: {
@@ -1118,13 +1129,16 @@ export class EntityService {
     return version.commit();
   }
 
-  /*validate that the selected entity ID exist in the current app and it is a persistent entity */
-  async isEntityInSameApp(entityId: string, appId: string): Promise<boolean> {
+  /*validate that the selected entity ID exist in the current resource and it is a persistent entity */
+  async isEntityInSameResource(
+    entityId: string,
+    resourceId: string
+  ): Promise<boolean> {
     const entities = await this.prisma.entity.findMany({
       where: {
         id: entityId,
-        app: {
-          id: appId
+        resource: {
+          id: resourceId
         },
         deletedAt: null
       }
@@ -1226,7 +1240,7 @@ export class EntityService {
         if (!isEmpty(args.data.addRoles)) {
           const createMany = args.data.addRoles.map(role => {
             return {
-              appRole: {
+              resourceRole: {
                 connect: {
                   id: role.id
                 }
@@ -1257,7 +1271,7 @@ export class EntityService {
           promises.push(
             this.prisma.entityPermissionRole.deleteMany({
               where: {
-                appRoleId: {
+                resourceRoleId: {
                   in: args.data.deleteRoles.map(role => role.id)
                 }
               }
@@ -1277,7 +1291,7 @@ export class EntityService {
           include: {
             permissionRoles: {
               include: {
-                appRole: true
+                resourceRole: true
               }
             },
             permissionFields: {
@@ -1285,7 +1299,7 @@ export class EntityService {
                 field: true,
                 permissionRoles: {
                   include: {
-                    appRole: true
+                    resourceRole: true
                   }
                 }
               }
@@ -1328,10 +1342,10 @@ export class EntityService {
       include: {
         permissionRoles: {
           orderBy: {
-            appRoleId: Prisma.SortOrder.asc
+            resourceRoleId: Prisma.SortOrder.asc
           },
           include: {
-            appRole: true
+            resourceRole: true
           }
         },
         permissionFields: {
@@ -1342,10 +1356,10 @@ export class EntityService {
             field: true,
             permissionRoles: {
               orderBy: {
-                appRoleId: Prisma.SortOrder.asc
+                resourceRoleId: Prisma.SortOrder.asc
               },
               include: {
-                appRole: true
+                resourceRole: true
               }
             }
           }
@@ -1536,7 +1550,7 @@ export class EntityService {
           field: true,
           permissionRoles: {
             include: {
-              appRole: true
+              resourceRole: true
             }
           }
         }
@@ -1672,7 +1686,10 @@ export class EntityService {
 
     if (dataType === EnumDataType.Lookup || dataType === null) {
       // Find an entity with the field's display name
-      const relatedEntity = await this.findEntityByNames(name, entity.appId);
+      const relatedEntity = await this.findEntityByNames(
+        name,
+        entity.resourceId
+      );
       // If found attempt to create a lookup field
       if (relatedEntity) {
         // The created field would be multiple selection if its name is equal to
@@ -1730,13 +1747,15 @@ export class EntityService {
   }
 
   /**
-   * Find entity by its names (name, displayName and pluralDisplayName) in given app
+   * Find entity by its names (name, displayName and pluralDisplayName) in given resource
    * @param name the entity name query
-   * @param appId the app identifier to search entity for
-   * @returns entity with a name matching the given name in the given app
+   * @param resourceId the resource identifier to search entity for
+   * @returns entity with a name matching the given name in the given resource
    */
-  private findEntityByNames(name: string, appId: string): Promise<Entity> {
-    return this.findFirst({ where: createEntityNamesWhereInput(name, appId) });
+  private findEntityByNames(name: string, resourceId: string): Promise<Entity> {
+    return this.findFirst({
+      where: createEntityNamesWhereInput(name, resourceId)
+    });
   }
 
   validateFieldMutationArgs(
@@ -2210,10 +2229,10 @@ function isUserEntity(entity: Entity): boolean {
 
 export function createEntityNamesWhereInput(
   name: string,
-  appId: string
+  resourceId: string
 ): Prisma.EntityWhereInput {
   return {
-    appId,
+    resourceId: resourceId,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     OR: [
       {

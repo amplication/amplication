@@ -1,21 +1,19 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
-
 import PageContent from "../Layout/PageContent";
 import { Snackbar } from "@amplication/design-system";
 import { formatError } from "../util/error";
-
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 import BuildSteps from "./BuildSteps";
-import { TruncatedId } from "../Components/TruncatedId";
 import ActionLog from "./ActionLog";
 import { GET_BUILD } from "./useBuildWatchStatus";
-import { GET_COMMIT } from "./CommitPage";
+import { GET_COMMIT } from "./PendingChangesPage";
 import { truncateId } from "../util/truncatedId";
-import { ClickableId } from "../Components/ClickableId";
 import "./BuildPage.scss";
+import DataPanel, { TitleDataType } from "./DataPanel";
+import { BackNavigation } from "../Components/BackNavigation";
+import { AppContext } from "../context/appContext";
 
 type LogData = {
   action: models.Action;
@@ -24,26 +22,18 @@ type LogData = {
 };
 
 type Props = {
-  match: match<{ application: string; buildId: string }>;
+  match: match<{ resource: string; build: string }>;
 };
 const CLASS_NAME = "build-page";
-const NAVIGATION_KEY = "BUILDS";
 
 const BuildPage = ({ match }: Props) => {
-  const { application, buildId } = match.params;
-
+  const { build } = match.params;
   const truncatedId = useMemo(() => {
-    return truncateId(buildId);
-  }, [buildId]);
-
-  useNavigationTabs(
-    application,
-    `${NAVIGATION_KEY}_${buildId}`,
-    match.url,
-    `Build ${truncatedId}`
-  );
+    return truncateId(build);
+  }, [build]);
 
   const [error, setError] = useState<Error>();
+  const { currentProject, currentWorkspace } = useContext(AppContext);
 
   const [getCommit, { data: commitData }] = useLazyQuery<{
     commit: models.Commit;
@@ -53,7 +43,7 @@ const BuildPage = ({ match }: Props) => {
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
-      buildId: buildId,
+      buildId: build,
     },
     onCompleted: (data) => {
       getCommit({ variables: { commitId: data.build.commitId } });
@@ -82,21 +72,20 @@ const BuildPage = ({ match }: Props) => {
           "loading..."
         ) : (
           <>
-            <div className={`${CLASS_NAME}__header`}>
-              <h2>
-                Build <TruncatedId id={data.build.id} />
-              </h2>
-              {commitData && (
-                <ClickableId
-                  label="Commit"
-                  to={`/${application}/commits/${commitData.commit.id}`}
-                  id={commitData.commit.id}
-                  eventData={{
-                    eventName: "commitHeaderIdClick",
-                  }}
-                />
-              )}
-            </div>
+            <BackNavigation
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
+              label="Back to Commits"
+            />
+            {commitData && (
+              <DataPanel
+                id={data.build.id}
+                dataType={TitleDataType.BUILD}
+                createdAt={data.build.createdAt}
+                account={data.build.createdBy.account}
+                relatedDataName="Commit"
+                relatedDataId={commitData.commit.id}
+              />
+            )}
             <div className={`${CLASS_NAME}__build-details`}>
               <BuildSteps build={data.build} onError={setError} />
               <aside className="log-container">

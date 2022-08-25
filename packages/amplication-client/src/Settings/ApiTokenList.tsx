@@ -20,7 +20,7 @@ type TData = {
 
 const CLASS_NAME = "api-token-list";
 
-export const ApiTokenList = React.memo(() => {
+const ApiTokenList = React.memo(() => {
   const [newTokenState, setNewTokenState] = useState<boolean>(false);
   const [newToken, setNewToken] = useState<models.ApiToken | null>(null);
   const [error, setError] = useState<Error>();
@@ -111,7 +111,7 @@ export const ApiTokenList = React.memo(() => {
       {data?.userApiTokens.map((token) => (
         <ApiTokenListItem
           key={token.id}
-          applicationId={"data?.entity.appId"}
+          resourceId={"data?.entity.resourceId"}
           apiToken={token}
           onError={setError}
         />
@@ -120,6 +120,8 @@ export const ApiTokenList = React.memo(() => {
     </>
   );
 });
+
+export default ApiTokenList;
 
 export const GET_API_TOKENS = gql`
   query userApiTokens {

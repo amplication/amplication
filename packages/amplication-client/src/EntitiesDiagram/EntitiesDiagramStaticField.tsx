@@ -6,7 +6,7 @@ import * as models from "../models";
 import { CLASS_NAME } from "./EntitiesDiagram";
 
 type Props = {
-  field: models.AppCreateWithEntitiesFieldInput;
+  field: models.ResourceCreateWithEntitiesFieldInput;
 };
 
 export const EntitiesDiagramStaticField = React.memo(({ field }: Props) => {

@@ -2,11 +2,11 @@ name: amplication-git-pull-service
 
 replicaCount: 1
 autoscaling:
-  enabled: false
+  enabled: true
   minReplicas: 1
   maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 60
 image:
   pullPolicy: Always
   repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service-dev

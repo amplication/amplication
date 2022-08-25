@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { Snackbar } from "@amplication/design-system";
@@ -7,6 +7,7 @@ import * as models from "../models";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import NewEntityField from "./NewEntityField";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   entity: models.Entity;
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
+  const {currentWorkspace, currentProject} = useContext(AppContext); 
   const { data, error } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
@@ -30,10 +32,10 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
   const history = useHistory();
   const handleFieldAdd = useCallback(
     (field: models.EntityField) => {
-      const fieldUrl = `/${data?.entity.appId}/entities/${entityId}/fields/${field.id}`;
+      const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
-    [data, history, entityId]
+    [data, history, entityId,currentWorkspace,currentProject]
   );
 
   const errorMessage = formatError(error);
@@ -44,7 +46,7 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
         <div key={field.id}>
           <InnerTabLink
             icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
-            to={`/${data?.entity.appId}/entities/${data?.entity.id}/fields/${field.id}`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${data?.entity.id}/fields/${field.id}`}
           >
             <span>{field.displayName}</span>
           </InnerTabLink>
@@ -67,7 +69,7 @@ export const GET_FIELDS = gql`
   ) {
     entity(where: { id: $id }) {
       id
-      appId
+      resourceId
       fields(where: { displayName: $whereName }, orderBy: $orderBy) {
         id
         displayName

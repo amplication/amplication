@@ -1,11 +1,8 @@
 import React, { useCallback } from "react";
-import MuiTreeView, {
-  TreeViewProps as MuiTreeViewProps,
-} from "@mui/lab/TreeView";
-import MuiTreeItem, {
-  TreeItemProps as MuiTreeItemProps,
-} from "@mui/lab/TreeItem";
-import { Icon } from "../..";
+import { TreeView as MuiTreeView, TreeItem as MuiTreeItem } from "@mui/lab";
+import { TreeViewProps as MuiTreeViewProps } from "@mui/lab/TreeView";
+import { TreeItemProps as MuiTreeItemProps } from "@mui/lab/TreeItem";
+import { Icon } from "../Icon/Icon";
 import "./TreeView.scss";
 
 const CLASS_NAME = "amp-tree-view";

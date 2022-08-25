@@ -25,7 +25,7 @@ export const EMPTY_STEP: models.ActionStep = {
 
 export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
 export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {

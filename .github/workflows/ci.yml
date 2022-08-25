@@ -181,7 +181,7 @@ jobs:
     strategy:
       matrix:
         package: ${{ fromJson(needs.changes.outputs.packages) }}
-        node-version: [14.x, 16.x]
+        node-version: [16.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -201,7 +201,7 @@ jobs:
             PUSH-${{ runner.os }}-${{matrix.node-version}}-
             PUSH-${{ runner.os }}-
       - name: Install Node.js dependencies
-        run: npm ci --cache ~/.npm --prefer-offline --only=production --silent
+        run: npm ci --cache ~/.npm --prefer-offline --only=production
       - name: Install package dependencies
         id: install
         run: lerna bootstrap --scope=${{matrix.package}} --include-dependencies
@@ -210,13 +210,13 @@ jobs:
         run: lerna run --scope=${{matrix.package}} prisma:generate
       - name: Build code
         id: build
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent build --include-dependencies
+        run: lerna run --scope=${{matrix.package}} build --include-dependencies
       - name: Format code
         id: format
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent check-format
+        run: lerna run --scope=${{matrix.package}} check-format
       - name: Lint code
         id: lint
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent lint
+        run: lerna run --scope=${{matrix.package}} lint
       - name: Run tests
         id: test
-        run: lerna run --scope=${{matrix.package}} --loglevel=silent test
+        run: lerna run --scope=${{matrix.package}} test

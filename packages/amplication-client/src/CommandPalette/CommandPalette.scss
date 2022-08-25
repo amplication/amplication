@@ -108,7 +108,7 @@ $item-height: 48px;
       background-color: var(--black5);
     }
   }
-  &__app-name {
+  &__resource-name {
     @include semiBold;
     color: var(--black80);
     margin-right: var(--default-spacing);

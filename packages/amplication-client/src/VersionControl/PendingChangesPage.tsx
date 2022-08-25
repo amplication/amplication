@@ -1,29 +1,15 @@
-import React, { useState, useCallback } from "react";
-import { match } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
-import * as models from "../models";
-
+import React, { useState, useCallback, useContext } from "react";
 import PageContent from "../Layout/PageContent";
-import { formatError } from "../util/error";
-
-import useNavigationTabs from "../Layout/UseNavigationTabs";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
-import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { MultiStateToggle, Snackbar } from "@amplication/design-system";
-
 import "./PendingChangesPage.scss";
-
-type Props = {
-  match: match<{ application: string; commitId: string }>;
-};
-
-type TData = {
-  pendingChanges: models.PendingChange[];
-};
+import { AppContext } from "../context/appContext";
+import { gql } from "@apollo/client";
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import { formatError } from "../util/error";
 
 const CLASS_NAME = "pending-changes-page";
-const NAVIGATION_KEY = "PENDING_CHANGES";
 const SPLIT = "Split";
 const UNIFIED = "Unified";
 
@@ -32,11 +18,15 @@ const OPTIONS = [
   { value: SPLIT, label: SPLIT },
 ];
 
-const PendingChangesPage = ({ match }: Props) => {
-  const { application } = match.params;
+const PendingChangesPage = () => {
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Pending Changes";
-  useNavigationTabs(application, NAVIGATION_KEY, match.url, pageTitle);
+  const { currentProject } = useContext(AppContext);
+  const {
+    pendingChangesByResource,
+    pendingChangesDataError,
+    pendingChangesIsError,
+  } = usePendingChanges(currentProject);
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -44,43 +34,42 @@ const PendingChangesPage = ({ match }: Props) => {
     },
     [setSplitView]
   );
-  const { data, error } = useQuery<TData>(GET_PENDING_CHANGES, {
-    variables: {
-      applicationId: application,
-    },
-  });
 
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(pendingChangesDataError);
 
   return (
     <>
       <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-        {!data ? (
-          "loading..."
-        ) : (
-          <div className={`${CLASS_NAME}__header`}>
-            <h1>Pending Changes</h1>
-            <MultiStateToggle
-              label=""
-              name="compareMode"
-              options={OPTIONS}
-              onChange={handleChangeType}
-              selectedValue={splitView ? SPLIT : UNIFIED}
-            />
-          </div>
-        )}
+        <div className={`${CLASS_NAME}__header`}>
+          <h1>Pending Changes</h1>
+          <MultiStateToggle
+            label=""
+            name="compareMode"
+            options={OPTIONS}
+            onChange={handleChangeType}
+            selectedValue={splitView ? SPLIT : UNIFIED}
+          />
+        </div>
         <div className={`${CLASS_NAME}__changes`}>
-          {data?.pendingChanges.map((change) => (
-            <PendingChangeWithCompare
-              key={change.originId}
-              change={change}
-              compareType={EnumCompareType.Pending}
-              splitView={splitView}
-            />
+          {pendingChangesByResource.map((resourceChanges) => (
+            <div key={resourceChanges.resource.id}>
+              <div className={`${CLASS_NAME}__title`}>
+                {resourceChanges.resource.name}
+              </div>
+              {resourceChanges.changes.map((change) => (
+                <PendingChangeWithCompare
+                  key={change.originId}
+                  change={change}
+                  compareType={EnumCompareType.Pending}
+                  splitView={splitView}
+                />
+              ))}
+            </div>
           ))}
+          <div />
         </div>
       </PageContent>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
     </>
   );
 };
@@ -122,7 +111,7 @@ export const GET_COMMIT = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         createdAt
-        appId
+        resourceId
         version
         message
         createdAt

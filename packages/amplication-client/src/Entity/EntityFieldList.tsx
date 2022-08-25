@@ -23,7 +23,7 @@ type Props = {
   entityId: string;
 };
 
-export const EntityFieldList = React.memo(({ entityId }: Props) => {
+const EntityFieldList = React.memo(({ entityId }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 
@@ -44,7 +44,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
     entities: models.Entity[];
   }>(GET_ENTITIES, {
     variables: {
-      id: data?.entity.appId,
+      id: data?.entity.resourceId,
       orderBy: undefined,
       whereName: undefined,
     },
@@ -84,7 +84,7 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
       {data?.entity.fields?.map((field) => (
         <EntityFieldListItem
           key={field.id}
-          applicationId={data?.entity.appId}
+          resourceId={data?.entity.resourceId}
           entity={data?.entity}
           entityField={field}
           entityIdToName={entityIdToName}
@@ -96,6 +96,8 @@ export const EntityFieldList = React.memo(({ entityId }: Props) => {
   );
 });
 
+export default EntityFieldList;
+
 /**@todo: expand search on other field  */
 export const GET_FIELDS = gql`
   query getEntityFields(
@@ -105,7 +107,7 @@ export const GET_FIELDS = gql`
   ) {
     entity(where: { id: $id }) {
       id
-      appId
+      resourceId
       fields(where: { displayName: $whereName }, orderBy: $orderBy) {
         id
         displayName

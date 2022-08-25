@@ -36,7 +36,7 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
       {data && relatedField && (
         <EntityRelationFieldsChart
           fixInPlace={false}
-          applicationId={data.entity.appId}
+          resourceId={data.entity.resourceId}
           entityId={data.entity.id}
           field={formik.values}
           entityName={entityDisplayName}
@@ -59,7 +59,7 @@ export const GET_ENTITY_FIELD_BY_PERMANENT_ID = gql`
     entity(where: { id: $entityId }) {
       id
       displayName
-      appId
+      resourceId
       fields(where: { permanentId: { equals: $fieldPermanentId } }) {
         id
         permanentId

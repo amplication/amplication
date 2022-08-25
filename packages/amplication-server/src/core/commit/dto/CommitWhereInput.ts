@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
+import { WhereUniqueInput, DateTimeFilter, StringFilter } from '../../../dto';
 
 @InputType({
   isAbstract: true
@@ -16,7 +16,7 @@ export class CommitWhereInput {
   createdAt?: DateTimeFilter | null;
 
   @Field(() => WhereUniqueInput)
-  app?: WhereUniqueInput;
+  project?: WhereUniqueInput;
 
   @Field(() => WhereUniqueInput, {
     nullable: true
