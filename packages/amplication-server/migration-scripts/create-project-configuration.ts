@@ -19,6 +19,14 @@ const blockVersionSettings = {
   baseDirectory: '/'
 };
 
+function chunkArrayInGroups(arr, size) {
+  var myArray = [];
+  for (var i = 0; i < arr.length; i += size) {
+    myArray.push(arr.slice(i, i + size));
+  }
+  return myArray;
+}
+
 async function main() {
   const client = new PrismaClient();
 
@@ -35,9 +43,19 @@ async function main() {
     }
   });
 
-  const promises = projects.map(async project => {
-    client.$transaction([
-      client.blockVersion.create({
+  console.log(projects.length);
+  let index = 1;
+
+  const chunks = chunkArrayInGroups(projects, 500);
+
+  for (let chunk of chunks) {
+    console.log(index++);
+    await migrateChunk(chunk);
+  }
+
+  async function migrateChunk(chunk) {
+    const promises = chunk.map(async project => {
+      return client.blockVersion.create({
         data: {
           versionNumber: 0,
           displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
@@ -62,11 +80,11 @@ async function main() {
             }
           }
         }
-      })
-    ]);
-  });
+      });
+    });
 
-  await Promise.all(promises);
+    await Promise.all(promises);
+  }
 
   await client.$disconnect();
 }
