@@ -10,15 +10,15 @@ import "./WorkspaceFooter.scss";
 import * as models from "../models";
 import { useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
-import { GET_LAST_BUILD } from "../VersionControl/LastBuild";
+// import { GET_LAST_BUILD } from "../VersionControl/LastBuild";
 
 type TDataCommit = {
   commits: models.Commit[];
 };
 
-type TDataBuild = {
-  builds: models.Build[];
-};
+// type TDataBuild = {
+//   builds: models.Build[];
+// };
 
 const CLASS_NAME = "workspace-footer";
 
@@ -39,21 +39,19 @@ const WorkspaceFooter: React.FC<{}> = () => {
       variables: {
         projectId: currentProject?.id,
       },
-      skip: !currentProject?.id
+      skip: !currentProject?.id,
     }
   );
 
-  console.log(currentResource, "currentResource");
-
-  const { data: buildsData, loading: buildsLoading } = useQuery<TDataBuild>(
-    GET_LAST_BUILD,
-    {
-      variables: {
-        resourceId: currentResource?.id,
-      },
-      skip: !currentResource?.id,
-    }
-  );
+  // const { data: buildsData, loading: buildsLoading } = useQuery<TDataBuild>(
+  //   GET_LAST_BUILD,
+  //   {
+  //     variables: {
+  //       resourceId: currentResource?.id,
+  //     },
+  //     skip: !currentResource?.id,
+  //   }
+  // );
 
   const lastCommit = useMemo(() => {
     if (commitsLoading || isEmpty(commitsData?.commits)) return null;
@@ -61,20 +59,20 @@ const WorkspaceFooter: React.FC<{}> = () => {
     return last;
   }, [commitsLoading, commitsData]);
 
-  const lastResourceBuild = useMemo(() => {
-    if (buildsLoading || isEmpty(buildsData?.builds)) return null;
-    const [last] = buildsData?.builds || [];
-    return last;
-  }, [buildsLoading, buildsData]);
-
   // const lastResourceBuild = useMemo(() => {
-  //   if (!lastCommit) return null;
-  //   if (lastCommit.builds && lastCommit.builds.length && currentResource?.id) {
-  //     return lastCommit.builds.find(
-  //       (lastCommitBuild) => lastCommitBuild.resourceId === currentResource.id
-  //     );
-  //   }
-  // }, [currentResource?.id, lastCommit]);
+  //   if (buildsLoading || isEmpty(buildsData?.builds)) return null;
+  //   const [last] = buildsData?.builds || [];
+  //   return last;
+  // }, [buildsLoading, buildsData]);
+
+  const lastResourceBuild = useMemo(() => {
+    if (!lastCommit) return null;
+    if (lastCommit.builds && currentResource?.id) {
+      return lastCommit.builds.find(
+        (lastCommitBuild) => lastCommitBuild.resourceId === currentResource.id
+      );
+    }
+  }, [currentResource?.id, lastCommit]);
 
   const handleBuildLinkClick = useCallback((event) => {
     event.stopPropagation();
