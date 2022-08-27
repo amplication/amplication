@@ -26,7 +26,13 @@ export class ProjectService {
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
-    return this.prisma.project.findMany(args);
+    return this.prisma.project.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null
+      }
+    });
   }
 
   async findUnique(args: FindOneArgs): Promise<Project> {
