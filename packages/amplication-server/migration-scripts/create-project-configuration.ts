@@ -19,6 +19,14 @@ const blockVersionSettings = {
   baseDirectory: '/'
 };
 
+function chunkArrayInGroups(arr, size) {
+  var myArray = [];
+  for (var i = 0; i < arr.length; i += size) {
+    myArray.push(arr.slice(i, i + size));
+  }
+  return myArray;
+}
+
 async function main() {
   const client = new PrismaClient();
 
@@ -35,40 +43,48 @@ async function main() {
     }
   });
 
-  const promises = projects.map(async project => {
-    const newProjectConfiguration = await client.resource.create({
-      data: {
-        color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
-        resourceType: EnumResourceType.ProjectConfiguration,
-        description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
-        name: DEFAULT_PROJECT_CONFIGURATION_NAME,
-        project: { connect: { id: project.id } }
-      }
+  console.log(projects.length);
+  let index = 1;
+
+  const chunks = chunkArrayInGroups(projects, 500);
+
+  for (let chunk of chunks) {
+    console.log(index++);
+    await migrateChunk(chunk);
+  }
+
+  async function migrateChunk(chunk) {
+    const promises = chunk.map(async project => {
+      return client.blockVersion.create({
+        data: {
+          versionNumber: 0,
+          displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
+          description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
+          inputParameters: {},
+          outputParameters: {},
+          settings: blockVersionSettings,
+          block: {
+            create: {
+              blockType: EnumBlockType.ProjectConfigurationSettings,
+              description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
+              displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
+              resource: {
+                create: {
+                  color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
+                  resourceType: EnumResourceType.ProjectConfiguration,
+                  description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
+                  name: DEFAULT_PROJECT_CONFIGURATION_NAME,
+                  project: { connect: { id: project.id } }
+                }
+              }
+            }
+          }
+        }
+      });
     });
 
-    const block = await client.block.create({
-      data: {
-        blockType: EnumBlockType.ProjectConfigurationSettings,
-        description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
-        displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
-        resource: { connect: { id: newProjectConfiguration.id } }
-      }
-    });
-
-    const blockVersion = await client.blockVersion.create({
-      data: {
-        versionNumber: 0,
-        displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
-        description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
-        inputParameters: {},
-        outputParameters: {},
-        settings: blockVersionSettings,
-        block: { connect: { id: block.id } }
-      }
-    });
-  });
-
-  await Promise.all(promises);
+    await Promise.all(promises);
+  }
 
   await client.$disconnect();
 }

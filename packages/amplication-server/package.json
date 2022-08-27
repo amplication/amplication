@@ -1,6 +1,6 @@
 {
   "name": "@amplication/server",
-  "version": "0.14.12",
+  "version": "0.15.0",
   "private": true,
   "scripts": {
     "prebuild": "rimraf dist",
@@ -24,11 +24,11 @@
     "migrate:up": "cd ../amplication-prisma-db && npm run migrate:up"
   },
   "dependencies": {
-    "@amplication/code-gen-types": "^0.14.12",
-    "@amplication/data-service-generator": "^0.14.12",
-    "@amplication/git-service": "^0.14.12",
-    "@amplication/kafka": "^0.14.12",
-    "@amplication/prisma-db": "^0.14.12",
+    "@amplication/code-gen-types": "^0.15.0",
+    "@amplication/data-service-generator": "^0.15.0",
+    "@amplication/git-service": "^0.15.0",
+    "@amplication/kafka": "^0.15.0",
+    "@amplication/prisma-db": "^0.15.0",
     "@apollo/gateway": "0.42.3",
     "@codebrew/nestjs-storage": "0.1.6",
     "@extra-set/difference": "2.2.3",
