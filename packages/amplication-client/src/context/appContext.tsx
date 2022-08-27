@@ -40,6 +40,7 @@ export interface AppContextInterface {
   setPendingChangesError: (onError: boolean) => void;
   refreshCurrentWorkspace: () => void;
   gitRepositoryFullName: string;
+  gitRepositoryUrl: string;
 }
 
 const initialContext: AppContextInterface = {
@@ -74,6 +75,7 @@ const initialContext: AppContextInterface = {
   setPendingChangesError: () => {},
   refreshCurrentWorkspace: () => {},
   gitRepositoryFullName: "",
+  gitRepositoryUrl: "",
 };
 
 export const AppContext = React.createContext<AppContextInterface>(
