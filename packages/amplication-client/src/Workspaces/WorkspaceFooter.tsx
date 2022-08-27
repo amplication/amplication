@@ -31,7 +31,6 @@ const WorkspaceFooter: React.FC<{}> = () => {
     gitRepositoryFullName,
     projectConfigurationResource,
   } = useContext(AppContext);
-  const repoUrl = `https://github.com/${gitRepositoryFullName}`;
 
   const { data: commitsData, loading: commitsLoading } = useQuery<TDataCommit>(
     GET_LAST_COMMIT,
@@ -111,10 +110,7 @@ const WorkspaceFooter: React.FC<{}> = () => {
           className={`${CLASS_NAME}__github-icon`}
         />
         {gitRepositoryFullName.includes("/") ? (
-          <GitStatusConnectedDetails
-            gitRepositoryFullName={gitRepositoryFullName}
-            repoUrl={repoUrl}
-          />
+          <GitStatusConnectedDetails />
         ) : (
           <Link
             title={"Connect to GitHub"}
