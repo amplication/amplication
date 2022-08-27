@@ -108,8 +108,13 @@ const useResources = (
       setGitRepositoryFullName(
         createGitRepositoryFullName(projectConfigurationResource.gitRepository)
       );
-      setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
-  }, [resourceMatch, currentResource, projectConfigurationResource, gitRepositoryFullName]);
+    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+  }, [
+    resourceMatch,
+    currentResource,
+    projectConfigurationResource,
+    gitRepositoryFullName,
+  ]);
 
   useEffect(() => {
     if (!resourceMatch || !projectConfigurationResource) return;
@@ -125,7 +130,12 @@ const useResources = (
       createGitRepositoryFullName(resource?.gitRepository)
     );
     setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
-  }, [resourceMatch, resources, projectConfigurationResource, gitRepositoryFullName]);
+  }, [
+    resourceMatch,
+    resources,
+    projectConfigurationResource,
+    gitRepositoryFullName,
+  ]);
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
