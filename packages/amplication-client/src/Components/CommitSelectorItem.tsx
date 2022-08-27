@@ -1,5 +1,5 @@
 import { formatTimeToNow } from "@amplication/design-system";
-import React from "react";
+import React, { useMemo } from "react";
 import { Commit } from "../models";
 import { truncateWithEllipsis } from "../util/truncatedWithEllipsis";
 import "./CommitSelectorItem.scss";
@@ -19,11 +19,13 @@ export const CommitSelectorItem = ({ commit }: Props) => {
     <label className={`commit-selector__hour`}>{createdAtHour}</label>
   );
 
-  const truncateCommitMessage = truncateWithEllipsis(
-    commit?.message.trim(),
-    15,
-    "No commit message"
-  );
+  const truncateCommitMessage = useMemo(() => {
+    return truncateWithEllipsis(
+      commit?.message.trim(),
+      15,
+      "No commit message"
+    );
+  }, [commit?.message]);
 
   return (
     <div className={CLASS_NAME}>

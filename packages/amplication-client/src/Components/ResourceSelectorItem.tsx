@@ -1,5 +1,5 @@
 import { formatTimeToNow } from "@amplication/design-system";
-import React from "react";
+import React, { useMemo } from "react";
 import { Resource } from "../models";
 import { truncateWithEllipsis } from "../util/truncatedWithEllipsis";
 import "./CommitSelectorItem.scss";
@@ -15,11 +15,9 @@ export const ResourceSelectorItem = ({ resource }: Props) => {
     ? formatTimeToNow(new Date(resource?.createdAt))
     : null;
 
-  const truncateServiceName = truncateWithEllipsis(
-    resource?.name.trim(),
-    15,
-    "Service Name"
-  );
+  const truncateServiceName = useMemo(() => {
+    return truncateWithEllipsis(resource?.name.trim(), 15, "Service Name");
+  }, [resource?.name]);
 
   return (
     <div className={CLASS_NAME}>
