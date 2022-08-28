@@ -1,6 +1,6 @@
 {
   "name": "@amplication/kafka-proxy",
-  "version": "0.14.12",
+  "version": "0.15.0",
   "private": true,
   "scripts": {
     "prebuild": "rimraf dist",
@@ -18,7 +18,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@amplication/nest-logger-module": "^0.14.12",
+    "@amplication/nest-logger-module": "^0.15.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "^8.0.0",

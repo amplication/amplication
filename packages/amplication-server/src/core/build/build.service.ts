@@ -498,7 +498,7 @@ export class BuildService {
       build.createdAt
     );
 
-    await this.saveToGitHub(build, oldBuild.id);
+    await this.saveToGitHub(build, oldBuild.id, null);
   }
 
   private async saveToGitHub(

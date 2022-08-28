@@ -213,7 +213,9 @@ export type Build = {
   createdBy: User;
   id: Scalars["String"];
   message: Scalars["String"];
-  status?: Maybe<EnumBuildStatus>;
+  resource?: Maybe<Resource>;
+  resourceId: Scalars["String"];
+  status?: Maybe<BuildStatus>;
   userId: Scalars["String"];
   version: Scalars["String"];
 };
@@ -1168,19 +1170,27 @@ export type MutationCreateOrganizationArgs = {
   data: GitOrganizationCreateInput;
 };
 
+export type MutationCreateProjectArgs = {
+  data: ProjectCreateInput;
+};
+
+export type MutationCreateResourceArgs = {
+  data: ResourceCreateInput;
+};
+
+export type MutationCreateResourceRoleArgs = {
+  data: ResourceRoleCreateInput;
+};
+
+export type MutationCreateResourceWithEntitiesArgs = {
+  data: ResourceCreateWithEntitiesInput;
+};
+
 export type MutationCreateWorkspaceArgs = {
   data: WorkspaceCreateInput;
 };
 
 export type MutationDeleteApiTokenArgs = {
-  where: WhereUniqueInput;
-};
-
-export type MutationDeleteAppArgs = {
-  where: WhereUniqueInput;
-};
-
-export type MutationDeleteAppRoleArgs = {
   where: WhereUniqueInput;
 };
 

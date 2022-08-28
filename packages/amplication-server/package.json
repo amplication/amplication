@@ -29,6 +29,7 @@
     "@amplication/git-service": "^0.15.0",
     "@amplication/kafka": "^0.15.0",
     "@amplication/prisma-db": "^0.15.0",
+    "@amplication/build-types": "^0.15.0",
     "@apollo/gateway": "0.42.3",
     "@codebrew/nestjs-storage": "0.1.6",
     "@extra-set/difference": "2.2.3",
