@@ -10,6 +10,7 @@ import React from "react";
 import { Commit } from "../models";
 import { CommitSelectorItem } from "./CommitSelectorItem";
 import "./CommitSelector.scss";
+import CommitData from "../VersionControl/CommitData";
 
 const CLASS_NAME = "commit-selector";
 
@@ -43,7 +44,7 @@ const CommitSelector = ({ commits, onSelectCommit, selectedCommit }: Props) => {
                     onSelectCommit(commit);
                   }}
                 >
-                  <CommitSelectorItem commit={commit} />
+                  <CommitData commit={commit} />
                 </SelectMenuItem>
               ))}
             </>

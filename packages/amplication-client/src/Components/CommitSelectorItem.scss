@@ -6,6 +6,6 @@
   margin-right: auto;
   &__title {
     @include regular-12;
-    margin: 0 var(--icon-spacing);
+    margin: 0 var(--user-badge-spacing);
   }
 }

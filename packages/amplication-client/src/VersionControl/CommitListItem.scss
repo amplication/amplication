@@ -2,28 +2,9 @@
 $metadata-width: 150px;
 
 .commit-list-item {
-  &__data {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  &__metadata {
-    display: flex;
-    flex-direction: column;
-    width: $metadata-width;
-    padding: 0 var(--default-spacing-small);
-
-    &__message {
-      @include regular-12;
-      color: var(--black100);
-    }
-
-    &__created {
-      @include regular-10;
-      color: var(--black80);
-    }
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   &__row {
     @include flexFullRowWithSpacing;
