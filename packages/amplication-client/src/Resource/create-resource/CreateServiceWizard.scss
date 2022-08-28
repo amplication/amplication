@@ -9,13 +9,11 @@ $max-width: 700px;
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  align-items: flex-start;
   position: absolute;
 
   &__splitWrapper {
     display: flex;
     height: 100%;
-    width: 1800px;
   }
 
   &__left {
@@ -43,8 +41,7 @@ $max-width: 700px;
 
     .circle-badge i {
       color: var(--black5);
-      font-size: 14px; 
-      
+      font-size: 14px;
     }
   }
 
