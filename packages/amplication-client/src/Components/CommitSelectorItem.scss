@@ -7,5 +7,10 @@
   &__title {
     @include regular-12;
     margin: 0 var(--user-badge-spacing);
+    width: 180px;
+    white-space: nowrap;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
