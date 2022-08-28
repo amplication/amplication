@@ -21,11 +21,8 @@ export type GitOrganizationFromGitRepository = {
   type: EnumGitOrganizationType;
 };
 
-
 const SyncWithGithubPage: React.FC = () => {
-  const { currentResource, refreshCurrentWorkspace } = useContext(
-    AppContext
-  );
+  const { currentResource, refreshCurrentWorkspace } = useContext(AppContext);
 
   const { data, error, refetch } = useQuery<{
     resource: Resource;
@@ -36,10 +33,10 @@ const SyncWithGithubPage: React.FC = () => {
     skip: !currentResource?.id,
   });
 
-  const handleOnDone = useCallback(()=> {
+  const handleOnDone = useCallback(() => {
     refreshCurrentWorkspace();
-    refetch(); 
-  },[refreshCurrentWorkspace, refetch]); 
+    refetch();
+  }, [refreshCurrentWorkspace, refetch]);
 
   const pageTitle = "GitHub";
   const errorMessage = formatError(error);
@@ -80,7 +77,6 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
     resource(where: { id: $resourceId }) {
       id
       name
-      color
       githubLastSync
       resourceType
       gitRepositoryOverride
