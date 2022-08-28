@@ -21,7 +21,6 @@ import {
 import * as models from "../../models";
 import { createResource, serviceSettingsFieldsInitValues } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
-import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
@@ -92,26 +91,30 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
     <Modal open fullScreen css={moduleClass}>
       {loadingCreateResource ? (
         <div className={`${moduleClass}__processing`}>
-          <div className={`${moduleClass}__processing__title`}>
-            All set! We’re currently generating your service.
+          <div
+            className={`${moduleClass}__processing__message_title_container`}
+          >
+            <div className={`${moduleClass}__processing__title`}>
+              All set! We’re currently generating your service.
+            </div>
+            <div className={`${moduleClass}__processing__message`}>
+              It should only take a few seconds to finish. Don't go away!
+            </div>
           </div>
-          <div className={`${moduleClass}__processing__message`}>
-            It should only take a few seconds to finish. Don't go away!
-          </div>
-          <SvgThemeImage image={EnumImages.Generating} />
-          <div className={`${moduleClass}__processing__loader`}>
-            <ProgressBar />
-          </div>
+          <SvgThemeImage image={EnumImages.CreateServiceWizard} />
           <div className={`${moduleClass}__processing__tagline`}>
-            For a full experience, connect with a GitHub repository and get a
-            new Pull Request every time you make changes in your data model.
+            <div>For a full experience, connect with a GitHub repository</div>
+            <div>
+              and get a new Pull Request every time you make changes in your
+              data model.
+            </div>
           </div>
         </div>
       ) : (
         <div className={`${moduleClass}__splitWrapper`}>
           <div className={`${moduleClass}__left`}>
             <div className={`${moduleClass}__description`}>
-              <ResourceCircleBadge type={models.EnumResourceType.Service} />
+              <ResourceCircleBadge type={models.EnumResourceType.Service} size="large"/>
               <h3>Amplication Service Creation Wizard</h3>
               <h2>Let’s start building your service</h2>
               <h3>
