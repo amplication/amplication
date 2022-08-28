@@ -1,24 +1,22 @@
+import { EnumResourceType } from "@amplication/code-gen-types/dist/models";
 import { CircleBadge } from "@amplication/design-system";
 import { gql } from "@apollo/client";
-import classNames from "classnames";
 import React, { useContext } from "react";
 import { match } from "react-router-dom";
+import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
-import "./ResourceHome.scss";
-import { COLOR_TO_NAME } from "./constants";
+import { AppRouteProps } from "../routes/routesUtil";
+import { resourceThemeMap } from "../util/resourceThemeMap";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
 import NewVersionTile from "./NewVersionTile";
 import OverviewTile from "./OverviewTile";
+import "./ResourceHome.scss";
+import ResourceMenu from "./ResourceMenu";
 import RolesTile from "./RolesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
-import { AppRouteProps } from "../routes/routesUtil";
-import ResourceMenu from "./ResourceMenu";
-import { AppContext } from "../context/appContext";
-import { EnumResourceType } from "@amplication/code-gen-types/dist/models";
-import { resourceThemeMap } from "../util/resourceThemeMap";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -45,12 +43,11 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
               pageTitle={currentResource?.name}
             >
               <div
-                className={classNames(
-                  `${CLASS_NAME}__header`,
-                  `theme-${
-                    currentResource && COLOR_TO_NAME[currentResource?.color]
-                  }`
-                )}
+                className={`${CLASS_NAME}__header`}
+                style={{
+                  backgroundColor:
+                    resourceThemeMap[currentResource?.resourceType].color,
+                }}
               >
                 {currentResource?.name}
                 <CircleBadge
