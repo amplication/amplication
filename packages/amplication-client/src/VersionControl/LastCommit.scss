@@ -7,6 +7,9 @@
   &__title {
     font-size: 14px;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &__status {
@@ -17,6 +20,7 @@
   .build-status-icons__status {
     .amp-icon {
       margin-left: 0;
+      font-size: 16px;
     }
   }
 

@@ -82,9 +82,12 @@ const LastCommit = ({ projectId }: Props) => {
     >
       <hr className={`${CLASS_NAME}__divider`} />
       <div className={`${CLASS_NAME}__content`}>
-        <p className={`${CLASS_NAME}__title`}>Last Commit</p>
-        <div className={`${CLASS_NAME}__status`}>
+        <p className={`${CLASS_NAME}__title`}>
+          Last Commit
           {build && <BuildStatusIcons build={build} showIcon={false} />}
+          </p>
+        
+        <div className={`${CLASS_NAME}__status`}>
           <SkeletonWrapper
             showSkeleton={generating}
             className={`${CLASS_NAME}__skeleton`}
