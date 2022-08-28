@@ -78,7 +78,8 @@ const EXAMPLE_RESOURCE: Resource = {
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
-  deletedAt: null
+  deletedAt: null,
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
@@ -89,7 +90,8 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
-  deletedAt: null
+  deletedAt: null,
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';

@@ -65,7 +65,8 @@ const EXAMPLE_RESOURCE: Resource = {
   updatedAt: new Date(),
   name: 'exampleName',
   description: 'exampleDescription',
-  builds: [EXAMPLE_BUILD]
+  builds: [EXAMPLE_BUILD],
+  gitRepositoryOverride: false
 };
 
 const FIND_MANY_BUILDS_QUERY = gql`

@@ -12,9 +12,9 @@ const SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR =
 
 const SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR = 'SENDGRID_INVITATION_TEMPLATE_ID';
 
-export const HOST_VAR = 'HOST';
+export const HOST_VAR = 'CLIENT_HOST';
 // set deployment notification to false until Novu notification implementation
-const IS_EMAIL_DEPLOYMENT_NOTIFICATION = 'false';
+const IS_EMAIL_DEPLOYMENT_NOTIFICATION = false;
 
 @Injectable()
 export class MailService {

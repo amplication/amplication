@@ -1,6 +1,7 @@
+import { EnumGitProvider } from '@amplication/git-service';
 import { IsString, ValidateNested } from 'class-validator';
-import { EnumGitProvider } from 'src/core/git/dto/enums/EnumGitProvider';
 import { GitCommit } from './GitCommit';
+import { GitResourceMeta } from './GitResourceMeta';
 export class SendPullRequestArgs {
   @IsString()
   resourceId!: string;
@@ -18,4 +19,7 @@ export class SendPullRequestArgs {
   gitRepositoryName!: string;
   @ValidateNested()
   commit: GitCommit;
+
+  @ValidateNested()
+  gitResourceMeta: GitResourceMeta;
 }

@@ -20,10 +20,10 @@ export class Build {
   })
   createdAt!: Date;
 
-  @Field(() => Resource)
+  @Field(() => Resource, { nullable: true })
   resource?: Resource;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   resourceId!: string;
 
   @Field(() => User)

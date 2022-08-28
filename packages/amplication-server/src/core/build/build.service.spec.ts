@@ -145,7 +145,8 @@ const EXAMPLE_SERVICE_RESOURCE: Resource = {
   updatedAt: new Date(),
   name: 'exampleResourceName',
   description: 'example Resources Description',
-  color: '#20A4F3'
+  color: '#20A4F3',
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT: Build = {

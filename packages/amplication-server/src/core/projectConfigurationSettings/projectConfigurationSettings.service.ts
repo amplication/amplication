@@ -14,12 +14,13 @@ const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME =
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION =
   'This block is used to store project configuration settings.';
 
-const DEFAULT_PROJECT_CONFIGURATION_SETTINGS: BlockValuesExtended<ProjectConfigurationSettings> = {
+export const DEFAULT_PROJECT_CONFIGURATION_SETTINGS: BlockValuesExtended<ProjectConfigurationSettings> = {
   baseDirectory: '/',
   blockType: EnumBlockType.ProjectConfigurationSettings,
   description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
   displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME
 };
+
 @Injectable()
 export class ProjectConfigurationSettingsService {
   @Inject()

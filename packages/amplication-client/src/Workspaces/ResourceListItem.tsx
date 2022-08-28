@@ -92,20 +92,27 @@ function ResourceListItem({ resource, onDelete }: Props) {
           <div className={`${CLASS_NAME}__row`}>
             <span className={`${CLASS_NAME}__description`}>{description}</span>
           </div>
-          <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-          <div className={`${CLASS_NAME}__row`}>
-            <div className={`${CLASS_NAME}__recently-used`}>
-              <span>Last build </span>
-              {lastBuild && (
-                <UserAndTime
-                  account={lastBuild.commit.user?.account || {}}
-                  time={lastBuild.createdAt}
-                />
-              )}
-            </div>
+          {resource.resourceType !==
+            models.EnumResourceType.ProjectConfiguration && (
+            <>
+              <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
+              <div className={`${CLASS_NAME}__row`}>
+                <div className={`${CLASS_NAME}__recently-used`}>
+                  <span className={`${CLASS_NAME}__last-build`}>
+                    Last commit:
+                  </span>
+                  {lastBuild && (
+                    <UserAndTime
+                      account={lastBuild.commit.user?.account || {}}
+                      time={lastBuild.createdAt}
+                    />
+                  )}
+                </div>
 
-            <span className="spacer" />
-          </div>
+                <span className="spacer" />
+              </div>
+            </>
+          )}
         </Panel>
       </NavLink>
     </>

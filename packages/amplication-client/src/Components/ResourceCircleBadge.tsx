@@ -25,7 +25,7 @@ const resourceMap: {
 
 const ResourceCircleBadge: React.FC<Props> = ({ type, size = "medium" }) => (
   <CircleBadge color={resourceMap[type].color} size={size}>
-    <Icon icon={resourceMap[type].icon} />
+    <Icon icon={resourceMap[type].icon} size={"small"} />
   </CircleBadge>
 );
 

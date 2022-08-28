@@ -14,9 +14,11 @@ import "./ResourceMenu.scss";
 const CLASS_NAME = "resource-menu";
 
 const ResourceMenu: React.FC<{}> = () => {
-  const { currentWorkspace, currentProject, currentResource } = useContext(
-    AppContext
-  );
+  const {
+    currentWorkspace,
+    currentProject,
+    currentResource,
+  } = useContext(AppContext);
 
   return (
     <div className={CLASS_NAME}>
@@ -38,24 +40,24 @@ const ResourceMenu: React.FC<{}> = () => {
               color={currentResource.color}
             />
           </MenuItem>
-          {resourceMenuLayout[
-            EnumResourceType[currentResource.resourceType]
-          ].map((menuItem: string) => {
-            const menuParams = linksMap[menuItem as MenuItemLinks];
-            return (
-              <MenuItem
-                key={menuParams.title}
-                title={menuParams.title}
-                to={setResourceUrlLink(
-                  currentWorkspace.id,
-                  currentProject.id,
-                  currentResource.id,
-                  menuParams.to
-                )}
-                icon={menuParams.icon}
-              />
-            );
-          })}
+          {resourceMenuLayout[EnumResourceType[currentResource.resourceType]].map(
+            (menuItem: string) => {
+              const menuParams = linksMap[menuItem as MenuItemLinks];
+              return (
+                <MenuItem
+                  key={menuParams.title}
+                  title={menuParams.title}
+                  to={setResourceUrlLink(
+                    currentWorkspace.id,
+                    currentProject.id,
+                    currentResource.id,
+                    menuParams.to
+                  )}
+                  icon={menuParams.icon}
+                />
+              );
+            }
+          )}
         </>
       )}
     </div>

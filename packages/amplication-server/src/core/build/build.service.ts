@@ -42,6 +42,7 @@ import { QueueService } from '../queue/queue.service';
 import { BuildFilesSaver, previousBuild } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
+import { GitResourceMeta } from './dto/GitResourceMeta';
 import { BuildContext } from './dto/BuildContext';
 import { BuildContextData } from './dto/BuildContextData';
 import { BuildContextStorageService } from './buildContextStorage.service';
@@ -500,8 +501,12 @@ export class BuildService {
     await this.saveToGitHub(build, oldBuild.id);
   }
 
-  private async saveToGitHub(build: Build, oldBuildId: string): Promise<void> {
-
+  private async saveToGitHub(
+    build: Build,
+    oldBuildId: string,
+    gitResourceMeta: GitResourceMeta
+  ): Promise<void> {
+    const resource = build.resource;
     const resourceRepository = await this.resourceService.gitRepository(
       build.resourceId
     );
@@ -512,7 +517,7 @@ export class BuildService {
 
     const gitOrganization = await this.resourceService.gitOrganizationByResource(
       {
-        where: { id: resourceRepository.id }
+        where: { id: resource.id }
       }
     );
 
@@ -552,7 +557,8 @@ export class BuildService {
                 
                 ${url}
                 `
-              }
+              },
+              gitResourceMeta
             }
           );
 

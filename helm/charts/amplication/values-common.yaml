@@ -14,6 +14,8 @@ cp-helm-charts:
     prometheus:
       jmx:
         enabled: true
+    nodeSelector:
+      role: kafka
     podAnnotations:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     configurationOverrides:
@@ -24,6 +26,8 @@ cp-helm-charts:
       "confluent.metrics.reporter.topic.replicas": "1"
     resources: {}
     heapOptions: "-Xms512M -Xmx512M"
+    nodeSelector:
+      role: kafka
     tolerations:
       - key: "kafka"
         operator: "Equal"
@@ -40,6 +44,12 @@ cp-helm-charts:
     heapOptions: "-Xms512M -Xmx512M"
     persistence:
       enabled: true
+    nodeSelector:
+      role: kafka
+    tolerations:
+      - key: "kafka"
+        operator: "Equal"
+        value: "true"
   cp-schema-registry:
     enabled: false
   cp-kafka-rest:
@@ -202,4 +212,3 @@ amplication-storage-gateway:
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
-
