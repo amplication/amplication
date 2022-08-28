@@ -28,7 +28,6 @@ $modal-menu-top: 30px;
     justify-content: center;
     align-items: center;
     &__project {
-      @include regular-12();
       color: var(--black80);
       margin-right: var(--default-spacing);
 
