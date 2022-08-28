@@ -11,6 +11,7 @@ import { CircleBadge, Icon } from "@amplication/design-system";
 import * as models from "../models";
 import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
+import { resourceThemeMap } from "../util/resourceThemeMap";
 
 export type ResourceDescriptor = Pick<models.Resource, "id" | "name" | "color">;
 export type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
@@ -28,6 +29,7 @@ export interface Command {
   type: string;
   resourceName?: string;
   resourceColor?: string;
+  resourceType?: models.EnumResourceType;
   highlight?: string;
   command(): void;
 }
@@ -150,18 +152,24 @@ export default CommandPalette;
 function CommandPaletteItem(suggestion: Command) {
   // A suggestion object will be passed to your custom component for each command
   const {
-    resourceColor,
     resourceName,
     name,
     highlight,
     showResourceData,
     type,
+    resourceType,
   } = suggestion;
   return (
     <>
       {showResourceData && (
         <>
-          <CircleBadge name={resourceName || ""} color={resourceColor} />
+          <CircleBadge
+            name={resourceName || ""}
+            color={
+              resourceThemeMap[resourceType || models.EnumResourceType.Service]
+                .color
+            }
+          />
           <span className="command-palette__resource-name">{resourceName}</span>
         </>
       )}
@@ -299,7 +307,7 @@ const SEARCH = gql`
     resources(where: { project: { id: $projectId } }) {
       id
       name
-      color
+      resourceType
       entities {
         id
         displayName
