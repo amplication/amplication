@@ -45,7 +45,7 @@ const LastCommit = ({ projectId }: Props) => {
     return () => {
       refetch();
     };
-  }, [pendingChangesIsError, refetch]);
+  }, [pendingChangesIsError, refetch, data]);
 
   const lastCommit = useMemo(() => {
     if (loading || isEmpty(data?.commits)) return null;
@@ -74,6 +74,9 @@ const LastCommit = ({ projectId }: Props) => {
 
   const generating = commitRunning;
 
+  console.log({ lastCommit }, "lastCommit");
+  console.log({ build }, "build");
+
   return (
     <div
       className={classNames(`${CLASS_NAME}`, {
@@ -85,8 +88,8 @@ const LastCommit = ({ projectId }: Props) => {
         <p className={`${CLASS_NAME}__title`}>
           Last Commit
           {build && <BuildStatusIcons build={build} showIcon={false} />}
-          </p>
-        
+        </p>
+
         <div className={`${CLASS_NAME}__status`}>
           <SkeletonWrapper
             showSkeleton={generating}
