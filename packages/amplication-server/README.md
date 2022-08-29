@@ -108,6 +108,7 @@ gcloud auth application-default login
 #### Workflow
 
 - Get external services up, if they're not already running
+
   ```
   npm run docker
   ```
