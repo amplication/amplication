@@ -1,4 +1,5 @@
 @import "../style/index.scss";
+$selector-title-max-width: 180px;
 
 .commit-selector-item {
   display: flex;
@@ -7,7 +8,7 @@
   &__title {
     @include regular-12;
     margin: 0 var(--user-badge-spacing);
-    width: 180px;
+    max-width: $selector-title-max-width;
     white-space: nowrap;
     text-align: left;
     overflow: hidden;
