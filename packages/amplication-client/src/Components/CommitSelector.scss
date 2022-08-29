@@ -7,7 +7,7 @@
   }
 
   &__hour {
-    @include regular-10;
+    @include regular-8;
     color: var(--black80);
   }
 
@@ -19,8 +19,5 @@
   }
   .amp-button {
     width: 100%;
-  }
-  .amp-button--secondary {
-    justify-content: left;
   }
 }

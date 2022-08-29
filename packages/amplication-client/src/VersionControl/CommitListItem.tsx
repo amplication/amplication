@@ -4,7 +4,7 @@ import "./CommitListItem.scss";
 import { AppContext } from "../context/appContext";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { BuildStatusIcons } from "./BuildStatusIcons";
-import UserBadge from "../Components/UserBadge";
+import CommitData from "./CommitData";
 
 type Props = {
   projectId: string;
@@ -23,16 +23,8 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
         icon=""
         to={`/${currentWorkspace?.id}/${projectId}/commits/${commit.id}`}
       >
-        <div className={`${CLASS_NAME}__data`}>
-          <UserBadge />
-          <div className={`${CLASS_NAME}__metadata`}>
-            <span className={`${CLASS_NAME}__metadata__message`}>
-              {commit.message || "No commit message"}
-            </span>
-            <span className={`${CLASS_NAME}__metadata__created`}>
-              {new Date(commit.createdAt).toDateString()}
-            </span>
-          </div>
+        <div className={`${CLASS_NAME}`}>
+          <CommitData commit={commit} />
           <BuildStatusIcons build={build} showIcon={false} />
         </div>
       </InnerTabLink>
