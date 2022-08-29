@@ -1,23 +1,6 @@
 import { gql } from "@apollo/client";
 import * as models from "../models";
 
-const YELLOW = "#F5B82E";
-const RED = "#FF6E6E";
-const PINK = "#F685A1";
-const TURQUOISE = "#41CADD";
-const GREEN = "#8DD9B9";
-const BLUE = "#20A4F3";
-
-export const COLOR_TO_NAME: {
-  [key: string]: string;
-} = {
-  [YELLOW]: "yellow",
-  [RED]: "red",
-  [PINK]: "pink",
-  [TURQUOISE]: "turquoise",
-  [GREEN]: "green",
-  [BLUE]: "blue",
-};
 export const serviceSettingsFieldsInitValues = {
   generateAdminUI: true,
   generateGraphQL: true,
@@ -34,7 +17,6 @@ export const sampleServiceResourceWithoutEntities = (
   resource: {
     name: "My service",
     description: "",
-    color: GREEN,
     resourceType: models.EnumResourceType.Service,
     project: {
       connect: {
