@@ -8,6 +8,7 @@ const resourceEntitiesRoutes = [
     routeTrackType: "",
     exactPath: false,
     routes: [],
+    isAnalytics: true,
   },
   {
     path:
@@ -17,6 +18,7 @@ const resourceEntitiesRoutes = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
   {
     path: "/:workspace/:project/:resource/entities/fields",
@@ -33,6 +35,7 @@ const resourceEntitiesRoutes = [
         routeTrackType: "",
         exactPath: true,
         routes: [],
+        isAnalytics: true,
       },
     ],
   },

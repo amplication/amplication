@@ -11,6 +11,7 @@ export interface RouteDef {
   moduleClass?: string;
   routeTrackType?: string;
   permission?: boolean;
+  isAnalytics?: boolean
 }
 
 export const Routes: RouteDef[] = [
@@ -37,6 +38,7 @@ export const Routes: RouteDef[] = [
             moduleClass: "code-view-page",
             routeTrackType: "",
             exactPath: false,
+            isAnalytics: true,
           },
           {
             path:
@@ -46,6 +48,7 @@ export const Routes: RouteDef[] = [
             moduleClass: "commits-page",
             routeTrackType: "",
             exactPath: false,
+            isAnalytics: true,
           },
           {
             path:
@@ -57,6 +60,7 @@ export const Routes: RouteDef[] = [
             moduleClass: "pending-changes-page",
             routeTrackType: "",
             exactPath: true,
+            isAnalytics: true,
           },
           {
             path:
@@ -68,6 +72,7 @@ export const Routes: RouteDef[] = [
             moduleClass: "create-service-wizard",
             routeTrackType: "",
             exactPath: true,
+            isAnalytics: true,
           },
           {
             path:
@@ -86,6 +91,7 @@ export const Routes: RouteDef[] = [
         moduleName: "",
         exactPath: true,
         routes: [],
+        isAnalytics: true,
       },
       {
         path: "/:workspace([A-Za-z0-9-]{20,})/settings",
@@ -93,6 +99,7 @@ export const Routes: RouteDef[] = [
         moduleName: "",
         exactPath: true,
         routes: [],
+        isAnalytics: true,
       },
     ],
   },
@@ -103,6 +110,7 @@ export const Routes: RouteDef[] = [
     routeTrackType: "login",
     moduleClass: "login-page",
     exactPath: true,
+    isAnalytics: true,
   },
   {
     path: "/github-auth-app/callback",
@@ -113,6 +121,7 @@ export const Routes: RouteDef[] = [
     permission: true,
     routeTrackType: "auth app with git callback",
     exactPath: true,
+    isAnalytics: true,
   },
   {
     path: "/signup",
@@ -121,6 +130,7 @@ export const Routes: RouteDef[] = [
     moduleClass: "signup-page",
     routeTrackType: "signup",
     exactPath: true,
+    isAnalytics: true,
   },
   {
     path: "/user/profile",
@@ -130,5 +140,6 @@ export const Routes: RouteDef[] = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
 ];
