@@ -11,7 +11,7 @@ import React, {
   useContext,
   useRef,
 } from "react";
-import { match } from "react-router-dom";
+import { match, useHistory } from "react-router-dom";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
 import {
@@ -36,10 +36,13 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
   const {
     currentProject,
     setNewResource,
+    currentWorkspace,
     errorCreateResource,
     loadingCreateResource,
     addEntity,
   } = useContext(AppContext);
+
+  const history = useHistory();
 
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
@@ -58,7 +61,11 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
     serviceSettingsFields.current = currentServiceSettings;
   };
 
-  const handleClick = () => {
+  const handleBackToProjectClick = () => {
+    history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
+  };
+
+  const handleCreateServiceClick = () => {
     if (!serviceSettingsFields) return;
     const {
       generateAdminUI,
@@ -114,13 +121,22 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
         <div className={`${moduleClass}__splitWrapper`}>
           <div className={`${moduleClass}__left`}>
             <div className={`${moduleClass}__description`}>
-              <ResourceCircleBadge type={models.EnumResourceType.Service} size="large"/>
-              <h3>Amplication Service Creation Wizard</h3>
-              <h2>Let’s start building your service</h2>
-              <h3>
-                Select which components to include in your service and whether
-                to use sample entities
-              </h3>
+              <ResourceCircleBadge
+                type={models.EnumResourceType.Service}
+                size="large"
+              />
+              <div className={`${moduleClass}__description_top`}>
+                <h2>
+                  Amplication Service Creation Wizard Let’s start building your
+                  service
+                </h2>
+              </div>
+              <div className={`${moduleClass}__description_bottom`}>
+                <h3>
+                  Select which components to include in your service and whether
+                  to use sample entities
+                </h3>
+              </div>
             </div>
           </div>
           <div className={`${moduleClass}__right`}>
@@ -131,17 +147,20 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
         </div>
       )}
       <div className={`${moduleClass}__footer`}>
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          disabled
-          icon="arrow_left"
-          iconPosition={EnumIconPosition.Left}
-        >
-          {"Back to project"}
-        </Button>
-        <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleClick}>
-          <label>Create Service</label>
-        </Button>
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            icon="arrow_left"
+            iconPosition={EnumIconPosition.Left}
+            onClick={handleBackToProjectClick}
+          >
+            {"Back to project"}
+          </Button>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleCreateServiceClick}
+          >
+            <label>Create Service</label>
+          </Button>
       </div>
       <Snackbar open={Boolean(errorCreateResource)} message={errorMessage} />
     </Modal>
