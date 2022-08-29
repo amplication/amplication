@@ -9,6 +9,7 @@ const resourceSettingsRoutes = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
   {
     path:
@@ -20,6 +21,7 @@ const resourceSettingsRoutes = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
   {
     path:
@@ -31,6 +33,7 @@ const resourceSettingsRoutes = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
   {
     path:
@@ -42,6 +45,7 @@ const resourceSettingsRoutes = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
   {
     path:
@@ -51,6 +55,7 @@ const resourceSettingsRoutes = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
   {
     path:
@@ -60,6 +65,7 @@ const resourceSettingsRoutes = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
 ];
 

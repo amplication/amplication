@@ -33,7 +33,7 @@ const CommitResourceListItem = ({ build }: Props) => {
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
       <div className={`${CLASS_NAME}__row`}>
-        {build && (
+        {build && build.resource && (
           <>
             <div className={`${CLASS_NAME}__title`}>
               {build.resource && (

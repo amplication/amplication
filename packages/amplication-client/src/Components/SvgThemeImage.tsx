@@ -14,6 +14,7 @@ export enum EnumImages {
   DropExcel = "--image-drop-excel",
   MyResources = "--image-my-resources",
   Generating = "--image-generating",
+  CreateServiceWizard = "--image-create-service-wizard"
 }
 
 type Props = {

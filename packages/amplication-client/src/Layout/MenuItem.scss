@@ -48,6 +48,7 @@ $inverted-border-radius: 6px;
     transition: all var(--menu-expand-animation-duration) ease-in;
     box-sizing: border-box;
     color: var(--menu-item-color);
+    height: auto;
   }
 
   &--active {
