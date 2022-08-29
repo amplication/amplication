@@ -28,7 +28,6 @@ export interface Command {
   isCurrentResource: boolean;
   type: string;
   resourceName?: string;
-  resourceColor?: string;
   resourceType?: models.EnumResourceType;
   highlight?: string;
   command(): void;
