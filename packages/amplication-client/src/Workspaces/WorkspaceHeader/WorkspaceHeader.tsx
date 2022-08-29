@@ -137,7 +137,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
                                     type={
                                       resource.resourceType as models.EnumResourceType
                                     }
-                                    size="medium"
+                                    size="xsmall"
                                   />
                                   <div
                                     className={`${CLASS_NAME}__breadcrumbs__resource__text`}
