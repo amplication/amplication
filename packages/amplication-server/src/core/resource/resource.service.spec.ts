@@ -40,7 +40,6 @@ import {
   ResourceCreateInput
 } from './dto';
 import { PendingChange } from './dto/PendingChange';
-import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ServiceSettings } from '../serviceSettings/dto';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
