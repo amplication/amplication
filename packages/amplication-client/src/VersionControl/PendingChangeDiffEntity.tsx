@@ -154,7 +154,7 @@ export const GET_ENTITY_VERSION = gql`
           action
           type
           permissionRoles {
-            appRole {
+            resourceRole {
               displayName
             }
           }
@@ -163,7 +163,7 @@ export const GET_ENTITY_VERSION = gql`
               displayName
             }
             permissionRoles {
-              appRole {
+              resourceRole {
                 displayName
               }
             }

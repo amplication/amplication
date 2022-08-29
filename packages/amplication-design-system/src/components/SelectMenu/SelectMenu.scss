@@ -1,8 +1,6 @@
 @import "../../style/index.scss";
 
 .select-menu {
-  margin-left: var(--default-spacing);
-
   & &__item {
     border-bottom: none;
     color: var(--black80);

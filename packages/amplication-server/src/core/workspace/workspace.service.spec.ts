@@ -5,12 +5,13 @@ import { PrismaService } from '@amplication/prisma-db';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';
 import { AccountService } from '../account/account.service';
-import { AppService } from '../app/app.service';
+import { ResourceService } from '../resource/resource.service';
 import { MailService } from '../mail/mail.service';
-import { Workspace, Account, User } from 'src/models';
+import { Workspace, Account, User, Project } from '../../models';
 import { Role } from 'src/enums/Role';
 import { DeleteUserArgs } from './dto';
 import { SubscriptionService } from '../subscription/subscription.service';
+import { ProjectService } from '../project/project.service';
 
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
@@ -51,6 +52,15 @@ const EXAMPLE_WORKSPACE: Workspace = {
   updatedAt: new Date(),
   name: EXAMPLE_WORKSPACE_NAME,
   users: [EXAMPLE_USER]
+};
+
+const EXAMPLE_PROJECT: Project = {
+  id: 'exampleId',
+  name: 'Example name',
+  workspaceId: 'ExampleWorkspaceId',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  deletedAt: undefined
 };
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
@@ -94,8 +104,11 @@ const passwordServiceGeneratePasswordMock = jest.fn(() => {
 const passwordServiceHashPasswordMock = jest.fn(() => {
   return EXAMPLE_NEW_PASSWORD;
 });
+const createProjectMock = jest.fn(() => {
+  return EXAMPLE_PROJECT;
+});
 
-const appCreateSampleAppMock = jest.fn();
+const resourceCreateSampleResourceMock = jest.fn();
 
 describe('WorkspaceService', () => {
   let service: WorkspaceService;
@@ -130,9 +143,9 @@ describe('WorkspaceService', () => {
           }))
         },
         {
-          provide: AppService,
+          provide: ResourceService,
           useClass: jest.fn().mockImplementation(() => ({
-            createSampleApp: appCreateSampleAppMock
+            createSampleResource: resourceCreateSampleResourceMock
           }))
         },
         {
@@ -156,6 +169,12 @@ describe('WorkspaceService', () => {
         {
           provide: SubscriptionService,
           useClass: jest.fn().mockImplementation(() => ({}))
+        },
+        {
+          provide: ProjectService,
+          useClass: jest.fn().mockImplementation(() => ({
+            createProject: createProjectMock
+          }))
         }
       ]
     }).compile();

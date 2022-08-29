@@ -10,9 +10,9 @@ const UNEXPECTED_ORIGIN_ID = 'unexpectedOriginId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
 
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 
-const EXAMPLE_APP_ROLE_ID = 'exampleAppRoleId';
+const EXAMPLE_RESOURCE_ROLE_ID = 'exampleResourceRoleId';
 
 const EXAMPLE_WORKSPACE: Workspace = {
   id: EXAMPLE_WORKSPACE_ID,
@@ -33,11 +33,11 @@ const EXAMPLE_USER: User = {
   isOwner: true
 };
 
-const prismaAppCountMock = jest.fn(() => {
+const prismaResourceCountMock = jest.fn(() => {
   return EXAMPLE_COUNT;
 });
 
-const prismaAppRoleCountMock = jest.fn(() => {
+const prismaResourceRoleCountMock = jest.fn(() => {
   return EXAMPLE_COUNT;
 });
 
@@ -52,11 +52,11 @@ describe('PermissionsService', () => {
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
-            app: {
-              count: prismaAppCountMock
+            resource: {
+              count: prismaResourceCountMock
             },
-            appRole: {
-              count: prismaAppRoleCountMock
+            resourceRole: {
+              count: prismaResourceRoleCountMock
             }
           }))
         }
@@ -81,39 +81,17 @@ describe('PermissionsService', () => {
     ).toEqual(true);
   });
 
-  it('should return true when originType is an authorized app id', async () => {
+  it('should return true when originType is an authorized resource id', async () => {
     const args = {
       user: EXAMPLE_USER,
-      originType: AuthorizableOriginParameter.AppId,
-      originId: EXAMPLE_APP_ID
+      originType: AuthorizableOriginParameter.ResourceId,
+      originId: EXAMPLE_RESOURCE_ID
     };
     const countArgs = {
       where: {
         deletedAt: null,
         id: args.originId,
-        workspace: {
-          id: EXAMPLE_WORKSPACE_ID
-        }
-      }
-    };
-    expect(
-      await service.validateAccess(args.user, args.originType, args.originId)
-    ).toEqual(true);
-    expect(prismaAppCountMock).toBeCalledTimes(1);
-    expect(prismaAppCountMock).toBeCalledWith(countArgs);
-  });
-
-  it('should return true if originType is an authorized instance of AuthorizableOriginParameter', async () => {
-    const args = {
-      user: EXAMPLE_USER,
-      originType: AuthorizableOriginParameter.AppRoleId,
-      originId: EXAMPLE_APP_ROLE_ID
-    };
-    const countArgs = {
-      where: {
-        id: args.originId,
-        app: {
-          deletedAt: null,
+        project: {
           workspace: {
             id: EXAMPLE_WORKSPACE_ID
           }
@@ -123,8 +101,34 @@ describe('PermissionsService', () => {
     expect(
       await service.validateAccess(args.user, args.originType, args.originId)
     ).toEqual(true);
-    expect(prismaAppRoleCountMock).toBeCalledTimes(1);
-    expect(prismaAppRoleCountMock).toBeCalledWith(countArgs);
+    expect(prismaResourceCountMock).toBeCalledTimes(1);
+    expect(prismaResourceCountMock).toBeCalledWith(countArgs);
+  });
+
+  it('should return true if originType is an authorized instance of AuthorizableOriginParameter', async () => {
+    const args = {
+      user: EXAMPLE_USER,
+      originType: AuthorizableOriginParameter.ResourceRoleId,
+      originId: EXAMPLE_RESOURCE_ROLE_ID
+    };
+    const countArgs = {
+      where: {
+        id: args.originId,
+        resource: {
+          deletedAt: null,
+          project: {
+            workspace: {
+              id: EXAMPLE_WORKSPACE_ID
+            }
+          }
+        }
+      }
+    };
+    expect(
+      await service.validateAccess(args.user, args.originType, args.originId)
+    ).toEqual(true);
+    expect(prismaResourceRoleCountMock).toBeCalledTimes(1);
+    expect(prismaResourceRoleCountMock).toBeCalledWith(countArgs);
   });
 
   it('should throw an error', async () => {

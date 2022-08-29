@@ -1,11 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
-import { PrismaService, Prisma } from '@amplication/prisma-db';
+import {
+  PrismaService,
+  Prisma,
+  EnumResourceType
+} from '@amplication/prisma-db';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { DiffModule } from 'src/services/diff.module';
 import {
-  App,
+  Resource,
   Block,
   BlockVersion,
   IBlock,
@@ -20,12 +24,14 @@ const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 
-const EXAMPLE_APP: App = {
-  id: 'ExampleApp',
+const EXAMPLE_RESOURCE: Resource = {
+  id: 'ExampleResource',
+  resourceType: EnumResourceType.Service,
   createdAt: NOW,
   updatedAt: NOW,
-  name: 'Example App',
-  description: 'Example App Description'
+  name: 'Example Resource',
+  description: 'Example Resource Description',
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_USER: User = {
@@ -45,8 +51,8 @@ const EXAMPLE_BLOCK: Block = {
   id: 'ExampleBlock',
   createdAt: NOW,
   updatedAt: NOW,
-  appId: EXAMPLE_APP.id,
-  app: EXAMPLE_APP,
+  resourceId: EXAMPLE_RESOURCE.id,
+  resource: EXAMPLE_RESOURCE,
   blockType: EnumBlockType.ConnectorRestApi,
   displayName: 'Example Block',
   description: 'Block Description',
@@ -173,9 +179,9 @@ describe('BlockService', () => {
     const result = await service.create<BlockType>(
       {
         data: {
-          app: {
+          resource: {
             connect: {
-              id: EXAMPLE_BLOCK.appId
+              id: EXAMPLE_BLOCK.resourceId
             }
           },
           blockType: EnumBlockType[EXAMPLE_BLOCK.blockType],
@@ -186,7 +192,7 @@ describe('BlockService', () => {
           ...EXAMPLE_BLOCK_SETTINGS
         }
       },
-      EXAMPLE_USER
+      EXAMPLE_USER.id
     );
     expect(result).toEqual(EXAMPLE_IBLOCK);
     expect(prismaBlockVersionCreateMock).toHaveBeenCalledTimes(1);
@@ -195,9 +201,9 @@ describe('BlockService', () => {
         versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
         block: {
           create: {
-            app: {
+            resource: {
               connect: {
-                id: EXAMPLE_APP.id
+                id: EXAMPLE_RESOURCE.id
               }
             },
             blockType: EXAMPLE_BLOCK.blockType,
@@ -227,7 +233,7 @@ describe('BlockService', () => {
       include: {
         block: {
           include: {
-            app: true,
+            resource: true,
             parentBlock: true
           }
         }
@@ -317,7 +323,7 @@ describe('BlockService', () => {
     const result = await service.update<BlockType>(
       {
         where: {
-          id: EXAMPLE_BLOCK.appId
+          id: EXAMPLE_BLOCK.resourceId
         },
         data: {
           displayName: EXAMPLE_BLOCK.displayName,
@@ -344,7 +350,7 @@ describe('BlockService', () => {
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
-          blockId: EXAMPLE_BLOCK.appId,
+          blockId: EXAMPLE_BLOCK.resourceId,
           versionNumber: INITIAL_VERSION_NUMBER
         }
       },

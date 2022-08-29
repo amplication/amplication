@@ -5,16 +5,15 @@ import { isEmpty } from "lodash";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../models";
-import { EnumButtonStyle, Button } from "../Components/Button";
 import { downloadArchive } from "./BuildSteps";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
 import { HelpPopover } from "../Components/HelpPopover";
-import { GET_APPLICATION } from "../Application/ApplicationHome";
+import { GET_RESOURCE } from "../Resource/ResourceHome";
 import useLocalStorage from "react-use-localstorage";
 
 import "./BuildSummary.scss";
-import { CircularProgress, Icon, Tooltip } from "@amplication/design-system";
+import { CircularProgress, Icon, Tooltip, Button, EnumButtonStyle } from "@amplication/design-system";
 
 const CLASS_NAME = "build-summary";
 
@@ -26,9 +25,9 @@ export const EMPTY_STEP: models.ActionStep = {
   message: "",
 };
 
-export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const GENERATE_STEP_NAME = "GENERATE_RESOURCE";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
-export const DEPLOY_STEP_NAME = "DEPLOY_APP";
+export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
 export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
@@ -47,11 +46,11 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
     "true"
   );
 
-  const { data: appData } = useQuery<{
-    app: models.App;
-  }>(GET_APPLICATION, {
+  const { data: resourceData } = useQuery<{
+    resource: models.Resource;
+  }>(GET_RESOURCE, {
     variables: {
-      id: build.appId,
+      id: build.resourceId,
     },
   });
 
@@ -109,13 +108,13 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
               Open GitHub
             </Button>
           </a>
-        ) : !appData?.app.githubSyncEnabled ? ( //app is not connected to github
+        ) : !resourceData?.resource.githubSyncEnabled ? ( //resource is not connected to github
           <HelpPopover
             onDismiss={handleDismissHelpGitHub}
             content={
               <div>
                 Enable sync with GitHub to automatically push the generated code
-                of your application and create a Pull Request in your GitHub
+                of your resource and create a Pull Request in your GitHub
                 repository every time you commit your changes.
               </div>
             }
@@ -123,7 +122,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             placement="top-start"
           >
             <Link
-              to={`/${build.appId}/code-view`}
+              to={`/${build.resourceId}/code-view`}
               className={`${CLASS_NAME}__view-code`}
             >
               <Button
@@ -139,7 +138,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
             </Link>
           </HelpPopover>
         ) : (
-          //app was connected after this build was created
+          //resource was connected after this build was created
           <div className={`${CLASS_NAME}__message`}>
             <Icon size="small" icon="info_circle" />
             <span>

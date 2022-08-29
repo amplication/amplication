@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import {
   SelectMenu as PrimerSelectMenu,
   SelectMenuProps,
@@ -15,11 +15,38 @@ import { Button, EnumButtonStyle } from "../Button/Button";
 
 import "./SelectMenu.scss";
 
-export type Props = SelectMenuProps & {
+interface ButtonProps {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
-  title: string | any;
+  title: string | Element;
   icon?: string;
+  openIcon?: string;
+  buttonClassName?: string;
+}
+
+export type Props = SelectMenuProps & ButtonProps;
+
+const SelectButton: React.FC<ButtonProps> = ({
+  disabled,
+  buttonStyle,
+  title,
+  icon,
+  openIcon,
+  buttonClassName,
+}) => {
+  const menuContext = useContext(PrimerSelectMenu.MenuContext);
+  const className = `select-menu__summary ${buttonClassName}`;
+  return (
+    <Button
+      {...(disabled ? { disabled } : { as: "summary" })}
+      className={className}
+      buttonStyle={buttonStyle}
+      icon={openIcon ? (menuContext.open ? openIcon : icon) : icon}
+      iconSize={"xsmall"}
+    >
+      {title}
+    </Button>
+  );
 };
 
 export const SelectMenu = ({
@@ -27,22 +54,23 @@ export const SelectMenu = ({
   children,
   className,
   buttonStyle,
+  buttonClassName,
   title,
   icon,
+  openIcon,
   ...rest
 }: Props) => {
   if (disabled) {
     return (
       <div className={classNames("select-menu", className)}>
-        <Button
-          className="select-menu__summary"
-          disabled
+        <SelectButton
+          disabled={disabled}
           buttonStyle={buttonStyle}
+          buttonClassName={buttonClassName}
           icon={icon}
-          iconSize={"xsmall"}
-        >
-          {title}
-        </Button>
+          openIcon={openIcon}
+          title={title}
+        />
       </div>
     );
   } else
@@ -51,15 +79,14 @@ export const SelectMenu = ({
         className={classNames("select-menu", className)}
         {...rest}
       >
-        <Button
-          as="summary"
-          className="select-menu__summary"
+        <SelectButton
+          disabled={disabled}
           buttonStyle={buttonStyle}
+          buttonClassName={buttonClassName}
           icon={icon}
-          iconSize={"xsmall"}
-        >
-          {title}
-        </Button>
+          openIcon={openIcon}
+          title={title}
+        />
         {children}
       </PrimerSelectMenu>
     );

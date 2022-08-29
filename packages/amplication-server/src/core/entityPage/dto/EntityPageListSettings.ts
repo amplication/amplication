@@ -3,24 +3,20 @@ import { IEntityPageSettings } from './IEntityPageSettings';
 
 @ObjectType({
   isAbstract: true,
-  implements: IEntityPageSettings,
-  description: undefined
+  implements: IEntityPageSettings
 })
 @InputType('EntityPageListSettingsInput', {
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityPageListSettings extends IEntityPageSettings {
   @Field(() => Boolean, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   enableSearch!: boolean;
 
   /* The page to navigate to when a user clicks on a single row */
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   navigateToPageId!: string;
 }

@@ -4,43 +4,36 @@ import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
 import { UserRole } from './UserRole'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class User {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   @Field(() => Account, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   account?: Account;
 
   @Field(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   workspace?: Workspace;
 
   @Field(() => [UserRole], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   userRoles?: UserRole[] | null;
 

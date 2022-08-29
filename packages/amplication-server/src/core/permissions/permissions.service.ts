@@ -14,13 +14,15 @@ export class PermissionsService {
   ): Promise<boolean> {
     const { workspace } = user;
 
-    const checkByAppParameters = {
+    const checkByResourceParameters = {
       where: {
         id: originId,
-        app: {
+        resource: {
           deletedAt: null,
-          workspace: {
-            id: workspace.id
+          project: {
+            workspace: {
+              id: workspace.id
+            }
           }
         }
       }
@@ -51,8 +53,8 @@ export class PermissionsService {
       return matching === 1;
     }
 
-    if (originType === AuthorizableOriginParameter.AppId) {
-      const matching = await this.prisma.app.count({
+    if (originType === AuthorizableOriginParameter.ProjectId) {
+      const matching = await this.prisma.project.count({
         where: {
           deletedAt: null,
           id: originId,
@@ -63,6 +65,22 @@ export class PermissionsService {
       });
       return matching === 1;
     }
+
+    if (originType === AuthorizableOriginParameter.ResourceId) {
+      const matching = await this.prisma.resource.count({
+        where: {
+          deletedAt: null,
+          id: originId,
+          project: {
+            workspace: {
+              id: workspace.id
+            }
+          }
+        }
+      });
+      return matching === 1;
+    }
+
     if (originType === AuthorizableOriginParameter.InvitationId) {
       const matching = await this.prisma.invitation.count({
         where: {
@@ -93,9 +111,11 @@ export class PermissionsService {
               deployments: {
                 some: {
                   build: {
-                    app: {
+                    resource: {
                       deletedAt: null,
-                      workspaceId: workspace.id
+                      project: {
+                        workspaceId: workspace.id
+                      }
                     }
                   }
                 }
@@ -105,9 +125,11 @@ export class PermissionsService {
               id: originId,
               builds: {
                 some: {
-                  app: {
+                  resource: {
                     deletedAt: null,
-                    workspaceId: workspace.id
+                    project: {
+                      workspaceId: workspace.id
+                    }
                   }
                 }
               }
@@ -122,9 +144,11 @@ export class PermissionsService {
         where: {
           id: originId,
           environment: {
-            app: {
+            resource: {
               deletedAt: null,
-              workspaceId: workspace.id
+              project: {
+                workspaceId: workspace.id
+              }
             }
           }
         }
@@ -137,9 +161,11 @@ export class PermissionsService {
           id: originId,
           entityVersion: {
             entity: {
-              app: {
+              resource: {
                 deletedAt: null,
-                workspaceId: workspace.id
+                project: {
+                  workspaceId: workspace.id
+                }
               }
             }
           }
@@ -154,9 +180,11 @@ export class PermissionsService {
           field: {
             entityVersion: {
               entity: {
-                app: {
+                resource: {
                   deletedAt: null,
-                  workspaceId: workspace.id
+                  project: {
+                    workspaceId: workspace.id
+                  }
                 }
               }
             }
@@ -166,29 +194,41 @@ export class PermissionsService {
       return matching === 1;
     }
     if (originType === AuthorizableOriginParameter.EntityId) {
-      const matching = await this.prisma.entity.count(checkByAppParameters);
+      const matching = await this.prisma.entity.count(
+        checkByResourceParameters
+      );
       return matching === 1;
     }
     if (originType === AuthorizableOriginParameter.BlockId) {
-      const matching = await this.prisma.block.count(checkByAppParameters);
+      const matching = await this.prisma.block.count(checkByResourceParameters);
       return matching === 1;
     }
     if (originType === AuthorizableOriginParameter.BuildId) {
-      const matching = await this.prisma.build.count(checkByAppParameters);
+      const matching = await this.prisma.build.count(checkByResourceParameters);
       return matching === 1;
     }
-    if (originType === AuthorizableOriginParameter.AppRoleId) {
-      const matching = await this.prisma.appRole.count(checkByAppParameters);
+    if (originType === AuthorizableOriginParameter.ResourceRoleId) {
+      const matching = await this.prisma.resourceRole.count(
+        checkByResourceParameters
+      );
       return matching === 1;
     }
     if (originType === AuthorizableOriginParameter.EnvironmentId) {
       const matching = await this.prisma.environment.count(
-        checkByAppParameters
+        checkByResourceParameters
       );
       return matching === 1;
     }
     if (originType === AuthorizableOriginParameter.CommitId) {
-      const matching = await this.prisma.commit.count(checkByAppParameters);
+      const matching = await this.prisma.commit.count({
+        where: {
+          id: originId,
+          project: {
+            deletedAt: null,
+            workspaceId: workspace.id
+          }
+        }
+      });
       return matching === 1;
     }
 

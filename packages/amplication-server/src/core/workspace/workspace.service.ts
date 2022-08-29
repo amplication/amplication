@@ -24,6 +24,7 @@ import { isEmpty } from 'lodash';
 import { EnumWorkspaceMemberType } from './dto/EnumWorkspaceMemberType';
 import { Subscription } from '../subscription/dto/Subscription';
 import { GitOrganization } from 'src/models/GitOrganization';
+import { ProjectService } from '../project/project.service';
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -33,7 +34,8 @@ export class WorkspaceService {
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
     private readonly mailService: MailService,
-    private readonly subscriptionService: SubscriptionService
+    private readonly subscriptionService: SubscriptionService,
+    private readonly projectService: ProjectService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -89,6 +91,18 @@ export class WorkspaceService {
         users: args?.include?.users || true
       }
     });
+
+    const [user] = workspace.users;
+
+    await this.projectService.createProject(
+      {
+        data: {
+          name: 'Sample Project',
+          workspace: { connect: { id: workspace.id } }
+        }
+      },
+      user.id
+    );
 
     return workspace;
   }

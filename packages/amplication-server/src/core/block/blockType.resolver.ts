@@ -36,8 +36,7 @@ export function BlockTypeResolver<
 
     @Query(() => classRef, {
       name: classRef.name,
-      nullable: true,
-      description: undefined
+      nullable: true
     })
     @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
     async findOne(@Args() args: FindOneArgs): Promise<T | null> {
@@ -46,10 +45,12 @@ export function BlockTypeResolver<
 
     @Query(() => [classRef], {
       name: findManyName,
-      nullable: false,
-      description: undefined
+      nullable: false
     })
-    @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.app.id')
+    @AuthorizeContext(
+      AuthorizableOriginParameter.ResourceId,
+      'where.resource.id'
+    )
     async findMany(
       @Args({ type: () => findManyArgsRef }) args: FindManyArgs
     ): Promise<T[]> {
@@ -58,10 +59,12 @@ export function BlockTypeResolver<
 
     @Mutation(() => classRef, {
       name: createName,
-      nullable: false,
-      description: undefined
+      nullable: false
     })
-    @AuthorizeContext(AuthorizableOriginParameter.AppId, 'data.app.connect.id')
+    @AuthorizeContext(
+      AuthorizableOriginParameter.ResourceId,
+      'data.resource.connect.id'
+    )
     async [createName](
       @Args({ type: () => createArgsRef }) args: CreateArgs,
       @UserEntity() user: User
@@ -71,8 +74,7 @@ export function BlockTypeResolver<
 
     @Mutation(() => classRef, {
       name: updateName,
-      nullable: false,
-      description: undefined
+      nullable: false
     })
     @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
     async [updateName](

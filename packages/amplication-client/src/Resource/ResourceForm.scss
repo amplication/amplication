@@ -1,0 +1,30 @@
+@import "../style/index.scss";
+
+.resource-form {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--large-spacing);
+    h3 {
+      margin: 0;
+      margin-bottom: var(--default-spacing); 
+      @include title-18();
+    }
+    h5{
+      @include regular-14;
+      margin: 0;
+    }
+  }
+  h1 {
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+  padding: var(--default-spacing-small);
+
+  hr {
+    border: none;
+    border-top: $border-black10;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+}

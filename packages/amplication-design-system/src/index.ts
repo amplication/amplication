@@ -91,6 +91,7 @@ export {
 
 export {
   UserAndTime,
+  formatTimeToNow,
   Props as UserAndTimeProps,
 } from "./components/UserAndTime/UserAndTime";
 
@@ -155,3 +156,9 @@ export {
   TreeViewProps,
   TreeItemProps,
 } from "./components/TreeView/TreeView";
+
+export { Modal } from "./components/Modal/Modal";
+export {
+  HorizontalRule,
+  EnumHorizontalRuleStyle,
+} from "./components/HorizontalRule/HorizontalRule";

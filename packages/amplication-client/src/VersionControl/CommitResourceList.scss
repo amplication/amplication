@@ -1,0 +1,9 @@
+@import "../style/index.scss";
+
+.commit-resource-list {
+  &__title {
+    @include regular-10;
+    color: var(--black60);
+    margin: 0 var(--default-spacing) var(--default-spacing);
+  }
+}

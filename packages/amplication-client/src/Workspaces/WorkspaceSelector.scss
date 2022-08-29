@@ -1,78 +1,121 @@
 @import "../style/index.scss";
 
 @mixin workspaceItem {
-  @include sectionTitle;
-  margin-bottom: 0;
-  padding: var(--default-spacing-small);
-  border-radius: var(--default-border-radius);
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
+  flex: 1;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-start;
+  cursor: pointer;
+  padding: var(--default-spacing);
 
   .circle-badge {
     margin-left: 0;
     margin-right: var(--default-spacing);
   }
-  &:hover,
-  &--active {
-    background-color: var(--black2);
-  }
 
   &__name {
+    @include regular-12;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
   &__plan {
-    @include body2;
+    font-size: 10px;
     color: var(--black60);
   }
 
   &__details {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    @include flexColumn;
+    font-weight: 400;
+    margin-right: auto;
   }
 }
 
 .workspaces-selector {
-  margin: var(--large-spacing);
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: var(--surface);
+  border: $border-black5;
+  border-top-left-radius: var(--default-spacing-small);
+  border-top-right-radius: var(--default-spacing-small);
+  width: 100%;
+  margin-bottom: var(--large-spacing);
 
   &__current {
     @include workspaceItem;
-    margin-bottom: var(--default-spacing);
 
-    .amp-icon {
-      margin-left: var(--default-spacing);
-      transform: rotate(90deg);
+    .amp-button {
+      min-width: var(--button-min-width);
+
+      .amp-icon {
+        margin: 0;
+      }
     }
   }
 
   &__list {
-    padding: var(--default-spacing-small);
-    border: $border-black20;
-    border-radius: var(--default-border-radius);
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 57px;
+    left: -1px;
+    border: $border-black30;
+    border-bottom-left-radius: var(--default-spacing-small);
+    border-bottom-right-radius: var(--default-spacing-small);
+    background-color: var(--black2);
+    width: 100%;
+    z-index: 1;
 
     &__item {
       @include workspaceItem;
-      @include title1;
-      margin-bottom: var(--default-spacing-small);
+      width: calc(100% - var(--double-spacing));
+      margin-bottom: var(--icon-spacing);
+      &__icon {
+        color: var(--positive-default);
+      }
+
+      &:hover {
+        background-color: var(--black10);
+      }
+    }
+
+    &__button {
+      i {
+        padding: 2px;
+      }
     }
 
     &__new {
-      margin-top: var(--default-spacing);
-      border-top: $border-black20;
-      padding-top: var(--default-spacing);
+      flex: 1;
+      padding: var(--default-spacing);
     }
+
+    &__divider {
+      flex-grow: 1;
+      height: 1px;
+      margin: 0 var(--default-spacing) var(--icon-spacing);
+      background-color: var(--black30);
+      border: none;
+    }
+  }
+
+  &:hover {
+    background-color: var(--black2);
+    border: $border-black30;
+  }
+
+  &__close {
+    border-bottom-left-radius: var(--default-spacing-small);
+    border-bottom-right-radius: var(--default-spacing-small);
+  }
+
+  &__open {
+    background-color: var(--black2);
+    border: $border-black30;
   }
 }

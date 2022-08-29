@@ -17,6 +17,7 @@ import {
 import { components } from '@octokit/openapi-types';
 import { join } from 'path';
 import { AmplicationIgnoreManger } from '../utils/AmplicationIgnoreManger';
+import { GitResourceMeta } from '../contracts/GitResourceMeta';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -171,7 +172,8 @@ export class GithubService implements IGitClient {
     commitDescription: string,
     baseBranchName: string,
     installationId: string,
-    amplicationBuildId: string
+    amplicationBuildId: string,
+    gitResourceMeta: GitResourceMeta
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
@@ -201,11 +203,25 @@ export class GithubService implements IGitClient {
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
     //do not override server/scripts/customSeed.ts
     const doNotOverride = [
-      /^server\/src\/[^\/]+\/.+\.controller.ts$/,
-      /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
-      /^server\/src\/[^\/]+\/.+\.service.ts$/,
-      /^server\/src\/[^\/]+\/.+\.module.ts$/,
-      /^server\/scripts\/customSeed.ts$/
+      new RegExp(
+        `^${gitResourceMeta.serverPath ||
+          'server'}\/src\/[^\/]+\/.+\.controller.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath ||
+          'server'}\/src\/[^\/]+\/.+\.resolver.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath ||
+          'server'}\/src\/[^\/]+\/.+\.service.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath ||
+          'server'}\/src\/[^\/]+\/.+\.module.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || 'server'}\/scripts\/customSeed.ts$`
+      )
     ];
 
     const authFolder = 'server/src/auth';
@@ -290,12 +306,11 @@ export class GithubService implements IGitClient {
   private async getInstallationAuthToken(
     installationId: string
   ): Promise<string> {
-    const auth = createAppAuth({
-      appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
-      privateKey: this.configService
-        .get(GITHUB_APP_PRIVATE_KEY_VAR)
-        .replace(/\\n/g, '\n')
-    });
+    const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
+    const privateKey = this.configService
+      .get(GITHUB_APP_PRIVATE_KEY_VAR)
+      .replace(/\\n/g, '\n');
+    const auth = createAppAuth({ appId, privateKey });
     // Retrieve installation access token
     return (
       await auth({

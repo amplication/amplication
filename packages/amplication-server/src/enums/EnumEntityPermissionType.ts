@@ -7,6 +7,5 @@ export enum EnumEntityPermissionType {
   Public = 'Public'
 }
 registerEnumType(EnumEntityPermissionType, {
-  name: 'EnumEntityPermissionType',
-  description: undefined
+  name: 'EnumEntityPermissionType'
 });

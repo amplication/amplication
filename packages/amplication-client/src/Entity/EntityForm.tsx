@@ -17,7 +17,7 @@ type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
 type Props = {
   entity?: models.Entity;
-  applicationId: string;
+  resourceId: string;
   onSubmit: (entity: EntityInput) => void;
 };
 
@@ -56,7 +56,7 @@ const EQUAL_PLURAL_DISPLAY_NAME_AND_NAME_TEXT =
 
 const CLASS_NAME = "entity-form";
 
-const EntityForm = React.memo(({ entity, applicationId, onSubmit }: Props) => {
+const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
       {

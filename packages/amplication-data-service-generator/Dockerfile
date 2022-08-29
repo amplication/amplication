@@ -20,5 +20,5 @@ COPY packages/amplication-data-service-generator/src/server/static/package.json 
 COPY packages/amplication-data-service-generator/src/admin/static/package.json packages/amplication-data-service-generator/src/admin/static/package-lock.json ./admin/
 
 # Install dependencies
-RUN cd server; npm ci --silent;
-# RUN cd admin; npm ci --silent;
+RUN cd server; npm ci;
+# RUN cd admin; npm ci;

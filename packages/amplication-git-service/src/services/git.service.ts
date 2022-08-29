@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GitResourceMeta } from '../contracts/GitResourceMeta';
 import { GithubFile } from '../Dto/entities/GithubFile';
 import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
 import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
@@ -93,6 +94,7 @@ export class GitService {
     commitDescription: string,
     installationId: string,
     amplicationBuildId: string,
+    gitResourceMeta: GitResourceMeta,
     baseBranchName?: string
   ): Promise<string> {
     const service = this.gitServiceFactory.getService(gitProvider);
@@ -105,7 +107,8 @@ export class GitService {
       commitDescription,
       baseBranchName,
       installationId,
-      amplicationBuildId
+      amplicationBuildId,
+      gitResourceMeta
     );
   }
 }

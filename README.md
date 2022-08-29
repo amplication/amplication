@@ -12,7 +12,7 @@
   <a href="https://discord.gg/Z2CG3rUFnu">
     <img src="https://img.shields.io/discord/757179260417867879?label=discord" alt="Discord">
   </a>
-  <a href="code_of_conduct.md">
+  <a href="CODE_OF_CONDUCT.md">
     <img src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg" alt="Contributor Covenant">
   </a>
   <a href="https://opensource.org/licenses/Apache-2.0">
@@ -84,7 +84,6 @@ Amplication is using a mono-repo with multiple packages. To initialize all the p
 ```jsx
 npm install
 npm run setup:dev
-npm run start
 ```
 This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
 
@@ -121,7 +120,7 @@ The client is based on React, Apollo client, Primer components, React Material W
 
 Amplication is currently in Beta version. This means that we are still working on essential features like production-ready hosting, migrations, and stability to our console.
 
-How does it affect you? Well... mostly it doesn't. Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open-source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on. You can read more about the generated app and its stack here https://docs.amplication.com/docs/getting-started
+How does it affect you? Well... mostly it doesn't. Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open-source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on. You can read more about the generated app and its stack in our [Getting Started documentation](https://docs.amplication.com/docs/getting-started).
 
 # Support
 
@@ -148,7 +147,7 @@ If you add some more information such as your thoughts and vision about the feat
 
 Amplication is an open-source project. We are committed to a fully transparent development process and appreciate highly any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
 
-Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./code_of_conduct.md).
+Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 # Contributors ✨
 

@@ -20,7 +20,7 @@ type TData = {
 
 const CLASS_NAME = "api-token-list";
 
-export const ApiTokenList = React.memo(() => {
+const ApiTokenList = React.memo(() => {
   const [newTokenState, setNewTokenState] = useState<boolean>(false);
   const [newToken, setNewToken] = useState<models.ApiToken | null>(null);
   const [error, setError] = useState<Error>();
@@ -78,11 +78,9 @@ export const ApiTokenList = React.memo(() => {
         </Button>
       </div>
       <div className={`${CLASS_NAME}__message`}>
-        API tokens are used to authenticate requests to Amplication API,
-        specifically it is required to use Amplication CLI.
+        API tokens are used to authenticate requests to the Amplication API. They are specifically required for Amplication CLI.
         <br />
-        Tokens are valid for 30 days from creation or last use, so that the 30
-        day expiration automatically refreshes with each API call.
+        Tokens are valid for 30 days following creation or last use. The 30 day expiration period automatically refreshes with each API.
       </div>
 
       {newToken && (
@@ -113,7 +111,7 @@ export const ApiTokenList = React.memo(() => {
       {data?.userApiTokens.map((token) => (
         <ApiTokenListItem
           key={token.id}
-          applicationId={"data?.entity.appId"}
+          resourceId={"data?.entity.resourceId"}
           apiToken={token}
           onError={setError}
         />
@@ -122,6 +120,8 @@ export const ApiTokenList = React.memo(() => {
     </>
   );
 });
+
+export default ApiTokenList;
 
 export const GET_API_TOKENS = gql`
   query userApiTokens {

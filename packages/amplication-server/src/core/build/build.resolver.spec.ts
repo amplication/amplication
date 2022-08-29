@@ -14,14 +14,16 @@ import { BuildService } from './build.service';
 import { ActionService } from '../action/action.service';
 import { UserService } from '../user/user.service';
 import { Build } from './dto/Build';
-import { Commit, User } from 'src/models/';
+import { Commit, Resource, User } from 'src/models/';
 import { Action } from '../action/dto';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { CommitService } from '../commit/commit.service';
+import { EnumResourceType } from '@amplication/code-gen-types/dist/models';
+import { ResourceService } from '../resource/resource.service';
 
 const EXAMPLE_BUILD_ID = 'exampleBuildId';
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_VERSION = 'exampleVersion';
 const EXAMPLE_ACTION_ID = 'exampleActionId';
@@ -48,7 +50,7 @@ const EXAMPLE_COMMIT: Commit = {
 
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   userId: EXAMPLE_USER_ID,
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
@@ -56,11 +58,22 @@ const EXAMPLE_BUILD: Build = {
   commitId: EXAMPLE_COMMIT_ID
 };
 
+const EXAMPLE_RESOURCE: Resource = {
+  id: EXAMPLE_RESOURCE_ID,
+  resourceType: EnumResourceType.Service,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: 'exampleName',
+  description: 'exampleDescription',
+  builds: [EXAMPLE_BUILD],
+  gitRepositoryOverride: false
+};
+
 const FIND_MANY_BUILDS_QUERY = gql`
   query {
     builds {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -74,7 +87,7 @@ const FIND_ONE_BUILD_QUERY = gql`
   query($id: String!) {
     build(where: { id: $id }) {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -125,16 +138,16 @@ const BUILD_STATUS_QUERY = gql`
 `;
 
 const CREATE_BUILD_MUTATION = gql`
-  mutation($appId: String!, $commitId: String!, $message: String!) {
+  mutation($resourceId: String!, $commitId: String!, $message: String!) {
     createBuild(
       data: {
-        app: { connect: { id: $appId } }
+        resource: { connect: { id: $resourceId } }
         commit: { connect: { id: $commitId } }
         message: $message
       }
     ) {
       id
-      appId
+      resourceId
       userId
       version
       actionId
@@ -150,6 +163,7 @@ const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 const actionServiceFindOneMock = jest.fn(() => EXAMPLE_ACTION);
 const commitServiceFindOneMock = jest.fn(() => EXAMPLE_COMMIT);
+const resourceServiceFindOneMock = jest.fn(() => EXAMPLE_RESOURCE);
 
 const buildServiceCalcBuildStatusMock = jest.fn(() => {
   return EnumBuildStatus.Completed;
@@ -191,6 +205,12 @@ describe('BuildResolver', () => {
           provide: CommitService,
           useClass: jest.fn(() => ({
             findOne: commitServiceFindOneMock
+          }))
+        },
+        {
+          provide: ResourceService,
+          useClass: jest.fn(() => ({
+            findOne: resourceServiceFindOneMock
           }))
         },
         {
@@ -327,7 +347,7 @@ describe('BuildResolver', () => {
   it('should create a build', async () => {
     const args = {
       data: {
-        app: { connect: { id: EXAMPLE_APP_ID } },
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         commit: { connect: { id: EXAMPLE_COMMIT_ID } },
         message: EXAMPLE_MESSAGE
       }
@@ -335,7 +355,7 @@ describe('BuildResolver', () => {
     const res = await apolloClient.mutate({
       mutation: CREATE_BUILD_MUTATION,
       variables: {
-        appId: EXAMPLE_APP_ID,
+        resourceId: EXAMPLE_RESOURCE_ID,
         commitId: EXAMPLE_COMMIT_ID,
         message: EXAMPLE_MESSAGE
       }
