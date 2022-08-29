@@ -462,24 +462,6 @@ describe('ResourceService', () => {
     );
   });
 
-  it('should fail to create resource for invalid color', async () => {
-    const createServiceArgs = {
-      args: {
-        data: {
-          name: EXAMPLE_RESOURCE_NAME,
-          description: EXAMPLE_RESOURCE_DESCRIPTION,
-          color: INVALID_COLOR,
-          resourceType: EnumResourceType.Service,
-          project: { connect: { id: 'projectId' } }
-        }
-      },
-      user: EXAMPLE_USER
-    };
-    await expect(
-      service.createResource(createServiceArgs.args, createServiceArgs.user)
-    ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
-  });
-
   it('should fail to create resource with entities with a reserved name', async () => {
     await expect(
       service.createResourceWithEntities(
