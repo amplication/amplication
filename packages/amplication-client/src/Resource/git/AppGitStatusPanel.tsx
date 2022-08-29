@@ -55,6 +55,13 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
           <Label text="connected to:" />
           <div className={`${CLASS_NAME}__connected__details`}>
             <GitStatusConnectedDetails />
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              icon="external_link"
+              eventData={{
+                eventName: "openGithubCodeView",
+              }}
+            />
           </div>
           {lastSync && (
             <div className={`${CLASS_NAME}__last-sync`}>

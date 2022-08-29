@@ -10,15 +10,10 @@ import "./WorkspaceFooter.scss";
 import * as models from "../models";
 import { useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
-// import { GET_LAST_BUILD } from "../VersionControl/LastBuild";
 
 type TDataCommit = {
   commits: models.Commit[];
 };
-
-// type TDataBuild = {
-//   builds: models.Build[];
-// };
 
 const CLASS_NAME = "workspace-footer";
 
@@ -29,6 +24,7 @@ const WorkspaceFooter: React.FC<{}> = () => {
     currentResource,
     commitRunning,
     gitRepositoryFullName,
+    gitRepositoryUrl,
     projectConfigurationResource,
   } = useContext(AppContext);
 
@@ -42,27 +38,11 @@ const WorkspaceFooter: React.FC<{}> = () => {
     }
   );
 
-  // const { data: buildsData, loading: buildsLoading } = useQuery<TDataBuild>(
-  //   GET_LAST_BUILD,
-  //   {
-  //     variables: {
-  //       resourceId: currentResource?.id,
-  //     },
-  //     skip: !currentResource?.id,
-  //   }
-  // );
-
   const lastCommit = useMemo(() => {
     if (commitsLoading || isEmpty(commitsData?.commits)) return null;
     const [last] = commitsData?.commits || [];
     return last;
   }, [commitsLoading, commitsData]);
-
-  // const lastResourceBuild = useMemo(() => {
-  //   if (buildsLoading || isEmpty(buildsData?.builds)) return null;
-  //   const [last] = buildsData?.builds || [];
-  //   return last;
-  // }, [buildsLoading, buildsData]);
 
   const lastResourceBuild = useMemo(() => {
     if (!lastCommit) return null;
@@ -104,20 +84,37 @@ const WorkspaceFooter: React.FC<{}> = () => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
-        <Icon
-          icon="github"
-          size="small"
-          className={`${CLASS_NAME}__github-icon`}
-        />
         {gitRepositoryFullName.includes("/") ? (
-          <GitStatusConnectedDetails />
+          <div className={`${CLASS_NAME}__gh-connection`}>
+            <Icon
+              icon="github"
+              size="small"
+              className={`${CLASS_NAME}__github-icon`}
+            />
+            <GitStatusConnectedDetails />
+            <a
+              className={`${CLASS_NAME}__gh-link`}
+              href={gitRepositoryUrl}
+              target="github"
+            >
+              Open With GitHub
+            </a>
+          </div>
         ) : (
-          <Link
-            title={"Connect to GitHub"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/github`}
-          >
-            Connect to GitHub
-          </Link>
+          <div className={`${CLASS_NAME}__gh-disconnected`}>
+            <Icon
+              icon="github"
+              size="small"
+              className={`${CLASS_NAME}__github-icon`}
+            />
+            <Link
+              className={`${CLASS_NAME}__connect-to-gh`}
+              title={"Connect to GitHub"}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/github`}
+            >
+              Connect to GitHub
+            </Link>
+          </div>
         )}
       </div>
       <div className={`${CLASS_NAME}__right`}>

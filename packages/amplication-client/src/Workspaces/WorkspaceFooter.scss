@@ -45,7 +45,32 @@
     }
   }
 
+  &__gh-connection {
+    color: var(--black80);
+    display: flex;
+    align-items: center;
+  }
+
+  &__gh-disconnected {
+    display: flex;
+    align-items: center;
+    color: var(--negative-dark);
+  }
+
+  &__connect-to-gh {
+    color: var(--negative-dark);
+  }
+
+  &__gh-link {
+    @include regular-12;
+    margin-left: var(--default-spacing-small);
+    color: var(--black100);
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   &__github-icon {
-    margin-right: var(--icon-spacing);
+    margin-right: var(--default-spacing-small);
   }
 }
