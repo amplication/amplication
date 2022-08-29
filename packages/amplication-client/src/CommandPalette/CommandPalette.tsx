@@ -13,7 +13,10 @@ import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
 import { resourceThemeMap } from "../util/resourceThemeMap";
 
-export type ResourceDescriptor = Pick<models.Resource, "id" | "name">;
+export type ResourceDescriptor = Pick<
+  models.Resource,
+  "id" | "name" | "resourceType"
+>;
 export type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
 export type ResourceDescriptorWithEntityDescriptors = ResourceDescriptor & {
   entities: EntityDescriptor[];
@@ -46,6 +49,7 @@ export class NavigationCommand implements Command {
     public readonly type: string,
     public readonly isCurrentResource: boolean,
     public readonly showResourceData: boolean,
+    public readonly resourceType?: models.EnumResourceType,
     public readonly resourceName?: string
   ) {}
   command() {
@@ -157,6 +161,8 @@ function CommandPaletteItem(suggestion: Command) {
     type,
     resourceType,
   } = suggestion;
+  console.log(resourceType);
+
   return (
     <>
       {showResourceData && (
@@ -231,6 +237,7 @@ export function getResourceCommands(
     TYPE_RESOURCE,
     isCurrentResource,
     true,
+    resource.resourceType,
     resource.name
   );
   const resourceCommands = RESOURCE_COMMANDS.map(
@@ -242,6 +249,7 @@ export function getResourceCommands(
         command.type,
         isCurrentResource,
         true,
+        resource.resourceType,
         resource.name
       )
   );
@@ -263,6 +271,7 @@ export function getEntityCommands(
       TYPE_ENTITY,
       isCurrentResource,
       true,
+      resource.resourceType,
       resource.name
     ),
   ];
