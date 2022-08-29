@@ -99,14 +99,20 @@ function ResourceListItem({ resource, onDelete }: Props) {
               <div className={`${CLASS_NAME}__row`}>
                 <div className={`${CLASS_NAME}__recently-used`}>
                   <span className={`${CLASS_NAME}__last-build`}>
-                    Last commit:
+                    <span className={`${CLASS_NAME}__last-build__title`}>
+                      Last commit:{" "}
+                    </span>
+                    {lastBuild ? (
+                      <UserAndTime
+                        account={lastBuild.commit.user?.account || {}}
+                        time={lastBuild.createdAt}
+                      />
+                    ) : (
+                      <span className={`${CLASS_NAME}__last-build__not-yet`}>
+                        No commit yet
+                      </span>
+                    )}
                   </span>
-                  {lastBuild && (
-                    <UserAndTime
-                      account={lastBuild.commit.user?.account || {}}
-                      time={lastBuild.createdAt}
-                    />
-                  )}
                 </div>
 
                 <span className="spacer" />
