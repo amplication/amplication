@@ -12,7 +12,6 @@ import { FindOneArgs } from '../../dto';
 import { EnumDataType } from '../../enums/EnumDataType';
 import { QueryMode } from '../../enums/QueryMode';
 import { Project, Resource, User, GitOrganization } from '../../models';
-import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
@@ -24,7 +23,6 @@ import {
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs
 } from './dto';
-import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
@@ -101,12 +99,7 @@ export class ResourceService {
     user: User,
     generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<Resource> {
-    const { color } = args.data;
-    if (color && !validateHTMLColorHex(color)) {
-      throw new InvalidColorError(color);
-    }
-
-    if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
+     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
         'Resource of type Project Configuration cannot be created manually'
       );
