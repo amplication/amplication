@@ -99,7 +99,7 @@ export class ResourceService {
     user: User,
     generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<Resource> {
-     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
+    if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
         'Resource of type Project Configuration cannot be created manually'
       );
