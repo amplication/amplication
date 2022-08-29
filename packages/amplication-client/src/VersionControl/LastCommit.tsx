@@ -74,9 +74,6 @@ const LastCommit = ({ projectId }: Props) => {
 
   const generating = commitRunning;
 
-  console.log({ lastCommit }, "lastCommit");
-  console.log({ build }, "build");
-
   return (
     <div
       className={classNames(`${CLASS_NAME}`, {
