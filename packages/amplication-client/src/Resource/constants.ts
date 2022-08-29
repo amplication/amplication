@@ -156,7 +156,6 @@ export function createResource(
       description: isResourceWithEntities
         ? "Sample service for e-commerce"
         : "",
-      color: isResourceWithEntities ? YELLOW : GREEN,
       resourceType: models.EnumResourceType.Service,
       project: {
         connect: {
