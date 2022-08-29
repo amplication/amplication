@@ -16,11 +16,6 @@ export class ResourceCreateInput {
   })
   description!: string;
 
-  @Field(() => String, {
-    nullable: true
-  })
-  color?: string;
-
   @Field(() => EnumResourceType, { nullable: false })
   resourceType!: keyof typeof EnumResourceType;
 
