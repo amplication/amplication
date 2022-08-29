@@ -45,7 +45,7 @@ const LastCommit = ({ projectId }: Props) => {
     return () => {
       refetch();
     };
-  }, [pendingChangesIsError, refetch]);
+  }, [pendingChangesIsError, refetch, data]);
 
   const lastCommit = useMemo(() => {
     if (loading || isEmpty(data?.commits)) return null;
@@ -85,8 +85,8 @@ const LastCommit = ({ projectId }: Props) => {
         <p className={`${CLASS_NAME}__title`}>
           Last Commit
           {build && <BuildStatusIcons build={build} showIcon={false} />}
-          </p>
-        
+        </p>
+
         <div className={`${CLASS_NAME}__status`}>
           <SkeletonWrapper
             showSkeleton={generating}
