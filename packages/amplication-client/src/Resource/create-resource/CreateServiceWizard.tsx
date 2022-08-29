@@ -147,26 +147,20 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
         </div>
       )}
       <div className={`${moduleClass}__footer`}>
-        <div className={`${moduleClass}__footer_btn`}>
-          <div className={`${moduleClass}__inside_btn`}>
-            <Button
-              buttonStyle={EnumButtonStyle.Secondary}
-              icon="arrow_left"
-              iconPosition={EnumIconPosition.Left}
-              onClick={handleBackToProjectClick}
-            >
-              {"Back to project"}
-            </Button>
-          </div>
-          <div className={`${moduleClass}__inside_btn`}>
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            icon="arrow_left"
+            iconPosition={EnumIconPosition.Left}
+            onClick={handleBackToProjectClick}
+          >
+            {"Back to project"}
+          </Button>
           <Button
             buttonStyle={EnumButtonStyle.Primary}
             onClick={handleCreateServiceClick}
           >
             <label>Create Service</label>
           </Button>
-          </div>     
-        </div>
       </div>
       <Snackbar open={Boolean(errorCreateResource)} message={errorMessage} />
     </Modal>

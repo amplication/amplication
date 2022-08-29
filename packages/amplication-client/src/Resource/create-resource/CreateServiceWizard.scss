@@ -54,7 +54,6 @@ $max-width: 700px;
   &__description_bottom {
     width: 450px;
     margin-top: 8px;
-    height: 44px;
   }
 
   h2 {
@@ -62,9 +61,10 @@ $max-width: 700px;
     text-align: center;
   }
 
-  h3 {
+  h3 {  
     @include regular-14;
     text-align: center;
+    margin: 0px;
   }
 
   &__footer {
@@ -73,22 +73,14 @@ $max-width: 700px;
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    height: 40px;
-    background: var(--black10);
-  }
-
-  &__footer_btn {
     height: 26px;
-  }
-
-  &__inside_btn {
-    width: 680px;
+    background: var(--black10);
   }
 
   .amp-icon--size-small {
     font-size: 12px;
   }
-  
+
   &__processing {
     display: flex;
     flex-direction: column;
