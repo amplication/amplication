@@ -55,7 +55,6 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID =
 const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
 const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
-const INVALID_COLOR = 'INVALID_COLOR';
 
 const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
