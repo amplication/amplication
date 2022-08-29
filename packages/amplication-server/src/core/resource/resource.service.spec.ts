@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
-  DEFAULT_SERVICE_DATA,
   INVALID_RESOURCE_ID,
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService
@@ -69,7 +68,6 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
 };
 
 const EXAMPLE_RESOURCE: Resource = {
-  ...DEFAULT_SERVICE_DATA,
   id: EXAMPLE_RESOURCE_ID,
   resourceType: EnumResourceType.Service,
   createdAt: new Date(),
@@ -81,7 +79,6 @@ const EXAMPLE_RESOURCE: Resource = {
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
-  ...DEFAULT_SERVICE_DATA,
   id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID,
   resourceType: EnumResourceType.ProjectConfiguration,
   createdAt: new Date(),
