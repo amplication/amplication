@@ -13,7 +13,7 @@ import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
 import { resourceThemeMap } from "../util/resourceThemeMap";
 
-export type ResourceDescriptor = Pick<models.Resource, "id" | "name" | "color">;
+export type ResourceDescriptor = Pick<models.Resource, "id" | "name">;
 export type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
 export type ResourceDescriptorWithEntityDescriptors = ResourceDescriptor & {
   entities: EntityDescriptor[];
@@ -47,8 +47,7 @@ export class NavigationCommand implements Command {
     public readonly type: string,
     public readonly isCurrentResource: boolean,
     public readonly showResourceData: boolean,
-    public readonly resourceName?: string,
-    public readonly resourceColor?: string
+    public readonly resourceName?: string
   ) {}
   command() {
     this.history.push(this.link);
@@ -233,8 +232,7 @@ export function getResourceCommands(
     TYPE_RESOURCE,
     isCurrentResource,
     true,
-    resource.name,
-    resource.color
+    resource.name
   );
   const resourceCommands = RESOURCE_COMMANDS.map(
     (command) =>
@@ -245,8 +243,7 @@ export function getResourceCommands(
         command.type,
         isCurrentResource,
         true,
-        resource.name,
-        resource.color
+        resource.name
       )
   );
   return [resourceCommand, ...resourceCommands];
@@ -267,8 +264,7 @@ export function getEntityCommands(
       TYPE_ENTITY,
       isCurrentResource,
       true,
-      resource.name,
-      resource.color
+      resource.name
     ),
   ];
 }
