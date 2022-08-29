@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { TransitionProps } from "@mui/material/transitions";
-import { Slide, Dialog } from "@mui/material";
+import { Dialog , Fade } from "@mui/material";
 
 interface Props {
   onCloseEvent?: () => void;
@@ -15,7 +15,7 @@ const Transition = React.forwardRef(function Transition(
   },
   ref: React.Ref<unknown>
 ) {
-  return <Slide direction="up" ref={ref} {...props} />;
+  return <Fade ref={ref} {...props} in timeout={200} appear= {false}/>;
 });
 
 export const Modal: React.FC<Props> = ({

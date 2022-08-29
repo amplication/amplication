@@ -41,8 +41,20 @@ $max-width: 700px;
 
     .circle-badge i {
       color: var(--black5);
-      font-size: 14px;
+      font-size: 20px;
     }
+  }
+
+  &__description_top {
+    margin-top: 24px;
+    width: 450px;
+    height: 72px;
+  }
+
+  &__description_bottom {
+    width: 450px;
+    margin-top: 8px;
+    height: 44px;
   }
 
   h2 {
@@ -51,7 +63,7 @@ $max-width: 700px;
   }
 
   h3 {
-    @include title-14;
+    @include regular-14;
     text-align: center;
   }
 
@@ -61,25 +73,22 @@ $max-width: 700px;
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    height: 26px;
+    height: 40px;
     background: var(--black10);
   }
 
-  .amp-button--clear[disabled] {
-    color: var(--black40);
-    border: 1px solid var(--black40);
-    padding: 5px 6px;
-    height: 28px;
-    left: 16px;
+  &__footer_btn {
+    height: 26px;
   }
+
+  &__inside_btn {
+    width: 680px;
+  }
+
   .amp-icon--size-small {
     font-size: 12px;
   }
-  .amp-button--primary {
-    right: 16px;
-    height: 28px;
-  }
-
+  
   &__processing {
     display: flex;
     flex-direction: column;
