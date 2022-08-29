@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useContext } from "react";
 // @ts-ignore
 import ReactCommandPalette from "react-command-palette";
-// @ts-ignore
 import { useQuery, gql } from "@apollo/client";
 import { History } from "history";
 
