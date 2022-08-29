@@ -94,9 +94,7 @@ export const routesGenerator: (
   );
 };
 
-
 const pageTracking = (path: string, url: string, params: any)=> {
-  console.log({path});
   analytics.page(path.replaceAll("/", "-"), {
     path,
     url,
