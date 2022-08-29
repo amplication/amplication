@@ -19,6 +19,7 @@ const resourceRoutes = [
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
+    isAnalytics: true,
   },
   {
     path:
@@ -28,6 +29,7 @@ const resourceRoutes = [
     moduleClass: "changes-page",
     routeTrackType: "",
     exactPath: true,
+    isAnalytics: true,
   },
   {
     path: "/:workspace/:project/:resource/roles",
@@ -43,6 +45,7 @@ const resourceRoutes = [
         routeTrackType: "",
         exactPath: true,
         routes: [],
+        isAnalytics: true,
       },
     ],
   },
@@ -62,6 +65,7 @@ const resourceRoutes = [
         routeTrackType: "",
         exactPath: true,
         routes: [],
+        isAnalytics: true,
       },
     ],
   },
@@ -72,6 +76,7 @@ const resourceRoutes = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
+    isAnalytics: true,
   },
   {
     path:
