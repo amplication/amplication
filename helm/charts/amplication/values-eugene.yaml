@@ -76,7 +76,7 @@ amplication-server:
       #GitHub App
       GITHUB_APP_APP_ID: "227239"
       GITHUB_APP_CLIENT_ID: "Iv1.67a34bd44a1938fb"
-      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/eugeneenvamplication/installations/new?state={state}"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/eugene-tseitlin-github-app/installations/new?state={state}"
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "fe0059c5fd76abbf7cb4"

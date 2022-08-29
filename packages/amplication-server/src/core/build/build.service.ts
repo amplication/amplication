@@ -557,10 +557,10 @@ export class BuildService {
                 
                 ${url}
                 `
-              },
-              gitResourceMeta
-            }
-          );
+                },
+                gitResourceMeta
+              }
+            );
 
             await this.resourceService.reportSyncMessage(
               build.resourceId,
