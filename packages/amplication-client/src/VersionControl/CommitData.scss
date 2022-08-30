@@ -1,5 +1,5 @@
 @import "../style/index.scss";
-$metadata-max-width: 150px;
+$metadata-width: 150px;
 
 .commit-data {
   display: flex;
@@ -9,7 +9,7 @@ $metadata-max-width: 150px;
   &__metadata {
     display: flex;
     flex-direction: column;
-    max-width: $metadata-max-width;
+    width: $metadata-width;
     margin: 0 var(--user-badge-spacing);
 
     &__message {
