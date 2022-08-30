@@ -45,7 +45,7 @@ const PendingChanges = ({ projectId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <h2>Pending changes</h2>
+      <h5 className={`${CLASS_NAME}__title`}>Pending changes</h5>
       <Commit projectId={projectId} noChanges={noChanges} />
       <Dialog
         className="discard-dialog"

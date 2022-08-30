@@ -11,6 +11,12 @@ $counter-height: 18px;
   overflow-y: auto;
   overflow-x: hidden;
 
+  &__title {
+    @include bold-14;
+    margin: 0;
+    padding-bottom: var(--large-spacing);
+  }
+
   &__divider {
     border: $border-black5;
     width: 100%;
