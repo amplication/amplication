@@ -99,11 +99,8 @@ $resource-name-max-width: 180px;
   }
 
   &__changes {
-    margin-top: var(--default-spacing);
     position: relative;
     margin-bottom: var(--default-spacing);
-    overflow-y: scroll;
-    overflow-x: hidden;
 
     &__resource {
       @include bold-12;
