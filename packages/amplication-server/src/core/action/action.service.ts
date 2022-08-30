@@ -97,6 +97,22 @@ export class ActionService {
     });
   }
 
+  async updateActionStep(
+    step: ActionStep,
+    status: EnumActionStepStatus
+  ): Promise<void> {
+    await this.prisma.actionStep.update({
+      where: {
+        id: step.id
+      },
+      data: {
+        status
+      },
+      select: SELECT_ID
+    });
+  }
+  
+
   /**
    * Logs given message with given level and given meta for given step
    * @param step the step to add log for

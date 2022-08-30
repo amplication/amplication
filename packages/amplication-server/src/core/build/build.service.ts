@@ -313,7 +313,7 @@ export class BuildService {
     });
   }
 
-  async updateStateByRunId(runId: string, status: BuildStatus): Promise<void> {
+  async updateStateByRunId(runId: string, status: BuildStatus, completedAt: Date): Promise<void> {
     const build = await this.findByRunId(runId);
     await this.prisma.actionStep.updateMany({
       where: {
@@ -321,7 +321,8 @@ export class BuildService {
         name: StepName.Generate
       },
       data: {
-        status: this.mapBuildStatusToActionStepStatus(status)
+        status: this.mapBuildStatusToActionStepStatus(status),
+        completedAt: completedAt
       }
     });
   }
@@ -331,11 +332,11 @@ export class BuildService {
   ): EnumActionStepStatus {
     switch (status) {
       case BuildStatus.Init:
-        return EnumActionStepStatus.Running;
+        return EnumActionStepStatus.Waiting;
       case BuildStatus.InProgress:
         return EnumActionStepStatus.Running;
       case BuildStatus.Succeeded:
-        return EnumActionStepStatus.Running;
+        return EnumActionStepStatus.Success;
       case BuildStatus.Failed:
         return EnumActionStepStatus.Failed;
       case BuildStatus.Stopped:
@@ -452,7 +453,7 @@ export class BuildService {
 
         dataServiceGeneratorLogger.destroy();
 
-        await this.actionService.complete(step, EnumActionStepStatus.Running);
+        await this.actionService.updateActionStep(step, EnumActionStepStatus.Running);
       },
       true
     );

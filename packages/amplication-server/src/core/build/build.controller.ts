@@ -104,14 +104,21 @@ export class BuildController {
       switch (status) {
         case BuildStatus.Init:
           await this.buildService.updateRunId(buildId, runId);
+          await this.buildService.logGenerateStatusByRunId(runId, status);
+          await this.buildService.updateStateByRunId(runId, status, null);
           break;
-        case BuildStatus.Ready:
+        case BuildStatus.InProgress:
+        case BuildStatus.Failed:
+        case BuildStatus.Stopped:
+          await this.buildService.logGenerateStatusByRunId(runId, status);
+          await this.buildService.updateStateByRunId(runId, status, null);
+          break;
+        case BuildStatus.Succeeded:
+          await this.buildService.logGenerateStatusByRunId(runId, status);
+          await this.buildService.updateStateByRunId(runId, status, new Date());
           await this.buildService.createPR(runId);
           break;
       }
-      await this.buildService.updateStateByRunId(runId, status);
-
-      await this.buildService.logGenerateStatusByRunId(runId, status);
     } catch (error) {
       this.logger.error(
         `Failed to update build status' buildId: ${buildId}, runId: ${runId}, status: ${status}, error: ${error}`
