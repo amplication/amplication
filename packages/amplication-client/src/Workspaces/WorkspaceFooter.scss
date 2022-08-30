@@ -32,13 +32,12 @@
 
   &__right {
     .truncated-id {
-      @include semiBold;
       color: var(--black100);
+      font-weight: 400;
     }
 
     .clickable-id {
       color: var(--black80);
-      // margin-left: var(--default-spacing-small);
       a {
         color: var(--black100);
       }
@@ -54,11 +53,14 @@
   &__gh-disconnected {
     display: flex;
     align-items: center;
-    color: var(--negative-dark);
+    color: var(--negative-light);
   }
 
   &__connect-to-gh {
-    color: var(--negative-dark);
+    color: var(--negative-light);
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   &__gh-link {
