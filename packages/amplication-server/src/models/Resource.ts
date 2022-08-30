@@ -53,11 +53,6 @@ export class Resource {
   })
   description!: string;
 
-  @Field(() => String, {
-    nullable: false
-  })
-  color?: string;
-
   @Field(() => [Entity], {
     nullable: false
   })

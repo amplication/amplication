@@ -29,25 +29,6 @@ $circle-badge-border: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &.theme-yellow {
-      background-color: var(--theme-yellow);
-    }
-    &.theme-red {
-      background-color: var(--theme-red);
-    }
-    &.theme-pink {
-      background-color: var(--theme-pink);
-    }
-    &.theme-turquoise {
-      background-color: var(--theme-turquoise);
-    }
-    &.theme-green {
-      background-color: var(--theme-green);
-    }
-    &.theme-blue {
-      background-color: var(--theme-blue);
-    }
   }
 
   .circle-badge {

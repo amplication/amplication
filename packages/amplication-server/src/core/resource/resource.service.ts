@@ -12,7 +12,6 @@ import { FindOneArgs } from '../../dto';
 import { EnumDataType } from '../../enums/EnumDataType';
 import { QueryMode } from '../../enums/QueryMode';
 import { Project, Resource, User, GitOrganization } from '../../models';
-import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
@@ -24,11 +23,9 @@ import {
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs
 } from './dto';
-import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
-import { DEFAULT_RESOURCE_COLORS } from './constants';
 import { AmplicationError } from 'src/errors/AmplicationError';
 
 const USER_RESOURCE_ROLE = {
@@ -38,10 +35,6 @@ const USER_RESOURCE_ROLE = {
 
 export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
 export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
-
-export const DEFAULT_SERVICE_DATA = {
-  color: DEFAULT_RESOURCE_COLORS.service
-};
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
@@ -79,7 +72,6 @@ export class ResourceService {
 
     const newProjectConfiguration = await this.prisma.resource.create({
       data: {
-        color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
         resourceType: EnumResourceType.ProjectConfiguration,
         description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
         name: DEFAULT_PROJECT_CONFIGURATION_NAME,
@@ -101,11 +93,6 @@ export class ResourceService {
     user: User,
     generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<Resource> {
-    const { color } = args.data;
-    if (color && !validateHTMLColorHex(color)) {
-      throw new InvalidColorError(color);
-    }
-
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
         'Resource of type Project Configuration cannot be created manually'
@@ -131,7 +118,6 @@ export class ResourceService {
 
     const resource = await this.prisma.resource.create({
       data: {
-        ...DEFAULT_SERVICE_DATA,
         ...args.data,
         gitRepository,
         roles: {

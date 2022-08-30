@@ -11,8 +11,7 @@ import NewWorkspace from "./NewWorkspace";
 import "./WorkspaceSelector.scss";
 import { AppContext } from "../context/appContext";
 
-
-export const COLOR = "#A787FF";
+export const WORKSPACE_COLOR = "#A787FF";
 const CLASS_NAME = "workspaces-selector";
 
 function WorkspaceSelector() {
@@ -21,7 +20,6 @@ function WorkspaceSelector() {
   );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [newWorkspace, setNewWorkspace] = useState<boolean>(false);
-
 
   const handleNewWorkspaceClick = useCallback(() => {
     setNewWorkspace(!newWorkspace);
@@ -32,7 +30,6 @@ function WorkspaceSelector() {
       return !isOpen;
     });
   }, [setIsOpen]);
-
 
   return (
     <div
@@ -58,7 +55,7 @@ function WorkspaceSelector() {
           <>
             <CircleBadge
               name={currentWorkspace.name || ""}
-              color={COLOR}
+              color={WORKSPACE_COLOR}
             />
             <div className={`${CLASS_NAME}__current__details`}>
               <span className={`${CLASS_NAME}__current__name`}>
