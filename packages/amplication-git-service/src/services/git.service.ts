@@ -93,7 +93,6 @@ export class GitService {
     commitMessage: string,
     commitDescription: string,
     installationId: string,
-    amplicationBuildId: string,
     gitResourceMeta: GitResourceMeta,
     baseBranchName?: string
   ): Promise<string> {
@@ -107,7 +106,6 @@ export class GitService {
       commitDescription,
       baseBranchName,
       installationId,
-      amplicationBuildId,
       gitResourceMeta
     );
   }
