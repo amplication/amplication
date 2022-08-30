@@ -7,6 +7,9 @@
   &__title {
     font-size: 14px;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &__status {
@@ -27,10 +30,6 @@
 
   &__skeleton {
     margin: var(--form-field-spacing) 0;
-
-    .clickable-id {
-      margin: 0 var(--icon-spacing);
-    }
   }
 
   &__content {
@@ -41,6 +40,7 @@
 
   .clickable-id {
     color: var(--black80);
+    margin-right: var(--icon-spacing);
     a {
       color: var(--black100);
     }

@@ -300,7 +300,6 @@ $bullet-size: 6px;
   }
 }
 
-
 @mixin modalForm {
   display: flex;
   flex-direction: column;
@@ -314,7 +313,7 @@ $bullet-size: 6px;
       margin-bottom: 0;
     }
   }
-  
+
   &__instructions {
     @include body2;
     color: var(--black100);
@@ -466,5 +465,13 @@ $active-indicator-width: 4px;
   font-weight: 400;
   font-size: 10px;
   line-height: 15px;
+  color: #f5f6fa;
+}
+
+@mixin regular-8 {
+  @include font-base();
+  font-weight: 400;
+  font-size: 8px;
+  line-height: 12px;
   color: #f5f6fa;
 }

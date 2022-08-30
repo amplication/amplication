@@ -95,6 +95,7 @@ export const GET_COMMITS = gql`
       builds {
         id
         createdAt
+        resourceId
         resource {
           id
           name

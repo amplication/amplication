@@ -26,14 +26,14 @@ const CommitResourceListItem = ({ build }: Props) => {
   const resourceChangesCount = useMemo(() => {
     const resourcesChanges = commitChangesByResource(build.commitId);
     return resourcesChanges.find(
-      (resourceChanges) => resourceChanges.resourceId === build.resource.id
+      (resourceChanges) => resourceChanges.resourceId === build.resourceId
     )?.changes.length;
-  }, [build.commitId, build.resource.id, commitChangesByResource]);
+  }, [build.commitId, build.resourceId, commitChangesByResource]);
 
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
       <div className={`${CLASS_NAME}__row`}>
-        {build && (
+        {build && build.resource && (
           <>
             <div className={`${CLASS_NAME}__title`}>
               <ResourceCircleBadge type={build.resource.resourceType} />
@@ -60,7 +60,7 @@ const CommitResourceListItem = ({ build }: Props) => {
       <hr className={`${CLASS_NAME}__divider`} />
       <div className={`${CLASS_NAME}__row`}>
         <Link
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/changes/${build.commitId}`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
           className={`${CLASS_NAME}__changes-count`}
         >
           {resourceChangesCount && resourceChangesCount > 0
@@ -70,7 +70,7 @@ const CommitResourceListItem = ({ build }: Props) => {
         </Link>
 
         <Link
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/builds/${build.id}`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
         >
           view log
         </Link>
