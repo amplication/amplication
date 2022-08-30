@@ -47,7 +47,6 @@ export interface IGitClient {
     commitDescription: string,
     baseBranchName: string,
     installationId: string,
-    amplicationBuildId: string,
     meta: GitResourceMeta
   ): Promise<string>;
 }

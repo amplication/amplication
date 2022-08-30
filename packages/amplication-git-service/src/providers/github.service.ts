@@ -172,7 +172,6 @@ export class GithubService implements IGitClient {
     commitDescription: string,
     baseBranchName: string,
     installationId: string,
-    amplicationBuildId: string,
     gitResourceMeta: GitResourceMeta
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
@@ -229,10 +228,7 @@ export class GithubService implements IGitClient {
     const files = Object.fromEntries(
       modules.map(module => {
         if (amplicationIgnoreManger.isIgnored(module.path)) {
-          return [
-            join(AMPLICATION_IGNORED_FOLDER, amplicationBuildId, module.path),
-            module.code
-          ];
+          return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
         }
         if (
           !module.path.startsWith(authFolder) &&

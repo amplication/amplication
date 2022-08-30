@@ -49,7 +49,6 @@ export class PullRequestService {
       title,
       body,
       installationId,
-      newBuildId,
       gitResourceMeta,
       base
     );
