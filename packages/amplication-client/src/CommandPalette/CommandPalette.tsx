@@ -160,8 +160,6 @@ function CommandPaletteItem(suggestion: Command) {
     type,
     resourceType,
   } = suggestion;
-  console.log(resourceType);
-
   return (
     <>
       {showResourceData && (
