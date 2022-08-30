@@ -498,7 +498,16 @@ export class BuildService {
       build.createdAt
     );
 
-    await this.saveToGitHub(build, oldBuild?.id, null);
+    const user = await this.userService.findUser({ where: { id: build.userId } });
+    const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
+      { where: { id: build.resourceId } },
+      user
+    );
+    const gitResourceMeta: GitResourceMeta = {
+      serverPath: serviceSettings.serverSettings.serverPath,
+      adminUIPath: serviceSettings.adminUISettings.adminUIPath,
+    };
+    await this.saveToGitHub(build, oldBuild?.id, gitResourceMeta);
   }
 
   private async saveToGitHub(
@@ -506,7 +515,6 @@ export class BuildService {
     oldBuildId: string,
     gitResourceMeta: GitResourceMeta
   ): Promise<void> {
-    const resource = build.resource;
     const resourceRepository = await this.resourceService.gitRepository(
       build.resourceId
     );
@@ -517,16 +525,15 @@ export class BuildService {
 
     const gitOrganization = await this.resourceService.gitOrganizationByResource(
       {
-        where: { id: resource.id }
+        where: { id: build.resourceId }
       }
     );
 
-    const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
     const commitMessage =
-      (commit.message &&
-        `${commit.message} (Amplication build ${truncateBuildId})`) ||
+      (build.message &&
+        `${build.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
 
     const clientHost = this.configService.get(CLIENT_HOST_VAR);
@@ -553,7 +560,7 @@ export class BuildService {
                   head: `amplication-build-${build.id}`,
                   title: commitMessage,
                   body: `Amplication build # ${build.id}.
-                Commit message: ${commit.message}
+                Commit message: ${build.message}
                 
                 ${url}
                 `
