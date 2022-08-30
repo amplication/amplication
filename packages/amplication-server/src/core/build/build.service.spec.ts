@@ -1,10 +1,13 @@
 import { Readable } from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import * as winston from 'winston';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
-import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
+import {
+  AMPLICATION_LOGGER_PROVIDER,
+  CreateLogger,
+  Transports
+} from '@amplication/nest-logger-module';
 import { orderBy } from 'lodash';
 import {
   ACTION_JOB_DONE_LOG,
@@ -41,23 +44,23 @@ import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
 
-jest.mock('winston');
+jest.mock('@amplication/nest-logger-module');
 jest.mock('@amplication/data-service-generator');
 
-const winstonConsoleTransportOnMock = jest.fn();
+const consoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
-  on: winstonConsoleTransportOnMock
+  on: consoleTransportOnMock
 };
-const winstonLoggerDestroyMock = jest.fn();
+const loggerDestroyMock = jest.fn();
 const MOCK_LOGGER = {
-  destroy: winstonLoggerDestroyMock
+  destroy: loggerDestroyMock
 };
 // eslint-disable-next-line
 // @ts-ignore
-winston.createLogger.mockImplementation(() => MOCK_LOGGER);
+CreateLogger.mockImplementation(() => MOCK_LOGGER);
 // eslint-disable-next-line
 // @ts-ignore
-winston.transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
+Transports.Console = jest.fn(() => MOCK_CONSOLE_TRANSPORT);
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
@@ -577,8 +580,8 @@ describe('BuildService', () => {
       },
       MOCK_LOGGER
     );
-    expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
-    expect(winstonLoggerDestroyMock).toBeCalledWith();
+    expect(loggerDestroyMock).toBeCalledTimes(1);
+    expect(loggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(1);
     expect(actionServiceRunMock.mock.calls).toEqual([
       [
@@ -599,14 +602,14 @@ describe('BuildService', () => {
       getBuildTarGzFilePath(EXAMPLE_BUILD.id)
     );
     expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
-    expect(winstonConsoleTransportOnMock).toBeCalledTimes(1);
-    /** @todo add expect(winstonConsoleTransportOnMock).toBeCalledWith() */
-    expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
-    expect(winstonLoggerDestroyMock).toBeCalledWith();
-    expect(winston.createLogger).toBeCalledTimes(1);
-    /** @todo add expect(winston.createLogger).toBeCalledWith() */
-    expect(winston.transports.Console).toBeCalledTimes(1);
-    expect(winston.transports.Console).toBeCalledWith();
+    expect(consoleTransportOnMock).toBeCalledTimes(1);
+    /** @todo add expect(consoleTransportOnMock).toBeCalledWith() */
+    expect(loggerDestroyMock).toBeCalledTimes(1);
+    expect(loggerDestroyMock).toBeCalledWith();
+    expect(CreateLogger).toBeCalledTimes(1);
+    /** @todo add expect(CreateLogger).toBeCalledWith() */
+    expect(Transports.Console).toBeCalledTimes(1);
+    expect(Transports.Console).toBeCalledWith();
   });
 
   test('find many builds', async () => {

@@ -89,7 +89,6 @@
     "ts-morph": "^13.0.2",
     "uuid": "8.3.2",
     "validate-color": "2.2.1",
-    "winston": "3.3.4",
     "zlib": "1.0.5"
   },
   "devDependencies": {

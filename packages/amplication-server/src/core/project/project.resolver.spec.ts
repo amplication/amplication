@@ -20,7 +20,7 @@ import {
 } from '@amplication/code-gen-types/dist/models';
 import { PendingChange } from '../resource/dto/PendingChange';
 import { ResourceService } from '../resource/resource.service';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 import { ConfigService } from '@nestjs/config';
 
 /** values mock */
@@ -230,7 +230,7 @@ describe('ProjectResolver', () => {
           }))
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn()
           }))

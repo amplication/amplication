@@ -6,9 +6,10 @@ import { StorageService } from '@codebrew/nestjs-storage';
 import { Prisma, PrismaService } from '@amplication/prisma-db';
 import {
   AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER
+  AMPLICATION_LOGGER_PROVIDER,
+  CreateLogger,
+  Transports
 } from '@amplication/nest-logger-module';
-import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
 import path, { join } from 'path';
@@ -101,7 +102,7 @@ export const ACTION_INCLUDE = {
   }
 };
 
-const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+const ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
 } = {
   error: EnumActionLogLevel.Error,
@@ -110,7 +111,7 @@ const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   debug: EnumActionLogLevel.Debug
 };
 
-const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
+const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
 
 export function createInitialStepData(
   version: string,
@@ -400,14 +401,14 @@ export class BuildService {
   private createDataServiceLogger(
     build: Build,
     step: ActionStep
-  ): [winston.Logger, Array<Promise<void>>] {
-    const transport = new winston.transports.Console();
+  ): [AmplicationLogger, Array<Promise<void>>] {
+    const transport = new Transports.Console();
     const logPromises: Array<Promise<void>> = [];
     transport.on('logged', info => {
       logPromises.push(this.createLog(step, info));
     });
     return [
-      winston.createLogger({
+      CreateLogger({
         format: this.logger.format,
         transports: [transport],
         defaultMeta: {
@@ -547,9 +548,9 @@ export class BuildService {
     step: ActionStep,
     info: { message: string }
   ): Promise<void> {
-    const { message, ...winstonMeta } = info;
-    const level = WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[info[LEVEL]];
-    const meta = omit(winstonMeta, WINSTON_META_KEYS_TO_OMIT);
+    const { message, ...metaInfo } = info;
+    const level = ACTION_LOG_LEVEL[info[LEVEL]];
+    const meta = omit(metaInfo, META_KEYS_TO_OMIT);
 
     await this.actionService.log(step, level, message, meta);
   }

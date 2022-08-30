@@ -3,7 +3,7 @@
 // @UseFilters(GqlResolverExceptionsFilter)
 // export class AuthResolver {
 // It logs the exception with context information like IP, Host, UserId
-// It uses Winston directly to log the error
+// It uses nest logger module to log
 
 import { Catch, ArgumentsHost, Inject, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
