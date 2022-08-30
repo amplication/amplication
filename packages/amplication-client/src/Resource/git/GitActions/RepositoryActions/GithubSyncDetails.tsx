@@ -7,6 +7,7 @@ import { AppContext } from "../../../../context/appContext";
 import { Resource } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
+import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
 
 const CLASS_NAME = "github-repo-details";
@@ -22,7 +23,7 @@ function GithubSyncDetails({
   className,
   showGitRepositoryBtn = true,
 }: Props) {
-  const { gitRepositoryFullName, gitRepositoryUrl } = useContext(AppContext);
+  const { gitRepositoryUrl } = useContext(AppContext);
 
   const [
     disconnectGitRepository,
@@ -43,9 +44,9 @@ function GithubSyncDetails({
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
         <div className={`${CLASS_NAME}__details`}>
-          <div className={classNames(className, `${CLASS_NAME}__name`)}>
-            {gitRepositoryFullName}
-          </div>
+          <GitRepoDetails
+            className={classNames(className, `${CLASS_NAME}__name`)}
+          />
           <div>
             <a
               href={gitRepositoryUrl}

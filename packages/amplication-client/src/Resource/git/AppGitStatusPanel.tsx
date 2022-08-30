@@ -12,7 +12,7 @@ import { isEmpty } from "lodash";
 import "./AppGitStatusPanel.scss";
 import { format } from "date-fns";
 import { AppContext } from "../../context/appContext";
-import GitStatusConnectedDetails from "./GitStatusConnectedDetails";
+import GitRepoDetails from "./GitRepoDetails";
 
 type Props = {
   resource: models.Resource | null;
@@ -23,7 +23,9 @@ const CLASS_NAME = "app-git-status-panel";
 const DATE_FORMAT = "PP p";
 
 const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { currentWorkspace, currentProject, gitRepositoryUrl } = useContext(
+    AppContext
+  );
 
   const lastSync = new Date(resource?.githubLastSync);
 
@@ -54,14 +56,20 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
         <div className={`${CLASS_NAME}__connected`}>
           <Label text="connected to:" />
           <div className={`${CLASS_NAME}__connected__details`}>
-            <GitStatusConnectedDetails />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="external_link"
-              eventData={{
-                eventName: "openGithubCodeView",
-              }}
-            />
+            <GitRepoDetails />
+            <a
+              className={`${CLASS_NAME}__gh-link`}
+              href={gitRepositoryUrl}
+              target="github"
+            >
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="external_link"
+                eventData={{
+                  eventName: "openGithubCodeView",
+                }}
+              />
+            </a>
           </div>
           {lastSync && (
             <div className={`${CLASS_NAME}__last-sync`}>

@@ -1,11 +1,11 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { Icon, SkeletonWrapper } from "@amplication/design-system";
 import { isEmpty } from "lodash";
 import { GET_LAST_COMMIT_BUILDS } from "../VersionControl/hooks/commitQueries";
 
 import { ClickableId } from "../Components/ClickableId";
 import { AppContext } from "../context/appContext";
-import GitStatusConnectedDetails from "../Resource/git/GitStatusConnectedDetails";
+import GitRepoDetails from "../Resource/git/GitRepoDetails";
 import "./WorkspaceFooter.scss";
 import * as models from "../models";
 import { useQuery } from "@apollo/client";
@@ -53,16 +53,11 @@ const WorkspaceFooter: React.FC<{}> = () => {
     }
   }, [currentResource?.id, lastCommit]);
 
-  const handleBuildLinkClick = useCallback((event) => {
-    event.stopPropagation();
-  }, []);
-
   const ClickableCommitId = lastCommit && (
     <ClickableId
       to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
       id={lastCommit.id}
       label="Commit ID"
-      onClick={handleBuildLinkClick}
       eventData={{
         eventName: "lastCommitIdClick",
       }}
@@ -74,7 +69,6 @@ const WorkspaceFooter: React.FC<{}> = () => {
       label="Build ID"
       to={`/${currentWorkspace?.id}/${currentProject?.id}/${lastResourceBuild.resourceId}/builds/${lastResourceBuild.id}`}
       id={lastResourceBuild.id}
-      onClick={handleBuildLinkClick}
       eventData={{
         eventName: "lastBuildIdClick",
       }}
@@ -91,7 +85,7 @@ const WorkspaceFooter: React.FC<{}> = () => {
               size="small"
               className={`${CLASS_NAME}__github-icon`}
             />
-            <GitStatusConnectedDetails />
+            <GitRepoDetails />
             <a
               className={`${CLASS_NAME}__gh-link`}
               href={gitRepositoryUrl}

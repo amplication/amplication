@@ -32,8 +32,8 @@
 
   &__right {
     .truncated-id {
+      @include regular-12;
       color: var(--black100);
-      font-weight: 400;
     }
 
     .clickable-id {
