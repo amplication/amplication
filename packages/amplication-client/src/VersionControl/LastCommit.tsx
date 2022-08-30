@@ -116,7 +116,7 @@ const LastCommit = ({ projectId }: Props) => {
                 eventName: "LastCommitViewCode",
               }}
             >
-              View Code
+              Go to view code
             </Button>
           </Link>
         )}

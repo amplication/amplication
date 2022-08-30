@@ -2,7 +2,6 @@
 
 .last-commit {
   margin-top: auto;
-  margin-bottom: var(--default-spacing);
 
   &__title {
     font-size: 14px;
@@ -25,17 +24,17 @@
 
   &__divider {
     border: $border-black5;
-    margin: var(--form-field-spacing) 0;
+    margin: 0;
   }
 
   &__skeleton {
-    margin: var(--form-field-spacing) 0;
+    padding: var(--large-spacing) 0;
   }
 
   &__content {
     display: flex;
     flex-direction: column;
-    padding: 0 var(--default-spacing);
+    padding: var(--large-spacing);
   }
 
   .clickable-id {
@@ -62,6 +61,7 @@
   }
 
   .amp-button.amp-button--secondary {
+    @include regular-14;
     width: 100%;
   }
 }

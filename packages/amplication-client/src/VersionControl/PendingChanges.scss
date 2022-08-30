@@ -2,9 +2,10 @@
 
 $empty-state-image-size: 120px;
 $counter-height: 18px;
+$resource-name-max-width: 180px;
 
 .pending-changes {
-  padding: var(--default-spacing);
+  padding: var(--large-spacing);
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -105,7 +106,13 @@ $counter-height: 18px;
     overflow-x: hidden;
 
     &__resource {
+      @include bold-12;
       margin-bottom: var(--double-spacing);
+      max-width: $resource-name-max-width;
+      white-space: nowrap;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
       .circle-badge {
         margin-right: var(--default-spacing);
       }
