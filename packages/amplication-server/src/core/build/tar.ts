@@ -1,10 +1,10 @@
 import zlib from 'zlib';
 import tar from 'tar-stream';
 import getStream from 'get-stream';
-import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { Module } from '@amplication/code-gen-types';
 
 export function createTarGzFileFromModules(
-  modules: DataServiceGenerator.Module[]
+  modules: Module[]
 ): Promise<Buffer> {
   const pack = tar.pack();
   for (const module of modules) {

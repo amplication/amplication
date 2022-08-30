@@ -1,4 +1,3 @@
-import { Module } from '@amplication/data-service-generator';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { outputFile, remove } from 'fs-extra';
@@ -10,6 +9,8 @@ import {
 } from '../../../../constants';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { Logger } from 'winston';
+import { Module } from '@amplication/code-gen-types';
+
 @Injectable()
 export class BuildFilesSaver {
   private baseBuildsPath: string;
