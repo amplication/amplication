@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import { Icon, SkeletonWrapper } from "@amplication/design-system";
 import { isEmpty } from "lodash";
-import { GET_LAST_COMMIT } from "../VersionControl/hooks/commitQueries";
+import { GET_LAST_COMMIT_BUILDS } from "../VersionControl/hooks/commitQueries";
 
 import { ClickableId } from "../Components/ClickableId";
 import { AppContext } from "../context/appContext";
@@ -29,7 +29,7 @@ const WorkspaceFooter: React.FC<{}> = () => {
   } = useContext(AppContext);
 
   const { data: commitsData, loading: commitsLoading } = useQuery<TDataCommit>(
-    GET_LAST_COMMIT,
+    GET_LAST_COMMIT_BUILDS,
     {
       variables: {
         projectId: currentProject?.id,
