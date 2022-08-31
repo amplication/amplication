@@ -347,6 +347,9 @@ export class ResourceService {
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: args.where.id
+      },
+      include: {
+        gitRepository: true
       }
     });
 
@@ -359,18 +362,8 @@ export class ResourceService {
     }
 
     if (resource.gitRepositoryOverride) {
-      const gitRepo = await this.prisma.gitRepository.findFirst({
-        where: {
-          resources: { every: { id: resource.id } }
-        }
-      });
-
-      if (gitRepo) {
-        await this.prisma.gitRepository.delete({
-          where: {
-            id: gitRepo.id
-          }
-        });
+      if (resource.gitRepository) {
+        await this.disconnectResourceGitRepository(resource.id);
       }
     }
 
@@ -381,6 +374,52 @@ export class ResourceService {
         deletedAt: new Date()
       }
     });
+  }
+
+  async disconnectResourceGitRepository(resourceId: string): Promise<Resource> {
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId
+      },
+      include: {
+        gitRepository: true
+      }
+    });
+
+    if (isEmpty(resource)) throw new AmplicationError(INVALID_RESOURCE_ID);
+
+    const resourcesToDisconnect: Prisma.ResourceWhereUniqueInput = {
+      id: resourceId
+    };
+
+    await this.prisma.gitRepository.update({
+      where: {
+        id: resource.gitRepositoryId
+      },
+      data: {
+        resources: {
+          disconnect: resourcesToDisconnect
+        }
+      }
+    });
+
+    const countResourcesConnected = await this.prisma.gitRepository
+      .findUnique({
+        where: {
+          id: resource.gitRepositoryId
+        }
+      })
+      .resources();
+
+    if (countResourcesConnected.length === 0) {
+      await this.prisma.gitRepository.delete({
+        where: {
+          id: resource.gitRepositoryId
+        }
+      });
+    }
+
+    return resource;
   }
 
   async updateResource(args: UpdateOneResourceArgs): Promise<Resource | null> {
