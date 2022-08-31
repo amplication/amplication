@@ -29,6 +29,7 @@ export class PullRequestService {
     gitProvider,
     gitResourceMeta,
   }: SendPullRequestArgs): Promise<ResultMessage<SendPullRequestResponse>> {
+    const { base, body, head, title } = commit;
     const changedFiles = await this.diffService.listOfChangedFiles(
       resourceId,
       oldBuildId,
@@ -39,7 +40,6 @@ export class PullRequestService {
       { lengthOfFile: changedFiles.length }
     );
 
-    const { base, body, head, title } = commit;
     const prUrl = await this.gitService.createPullRequest(
       gitProvider,
       gitOrganizationName,
