@@ -87,8 +87,7 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
-  gitRepositoryOverride: false,
-  gitRepository: EXAMPLE_GIT_REPOSITORY
+  gitRepositoryOverride: false
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
@@ -626,7 +625,13 @@ describe('ResourceService', () => {
       ...args,
       data: {
         deletedAt: dateSpy.mock.instances[0],
-        name: prepareDeletedItemName(EXAMPLE_RESOURCE.name, EXAMPLE_RESOURCE.id)
+        name: prepareDeletedItemName(
+          EXAMPLE_RESOURCE.name,
+          EXAMPLE_RESOURCE.id
+        ),
+        gitRepository: {
+          disconnect: true
+        }
       }
     });
   });
