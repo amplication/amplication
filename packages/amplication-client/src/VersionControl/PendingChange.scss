@@ -5,8 +5,8 @@ $before-spacing: -6px;
 
 .pending-change {
   margin-left: 0;
-  margin-right: 0;
-  margin-bottom: var(--default-spacing);
+  margin-right: var(--default-spacing-small);
+  margin-bottom: var(--default-spacing-small);
   position: relative;
   @include flexFullRow;
 
@@ -36,7 +36,7 @@ $before-spacing: -6px;
     margin-left: var(--double-spacing);
     margin-right: var(--default-spacing);
 
-    &::before {
+    &:before {
       content: "";
       position: absolute;
       display: block;

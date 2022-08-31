@@ -106,7 +106,7 @@ const PendingChanges = ({ projectId }: Props) => {
             {pendingChanges.length}
           </span>
           <div className="spacer" />
-          <Tooltip aria-label={"Compare Changes"} direction="sw">
+          <Tooltip aria-label={"Compare Changes"} direction="nw">
             <Link
               to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
             >
@@ -117,7 +117,7 @@ const PendingChanges = ({ projectId }: Props) => {
               />
             </Link>
           </Tooltip>
-          <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
+          <Tooltip aria-label={"Discard Pending Changes"} direction="nw">
             <Button
               buttonStyle={EnumButtonStyle.Text}
               onClick={handleToggleDiscardDialog}

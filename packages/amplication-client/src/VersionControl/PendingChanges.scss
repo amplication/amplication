@@ -100,11 +100,14 @@ $resource-name-max-width: 180px;
 
   &__changes {
     position: relative;
-    margin-bottom: var(--default-spacing);
+    margin-bottom: var(--large-spacing);
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     &__resource {
       @include bold-12;
-      margin-bottom: var(--double-spacing);
+      margin-bottom: var(--medium-spacing);
       max-width: $resource-name-max-width;
       white-space: nowrap;
       text-align: left;
