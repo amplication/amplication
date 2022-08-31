@@ -68,7 +68,7 @@ export async function createDataServiceImpl(
         logger
       ),
       (appInfo.settings.adminUISettings.generateAdminUI &&
-        createAdminModules(normalizedEntities, roles, appInfo, dtos, logger)) ||
+        createAdminModules()) ||
         [],
     ])
   ).flat();

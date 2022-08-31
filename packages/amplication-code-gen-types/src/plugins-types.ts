@@ -10,7 +10,7 @@ export interface PrintResultType {
 export interface ContextUtil {
   setDsgPath: (path: string) => string;
   skipDefaultBehavior: boolean;
-  importStaticModules: (source: string, basePath: string) => Promise<Module[]>
+  importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
 export interface DsgContext {
   appInfo: AppInfo;
@@ -72,10 +72,16 @@ export interface CreateAuthModulesParams extends EventParams {
   after: Module[];
 }
 
+export interface CreateAdminModulesParams extends EventParams {
+  before: {};
+  after: Module[];
+}
+
 export enum EventNames {
   CreateServiceModules = "createServiceModules",
   CreateControllerModules = "createControllerModules",
   CreateAuthModules = "createAuthModules",
+  CreateAdminModules = "createAdminModules",
 }
 
 export type Events = {
@@ -107,6 +113,16 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       eventParams: CreateAuthModulesParams["after"]
+    ) => void;
+  };
+  [EventNames.CreateAdminModules]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateAdminModulesParams["before"]
+    ) => CreateAdminModulesParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      eventParams: CreateAdminModulesParams["after"]
     ) => void;
   };
 };
