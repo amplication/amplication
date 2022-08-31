@@ -18,31 +18,32 @@ export class DiffService {
   ) {}
   async listOfChangedFiles(
     resourceId: string,
-    previousAmplicationBuildId: string,
+    previousAmplicationBuildId: string | undefined,
     newAmplicationBuildId: string
   ): Promise<{ path: string; code: string }[]> {
-    // const oldBuildPath = this.buildsPathFactory.get(
-    //   resourceId,
-    //   previousAmplicationBuildId
-    // );
     const newBuildPath = this.buildsPathFactory.get(
       resourceId,
       newAmplicationBuildId
+    );
+    if (!previousAmplicationBuildId) {
+      return this.firstBuild(newBuildPath);
+    }
+    const oldBuildPath = this.buildsPathFactory.get(
+      resourceId,
+      previousAmplicationBuildId
     );
     this.logger.info('List of the paths', {
       resourceId,
       previousAmplicationBuildId,
       newAmplicationBuildId,
     });
-    // assert.notStrictEqual(
-    //   oldBuildPath,
-    //   newBuildPath,
-    //   'Cant get the same build id'
-    // );
+    assert.notStrictEqual(
+      oldBuildPath,
+      newBuildPath,
+      'Cant get the same build id'
+    );
 
-    //This line added as a hotfix to https://github.com/amplication/amplication/issues/2878
     return this.firstBuild(newBuildPath);
-
     // // return all the new files if an old build folder dont exist
     // if (existsSync(oldBuildPath) === false) {
     //   return this.firstBuild(newBuildPath);

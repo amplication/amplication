@@ -16,7 +16,8 @@
     "strictFunctionTypes": true,
     "noImplicitUseStrict": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strictNullChecks": true
   },
   "exclude": ["node_modules", "dist", "builds"]
 }
