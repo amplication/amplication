@@ -193,5 +193,4 @@ export interface DsgContext {
 export type ResourceGenerationConfig = {
   dataServiceGeneratorVersion: string;
   appInfo: AppInfo;
-
 };
