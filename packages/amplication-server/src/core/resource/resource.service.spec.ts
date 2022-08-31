@@ -63,6 +63,14 @@ const EXAMPLE_CUID = 'EXAMPLE_CUID';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
+const EXAMPLE_GIT_REPOSITORY: GitRepository = {
+  id: 'exampleGitRepositoryId',
+  name: 'repositoryTest',
+  gitOrganizationId: 'exampleGitOrganizationId',
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   description: 'Sample Service for task management',
   name: 'My sample service',
@@ -79,7 +87,8 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
+  gitRepository: EXAMPLE_GIT_REPOSITORY
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
@@ -224,14 +233,6 @@ const EXAMPLE_BUILD: Build = {
   message: 'new build',
   actionId: 'ExampleActionId',
   commitId: EXAMPLE_COMMIT_ID
-};
-
-const EXAMPLE_GIT_REPOSITORY: GitRepository = {
-  id: 'exampleGitRepositoryId',
-  name: 'repositoryTest',
-  gitOrganizationId: 'exampleGitOrganizationId',
-  createdAt: new Date(),
-  updatedAt: new Date()
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
