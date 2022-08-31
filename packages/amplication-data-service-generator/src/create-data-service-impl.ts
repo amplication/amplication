@@ -17,7 +17,7 @@ import { createServerModules } from "./server/create-server";
 import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
-import pluginManager from "./plugin-manager";
+import registerPlugins from "./register-plugin";
 
 export async function createDataServiceImpl(
   entities: Entity[],
@@ -43,7 +43,7 @@ export async function createDataServiceImpl(
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
-  const plugins = await pluginManager([
+  const plugins = await registerPlugins([
     {
       packageName: "jwt-auth-plugin",
     },

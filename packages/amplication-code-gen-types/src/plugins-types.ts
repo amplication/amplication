@@ -1,5 +1,17 @@
 import { AppInfo, DTOs, Entity, Module, Role } from "./code-gen-types";
+import winston from "winston";
 
+export interface PrintResultType {
+  code: string;
+  map?: any;
+  toString(): string;
+}
+
+export interface ContextUtil {
+  setDsgPath: (path: string) => string;
+  skipDefaultBehavior: boolean;
+  importStaticModules: (source: string, basePath: string) => Promise<Module[]>
+}
 export interface DsgContext {
   appInfo: AppInfo;
   entities: Entity[];
@@ -7,6 +19,8 @@ export interface DsgContext {
   modules: Module[];
   DTOs: DTOs;
   plugins: PluginMap;
+  logger: winston.Logger;
+  utils: ContextUtil;
 }
 
 export type PluginWrapper = (args: any[], func: () => void) => any;
@@ -21,9 +35,9 @@ export interface DsgPlugin {
 }
 
 export type PluginMap = {
-  [K in EventsName]?: {
-    before: (<T>(context: DsgContext, params: any) => T)[];
-    after: (<T>(context: DsgContext, params: any) => T)[];
+  [K in EventNames]?: {
+    before?: (<T>(context: DsgContext, params: any) => T)[];
+    after?: (<T>(context: DsgContext, params: any) => T)[];
   };
 };
 
@@ -52,20 +66,20 @@ export interface CreateControllerModulesParams extends EventParams {
 }
 
 export interface CreateAuthModulesParams extends EventParams {
-  before: [srcDir: string, templatePath?: string];
+  before: {
+    srcDir: string;
+  };
   after: Module[];
 }
 
-export enum EventsName {
+export enum EventNames {
   CreateServiceModules = "createServiceModules",
   CreateControllerModules = "createControllerModules",
   CreateAuthModules = "createAuthModules",
 }
 
-export type EventName = EventsName;
-
 export type Events = {
-  [EventsName.CreateServiceModules]?: {
+  [EventNames.CreateServiceModules]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateServiceModulesParams["before"]
@@ -75,7 +89,7 @@ export type Events = {
       eventParams: CreateServiceModulesParams["after"]
     ) => CreateServiceModulesParams["after"];
   };
-  [EventsName.CreateControllerModules]?: {
+  [EventNames.CreateControllerModules]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateControllerModulesParams["before"]
@@ -85,7 +99,7 @@ export type Events = {
       eventParams: CreateControllerModulesParams["after"]
     ) => CreateControllerModulesParams["after"];
   };
-  [EventsName.CreateAuthModules]?: {
+  [EventNames.CreateAuthModules]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateAuthModulesParams["before"]
@@ -93,7 +107,7 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       eventParams: CreateAuthModulesParams["after"]
-    ) => Promise<CreateAuthModulesParams["after"]>;
+    ) => void;
   };
 };
 

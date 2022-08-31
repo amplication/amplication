@@ -34,7 +34,6 @@ import {
 } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
-import DsgContext from "../../../dsg-context";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -56,8 +55,7 @@ export async function createServiceModules(
   entityType: string,
   entity: Entity,
   dtos: DTOs,
-  srcDirectory: string,
-  extraMapping?: { [key: string]: any }
+  srcDirectory: string
 ): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
   const serviceBaseId = createServiceBaseId(entityType);
@@ -98,10 +96,10 @@ export async function createServiceModules(
         );
       })
     ),
-    ...(extraMapping || {}),
   };
   return [
     await createServiceModule(
+      entityName,
       mapping,
       passwordFields,
       serviceId,
@@ -124,15 +122,15 @@ export async function createServiceModules(
 }
 
 async function createServiceModule(
+  entityName: string,
   mapping: { [key: string]: ASTNode | undefined },
   passwordFields: EntityField[],
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
   srcDirectory: string
 ): Promise<Module> {
-  const context = DsgContext.getInstance;
-  const modulePath = `${srcDirectory}/${context.appInfo}/${context.appInfo}.service.ts`;
-  const moduleBasePath = `${srcDirectory}/${context.appInfo}/base/${context.appInfo}.service.base.ts`;
+  const modulePath = `${srcDirectory}/${entityName}/${entityName}.service.ts`;
+  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
   const file = await readFile(serviceTemplatePath);
 
   interpolate(file, mapping);

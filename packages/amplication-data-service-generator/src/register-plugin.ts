@@ -1,7 +1,7 @@
 import {
   DsgPlugin,
   Events,
-  EventsName,
+  EventNames,
   PluginMap,
 } from "@amplication/code-gen-types";
 
@@ -14,7 +14,9 @@ const functionsObject = ["[object Function]", "[object AsyncFunction]"];
  * @param pluginList
  * @returns Plugin class
  */
-async function* getPluginFuncGenerator(pluginList: DsgPlugin[]): AsyncGenerator<new () => any> {
+async function* getPluginFuncGenerator(
+  pluginList: DsgPlugin[]
+): AsyncGenerator<new () => any> {
   try {
     const pluginListLength = pluginList.length;
     let index = 0;
@@ -58,9 +60,9 @@ const getAllPlugins = async (pluginList: DsgPlugin[]): Promise<Events[]> => {
 /**
  * main plugin manger function. it trigger plugin import and set the structure for plugin context
  */
-const pluginManager = async (
+const registerPlugins = async (
   pluginList: DsgPlugin[]
-): Promise<{ [K in EventsName]?: any }> => {
+): Promise<{ [K in EventNames]?: any }> => {
   const pluginMap: PluginMap = {};
 
   const pluginFuncsArr = (await getAllPlugins(pluginList)) as Events[];
@@ -70,9 +72,10 @@ const pluginManager = async (
     (pluginContext: { [key: string]: any }, plugin: Events) => {
       Object.keys(plugin).forEach((eventKey: string) => {
         if (!pluginMap.hasOwnProperty(eventKey))
-          pluginContext[eventKey as EventsName] = { before: [], after: [] };
+          pluginContext[eventKey as EventNames] = { before: [], after: [] };
 
         const { before, after } = plugin[eventKey as keyof Events] || {};
+
         functionsObject.includes(Object.prototype.toString.call(before)) &&
           pluginContext[eventKey].before.push(before);
         functionsObject.includes(Object.prototype.toString.call(after)) &&
@@ -86,4 +89,4 @@ const pluginManager = async (
   return pluginMap;
 };
 
-export default pluginManager;
+export default registerPlugins;
