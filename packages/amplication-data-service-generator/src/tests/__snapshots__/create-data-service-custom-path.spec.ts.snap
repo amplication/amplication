@@ -3524,44 +3524,6 @@ export class TokenServiceBase implements ITokenService {
   }
 }
 ",
-  "test/src/auth/basic/base/basic.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { BasicStrategy as Strategy } from \\"passport-http\\";
-import { AuthService } from \\"../../auth.service\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class BasicStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
-  constructor(protected readonly authService: AuthService) {
-    super();
-  }
-
-  async validate(username: string, password: string): Promise<UserInfo> {
-    const user = await this.authService.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-}
-",
-  "test/src/auth/basic/basic.strategy.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { AuthService } from \\"../auth.service\\";
-import { BasicStrategyBase } from \\"./base/basic.strategy.base\\";
-
-@Injectable()
-export class BasicStrategy extends BasicStrategyBase {
-  constructor(protected readonly authService: AuthService) {
-    super(authService);
-  }
-}
-",
-  "test/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
-",
   "test/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
 export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
 ",
@@ -3639,78 +3601,6 @@ export const UserRoles = createParamDecorator(
     return data ? request.user[data] : request.user.roles;
   }
 );
-",
-  "test/src/auth/jwt/base/jwt.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { ExtractJwt, Strategy } from \\"passport-jwt\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../../user/user.service\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class JwtStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
-  constructor(
-    protected readonly userService: UserService,
-    protected readonly secretOrKey: string
-  ) {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey,
-    });
-  }
-
-  async validate(payload: UserInfo): Promise<UserInfo> {
-    const { username } = payload;
-    const user = await this.userService.findOne({
-      where: { username },
-    });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-}
-",
-  "test/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
-import { JWT_SECRET_KEY } from \\"../../constants\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../../user/user.service\\";
-import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
-@Injectable()
-export class JwtStrategy extends JwtStrategyBase {
-  constructor(
-    protected readonly userService: UserService,
-    @Inject(JWT_SECRET_KEY) secretOrKey: string
-  ) {
-    super(userService, secretOrKey);
-  }
-}
-",
-  "test/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
-",
-  "test/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY } from \\"../../constants\\";
-import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
-
-export const jwtSecretFactory = {
-  provide: JWT_SECRET_KEY,
-  useFactory: async (
-    secretsService: SecretsManagerService
-  ): Promise<string> => {
-    const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
-    if (secret) {
-      return secret;
-    }
-    throw new Error(\\"jwtSecretFactory missing secret\\");
-  },
-  inject: [SecretsManagerService],
-};
 ",
   "test/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
 import { Test, TestingModule } from \\"@nestjs/testing\\";
@@ -11944,6 +11834,116 @@ export class ServeStaticOptionsService
     return DEFAULT_STATIC_MODULE_OPTIONS_LIST;
   }
 }
+",
+  "test/src/src/auth/basic/base/basic.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
+import { PassportStrategy } from \\"@nestjs/passport\\";
+import { BasicStrategy as Strategy } from \\"passport-http\\";
+import { AuthService } from \\"../../auth.service\\";
+import { IAuthStrategy } from \\"../../IAuthStrategy\\";
+import { UserInfo } from \\"../../UserInfo\\";
+
+export class BasicStrategyBase
+  extends PassportStrategy(Strategy)
+  implements IAuthStrategy {
+  constructor(protected readonly authService: AuthService) {
+    super();
+  }
+
+  async validate(username: string, password: string): Promise<UserInfo> {
+    const user = await this.authService.validateUser(username, password);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+}
+",
+  "test/src/src/auth/basic/basic.strategy.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { AuthService } from \\"../auth.service\\";
+import { BasicStrategyBase } from \\"./base/basic.strategy.base\\";
+
+@Injectable()
+export class BasicStrategy extends BasicStrategyBase {
+  constructor(protected readonly authService: AuthService) {
+    super(authService);
+  }
+}
+",
+  "test/src/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+
+export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
+",
+  "test/src/src/auth/jwt/base/jwt.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
+import { PassportStrategy } from \\"@nestjs/passport\\";
+import { ExtractJwt, Strategy } from \\"passport-jwt\\";
+import { IAuthStrategy } from \\"../../IAuthStrategy\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { UserService } from \\"../../user/user.service\\";
+import { UserInfo } from \\"../../UserInfo\\";
+
+export class JwtStrategyBase
+  extends PassportStrategy(Strategy)
+  implements IAuthStrategy {
+  constructor(
+    protected readonly userService: UserService,
+    protected readonly secretOrKey: string
+  ) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey,
+    });
+  }
+
+  async validate(payload: UserInfo): Promise<UserInfo> {
+    const { username } = payload;
+    const user = await this.userService.findOne({
+      where: { username },
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+}
+",
+  "test/src/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
+import { JWT_SECRET_KEY } from \\"../../constants\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { UserService } from \\"../../user/user.service\\";
+import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
+@Injectable()
+export class JwtStrategy extends JwtStrategyBase {
+  constructor(
+    protected readonly userService: UserService,
+    @Inject(JWT_SECRET_KEY) secretOrKey: string
+  ) {
+    super(userService, secretOrKey);
+  }
+}
+",
+  "test/src/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
+
+export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
+",
+  "test/src/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY } from \\"../../constants\\";
+import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
+
+export const jwtSecretFactory = {
+  provide: JWT_SECRET_KEY,
+  useFactory: async (
+    secretsService: SecretsManagerService
+  ): Promise<string> => {
+    const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
+    if (secret) {
+      return secret;
+    }
+    throw new Error(\\"jwtSecretFactory missing secret\\");
+  },
+  inject: [SecretsManagerService],
+};
 ",
   "test/src/swagger.ts": "import { DocumentBuilder } from \\"@nestjs/swagger\\";
 
