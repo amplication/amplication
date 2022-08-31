@@ -131,7 +131,8 @@ $modal-menu-top: 30px;
   }
 
   &__divider {
-    border: $border-black5;
+    border: none;
+    width: $border-black10;
     margin-left: 10px;
     margin-right: 10px;
     margin-top: 0;

@@ -19,7 +19,9 @@ $resource-name-max-width: 180px;
   }
 
   &__divider {
-    border: $border-black5;
+    border: none;
+    background-color: var(--black10);
+    height: 1px;
     width: 100%;
     margin-top: auto;
   }
@@ -33,7 +35,7 @@ $resource-name-max-width: 180px;
 
   &__changes-header {
     @include flexFullRowWithSpacing;
-    @include body2;
+    @include regular-12;
 
     :first-child {
       color: var(--black100);
@@ -105,6 +107,17 @@ $resource-name-max-width: 180px;
     overflow-x: hidden;
     overflow-y: auto;
 
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+      border-radius: var(--scrollbar-radius);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--black60);
+      border-radius: var(--scrollbar-radius);
+      width: var(--grid-row-gap);
+    }
+
     &__resource {
       @include bold-12;
       margin-bottom: var(--medium-spacing);
@@ -114,7 +127,7 @@ $resource-name-max-width: 180px;
       overflow: hidden;
       text-overflow: ellipsis;
       .circle-badge {
-        margin-right: var(--default-spacing);
+        margin-right: var(--user-badge-spacing);
       }
     }
   }
@@ -123,6 +136,7 @@ $resource-name-max-width: 180px;
     color: var(--black100);
     font-size: var(--icon-font-size);
     cursor: pointer;
+    margin-right: 0;
   }
 }
 

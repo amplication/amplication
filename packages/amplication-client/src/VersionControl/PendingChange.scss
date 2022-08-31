@@ -6,16 +6,16 @@ $before-spacing: -6px;
 .pending-change {
   margin-left: 0;
   margin-right: var(--default-spacing-small);
-  margin-bottom: var(--default-spacing-small);
+  margin-bottom: var(--default-spacing);
   position: relative;
   @include flexFullRow;
 
   &:last-child {
-    margin-bottom: var(--double-spacing);
+    margin-bottom: var(--large-spacing);
   }
 
   &__link {
-    font-size: var(--title2-font-size);
+    @include regular-12;
   }
 
   &__spacer {
@@ -34,14 +34,14 @@ $before-spacing: -6px;
     color: var(--static-white);
     margin-bottom: 0;
     margin-left: var(--double-spacing);
-    margin-right: var(--default-spacing);
+    margin-right: var(--user-badge-spacing);
 
     &:before {
       content: "";
       position: absolute;
       display: block;
       left: $before-spacing-left;
-      border-right: 1px solid var(--black30);
+      border-right: 1px solid var(--black10);
       top: $before-spacing;
       bottom: $before-spacing;
     }

@@ -2,11 +2,10 @@
 
 .commit {
   padding-top: 0;
-  margin-bottom: var(--default-spacing);
 
   .amp-button {
     @include regular-12;
-    margin-top: var(--large-spacing);
+    margin: var(--large-spacing) 0;
     width: 100%;
   }
 

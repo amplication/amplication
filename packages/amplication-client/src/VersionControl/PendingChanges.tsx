@@ -113,7 +113,7 @@ const PendingChanges = ({ projectId }: Props) => {
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 disabled={pendingChangesDataLoading || noChanges}
-                icon="compare"
+                icon="compare"  
               />
             </Link>
           </Tooltip>
