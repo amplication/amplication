@@ -72,7 +72,7 @@ const NewWorkspace = () => {
         }}
       </Formik>
       <Snackbar
-        open={Boolean(createNewWorkspaceError)}
+        open={Boolean(errorMessage)}
         message={errorMessage}
       />
     </div>
