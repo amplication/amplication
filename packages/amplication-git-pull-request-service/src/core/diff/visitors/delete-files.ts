@@ -3,7 +3,7 @@ import { join } from 'path';
 import { PrModule } from '../../../constants';
 
 export function deleteFilesVisitor(diff: Difference): PrModule | null {
-const { state, name1, type1, type2, relativePath } = diff;
+  const { state, name1, type1, type2, relativePath } = diff;
   if (!name1) {
     return null;
   }
