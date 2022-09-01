@@ -51,8 +51,6 @@ export class DiffService {
     DiffService.assertBuildExist(oldBuildPath);
     DiffService.assertBuildExist(newBuildPath);
 
-    this.logger.info({ oldBuildPath, newBuildPath });
-
     const res = await compare(oldBuildPath, newBuildPath, {
       compareContent: true,
       compareDate: false,
