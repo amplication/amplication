@@ -29,7 +29,7 @@ export class DiffService {
       resourceId,
       newAmplicationBuildId
     );
-    // return all the new files if an old build folder dont exist
+    // If an old build folder does not exist, we return all new files
     if (!previousAmplicationBuildId) {
       return this.allNewModules(newBuildPath);
     }
