@@ -4,10 +4,14 @@ import {
 } from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
 import assert from 'assert';
+import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
 import { normalize } from 'path';
+import { PrModule } from '../../constants';
+import { mapDiffSetToPrModule } from './diffset-mapper';
 import { BuildPathFactory } from './utils/BuildPathFactory';
+import { deleteFilesVisitor } from './visitors/delete-files';
 
 @Injectable()
 export class DiffService {
@@ -20,13 +24,14 @@ export class DiffService {
     resourceId: string,
     previousAmplicationBuildId: string | undefined,
     newAmplicationBuildId: string
-  ): Promise<{ path: string; code: string }[]> {
+  ): Promise<PrModule[]> {
     const newBuildPath = this.buildsPathFactory.get(
       resourceId,
       newAmplicationBuildId
     );
+    // If an old build folder does not exist, we return all new files
     if (!previousAmplicationBuildId) {
-      return this.firstBuild(newBuildPath);
+      return this.getAllModulesForPath(newBuildPath);
     }
     const oldBuildPath = this.buildsPathFactory.get(
       resourceId,
@@ -43,54 +48,35 @@ export class DiffService {
       'Cant get the same build id'
     );
 
-    return this.firstBuild(newBuildPath);
-    // // return all the new files if an old build folder dont exist
-    // if (existsSync(oldBuildPath) === false) {
-    //   return this.firstBuild(newBuildPath);
-    // }
+    DiffService.assertBuildExist(oldBuildPath);
+    DiffService.assertBuildExist(newBuildPath);
 
-    // DiffService.assertBuildExist(newBuildPath);
+    const res = await compare(oldBuildPath, newBuildPath, {
+      compareContent: true,
+      compareDate: false,
+      compareSize: false,
+      compareSymlink: false,
+      skipEmptyDirs: true,
+    });
 
-    // this.logger.info({ oldBuildPath, newBuildPath });
+    this.logger.debug('Finish the dir-compare lib process');
 
-    // const res = await compare(oldBuildPath, newBuildPath, {
-    //   compareContent: true,
-    //   compareDate: false,
-    //   compareSize: false,
-    //   compareSymlink: false,
-    // });
+    if (!res?.diffSet) {
+      throw new Error('Error in creating a diff set');
+    }
 
-    // this.logger.debug('Finish the dir-compare lib process');
+    const modules = mapDiffSetToPrModule(res.diffSet, [deleteFilesVisitor]);
 
-    // const changedFiles = res.diffSet.filter((diff) => {
-    //   if (diff.state !== 'equal' && diff.type2 === 'file') {
-    //     //make sure that only new files enter and ignore old files
-    //     if (diff.state !== 'left') {
-    //       return true;
-    //     }
-    //   }
-    //   return false;
-    // });
-
-    // this.logger.info('The list of the changed files', { changedFiles });
-
-    // const modules = changedFiles.map(async (diff) => {
-    //   const path = join(diff.relativePath, diff.name2);
-    //   const code = await readFileSync(join(diff.path2, diff.name2)).toString(
-    //     'utf8'
-    //   );
-    //   return {
-    //     path,
-    //     code,
-    //   };
-    // });
-
-    // return await Promise.all(modules);
+    const resultModule = await Promise.all([
+      ...(await this.getAllModulesForPath(newBuildPath)),
+      ...modules,
+    ]);
+    return resultModule;
   }
 
-  private async firstBuild(newBuildPath: string) {
-    const basePathLength = newBuildPath.length;
-    const files = sync(`${newBuildPath}/**`, { dot: true }).map(
+  private async getAllModulesForPath(buildPath: string) {
+    const basePathLength = buildPath.length;
+    const files = sync(`${buildPath}/**`, { dot: true }).map(
       async (fullPath) => {
         const path = normalize(fullPath.slice(basePathLength));
         const code = await readFileSync(fullPath).toString('utf8');
