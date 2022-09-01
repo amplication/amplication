@@ -107,6 +107,7 @@
     "@types/node-fetch": "2.6.1",
     "@types/passport": "1.0.7",
     "@types/passport-github": "1.1.7",
+    "@types/passport-github2": "1.2.5",
     "@types/passport-jwt": "3.0.6",
     "@types/pluralize": "0.0.29",
     "@types/semver": "7.3.9",
