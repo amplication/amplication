@@ -39,11 +39,14 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   async githubCallback(@Req() request: Request, @Res() response: Response) {
     const user: AuthUser = request.user as AuthUser;
+
     this.logger.log({
       level: 'info',
       message: `receive login callback from github account_id=${user.account.id}`
     });
+
+    const isNewPath = user.isNewUser ? '&complete-signup=1' : '';
     const token = await this.authService.prepareToken(user);
-    response.redirect(301, `${this.host}?token=${token}`);
+    response.redirect(301, `${this.host}?token=${token}${isNewPath}`);
   }
 }

@@ -26,11 +26,15 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
       }
     });
     if (!user) {
-      return this.authService.createGitHubUser(profile, email);
+      const newUser = await this.authService.createGitHubUser(profile, email);
+      newUser.isNewUser = true;
+      return newUser;
     }
     if (!user.account.githubId) {
+      user.isNewUser = false;
       return this.authService.updateGitHubUser(user, profile);
     }
+    user.isNewUser = false;
     return user;
   }
 }

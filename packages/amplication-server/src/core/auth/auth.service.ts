@@ -26,6 +26,7 @@ export type AuthUser = User & {
   account: Account;
   workspace: Workspace;
   userRoles: UserRole[];
+  isNewUser?: boolean;
 };
 
 const TOKEN_PREVIEW_LENGTH = 8;
