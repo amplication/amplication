@@ -60,6 +60,14 @@ const EXAMPLE_CUID = 'EXAMPLE_CUID';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
 
+const EXAMPLE_GIT_REPOSITORY: GitRepository = {
+  id: 'exampleGitRepositoryId',
+  name: 'repositoryTest',
+  gitOrganizationId: 'exampleGitOrganizationId',
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   description: 'Sample Service for task management',
   name: 'My sample service',
@@ -219,14 +227,6 @@ const EXAMPLE_BUILD: Build = {
   message: 'new build',
   actionId: 'ExampleActionId',
   commitId: EXAMPLE_COMMIT_ID
-};
-
-const EXAMPLE_GIT_REPOSITORY: GitRepository = {
-  id: 'exampleGitRepositoryId',
-  name: 'repositoryTest',
-  gitOrganizationId: 'exampleGitOrganizationId',
-  createdAt: new Date(),
-  updatedAt: new Date()
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
@@ -602,7 +602,13 @@ describe('ResourceService', () => {
       ...args,
       data: {
         deletedAt: dateSpy.mock.instances[0],
-        name: prepareDeletedItemName(EXAMPLE_RESOURCE.name, EXAMPLE_RESOURCE.id)
+        name: prepareDeletedItemName(
+          EXAMPLE_RESOURCE.name,
+          EXAMPLE_RESOURCE.id
+        ),
+        gitRepository: {
+          disconnect: true
+        }
       }
     });
   });

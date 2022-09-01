@@ -13,6 +13,16 @@ type TData = {
   createResourceWithEntities: models.Resource;
 };
 
+const createGitRepositoryFullName = (
+  gitRepository: models.Maybe<models.GitRepository> | undefined
+) => {
+  return (
+    (gitRepository &&
+      `${gitRepository.gitOrganization.name}/${gitRepository.name}`) ||
+    "connect to GitHub"
+  );
+};
+
 const useResources = (
   currentWorkspace: models.Workspace | undefined,
   currentProject: models.Project | undefined
@@ -38,6 +48,10 @@ const useResources = (
     setProjectConfigurationResource,
   ] = useState<models.Resource | undefined>(undefined);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
+    createGitRepositoryFullName(currentResource?.gitRepository)
+  );
+  const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
   const {
     data: resourcesData,
@@ -87,6 +101,22 @@ const useResources = (
   };
 
   useEffect(() => {
+    if (resourceMatch) return;
+
+    currentResource && setCurrentResource(undefined);
+    projectConfigurationResource &&
+      setGitRepositoryFullName(
+        createGitRepositoryFullName(projectConfigurationResource.gitRepository)
+      );
+    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+  }, [
+    resourceMatch,
+    currentResource,
+    projectConfigurationResource,
+    gitRepositoryFullName,
+  ]);
+
+  useEffect(() => {
     if (!resourceMatch || !projectConfigurationResource) return;
 
     const urlResource =
@@ -96,7 +126,16 @@ const useResources = (
     );
 
     setCurrentResource(resource);
-  }, [resourceMatch, resources, projectConfigurationResource]);
+    setGitRepositoryFullName(
+      createGitRepositoryFullName(resource?.gitRepository)
+    );
+    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+  }, [
+    resourceMatch,
+    resources,
+    projectConfigurationResource,
+    gitRepositoryFullName,
+  ]);
 
   useEffect(() => {
     if (loadingResources || !resourcesData) return;
@@ -143,6 +182,8 @@ const useResources = (
     createResource,
     loadingCreateResource,
     errorCreateResource,
+    gitRepositoryFullName,
+    gitRepositoryUrl,
   };
 };
 
