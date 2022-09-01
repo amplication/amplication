@@ -4,9 +4,11 @@ import {
 } from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
 import assert from 'assert';
+import { compare, DiffSet } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
-import { normalize } from 'path';
+import { join, normalize } from 'path';
+import { PrModule } from '../../constants';
 import { BuildPathFactory } from './utils/BuildPathFactory';
 
 @Injectable()
@@ -20,11 +22,12 @@ export class DiffService {
     resourceId: string,
     previousAmplicationBuildId: string | undefined,
     newAmplicationBuildId: string
-  ): Promise<{ path: string; code: string }[]> {
+  ): Promise<PrModule[]> {
     const newBuildPath = this.buildsPathFactory.get(
       resourceId,
       newAmplicationBuildId
     );
+    // return all the new files if an old build folder dont exist
     if (!previousAmplicationBuildId) {
       return this.firstBuild(newBuildPath);
     }
@@ -43,26 +46,23 @@ export class DiffService {
       'Cant get the same build id'
     );
 
-    return this.firstBuild(newBuildPath);
-    // // return all the new files if an old build folder dont exist
-    // if (existsSync(oldBuildPath) === false) {
-    //   return this.firstBuild(newBuildPath);
-    // }
+    DiffService.assertBuildExist(oldBuildPath);
+    DiffService.assertBuildExist(newBuildPath);
 
-    // DiffService.assertBuildExist(newBuildPath);
+    this.logger.info({ oldBuildPath, newBuildPath });
 
-    // this.logger.info({ oldBuildPath, newBuildPath });
+    const res = await compare(oldBuildPath, newBuildPath, {
+      compareContent: true,
+      compareDate: false,
+      compareSize: false,
+      compareSymlink: false,
+    });
 
-    // const res = await compare(oldBuildPath, newBuildPath, {
-    //   compareContent: true,
-    //   compareDate: false,
-    //   compareSize: false,
-    //   compareSymlink: false,
-    // });
-
-    // this.logger.debug('Finish the dir-compare lib process');
-
-    // const changedFiles = res.diffSet.filter((diff) => {
+    this.logger.debug('Finish the dir-compare lib process');
+    if (!res?.diffSet) {
+      throw new Error('');
+    }
+    // const changedFiles = res?.diffSet?.filter((diff) => {
     //   if (diff.state !== 'equal' && diff.type2 === 'file') {
     //     //make sure that only new files enter and ignore old files
     //     if (diff.state !== 'left') {
@@ -71,21 +71,38 @@ export class DiffService {
     //   }
     //   return false;
     // });
-
+    const removedFiles = DiffService.removedFiles(res.diffSet);
     // this.logger.info('The list of the changed files', { changedFiles });
+    // if (!changedFiles) {
+    //   throw new Error("Didn't have changed files");
+    // }
+    const removedModules = removedFiles.map(({ name1, relativePath }) => {
+      if (!name1) {
+        throw new Error("Didn't have name1");
+      }
+      const path = join(relativePath, name1);
 
-    // const modules = changedFiles.map(async (diff) => {
-    //   const path = join(diff.relativePath, diff.name2);
-    //   const code = await readFileSync(join(diff.path2, diff.name2)).toString(
-    //     'utf8'
-    //   );
+      return {
+        path: path,
+        code: null,
+      };
+    });
+    // const modules = changedFiles.map(async ({ name2, path2, relativePath }) => {
+    //   if (!name2 || !path2) {
+    //     throw new Error("Didn't got valid props");
+    //   }
+    //   const path = join(relativePath, name2);
+    //   const code = await readFileSync(join(path2, name2)).toString('utf8');
     //   return {
     //     path,
     //     code,
     //   };
     // });
-
-    // return await Promise.all(modules);
+    const resultModule = await Promise.all([
+      /*...modules,*/ ...(await this.firstBuild(newBuildPath)),
+      ...removedModules,
+    ]);
+    return resultModule;
   }
 
   private async firstBuild(newBuildPath: string) {
@@ -105,5 +122,18 @@ export class DiffService {
 
   private static assertBuildExist(buildPath) {
     assert(existsSync(buildPath));
+  }
+
+  private static removedFiles(diff: DiffSet): DiffSet {
+    return diff.filter((diff) => {
+      if (
+        diff.state === 'left' &&
+        diff.type2 === 'missing' &&
+        diff.type1 !== 'directory'
+      ) {
+        return true;
+      }
+      return false;
+    });
   }
 }
