@@ -4,7 +4,7 @@ import { deleteFilesVisitor } from './delete-files';
 import { missingFolderMock } from './mocks';
 
 describe('Testing the delete files visitor', () => {
-  it('return null when its a new file', () => {
+  it('should return null if diff indicates an addition', () => {
     // Arrange
     // The name1 is not existing
     const diff = mock<Difference>({});
