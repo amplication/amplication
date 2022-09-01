@@ -31,7 +31,7 @@ export class DiffService {
     );
     // If an old build folder does not exist, we return all new files
     if (!previousAmplicationBuildId) {
-      return this.allNewModules(newBuildPath);
+      return this.getAllModulesForPath(newBuildPath);
     }
     const oldBuildPath = this.buildsPathFactory.get(
       resourceId,
@@ -68,15 +68,15 @@ export class DiffService {
     const modules = mapDiffSetToPrModule(res.diffSet, [deleteFilesVisitor]);
 
     const resultModule = await Promise.all([
-      ...(await this.allNewModules(newBuildPath)),
+      ...(await this.getAllModulesForPath(newBuildPath)),
       ...modules,
     ]);
     return resultModule;
   }
 
-  private async allNewModules(newBuildPath: string) {
-    const basePathLength = newBuildPath.length;
-    const files = sync(`${newBuildPath}/**`, { dot: true }).map(
+  private async getAllModulesForPath(buildPath: string) {
+    const basePathLength = buildPath.length;
+    const files = sync(`${buildPath}/**`, { dot: true }).map(
       async (fullPath) => {
         const path = normalize(fullPath.slice(basePathLength));
         const code = await readFileSync(fullPath).toString('utf8');
