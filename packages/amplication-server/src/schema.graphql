@@ -1055,8 +1055,8 @@ type Mutation {
   createProject(data: ProjectCreateInput!): Project!
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
-  createResource(data: ResourceCreateInput!): Resource!
-  createResourceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
+  createService(data: ResourceCreateInput!): Resource!
+  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!

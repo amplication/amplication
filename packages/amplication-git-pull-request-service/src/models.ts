@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -372,11 +370,15 @@ export type ConnectorRestApiCreateInput = {
   authenticationType: EnumConnectorRestApiAuthenticationType;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  httpBasicAuthenticationSettings?: InputMaybe<HttpBasicAuthenticationSettingsInput>;
+  httpBasicAuthenticationSettings?: InputMaybe<
+    HttpBasicAuthenticationSettingsInput
+  >;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  privateKeyAuthenticationSettings?: InputMaybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: InputMaybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
   resource: WhereParentIdInput;
 };
 
@@ -1056,9 +1058,9 @@ export type Mutation = {
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createProject: Project;
-  createResource: Resource;
   createResourceRole: ResourceRole;
-  createResourceWithEntities: Resource;
+  createService: Resource;
+  createServiceWithEntities: Resource;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
   deleteEntity?: Maybe<Entity>;
@@ -1172,15 +1174,15 @@ export type MutationCreateProjectArgs = {
   data: ProjectCreateInput;
 };
 
-export type MutationCreateResourceArgs = {
-  data: ResourceCreateInput;
-};
-
 export type MutationCreateResourceRoleArgs = {
   data: ResourceRoleCreateInput;
 };
 
-export type MutationCreateResourceWithEntitiesArgs = {
+export type MutationCreateServiceArgs = {
+  data: ResourceCreateInput;
+};
+
+export type MutationCreateServiceWithEntitiesArgs = {
   data: ResourceCreateWithEntitiesInput;
 };
 
