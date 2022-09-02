@@ -533,6 +533,7 @@ model Subscription {
 enum EnumResourceType {
   Service
   ProjectConfiguration
+  MessageBroker
 }
 
 enum EnumGitProvider {

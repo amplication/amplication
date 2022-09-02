@@ -14,4 +14,8 @@ export const resourceThemeMap: {
     icon: "services",
     color: "#A787FF",
   },
+  [EnumResourceType.MessageBroker]: {
+    icon: "queue",
+    color: "#8DD9B9",
+  },
 };

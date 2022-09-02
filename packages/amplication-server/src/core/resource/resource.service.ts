@@ -121,6 +121,23 @@ export class ResourceService {
     });
   }
 
+
+   /**
+   * Create a resource of type "Service", with the built-in "user" role
+   */
+    async createMessageBroker(
+      args: CreateOneResourceArgs
+    ): Promise<Resource> {
+      const resource = await this.createResource({
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.MessageBroker
+        }
+      });
+    
+      return resource;
+    }
+
   /**
    * Create a resource of type "Service", with the built-in "user" role
    */
