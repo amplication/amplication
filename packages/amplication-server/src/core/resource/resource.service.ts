@@ -104,8 +104,7 @@ export class ResourceService {
       throw new AmplicationError('Project configuration missing from project');
     }
 
-    const lowerResourceName = args.data.name.toLowerCase();
-
+    let lowerResourceName = args.data.name.toLowerCase();
     const existingResources = await this.prisma.resource.findMany({
       where: {
         name: {
@@ -122,10 +121,12 @@ export class ResourceService {
 
     let index = 1;
     while (
+      index < 10 &&
       existingResources.find(resource => {
         return resource.name.toLowerCase() === lowerResourceName;
       })
     ) {
+      lowerResourceName = `${lowerResourceName}-${index}`;
       args.data.name = `${args.data.name}-${index}`;
       index += 1;
     }
