@@ -1,10 +1,23 @@
 @import "../style/index.scss";
-$selector-title-max-width: 180px;
+$button-width: 180px;
 
 .create-resource-button {
-  a {
+  position: relative;
+
+  .amp-button {
+    width: $button-width;
+  }
+
+  .select-menu__modal {
+    > div {
+      width: $button-width;
+    }
+  }
+  .select-menu__item {
+    width: $button-width;
     display: flex;
     align-items: center;
+    padding: var(--default-spacing);
 
     .circle-badge {
       margin-right: var(--default-spacing);

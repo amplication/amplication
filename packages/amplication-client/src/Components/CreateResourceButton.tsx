@@ -38,7 +38,7 @@ const CreateResourceButton = () => {
         buttonStyle={EnumButtonStyle.Primary}
         icon="plus"
       >
-        <SelectMenuModal>
+        <SelectMenuModal align="right">
           <SelectMenuList>
             {ITEMS.map((item, index) => (
               <CreateResourceButtonItem item={item} key={index} />
