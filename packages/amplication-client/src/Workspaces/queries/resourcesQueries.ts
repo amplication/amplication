@@ -62,8 +62,22 @@ export const GET_RESOURCES = gql`
   }
 `;
 
-export const CREATE_RESOURCE_WITH_ENTITIES = gql`
+export const CREATE_SERVICE_WITH_ENTITIES = gql`
   mutation createServiceWithEntities($data: ResourceCreateWithEntitiesInput!) {
+    createServiceWithEntities(data: $data) {
+      id
+      name
+      description
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        id
+      }
+    }
+  }
+`;
+
+
+export const CREATE_MESSAGE_BROKER = gql`
+  mutation createMessageBroker($data: ResourceCreateInput!) {
     createServiceWithEntities(data: $data) {
       id
       name
