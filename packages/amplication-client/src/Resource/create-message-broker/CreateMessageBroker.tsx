@@ -5,28 +5,17 @@ import {
   Modal,
   Snackbar,
 } from "@amplication/design-system";
-import React, {
-  MutableRefObject,
-  useCallback,
-  useContext,
-  useRef,
-} from "react";
+import React, { useCallback, useContext } from "react";
 import { match, useHistory } from "react-router-dom";
-import { formatError } from "../../util/error";
-import "./CreateServiceWizard.scss";
-import {
-  CreateServiceWizardForm,
-  serviceSettings,
-} from "./CreateServiceWizardForm";
-import * as models from "../../models";
-import {
-  prepareServiceObject,
-  serviceSettingsFieldsInitValues,
-} from "../constants";
-import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
-import { AppRouteProps } from "../../routes/routesUtil";
+import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import { AppContext } from "../../context/appContext";
+import * as models from "../../models";
+import { AppRouteProps } from "../../routes/routesUtil";
+import { formatError } from "../../util/error";
+import { prepareMessageBrokerObject } from "../constants";
+import { CreateMessageBrokerForm } from "./CreateMessageBrokerForm";
+import "./CreateMessageBroker.scss";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -35,71 +24,40 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
+const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const {
     currentProject,
-    setNewService,
+    createMessageBroker,
     currentWorkspace,
-    errorCreateService,
-    loadingCreateService,
-    addEntity,
+    errorCreateMessageBroker,
+    loadingCreateMessageBroker,
   } = useContext(AppContext);
 
   const history = useHistory();
 
-  const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
-    serviceSettingsFieldsInitValues
-  );
-
-  const errorMessage = formatError(errorCreateService);
+  const errorMessage = formatError(errorCreateMessageBroker);
 
   const createStarterResource = useCallback(
-    (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
-      setNewService(data, eventName, addEntity);
+    (data: models.ResourceCreateInput, eventName: string) => {
+      createMessageBroker(data, eventName);
     },
-    [setNewService, addEntity]
+    [createMessageBroker]
   );
-
-  const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
-    serviceSettingsFields.current = currentServiceSettings;
-  };
 
   const handleBackToProjectClick = () => {
     history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
   };
 
   const handleCreateServiceClick = () => {
-    if (!serviceSettingsFields) return;
-    const {
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi,
-    } = serviceSettingsFields.current;
-
-    const isResourceWithEntities =
-      serviceSettingsFields.current.resourceType === "sample";
-
     if (currentProject) {
-      const resource = prepareServiceObject(
-        currentProject?.id,
-        isResourceWithEntities,
-        generateAdminUI,
-        generateGraphQL,
-        generateRestApi
-      );
-
-      createStarterResource(
-        resource,
-        isResourceWithEntities
-          ? "createResourceFromSample"
-          : "createResourceFromScratch"
-      );
+      const resource = prepareMessageBrokerObject(currentProject.id);
+      createStarterResource(resource, "createMessageBroker");
     }
   };
 
   return (
     <Modal open fullScreen css={moduleClass}>
-      {loadingCreateService ? (
+      {loadingCreateMessageBroker ? (
         <div className={`${moduleClass}__processing`}>
           <div
             className={`${moduleClass}__processing__message_title_container`}
@@ -125,27 +83,22 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
           <div className={`${moduleClass}__left`}>
             <div className={`${moduleClass}__description`}>
               <ResourceCircleBadge
-                type={models.EnumResourceType.Service}
+                type={models.EnumResourceType.MessageBroker}
                 size="large"
               />
               <div className={`${moduleClass}__description_top`}>
-                <h2>
-                  Amplication Service Creation Wizard Let’s start building your
-                  service
-                </h2>
+                <h2>Broker Creation Wizard</h2>
               </div>
               <div className={`${moduleClass}__description_bottom`}>
                 <h3>
-                  Select which components to include in your service and whether
-                  to use sample entities
+                  Create a message broker to communicate between services with
+                  messages and events
                 </h3>
               </div>
             </div>
           </div>
           <div className={`${moduleClass}__right`}>
-            <CreateServiceWizardForm
-              handleSubmitResource={handleSubmitResource}
-            />
+            <CreateMessageBrokerForm handleSubmitResource={() => {}} />
           </div>
         </div>
       )}
@@ -165,9 +118,12 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
           <label>Create Service</label>
         </Button>
       </div>
-      <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(errorCreateMessageBroker)}
+        message={errorMessage}
+      />
     </Modal>
   );
 };
 
-export default CreateServiceWizard;
+export default CreateMessageBrokerWizard;

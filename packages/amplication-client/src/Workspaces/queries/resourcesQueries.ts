@@ -75,10 +75,9 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
   }
 `;
 
-
 export const CREATE_MESSAGE_BROKER = gql`
   mutation createMessageBroker($data: ResourceCreateInput!) {
-    createServiceWithEntities(data: $data) {
+    createMessageBroker(data: $data) {
       id
       name
       description

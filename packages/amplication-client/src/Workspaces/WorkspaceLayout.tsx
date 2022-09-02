@@ -64,6 +64,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     errorCreateService,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    createMessageBroker,
+    errorCreateMessageBroker,
+    loadingCreateMessageBroker,
   } = useResources(currentWorkspace, currentProject);
 
   const {
@@ -92,7 +95,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         setNewProject: createProject,
         onNewProjectCompleted,
         resources,
-        setNewResource: createService,
+        setNewService: createService,
         projectConfigurationResource,
         handleSearchChange,
         loadingResources,
@@ -113,6 +116,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         refreshCurrentWorkspace,
         gitRepositoryFullName,
         gitRepositoryUrl,
+        createMessageBroker,
+        errorCreateMessageBroker,
+        loadingCreateMessageBroker,
       }}
     >
       {isMobileOnly ? (
