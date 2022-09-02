@@ -1,0 +1,13 @@
+@import "../style/index.scss";
+$selector-title-max-width: 180px;
+
+.create-resource-button {
+  a {
+    display: flex;
+    align-items: center;
+
+    .circle-badge {
+      margin-right: var(--default-spacing);
+    }
+  }
+}
