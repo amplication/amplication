@@ -136,6 +136,10 @@ export class ResourceService {
       }
     });
 
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id }
+    });
+
     await this.entityService.createDefaultEntities(resource.id, user);
 
     await this.environmentService.createDefaultEnvironment(resource.id);
