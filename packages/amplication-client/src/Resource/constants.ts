@@ -125,7 +125,7 @@ export type createServiceSettings = {
   resourceType: string;
 };
 
-export function createResource(
+export function createService(
   projectId: string,
   isResourceWithEntities: boolean,
   generateAdminUI: boolean,

@@ -10,7 +10,7 @@ import {
 
 type TData = {
   resources: models.Resource[];
-  createResourceWithEntities: models.Resource;
+  createServiceWithEntities: models.Resource;
 };
 
 const createGitRepositoryFullName = (
@@ -78,11 +78,11 @@ const useResources = (
   );
 
   const [
-    createResourceWithEntities,
-    { loading: loadingCreateResource, error: errorCreateResource },
+    createServiceWithEntities,
+    { loading: loadingCreateService, error: errorCreateService },
   ] = useMutation<TData>(CREATE_RESOURCE_WITH_ENTITIES);
 
-  const createResource = (
+  const createService = (
     data: models.ResourceCreateWithEntitiesInput,
     eventName: string,
     addEntity: (id: string) => void
@@ -90,12 +90,12 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
-    createResourceWithEntities({ variables: { data: data } }).then((result) => {
-      result.data?.createResourceWithEntities.id &&
-        addEntity(result.data?.createResourceWithEntities.id);
-      result.data?.createResourceWithEntities.id &&
+    createServiceWithEntities({ variables: { data: data } }).then((result) => {
+      result.data?.createServiceWithEntities.id &&
+        addEntity(result.data?.createServiceWithEntities.id);
+      result.data?.createServiceWithEntities.id &&
         refetch().then(() =>
-          resourceRedirect(result.data?.createResourceWithEntities.id as string)
+          resourceRedirect(result.data?.createServiceWithEntities.id as string)
         );
     });
   };
@@ -179,9 +179,9 @@ const useResources = (
     errorResources,
     currentResource,
     setResource,
-    createResource,
-    loadingCreateResource,
-    errorCreateResource,
+    createService,
+    loadingCreateService,
+    errorCreateService,
     gitRepositoryFullName,
     gitRepositoryUrl,
   };

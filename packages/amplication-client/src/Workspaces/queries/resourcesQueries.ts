@@ -63,8 +63,8 @@ export const GET_RESOURCES = gql`
 `;
 
 export const CREATE_RESOURCE_WITH_ENTITIES = gql`
-  mutation createResourceWithEntities($data: ResourceCreateWithEntitiesInput!) {
-    createResourceWithEntities(data: $data) {
+  mutation createServiceWithEntities($data: ResourceCreateWithEntitiesInput!) {
+    createServiceWithEntities(data: $data) {
       id
       name
       description

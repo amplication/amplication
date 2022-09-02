@@ -440,7 +440,7 @@ describe('ResourceService', () => {
       user: EXAMPLE_USER
     };
     expect(
-      await service.createResource(
+      await service.createService(
         createResourceArgs.args,
         createResourceArgs.user
       )
@@ -460,7 +460,7 @@ describe('ResourceService', () => {
 
   it('should fail to create resource with entities with a reserved name', async () => {
     await expect(
-      service.createResourceWithEntities(
+      service.createServiceWithEntities(
         {
           resource: SAMPLE_SERVICE_DATA,
           commitMessage: 'commitMessage',
@@ -511,7 +511,7 @@ describe('ResourceService', () => {
       }
     };
     await expect(
-      service.createResourceWithEntities(
+      service.createServiceWithEntities(
         {
           resource: SAMPLE_SERVICE_DATA,
           commitMessage: commitMessage,

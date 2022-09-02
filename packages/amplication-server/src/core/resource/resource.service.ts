@@ -86,13 +86,10 @@ export class ResourceService {
   }
 
   /**
-   * Create resource in the user's workspace, with the built-in "user" role
+   * Create a resource
+   * This function should be called from one of the other "Create[ResourceType] functions like CreateService, CreateMessageBroker etc."
    */
-  async createResource(
-    args: CreateOneResourceArgs,
-    user: User,
-    generationSettings: ResourceGenSettingsCreateInput = null
-  ): Promise<Resource> {
+  private async createResource(args: CreateOneResourceArgs): Promise<Resource> {
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
         'Resource of type Project Configuration cannot be created manually'
@@ -116,13 +113,26 @@ export class ResourceService {
       };
     }
 
-    const resource = await this.prisma.resource.create({
+    return this.prisma.resource.create({
       data: {
         ...args.data,
-        gitRepository,
-        roles: {
-          create: USER_RESOURCE_ROLE
-        }
+        gitRepository
+      }
+    });
+  }
+
+  /**
+   * Create a resource of type "Service", with the built-in "user" role
+   */
+  async createService(
+    args: CreateOneResourceArgs,
+    user: User,
+    generationSettings: ResourceGenSettingsCreateInput = null
+  ): Promise<Resource> {
+    const resource = await this.createResource({
+      data: {
+        ...args.data,
+        resourceType: EnumResourceType.Service
       }
     });
 
@@ -136,35 +146,14 @@ export class ResourceService {
       generationSettings
     );
 
-    // try {
-    //   await this.commit(
-    //     {
-    //       data: {
-    //         project: {
-    //           connect: {
-    //             id: resource.projectId
-    //           }
-    //         },
-    //         message: INITIAL_COMMIT_MESSAGE,
-    //         user: {
-    //           connect: {
-    //             id: user.id
-    //           }
-    //         }
-    //       }
-    //     },
-    //     true
-    //   );
-    // } catch {} //ignore - return the new resource and the message will be available on the build log
-
     return resource;
   }
 
   /**
-   * Create an resource with entities and field in one transaction, based only on entities and fields names
+   * Create a resource of type "Service" with entities and fields in one transaction, based only on entities and fields names
    * @param user the user to associate the created resource with
    */
-  async createResourceWithEntities(
+  async createServiceWithEntities(
     data: ResourceCreateWithEntitiesInput,
     user: User
   ): Promise<Resource> {
@@ -201,7 +190,7 @@ export class ResourceService {
       index += 1;
     }
 
-    const resource = await this.createResource(
+    const resource = await this.createService(
       {
         data: data.resource
       },
@@ -286,26 +275,6 @@ export class ResourceService {
         }
       }
     }
-    // do not commit if there are no entities
-    // if (!isEmpty(data.entities)) {
-    //   try {
-    //     await this.commit({
-    //       data: {
-    //         project: {
-    //           connect: {
-    //             id: resource.projectId
-    //           }
-    //         },
-    //         message: data.commitMessage,
-    //         user: {
-    //           connect: {
-    //             id: user.id
-    //           }
-    //         }
-    //       }
-    //     });
-    //   } catch {} //ignore - return the new resource and the message will be available on the build log
-    // }
 
     return resource;
   }

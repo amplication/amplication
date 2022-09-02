@@ -1058,9 +1058,9 @@ export type Mutation = {
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createProject: Project;
-  createResource: Resource;
   createResourceRole: ResourceRole;
-  createResourceWithEntities: Resource;
+  createService: Resource;
+  createServiceWithEntities: Resource;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
   deleteEntity?: Maybe<Entity>;
@@ -1174,15 +1174,15 @@ export type MutationCreateProjectArgs = {
   data: ProjectCreateInput;
 };
 
-export type MutationCreateResourceArgs = {
-  data: ResourceCreateInput;
-};
-
 export type MutationCreateResourceRoleArgs = {
   data: ResourceRoleCreateInput;
 };
 
-export type MutationCreateResourceWithEntitiesArgs = {
+export type MutationCreateServiceArgs = {
+  data: ResourceCreateInput;
+};
+
+export type MutationCreateServiceWithEntitiesArgs = {
   data: ResourceCreateWithEntitiesInput;
 };
 

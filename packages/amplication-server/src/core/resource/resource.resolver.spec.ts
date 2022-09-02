@@ -180,9 +180,9 @@ const FIND_MANY_ENVIRONMENTS_QUERY = gql`
   }
 `;
 
-const CREATE_RESOURCE_MUTATION = gql`
+const CREATE_SERVICE_MUTATION = gql`
   mutation($data: ResourceCreateInput!) {
-    createResource(data: $data) {
+    createService(data: $data) {
       id
       createdAt
       updatedAt
@@ -301,7 +301,7 @@ const UPDATE_RESOURCE_MUTATION = gql`
 const resourceMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
-const createResourceMock = jest.fn(() => {
+const createServiceMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
 const deleteResourceMock = jest.fn(() => {
@@ -336,7 +336,7 @@ describe('ResourceResolver', () => {
           provide: ResourceService,
           useClass: jest.fn(() => ({
             resource: resourceMock,
-            createResource: createResourceMock,
+            createService: createServiceMock,
             deleteResource: deleteResourceMock,
             updateResource: updateResourceMock
           }))
@@ -510,7 +510,7 @@ describe('ResourceResolver', () => {
     });
   });
 
-  it('should create a resource', async () => {
+  it('should create a service', async () => {
     const resourceCreateInput: ResourceCreateInput = {
       name: EXAMPLE_NAME,
       description: EXAMPLE_DESCRIPTION,
@@ -518,14 +518,14 @@ describe('ResourceResolver', () => {
       project: { connect: { id: EXAMPLE_PROJECT_ID } }
     };
     const res = await apolloClient.query({
-      query: CREATE_RESOURCE_MUTATION,
+      query: CREATE_SERVICE_MUTATION,
       variables: {
         data: resourceCreateInput
       }
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
-      createResource: {
+      createService: {
         ...EXAMPLE_RESOURCE,
         resourceType: EnumResourceType.Service,
         createdAt: EXAMPLE_RESOURCE.createdAt.toISOString(),
@@ -552,8 +552,8 @@ describe('ResourceResolver', () => {
         ]
       }
     });
-    expect(createResourceMock).toBeCalledTimes(1);
-    expect(createResourceMock).toBeCalledWith(
+    expect(createServiceMock).toBeCalledTimes(1);
+    expect(createServiceMock).toBeCalledWith(
       {
         data: resourceCreateInput
       },
