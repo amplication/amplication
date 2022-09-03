@@ -9,6 +9,7 @@ import { User } from '../../models';
 import { ResourceService } from '../resource/resource.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
 import { AmplicationError } from 'src/errors/AmplicationError';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class ServiceMessageBrokerConnectionService extends BlockTypeService<
@@ -19,8 +20,11 @@ export class ServiceMessageBrokerConnectionService extends BlockTypeService<
 > {
   blockType = EnumBlockType.ServiceMessageBrokerConnection;
 
-  constructor(private resourceService: ResourceService) {
-    super();
+  constructor(
+    private resourceService: ResourceService,
+    protected readonly blockService: BlockService
+  ) {
+    super(blockService);
   }
 
   //check if the connected message broker is a resource of type "MessageBroker" in the current project
@@ -69,7 +73,7 @@ export class ServiceMessageBrokerConnectionService extends BlockTypeService<
     args: UpdateServiceMessageBrokerConnectionArgs,
     user: User
   ): Promise<ServiceMessageBrokerConnection> {
-    const block = await super.blockService.findOne({
+    const block = await this.blockService.findOne({
       where: args.where
     });
 
