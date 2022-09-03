@@ -21,6 +21,7 @@ import { ProjectModule } from './project/project.module';
 import { HealthModule } from './health/health.module';
 import { TopicModule } from './topic/topic.module';
 import { ServiceMessageBrokerConnectionModule } from './serviceMessageBrokerConnection/serviceMessageBrokerConnection.module';
+import { ServiceConnectionTopicModule } from './serviceConnectionTopic/serviceConnectionTopic.module';
 
 @Module({
   imports: [
@@ -46,7 +47,8 @@ import { ServiceMessageBrokerConnectionModule } from './serviceMessageBrokerConn
     ProjectModule,
     HealthModule,
     TopicModule,
-    ServiceMessageBrokerConnectionModule
+    ServiceMessageBrokerConnectionModule,
+    ServiceConnectionTopicModule
   ],
   exports: [
     AccountModule,
@@ -70,7 +72,8 @@ import { ServiceMessageBrokerConnectionModule } from './serviceMessageBrokerConn
     SubscriptionModule,
     ProjectModule,
     TopicModule,
-    ServiceMessageBrokerConnectionModule
+    ServiceMessageBrokerConnectionModule,
+    ServiceConnectionTopicModule
   ]
 })
 export class CoreModule {}
