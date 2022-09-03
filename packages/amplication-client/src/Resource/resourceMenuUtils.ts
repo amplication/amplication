@@ -3,7 +3,13 @@ import { EnumResourceType } from "../models";
 export type MenuItemLinks = "entities" | "roles" | "github" | "settings";
 
 export const resourceMenuLayout: { [key in EnumResourceType]: string[] } = {
-  [EnumResourceType.Service]: ["entities", "roles","connections", "github", "settings"],
+  [EnumResourceType.Service]: [
+    "entities",
+    "roles",
+    "connections",
+    "github",
+    "settings",
+  ],
   [EnumResourceType.ProjectConfiguration]: ["github", "settings"],
   [EnumResourceType.MessageBroker]: ["topics", "github", "settings"],
 };
