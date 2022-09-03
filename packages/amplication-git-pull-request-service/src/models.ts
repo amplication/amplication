@@ -3,10 +3,12 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -768,7 +770,7 @@ export type GitRepository = {
 export type IBlock = {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
@@ -1129,7 +1131,7 @@ export type ProjectConfigurationSettings = IBlock & {
   baseDirectory: Scalars['String'];
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
@@ -1520,7 +1522,7 @@ export type ServiceSettings = IBlock & {
   dbPassword: Scalars['String'];
   dbPort: Scalars['Int'];
   dbUser: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
@@ -1594,7 +1596,7 @@ export type Topic = IBlock & {
   __typename?: 'Topic';
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
