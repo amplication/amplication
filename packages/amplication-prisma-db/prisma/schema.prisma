@@ -452,6 +452,7 @@ enum EnumDataType {
 enum EnumBlockType {
   ServiceSettings
   ProjectConfigurationSettings
+  Topic
   Flow
   ConnectorRestApi
   ConnectorRestApiCall

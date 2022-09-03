@@ -3,6 +3,7 @@ import { registerEnumType } from '@nestjs/graphql';
 export enum EnumBlockType {
   ServiceSettings = 'ServiceSettings',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
+  Topic = 'Topic',
   Flow = 'Flow',
   ConnectorRestApi = 'ConnectorRestApi',
   ConnectorRestApiCall = 'ConnectorRestApiCall',
