@@ -1,6 +1,9 @@
 import { GithubFile } from '../Dto/entities/GithubFile';
 import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
-import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
+import {
+  RemoteGitRepository,
+  RemoteGitRepos
+} from '../Dto/entities/RemoteGitRepository';
 import { GitResourceMeta } from './GitResourceMeta';
 
 export interface IGitClient {
@@ -18,7 +21,11 @@ export interface IGitClient {
     isPublic: boolean
   ): Promise<RemoteGitRepository>;
 
-  getOrganizationRepos(installationId: string): Promise<RemoteGitRepository[]>;
+  getOrganizationRepos(
+    installationId: string,
+    limit: number,
+    page: number
+  ): Promise<RemoteGitRepos>;
 
   isRepoExist(installationId: string, name: string): Promise<boolean>;
 

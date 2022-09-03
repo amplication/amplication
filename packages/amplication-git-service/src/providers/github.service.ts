@@ -4,7 +4,10 @@ import { App, Octokit } from 'octokit';
 import { IGitClient } from '../contracts/IGitClient';
 import { GithubFile } from '../Dto/entities/GithubFile';
 import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
-import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
+import {
+  RemoteGitRepository,
+  RemoteGitRepos
+} from '../Dto/entities/RemoteGitRepository';
 import { EnumGitOrganizationType } from '../Dto/enums/EnumGitOrganizationType';
 import { ConverterUtil } from '../utils/ConverterUtil';
 import { createAppAuth } from '@octokit/auth-app';
@@ -88,10 +91,16 @@ export class GithubService implements IGitClient {
     };
   }
   async getOrganizationRepos(
-    installationId: string
-  ): Promise<RemoteGitRepository[]> {
+    installationId: string,
+    limit: number,
+    page: number
+  ): Promise<RemoteGitRepos> {
     const octokit = await this.getInstallationOctokit(installationId);
-    return await GithubService.getOrganizationReposWithOctokit(octokit);
+    return await GithubService.getOrganizationReposWithOctokitAndPagination(
+      octokit,
+      limit,
+      page
+    );
   }
 
   async isRepoExist(installationId: string, name: string): Promise<boolean> {
@@ -294,6 +303,30 @@ export class GithubService implements IGitClient {
       fullName: repo.full_name,
       admin: repo.permissions.admin
     }));
+  }
+
+  private static async getOrganizationReposWithOctokitAndPagination(
+    octokit: Octokit,
+    limit = 10,
+    page = 1
+  ): Promise<RemoteGitRepos> {
+    const results = await octokit.request(
+      `GET /installation/repositories?per_page=${limit}&page=${page}`
+    );
+    const repos = results.data.repositories.map(repo => ({
+      name: repo.name,
+      url: repo.html_url,
+      private: repo.private,
+      fullName: repo.full_name,
+      admin: repo.permissions.admin
+    }));
+
+    return {
+      totalRepos: results.data.total_count,
+      repos: repos,
+      pageSize: limit,
+      currentPage: page
+    };
   }
 
   private static async isRepoExistWithOctokit(

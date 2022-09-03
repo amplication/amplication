@@ -1636,6 +1636,14 @@ export type RemoteGitRepository = {
   url: Scalars["String"];
 };
 
+export type RemoteGitRepos = {
+  __typename?: "RemoteGitRepos";
+  repos: [RemoteGitRepository];
+  totalRepos: Scalars["Int"];
+  currentPage: Scalars["Int"];
+  pageSize: Scalars["Int"];
+};
+
 export type Resource = {
   __typename?: "Resource";
   builds: Array<Build>;

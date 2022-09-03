@@ -50,7 +50,7 @@ type Query {
   EntityPage(where: WhereUniqueInput!): EntityPage
   EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
+  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 
@@ -1027,6 +1027,13 @@ input EntityPageOrderByInput {
   description: SortOrder
 }
 
+type RemoteGitRepos {
+  repos: [RemoteGitRepository!]!
+  totalRepos: Float!
+  currentPage: Float!
+  pageSize: Float!
+}
+
 type RemoteGitRepository {
   name: String!
   url: String!
@@ -1038,6 +1045,8 @@ type RemoteGitRepository {
 input RemoteGitRepositoriesWhereUniqueInput {
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
+  limit: Float!
+  page: Float!
 }
 
 input GitOrganizationWhereInput {

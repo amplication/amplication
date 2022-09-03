@@ -19,6 +19,10 @@
       padding-bottom: var(--default-spacing-small);
     }
   }
+  &__pagination {
+    display: flex;
+    margin-bottom: 20px;
+  }
 }
 
 .amp-dialog.select-repo-dialog {
