@@ -163,14 +163,13 @@ export class BlockService {
 
     // validate the parent block type
     if (
-      parentBlock &&
       !this.canUseParentType(
         EnumBlockType[blockType],
-        EnumBlockType[parentBlock.blockType]
+        parentBlock && EnumBlockType[parentBlock.blockType]
       )
     ) {
       throw new ConflictException(
-        parentBlock.blockType
+        parentBlock?.blockType
           ? `Block type ${parentBlock.blockType} is not allowed as a parent for block type ${blockType}`
           : `Block type ${blockType} cannot be created without a parent block`
       );
@@ -393,7 +392,7 @@ export class BlockService {
 
   private canUseParentType(
     blockType: EnumBlockType,
-    parentType: EnumBlockType
+    parentType: EnumBlockType | null
   ): boolean {
     return this.blockTypeAllowedParents[blockType].has(parentType);
   }
