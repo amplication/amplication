@@ -23,6 +23,7 @@ type Props = {
 
 export const ServiceConnectionsList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
+    
     const { currentWorkspace, currentProject, resources } = useContext(
       AppContext
     );

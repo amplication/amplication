@@ -13,3 +13,30 @@ export const GET_SERVICE_MESSAGE_BROKER_CONNECTIONS = gql`
     }
   }
 `;
+
+export const UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION = gql`
+  mutation updateServiceMessageBrokerConnection(
+    $data: ServiceMessageBrokerConnectionUpdateInput!
+    $where: WhereUniqueInput!
+  ) {
+    updateServiceMessageBrokerConnection(data: $data, where: $where) {
+      id
+      displayName
+      messageBrokerId
+      enabled
+    }
+  }
+`;
+
+export const CREATE_SERVICE_MESSAGE_BROKER_CONNECTION = gql`
+  mutation createServiceMessageBrokerConnection(
+    $data: ServiceMessageBrokerConnectionCreateInput!
+  ) {
+    createServiceMessageBrokerConnection(data: $data) {
+      id
+      displayName
+      messageBrokerId
+      enabled
+    }
+  }
+`;
