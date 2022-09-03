@@ -53,7 +53,7 @@ describe('GitService', () => {
           gitProvider,
           installationId,
           2,
-          0
+          1
         );
         expect(remoteGitRepositories).toEqual(TEST_GIT_REPOS);
       });

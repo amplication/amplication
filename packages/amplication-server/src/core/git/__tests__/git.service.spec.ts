@@ -119,7 +119,9 @@ describe('GitService', () => {
       it('should return RemoteGitRepositories[]', async () => {
         const remoteGitRepositoriesWhereUniqueInput: RemoteGitRepositoriesWhereUniqueInput = {
           gitOrganizationId: 'exampleGitOrganizationId',
-          gitProvider: EnumGitProvider.Github
+          gitProvider: EnumGitProvider.Github,
+          limit: 2,
+          page: 1,
         };
         const remoteGitRepositories = await gitService.getReposOfOrganization(
           remoteGitRepositoriesWhereUniqueInput
