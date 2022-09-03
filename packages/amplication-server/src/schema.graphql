@@ -720,7 +720,7 @@ type ServiceSettings implements IBlock {
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
-  description: String!
+  description: String
   blockType: EnumBlockType!
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
@@ -743,7 +743,7 @@ interface IBlock {
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
-  description: String!
+  description: String
   blockType: EnumBlockType!
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
@@ -848,7 +848,7 @@ type ProjectConfigurationSettings implements IBlock {
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
-  description: String!
+  description: String
   blockType: EnumBlockType!
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
@@ -892,7 +892,7 @@ type Topic implements IBlock {
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
-  description: String!
+  description: String
   blockType: EnumBlockType!
   versionNumber: Float!
   inputParameters: [BlockInputOutput!]!
