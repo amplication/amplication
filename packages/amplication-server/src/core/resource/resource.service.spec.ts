@@ -281,6 +281,9 @@ const prismaEntityFindManyMock = jest.fn(() => {
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
 });
+const prismaResourceRoleCreateMock = jest.fn(() => {
+  return null;
+});
 
 const prismaGitRepositoryCreateMock = jest.fn(() => {
   return EXAMPLE_GIT_REPOSITORY;
@@ -362,6 +365,9 @@ describe('ResourceService', () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock
+            },
+            resourceRole: {
+              create: prismaResourceRoleCreateMock
             }
           }))
         },
@@ -545,7 +551,7 @@ describe('ResourceService', () => {
             deletedAt: null,
             name: {
               mode: QueryMode.Insensitive,
-              startsWith: SAMPLE_SERVICE_DATA.name
+              startsWith: SAMPLE_SERVICE_DATA.name.toLowerCase()
             },
             projectId: EXAMPLE_PROJECT_ID
           },
