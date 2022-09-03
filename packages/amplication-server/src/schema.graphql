@@ -697,6 +697,14 @@ input ResourceWhereInput {
   description: StringFilter
   project: WhereUniqueInput
   projectId: String
+  resourceType: EnumResourceTypeFilter
+}
+
+input EnumResourceTypeFilter {
+  equals: EnumResourceType
+  not: EnumResourceType
+  in: [EnumResourceType!]
+  notIn: [EnumResourceType!]
 }
 
 input ProjectOrderByInput {

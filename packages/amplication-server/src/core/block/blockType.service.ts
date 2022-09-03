@@ -19,7 +19,7 @@ export abstract class BlockTypeService<
   abstract blockType: EnumBlockType;
 
   @Inject()
-  private readonly blockService: BlockService;
+  protected readonly blockService: BlockService;
 
   async findOne(args: FindOneArgs): Promise<T | null> {
     return this.blockService.findOne<T>(args);
