@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Snackbar } from "@amplication/design-system";
+import { Snackbar, HorizontalRule } from "@amplication/design-system";
 
 import { formatError } from "../util/error";
 import TopicForm from "./TopicForm";
@@ -10,6 +10,8 @@ import * as models from "../models";
 type TData = {
   Topic: models.Topic;
 };
+
+const CLASS_NAME = "topic-page";
 
 const Topic = () => {
   const match = useRouteMatch<{
@@ -46,6 +48,11 @@ const Topic = () => {
 
   return (
     <>
+      <div className={`${CLASS_NAME}__header`}>
+        <h3>Topic Settings</h3>
+      </div>
+
+      <HorizontalRule />
       {!loading && (
         <TopicForm onSubmit={handleSubmit} defaultValues={data?.Topic} />
       )}
