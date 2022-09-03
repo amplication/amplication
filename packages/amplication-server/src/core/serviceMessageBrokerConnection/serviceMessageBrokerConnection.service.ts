@@ -51,7 +51,6 @@ export class ServiceMessageBrokerConnectionService extends BlockTypeService<
         `Cannot find a resource of type "MessageBroker" with ID ${messageBrokerId}`
       );
     }
-    
   }
 
   async create(

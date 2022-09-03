@@ -6,7 +6,7 @@ import { PermissionsModule } from '../permissions/permissions.module';
 import { ResourceModule } from '../resource/resource.module';
 
 @Module({
-  imports: [BlockModule, PermissionsModule,ResourceModule],
+  imports: [BlockModule, PermissionsModule, ResourceModule],
   providers: [
     ServiceMessageBrokerConnectionService,
     ServiceMessageBrokerConnectionResolver
