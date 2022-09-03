@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -615,6 +613,7 @@ export enum EnumBlockType {
   FlowApi = 'FlowApi',
   Layout = 'Layout',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
+  ServiceMessageBrokerConnection = 'ServiceMessageBrokerConnection',
   ServiceSettings = 'ServiceSettings',
   Topic = 'Topic',
 }
@@ -832,6 +831,7 @@ export type Mutation = {
   createProject: Project;
   createResourceRole: ResourceRole;
   createService: Resource;
+  createServiceMessageBrokerConnection: ServiceMessageBrokerConnection;
   createServiceWithEntities: Resource;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
@@ -864,6 +864,7 @@ export type Mutation = {
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
   updateResourceRole?: Maybe<ResourceRole>;
+  updateServiceMessageBrokerConnection: ServiceMessageBrokerConnection;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateTopic: Topic;
   updateWorkspace?: Maybe<Workspace>;
@@ -943,6 +944,10 @@ export type MutationCreateResourceRoleArgs = {
 
 export type MutationCreateServiceArgs = {
   data: ResourceCreateInput;
+};
+
+export type MutationCreateServiceMessageBrokerConnectionArgs = {
+  data: ServiceMessageBrokerConnectionCreateInput;
 };
 
 export type MutationCreateServiceWithEntitiesArgs = {
@@ -1082,6 +1087,11 @@ export type MutationUpdateResourceRoleArgs = {
   where: WhereUniqueInput;
 };
 
+export type MutationUpdateServiceMessageBrokerConnectionArgs = {
+  data: ServiceMessageBrokerConnectionUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationUpdateServiceSettingsArgs = {
   data: ServiceSettingsUpdateInput;
   where: WhereUniqueInput;
@@ -1202,6 +1212,8 @@ export type Query = {
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
+  ServiceMessageBrokerConnection?: Maybe<ServiceMessageBrokerConnection>;
+  ServiceMessageBrokerConnections: Array<ServiceMessageBrokerConnection>;
   serviceSettings: ServiceSettings;
   Topic?: Maybe<Topic>;
   Topics: Array<Topic>;
@@ -1314,6 +1326,17 @@ export type QueryResourcesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<ResourceWhereInput>;
+};
+
+export type QueryServiceMessageBrokerConnectionArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryServiceMessageBrokerConnectionsArgs = {
+  orderBy?: InputMaybe<ServiceMessageBrokerConnectionOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<ServiceMessageBrokerConnectionWhereInput>;
 };
 
 export type QueryServiceSettingsArgs = {
@@ -1509,6 +1532,61 @@ export type ServerSettingsUpdateInput = {
   generateGraphQL?: InputMaybe<Scalars['Boolean']>;
   generateRestApi?: InputMaybe<Scalars['Boolean']>;
   serverPath?: InputMaybe<Scalars['String']>;
+};
+
+export type ServiceMessageBrokerConnection = IBlock & {
+  __typename?: 'ServiceMessageBrokerConnection';
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime'];
+  description?: Maybe<Scalars['String']>;
+  displayName: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  id: Scalars['String'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  messageBrokerId: Scalars['String'];
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  updatedAt: Scalars['DateTime'];
+  versionNumber: Scalars['Float'];
+};
+
+export type ServiceMessageBrokerConnectionCreateInput = {
+  description?: InputMaybe<Scalars['String']>;
+  displayName: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  messageBrokerId: Scalars['String'];
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  resource: WhereParentIdInput;
+};
+
+export type ServiceMessageBrokerConnectionOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ServiceMessageBrokerConnectionUpdateInput = {
+  description?: InputMaybe<Scalars['String']>;
+  displayName?: InputMaybe<Scalars['String']>;
+  enabled: Scalars['Boolean'];
+  messageBrokerId: Scalars['String'];
+};
+
+export type ServiceMessageBrokerConnectionWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<WhereUniqueInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type ServiceSettings = IBlock & {

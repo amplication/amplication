@@ -4,6 +4,7 @@ export enum EnumBlockType {
   ServiceSettings = 'ServiceSettings',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   Topic = 'Topic',
+  ServiceMessageBrokerConnection = 'ServiceMessageBrokerConnection',
   Flow = 'Flow',
   ConnectorRestApi = 'ConnectorRestApi',
   ConnectorRestApiCall = 'ConnectorRestApiCall',
