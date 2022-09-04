@@ -2,15 +2,14 @@ import React, { useContext, useCallback } from "react";
 import { Formik, Form } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
-import PendingChangesContext from "./PendingChangesContext";
 import { formatError } from "../util/error";
-import { GET_PENDING_CHANGES } from "./PendingChanges";
-import { GET_LAST_COMMIT } from "./LastCommit";
+
 import { TextField, Snackbar } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./Commit.scss";
-import { CREATED_AT_FIELD, GET_BUILDS_COMMIT } from "../Application/code-view/CodeViewExplorer";
+import { AppContext } from "../context/appContext";
+import { GET_COMMITS, GET_LAST_COMMIT } from "./hooks/commitQueries";
 import { SortOrder } from "../models";
 
 type TCommit = {
@@ -22,7 +21,7 @@ const INITIAL_VALUES: TCommit = {
 };
 
 type Props = {
-  applicationId: string;
+  projectId: string;
   noChanges: boolean;
 };
 const CLASS_NAME = "commit";
@@ -31,57 +30,64 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const Commit = ({ applicationId, noChanges }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
+const Commit = ({ projectId, noChanges }: Props) => {
+  const {
+    setCommitRunning,
+    resetPendingChanges,
+    setPendingChangesError,
+    addChange,
+  } = useContext(AppContext);
   const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
     onError: () => {
-      pendingChangesContext.setCommitRunning(false);
-      pendingChangesContext.setIsError(true);
-      pendingChangesContext.reset();
+      setCommitRunning(false);
+      setPendingChangesError(true);
+      resetPendingChanges();
     },
-    onCompleted: () => {
-      pendingChangesContext.setCommitRunning(false);
-      pendingChangesContext.setIsError(false);
+    onCompleted: (commit) => {
+      setCommitRunning(false);
+      setPendingChangesError(false);
+      resetPendingChanges();
+      addChange(commit.id);
     },
     refetchQueries: [
       {
-        query: GET_PENDING_CHANGES,
-        variables: {
-          applicationId,
-        },
-      },
-      {
         query: GET_LAST_COMMIT,
         variables: {
-          applicationId,
+          projectId,
         },
       },
       {
-        query: GET_BUILDS_COMMIT,
+        query: GET_COMMITS,
         variables: {
-          appId: applicationId,
+          projectId,
           orderBy: {
-            [CREATED_AT_FIELD]: SortOrder.Desc,
+            createdAt: SortOrder.Desc,
           },
-        }
-      }
+        },
+      },
     ],
   });
 
   const handleSubmit = useCallback(
     (data, { resetForm }) => {
-      pendingChangesContext.setCommitRunning(true);
+      setCommitRunning(true);
       commit({
         variables: {
           message: data.message,
-          applicationId,
+          projectId,
         },
       }).catch(console.error);
       resetForm(INITIAL_VALUES);
-      pendingChangesContext.setIsError(false);
-      pendingChangesContext.reset();
+      setPendingChangesError(false);
+      resetPendingChanges();
     },
-    [applicationId, commit, pendingChangesContext]
+    [
+      setCommitRunning,
+      commit,
+      projectId,
+      setPendingChangesError,
+      resetPendingChanges,
+    ]
   );
 
   const errorMessage = formatError(error);
@@ -137,9 +143,9 @@ const Commit = ({ applicationId, noChanges }: Props) => {
 export default Commit;
 
 const COMMIT_CHANGES = gql`
-  mutation commit($message: String!, $applicationId: String!) {
+  mutation commit($message: String!, $projectId: String!) {
     commit(
-      data: { message: $message, app: { connect: { id: $applicationId } } }
+      data: { message: $message, project: { connect: { id: $projectId } } }
     ) {
       id
     }

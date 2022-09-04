@@ -1,48 +1,36 @@
-import React, { useState, useCallback, useEffect, useContext } from "react";
-import { gql, useQuery } from "@apollo/client";
+import React, { useState, useCallback, useContext } from "react";
 import { isEmpty } from "lodash";
 import { Link } from "react-router-dom";
-
 import { formatError } from "../util/error";
-import * as models from "../models";
 import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { Dialog, Snackbar, Tooltip } from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
 import "./PendingChanges.scss";
+import { AppContext } from "../context/appContext";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 
 const CLASS_NAME = "pending-changes";
 
-type TData = {
-  pendingChanges: models.PendingChange[];
-};
-
 type Props = {
-  applicationId: string;
+  projectId: string;
 };
 
-const PendingChanges = ({ applicationId }: Props) => {
+const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
-  const pendingChangesContext = useContext(PendingChangesContext);
-
-  const { data, loading, error, refetch } = useQuery<TData>(
-    GET_PENDING_CHANGES,
-    {
-      variables: {
-        applicationId,
-      },
-    }
+  const { currentWorkspace, currentProject, pendingChanges } = useContext(
+    AppContext
   );
-
-  //refetch when pending changes object change
-  useEffect(() => {
-    refetch().catch(console.error);
-  }, [refetch, pendingChangesContext.pendingChanges]);
-
+  const {
+    pendingChangesByResource,
+    pendingChangesDataError,
+    pendingChangesIsError,
+    pendingChangesDataLoading,
+  } = usePendingChanges(currentProject);
   const handleToggleDiscardDialog = useCallback(() => {
     setDiscardDialogOpen(!discardDialogOpen);
   }, [discardDialogOpen, setDiscardDialogOpen]);
@@ -51,114 +39,96 @@ const PendingChanges = ({ applicationId }: Props) => {
     setDiscardDialogOpen(false);
   }, []);
 
-  const errorMessage = formatError(error);
+  const errorMessage = formatError(pendingChangesDataError);
 
-  const noChanges = isEmpty(data?.pendingChanges);
+  const noChanges = isEmpty(pendingChanges);
 
   return (
     <div className={CLASS_NAME}>
-      <Commit applicationId={applicationId} noChanges={noChanges} />
-      <div className={`${CLASS_NAME}__changes-header`}>
-        <span>Changes</span>
-        <span
-          className={
-            data?.pendingChanges.length
-              ? `${CLASS_NAME}__changes-count-warning`
-              : `${CLASS_NAME}__changes-count`
-          }
-        >
-          {data?.pendingChanges.length}
-        </span>
-        <div className="spacer" />
-        <Tooltip aria-label={"Compare Changes"} direction="sw">
-          <Link to={`/${applicationId}/pending-changes`}>
+      <h5 className={`${CLASS_NAME}__title`}>Pending changes</h5>
+      <Commit projectId={projectId} noChanges={noChanges} />
+      <Dialog
+        className="discard-dialog"
+        isOpen={discardDialogOpen}
+        onDismiss={handleToggleDiscardDialog}
+        title="Discard Changes"
+      >
+        <DiscardChanges
+          projectId={projectId}
+          onComplete={handleDiscardDialogCompleted}
+          onCancel={handleToggleDiscardDialog}
+        />
+      </Dialog>
+
+      <div className={`${CLASS_NAME}__changes-wrapper`}>
+        {pendingChangesDataLoading ? (
+          <span>Loading...</span>
+        ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
+          <div className={`${CLASS_NAME}__empty-state`}>
+            <SvgThemeImage image={EnumImages.NoChanges} />
+            <div className={`${CLASS_NAME}__empty-state__title`}>
+              No pending changes! keep working.
+            </div>
+          </div>
+        ) : (
+          <div className={`${CLASS_NAME}__changes`}>
+            {pendingChangesByResource.map((group) => (
+              <div key={group.resource.id}>
+                <div className={`${CLASS_NAME}__changes__resource`}>
+                  <ResourceCircleBadge
+                    type={group.resource.resourceType}
+                    size="xsmall"
+                  />
+                  <span>{group.resource.name}</span>
+                </div>
+                {group.changes.map((change) => (
+                  <PendingChange
+                    key={change.originId}
+                    change={change}
+                    linkToOrigin
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+        <hr className={`${CLASS_NAME}__divider`} />
+        <div className={`${CLASS_NAME}__changes-header`}>
+          <span>Changes</span>
+          <span
+            className={
+              pendingChanges.length
+                ? `${CLASS_NAME}__changes-count-warning`
+                : `${CLASS_NAME}__changes-count`
+            }
+          >
+            {pendingChanges.length}
+          </span>
+          <div className="spacer" />
+          <Tooltip aria-label={"Compare Changes"} direction="nw">
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
+            >
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                disabled={pendingChangesDataLoading || noChanges}
+                icon="compare"  
+              />
+            </Link>
+          </Tooltip>
+          <Tooltip aria-label={"Discard Pending Changes"} direction="nw">
             <Button
               buttonStyle={EnumButtonStyle.Text}
-              disabled={loading || noChanges}
-              icon="compare"
+              onClick={handleToggleDiscardDialog}
+              disabled={pendingChangesDataLoading || noChanges}
+              icon="trash_2"
             />
-          </Link>
-        </Tooltip>
-        <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
-          <Button
-            buttonStyle={EnumButtonStyle.Text}
-            onClick={handleToggleDiscardDialog}
-            disabled={loading || noChanges}
-            icon="trash_2"
-          />
-        </Tooltip>
-      </div>
-      {isEmpty(data?.pendingChanges) && !loading ? (
-        <div className={`${CLASS_NAME}__empty-state`}>
-          <SvgThemeImage image={EnumImages.NoChanges} />
-          <div className={`${CLASS_NAME}__empty-state__title`}>
-            No pending changes! keep working.
-          </div>
+          </Tooltip>
         </div>
-      ) : (
-        <>
-          <Dialog
-            className="discard-dialog"
-            isOpen={discardDialogOpen}
-            onDismiss={handleToggleDiscardDialog}
-            title="Discard Changes"
-          >
-            <DiscardChanges
-              applicationId={applicationId}
-              onComplete={handleDiscardDialogCompleted}
-              onCancel={handleToggleDiscardDialog}
-            />
-          </Dialog>
-
-          {loading ? (
-            <span>Loading...</span>
-          ) : (
-            <div className={`${CLASS_NAME}__changes`}>
-              {data?.pendingChanges.map((change) => (
-                <PendingChange
-                  key={change.originId}
-                  change={change}
-                  applicationId={applicationId}
-                  linkToOrigin
-                />
-              ))}
-            </div>
-          )}
-        </>
-      )}
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      </div>
+      <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
     </div>
   );
 };
 
 export default PendingChanges;
-
-export const GET_PENDING_CHANGES = gql`
-  query pendingChanges($applicationId: String!) {
-    pendingChanges(where: { app: { id: $applicationId } }) {
-      originId
-      action
-      originType
-      versionNumber
-      origin {
-        __typename
-        ... on Entity {
-          id
-          displayName
-          updatedAt
-          lockedByUser {
-            account {
-              firstName
-              lastName
-            }
-          }
-        }
-        ... on Block {
-          id
-          displayName
-          updatedAt
-        }
-      }
-    }
-  }
-`;

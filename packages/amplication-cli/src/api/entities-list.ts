@@ -4,17 +4,17 @@ import * as models from '../models';
 
 const GET_ENTITIES = gql`
   query getEntities(
-    $appId: String!
+    $resourceId: String!
     $orderBy: EntityOrderByInput
     $whereName: StringFilter
   ) {
     entities(
-      where: { app: { id: $appId }, displayName: $whereName }
+      where: { resource: { id: $resourceId }, displayName: $whereName }
       orderBy: $orderBy
     ) {
       id
       name
-      appId
+      resourceId
       displayName
       pluralDisplayName
       description
@@ -34,14 +34,14 @@ const GET_ENTITIES = gql`
 
 export async function getEntities(
   client: ApolloClient<NormalizedCacheObject>,
-  appId: string,
+  resourceId: string,
   orderBy: string | undefined,
   whereName: string | undefined
 ): Promise<models.Entity[]> {
   const { data } = await client.query<{ entities: models.Entity[] }>({
     query: GET_ENTITIES,
     variables: {
-      appId,
+      resourceId,
       orderBy,
       whereName,
     },

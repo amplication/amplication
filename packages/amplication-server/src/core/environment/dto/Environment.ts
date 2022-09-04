@@ -1,34 +1,30 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { App } from 'src/models'; // eslint-disable-line import/no-cycle
+import { Resource } from 'src/models'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class Environment {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
-  @Field(() => App)
-  app?: App;
+  @Field(() => Resource)
+  resource?: Resource;
 
   @Field(() => String)
-  appId!: string;
+  resourceId!: string;
 
   @Field(() => String, {
     nullable: false

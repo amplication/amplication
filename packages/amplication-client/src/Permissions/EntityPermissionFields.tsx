@@ -14,7 +14,7 @@ import {
 import { EntityPermissionField } from "./EntityPermissionField";
 import { EnumButtonStyle } from "../Components/Button";
 import "./EntityPermissionFields.scss";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "entity-permission-fields";
 
@@ -35,8 +35,7 @@ export const EntityPermissionFields = ({
   entityId,
   permission,
 }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+  const { addEntity } = useContext(AppContext);
   const selectedFieldIds = useMemo((): Set<string> => {
     return new Set(permission.permissionFields?.map((field) => field.field.id));
   }, [permission.permissionFields]);
@@ -52,7 +51,7 @@ export const EntityPermissionFields = ({
   /**@todo: handle  errors */
   const [addField] = useMutation(ADD_FIELD, {
     onCompleted: (data) => {
-      pendingChangesContext.addEntity(entityId);
+      addEntity(entityId);
     },
     update(cache, { data: { addEntityPermissionField } }) {
       const queryData = cache.readQuery<{
@@ -98,7 +97,7 @@ export const EntityPermissionFields = ({
   /**@todo: handle  errors */
   const [deleteField] = useMutation(DELETE_FIELD, {
     onCompleted: (data) => {
-      pendingChangesContext.addEntity(entityId);
+      addEntity(entityId);
     },
     update(cache, { data: { deleteEntityPermissionField } }) {
       const queryData = cache.readQuery<{
@@ -175,14 +174,16 @@ export const EntityPermissionFields = ({
       <div className={`${CLASS_NAME}__add-field`}>
         Set specific permissions to special fields
         <SelectMenu
+          css=""
           title="Add Field"
           icon="plus"
           buttonStyle={EnumButtonStyle.Clear}
         >
-          <SelectMenuModal>
+          <SelectMenuModal css="">
             <SelectMenuList>
               {data?.entity?.fields?.map((field) => (
                 <SelectMenuItem
+                  css=""
                   key={field.id}
                   selected={selectedFieldIds.has(field.id)}
                   onSelectionChange={handleFieldSelected}
@@ -233,7 +234,7 @@ const ADD_FIELD = gql`
       }
       permissionRoles {
         id
-        appRole {
+        resourceRole {
           id
           displayName
         }

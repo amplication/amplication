@@ -1,103 +1,33 @@
 import { TextField, Snackbar } from "@amplication/design-system";
-import { gql, Reference, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback } from "react";
+import React, { useContext } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
-import * as models from "../models";
-import { useTracking } from "../util/analytics";
+import { AppContext } from "../context/appContext";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import {
+  CreateWorkspaceType,
+  WORKSPACE_INITIAL_VALUES,
+  WORKSPACE_FORM_SCHEMA,
+} from "./hooks/workspace";
 import "./NewWorkspace.scss";
 
-type CreateWorkspaceType = models.WorkspaceCreateInput;
-
-type DType = {
-  createWorkspace: models.Workspace;
-};
-
-const INITIAL_VALUES: CreateWorkspaceType = {
-  name: "",
-};
-
-const NAME_MIN_LENGTH = 2;
-
-const FORM_SCHEMA = {
-  required: ["name"],
-  properties: {
-    name: {
-      type: "string",
-      minLength: NAME_MIN_LENGTH,
-    },
-  },
-};
 const CLASS_NAME = "new-workspace";
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-type Props = {
-  onWorkspaceCreated: (workspace: models.Workspace) => void;
-};
-
-const NewWorkspace = ({ onWorkspaceCreated }: Props) => {
-  const { trackEvent } = useTracking();
-
-  const [createWorkspace, { error, loading }] = useMutation<DType>(
-    CREATE_WORKSPACE,
-    {
-      onCompleted: (data) => {
-        trackEvent({
-          eventName: "createWorkspace",
-          workspaceName: data.createWorkspace.name,
-        });
-        onWorkspaceCreated && onWorkspaceCreated(data.createWorkspace);
-      },
-      update(cache, { data }) {
-        if (!data) return;
-
-        const newWorkspace = data.createWorkspace;
-
-        cache.modify({
-          fields: {
-            workspaces(existingWorkspaceRefs = [], { readField }) {
-              const newWorkspaceRef = cache.writeFragment({
-                data: newWorkspace,
-                fragment: NEW_WORKSPACE_FRAGMENT,
-              });
-
-              if (
-                existingWorkspaceRefs.some(
-                  (WorkspaceRef: Reference) =>
-                    readField("id", WorkspaceRef) === newWorkspace.id
-                )
-              ) {
-                return existingWorkspaceRefs;
-              }
-
-              return [...existingWorkspaceRefs, newWorkspaceRef];
-            },
-          },
-        });
-      },
-    }
-  );
-
-  const handleSubmit = useCallback(
-    (data: CreateWorkspaceType) => {
-      createWorkspace({
-        variables: {
-          data,
-        },
-      }).catch(console.error);
-    },
-    [createWorkspace]
-  );
-
-  const errorMessage = formatError(error);
+const NewWorkspace = () => {
+  const {
+    createWorkspace,
+    createNewWorkspaceError,
+    loadingCreateNewWorkspace,
+  } = useContext(AppContext);
+  const errorMessage = formatError(createNewWorkspaceError);
 
   return (
     <div className={CLASS_NAME}>
@@ -106,11 +36,12 @@ const NewWorkspace = ({ onWorkspaceCreated }: Props) => {
         Give your new workspace a descriptive name.
       </div>
       <Formik
-        initialValues={INITIAL_VALUES}
+        initialValues={WORKSPACE_INITIAL_VALUES}
         validate={(values: CreateWorkspaceType) =>
-          validate(values, FORM_SCHEMA)
+          validate(values, WORKSPACE_FORM_SCHEMA)
         }
-        onSubmit={handleSubmit}
+        onSubmit={createWorkspace}
+        validateOnMount
         validateOnBlur={false}
       >
         {(formik) => {
@@ -123,7 +54,7 @@ const NewWorkspace = ({ onWorkspaceCreated }: Props) => {
               <TextField
                 name="name"
                 label="New Workspace Name"
-                disabled={loading}
+                disabled={loadingCreateNewWorkspace}
                 autoFocus
                 hideLabel
                 placeholder="Type New Workspace Name"
@@ -132,11 +63,7 @@ const NewWorkspace = ({ onWorkspaceCreated }: Props) => {
               <Button
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
-                disabled={
-                  !formik.isValid ||
-                  loading ||
-                  formik.values.name.length < NAME_MIN_LENGTH
-                }
+                disabled={!formik.isValid || loadingCreateNewWorkspace}
               >
                 Create Workspace
               </Button>
@@ -144,25 +71,12 @@ const NewWorkspace = ({ onWorkspaceCreated }: Props) => {
           );
         }}
       </Formik>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(createNewWorkspaceError)}
+        message={errorMessage}
+      />
     </div>
   );
 };
 
 export default NewWorkspace;
-
-const CREATE_WORKSPACE = gql`
-  mutation createWorkspace($data: WorkspaceCreateInput!) {
-    createWorkspace(data: $data) {
-      id
-      name
-    }
-  }
-`;
-
-const NEW_WORKSPACE_FRAGMENT = gql`
-  fragment NewWorkspace on Workspace {
-    id
-    name
-  }
-`;

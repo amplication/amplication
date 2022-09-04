@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
-import { PrismaService } from '@amplication/prisma-db';
+import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { orderBy } from 'lodash';
@@ -17,8 +17,8 @@ import {
 } from './build.service';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { EntityService } from '..';
-import { AppRoleService } from '../appRole/appRole.service';
-import { AppService } from '../app/app.service';
+import { ResourceRoleService } from '../resourceRole/resourceRole.service';
+import { ResourceService } from '../resource/resource.service';
 import { ActionService } from '../action/action.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
@@ -28,18 +28,18 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
 import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { App, Commit, Entity } from 'src/models';
+import { Resource, Commit, Entity } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,
   EnumActionStepStatus
 } from '../action/dto';
-import { AppSettingsService } from '../appSettings/appSettings.service';
-
-import { AppSettingsValues } from '../appSettings/constants';
-import { EnumAuthProviderType } from '../appSettings/dto/EnumAuthenticationProviderType';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
+import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
+import { ServiceSettingsValues } from '../serviceSettings/constants';
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
+import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -63,7 +63,7 @@ const EXAMPLE_COMMIT_ID = 'exampleCommitId';
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 export const EXAMPLE_DATE = new Date('2020-01-01');
 
 const JOB_STARTED_LOG = 'Build job started';
@@ -71,13 +71,13 @@ const JOB_DONE_LOG = 'Build job done';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
-const EXAMPLE_APP_SETTINGS_VALUES: AppSettingsValues = {
+const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
   dbHost: 'localhost',
   dbName: 'myDb',
   dbPassword: '1234',
   dbPort: 5432,
   dbUser: 'admin',
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   authProvider: EnumAuthProviderType.Http,
   serverSettings: {
     generateGraphQL: true,
@@ -124,7 +124,7 @@ const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
   createdAt: EXAMPLE_DATE,
   userId: EXAMPLE_USER_ID,
-  appId: EXAMPLE_APP_ID,
+  resourceId: EXAMPLE_RESOURCE_ID,
   version: '1.0.0',
   message: 'new build',
   actionId: EXAMPLE_ACTION.id,
@@ -168,19 +168,20 @@ const EXAMPLE_USER = {
 
 const EXAMPLE_APP_ROLES = [];
 
-const EXAMPLE_APP: App = {
-  id: 'exampleAppId',
+const EXAMPLE_SERVICE_RESOURCE: Resource = {
+  id: 'exampleResourceId',
+  resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: 'exampleAppName',
-  description: 'example App Description',
-  color: '#20A4F3'
+  name: 'exampleResourceName',
+  description: 'example Resources Description',
+  gitRepositoryOverride: false
 };
 
-const EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT: Build = {
+const EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT: Build = {
   ...EXAMPLE_BUILD,
   commit: EXAMPLE_COMMIT,
-  app: EXAMPLE_APP
+  resource: EXAMPLE_SERVICE_RESOURCE
 };
 
 const commitId = EXAMPLE_COMMIT_ID;
@@ -214,7 +215,7 @@ const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
 const EXAMPLE_MODULES = [];
 
 const prismaBuildCreateMock = jest.fn(
-  () => EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT
+  () => EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
 );
 
 const prismaBuildFindOneMock = jest.fn();
@@ -237,7 +238,7 @@ const EXAMPLE_ENTITIES: Entity[] = [
     id: 'EXAMPLE_SECOND_ID',
     createdAt: new Date('2020-02-17 18:20:20'),
     updatedAt: new Date(),
-    appId: 'exampleAppId',
+    resourceId: 'exampleResourceId',
     name: EXAMPLE_SECOND_ENTITY_NAME,
     displayName: 'Second entity',
     pluralDisplayName: 'Second entity plural display name'
@@ -246,7 +247,7 @@ const EXAMPLE_ENTITIES: Entity[] = [
     id: 'EXAMPLE_FIRST_ID',
     createdAt: new Date('2020-02-10 18:20:20'), //created first
     updatedAt: new Date(),
-    appId: 'exampleAppId',
+    resourceId: 'exampleResourceId',
     name: EXAMPLE_FIRST_ENTITY_NAME,
     displayName: 'First entity',
     pluralDisplayName: 'First entity plural display name'
@@ -255,9 +256,11 @@ const EXAMPLE_ENTITIES: Entity[] = [
 
 const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
 
-const appRoleServiceGetAppRolesMock = jest.fn(() => EXAMPLE_APP_ROLES);
+const resourceRoleServiceGetResourceRolesMock = jest.fn(
+  () => EXAMPLE_APP_ROLES
+);
 
-const appServiceGetAppMock = jest.fn(() => EXAMPLE_APP);
+const resourceServiceGetResourceMock = jest.fn(() => EXAMPLE_SERVICE_RESOURCE);
 
 const EXAMPLE_ACTION_STEP: ActionStep = {
   id: 'EXAMPLE_ACTION_STEP_ID',
@@ -322,7 +325,10 @@ const actionServiceCompleteMock = jest.fn(() => ({}));
 
 const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 
-const getAppSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
+const getServiceSettingsValuesMock = jest.fn(() => EXAMPLE_APP_SETTINGS_VALUES);
+
+const getGitRepository = jest.fn(() => null);
+const getGitOrganization = jest.fn(() => EXAMPLE_GIT_ORGANIZATION);
 
 describe('BuildService', () => {
   let service: BuildService;
@@ -376,15 +382,17 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: AppRoleService,
+          provide: ResourceRoleService,
           useValue: {
-            getAppRoles: appRoleServiceGetAppRolesMock
+            getResourceRoles: resourceRoleServiceGetResourceRolesMock
           }
         },
         {
-          provide: AppService,
+          provide: ResourceService,
           useValue: {
-            app: appServiceGetAppMock
+            resource: resourceServiceGetResourceMock,
+            gitRepository: getGitRepository,
+            gitOrganizationByResource: getGitOrganization
           }
         },
         {
@@ -408,9 +416,9 @@ describe('BuildService', () => {
           }
         },
         {
-          provide: AppSettingsService,
+          provide: ServiceSettingsService,
           useValue: {
-            getAppSettingsValues: getAppSettingsValuesMock
+            getServiceSettingsValues: getServiceSettingsValuesMock
           }
         },
         {
@@ -460,9 +468,9 @@ describe('BuildService', () => {
             id: EXAMPLE_USER_ID
           }
         },
-        app: {
+        resource: {
           connect: {
-            id: EXAMPLE_APP_ID
+            id: EXAMPLE_RESOURCE_ID
           }
         },
         message: EXAMPLE_BUILD.message,
@@ -477,11 +485,11 @@ describe('BuildService', () => {
     const version = commitId.slice(commitId.length - 8);
     const latestEntityVersions = [{ id: EXAMPLE_ENTITY_VERSION_ID }];
     expect(await service.create(args)).toEqual(
-      EXAMPLE_BUILD_INCLUDE_APP_AND_COMMIT
+      EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
     );
     expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
-      where: { app: { id: EXAMPLE_APP_ID } }
+      where: { resource: { id: EXAMPLE_RESOURCE_ID } }
     });
     expect(prismaBuildCreateMock).toBeCalledTimes(1);
     expect(prismaBuildCreateMock).toBeCalledWith({
@@ -509,7 +517,7 @@ describe('BuildService', () => {
       },
       include: {
         commit: true,
-        app: true
+        resource: true
       }
     });
     expect(loggerChildMock).toBeCalledTimes(1);
@@ -530,9 +538,9 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
-    expect(appServiceGetAppMock).toBeCalledTimes(1);
-    expect(appServiceGetAppMock).toBeCalledWith({
-      where: { id: EXAMPLE_APP_ID }
+    expect(resourceServiceGetResourceMock).toBeCalledTimes(1);
+    expect(resourceServiceGetResourceMock).toBeCalledWith({
+      where: { id: EXAMPLE_RESOURCE_ID }
     });
 
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
@@ -546,11 +554,11 @@ describe('BuildService', () => {
       },
       include: ENTITIES_INCLUDE
     });
-    expect(appRoleServiceGetAppRolesMock).toBeCalledTimes(1);
-    expect(appRoleServiceGetAppRolesMock).toBeCalledWith({
+    expect(resourceRoleServiceGetResourceRolesMock).toBeCalledTimes(1);
+    expect(resourceRoleServiceGetResourceRolesMock).toBeCalledWith({
       where: {
-        app: {
-          id: EXAMPLE_APP_ID
+        resource: {
+          id: EXAMPLE_RESOURCE_ID
         }
       }
     });
@@ -559,11 +567,11 @@ describe('BuildService', () => {
       orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
       EXAMPLE_APP_ROLES,
       {
-        name: EXAMPLE_APP.name,
-        description: EXAMPLE_APP.description,
+        name: EXAMPLE_SERVICE_RESOURCE.name,
+        description: EXAMPLE_SERVICE_RESOURCE.description,
         version: EXAMPLE_BUILD.version,
-        id: EXAMPLE_APP.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_APP.id}`,
+        id: EXAMPLE_SERVICE_RESOURCE.id,
+        url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
         settings: EXAMPLE_APP_SETTINGS_VALUES
       },
       MOCK_LOGGER

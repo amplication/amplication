@@ -18,8 +18,7 @@ import {
 } from './dto';
 import { FindOneArgs } from 'src/dto';
 
-import { Workspace, App, User } from 'src/models';
-import { AppService } from 'src/core/app/app.service';
+import { Workspace, User, Project } from 'src/models';
 import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { UserEntity } from 'src/decorators/user.decorator';
@@ -29,18 +28,19 @@ import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParamet
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { Subscription } from '../subscription/dto/Subscription';
+import { ProjectService } from '../project/project.service';
+
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly appService: AppService
+    private readonly projectService: ProjectService
   ) {}
 
   @Query(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async workspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
@@ -48,8 +48,7 @@ export class WorkspaceResolver {
   }
 
   @Query(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async currentWorkspace(
     @UserEntity() currentUser: User
@@ -57,16 +56,15 @@ export class WorkspaceResolver {
     return currentUser.workspace;
   }
 
-  @ResolveField(() => [App])
-  async apps(@Parent() workspace: Workspace): Promise<App[]> {
-    return this.appService.apps({
+  @ResolveField(() => [Project])
+  async projects(@Parent() workspace: Workspace): Promise<Project[]> {
+    return this.projectService.findProjects({
       where: { workspace: { id: workspace.id } }
     });
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
@@ -74,8 +72,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async updateWorkspace(
@@ -85,8 +82,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async createWorkspace(
     @UserEntity() currentUser: User,
@@ -96,8 +92,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async inviteUser(
     @UserEntity() currentUser: User,
@@ -107,8 +102,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableOriginParameter.InvitationId, 'where.id')
   async revokeInvitation(
@@ -118,8 +112,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableOriginParameter.InvitationId, 'where.id')
   async resendInvitation(
@@ -129,8 +122,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => User, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async deleteUser(
     @UserEntity() currentUser: User,
@@ -140,8 +132,7 @@ export class WorkspaceResolver {
   }
 
   @Query(() => [WorkspaceMember], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   async workspaceMembers(
     @UserEntity() currentUser: User

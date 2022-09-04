@@ -5,8 +5,7 @@ import { EnumWorkspaceMemberType } from './EnumWorkspaceMemberType';
 import { WorkspaceMemberType } from './WorkspaceMemberType'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class WorkspaceMember {
   @Field(() => EnumWorkspaceMemberType, {

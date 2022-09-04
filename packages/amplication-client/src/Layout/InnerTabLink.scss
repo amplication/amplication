@@ -12,9 +12,14 @@
   justify-content: flex-start;
   margin-bottom: var(--default-spacing-small);
   padding: var(--default-spacing-small);
-  border-radius: var(--default-border-radius);
+  border-radius: var(--small-border-radius);
   .amp-icon {
-    margin-right: var(--default-spacing);
+    font-size: var(--title3-font-size);
+    margin-right: var(--default-spacing-small);
+  }
+
+  &:last-child {
+    margin-bottom: 0;
   }
 
   &:hover {

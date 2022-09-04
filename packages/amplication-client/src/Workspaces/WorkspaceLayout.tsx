@@ -1,107 +1,145 @@
-import React from "react";
-import { Switch, match } from "react-router-dom";
-import MainLayout from "../Layout/MainLayout";
+import React, { lazy } from "react";
+import { match } from "react-router-dom";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import * as models from "../models";
-import MenuItemWithFixedPanel from "../Layout/MenuItemWithFixedPanel";
-import { PendingChangeItem } from "../VersionControl/PendingChangesContext";
-import ApplicationList from "./ApplicationList";
-//import Subscription from "../Subscription/Subscription";
-import MemberList from "./MemberList";
-import InnerTabLink from "../Layout/InnerTabLink";
-import WorkspaceSelector from "./WorkspaceSelector";
-import WorkspaceForm from "./WorkspaceForm";
-import PageContent from "../Layout/PageContent";
-import CompleteInvitation from "../User/CompleteInvitation";
-import ProfilePage from "../Profile/ProfilePage";
-import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 import { isMobileOnly } from "react-device-detect";
-import MobileMessage from "../Layout/MobileMessage";
+import CompleteInvitation from "../User/CompleteInvitation";
 import "./WorkspaceLayout.scss";
+import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
+// import WorkspaceFooter from "./WorkspaceFooter";
+import useAuthenticated from "../authentication/use-authenticated";
+import useProjectSelector from "./hooks/useProjectSelector";
+import { AppContextProvider } from "../context/appContext";
+import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
+import { CircularProgress } from "@amplication/design-system";
+import useResources from "./hooks/useResources";
+import { AppRouteProps } from "../routes/routesUtil";
+import usePendingChanges, {
+  PendingChangeItem,
+} from "./hooks/usePendingChanges";
+import ProjectEmptyState from "../Project/ProjectEmptyState";
+import PendingChanges from "../VersionControl/PendingChanges";
+import LastCommit from "../VersionControl/LastCommit";
+import WorkspaceFooter from "./WorkspaceFooter";
 
-export type ApplicationData = {
-  app: models.App;
-};
+const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
 export type PendingChangeStatusData = {
   pendingChanges: PendingChangeItem[];
 };
 
-const CLASS_NAME = "workspaces-layout";
-
-type Props = {
+type Props = AppRouteProps & {
   match: match<{
     workspace: string;
   }>;
 };
 
-function WorkspaceLayout({ match }: Props) {
-  if (isMobileOnly) {
-    return <MobileMessage />;
-  }
+const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
+  const authenticated = useAuthenticated();
+  const {
+    currentWorkspace,
+    handleSetCurrentWorkspace,
+    createWorkspace,
+    createNewWorkspaceError,
+    loadingCreateNewWorkspace,
+    refreshCurrentWorkspace,
+  } = useWorkspaceSelector(authenticated);
+  const {
+    currentProject,
+    createProject,
+    projectsList,
+    onNewProjectCompleted,
+    currentProjectConfiguration,
+  } = useProjectSelector(authenticated, currentWorkspace);
 
-  return (
-    <MainLayout className={CLASS_NAME}>
-      <MainLayout.Menu>
-        <MenuItemWithFixedPanel
-          tooltip=""
-          icon={false}
-          isOpen
-          panelKey={"panelKey"}
-          onClick={() => {}}
-        >
-          <WorkspaceSelector />
-          <div className={`${CLASS_NAME}__tabs`}>
-            <InnerTabLink to={`/`} icon="grid">
-              Apps
-            </InnerTabLink>
-            <InnerTabLink to={`/workspace/settings`} icon="settings">
-              Workspace Settings
-            </InnerTabLink>
-            <InnerTabLink to={`/workspace/members`} icon="users">
-              Workspace Members
-            </InnerTabLink>
-            {/* <InnerTabLink to={`/workspace/plans`} icon="file_text">
-              Workspace Plan
-            </InnerTabLink> */}
+  const {
+    resources,
+    projectConfigurationResource,
+    handleSearchChange,
+    loadingResources,
+    errorResources,
+    currentResource,
+    setResource,
+    createResource,
+    loadingCreateResource,
+    errorCreateResource,
+    gitRepositoryFullName,
+    gitRepositoryUrl,
+  } = useResources(currentWorkspace, currentProject);
+
+  const {
+    pendingChanges,
+    commitRunning,
+    pendingChangesIsError,
+    addEntity,
+    addBlock,
+    addChange,
+    resetPendingChanges,
+    setCommitRunning,
+    setPendingChangesError,
+  } = usePendingChanges(currentProject);
+
+  return currentWorkspace ? (
+    <AppContextProvider
+      newVal={{
+        currentWorkspace,
+        handleSetCurrentWorkspace,
+        createWorkspace,
+        currentProjectConfiguration,
+        createNewWorkspaceError,
+        loadingCreateNewWorkspace,
+        currentProject,
+        projectsList,
+        setNewProject: createProject,
+        onNewProjectCompleted,
+        resources,
+        setNewResource: createResource,
+        projectConfigurationResource,
+        handleSearchChange,
+        loadingResources,
+        errorResources,
+        loadingCreateResource,
+        errorCreateResource,
+        currentResource,
+        setResource,
+        pendingChanges,
+        commitRunning,
+        pendingChangesIsError,
+        addEntity,
+        addBlock,
+        addChange,
+        resetPendingChanges,
+        setCommitRunning,
+        setPendingChangesError,
+        refreshCurrentWorkspace,
+        gitRepositoryFullName,
+        gitRepositoryUrl,
+      }}
+    >
+      {isMobileOnly ? (
+        <MobileMessage />
+      ) : (
+        <div className={moduleClass}>
+          <WorkspaceHeader />
+          <CompleteInvitation />
+          <div className={`${moduleClass}__page_content`}>
+            <div className={`${moduleClass}__main_content`}>
+              {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+            </div>
+            <div className={`${moduleClass}__changes_menu`}>
+              {currentProject ? (
+                <PendingChanges projectId={currentProject.id} />
+              ) : null}
+              {currentProject && <LastCommit projectId={currentProject.id} />}
+            </div>
           </div>
-        </MenuItemWithFixedPanel>
-      </MainLayout.Menu>
-      <MainLayout.Content>
-        <CompleteInvitation />
-        <div className={`${CLASS_NAME}__app-container`}>
-          <PageContent className={CLASS_NAME}>
-            <Switch>
-              <RouteWithAnalytics exact path="/workspace/settings">
-                <WorkspaceForm />
-              </RouteWithAnalytics>
-            </Switch>
-            <Switch>
-              <RouteWithAnalytics
-                exact
-                path="/workspace/members"
-                component={MemberList}
-              />
-            </Switch>
-            {/* <Switch>
-              <RouteWithAnalytics exact path="/workspace/plans" component={Subscription} />
-            </Switch> */}
-			<Switch>
-              <RouteWithAnalytics exact path="/user/profile">
-                <ProfilePage />
-              </RouteWithAnalytics>
-            </Switch>
-            <Switch>
-              <RouteWithAnalytics exact path="/">
-                <ApplicationList />
-              </RouteWithAnalytics>
-            </Switch>
-          </PageContent>
+          <WorkspaceFooter />
+          <ScreenResolutionMessage />
         </div>
-      </MainLayout.Content>
-      <ScreenResolutionMessage />
-    </MainLayout>
+      )}
+    </AppContextProvider>
+  ) : (
+    <CircularProgress />
   );
-}
+};
 
 export default WorkspaceLayout;

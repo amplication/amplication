@@ -23,7 +23,7 @@
     "docker:dev": "docker-compose -f docker-compose.dev.yml up -d"
   },
   "dependencies": {
-    "lerna": "4.0.0",
+    "lerna": "5.4.1",
     "ora": "5.4.0",
     "react-query": "^3.39.1",
     "semver": "7.3.5",
@@ -33,10 +33,10 @@
     "@graphql-codegen/cli": "2.6.3",
     "@graphql-codegen/typescript": "2.4.1",
     "@types/jest": "27.0.2",
-    "@types/ora": "3.2.0",
     "@types/semver": "7.3.9",
     "graphql": "15.3.0",
     "npm-run-all": "4.1.5",
+    "nx": "14.5.4",
     "prettier": "2.0.5",
     "ts-jest": "27.0.5"
   },

@@ -1,82 +1,80 @@
-import React, { useMemo, useState, useContext } from "react";
-import { gql, useQuery } from "@apollo/client";
+import React, { useMemo, useContext, useEffect } from "react";
+import { useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
-import { formatError } from "../util/error";
 import * as models from "../models";
 import {
-  UserAndTime,
   Tooltip,
   SkeletonWrapper,
+  Button,
+  EnumButtonStyle,
 } from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
-import BuildSummary from "./BuildSummary";
-import BuildHeader from "./BuildHeader";
-import PendingChangesContext from "./PendingChangesContext";
 import "./LastCommit.scss";
-import PendingChangesMenuItem from "../VersionControl/PendingChangesMenuItem";
+import { AppContext } from "../context/appContext";
+import { Link } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import { BuildStatusIcons } from "./BuildStatusIcons";
+import { GET_LAST_COMMIT } from "./hooks/commitQueries";
 
 type TData = {
   commits: models.Commit[];
 };
 
 type Props = {
-  applicationId: string;
+  projectId: string;
 };
 
 const CLASS_NAME = "last-commit";
 
-const LastCommit = ({ applicationId }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
-  const [error, setError] = useState<Error>();
+const LastCommit = ({ projectId }: Props) => {
+  const {
+    currentWorkspace,
+    currentProject,
+    commitRunning,
+    pendingChangesIsError,
+  } = useContext(AppContext);
 
-  const { data, loading, error: errorLoading, refetch } = useQuery<TData>(
-    GET_LAST_COMMIT,
-    {
-      variables: {
-        applicationId,
-      },
-    }
-  );
+  const { data, loading, refetch } = useQuery<TData>(GET_LAST_COMMIT, {
+    variables: {
+      projectId,
+    },
+    skip: !projectId,
+  });
 
-  React.useEffect(() => {
+  useEffect(() => {
     refetch();
     return () => {
       refetch();
     };
-  }, [pendingChangesContext.isError, refetch]);
+  }, [pendingChangesIsError, refetch, data]);
 
   const lastCommit = useMemo(() => {
     if (loading || isEmpty(data?.commits)) return null;
-    const [last] = data?.commits;
+    const [last] = data?.commits || [];
     return last;
   }, [loading, data]);
 
   const build = useMemo(() => {
     if (!lastCommit) return null;
-    const [last] = lastCommit.builds;
+    const [last] = lastCommit.builds || [];
     return last;
   }, [lastCommit]);
-
-  const errorMessage =
-    formatError(errorLoading) || (error && formatError(error));
-
-  const account = lastCommit?.user?.account;
 
   if (!lastCommit) return null;
 
   const ClickableCommitId = (
     <ClickableId
-      to={`/${build?.appId}/commits/${lastCommit.id}`}
+      to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${lastCommit.id}`}
       id={lastCommit.id}
-      label="Last commit"
+      label="Commit"
       eventData={{
         eventName: "lastCommitIdClick",
       }}
     />
   );
 
-  const generating = pendingChangesContext.commitRunning;
+  const generating = commitRunning;
 
   return (
     <div
@@ -84,121 +82,58 @@ const LastCommit = ({ applicationId }: Props) => {
         [`${CLASS_NAME}__generating`]: generating,
       })}
     >
-      {Boolean(error) && errorMessage}
+      <hr className={`${CLASS_NAME}__divider`} />
+      <div className={`${CLASS_NAME}__content`}>
+        <p className={`${CLASS_NAME}__title`}>
+          Last Commit
+          {build && <BuildStatusIcons build={build} showIcon={false} />}
+        </p>
 
-      <SkeletonWrapper showSkeleton={generating}>
-        {isEmpty(lastCommit?.message) ? (
-          ClickableCommitId
-        ) : (
-          <Tooltip aria-label={lastCommit?.message} direction="ne">
-            {ClickableCommitId}
-          </Tooltip>
-        )}
-      </SkeletonWrapper>
-      <UserAndTime
-        loading={generating}
-        account={account}
-        time={lastCommit.createdAt}
-      />
-
-      {build && (
-        <>
-          <SkeletonWrapper showSkeleton={generating}>
-            <BuildHeader
-              build={build}
-              isError={pendingChangesContext.isError}
-            />
+        <div className={`${CLASS_NAME}__status`}>
+          <SkeletonWrapper
+            showSkeleton={generating}
+            className={`${CLASS_NAME}__skeleton`}
+          >
+            {isEmpty(lastCommit?.message) ? (
+              ClickableCommitId
+            ) : (
+              <Tooltip aria-label={lastCommit?.message} direction="ne">
+                {ClickableCommitId}
+              </Tooltip>
+            )}
+            <span className={classNames("clickable-id")}>
+              {formatTimeToNow(lastCommit?.createdAt)}
+            </span>
           </SkeletonWrapper>
-
-          <BuildSummary
-            build={build}
-            onError={setError}
-            generating={generating}
-          />
-        </>
-      )}
-
-      <PendingChangesMenuItem applicationId={applicationId} />
+        </div>
+        {build && (
+          <Link
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/code-view`}
+            className={`${CLASS_NAME}__view-code`}
+          >
+            <Button
+              buttonStyle={EnumButtonStyle.Secondary}
+              disabled={generating}
+              eventData={{
+                eventName: "LastCommitViewCode",
+              }}
+            >
+              Go to view code
+            </Button>
+          </Link>
+        )}
+      </div>
     </div>
   );
 };
 
-export default LastCommit;
+function formatTimeToNow(time: Date | null): string | null {
+  return (
+    time &&
+    formatDistanceToNow(new Date(time), {
+      addSuffix: true,
+    })
+  );
+}
 
-export const GET_LAST_COMMIT = gql`
-  query lastCommit($applicationId: String!) {
-    commits(
-      where: { app: { id: $applicationId } }
-      orderBy: { createdAt: Desc }
-      take: 1
-    ) {
-      id
-      message
-      createdAt
-      user {
-        id
-        account {
-          firstName
-          lastName
-        }
-      }
-      changes {
-        originId
-        action
-        originType
-        versionNumber
-        origin {
-          __typename
-          ... on Entity {
-            id
-            displayName
-            updatedAt
-          }
-          ... on Block {
-            id
-            displayName
-            updatedAt
-          }
-        }
-      }
-      builds(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        createdAt
-        appId
-        version
-        message
-        createdAt
-        commitId
-        actionId
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
-        createdBy {
-          id
-          account {
-            firstName
-            lastName
-          }
-        }
-        status
-        archiveURI
-      }
-    }
-  }
-`;
+export default LastCommit;

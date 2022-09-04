@@ -3,61 +3,51 @@ import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
 import { EntityFieldFilter } from './EntityFieldFilter';
 
 @InputType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityWhereInput {
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   name?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   pluralDisplayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: StringFilter | null;
 
   @Field(() => EntityFieldFilter, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   fields?: EntityFieldFilter | null;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
-  app?: WhereUniqueInput | null;
+  resource?: WhereUniqueInput | null;
 }

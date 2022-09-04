@@ -5,6 +5,5 @@ export enum EnumRoleLevel {
   Project = 'Project'
 }
 registerEnumType(EnumRoleLevel, {
-  name: 'EnumRoleLevel',
-  description: undefined
+  name: 'EnumRoleLevel'
 });

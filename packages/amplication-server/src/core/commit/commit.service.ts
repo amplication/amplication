@@ -3,7 +3,7 @@ import { PrismaService } from '@amplication/prisma-db';
 import { FindOneCommitArgs } from './dto/FindOneCommitArgs';
 import { FindManyCommitArgs } from './dto/FindManyCommitArgs';
 import { Commit } from 'src/models';
-import { PendingChange } from '../app/dto';
+import { PendingChange } from '../resource/dto';
 import { EntityService } from '../entity/entity.service';
 import { BlockService } from '../block/block.service';
 @Injectable()

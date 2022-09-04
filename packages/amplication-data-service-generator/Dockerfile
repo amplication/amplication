@@ -20,5 +20,5 @@ COPY src/server/static/package.json src/server/static/package-lock.json ./server
 COPY src/admin/static/package.json src/admin/static/package-lock.json ./admin/
 
 # Install dependencies
-RUN cd server; npm ci --silent;
-RUN cd admin; npm ci --silent;
+RUN cd server; npm ci;
+RUN cd admin; npm ci;

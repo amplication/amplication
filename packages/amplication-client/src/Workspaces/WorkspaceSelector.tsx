@@ -1,63 +1,25 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { gql, useQuery, useMutation, useApolloClient } from "@apollo/client";
+import React, { useCallback, useContext, useState } from "react";
 import classNames from "classnames";
-import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { setToken } from "../authentication/authentication";
 import {
   CircleBadge,
   Dialog,
   CircularProgress,
 } from "@amplication/design-system";
-import * as models from "../models";
 import WorkspaceSelectorList from "./WorkspaceSelectorList";
 import NewWorkspace from "./NewWorkspace";
 import "./WorkspaceSelector.scss";
+import { AppContext } from "../context/appContext";
 
-type TData = {
-  currentWorkspace: models.Workspace;
-};
-
-type TSetData = {
-  setCurrentWorkspace: {
-    token: string;
-  };
-};
-
-export const COLOR = "#A787FF";
+export const WORKSPACE_COLOR = "#A787FF";
 const CLASS_NAME = "workspaces-selector";
 
 function WorkspaceSelector() {
+  const { currentWorkspace, handleSetCurrentWorkspace } = useContext(
+    AppContext
+  );
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [newWorkspace, setNewWorkspace] = useState<boolean>(false);
-
-  const apolloClient = useApolloClient();
-  const history = useHistory();
-
-  const [setCurrentWorkspace, { data: setCurrentData }] = useMutation<TSetData>(
-    SET_CURRENT_WORKSPACE
-  );
-
-  const handleSetCurrentWorkspace = useCallback(
-    (workspace: models.Workspace) => {
-      setIsOpen(false);
-      setCurrentWorkspace({
-        variables: {
-          workspaceId: workspace.id,
-        },
-      }).catch(console.error);
-    },
-    [setCurrentWorkspace]
-  );
-
-  useEffect(() => {
-    if (setCurrentData) {
-      apolloClient.clearStore();
-      setToken(setCurrentData.setCurrentWorkspace.token);
-      history.replace("/");
-      window.location.reload();
-    }
-  }, [setCurrentData, history, apolloClient]);
 
   const handleNewWorkspaceClick = useCallback(() => {
     setNewWorkspace(!newWorkspace);
@@ -69,17 +31,19 @@ function WorkspaceSelector() {
     });
   }, [setIsOpen]);
 
-  const { data, loading } = useQuery<TData>(GET_CURRENT_WORKSPACE);
-
   return (
-    <div className={CLASS_NAME}>
+    <div
+      className={`${CLASS_NAME}${
+        isOpen ? ` ${CLASS_NAME}__open` : ` ${CLASS_NAME}__close`
+      }`}
+    >
       <Dialog
         className="new-entity-dialog"
         isOpen={newWorkspace}
         onDismiss={handleNewWorkspaceClick}
         title="New Workspace"
       >
-        <NewWorkspace onWorkspaceCreated={handleSetCurrentWorkspace} />
+        <NewWorkspace />
       </Dialog>
       <div
         className={classNames(`${CLASS_NAME}__current`, {
@@ -87,30 +51,36 @@ function WorkspaceSelector() {
         })}
         onClick={handleOpen}
       >
-        {loading ? (
-          <CircularProgress />
-        ) : (
+        {currentWorkspace ? (
           <>
             <CircleBadge
-              name={data?.currentWorkspace.name || ""}
-              color={COLOR}
+              name={currentWorkspace.name || ""}
+              color={WORKSPACE_COLOR}
             />
-            <span className={`${CLASS_NAME}__current__name`}>
-              {data?.currentWorkspace.name}
-            </span>
+            <div className={`${CLASS_NAME}__current__details`}>
+              <span className={`${CLASS_NAME}__current__name`}>
+                {currentWorkspace.name}
+              </span>
+              <span className={`${CLASS_NAME}__current__plan`}>
+                {currentWorkspace.subscription?.subscriptionPlan || "Community"}{" "}
+                Plan
+              </span>
+            </div>
             <Button
               buttonStyle={EnumButtonStyle.Text}
-              disabled={loading}
               type="button"
-              icon="code"
+              icon={isOpen ? "chevron_up" : "chevron_down"}
+              iconSize="xsmall"
             />
           </>
+        ) : (
+          <CircularProgress />
         )}
       </div>
-      {isOpen && data && (
+      {isOpen && currentWorkspace && (
         <WorkspaceSelectorList
           onNewWorkspaceClick={handleNewWorkspaceClick}
-          selectedWorkspace={data.currentWorkspace}
+          selectedWorkspace={currentWorkspace}
           onWorkspaceSelected={handleSetCurrentWorkspace}
         />
       )}
@@ -119,31 +89,3 @@ function WorkspaceSelector() {
 }
 
 export default WorkspaceSelector;
-
-export const GET_CURRENT_WORKSPACE = gql`
-  query getCurrentWorkspace {
-    currentWorkspace {
-      id
-      name
-      subscription {
-        id
-        workspaceId
-        subscriptionPlan
-        status
-        nextBillDate
-        cancelUrl
-        updateUrl
-        price
-        cancellationEffectiveDate
-      }
-    }
-  }
-`;
-
-const SET_CURRENT_WORKSPACE = gql`
-  mutation setCurrentWorkspace($workspaceId: String!) {
-    setCurrentWorkspace(data: { id: $workspaceId }) {
-      token
-    }
-  }
-`;

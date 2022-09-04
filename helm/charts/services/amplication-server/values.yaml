@@ -4,8 +4,8 @@ autoscaling:
   enabled: true
   minReplicas: 2
   maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 60
 replicaCount: 2
 image:
   pullPolicy: Always
@@ -35,5 +35,5 @@ podAnnotations:
 
 maxMemory: "2Gi"
 minMemory: "2Gi"
-maxCPU: 1
-minCPU: 1
+maxCPU: 2
+minCPU: 2

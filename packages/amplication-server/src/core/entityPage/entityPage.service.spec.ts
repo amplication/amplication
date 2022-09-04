@@ -15,7 +15,7 @@ const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
 const EXAMPLE_SINGLE_RECORD_NAME = 'Example Single Record Entity Page';
 const EXAMPLE_LIST_NAME = 'Example List Entity Page';
-const EXAMPLE_APP_ID = 'ExampleApp';
+const EXAMPLE_RESOURCE_ID = 'ExampleResource';
 const EXAMPLE_ENTITY_ID = 'ExampleEntityId';
 const NOW = new Date();
 const VERSION_NUMBER = 0;
@@ -94,9 +94,9 @@ const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {
   pageType: EnumEntityPageType.SingleRecord,
   showAllFields: true,
   singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
-  app: {
+  resource: {
     connect: {
-      id: EXAMPLE_APP_ID
+      id: EXAMPLE_RESOURCE_ID
     }
   }
 };
@@ -110,9 +110,9 @@ const LIST_CREATE_INPUT: EntityPageCreateInput = {
   pageType: EnumEntityPageType.List,
   showAllFields: true,
   listSettings: EXAMPLE_LIST_SETTINGS,
-  app: {
+  resource: {
     connect: {
-      id: EXAMPLE_APP_ID
+      id: EXAMPLE_RESOURCE_ID
     }
   }
 };
@@ -135,7 +135,7 @@ const updateMock = jest.fn(() => {
 const findOneMock = jest.fn(() => EXAMPLE_SINGLE_RECORD_ENTITY_PAGE);
 const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_ENTITY_PAGES);
 
-const isEntityInSameAppMock = jest.fn(() => true);
+const isEntityInSameResourceMock = jest.fn(() => true);
 const validateAllFieldsExistMock = jest.fn(() => true);
 
 describe('EntityPageService', () => {
@@ -145,7 +145,7 @@ describe('EntityPageService', () => {
     createMock.mockClear();
     findOneMock.mockClear();
     findManyByBlockTypeMock.mockClear();
-    isEntityInSameAppMock.mockClear();
+    isEntityInSameResourceMock.mockClear();
     validateAllFieldsExistMock.mockClear();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -162,7 +162,7 @@ describe('EntityPageService', () => {
         {
           provide: EntityService,
           useClass: jest.fn(() => ({
-            isEntityInSameApp: isEntityInSameAppMock,
+            isEntityInSameResource: isEntityInSameResourceMock,
             validateAllFieldsExist: validateAllFieldsExistMock
           }))
         },
@@ -205,7 +205,7 @@ describe('EntityPageService', () => {
       EXAMPLE_SINGLE_RECORD_ENTITY_PAGE
     );
     expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith(args, EXAMPLE_USER);
+    expect(createMock).toBeCalledWith(args, EXAMPLE_USER.id);
   });
 
   it('should create list entity page', async () => {
@@ -216,7 +216,7 @@ describe('EntityPageService', () => {
       EXAMPLE_LIST_ENTITY_PAGE
     );
     expect(createMock).toBeCalledTimes(1);
-    expect(createMock).toBeCalledWith(args, EXAMPLE_USER);
+    expect(createMock).toBeCalledWith(args, EXAMPLE_USER.id);
   });
 
   it('should update an entity page', async () => {

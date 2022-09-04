@@ -1,14 +1,12 @@
 {
   "name": "@amplication/kafka",
-  "version": "0.14.12",
+  "version": "0.15.3",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
     "build": "tsc",
     "prebuild": "rimraf lib",
-    "prepare": "npm run build",
-    "test": "jest",
-    "postinstall": "npm run build"
+    "test": "jest"
   },
   "keywords": [],
   "author": "tupe12334",

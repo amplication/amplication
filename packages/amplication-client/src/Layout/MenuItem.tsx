@@ -18,13 +18,14 @@ type Props = {
   /** Optional class name to be added to the element */
   className?: string;
   hideTooltip?: boolean;
+  disableHover?: boolean;
   children?: ReactNode;
   onClick?: () => void;
 };
 
 const NON_URL = "non-url";
 const DIRECTION = "e";
-const ICON_SIZE = "xlarge";
+const ICON_SIZE = "medium";
 
 /**
  *
@@ -38,6 +39,7 @@ const MenuItem = ({
   className,
   children,
   hideTooltip = false,
+  disableHover = false,
   onClick,
 }: Props) => {
   const match = useRouteMatch(to || NON_URL);
@@ -57,6 +59,7 @@ const MenuItem = ({
     <div
       className={classNames("amp-menu-item", className, {
         "amp-menu-item--active": match !== null,
+        "amp-menu-item--no-hover": disableHover,
       })}
     >
       {hideTooltip ? (

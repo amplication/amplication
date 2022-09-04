@@ -1,0 +1,78 @@
+@import "../style/index.scss";
+
+.workspace-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px var(--large-spacing);
+  background: var(--black10);
+  height: var(--footer-height);
+  min-height: var(--footer-height);
+
+  &__skeleton {
+    display: flex;
+    align-items: center;
+  }
+
+  &__vertical_border {
+    width: 1px;
+    height: var(--large-spacing);
+    background: var(--black60);
+    border: none;
+    margin: 0 var(--default-spacing-small);
+  }
+
+  &__right,
+  &__left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__right {
+    .truncated-id {
+      @include regular-12;
+      color: var(--black100);
+    }
+
+    .clickable-id {
+      color: var(--black80);
+      a {
+        color: var(--black100);
+      }
+    }
+  }
+
+  &__gh-connection {
+    color: var(--black80);
+    display: flex;
+    align-items: center;
+  }
+
+  &__gh-disconnected {
+    display: flex;
+    align-items: center;
+    color: var(--negative-light);
+  }
+
+  &__connect-to-gh {
+    color: var(--negative-light);
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__gh-link {
+    @include regular-12;
+    margin-left: var(--default-spacing-small);
+    color: var(--black100);
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__github-icon {
+    margin-right: var(--default-spacing-small);
+  }
+}
