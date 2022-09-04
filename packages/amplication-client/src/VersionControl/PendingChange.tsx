@@ -12,8 +12,6 @@ const TOOLTIP_DIRECTION = "ne";
 
 type Props = {
   change: models.PendingChange;
-  /**@todo: figure out how to pass this value without too many props drilling down */
-  resourceId?: string; 
   linkToOrigin?: boolean;
 };
 
@@ -25,13 +23,13 @@ const ACTION_TO_LABEL: {
   [models.EnumPendingChangeAction.Update]: "U",
 };
 
-const PendingChange = ({ change, resourceId, linkToOrigin = false }: Props) => {
+const PendingChange = ({ change, linkToOrigin = false }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
   /**@todo: update the url for other types of blocks  */
   const url =
     change.originType === models.EnumPendingChangeOriginType.Entity
-      ? `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${change.originId}`
-      : `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/update`;
+      ? `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/entities/${change.originId}`
+      : `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/update`;
 
   const isDeletedEntity =
     change.action === models.EnumPendingChangeAction.Delete;

@@ -85,7 +85,6 @@ const PendingChanges = ({ projectId }: Props) => {
                   <PendingChange
                     key={change.originId}
                     change={change}
-                    resourceId={projectId}
                     linkToOrigin
                   />
                 ))}
