@@ -43,15 +43,11 @@ type Query {
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
-  ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
-  ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
-  ConnectorRestApiCall(where: WhereUniqueInput!): ConnectorRestApiCall
-  ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
-  EntityPage(where: WhereUniqueInput!): EntityPage
-  EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  Topic(where: WhereUniqueInput!): Topic
+  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
 }
 
 type Account {
@@ -371,6 +367,7 @@ type Block {
 enum EnumBlockType {
   ServiceSettings
   ProjectConfigurationSettings
+  Topic
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -872,161 +869,6 @@ type ApiToken {
   lastAccessAt: DateTime!
 }
 
-type ConnectorRestApi implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String!
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  authenticationType: EnumConnectorRestApiAuthenticationType!
-  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings
-  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings
-}
-
-enum EnumConnectorRestApiAuthenticationType {
-  None
-  PrivateKey
-  HttpBasicAuthentication
-  OAuth2PasswordFlow
-  OAuth2UserAgentFlow
-}
-
-type PrivateKeyAuthenticationSettings {
-  keyName: String!
-  keyValue: String!
-  type: String!
-}
-
-type HttpBasicAuthenticationSettings {
-  username: String!
-  password: String!
-}
-
-input ConnectorRestApiWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-input ConnectorRestApiOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
-type ConnectorRestApiCall implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String!
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  url: String!
-}
-
-input ConnectorRestApiCallWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-input ConnectorRestApiCallOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
-type EntityPage implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String!
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  entityId: String!
-  pageType: EnumEntityPageType!
-  singleRecordSettings: EntityPageSingleRecordSettings
-  listSettings: EntityPageListSettings
-  showAllFields: Boolean!
-  showFieldList: [String!]
-}
-
-enum EnumEntityPageType {
-  SingleRecord
-  List
-  MasterDetails
-}
-
-type EntityPageSingleRecordSettings implements IEntityPageSettings {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-  allowUpdate: Boolean!
-}
-
-interface IEntityPageSettings {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-}
-
-type EntityPageListSettings implements IEntityPageSettings {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-  enableSearch: Boolean!
-  navigateToPageId: String
-}
-
-input EntityPageWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-input EntityPageOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
 type RemoteGitRepository {
   name: String!
   url: String!
@@ -1042,6 +884,41 @@ input RemoteGitRepositoriesWhereUniqueInput {
 
 input GitOrganizationWhereInput {
   id: String
+}
+
+type Topic implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  name: String!
+}
+
+input TopicWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input TopicOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
 }
 
 type Mutation {
@@ -1088,12 +965,6 @@ type Mutation {
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   completeInvitation(data: CompleteInvitationInput!): Auth!
-  createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
-  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
-  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
-  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
-  createEntityPage(data: EntityPageCreateInput!): EntityPage!
-  updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
   createGitRepository(data: CreateGitRepositoryInput!): Resource!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
@@ -1102,6 +973,8 @@ type Mutation {
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   disconnectResourceGitRepository(resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  createTopic(data: TopicCreateInput!): Topic!
+  updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
 }
 
 input UpdateAccountInput {
@@ -1326,98 +1199,6 @@ input CompleteInvitationInput {
   token: String!
 }
 
-input ConnectorRestApiCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  authenticationType: EnumConnectorRestApiAuthenticationType!
-  privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettingsInput
-  httpBasicAuthenticationSettings: HttpBasicAuthenticationSettingsInput
-}
-
-input BlockInputOutputInput {
-  name: String!
-  description: String!
-  dataType: EnumDataType
-  dataTypeEntityName: String
-  isList: Boolean
-  includeAllPropertiesByDefault: Boolean
-  propertyList: [PropertySelectorInput!]
-}
-
-input PropertySelectorInput {
-  propertyName: String!
-  include: Boolean!
-}
-
-input PrivateKeyAuthenticationSettingsInput {
-  keyName: String!
-  keyValue: String!
-  type: String!
-}
-
-input HttpBasicAuthenticationSettingsInput {
-  username: String!
-  password: String!
-}
-
-input BlockUpdateInput {
-  displayName: String
-  description: String
-}
-
-input ConnectorRestApiCallCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  url: String!
-}
-
-input EntityPageCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  entityId: String
-  pageType: EnumEntityPageType!
-  singleRecordSettings: EntityPageSingleRecordSettingsInput
-  listSettings: EntityPageListSettingsInput
-  showAllFields: Boolean!
-  showFieldList: [String!]
-}
-
-input EntityPageSingleRecordSettingsInput {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-  allowUpdate: Boolean!
-}
-
-input EntityPageListSettingsInput {
-  allowCreation: Boolean!
-  allowDeletion: Boolean!
-  enableSearch: Boolean!
-  navigateToPageId: String
-}
-
-input EntityPageUpdateInput {
-  displayName: String
-  description: String
-  entityId: String
-  pageType: EnumEntityPageType!
-  singleRecordSettings: EntityPageSingleRecordSettingsInput
-  listSettings: EntityPageListSettingsInput
-  showAllFields: Boolean!
-  showFieldList: [String!]
-}
-
 input CreateGitRepositoryInput {
   name: String!
   public: Boolean!
@@ -1440,4 +1221,35 @@ input GitOrganizationCreateInput {
 
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
+}
+
+input TopicCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  name: String
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
+}
+
+input TopicUpdateInput {
+  displayName: String
+  description: String
+  name: String
 }
