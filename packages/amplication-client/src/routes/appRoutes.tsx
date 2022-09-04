@@ -11,7 +11,7 @@ export interface RouteDef {
   moduleClass?: string;
   routeTrackType?: string;
   permission?: boolean;
-  isAnalytics?: boolean
+  isAnalytics?: boolean;
 }
 
 export const Routes: RouteDef[] = [
@@ -70,6 +70,19 @@ export const Routes: RouteDef[] = [
             ),
             moduleName: "CreateServiceWizard",
             moduleClass: "create-service-wizard",
+            routeTrackType: "",
+            exactPath: true,
+            isAnalytics: true,
+          },
+          {
+            path:
+              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",
+            Component: lazy(
+              () =>
+                import("../Resource/create-message-broker/CreateMessageBroker")
+            ),
+            moduleName: "CreateMessageBroker",
+            moduleClass: "create-message-broker",
             routeTrackType: "",
             exactPath: true,
             isAnalytics: true,

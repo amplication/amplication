@@ -125,7 +125,7 @@ export type createServiceSettings = {
   resourceType: string;
 };
 
-export function createService(
+export function prepareServiceObject(
   projectId: string,
   isResourceWithEntities: boolean,
   generateAdminUI: boolean,
@@ -155,6 +155,21 @@ export function createService(
   };
 }
 
+export function prepareMessageBrokerObject(
+  projectId: string
+): models.ResourceCreateInput {
+  return {
+    name: "My message broker",
+    description: "",
+    resourceType: models.EnumResourceType.MessageBroker,
+    project: {
+      connect: {
+        id: projectId,
+      },
+    },
+  };
+}
+
 export const GET_APP_SETTINGS = gql`
   query serviceSettings($id: String!) {
     serviceSettings(where: { id: $id }) {
@@ -168,3 +183,23 @@ export const GET_APP_SETTINGS = gql`
     }
   }
 `;
+
+export const resourceThemeMap: {
+  [key in models.EnumResourceType]: {
+    icon: string;
+    color: string;
+  };
+} = {
+  [models.EnumResourceType.ProjectConfiguration]: {
+    icon: "app-settings",
+    color: "#FFBD70",
+  },
+  [models.EnumResourceType.Service]: {
+    icon: "services",
+    color: "#A787FF",
+  },
+  [models.EnumResourceType.MessageBroker]: {
+    icon: "services",
+    color: "#8DD9B9",
+  },
+};

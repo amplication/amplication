@@ -623,6 +623,7 @@ type Environment {
 enum EnumResourceType {
   Service
   ProjectConfiguration
+  MessageBroker
 }
 
 type Subscription {
@@ -1055,6 +1056,7 @@ type Mutation {
   createProject(data: ProjectCreateInput!): Project!
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
+  createMessageBroker(data: ResourceCreateInput!): Resource!
   createService(data: ResourceCreateInput!): Resource!
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
   deleteResource(where: WhereUniqueInput!): Resource

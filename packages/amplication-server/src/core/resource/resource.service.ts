@@ -104,6 +104,33 @@ export class ResourceService {
       throw new AmplicationError('Project configuration missing from project');
     }
 
+    let lowerResourceName = args.data.name.toLowerCase();
+    const existingResources = await this.prisma.resource.findMany({
+      where: {
+        name: {
+          mode: QueryMode.Insensitive,
+          startsWith: lowerResourceName
+        },
+        projectId: projectId,
+        deletedAt: null
+      },
+      select: {
+        name: true
+      }
+    });
+
+    let index = 1;
+    while (
+      index < 10 &&
+      existingResources.find(resource => {
+        return resource.name.toLowerCase() === lowerResourceName;
+      })
+    ) {
+      lowerResourceName = `${lowerResourceName}-${index}`;
+      args.data.name = `${args.data.name}-${index}`;
+      index += 1;
+    }
+
     let gitRepository:
       | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
       | undefined = undefined;
@@ -119,6 +146,20 @@ export class ResourceService {
         gitRepository
       }
     });
+  }
+
+  /**
+   * Create a resource of type "Service", with the built-in "user" role
+   */
+  async createMessageBroker(args: CreateOneResourceArgs): Promise<Resource> {
+    const resource = await this.createResource({
+      data: {
+        ...args.data,
+        resourceType: EnumResourceType.MessageBroker
+      }
+    });
+
+    return resource;
   }
 
   /**
@@ -167,31 +208,6 @@ export class ResourceService {
       )
     ) {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
-    }
-
-    const existingResources = await this.prisma.resource.findMany({
-      where: {
-        name: {
-          mode: QueryMode.Insensitive,
-          startsWith: data.resource.name
-        },
-        projectId: data.resource.project.connect.id,
-        deletedAt: null
-      },
-      select: {
-        name: true
-      }
-    });
-
-    const resourceName = data.resource.name;
-    let index = 1;
-    while (
-      existingResources.find(resource => {
-        return resource.name.toLowerCase() === data.resource.name.toLowerCase();
-      })
-    ) {
-      data.resource.name = `${resourceName}-${index}`;
-      index += 1;
     }
 
     const resource = await this.createService(

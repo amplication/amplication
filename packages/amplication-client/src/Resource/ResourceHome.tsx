@@ -6,7 +6,7 @@ import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import { AppRouteProps } from "../routes/routesUtil";
-import { resourceThemeMap } from "../util/resourceThemeMap";
+import { resourceThemeMap } from "./constants";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";

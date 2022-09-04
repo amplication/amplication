@@ -908,6 +908,7 @@ export enum EnumPendingChangeOriginType {
 }
 
 export enum EnumResourceType {
+  MessageBroker = "MessageBroker",
   ProjectConfiguration = "ProjectConfiguration",
   Service = "Service",
 }
@@ -1055,6 +1056,7 @@ export type Mutation = {
   createEntityFieldByDisplayName: EntityField;
   createEntityPage: EntityPage;
   createGitRepository: Resource;
+  createMessageBroker: Resource;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createProject: Project;
@@ -1160,6 +1162,10 @@ export type MutationCreateEntityPageArgs = {
 
 export type MutationCreateGitRepositoryArgs = {
   data: CreateGitRepositoryInput;
+};
+
+export type MutationCreateMessageBrokerArgs = {
+  data: ResourceCreateInput;
 };
 
 export type MutationCreateOneEntityArgs = {
