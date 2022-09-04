@@ -454,6 +454,7 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   Topic
   ServiceMessageBrokerConnection
+  ServiceConnectionTopic
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
