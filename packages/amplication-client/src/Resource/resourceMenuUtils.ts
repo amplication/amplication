@@ -5,7 +5,7 @@ export type MenuItemLinks = "entities" | "roles" | "github" | "settings";
 export const resourceMenuLayout: { [key in EnumResourceType]: string[] } = {
   [EnumResourceType.Service]: ["entities", "roles", "github", "settings"],
   [EnumResourceType.ProjectConfiguration]: ["github", "settings"],
-  [EnumResourceType.MessageBroker]: ["github", "settings"],
+  [EnumResourceType.MessageBroker]: ["topics", "github", "settings"],
 };
 
 export const linksMap = {
@@ -28,6 +28,11 @@ export const linksMap = {
     title: "Settings",
     icon: "settings",
     to: "/settings/update",
+  },
+  topics: {
+    title: "Topics",
+    icon: "plus",
+    to: "/topics",
   },
 };
 

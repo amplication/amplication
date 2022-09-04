@@ -770,7 +770,7 @@ export type GitRepository = {
 export type IBlock = {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
@@ -1131,7 +1131,7 @@ export type ProjectConfigurationSettings = IBlock & {
   baseDirectory: Scalars['String'];
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
@@ -1522,7 +1522,7 @@ export type ServiceSettings = IBlock & {
   dbPassword: Scalars['String'];
   dbPort: Scalars['Int'];
   dbUser: Scalars['String'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
@@ -1596,7 +1596,7 @@ export type Topic = IBlock & {
   __typename?: 'Topic';
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
   inputParameters: Array<BlockInputOutput>;
