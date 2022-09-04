@@ -99,7 +99,6 @@ type Resource {
   gitRepositoryId: String
   name: String!
   description: String!
-  color: String!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   environments: [Environment!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
@@ -1140,7 +1139,6 @@ input PendingChangesDiscardInput {
 input ResourceCreateInput {
   name: String!
   description: String!
-  color: String
   resourceType: EnumResourceType!
   project: WhereParentIdInput!
 }
@@ -1172,7 +1170,6 @@ input ResourceGenSettingsCreateInput {
 input ResourceUpdateInput {
   name: String
   description: String
-  color: String
   gitRepositoryOverride: Boolean
 }
 

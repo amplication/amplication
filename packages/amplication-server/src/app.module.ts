@@ -59,7 +59,7 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
   ]
 })
 export class AppModule implements OnApplicationShutdown {
-  onApplicationShutdown(signal: string) {
+  onApplicationShutdown(signal: string): void {
     console.trace(`Application shut down (signal: ${signal})`);
   }
 }

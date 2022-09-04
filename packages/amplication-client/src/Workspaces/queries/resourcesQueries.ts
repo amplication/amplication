@@ -9,7 +9,6 @@ export const GET_RESOURCES = gql`
       id
       name
       description
-      color
       createdAt
       updatedAt
       resourceType
@@ -106,7 +105,6 @@ export const UPDATE_RESOURCE = gql`
       updatedAt
       name
       description
-      color
       gitRepositoryOverride
     }
   }

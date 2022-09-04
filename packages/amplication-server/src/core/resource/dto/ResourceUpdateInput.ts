@@ -14,11 +14,6 @@ export class ResourceUpdateInput {
   })
   description?: string | null;
 
-  @Field(() => String, {
-    nullable: true
-  })
-  color?: string | null;
-
   @Field(() => Boolean, { nullable: true })
   gitRepositoryOverride?: boolean | null;
 }

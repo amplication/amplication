@@ -36,10 +36,12 @@ const CommitResourceListItem = ({ build }: Props) => {
         {build && build.resource && (
           <>
             <div className={`${CLASS_NAME}__title`}>
-              <ResourceCircleBadge type={build.resource.resourceType} />
-              <p>{build.resource.name}</p>
+              {build.resource && (
+                <ResourceCircleBadge type={build.resource.resourceType} />
+              )}
+              <p>{build.resource?.name}</p>
               <Link
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}`}
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}`}
               >
                 <Icon icon="link" size="xsmall" />
               </Link>
@@ -47,7 +49,7 @@ const CommitResourceListItem = ({ build }: Props) => {
 
             <ClickableId
               label="Build ID"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resource.id}/builds/${build.id}`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
               id={build.id}
               onClick={handleBuildLinkClick}
               eventData={{

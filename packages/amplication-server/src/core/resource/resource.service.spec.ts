@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import cuid from 'cuid';
 import {
-  DEFAULT_SERVICE_DATA,
   INVALID_RESOURCE_ID,
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService
@@ -40,7 +39,6 @@ import {
   ResourceCreateInput
 } from './dto';
 import { PendingChange } from './dto/PendingChange';
-import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ServiceSettings } from '../serviceSettings/dto';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
@@ -56,12 +54,19 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID =
 const EXAMPLE_PROJECT_ID = 'exampleProjectId';
 const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
 const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
-const INVALID_COLOR = 'INVALID_COLOR';
 
 const EXAMPLE_CUID = 'EXAMPLE_CUID';
 
 const EXAMPLE_BUILD_ID = 'ExampleBuildId';
 const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
+
+const EXAMPLE_GIT_REPOSITORY: GitRepository = {
+  id: 'exampleGitRepositoryId',
+  name: 'repositoryTest',
+  gitOrganizationId: 'exampleGitOrganizationId',
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
 
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   description: 'Sample Service for task management',
@@ -71,7 +76,6 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
 };
 
 const EXAMPLE_RESOURCE: Resource = {
-  ...DEFAULT_SERVICE_DATA,
   id: EXAMPLE_RESOURCE_ID,
   resourceType: EnumResourceType.Service,
   createdAt: new Date(),
@@ -83,7 +87,6 @@ const EXAMPLE_RESOURCE: Resource = {
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
-  ...DEFAULT_SERVICE_DATA,
   id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID,
   resourceType: EnumResourceType.ProjectConfiguration,
   createdAt: new Date(),
@@ -224,14 +227,6 @@ const EXAMPLE_BUILD: Build = {
   message: 'new build',
   actionId: 'ExampleActionId',
   commitId: EXAMPLE_COMMIT_ID
-};
-
-const EXAMPLE_GIT_REPOSITORY: GitRepository = {
-  id: 'exampleGitRepositoryId',
-  name: 'repositoryTest',
-  gitOrganizationId: 'exampleGitOrganizationId',
-  createdAt: new Date(),
-  updatedAt: new Date()
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
@@ -463,24 +458,6 @@ describe('ResourceService', () => {
     );
   });
 
-  it('should fail to create resource for invalid color', async () => {
-    const createServiceArgs = {
-      args: {
-        data: {
-          name: EXAMPLE_RESOURCE_NAME,
-          description: EXAMPLE_RESOURCE_DESCRIPTION,
-          color: INVALID_COLOR,
-          resourceType: EnumResourceType.Service,
-          project: { connect: { id: 'projectId' } }
-        }
-      },
-      user: EXAMPLE_USER
-    };
-    await expect(
-      service.createResource(createServiceArgs.args, createServiceArgs.user)
-    ).rejects.toThrow(new InvalidColorError(INVALID_COLOR));
-  });
-
   it('should fail to create resource with entities with a reserved name', async () => {
     await expect(
       service.createResourceWithEntities(
@@ -625,7 +602,13 @@ describe('ResourceService', () => {
       ...args,
       data: {
         deletedAt: dateSpy.mock.instances[0],
-        name: prepareDeletedItemName(EXAMPLE_RESOURCE.name, EXAMPLE_RESOURCE.id)
+        name: prepareDeletedItemName(
+          EXAMPLE_RESOURCE.name,
+          EXAMPLE_RESOURCE.id
+        ),
+        gitRepository: {
+          disconnect: true
+        }
       }
     });
   });
