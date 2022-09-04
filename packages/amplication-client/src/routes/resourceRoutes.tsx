@@ -68,6 +68,29 @@ const resourceRoutes = [
     ],
   },
   {
+    path: "/:workspace/:project/:resource/service-connections",
+    Component: lazy(
+      () => import("../ServiceConnections/ServiceConnectionsPage")
+    ),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [
+      {
+        path:
+          "/:workspace/:project/:resource/service-connections/:connectedResourceId",
+        Component: lazy(
+          () => import("../ServiceConnections/ServiceMessageBrokerConnection")
+        ),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+    ],
+  },
+  {
     path:
       "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/commits",
     Component: lazy(() => import("../VersionControl/CommitList")),
