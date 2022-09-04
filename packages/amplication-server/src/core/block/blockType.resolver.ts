@@ -4,7 +4,6 @@ import { FindOneArgs } from 'src/dto';
 import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { BlockTypeService } from './blockType.service';
-import { Roles } from '../../decorators/roles.decorator';
 import {
   FindManyBlockArgs,
   CreateBlockArgs,
