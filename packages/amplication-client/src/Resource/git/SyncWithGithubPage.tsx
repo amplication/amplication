@@ -40,8 +40,8 @@ const SyncWithGithubPage: React.FC = () => {
 
   const pageTitle = "GitHub";
   const errorMessage = formatError(error);
-  const isServiceResource =
-    data?.resource.resourceType === EnumResourceType.Service;
+  const isProjectConfiguration =
+    data?.resource.resourceType === EnumResourceType.ProjectConfiguration;
 
   return (
     <PageContent pageTitle={pageTitle}>
@@ -55,10 +55,10 @@ const SyncWithGithubPage: React.FC = () => {
           automatically pushes your generated code and creates a Pull Request in
           your GitHub repository.
         </div>
-        {data?.resource && !isServiceResource && (
+        {data?.resource && isProjectConfiguration && (
           <AuthResourceWithGit resource={data.resource} onDone={handleOnDone} />
         )}
-        {isServiceResource && data?.resource && (
+        {!isProjectConfiguration && data?.resource && (
           <ServiceConfigurationGitSettings
             resource={data.resource}
             onDone={handleOnDone}
