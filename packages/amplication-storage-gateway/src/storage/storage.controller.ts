@@ -13,7 +13,7 @@ import { PaginationService } from "../pagination/pagination.service";
 import { FileMeta } from "./dto/FileMeta";
 import { StorageService } from "./storage.service";
 
-const APP_ID_PARAM_KEY = "appId";
+const RESOURCE_ID_PARAM_KEY = "resourceId";
 const BUILD_ID_PARAM_KEY = "buildId";
 const PATH_PARAM_KEY = "path";
 
@@ -25,28 +25,23 @@ export class StorageController {
     protected readonly paginationService: PaginationService
   ) {}
 
-  @Get()
-  testStorage(): string {
-    return "hello world";
-  }
-
-  @Get(`/:${APP_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/list`)
+  @Get(`/:${RESOURCE_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/list`)
   getBuildFilesList(
-    @Param(APP_ID_PARAM_KEY) appId: string,
+    @Param(RESOURCE_ID_PARAM_KEY) resourceId: string,
     @Param(BUILD_ID_PARAM_KEY) buildId: string,
     @Query(PATH_PARAM_KEY) path: string | undefined,
     @Query() query: PaginationQuery
   ): PaginationResult<FileMeta> {
-    const results = this.service.getBuildFilesList(appId, buildId, path);
+    const results = this.service.getBuildFilesList(resourceId, buildId, path);
     return this.paginationService.paginate(results, query);
   }
-  @Get(`/:${APP_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/content`)
+  @Get(`/:${RESOURCE_ID_PARAM_KEY}/:${BUILD_ID_PARAM_KEY}/content`)
   @Header("Content-Type", "text/plain")
   fileContent(
-    @Param(APP_ID_PARAM_KEY) appId: string,
+    @Param(RESOURCE_ID_PARAM_KEY) resourceId: string,
     @Param(BUILD_ID_PARAM_KEY) buildId: string,
     @Query("path") path: string | undefined
   ): string {
-    return this.service.fileContent(appId, buildId, path);
+    return this.service.fileContent(resourceId, buildId, path);
   }
 }

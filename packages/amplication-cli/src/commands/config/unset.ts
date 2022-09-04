@@ -4,7 +4,7 @@ import { allowedProperties } from '../../properties';
 export default class ConfigUnset extends ConfiguredCommand {
   static description = 'unset a property value';
 
-  static examples = ['amp config:unset AMP_CURRENT_APP'];
+  static examples = ['amp config:unset AMP_CURRENT_RESOURCE'];
 
   static args = [
     {

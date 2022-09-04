@@ -1,21 +1,15 @@
 import React, { useEffect } from "react";
-import { Switch } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
-
-import ApplicationLayout from "./Application/ApplicationLayout";
-import Login from "./User/Login";
-import Signup from "./User/Signup";
-import WorkspaceLayout from "./Workspaces/WorkspaceLayout";
-import { CreateAppFromExcel } from "./Application/CreateAppFromExcel";
-
-import PrivateRoute from "./authentication/PrivateRoute";
-import NavigationTabsProvider from "./Layout/NavigationTabsProvider";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
 import { init as initPaddle } from "./util/paddle";
-import RouteWithAnalytics from "./Layout/RouteWithAnalytics";
-import AuthAppWithGitCallback from "./Application/git/AuthAppWithGitCallback";
+import { Routes } from "./routes/appRoutes";
+import { routesGenerator } from "./routes/routesUtil";
+import useAuthenticated from "./authentication/use-authenticated";
+import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
+import { CircularProgress } from "@amplication/design-system";
 
+const GeneratedRoutes = routesGenerator(Routes);
 const context = {
   source: "amplication-client",
 };
@@ -30,6 +24,11 @@ export const enhance = track<keyof typeof context>(
 );
 
 function App() {
+  const authenticated = useAuthenticated();
+  const { currentWorkspaceLoad } = useCurrentWorkspace(
+    authenticated
+  );
+
   useEffect(() => {
     initAnalytics();
     initPaddle();
@@ -46,30 +45,7 @@ function App() {
 
   return (
     <ThemeProvider>
-      <NavigationTabsProvider>
-        <Switch>
-          <RouteWithAnalytics path="/login">
-            <Login />
-          </RouteWithAnalytics>
-          <RouteWithAnalytics path="/signup">
-            <Signup />
-          </RouteWithAnalytics>
-          <PrivateRoute
-            exact
-            path="/github-auth-app/callback"
-            component={AuthAppWithGitCallback}
-          />
-          <PrivateRoute exact path="/" component={WorkspaceLayout} />
-          <PrivateRoute path="/workspace" component={WorkspaceLayout} />
-          <PrivateRoute path="/user/profile" component={WorkspaceLayout} />
-          <PrivateRoute
-            exact
-            path="/create-app"
-            component={CreateAppFromExcel}
-          />
-          <PrivateRoute path="/:application" component={ApplicationLayout} />
-        </Switch>
-      </NavigationTabsProvider>
+      {currentWorkspaceLoad ? <CircularProgress /> : GeneratedRoutes}
     </ThemeProvider>
   );
 }

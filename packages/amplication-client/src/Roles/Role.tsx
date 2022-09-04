@@ -8,14 +8,14 @@ import RoleForm from "./RoleForm";
 import * as models from "../models";
 
 type TData = {
-  appRole: models.AppRole;
+  resourceRole: models.ResourceRole;
 };
 
 const Role = () => {
   const match = useRouteMatch<{
-    application: string;
+    resource: string;
     roleId: string;
-  }>("/:application/roles/:roleId");
+  }>("/:workspace/:project/:resource/roles/:roleId");
 
   const { roleId } = match?.params ?? {};
 
@@ -47,7 +47,7 @@ const Role = () => {
   return (
     <>
       {!loading && (
-        <RoleForm onSubmit={handleSubmit} defaultValues={data?.appRole} />
+        <RoleForm onSubmit={handleSubmit} defaultValues={data?.resourceRole} />
       )}
       <Snackbar open={hasError} message={errorMessage} />
     </>
@@ -57,8 +57,8 @@ const Role = () => {
 export default Role;
 
 const GET_ROLE = gql`
-  query getAppRole($roleId: String!) {
-    appRole(where: { id: $roleId }) {
+  query getResourceRole($roleId: String!) {
+    resourceRole(where: { id: $roleId }) {
       id
       name
       displayName
@@ -68,11 +68,11 @@ const GET_ROLE = gql`
 `;
 
 const UPDATE_ROLE = gql`
-  mutation updateAppRole(
-    $data: AppRoleUpdateInput!
+  mutation updateResourceRole(
+    $data: ResourceRoleUpdateInput!
     $where: WhereUniqueInput!
   ) {
-    updateAppRole(data: $data, where: $where) {
+    updateResourceRole(data: $data, where: $where) {
       id
       name
       displayName

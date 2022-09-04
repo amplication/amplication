@@ -3,6 +3,13 @@ global:
     name: mor-efs-claim
   pv:
     name: efs-pv-mor
+  nodeSelector:
+    role: custom-envs
+  tolerations:
+    - key: "custom-envs"
+      operator: "Equal"
+      value: "true"
+
     
 postgres:
   primary:

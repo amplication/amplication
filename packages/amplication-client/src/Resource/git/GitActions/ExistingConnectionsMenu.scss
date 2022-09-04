@@ -1,0 +1,44 @@
+@import "../../../style/index.scss";
+
+.git-organization-select-menu {
+  &__select-menu {
+    background: var(--black2);
+  }
+  &__menu {
+    margin-left: 0 !important;
+    box-sizing: border-box;
+    padding: 0px 12px;
+    gap: 8px;
+    width: 248px;
+    height: 28px;
+    background: var(--black5);
+    border: $border-black20;
+    border-radius: var(--small-border-radius);
+
+    .amp-button.amp-button--text {
+      height: 28px;
+    }
+
+    &__hr {
+      background-color: var(--black2);
+      border-bottom: none;
+      width: 100%;
+      display: flex;
+      border-top: $border-black10;
+
+      hr {
+        border: none;
+        border-top: $border-black10;
+        margin-left: var(--default-spacing-small);
+        margin-right: var(--default-spacing-small);
+        background-color: var(--black2);
+        display: flex;
+        width: 100%;
+      }
+    }
+    &__add-icon {
+      position: absolute;
+      margin-right: var(--double-spacing);
+    }
+  }
+}

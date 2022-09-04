@@ -1,0 +1,15 @@
+@import "../style/index.scss";
+
+.workspace-settings-navigation {
+  width: 100%;
+  margin-top: auto; 
+
+  &__divider {
+    border: $border-black5;
+    width: 100%;
+  }
+
+  &__links {
+    padding: var(--default-spacing-small);
+  }
+}

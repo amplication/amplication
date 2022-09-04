@@ -6,7 +6,7 @@ import roles from "./roles";
 jest.setTimeout(100000);
 
 describe("createDataService", () => {
-  test("creates app as expected", async () => {
+  test("creates resource as expected", async () => {
     const modules = await createDataService(entities, roles, appInfo);
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>

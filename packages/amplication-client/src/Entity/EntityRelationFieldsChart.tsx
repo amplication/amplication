@@ -3,12 +3,13 @@ import classNames from "classnames";
 import { Link } from "react-router-dom";
 import { Formik } from "formik";
 import { isEmpty } from "lodash";
-import React from "react";
+import React, { useContext } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import { Form } from "../Components/Form";
 import * as models from "../models";
 import "./EntityRelationFieldsChart.scss";
+import { AppContext } from "../context/appContext";
 
 export type FormValues = {
   fieldId: string;
@@ -16,7 +17,7 @@ export type FormValues = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   entityId: string;
   field: models.EntityField;
   entityName: string;
@@ -29,7 +30,7 @@ type Props = {
 const CLASS_NAME = "entity-relation-fields-chart";
 
 export const EntityRelationFieldsChart = ({
-  applicationId,
+  resourceId,
   entityId,
   field,
   entityName,
@@ -44,6 +45,7 @@ export const EntityRelationFieldsChart = ({
   };
 
   const relatedFieldIsMissing = isEmpty(field.properties.relatedFieldId);
+  const {currentWorkspace, currentProject} = useContext(AppContext); 
 
   return (
     <Formik
@@ -59,15 +61,13 @@ export const EntityRelationFieldsChart = ({
           key={field.id}
         >
           <div className={`${CLASS_NAME}__entity`}>
-            <Link to={`/${applicationId}/entities/${entityId}`}>
+            <Link to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}>
               <Icon icon="entity_outline" />
               {entityName}
             </Link>
           </div>
           <div className={`${CLASS_NAME}__field`}>
-            <Link
-              to={`/${applicationId}/entities/${entityId}`}
-            >
+            <Link to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}>
               {field.displayName}
             </Link>
           </div>
@@ -92,7 +92,7 @@ export const EntityRelationFieldsChart = ({
           </div>
           <div className={`${CLASS_NAME}__entity`}>
             <Link
-              to={`/${applicationId}/entities/${field.properties.relatedEntityId}`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${field.properties.relatedEntityId}`}
             >
               <Icon icon="entity_outline" />
               {relatedEntityName}
@@ -110,14 +110,14 @@ export const EntityRelationFieldsChart = ({
               ) : (
                 <Link
                   className={`${CLASS_NAME}__field__textbox`}
-                  to={`/${applicationId}/fix-related-entities`}
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/fix-related-entities`}
                 >
                   Fix it
                 </Link>
               )
             ) : (
               <Link
-                to={`/${applicationId}/entities/${field.properties.relatedEntityId}/fields/${relatedField?.id}`}
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${field.properties.relatedEntityId}/fields/${relatedField?.id}`}
               >
                 {relatedField?.displayName}
               </Link>

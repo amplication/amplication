@@ -1,8 +1,10 @@
 @import "../style/index.scss";
+$metadata-width: 150px;
 
 .commit-list-item {
-  margin: 0;
-  margin-bottom: var(--default-spacing);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   &__row {
     @include flexFullRowWithSpacing;

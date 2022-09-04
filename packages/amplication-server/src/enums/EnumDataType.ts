@@ -21,6 +21,5 @@ export enum EnumDataType {
   Json = 'Json'
 }
 registerEnumType(EnumDataType, {
-  name: 'EnumDataType',
-  description: undefined
+  name: 'EnumDataType'
 });

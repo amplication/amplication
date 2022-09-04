@@ -6,12 +6,12 @@
  */
 export enum AuthorizableOriginParameter {
   WorkspaceId,
-  AppId,
+  ResourceId,
   EntityId,
   EntityFieldId,
   EntityPermissionFieldId,
   BlockId,
-  AppRoleId,
+  ResourceRoleId,
   BuildId,
   ActionId,
   EnvironmentId,
@@ -20,5 +20,6 @@ export enum AuthorizableOriginParameter {
   ApiTokenId,
   GitOrganizationId,
   GitRepositoryId,
-  InvitationId
+  InvitationId,
+  ProjectId
 }

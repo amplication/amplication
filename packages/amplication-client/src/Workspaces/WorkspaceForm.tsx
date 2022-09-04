@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import React, { useCallback, useContext } from "react";
+import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
 
@@ -8,8 +8,10 @@ import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import { TextField, Snackbar } from "@amplication/design-system";
 import { useTracking } from "../util/analytics";
-import { GET_CURRENT_WORKSPACE } from "./WorkspaceSelector";
 import "./WorkspaceForm.scss";
+import { AppContext } from "../context/appContext";
+import PageContent from "../Layout/PageContent";
+import ProjectSideBar from "../Project/ProjectSideBar";
 
 type TData = {
   updateWorkspace: models.Workspace;
@@ -28,9 +30,7 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "workspace-form";
 
 function WorkspaceForm() {
-  const { data, error } = useQuery<{
-    currentWorkspace: models.Workspace;
-  }>(GET_CURRENT_WORKSPACE);
+  const { currentWorkspace } = useContext(AppContext);
 
   const { trackEvent } = useTracking();
 
@@ -44,46 +44,50 @@ function WorkspaceForm() {
       trackEvent({
         eventName: "updateWorkspaceInfo",
       });
-      updateWorkspace({
-        variables: {
-          data: {
-            name,
+      currentWorkspace &&
+        updateWorkspace({
+          variables: {
+            data: {
+              name,
+            },
+            workspaceId: currentWorkspace.id,
           },
-          workspaceId: data?.currentWorkspace.id,
-        },
-      }).catch(console.error);
+        }).catch(console.error);
     },
-    [updateWorkspace, data, trackEvent]
+    [trackEvent, currentWorkspace, updateWorkspace]
   );
 
-  const errorMessage = formatError(error || updateError);
-  return (
-    <div className={CLASS_NAME}>
-      <h2>Workspace Settings</h2>
-      <p>Workspaces help you manage your projects by enabling selected team members to work on specific apps</p>
-      <br/>
-      {data?.currentWorkspace && (
-        <Formik
-          initialValues={data.currentWorkspace}
-          validate={(values: models.Workspace) => validate(values, FORM_SCHEMA)}
-          enableReinitialize
-          onSubmit={handleSubmit}
-        >
-          {(formik) => {
-            return (
-              <Form>
-                <FormikAutoSave debounceMS={1000} />
-                <TextField name="name" label="Workspace Name" />
-              </Form>
-            );
-          }}
-        </Formik>
-      )}
-      <label className={`${CLASS_NAME}__label`}>workspace ID </label>
-      <div>{data?.currentWorkspace.id}</div>
+  const errorMessage = formatError(updateError);
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
-    </div>
+  return (
+    <PageContent pageTitle="Workspace settings" sideContent={<ProjectSideBar />}>
+      <div className={CLASS_NAME}>
+        <h2>Workspace Settings</h2>
+        {currentWorkspace && (
+          <Formik
+            initialValues={currentWorkspace}
+            validate={(values: models.Workspace) =>
+              validate(values, FORM_SCHEMA)
+            }
+            enableReinitialize
+            onSubmit={handleSubmit}
+          >
+            {(formik) => {
+              return (
+                <Form>
+                  <FormikAutoSave debounceMS={1000} />
+                  <TextField name="name" label="Workspace Name" />
+                </Form>
+              );
+            }}
+          </Formik>
+        )}
+        <label className={`${CLASS_NAME}__label`}>workspace ID </label>
+        {currentWorkspace && <div>{currentWorkspace.id}</div>}
+
+        <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
+      </div>
+    </PageContent>
   );
 }
 

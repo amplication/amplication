@@ -1,5 +1,5 @@
 .amp-theme-dark {
-  --surface: #15192c; /*dark: black100 */
+  --surface: var(--black2);
   --white: #15192c; /*dark: black100 */
 
   --black100: #ffffff; /*dark: white */
@@ -34,12 +34,14 @@
   --image-sync-github: url("../assets/images/mono/sync-github-dark.svg");
   --image-commit: url("../assets/images/mono/commit-dark.svg");
   --image-no-changes: url("../assets/images/mono/no-changes-dark.svg");
-  --image-add-app: url("../assets/images/mono/add-app-dark.svg");
+  --image-add-resource: url("../assets/images/mono/add-resource-dark.svg");
   --image-relations: url("../assets/images/mono/relations-dark.svg");
   --image-import-excel: url("../assets/images/mono/import-excel-dark.svg");
   --image-drop-excel: url("../assets/images/mono/drop-excel-dark.svg");
-  --image-my-apps: url("../assets/images/mono/my-apps-dark.svg");
+  --image-my-resources: url("../assets/images/mono/my-resources-dark.svg");
   --image-generating: url("../assets/images/mono/generating-dark.svg");
+  --image-create-service-wizard : url("../assets/images/mono/service-wizard-create.svg");
+
 
   --diffViewerBackground: var(--white);
   --diffViewerColor: var(--black100);

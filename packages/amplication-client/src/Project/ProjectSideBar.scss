@@ -1,0 +1,22 @@
+@import "../style/index.scss";
+
+.project-sidebar {
+  @include flexColumn;
+  height: 100%;
+
+  &__project-wrapper {
+    flex-grow: 1;
+    width: 100%;
+  }
+  &__label {
+    @include regular-12;
+    margin-top: 0;
+    margin-bottom: var(--default-spacing-small);
+    color: var(--black80);
+  }
+
+  &__divider {
+    border: $border-black5;
+    width: 99%;
+  }
+}

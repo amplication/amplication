@@ -54,21 +54,38 @@
 
   --form-horizontal-width: 700px;
   --form-horizontal-label-width: 300px;
-  --title1-font-size: 15px;
+  --large-icon-font-size: 18px;
+  --title1-font-size: 16px;
   --title2-font-size: 12px;
+  --title3-font-size: 18px;
+  --title4-font-size: 24px;
+  --icon-font-size: 16px;
+  --title5-font-size: 14px;
   --normal-font-size: 12px;
   --text-field-label-font-size: 10px;
   --text-field-label-horizontal-font-size: var(--normal-font-size);
 
   --mdc-typography-body2-font-size: var(--normal-font-size);
 
+  --icon-size-xxsmall: 16px;
+  --icon-size-xsmall: 20px;
+  --icon-size-small: 24px;
+  --icon-size-medium: 32px;
+  --icon-size-large: 44px;
+  --icon-size-xlarge: 54px;
+  --icon-size-xxlarge: 64px;
+
   --icon-spacing: 4px;
   --default-spacing: 12px;
   --default-spacing-small: 8px;
+  --medium-spacing: 14px;
   --large-spacing: 16px;
   --double-spacing: 24px;
   --triple-spacing: 36px;
   --form-field-spacing: 16px;
+
+  --user-badge-spacing: 6px;
+
   --form-field-long: 320px;
   --form-field-normal: 200px;
   --grid-row-gap: 8px;
@@ -78,25 +95,31 @@
   --field-height: 34px;
   --textarea-height: 130px;
 
-  --modal-min-width: 400px;
+  --modal-min-width: 470px;
+  --button-min-width: 16px;
 
   --header-height: 50px;
+  --footer-height: 35px;
   --header-spacing: 50px;
   --menu-width: var(--header-height);
   --menu-width-expanded: 230px;
   --menu-item-width: 32px;
   --menu-item-height: var(--menu-item-width);
+  --small-menu-item-width: 20px;
+  --small-menu-item-height: var(--small-menu-item-width);
   --menu-expand-animation-duration: 0.2s;
 
-  --menu-item-color: #b7bac7;
-  --menu-item-active-background: #373d57;
+  --menu-item-color: #a3a8b8;
+  --menu-item-active-background: #515873;
   --menu-item-active-color: #ffffff;
 
+  --changes-menu-width: 261px;
   --application-card-width: 390px;
   --application-card-height: 210px;
 
   --default-border-radius: 8px;
   --small-border-radius: 4px;
+  --scrollbar-radius: 20px;
   --form-elements-border-radius: var(--default-border-radius);
   --form-permission-type-radius: var() var(--small-border-radius);
 

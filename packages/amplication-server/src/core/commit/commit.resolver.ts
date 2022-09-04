@@ -12,7 +12,7 @@ import { CommitService } from './commit.service';
 import { Build } from '../build/dto/Build';
 import { BuildService } from '../build/build.service';
 import { FindManyBuildArgs } from '../build/dto/FindManyBuildArgs';
-import { PendingChange } from '../app/dto/PendingChange';
+import { PendingChange } from '../resource/dto/PendingChange';
 
 @Resolver(() => Commit)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -25,7 +25,7 @@ export class CommitResolver {
   ) {}
 
   @ResolveField(() => User)
-  async user(@Parent() commit: Commit) {
+  async user(@Parent() commit: Commit): Promise<User> {
     return this.userService.findUser({
       where: {
         id: commit.userId
@@ -34,8 +34,7 @@ export class CommitResolver {
   }
 
   @Query(() => Commit, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   @AuthorizeContext(AuthorizableOriginParameter.CommitId, 'where.id')
   async commit(@Args() args: FindOneCommitArgs): Promise<Commit> {
@@ -43,10 +42,9 @@ export class CommitResolver {
   }
 
   @Query(() => [Commit], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
-  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.app.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ProjectId, 'where.project.id')
   async commits(@Args() args: FindManyCommitArgs): Promise<Commit[]> {
     return this.commitService.findMany(args);
   }

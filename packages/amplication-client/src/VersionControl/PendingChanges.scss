@@ -2,9 +2,29 @@
 
 $empty-state-image-size: 120px;
 $counter-height: 18px;
+$resource-name-max-width: 180px;
 
 .pending-changes {
-  padding: var(--default-spacing);
+  padding: var(--large-spacing);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &__title {
+    @include bold-14;
+    margin: 0;
+    padding-bottom: var(--large-spacing);
+  }
+
+  &__divider {
+    border: none;
+    background-color: var(--black10);
+    height: 1px;
+    width: 100%;
+    margin-top: auto;
+  }
 
   &__header {
     @include flexFullRowWithSpacing;
@@ -15,7 +35,7 @@ $counter-height: 18px;
 
   &__changes-header {
     @include flexFullRowWithSpacing;
-    @include body2;
+    @include regular-12;
 
     :first-child {
       color: var(--black100);
@@ -31,7 +51,6 @@ $counter-height: 18px;
 
   %__changes-count {
     height: $counter-height;
-    border-radius: $counter-height * 0.5;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -45,8 +64,7 @@ $counter-height: 18px;
 
   &__changes-count-warning {
     @extend %__changes-count;
-    background-color: var(--warning-default);
-    color: var(--static-black);
+    color: var(--warning-default);
   }
 
   &__changes-count {
@@ -71,15 +89,54 @@ $counter-height: 18px;
     }
   }
 
+  &__changes-wrapper {
+    display: flex;
+    flex-direction: column;
+    border: $border-black10;
+    padding: var(--default-spacing);
+    border-radius: var(--small-border-radius);
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
   &__changes {
-    margin-top: var(--default-spacing);
     position: relative;
-    margin-bottom: var(--default-spacing);
+    margin-bottom: var(--large-spacing);
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+      border-radius: var(--scrollbar-radius);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--black60);
+      border-radius: var(--scrollbar-radius);
+      width: var(--grid-row-gap);
+    }
+
+    &__resource {
+      @include bold-12;
+      margin-bottom: var(--medium-spacing);
+      max-width: $resource-name-max-width;
+      white-space: nowrap;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      .circle-badge {
+        margin-right: var(--user-badge-spacing);
+      }
+    }
   }
 
   .amp-button__icon {
     color: var(--black100);
+    font-size: var(--icon-font-size);
     cursor: pointer;
+    margin-right: 0;
   }
 }
 

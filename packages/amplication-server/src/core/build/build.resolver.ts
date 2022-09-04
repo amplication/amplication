@@ -18,12 +18,13 @@ import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
 import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
 import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
-import { Commit, User } from 'src/models';
+import { Commit, Resource, User } from 'src/models';
 import { UserService } from '../user/user.service';
 import { Action } from '../action/dto';
 import { ActionService } from '../action/action.service';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { CommitService } from '../commit/commit.service';
+import { ResourceService } from '../resource/resource.service';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -33,11 +34,12 @@ export class BuildResolver {
     private readonly service: BuildService,
     private readonly userService: UserService,
     private readonly actionService: ActionService,
-    private readonly commitService: CommitService
+    private readonly commitService: CommitService,
+    private readonly resourceService: ResourceService
   ) {}
 
   @Query(() => [Build])
-  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.app.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async builds(@Args() args: FindManyBuildArgs): Promise<Build[]> {
     return this.service.findMany(args);
   }
@@ -64,6 +66,11 @@ export class BuildResolver {
   }
 
   @ResolveField()
+  async resource(@Parent() build: Build): Promise<Resource> {
+    return this.resourceService.resource({ where: { id: build.resourceId } });
+  }
+
+  @ResolveField()
   archiveURI(@Parent() build: Build): string {
     return `/generated-apps/${build.id}.zip`;
   }
@@ -78,7 +85,10 @@ export class BuildResolver {
     InjectableOriginParameter.UserId,
     'data.createdBy.connect.id'
   )
-  @AuthorizeContext(AuthorizableOriginParameter.AppId, 'data.app.connect.id')
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ResourceId,
+    'data.resource.connect.id'
+  )
   async createBuild(@Args() args: CreateBuildArgs): Promise<Build> {
     return this.service.create(args);
   }

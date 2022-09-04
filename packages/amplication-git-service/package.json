@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-service",
-  "version": "0.14.12",
+  "version": "0.15.3",
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -17,8 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postinstall": "npm run build"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@apollo/gateway": "0.42.3",
@@ -31,7 +30,7 @@
     "graphql": "15.7.2",
     "minimatch": "5.1.0",
     "octokit": "^1.7.1",
-    "octokit-plugin-create-pull-request": "^3.11.0",
+    "octokit-plugin-create-pull-request": "3.12.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

@@ -9,7 +9,7 @@ export class BuildCreateInput {
   createdBy: WhereParentIdInput;
 
   @Field(() => WhereParentIdInput)
-  app!: WhereParentIdInput;
+  resource!: WhereParentIdInput;
 
   @Field(() => String)
   message: string;

@@ -3,6 +3,12 @@ global:
     name: shimi-efs-claim
   pv:
     name: efs-pv-shimi
+  nodeSelector:
+    role: custom-envs
+  tolerations:
+    - key: "custom-envs"
+      operator: "Equal"
+      value: "true"
 
 postgres:
   primary:
@@ -25,7 +31,6 @@ amplication-server:
     hostname: server-shimi.amplication-dev.com
   config:
     env:
-
       HOST: "https://server-shimi.amplication-dev.com"
       CLIENT_HOST: "https://app-shimi.amplication-dev.com"
 

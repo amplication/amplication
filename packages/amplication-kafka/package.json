@@ -1,14 +1,12 @@
 {
   "name": "@amplication/kafka",
-  "version": "0.14.12",
+  "version": "0.15.3",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
     "build": "tsc",
     "prebuild": "rimraf lib",
-    "prepare": "npm run build",
-    "test": "jest",
-    "postinstall": "npm run build"
+    "test": "jest"
   },
   "keywords": [],
   "author": "tupe12334",
@@ -42,7 +40,10 @@
     "@nestjs/common": "8.4.4",
     "@nestjs/core": "8.4.4",
     "@nestjs/microservices": "8.4.3",
+    "@types/error-cause": "1.0.1",
+    "@types/kafkajs": "^1.9.0",
     "dotenv": "16.0.0",
+    "kafkajs": "^2.2.0",
     "reflect-metadata": "0.1.13"
   }
 }

@@ -13,7 +13,7 @@ export class UserResolver {
 
   // @Query(() => User, {
   //   nullable: true,
-  //   description: undefined
+  //
   // })
   // async user(@Args() args: FindOneArgs): Promise<User | null> {
   //   return this.userService.findUser(args);
@@ -21,7 +21,7 @@ export class UserResolver {
 
   // @Query(() => [User], {
   //   nullable: false,
-  //   description: undefined
+  //
   // })
   // async users(@Args() args: FindManyUserArgs): Promise<User[]> {
   //   return this.userService.findUsers(args);
@@ -29,7 +29,7 @@ export class UserResolver {
 
   // @Mutation(() => User, {
   //   nullable: true,
-  //   description: undefined
+  //
   // })
   // async assignRoleToUser(@Args() args: UserRoleArgs): Promise<User | null> {
   //   return this.userService.assignRole(args);
@@ -37,7 +37,7 @@ export class UserResolver {
 
   // @Mutation(() => User, {
   //   nullable: true,
-  //   description: undefined
+  //
   // })
   // async removeRoleFromUser(@Args() args: UserRoleArgs): Promise<User | null> {
   //   return this.userService.removeRole(args);

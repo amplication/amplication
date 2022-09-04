@@ -3,9 +3,7 @@
 # ------------------------------------------------------
 
 type Auth {
-  """
-  JWT Bearer token
-  """
+  """JWT Bearer token"""
   token: String!
 }
 
@@ -14,10 +12,8 @@ type AdminUISettings {
   adminUIPath: String!
 }
 
-type AuthorizeAppWithGitResult {
-  """
-
-  """
+type AuthorizeResourceWithGitResult {
+  """"""
   url: String!
 }
 
@@ -27,84 +23,35 @@ type Query {
   workspace(where: WhereUniqueInput!): Workspace
   currentWorkspace: Workspace
   workspaceMembers: [WorkspaceMember!]
-  app(where: WhereUniqueInput!): App
-  apps(
-    where: AppWhereInput
-    orderBy: AppOrderByInput
-    skip: Int
-    take: Int
-  ): [App!]!
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
+  project(where: WhereUniqueInput!): Project
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  resource(where: WhereUniqueInput!): Resource
+  resources(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, take: Int): [Resource!]!
   entity(where: WhereUniqueInput!): Entity
-  entities(
-    where: EntityWhereInput
-    orderBy: EntityOrderByInput
-    skip: Int
-    take: Int
-  ): [Entity!]!
-  appSettings(where: WhereUniqueInput!): AppSettings!
-  blocks(
-    where: BlockWhereInput
-    orderBy: BlockOrderByInput
-    skip: Int
-    take: Int
-  ): [Block!]!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   block(where: WhereUniqueInput!): Block!
-  builds(
-    where: BuildWhereInput
-    orderBy: BuildOrderByInput
-    take: Int
-    skip: Int
-  ): [Build!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
-  appRole(where: WhereUniqueInput!, version: Float): AppRole
-  appRoles(
-    where: AppRoleWhereInput
-    orderBy: AppRoleOrderByInput
-    skip: Int
-    take: Int
-  ): [AppRole!]!
+  resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
+  resourceRoles(where: ResourceRoleWhereInput, orderBy: ResourceRoleOrderByInput, skip: Int, take: Int): [ResourceRole!]!
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
-  commits(
-    where: CommitWhereInput
-    orderBy: CommitOrderByInput
-    cursor: CommitWhereUniqueInput
-    take: Int
-    skip: Int
-  ): [Commit!]
+  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
   ConnectorRestApi(where: WhereUniqueInput!): ConnectorRestApi
-  ConnectorRestApis(
-    where: ConnectorRestApiWhereInput
-    orderBy: ConnectorRestApiOrderByInput
-    skip: Int
-    take: Int
-  ): [ConnectorRestApi!]!
+  ConnectorRestApis(where: ConnectorRestApiWhereInput, orderBy: ConnectorRestApiOrderByInput, skip: Int, take: Int): [ConnectorRestApi!]!
   ConnectorRestApiCall(where: WhereUniqueInput!): ConnectorRestApiCall
-  ConnectorRestApiCalls(
-    where: ConnectorRestApiCallWhereInput
-    orderBy: ConnectorRestApiCallOrderByInput
-    skip: Int
-    take: Int
-  ): [ConnectorRestApiCall!]!
+  ConnectorRestApiCalls(where: ConnectorRestApiCallWhereInput, orderBy: ConnectorRestApiCallOrderByInput, skip: Int, take: Int): [ConnectorRestApiCall!]!
   EntityPage(where: WhereUniqueInput!): EntityPage
-  EntityPages(
-    where: EntityPageWhereInput
-    orderBy: EntityPageOrderByInput
-    skip: Int
-    take: Int
-  ): [EntityPage!]!
+  EntityPages(where: EntityPageWhereInput, orderBy: EntityPageOrderByInput, skip: Int, take: Int): [EntityPage!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  remoteGitRepositories(
-    where: RemoteGitRepositoriesWhereUniqueInput!
-  ): [RemoteGitRepository!]!
-  gitOrganizations(
-    where: GitOrganizationWhereInput
-    skip: Float
-    take: Float
-  ): [GitOrganization!]!
+  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
+  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 
 type Account {
@@ -128,37 +75,37 @@ type Workspace {
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String!
-  apps: [App!]!
+  projects: [Project!]!
   gitOrganizations: [GitOrganization!]
   users: [User!]!
   subscription: Subscription
 }
 
-type App {
+type Project {
+  id: String!
+  name: String!
+  resources: [Resource!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Resource {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  project: Project
+  projectId: String
   gitRepository: GitRepository
   gitRepositoryId: String
   name: String!
   description: String!
-  color: String!
-  entities(
-    where: EntityWhereInput
-    orderBy: EntityOrderByInput
-    skip: Int
-    take: Int
-  ): [Entity!]!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   environments: [Environment!]!
-  builds(
-    where: BuildWhereInput
-    orderBy: BuildOrderByInput
-    take: Int
-    skip: Int
-  ): [Build!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   githubLastMessage: String
   githubLastSync: DateTime
-  workspace: Workspace!
+  resourceType: EnumResourceType!
+  gitRepositoryOverride: Boolean!
 }
 
 type GitRepository {
@@ -193,24 +140,14 @@ type Entity {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  app: App
-  appId: String!
+  resource: Resource
+  resourceId: String!
   name: String!
   displayName: String!
   pluralDisplayName: String!
   description: String
-  versions(
-    where: EntityVersionWhereInput
-    orderBy: EntityVersionOrderByInput
-    skip: Int
-    take: Int
-  ): [EntityVersion!]
-  fields(
-    where: EntityFieldWhereInput
-    orderBy: EntityFieldOrderByInput
-    skip: Int
-    take: Int
-  ): [EntityField!]
+  versions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
   permissions: [EntityPermission!]
   lockedByUserId: String
   lockedByUser: User
@@ -229,12 +166,7 @@ type EntityVersion {
   pluralDisplayName: String!
   description: String
   commit: Commit
-  fields(
-    where: EntityFieldWhereInput
-    orderBy: EntityFieldOrderByInput
-    skip: Int
-    take: Int
-  ): [EntityField!]!
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
   permissions: [EntityPermission!]
 }
 
@@ -244,12 +176,7 @@ type Commit {
   userId: String!
   user: User
   message: String!
-  builds(
-    where: BuildWhereInput
-    orderBy: BuildOrderByInput
-    take: Int
-    skip: Int
-  ): [Build!]
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
   changes: [PendingChange!]
 }
 
@@ -280,8 +207,8 @@ enum Role {
 type Build {
   id: String!
   createdAt: DateTime!
-  app: App!
-  appId: String!
+  resource: Resource
+  resourceId: String!
   createdBy: User!
   userId: String!
   status: EnumBuildStatus
@@ -335,10 +262,7 @@ type ActionLog {
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
-scalar JSONObject
-  @specifiedBy(
-    url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf"
-  )
+scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
 enum EnumActionLogLevel {
   Error
@@ -350,7 +274,7 @@ enum EnumActionLogLevel {
 input BuildWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
-  app: WhereUniqueInput!
+  resource: WhereUniqueInput!
   createdBy: WhereUniqueInput
   version: StringFilter
   message: StringFilter
@@ -408,10 +332,11 @@ enum SortOrder {
 
 type PendingChange {
   action: EnumPendingChangeAction!
-  resourceType: EnumPendingChangeResourceType!
-  resourceId: String!
-  resource: PendingChangeResource!
+  originType: EnumPendingChangeOriginType!
+  originId: String!
+  origin: PendingChangeOrigin!
   versionNumber: Int!
+  resource: Resource!
 }
 
 enum EnumPendingChangeAction {
@@ -420,18 +345,18 @@ enum EnumPendingChangeAction {
   Delete
 }
 
-enum EnumPendingChangeResourceType {
+enum EnumPendingChangeOriginType {
   Entity
   Block
 }
 
-union PendingChangeResource = Entity | Block
+union PendingChangeOrigin = Entity | Block
 
 type Block {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  app: App
+  resource: Resource
   parentBlock: Block
   displayName: String!
   description: String
@@ -439,17 +364,13 @@ type Block {
   versionNumber: Float
   lockedByUserId: String
   lockedAt: DateTime
-  versions(
-    where: BlockVersionWhereInput
-    orderBy: BlockVersionOrderByInput
-    skip: Int
-    take: Int
-  ): [BlockVersion!]
+  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]
   lockedByUser: [User!]!
 }
 
 enum EnumBlockType {
-  AppSettings
+  ServiceSettings
+  ProjectConfigurationSettings
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -612,11 +533,11 @@ type EntityPermissionRole {
   entityVersionId: String!
   action: EnumEntityAction!
   entityPermission: EntityPermission
-  appRoleId: String!
-  appRole: AppRole!
+  resourceRoleId: String!
+  resourceRole: ResourceRole!
 }
 
-type AppRole {
+type ResourceRole {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -669,7 +590,7 @@ input EntityWhereInput {
   pluralDisplayName: StringFilter
   description: StringFilter
   fields: EntityFieldFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
 }
 
 input EntityFieldFilter {
@@ -692,11 +613,16 @@ type Environment {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  app: App!
-  appId: String!
+  resource: Resource!
+  resourceId: String!
   name: String!
   description: String
   address: String!
+}
+
+enum EnumResourceType {
+  Service
+  ProjectConfiguration
 }
 
 type Subscription {
@@ -749,15 +675,40 @@ type Invitation {
   invitedByUser: User
 }
 
-input AppWhereInput {
+input ProjectWhereInput {
+  id: String
+  deletedAt: DateTimeFilter
+  name: StringFilter
+  resources: ResourceListRelationFilter
+}
+
+input ResourceListRelationFilter {
+  every: ResourceWhereInput
+  some: ResourceWhereInput
+  none: ResourceWhereInput
+}
+
+input ResourceWhereInput {
   id: String
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
   description: StringFilter
+  project: WhereUniqueInput
+  projectId: String
 }
 
-input AppOrderByInput {
+input ProjectOrderByInput {
+  id: SortOrder
+  deletedAt: SortOrder
+  name: SortOrder
+}
+
+input PendingChangesFindInput {
+  project: WhereUniqueInput!
+}
+
+input ResourceOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
@@ -765,11 +716,7 @@ input AppOrderByInput {
   description: SortOrder
 }
 
-input PendingChangesFindInput {
-  app: WhereUniqueInput!
-}
-
-type AppSettings implements IBlock {
+type ServiceSettings implements IBlock {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -837,7 +784,7 @@ input BlockWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
   parentBlock: WhereUniqueInput
   blockType: EnumBlockTypeFilter
   displayName: StringFilter
@@ -860,17 +807,17 @@ input BlockOrderByInput {
   description: SortOrder
 }
 
-input AppRoleWhereInput {
+input ResourceRoleWhereInput {
   id: String
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
   displayName: StringFilter
   description: StringFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
 }
 
-input AppRoleOrderByInput {
+input ResourceRoleOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
@@ -886,7 +833,7 @@ input CommitWhereUniqueInput {
 input CommitWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
-  app: WhereUniqueInput!
+  project: WhereUniqueInput!
   user: WhereUniqueInput
   message: StringFilter
 }
@@ -895,6 +842,22 @@ input CommitOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   message: SortOrder
+}
+
+type ProjectConfigurationSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  baseDirectory: String!
 }
 
 type ApiToken {
@@ -949,7 +912,7 @@ input ConnectorRestApiWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -984,7 +947,7 @@ input ConnectorRestApiCallWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -1048,7 +1011,7 @@ input EntityPageWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  app: WhereUniqueInput
+  resource: WhereUniqueInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -1083,69 +1046,39 @@ input GitOrganizationWhereInput {
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
-  updateWorkspace(
-    data: WorkspaceUpdateInput!
-    where: WhereUniqueInput!
-  ): Workspace
+  updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   inviteUser(data: InviteUserInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   resendInvitation(where: WhereUniqueInput!): Invitation
   deleteUser(where: WhereUniqueInput!): User
-  createApp(data: AppCreateInput!): App!
-  createAppWithEntities(data: AppCreateWithEntitiesInput!): App!
-  deleteApp(where: WhereUniqueInput!): App
-  updateApp(data: AppUpdateInput!, where: WhereUniqueInput!): App
+  createProject(data: ProjectCreateInput!): Project!
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
+  createResource(data: ResourceCreateInput!): Resource!
+  createResourceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
+  deleteResource(where: WhereUniqueInput!): Resource
+  updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermission(
-    data: EntityUpdatePermissionInput!
-    where: WhereUniqueInput!
-  ): EntityPermission!
-  updateEntityPermissionRoles(
-    data: EntityUpdatePermissionRolesInput!
-  ): EntityPermission!
-  addEntityPermissionField(
-    data: EntityAddPermissionFieldInput!
-  ): EntityPermissionField!
-  deleteEntityPermissionField(
-    where: EntityPermissionFieldWhereUniqueInput!
-  ): EntityPermissionField!
-  updateEntityPermissionFieldRoles(
-    data: EntityUpdatePermissionFieldRolesInput!
-  ): EntityPermissionField!
-  createEntityField(
-    data: EntityFieldCreateInput!
-    relatedFieldName: String
-    relatedFieldDisplayName: String
-  ): EntityField!
-  createEntityFieldByDisplayName(
-    data: EntityFieldCreateByDisplayNameInput!
-  ): EntityField!
+  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
+  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
+  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
+  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
+  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
   deleteEntityField(where: WhereUniqueInput!): EntityField!
-  updateEntityField(
-    data: EntityFieldUpdateInput!
-    where: WhereUniqueInput!
-    relatedFieldName: String
-    relatedFieldDisplayName: String
-  ): EntityField!
-  createDefaultRelatedField(
-    where: WhereUniqueInput!
-    relatedFieldName: String
-    relatedFieldDisplayName: String
-  ): EntityField!
-  updateAppSettings(
-    data: AppSettingsUpdateInput!
-    where: WhereUniqueInput!
-  ): AppSettings
+  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   createBuild(data: BuildCreateInput!): Build!
-  createAppRole(data: AppRoleCreateInput!): AppRole!
-  deleteAppRole(where: WhereUniqueInput!): AppRole
-  updateAppRole(data: AppRoleUpdateInput!, where: WhereUniqueInput!): AppRole
+  createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
+  deleteResourceRole(where: WhereUniqueInput!): ResourceRole
+  updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1154,33 +1087,19 @@ type Mutation {
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   completeInvitation(data: CompleteInvitationInput!): Auth!
   createConnectorRestApi(data: ConnectorRestApiCreateInput!): ConnectorRestApi!
-  updateConnectorRestApi(
-    data: BlockUpdateInput!
-    where: WhereUniqueInput!
-  ): ConnectorRestApi!
-  createConnectorRestApiCall(
-    data: ConnectorRestApiCallCreateInput!
-  ): ConnectorRestApiCall!
-  updateConnectorRestApiCall(
-    data: BlockUpdateInput!
-    where: WhereUniqueInput!
-  ): ConnectorRestApiCall!
+  updateConnectorRestApi(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApi!
+  createConnectorRestApiCall(data: ConnectorRestApiCallCreateInput!): ConnectorRestApiCall!
+  updateConnectorRestApiCall(data: BlockUpdateInput!, where: WhereUniqueInput!): ConnectorRestApiCall!
   createEntityPage(data: EntityPageCreateInput!): EntityPage!
-  updateEntityPage(
-    data: EntityPageUpdateInput!
-    where: WhereUniqueInput!
-  ): EntityPage!
-  createGitRepository(data: CreateGitRepositoryInput!): App!
-  connectAppGitRepository(data: ConnectGitRepositoryInput!): App!
+  updateEntityPage(data: EntityPageUpdateInput!, where: WhereUniqueInput!): EntityPage!
+  createGitRepository(data: CreateGitRepositoryInput!): Resource!
+  connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToProjectRepository(resourceId: String!): Resource!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
-  deleteGitRepository(gitRepositoryId: String!): App!
-  deleteGitOrganization(
-    gitOrganizationId: String!
-    gitProvider: EnumGitProvider!
-  ): Boolean!
-  getGitAppInstallationUrl(
-    data: GitGetInstallationUrlInput!
-  ): AuthorizeAppWithGitResult!
+  deleteGitRepository(gitRepositoryId: String!): Resource!
+  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  disconnectResourceGitRepository(resourceId: String!): Resource!
+  getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
 }
 
 input UpdateAccountInput {
@@ -1200,38 +1119,13 @@ input InviteUserInput {
   email: String!
 }
 
-input AppCreateInput {
+input ProjectCreateInput {
   name: String!
-  description: String!
-  color: String
-}
-
-input AppCreateWithEntitiesInput {
-  app: AppCreateInput!
-  entities: [AppCreateWithEntitiesEntityInput!]!
-  commitMessage: String!
-}
-
-input AppCreateWithEntitiesEntityInput {
-  name: String!
-  fields: [AppCreateWithEntitiesFieldInput!]!
-  relationsToEntityIndex: [Int!]
-}
-
-input AppCreateWithEntitiesFieldInput {
-  name: String!
-  dataType: EnumDataType
-}
-
-input AppUpdateInput {
-  name: String
-  description: String
-  color: String
 }
 
 input CommitCreateInput {
   message: String!
-  app: WhereParentIdInput!
+  project: WhereParentIdInput!
 }
 
 input WhereParentIdInput {
@@ -1239,7 +1133,44 @@ input WhereParentIdInput {
 }
 
 input PendingChangesDiscardInput {
-  app: WhereParentIdInput!
+  project: WhereParentIdInput!
+}
+
+input ResourceCreateInput {
+  name: String!
+  description: String!
+  resourceType: EnumResourceType!
+  project: WhereParentIdInput!
+}
+
+input ResourceCreateWithEntitiesInput {
+  resource: ResourceCreateInput!
+  entities: [ResourceCreateWithEntitiesEntityInput!]!
+  generationSettings: ResourceGenSettingsCreateInput!
+  commitMessage: String!
+}
+
+input ResourceCreateWithEntitiesEntityInput {
+  name: String!
+  fields: [ResourceCreateWithEntitiesFieldInput!]!
+  relationsToEntityIndex: [Int!]
+}
+
+input ResourceCreateWithEntitiesFieldInput {
+  name: String!
+  dataType: EnumDataType
+}
+
+input ResourceGenSettingsCreateInput {
+  generateAdminUI: Boolean!
+  generateGraphQL: Boolean!
+  generateRestApi: Boolean!
+}
+
+input ResourceUpdateInput {
+  name: String
+  description: String
+  gitRepositoryOverride: Boolean
 }
 
 input EntityCreateInput {
@@ -1247,7 +1178,7 @@ input EntityCreateInput {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
 }
 
 input EntityUpdateInput {
@@ -1318,7 +1249,7 @@ input EntityFieldUpdateInput {
   position: Int
 }
 
-input AppSettingsUpdateInput {
+input ServiceSettingsUpdateInput {
   displayName: String
   description: String
   dbHost: String!
@@ -1343,22 +1274,28 @@ input ServerSettingsUpdateInput {
 }
 
 input BuildCreateInput {
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
   message: String!
   commit: WhereParentIdInput!
 }
 
-input AppRoleCreateInput {
+input ResourceRoleCreateInput {
   name: String!
   description: String!
   displayName: String!
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
 }
 
-input AppRoleUpdateInput {
+input ResourceRoleUpdateInput {
   name: String
   description: String
   displayName: String!
+}
+
+input ProjectConfigurationSettingsUpdateInput {
+  displayName: String
+  description: String
+  baseDirectory: String
 }
 
 input SignupInput {
@@ -1390,7 +1327,7 @@ input CompleteInvitationInput {
 input ConnectorRestApiCreateInput {
   displayName: String!
   description: String
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
@@ -1433,7 +1370,7 @@ input BlockUpdateInput {
 input ConnectorRestApiCallCreateInput {
   displayName: String!
   description: String
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
@@ -1443,7 +1380,7 @@ input ConnectorRestApiCallCreateInput {
 input EntityPageCreateInput {
   displayName: String!
   description: String
-  app: WhereParentIdInput!
+  resource: WhereParentIdInput!
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
@@ -1482,7 +1419,7 @@ input EntityPageUpdateInput {
 input CreateGitRepositoryInput {
   name: String!
   public: Boolean!
-  appId: String!
+  resourceId: String!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
@@ -1490,7 +1427,7 @@ input CreateGitRepositoryInput {
 
 input ConnectGitRepositoryInput {
   name: String!
-  appId: String!
+  resourceId: String!
   gitOrganizationId: String!
 }
 

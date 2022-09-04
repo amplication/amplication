@@ -1,0 +1,68 @@
+@use "sass:math";
+
+@import "../style/index.scss";
+
+$info-panel-height: 140px;
+$application-badge-size-large: 100px;
+$app-icon-large-font-size: 70px;
+$circle-badge-border: 2px;
+
+.resource-home {
+  width: 100%;
+
+  &__header {
+    @include flexFullRowWithSpacing;
+    @include pageTitle;
+    color: var(--static-white);
+    border-radius: var(--default-border-radius);
+    position: relative;
+    z-index: 0;
+    height: $info-panel-height;
+    margin-right: 0;
+    margin-left: 0;
+    background-image: url("../assets/app-banner/app-banner-bg.svg");
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    border: none;
+    margin-bottom: ($application-badge-size-large * 0.5) + 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .circle-badge {
+    width: $application-badge-size-large;
+    height: $application-badge-size-large;
+    font-size: $app-icon-large-font-size;
+    position: absolute;
+    bottom: math.div($application-badge-size-large, -2);
+    left: calc(var(--double-spacing) * 2);
+
+    &:before {
+      width: $application-badge-size-large + ($circle-badge-border * 4);
+      height: $application-badge-size-large + ($circle-badge-border * 4);
+      content: "";
+      background: var(--black2);
+      z-index: -1;
+      position: absolute;
+      border-radius: 50%;
+      border: $circle-badge-border solid var(--black2);
+      box-sizing: border-box;
+    }
+  }
+
+  &__tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--large-spacing);
+
+    .overview-tile {
+      grid-column: 1/-1;
+    }
+
+    @media only screen and (min-width: $breakpoint-xl-desktop) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+}

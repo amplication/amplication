@@ -4,6 +4,7 @@ import {
   AMPLICATION_LOGGER_PROVIDER,
 } from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
+import { PrModule } from '../../constants';
 import { DiffService } from '../diff';
 import { ResultMessage } from './dto/ResultMessage';
 import { SendPullRequestArgs } from './dto/sendPullRequest';
@@ -19,7 +20,7 @@ export class PullRequestService {
     private readonly logger: AmplicationLogger
   ) {}
   async createPullRequest({
-    amplicationAppId,
+    resourceId,
     oldBuildId,
     newBuildId,
     gitOrganizationName,
@@ -27,9 +28,11 @@ export class PullRequestService {
     installationId,
     commit,
     gitProvider,
+    gitResourceMeta,
   }: SendPullRequestArgs): Promise<ResultMessage<SendPullRequestResponse>> {
+    const { base, body, head, title } = commit;
     const changedFiles = await this.diffService.listOfChangedFiles(
-      amplicationAppId,
+      resourceId,
       oldBuildId,
       newBuildId
     );
@@ -38,7 +41,6 @@ export class PullRequestService {
       { lengthOfFile: changedFiles.length }
     );
 
-    const { base, body, head, title } = commit;
     const prUrl = await this.gitService.createPullRequest(
       gitProvider,
       gitOrganizationName,
@@ -48,15 +50,15 @@ export class PullRequestService {
       title,
       body,
       installationId,
-      newBuildId,
+      gitResourceMeta,
       base
     );
     this.logger.info('Opened a new pull request', { prUrl });
     return { value: { url: prUrl }, status: StatusEnum.Success, error: null };
   }
   private static removeFirstSlashFromPath(
-    changedFiles: { code: string; path: string }[]
-  ): { code: string; path: string }[] {
+    changedFiles: PrModule[]
+  ): PrModule[] {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp('^/'), '') };
     });

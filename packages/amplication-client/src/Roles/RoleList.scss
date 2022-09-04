@@ -5,7 +5,21 @@
     margin-left: 0;
     margin-bottom: var(--default-spacing);
   }
+  
   &__header {
     margin-bottom: var(--default-spacing);
+  }
+
+  &__list {
+    &__item {
+      margin-bottom: var(--default-spacing-small);
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .new-role {
+    margin: var(--default-spacing-small) 0;
   }
 }

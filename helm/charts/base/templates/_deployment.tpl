@@ -28,13 +28,12 @@ spec:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.autoscaling.enabled }}
           resources:
-            limits:
-              cpu: {{ .Values.maxCPU }}
-              memory: {{ .Values.minMemory }}
             requests:
-              cpu:    {{ .Values.minCPU }}
+              cpu: {{ .Values.minCPU }}
               memory: {{ .Values.maxMemory }}
+          {{- end }}
           {{- if hasKey .Values "config" }}
           envFrom:
           - configMapRef:
@@ -42,7 +41,7 @@ spec:
           - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}
-          env: 
+          env:
             - name: ENVIRONMENT
               valueFrom:
                 fieldRef:
@@ -65,6 +64,16 @@ spec:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.global.pvc.name }}
+      {{- end }}
+      {{- if hasKey .Values.global "nodeSelector"}}
+      nodeSelector:
+      {{- with .Values.global.nodeSelector -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.global.tolerations -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
 {{- end -}}
 {{- define "base.deployment" -}}

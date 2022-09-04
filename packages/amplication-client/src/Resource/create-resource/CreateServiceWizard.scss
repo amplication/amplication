@@ -1,0 +1,132 @@
+@use "sass:math";
+@import "../../style/index.scss";
+
+$max-width: 700px;
+
+.create-service-wizard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  position: absolute;
+
+  &__splitWrapper {
+    display: flex;
+    height: 100%;
+  }
+
+  &__left {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--black2);
+  }
+
+  &__right {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--white);
+  }
+  &__description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 66%;
+
+    .circle-badge i {
+      color: var(--black5);
+      font-size: 20px;
+    }
+  }
+
+  &__description_top {
+    margin-top: 24px;
+    width: 450px;
+    height: 72px;
+  }
+
+  &__description_bottom {
+    width: 450px;
+    margin-top: 8px;
+  }
+
+  h2 {
+    @include title-24;
+    text-align: center;
+  }
+
+  h3 {  
+    @include regular-14;
+    text-align: center;
+    margin: 0px;
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    height: 26px;
+    background: var(--black10);
+  }
+
+  .amp-icon--size-small {
+    font-size: 12px;
+  }
+
+  &__processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 100%;
+    background: var(--white);
+
+    &__message_title_container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &__title {
+      font-weight: 600;
+      font-size: 24px;
+      text-align: center;
+      color: var(--black100);
+    }
+
+    &__message {
+      font-size: 18px;
+      line-height: 28px;
+      color: var(--black80);
+      margin-top: 4px;
+      color: var(--black100);
+    }
+
+    &__tagline {
+      //@include body2;
+      font-size: 10px;
+      line-height: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      color: var(--black80);
+    }
+
+    .svg-theme-image {
+      width: 200px;
+      height: 200px;
+      margin: 50px;
+    }
+  }
+}

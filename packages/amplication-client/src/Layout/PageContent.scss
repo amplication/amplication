@@ -11,6 +11,7 @@ $tabs-width: 300px;
   box-sizing: border-box;
   flex: 1;
   overflow: hidden;
+  height: 100%;
 
   &__tabs {
     @include scrollbars(10px, var(--black60), transparent);
@@ -19,9 +20,9 @@ $tabs-width: 300px;
     border-radius: var(--default-border-radius);
     border: $border-black10;
     padding: var(--large-spacing);
+    margin: var(--large-spacing) 0;
     box-sizing: border-box;
     overflow: auto;
-    margin: var(--large-spacing) 0;
 
     .sub-list {
       margin-left: var(--triple-spacing);
