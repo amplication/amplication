@@ -28,6 +28,12 @@ spec:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.autoscaling.enabled }}
+          resources:
+            requests:
+              cpu: {{ .Values.minCPU }}
+              memory: {{ .Values.maxMemory }}
+          {{- end }}
           {{- if hasKey .Values "config" }}
           envFrom:
           - configMapRef:

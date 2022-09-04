@@ -11,6 +11,7 @@ spec:
       initContainers:
         - name: "{{ .Values.name }}-migrate"
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.autoscaling.enabled }}
           resources:
             limits:
               cpu: {{ .Values.maxCPU }}
@@ -18,6 +19,7 @@ spec:
             requests:
               cpu: {{ .Values.minCPU }}
               memory: {{ .Values.maxMemory }}
+          {{- end }}
           command: ["/bin/sh"]
           args: ["-c", "npm run migrate:up", ";", "exit"]
           env:
@@ -31,6 +33,12 @@ spec:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.autoscaling.enabled }}
+          resources:
+            requests:
+              cpu: {{ .Values.minCPU }}
+              memory: {{ .Values.maxMemory }}
+          {{- end }}
           envFrom:
           {{- if hasKey .Values "config" }}
           - configMapRef:
