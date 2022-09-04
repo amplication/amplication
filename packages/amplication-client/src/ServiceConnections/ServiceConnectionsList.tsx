@@ -23,7 +23,6 @@ type Props = {
 
 export const ServiceConnectionsList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
-    
     const { currentWorkspace, currentProject, resources } = useContext(
       AppContext
     );
@@ -82,7 +81,7 @@ export const ServiceConnectionsList = React.memo(
               className={`${CLASS_NAME}__list__item`}
             >
               <InnerTabLink
-                icon="link_2"
+                icon="connection"
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/service-connections/${connection.resource.id}`}
               >
                 <span>{connection.resource.name}</span>

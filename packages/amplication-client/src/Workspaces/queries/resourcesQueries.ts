@@ -4,7 +4,7 @@ export const GET_RESOURCES = gql`
   query getResources($projectId: String!, $whereName: StringFilter) {
     resources(
       where: { project: { id: $projectId }, name: $whereName }
-      orderBy: { createdAt: Desc }
+      orderBy: [{ resourceType: Asc }, { createdAt: Desc }]
     ) {
       id
       name

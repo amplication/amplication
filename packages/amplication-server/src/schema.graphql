@@ -27,7 +27,7 @@ type Query {
   project(where: WhereUniqueInput!): Project
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   resource(where: WhereUniqueInput!): Resource
-  resources(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, take: Int): [Resource!]!
+  resources(where: ResourceWhereInput, orderBy: [ResourceOrderByInput!], skip: Int, take: Int): [Resource!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
@@ -726,6 +726,7 @@ input ResourceOrderByInput {
   updatedAt: SortOrder
   name: SortOrder
   description: SortOrder
+  resourceType: SortOrder
 }
 
 type ServiceSettings implements IBlock {
