@@ -76,7 +76,7 @@ const useProjectSelector = (
   useEffect(() => {
     if (currentProject || project || !projectsList.length) return;
 
-    const isFromSignup = location.search.includes("route=create-resource");
+    const isFromSignup = location.search.includes("complete-signup=1");
     !workspaceUtil &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
