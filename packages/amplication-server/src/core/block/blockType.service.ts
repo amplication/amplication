@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FindOneArgs } from 'src/dto';
 import { IBlock, User } from 'src/models';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
