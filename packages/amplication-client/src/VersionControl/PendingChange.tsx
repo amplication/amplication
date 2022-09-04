@@ -26,10 +26,11 @@ const ACTION_TO_LABEL: {
 const PendingChange = ({ change, linkToOrigin = false }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
   /**@todo: update the url for other types of blocks  */
-  const url =
-    change.originType === models.EnumPendingChangeOriginType.Entity
-      ? `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/entities/${change.originId}`
-      : `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/update`;
+  const baseUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}`;
+  // const url =
+  //   change.originType === models.EnumPendingChangeOriginType.Entity
+  //     ? `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/entities/${change.originId}`
+  //     : `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/settings/update`;
 
   const isDeletedEntity =
     change.action === models.EnumPendingChangeAction.Delete;
@@ -51,7 +52,14 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
     }
     if (linkToOrigin) {
       return (
-        <Link to={url} className={`${CLASS_NAME}__link`}>
+        <Link
+          to={getEntityLinkByChangeType(
+            change.originType,
+            change.originId,
+            baseUrl
+          )}
+          className={`${CLASS_NAME}__link`}
+        >
           {change.origin.displayName}
         </Link>
       );
@@ -76,3 +84,23 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
 };
 
 export default PendingChange;
+
+const getEntityLinkByChangeType = (
+  type: models.EnumPendingChangeOriginType,
+  originId: string,
+  baseUrl: string
+): string => {
+  switch (type) {
+    case models.EnumPendingChangeOriginType.Entity: {
+      return `${baseUrl}/entities/${originId}`;
+    }
+    case models.EnumPendingChangeOriginType.Block: {
+      return `${baseUrl}/topics/${originId}`;
+    }
+    default: {
+      return `${baseUrl}/settings/update`;
+    }
+
+    //todo: handle: service-connections and settings from the type
+  }
+};
