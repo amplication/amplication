@@ -1,5 +1,5 @@
 import React, { useMemo, useContext, useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
 import * as models from "../models";
@@ -15,6 +15,7 @@ import { AppContext } from "../context/appContext";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { BuildStatusIcons } from "./BuildStatusIcons";
+import { GET_LAST_COMMIT } from "./hooks/commitQueries";
 
 type TData = {
   commits: models.Commit[];
@@ -38,6 +39,7 @@ const LastCommit = ({ projectId }: Props) => {
     variables: {
       projectId,
     },
+    skip: !projectId,
   });
 
   useEffect(() => {
@@ -116,7 +118,7 @@ const LastCommit = ({ projectId }: Props) => {
                 eventName: "LastCommitViewCode",
               }}
             >
-              View Code
+              Go to view code
             </Button>
           </Link>
         )}
@@ -135,81 +137,3 @@ function formatTimeToNow(time: Date | null): string | null {
 }
 
 export default LastCommit;
-
-export const GET_LAST_COMMIT = gql`
-  query lastCommit($projectId: String!) {
-    commits(
-      where: { project: { id: $projectId } }
-      orderBy: { createdAt: Desc }
-      take: 1
-    ) {
-      id
-      message
-      createdAt
-      user {
-        id
-        account {
-          firstName
-          lastName
-        }
-      }
-      changes {
-        originId
-        action
-        originType
-        versionNumber
-        origin {
-          __typename
-          ... on Entity {
-            id
-            displayName
-            updatedAt
-          }
-          ... on Block {
-            id
-            displayName
-            updatedAt
-          }
-        }
-      }
-      builds(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        createdAt
-        resourceId
-        version
-        message
-        createdAt
-        commitId
-        actionId
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
-        createdBy {
-          id
-          account {
-            firstName
-            lastName
-          }
-        }
-        status
-        archiveURI
-      }
-    }
-  }
-`;

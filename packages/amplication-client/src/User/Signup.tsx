@@ -59,9 +59,9 @@ const Signup = () => {
     if (data) {
       setToken(data.signup.token);
       history.push({
-        pathname: '/',
-        search: '?route=create-resource'
-      })
+        pathname: "/",
+        search: "?complete-signup=1",
+      });
     }
   }, [data, history, location]);
 

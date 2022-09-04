@@ -12,6 +12,9 @@ export class EnvironmentVariables {
   }
   static getArray(key: string, strict: boolean, separator: string): string[] {
     const envValue = EnvironmentVariables.get(key, strict);
+    if (!envValue) {
+      throw new Error(`Missing ${key} in the env`);
+    }
     const array = envValue.split(separator);
     return array;
   }

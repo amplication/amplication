@@ -18,6 +18,7 @@ import { components } from '@octokit/openapi-types';
 import { join } from 'path';
 import { AmplicationIgnoreManger } from '../utils/AmplicationIgnoreManger';
 import { GitResourceMeta } from '../contracts/GitResourceMeta';
+import { PrModule } from '../types';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -166,7 +167,7 @@ export class GithubService implements IGitClient {
   async createPullRequest(
     userName: string,
     repoName: string,
-    modules: { path: string; code: string }[],
+    modules: PrModule[],
     commitName: string,
     commitMessage: string,
     commitDescription: string,
@@ -227,9 +228,15 @@ export class GithubService implements IGitClient {
 
     const files = Object.fromEntries(
       modules.map(module => {
+        // ignored file
         if (amplicationIgnoreManger.isIgnored(module.path)) {
           return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
         }
+        // Deleted file
+        if (module.code === null) {
+          return [module.path, module.code];
+        }
+        // Regex ignored file
         if (
           !module.path.startsWith(authFolder) &&
           doNotOverride.some(rx => rx.test(module.path))
@@ -244,12 +251,10 @@ export class GithubService implements IGitClient {
             }
           ];
         }
-
+        // Regular file
         return [module.path, module.code];
       })
     );
-
-    //todo: delete files that are no longer part of the app
 
     // Returns a normal Octokit PR response
     // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create

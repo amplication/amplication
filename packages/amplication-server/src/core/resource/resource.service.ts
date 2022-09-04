@@ -333,6 +333,9 @@ export class ResourceService {
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: args.where.id
+      },
+      include: {
+        gitRepository: true
       }
     });
 
@@ -344,29 +347,40 @@ export class ResourceService {
       throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
     }
 
-    if (resource.gitRepositoryOverride) {
-      const gitRepo = await this.prisma.gitRepository.findFirst({
-        where: {
-          resources: { every: { id: resource.id } }
-        }
-      });
-
-      if (gitRepo) {
-        await this.prisma.gitRepository.delete({
-          where: {
-            id: gitRepo.id
-          }
-        });
-      }
-    }
-
-    return this.prisma.resource.update({
+    await this.prisma.resource.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(resource.name, resource.id),
-        deletedAt: new Date()
+        deletedAt: new Date(),
+        gitRepository: {
+          disconnect: true
+        }
       }
     });
+
+    if (!resource.gitRepositoryOverride) {
+      return resource;
+    }
+
+    return await this.deleteResourceGitRepository(resource);
+  }
+
+  async deleteResourceGitRepository(resource: Resource): Promise<Resource> {
+    const gitRepo = await this.prisma.gitRepository.findFirst({
+      where: {
+        resources: { every: { id: resource.id } }
+      }
+    });
+
+    if (!gitRepo) {
+      await this.prisma.gitRepository.delete({
+        where: {
+          id: resource.gitRepositoryId
+        }
+      });
+    }
+
+    return resource;
   }
 
   async updateResource(args: UpdateOneResourceArgs): Promise<Resource | null> {

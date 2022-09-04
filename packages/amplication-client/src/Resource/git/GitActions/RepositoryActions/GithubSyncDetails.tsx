@@ -1,11 +1,13 @@
 import { Snackbar } from "@amplication/design-system";
 import { useMutation } from "@apollo/client";
 import classNames from "classnames";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
+import { AppContext } from "../../../../context/appContext";
 import { Resource } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
+import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
 
 const CLASS_NAME = "github-repo-details";
@@ -21,15 +23,13 @@ function GithubSyncDetails({
   className,
   showGitRepositoryBtn = true,
 }: Props) {
-  const { gitRepository } = resourceWithRepository;
-
-  const gitRepositoryFullName = `${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`;
+  const { gitRepositoryUrl } = useContext(AppContext);
 
   const [
     disconnectGitRepository,
     { error: disconnectErrorUpdate },
   ] = useMutation(DISCONNECT_GIT_REPOSITORY, {
-    variables: { resourceId: resourceWithRepository.id }
+    variables: { resourceId: resourceWithRepository.id },
   });
 
   const handleDisconnectGitRepository = useCallback(() => {
@@ -39,18 +39,21 @@ function GithubSyncDetails({
   }, [disconnectGitRepository, resourceWithRepository.id]);
 
   const errorMessage = formatError(disconnectErrorUpdate);
-  const repoUrl = `https://github.com/${gitRepositoryFullName}`;
 
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
-        <div className={`${CLASS_NAME}__details`}> 
-          <div className={classNames(className, `${CLASS_NAME}__name`)}>
-            {gitRepositoryFullName}
-          </div>
+        <div className={`${CLASS_NAME}__details`}>
+          <GitRepoDetails
+            className={classNames(className, `${CLASS_NAME}__name`)}
+          />
           <div>
-            <a href={repoUrl} target="github_repo" className={className}>
-              {repoUrl}
+            <a
+              href={gitRepositoryUrl}
+              target="github_repo"
+              className={className}
+            >
+              {gitRepositoryUrl}
             </a>
           </div>
         </div>
