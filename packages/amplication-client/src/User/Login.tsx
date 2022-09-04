@@ -94,7 +94,7 @@ const Login = () => {
       let { from } = location.state || { from: { pathname: "/" } };
       if (from === "login") {
         from = "/";
-      }
+      }  
       history.replace(from);
     }
   }, [data, history, location]);
