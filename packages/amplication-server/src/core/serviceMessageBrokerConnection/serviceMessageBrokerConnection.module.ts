@@ -3,9 +3,10 @@ import { ServiceMessageBrokerConnectionService } from './serviceMessageBrokerCon
 import { ServiceMessageBrokerConnectionResolver } from './serviceMessageBrokerConnection.resolver';
 import { BlockModule } from '../block/block.module';
 import { PermissionsModule } from '../permissions/permissions.module';
+import { ResourceModule } from '../resource/resource.module';
 
 @Module({
-  imports: [BlockModule, PermissionsModule],
+  imports: [BlockModule, PermissionsModule, ResourceModule],
   providers: [
     ServiceMessageBrokerConnectionService,
     ServiceMessageBrokerConnectionResolver

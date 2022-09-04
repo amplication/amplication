@@ -1,4 +1,4 @@
-import { EnumResourceType } from '@amplication/prisma-db';
+import { EnumResourceType } from './EnumResourceType';
 import { Field, InputType } from '@nestjs/graphql';
 import { WhereParentIdInput } from 'src/dto';
 

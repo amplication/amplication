@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { BlockService } from '../block/block.service';
 import { BlockTypeService } from '../block/blockType.service';
 import { CreateTopicArgs } from './dto/CreateTopicArgs';
 import { FindManyTopicArgs } from './dto/FindManyTopicArgs';
@@ -15,7 +16,7 @@ export class TopicService extends BlockTypeService<
 > {
   blockType = EnumBlockType.Topic;
 
-  constructor() {
-    super();
+  constructor(protected readonly blockService: BlockService) {
+    super(blockService);
   }
 }
