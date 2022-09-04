@@ -15,19 +15,19 @@ image:
 
 service:
   type: LoadBalancer
-  port: 
+  port:
     target: 8080
   protocol: TCP
-  hostname: app.amplication-dev.com	
+  hostname: app.amplication-dev.com
   certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/bc3442ea-ddcb-4870-b4ba-79144e623d71
 
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: "2Gi"
-minMemory: "2Gi"
-maxCPU: 1
-minCPU: 1
+maxMemory: "1.6Gi"
+minMemory: "1.6Gi"
+maxCPU: "0.9"
+minCPU: "0.9"
 
 config:
   env:
