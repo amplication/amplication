@@ -16,7 +16,7 @@ import { GithubAuthExceptionFilter } from 'src/filters/github-auth-exception.fil
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { GitHubAuthGuard } from './github.guard';
 import { GitHubRequest } from './types';
-import { parseUrl, stringifyUrl } from 'query-string';
+import { stringifyUrl } from 'query-string';
 
 @Controller('/')
 export class AuthController {
