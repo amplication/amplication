@@ -20,6 +20,7 @@ import { GitProviderModule } from './git/git.provider.module';
 import { ProjectModule } from './project/project.module';
 import { HealthModule } from './health/health.module';
 import { TopicModule } from './topic/topic.module';
+import { ServiceMessageBrokerConnectionModule } from './serviceMessageBrokerConnection/serviceMessageBrokerConnection.module';
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { TopicModule } from './topic/topic.module';
     SubscriptionModule,
     ProjectModule,
     HealthModule,
-    TopicModule
+    TopicModule,
+    ServiceMessageBrokerConnectionModule
   ],
   exports: [
     AccountModule,
@@ -67,7 +69,8 @@ import { TopicModule } from './topic/topic.module';
     MailModule,
     SubscriptionModule,
     ProjectModule,
-    TopicModule
+    TopicModule,
+    ServiceMessageBrokerConnectionModule
   ]
 })
 export class CoreModule {}
