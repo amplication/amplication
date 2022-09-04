@@ -37,12 +37,12 @@ export const linksMap = {
   },
   topics: {
     title: "Topics",
-    icon: "plus",
+    icon: "topic",
     to: "/topics",
   },
   connections: {
     title: "Connections",
-    icon: "link_2",
+    icon: "connection",
     to: "/service-connections",
   },
 };
