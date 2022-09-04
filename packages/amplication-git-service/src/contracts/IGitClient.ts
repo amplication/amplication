@@ -1,3 +1,4 @@
+import { PrModule } from '../types';
 import { GithubFile } from '../Dto/entities/GithubFile';
 import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
 import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
@@ -41,7 +42,7 @@ export interface IGitClient {
   createPullRequest(
     userName: string,
     repoName: string,
-    modules: { path: string; code: string }[],
+    modules: PrModule[],
     commitName: string,
     commitMessage: string,
     commitDescription: string,
