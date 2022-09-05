@@ -3,4 +3,4 @@ export * as types from "./types";
 export * from "./code-gen-types";
 export * from "./plugins-types";
 export * from "./eventsParams";
-export * from "./plugin-generic"
+export * from "./plugin-generic";

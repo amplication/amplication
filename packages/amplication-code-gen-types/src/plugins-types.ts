@@ -1,6 +1,11 @@
 import { AppInfo, DTOs, Entity, Module, Role } from "./code-gen-types";
 import winston from "winston";
-import { CreateAdminModulesParams, CreateAuthModulesParams, CreateControllerModulesParams, CreateServiceModulesParams } from "./eventsParams";
+import {
+  CreateAdminModulesParams,
+  CreateAuthModulesParams,
+  CreateControllerModulesParams,
+  CreateServiceModulesParams,
+} from "./eventsParams";
 import { EventParams } from "./plugin-generic";
 
 export interface PrintResultType {
