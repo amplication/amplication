@@ -66,7 +66,7 @@ const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
   listSettings: null,
   singleRecordSettings: EXAMPLE_SINGLE_RECORD_SETTINGS,
   showAllFields: true,
-  resourceId:EXAMPLE_RESOURCE_ID
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
@@ -84,7 +84,7 @@ const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
   pageType: EnumEntityPageType.List,
   listSettings: EXAMPLE_LIST_SETTINGS,
   showAllFields: true,
-  resourceId:EXAMPLE_RESOURCE_ID
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const SINGLE_RECORD_CREATE_INPUT: EntityPageCreateInput = {

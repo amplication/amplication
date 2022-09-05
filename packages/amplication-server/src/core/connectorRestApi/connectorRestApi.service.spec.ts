@@ -43,7 +43,7 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApi = {
   authenticationType: EnumConnectorRestApiAuthenticationType.None,
   privateKeyAuthenticationSettings: null,
   httpBasicAuthenticationSettings: null,
-  resourceId:EXAMPLE_RESOURCE_ID
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
