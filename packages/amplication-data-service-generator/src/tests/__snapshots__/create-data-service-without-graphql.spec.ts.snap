@@ -5852,40 +5852,40 @@ export class CustomerServiceBase {
   async count<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
   ): Promise<number> {
-    return this.prisma.customer.count(args);
+    return await this.prisma.customer.count(args);
   }
 
   async findMany<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
   ): Promise<Customer[]> {
-    return this.prisma.customer.findMany(args);
+    return await this.prisma.customer.findMany(args);
   }
   async findOne<T extends Prisma.CustomerFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
   ): Promise<Customer | null> {
-    return this.prisma.customer.findUnique(args);
+    return await this.prisma.customer.findUnique(args);
   }
   async create<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
   ): Promise<Customer> {
-    return this.prisma.customer.create<T>(args);
+    return await this.prisma.customer.create<T>(args);
   }
   async update<T extends Prisma.CustomerUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
   ): Promise<Customer> {
-    return this.prisma.customer.update<T>(args);
+    return await this.prisma.customer.update<T>(args);
   }
   async delete<T extends Prisma.CustomerDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
   ): Promise<Customer> {
-    return this.prisma.customer.delete(args);
+    return await this.prisma.customer.delete(args);
   }
 
   async findOrders(
     parentId: string,
     args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
-    return this.prisma.customer
+    return await this.prisma.customer
       .findUnique({
         where: { id: parentId },
       })
@@ -5893,7 +5893,7 @@ export class CustomerServiceBase {
   }
 
   async getOrganization(parentId: string): Promise<Organization | null> {
-    return this.prisma.customer
+    return await this.prisma.customer
       .findUnique({
         where: { id: parentId },
       })
@@ -5901,7 +5901,7 @@ export class CustomerServiceBase {
   }
 
   async getVipOrganization(parentId: string): Promise<Organization | null> {
-    return this.prisma.customer
+    return await this.prisma.customer
       .findUnique({
         where: { id: parentId },
       })
@@ -6765,33 +6765,33 @@ export class EmptyServiceBase {
   async count<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
   ): Promise<number> {
-    return this.prisma.empty.count(args);
+    return await this.prisma.empty.count(args);
   }
 
   async findMany<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
   ): Promise<Empty[]> {
-    return this.prisma.empty.findMany(args);
+    return await this.prisma.empty.findMany(args);
   }
   async findOne<T extends Prisma.EmptyFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
   ): Promise<Empty | null> {
-    return this.prisma.empty.findUnique(args);
+    return await this.prisma.empty.findUnique(args);
   }
   async create<T extends Prisma.EmptyCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
   ): Promise<Empty> {
-    return this.prisma.empty.create<T>(args);
+    return await this.prisma.empty.create<T>(args);
   }
   async update<T extends Prisma.EmptyUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
   ): Promise<Empty> {
-    return this.prisma.empty.update<T>(args);
+    return await this.prisma.empty.update<T>(args);
   }
   async delete<T extends Prisma.EmptyDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
   ): Promise<Empty> {
-    return this.prisma.empty.delete(args);
+    return await this.prisma.empty.delete(args);
   }
 }
 ",
@@ -8096,37 +8096,37 @@ export class OrderServiceBase {
   async count<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
   ): Promise<number> {
-    return this.prisma.order.count(args);
+    return await this.prisma.order.count(args);
   }
 
   async findMany<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
   ): Promise<Order[]> {
-    return this.prisma.order.findMany(args);
+    return await this.prisma.order.findMany(args);
   }
   async findOne<T extends Prisma.OrderFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
   ): Promise<Order | null> {
-    return this.prisma.order.findUnique(args);
+    return await this.prisma.order.findUnique(args);
   }
   async create<T extends Prisma.OrderCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
   ): Promise<Order> {
-    return this.prisma.order.create<T>(args);
+    return await this.prisma.order.create<T>(args);
   }
   async update<T extends Prisma.OrderUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
   ): Promise<Order> {
-    return this.prisma.order.update<T>(args);
+    return await this.prisma.order.update<T>(args);
   }
   async delete<T extends Prisma.OrderDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
   ): Promise<Order> {
-    return this.prisma.order.delete(args);
+    return await this.prisma.order.delete(args);
   }
 
   async getCustomer(parentId: string): Promise<Customer | null> {
-    return this.prisma.order
+    return await this.prisma.order
       .findUnique({
         where: { id: parentId },
       })
@@ -9661,40 +9661,40 @@ export class OrganizationServiceBase {
   async count<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
   ): Promise<number> {
-    return this.prisma.organization.count(args);
+    return await this.prisma.organization.count(args);
   }
 
   async findMany<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
   ): Promise<Organization[]> {
-    return this.prisma.organization.findMany(args);
+    return await this.prisma.organization.findMany(args);
   }
   async findOne<T extends Prisma.OrganizationFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
   ): Promise<Organization | null> {
-    return this.prisma.organization.findUnique(args);
+    return await this.prisma.organization.findUnique(args);
   }
   async create<T extends Prisma.OrganizationCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
   ): Promise<Organization> {
-    return this.prisma.organization.create<T>(args);
+    return await this.prisma.organization.create<T>(args);
   }
   async update<T extends Prisma.OrganizationUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
   ): Promise<Organization> {
-    return this.prisma.organization.update<T>(args);
+    return await this.prisma.organization.update<T>(args);
   }
   async delete<T extends Prisma.OrganizationDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
   ): Promise<Organization> {
-    return this.prisma.organization.delete(args);
+    return await this.prisma.organization.delete(args);
   }
 
   async findUsers(
     parentId: string,
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
-    return this.prisma.organization
+    return await this.prisma.organization
       .findUnique({
         where: { id: parentId },
       })
@@ -9705,7 +9705,7 @@ export class OrganizationServiceBase {
     parentId: string,
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return this.prisma.organization
+    return await this.prisma.organization
       .findUnique({
         where: { id: parentId },
       })
@@ -9716,7 +9716,7 @@ export class OrganizationServiceBase {
     parentId: string,
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return this.prisma.organization
+    return await this.prisma.organization
       .findUnique({
         where: { id: parentId },
       })
@@ -10760,37 +10760,37 @@ export class ProfileServiceBase {
   async count<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
   ): Promise<number> {
-    return this.prisma.profile.count(args);
+    return await this.prisma.profile.count(args);
   }
 
   async findMany<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
   ): Promise<Profile[]> {
-    return this.prisma.profile.findMany(args);
+    return await this.prisma.profile.findMany(args);
   }
   async findOne<T extends Prisma.ProfileFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
   ): Promise<Profile | null> {
-    return this.prisma.profile.findUnique(args);
+    return await this.prisma.profile.findUnique(args);
   }
   async create<T extends Prisma.ProfileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
   ): Promise<Profile> {
-    return this.prisma.profile.create<T>(args);
+    return await this.prisma.profile.create<T>(args);
   }
   async update<T extends Prisma.ProfileUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
   ): Promise<Profile> {
-    return this.prisma.profile.update<T>(args);
+    return await this.prisma.profile.update<T>(args);
   }
   async delete<T extends Prisma.ProfileDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
   ): Promise<Profile> {
-    return this.prisma.profile.delete(args);
+    return await this.prisma.profile.delete(args);
   }
 
   async getUser(parentId: string): Promise<User | null> {
-    return this.prisma.profile
+    return await this.prisma.profile
       .findUnique({
         where: { id: parentId },
       })
@@ -13307,23 +13307,23 @@ export class UserServiceBase {
   async count<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<number> {
-    return this.prisma.user.count(args);
+    return await this.prisma.user.count(args);
   }
 
   async findMany<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<User[]> {
-    return this.prisma.user.findMany(args);
+    return await this.prisma.user.findMany(args);
   }
   async findOne<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
-    return this.prisma.user.findUnique(args);
+    return await this.prisma.user.findUnique(args);
   }
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<User> {
-    return this.prisma.user.create<T>({
+    return await this.prisma.user.create<T>({
       ...args,
 
       data: {
@@ -13335,7 +13335,7 @@ export class UserServiceBase {
   async update<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
-    return this.prisma.user.update<T>({
+    return await this.prisma.user.update<T>({
       ...args,
 
       data: {
@@ -13353,14 +13353,14 @@ export class UserServiceBase {
   async delete<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
   ): Promise<User> {
-    return this.prisma.user.delete(args);
+    return await this.prisma.user.delete(args);
   }
 
   async findEmployees(
     parentId: string,
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
-    return this.prisma.user
+    return await this.prisma.user
       .findUnique({
         where: { id: parentId },
       })
@@ -13371,7 +13371,7 @@ export class UserServiceBase {
     parentId: string,
     args: Prisma.OrganizationFindManyArgs
   ): Promise<Organization[]> {
-    return this.prisma.user
+    return await this.prisma.user
       .findUnique({
         where: { id: parentId },
       })
@@ -13379,7 +13379,7 @@ export class UserServiceBase {
   }
 
   async getManager(parentId: string): Promise<User | null> {
-    return this.prisma.user
+    return await this.prisma.user
       .findUnique({
         where: { id: parentId },
       })
@@ -13387,7 +13387,7 @@ export class UserServiceBase {
   }
 
   async getProfile(parentId: string): Promise<Profile | null> {
-    return this.prisma.user
+    return await this.prisma.user
       .findUnique({
         where: { id: parentId },
       })
