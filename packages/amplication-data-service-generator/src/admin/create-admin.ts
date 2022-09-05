@@ -2,10 +2,7 @@ import * as path from "path";
 import { paramCase } from "param-case";
 import { get } from "lodash";
 import { plural } from "pluralize";
-import {
-  Module,
-  EventNames,
-} from "@amplication/code-gen-types";
+import { Module, EventNames } from "@amplication/code-gen-types";
 import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
 import { updatePackageJSONs } from "../update-package-jsons";
@@ -49,6 +46,7 @@ const dynamicPathCreator = (adminPath: string) => {
 export const createAdminModules = async (): Promise<Module[]> =>
   pluginWrapper(
     async (): Promise<Module[]> => {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const { appInfo, logger, entities, roles, DTOs } = DsgContext.getInstance;
       const directoryManager = dynamicPathCreator(
         get(appInfo, "settings.adminUISettings.adminUIPath", "")

@@ -1,4 +1,4 @@
-import { EventNames } from "@amplication/code-gen-types";
+import { EventNames, Module, EventParams } from "@amplication/code-gen-types";
 import DsgContext from "./dsg-context";
 
 export type PluginWrapper = (
@@ -7,10 +7,9 @@ export type PluginWrapper = (
   ...args: any
 ) => any;
 
-const pipe = (...fns: ((context: DsgContext, res: {[key: string]: any}) => any)[]) => (
-  context: DsgContext,
-  x: any
-) =>
+const pipe = (
+  ...fns: ((context: DsgContext, res: EventParams | Module[]) => any)[]
+) => (context: DsgContext, x: any) =>
   fns.reduce((res, fn) => {
     return fn(context, res);
   }, x);
@@ -43,20 +42,24 @@ const pluginWrapper: PluginWrapper = async (
     context.utils.skipDefaultBehavior = false;
     if (!context.plugins.hasOwnProperty(event)) return func(args);
 
-    const beforePlugins = context.plugins[event]?.before;
-    const afterPlugins = context.plugins[event]?.after;
+    const beforePlugins = context.plugins[event]?.before || [];
+    const afterPlugins = context.plugins[event]?.after || [];
 
-    const beforeFuncResults = beforePlugins
+    const updatedEventParams = beforePlugins
       ? pipe(...beforePlugins)(context, args)
       : args;
-    const funcResults = await defaultBehavior(context, func, beforeFuncResults);
+    const defaultBehaviorModules = await defaultBehavior(
+      context,
+      func,
+      updatedEventParams
+    );
 
-    const afterFuncResults = afterPlugins
-      ? await pipe(...afterPlugins)(context, funcResults)
-      : funcResults;
+    const finalModules = afterPlugins
+      ? await pipe(...afterPlugins)(context, defaultBehaviorModules)
+      : defaultBehaviorModules;
 
-    context.modules.push(afterFuncResults);
-    return afterFuncResults;
+    context.modules.push(finalModules);
+    return finalModules;
   } catch (error) {
     console.log(error);
     return Error(JSON.stringify({ event, msg: error }));

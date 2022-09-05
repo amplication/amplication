@@ -1,12 +1,9 @@
 import * as types from "@amplication/code-gen-types";
 import { ContextUtil } from "@amplication/code-gen-types";
-import { join } from "path";
 import { readStaticModules } from "./read-static-modules";
 import winston from "winston";
 
 const contextUtil = {
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setDsgPath: (path: string) => join(__dirname, `../node_modules/${path}`),
   skipDefaultBehavior: false,
   importStaticModules: readStaticModules,
 };

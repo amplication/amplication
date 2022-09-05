@@ -1,5 +1,7 @@
 import { AppInfo, DTOs, Entity, Module, Role } from "./code-gen-types";
 import winston from "winston";
+import { CreateAdminModulesParams, CreateAuthModulesParams, CreateControllerModulesParams, CreateServiceModulesParams } from "./eventsParams";
+import { EventParams } from "./plugin-generic";
 
 export interface PrintResultType {
   code: string;
@@ -8,7 +10,6 @@ export interface PrintResultType {
 }
 
 export interface ContextUtil {
-  setDsgPath: (path: string) => string;
   skipDefaultBehavior: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
@@ -23,9 +24,7 @@ export interface DsgContext {
   utils: ContextUtil;
 }
 
-export type PluginWrapper = (args: any[], func: () => void) => any;
-
-export interface EventParams {}
+export type PluginWrapper = (args: EventParams, func: () => void) => any;
 
 export interface DsgPlugin {
   id?: string;
@@ -36,46 +35,10 @@ export interface DsgPlugin {
 
 export type PluginMap = {
   [K in EventNames]?: {
-    before?: (<T>(context: DsgContext, params: any) => T)[];
-    after?: (<T>(context: DsgContext, params: any) => T)[];
+    before?: (<T>(context: DsgContext, params: EventParams | Module[]) => T)[];
+    after?: (<T>(context: DsgContext, modules: EventParams | Module[]) => T)[];
   };
 };
-
-export interface CreateServiceModulesParams extends EventParams {
-  before: {
-    entityName: string;
-    entityType: string;
-    entity: Entity;
-    srcDirectory: string;
-    extraMapping: { [key: string]: any };
-  };
-  after: Module[];
-}
-
-export interface CreateControllerModulesParams extends EventParams {
-  before: {
-    resource: string;
-    entityName: string;
-    entityType: string;
-    entityServiceModule: string;
-    entity: Entity;
-    srcDirectory: string;
-    extraMapping: { [key: string]: any };
-  };
-  after: Module[];
-}
-
-export interface CreateAuthModulesParams extends EventParams {
-  before: {
-    srcDir: string;
-  };
-  after: Module[];
-}
-
-export interface CreateAdminModulesParams extends EventParams {
-  before: {};
-  after: Module[];
-}
 
 export enum EventNames {
   CreateServiceModules = "createServiceModules",

@@ -60,8 +60,7 @@ export async function createControllerModules(
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
-  srcDirectory: string,
-  extraMapping?: { [key: string]: any }
+  srcDirectory: string
 ): Promise<Module[]> {
   const context = DsgContext.getInstance;
   const { settings } = context.appInfo;
@@ -113,7 +112,6 @@ export async function createControllerModules(
     WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
 
     SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
-    ...(extraMapping || {}),
   };
   return [
     await createControllerModule(
