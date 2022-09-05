@@ -76,7 +76,7 @@ export async function createServerModules(
   );
 
   logger.info("Creating Auth module...");
-  const authModules = await createAuthModules(directoryManager.SRC, appInfo);
+  const authModules = await createAuthModules({ srcDir: directoryManager.SRC });
 
   logger.info("Creating application module...");
   const appModule = await createAppModule(

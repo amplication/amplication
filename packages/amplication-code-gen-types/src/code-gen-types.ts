@@ -182,16 +182,7 @@ export type DTOs = {
   [entity: string]: EntityEnumDTOs & EntityDTOs;
 };
 
-export interface DsgContext {
-  appInfo: AppInfo;
-  entities: Entity[];
-  roles: Role[];
-  modules: Module[];
-  DTOs: DTOs;
-}
-
 export type ResourceGenerationConfig = {
   dataServiceGeneratorVersion: string;
   appInfo: AppInfo;
-
 };
