@@ -230,6 +230,7 @@ const EXAMPLE_BUILD: Build = {
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
+  resourceId:EXAMPLE_RESOURCE_ID,
   dbHost: 'exampleDbHost',
   dbName: 'exampleDbName',
   dbUser: 'exampleDbUser',
