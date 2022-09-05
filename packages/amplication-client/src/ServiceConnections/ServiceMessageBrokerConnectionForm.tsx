@@ -61,6 +61,7 @@ const ServiceMessageBrokerConnectionForm = ({
     >
       <Form childrenAsBlocks>
         <FormikAutoSave debounceMS={1000} />
+
         <ToggleField name="enabled" label="enabled" />
       </Form>
     </Formik>
