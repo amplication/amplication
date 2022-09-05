@@ -1348,7 +1348,7 @@ export type QueryResourceRolesArgs = {
 };
 
 export type QueryResourcesArgs = {
-  orderBy?: InputMaybe<ResourceOrderByInput>;
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<ResourceWhereInput>;
@@ -1490,6 +1490,7 @@ export type ResourceOrderByInput = {
   description?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
+  resourceType?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
 };
 

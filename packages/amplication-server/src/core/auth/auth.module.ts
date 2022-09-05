@@ -18,6 +18,7 @@ import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.mo
 import { GitHubStrategyConfigService } from './githubStrategyConfig.service';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
 import { ProjectModule } from '../project/project.module';
+import { GitHubAuthGuard } from './github.guard';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ProjectModule } from '../project/project.module';
   providers: [
     AuthService,
     JwtStrategy,
+    GitHubAuthGuard,
     {
       provide: 'GitHubStrategy',
       useFactory: async (
