@@ -10,6 +10,7 @@ import {
   EnumDataType,
   LookupResolvedProperties,
   types,
+  DsgPlugin,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -23,7 +24,8 @@ export async function createDataServiceImpl(
   entities: Entity[],
   roles: Role[],
   appInfo: AppInfo,
-  logger: winston.Logger
+  logger: winston.Logger,
+  resourcePlugins: DsgPlugin[] = []
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const timer = logger.startTimer();
@@ -43,11 +45,7 @@ export async function createDataServiceImpl(
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
-  const plugins = await registerPlugins([
-    {
-      packageName: "jwt-auth-plugin",
-    },
-  ]);
+  const plugins = await registerPlugins(resourcePlugins);
 
   context.plugins = plugins;
 
