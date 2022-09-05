@@ -1,4 +1,5 @@
 import { InterfaceType, Field } from '@nestjs/graphql';
+import { IsString } from 'class-validator';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { Block } from 'src/models';
 import { BlockInputOutput } from './BlockInputOutput';
@@ -15,7 +16,8 @@ export abstract class IBlock {
   })
   createdAt!: Date;
 
-  resourceId?: string;
+  @IsString()
+  resourceId!: string;
 
   @Field(() => Date, {
     nullable: false

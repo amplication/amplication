@@ -222,6 +222,7 @@ export class BlockService {
     const block: IBlock = {
       displayName,
       description,
+      resourceId: resourceConnect.connect.id,
       blockType: blockData.blockType,
       id: version.block.id,
       createdAt: version.block.createdAt,
@@ -253,7 +254,8 @@ export class BlockService {
       description,
       blockType,
       lockedAt,
-      lockedByUserId
+      lockedByUserId,
+      resourceId
     } = version.block;
     const block: IBlock = {
       id,
@@ -263,6 +265,7 @@ export class BlockService {
       displayName,
       description,
       blockType,
+      resourceId,
       lockedAt,
       lockedByUserId,
       versionNumber: version.versionNumber,

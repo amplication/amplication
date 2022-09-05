@@ -10,6 +10,7 @@ import { ResourceService } from '../resource/resource.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
 import { AmplicationError } from 'src/errors/AmplicationError';
 import { BlockService } from '../block/block.service';
+import { validateOrReject } from 'class-validator';
 
 @Injectable()
 export class ServiceMessageBrokerConnectionService extends BlockTypeService<
@@ -76,6 +77,8 @@ export class ServiceMessageBrokerConnectionService extends BlockTypeService<
     const block = await this.blockService.findOne({
       where: args.where
     });
+
+    await validateOrReject(block);
 
     await this.validateConnectedResource(
       block.resourceId,
