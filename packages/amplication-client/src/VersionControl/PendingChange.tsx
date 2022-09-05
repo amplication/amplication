@@ -25,12 +25,7 @@ const ACTION_TO_LABEL: {
 
 const PendingChange = ({ change, linkToOrigin = false }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  /**@todo: update the url for other types of blocks  */
   const baseUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}`;
-  // const url =
-  //   change.originType === models.EnumPendingChangeOriginType.Entity
-  //     ? `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/entities/${change.originId}`
-  //     : `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/settings/update`;
 
   const isDeletedEntity =
     change.action === models.EnumPendingChangeAction.Delete;
@@ -53,11 +48,7 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
     if (linkToOrigin) {
       return (
         <Link
-          to={getEntityLinkByChangeType(
-            change.originType,
-            change.originId,
-            baseUrl
-          )}
+          to={getEntityLinkByChangeType(change, baseUrl)}
           className={`${CLASS_NAME}__link`}
         >
           {change.origin.displayName}
@@ -86,21 +77,32 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
 export default PendingChange;
 
 const getEntityLinkByChangeType = (
-  type: models.EnumPendingChangeOriginType,
-  originId: string,
+  change: models.PendingChange,
   baseUrl: string
 ): string => {
-  switch (type) {
+  switch (change.originType) {
     case models.EnumPendingChangeOriginType.Entity: {
-      return `${baseUrl}/entities/${originId}`;
+      return `${baseUrl}/entities/${change.originId}`;
     }
     case models.EnumPendingChangeOriginType.Block: {
-      return `${baseUrl}/topics/${originId}`;
+      switch (change.resource.resourceType) {
+        case models.EnumResourceType.MessageBroker: {
+          return `${baseUrl}/service-connections/${change.originId}`;
+        }
+        case models.EnumResourceType.Service: {
+          return `${baseUrl}/settings/update`;
+        }
+
+        case models.EnumResourceType.ProjectConfiguration: {
+          return `${baseUrl}/settings/update`;
+        }
+        default: {
+          return `${baseUrl}/topics/${change.originId}`;
+        }
+      }
     }
     default: {
       return `${baseUrl}/settings/update`;
     }
-
-    //todo: handle: service-connections and settings from the type
   }
 };
