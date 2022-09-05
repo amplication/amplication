@@ -19,13 +19,8 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
     <PageContent
       pageTitle={pageTitle}
       className="topics"
-      sideContent={
-        <ServiceConnectionsList
-          resourceId={resource}
-        />
-      }
+      sideContent={<ServiceConnectionsList resourceId={resource} />}
     >
-      connection details
       {innerRoutes}
     </PageContent>
   );

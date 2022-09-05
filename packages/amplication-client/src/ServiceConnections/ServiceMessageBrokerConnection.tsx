@@ -1,11 +1,13 @@
 import * as models from "../models";
 import { HorizontalRule, Snackbar } from "@amplication/design-system";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
 import useServiceConnection from "./hooks/useServiceConnection";
 import ServiceMessageBrokerConnectionForm from "./ServiceMessageBrokerConnectionForm";
 import { formatError } from "../util/error";
-
+import { AppContext } from "../context/appContext";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import "./ServiceMessageBrokerConnection.scss";
 const CLASS_NAME = "service-message-broker-connection";
 
 const ServiceMessageBrokerConnection = () => {
@@ -18,6 +20,12 @@ const ServiceMessageBrokerConnection = () => {
     resource: "",
     connectedResourceId: "",
   };
+
+  const { resources } = useContext(AppContext);
+
+  const connectedResource = useMemo(() => {
+    return resources.find((resource) => resource.id === connectedResourceId);
+  }, [resources, connectedResourceId]);
 
   const {
     serviceMessageBrokerConnections: data,
@@ -74,12 +82,28 @@ const ServiceMessageBrokerConnection = () => {
 
   return (
     <div className={CLASS_NAME}>
+      <div className={`${CLASS_NAME}__row`}>
+        <ResourceCircleBadge
+          type={models.EnumResourceType.MessageBroker}
+          size="medium"
+        />
+        <span className={`${CLASS_NAME}__title`}>
+          {connectedResource?.name}
+        </span>
+        <span className="spacer" />
+
+        <ServiceMessageBrokerConnectionForm
+          onSubmit={handleSubmit}
+          defaultValues={serviceMessageBrokerConnection}
+        />
+      </div>
+      <div className={`${CLASS_NAME}__row`}>
+        <span className={`${CLASS_NAME}__description`}>
+          description about message broker and topic{" "}
+        </span>
+      </div>
+
       <HorizontalRule />
-      {connectedResourceId}
-      <ServiceMessageBrokerConnectionForm
-        onSubmit={handleSubmit}
-        defaultValues={serviceMessageBrokerConnection}
-      />
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}
