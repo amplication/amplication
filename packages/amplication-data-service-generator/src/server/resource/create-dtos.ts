@@ -1,7 +1,13 @@
 import { namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
-import { Entity, Module } from "@amplication/code-gen-types";
-import { NamedClassDeclaration } from "../../util/ast";
+import {
+  DTOs,
+  Entity,
+  Module,
+  NamedClassDeclaration,
+  EntityEnumDTOs,
+  EntityDTOs,
+} from "@amplication/code-gen-types";
 import { getEnumFields } from "../../util/entity";
 import { createEnumName } from "../prisma/create-prisma-schema";
 import { createCreateInput } from "./dto/create-create-input";
@@ -21,29 +27,6 @@ import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-nested";
 import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-nested";
 import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
-
-type EntityDTOs = {
-  entity: NamedClassDeclaration;
-  createInput: NamedClassDeclaration;
-  updateInput: NamedClassDeclaration;
-  whereInput: NamedClassDeclaration;
-  whereUniqueInput: NamedClassDeclaration;
-  deleteArgs: NamedClassDeclaration;
-  findManyArgs: NamedClassDeclaration;
-  findOneArgs: NamedClassDeclaration;
-  createArgs?: NamedClassDeclaration;
-  updateArgs?: NamedClassDeclaration;
-  orderByInput: NamedClassDeclaration;
-  listRelationFilter: NamedClassDeclaration;
-};
-
-type EntityEnumDTOs = {
-  [dto: string]: namedTypes.TSEnumDeclaration;
-};
-
-export type DTOs = {
-  [entity: string]: EntityEnumDTOs & EntityDTOs;
-};
 
 /**
  * creating all the DTOs files in the base (only the DTOs)

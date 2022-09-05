@@ -6,20 +6,7 @@ import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
 import * as parser from "./parser";
 import * as partialParser from "./partial-parser";
-
-export type ClassDeclaration = namedTypes.ClassDeclaration & {
-  decorators: namedTypes.Decorator[];
-};
-
-export type NamedClassDeclaration = ClassDeclaration & {
-  id: namedTypes.Identifier;
-};
-
-export type NamedClassProperty = namedTypes.ClassProperty & {
-  key: namedTypes.Identifier;
-  typeAnnotation: namedTypes.TSTypeAnnotation;
-  optional?: boolean;
-};
+import { NamedClassProperty } from "@amplication/code-gen-types";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
