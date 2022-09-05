@@ -9,7 +9,7 @@
     "build": "npx rollup -c",
     "watch": "npm run build -- --watch",
     "prepare": "npm run build",
-    "storybook": "start-storybook -p 6006 -c .storybook watch-css -s ./src",
+    "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
@@ -31,15 +31,16 @@
   },
   "devDependencies": {
     "@babel/core": "7.18.10",
-    "@storybook/addon-actions": "6.4.22",
-    "@storybook/addon-essentials": "6.4.22",
-    "@storybook/addon-interactions": "6.4.22",
-    "@storybook/addon-links": "6.5.10",
-    "@storybook/builder-webpack5": "6.5.9",
-    "@storybook/manager-webpack5": "6.4.22",
-    "@storybook/preset-scss": "1.0.3",
-    "@storybook/react": "6.5.10",
-    "@storybook/testing-library": "0.0.13",
+    "@storybook/addon-actions": "^6.5.10",
+    "@storybook/addon-essentials": "^6.5.10",
+    "@storybook/addon-interactions": "^6.5.10",
+    "@storybook/addon-links": "^6.5.10",
+    "@storybook/builder-webpack4": "^6.5.10",
+    "@storybook/builder-webpack5": "^6.5.10",
+    "@storybook/manager-webpack4": "^6.5.10",
+    "@storybook/manager-webpack5": "^6.5.10",
+    "@storybook/react": "^6.5.10",
+    "@storybook/testing-library": "^0.0.13",
     "@types/classnames": "2.3.1",
     "@types/lodash": "4.14.178",
     "@types/react": "17.0.34",
@@ -65,7 +66,10 @@
     "sass-loader": "12.6.0",
     "style-loader": "3.3.1",
     "typescript": "3.9.10",
-    "webpack": "5.65.0"
+    "webpack": "^5.74.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "styled-components": "^5.3.3"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -78,9 +82,5 @@
     }
   },
   "peerDependencies": {
-    "formik": "^2.2.9",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "styled-components": "^5.3.3"
   }
 }
