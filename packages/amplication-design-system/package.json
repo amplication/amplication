@@ -39,6 +39,7 @@
     "@storybook/builder-webpack5": "^6.5.10",
     "@storybook/manager-webpack4": "^6.5.10",
     "@storybook/manager-webpack5": "^6.5.10",
+    "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^6.5.10",
     "@storybook/testing-library": "^0.0.13",
     "@types/classnames": "2.3.1",
@@ -47,7 +48,7 @@
     "@typescript-eslint/eslint-plugin": "5.9.1",
     "@typescript-eslint/parser": "5.9.1",
     "babel-loader": "8.2.5",
-    "css-loader": "6.7.1",
+    "css-loader": "^6.7.1",
     "eslint": "8.6.0",
     "eslint-config-react-app": "7.0.0",
     "eslint-plugin-import": "2.25.4",
@@ -56,6 +57,8 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "formik": "2.2.9",
     "prettier": "2.1.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-is": "16.13.1",
     "react-scripts": "5.0.0",
     "rollup": "2.63.0",
@@ -63,13 +66,11 @@
     "rollup-plugin-postcss": "3.1.8",
     "rollup-plugin-typescript2": "0.32.1",
     "sass": "1.35.2",
-    "sass-loader": "12.6.0",
-    "style-loader": "3.3.1",
+    "sass-loader": "^12.6.0",
+    "style-loader": "^3.3.1",
+    "styled-components": "^5.3.3",
     "typescript": "3.9.10",
-    "webpack": "^5.74.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "styled-components": "^5.3.3"
+    "webpack": "^5.74.0"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -80,7 +81,5 @@
       "react/jsx-no-useless-fragment": "error",
       "no-duplicate-imports": "error"
     }
-  },
-  "peerDependencies": {
   }
 }
