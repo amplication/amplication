@@ -6,7 +6,6 @@ import {
   Entity,
   EntityLookupField,
   Module,
-  AppInfo,
   NamedClassDeclaration,
   DTOs,
 } from "@amplication/code-gen-types";
