@@ -10,6 +10,10 @@ export const GET_SERVICE_MESSAGE_BROKER_CONNECTIONS = gql`
       displayName
       messageBrokerId
       enabled
+      patterns {
+        topicId
+        type
+      }
     }
   }
 `;
@@ -24,6 +28,10 @@ export const UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION = gql`
       displayName
       messageBrokerId
       enabled
+      patterns {
+        topicId
+        type
+      }
     }
   }
 `;
@@ -37,6 +45,10 @@ export const CREATE_SERVICE_MESSAGE_BROKER_CONNECTION = gql`
       displayName
       messageBrokerId
       enabled
+      patterns {
+        topicId
+        type
+      }
     }
   }
 `;

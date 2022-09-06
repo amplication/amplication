@@ -1,14 +1,12 @@
-import * as models from "../models";
-import { HorizontalRule, Snackbar } from "@amplication/design-system";
+import { Snackbar } from "@amplication/design-system";
 import React, { useCallback, useContext, useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
-import useServiceConnection from "./hooks/useServiceConnection";
-import ServiceMessageBrokerConnectionForm from "./ServiceMessageBrokerConnectionForm";
-import { formatError } from "../util/error";
 import { AppContext } from "../context/appContext";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import useServiceConnection from "./hooks/useServiceConnection";
 import "./ServiceMessageBrokerConnection.scss";
-import TopicsList from "./topics/TopicsList";
+import ServiceMessageBrokerConnectionForm from "./ServiceMessageBrokerConnectionForm";
 const CLASS_NAME = "service-message-broker-connection";
 
 const ServiceMessageBrokerConnection = () => {
@@ -80,41 +78,17 @@ const ServiceMessageBrokerConnection = () => {
   );
 
   const errorMessage = formatError(updateError || createError);
-  console.log(
-    { resources },
-    { serviceMessageBrokerConnection },
-    { data },
-    { connectedResourceId }
-  );
 
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__row`}>
-        <ResourceCircleBadge
-          type={models.EnumResourceType.MessageBroker}
-          size="medium"
-        />
-        <span className={`${CLASS_NAME}__title`}>
-          {connectedResource?.name}
-        </span>
-        <span className="spacer" />
-
+      {connectedResource && serviceMessageBrokerConnection && (
         <ServiceMessageBrokerConnectionForm
           onSubmit={handleSubmit}
           defaultValues={serviceMessageBrokerConnection}
+          connectedResource={connectedResource}
         />
-      </div>
-      <div className={`${CLASS_NAME}__row`}>
-        <span className={`${CLASS_NAME}__description`}>
-          description about message broker and topic{" "}
-        </span>
-      </div>
+      )}
 
-      <HorizontalRule />
-      <TopicsList
-        messageBrokerId={connectedResourceId}
-        enabled={Boolean(serviceMessageBrokerConnection?.enabled)}
-      />
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}

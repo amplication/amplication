@@ -1,16 +1,24 @@
 import React from "react";
-import { Topic } from "../../models";
-import ServiceConnectionTopicItemForm, {
-  FormValues,
-} from "./ServiceConnectionTopicItemForm";
+import {
+  EnumMessagePatternConnectionOptions,
+  MessagePattern,
+  Topic,
+} from "../../models";
+import ServiceConnectionTopicItemForm from "./ServiceConnectionTopicItemForm";
 
 type Props = {
   topic: Topic;
-  onPatterTypeChange: (values: FormValues) => void;
+  enabled: boolean;
+  selectedPatternType: MessagePattern;
+  onMessagePatternTypeChange: (
+    pattern: EnumMessagePatternConnectionOptions
+  ) => void;
 };
 export default function ServiceConnectionTopicItem({
   topic,
-  onPatterTypeChange,
+  enabled,
+  selectedPatternType,
+  onMessagePatternTypeChange,
 }: Props) {
   return (
     <div>
@@ -18,8 +26,8 @@ export default function ServiceConnectionTopicItem({
       <br />
       {topic.description}
       <ServiceConnectionTopicItemForm
-        onSubmit={onPatterTypeChange}
-        topicId={topic.id}
+        selectedPatternType={selectedPatternType}
+        onMessagePatternTypeChange={onMessagePatternTypeChange}
       />
     </div>
   );
