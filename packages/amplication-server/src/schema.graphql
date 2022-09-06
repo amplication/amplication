@@ -1490,6 +1490,7 @@ input PluginInstallationCreateInput {
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
   pluginId: String!
+  enabled: Boolean!
 }
 
 input PluginInstallationUpdateInput {

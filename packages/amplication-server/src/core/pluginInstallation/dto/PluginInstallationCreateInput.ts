@@ -9,4 +9,9 @@ export class PluginInstallationCreateInput extends BlockCreateInput {
     nullable: false
   })
   pluginId!: string;
+
+  @Field(() => Boolean, {
+    nullable: false
+  })
+  enabled: boolean;
 }
