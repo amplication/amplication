@@ -17,7 +17,10 @@ export default function ServiceConnectionTopicItem({
       {topic.displayName}
       <br />
       {topic.description}
-      <ServiceConnectionTopicItemForm onSubmit={onPatterTypeChange} />
+      <ServiceConnectionTopicItemForm
+        onSubmit={onPatterTypeChange}
+        topicId={topic.id}
+      />
     </div>
   );
 }

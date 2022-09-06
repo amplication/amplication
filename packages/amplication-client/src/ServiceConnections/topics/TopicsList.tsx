@@ -18,9 +18,12 @@ export default function TopicsList({ messageBrokerId, enabled }: Props) {
     skip: !messageBrokerId,
   });
 
-  const handlePatternChange = useCallback(({ patternType }: FormValues) => {
-    console.log({ patternType });
-  }, []);
+  const handlePatternChange = useCallback(
+    ({ patternType, topicId }: FormValues) => {
+      console.log({ patternType }, { topicId });
+    },
+    []
+  );
 
   return data ? (
     <div>

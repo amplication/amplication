@@ -13,11 +13,13 @@ import { validate } from "../../util/formikValidateJsonSchema";
 
 export type FormValues = {
   patternType: EnumMessagePatternConnectionOptions;
+  topicId: string;
 };
 
 type Props = {
   onSubmit: (values: FormValues) => void;
   existingPattern?: EnumMessagePatternConnectionOptions;
+  topicId: string;
 };
 
 export const INITIAL_VALUES: EnumMessagePatternConnectionOptions =
@@ -35,14 +37,15 @@ const FORM_SCHEMA = {
 export default function ServiceConnectionTopicItemForm({
   onSubmit,
   existingPattern,
+  topicId,
 }: Props) {
   const initialValues = useMemo(() => {
-    return existingPattern || INITIAL_VALUES;
-  }, [existingPattern]);
+    return { patternType: existingPattern || INITIAL_VALUES, topicId };
+  }, [existingPattern, topicId]);
 
   return (
     <Formik
-      initialValues={{ patternType: initialValues }}
+      initialValues={initialValues}
       validate={(values) => validate(values, FORM_SCHEMA)}
       enableReinitialize
       onSubmit={onSubmit}
