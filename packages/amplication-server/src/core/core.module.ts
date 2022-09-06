@@ -22,6 +22,7 @@ import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
 import { ProjectModule } from './project/project.module';
 import { HealthModule } from './health/health.module';
+import { PluginInstallationModule } from './pluginInstallation/pluginInstallation.module';
 
 @Module({
   imports: [
@@ -48,7 +49,8 @@ import { HealthModule } from './health/health.module';
     MailModule,
     SubscriptionModule,
     ProjectModule,
-    HealthModule
+    HealthModule,
+    PluginInstallationModule
   ],
   exports: [
     AccountModule,
@@ -73,7 +75,8 @@ import { HealthModule } from './health/health.module';
     GitModule,
     MailModule,
     SubscriptionModule,
-    ProjectModule
+    ProjectModule,
+    PluginInstallationModule
   ]
 })
 export class CoreModule {}

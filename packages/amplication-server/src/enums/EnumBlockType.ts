@@ -14,7 +14,8 @@ export enum EnumBlockType {
   Layout = 'Layout',
   CanvasPage = 'CanvasPage',
   EntityPage = 'EntityPage',
-  Document = 'Document'
+  Document = 'Document',
+  PluginInstallation = 'PluginInstallation'
 }
 
 registerEnumType(EnumBlockType, { name: 'EnumBlockType' });

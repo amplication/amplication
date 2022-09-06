@@ -88,7 +88,8 @@ export class BlockService {
     [EnumBlockType.Layout]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.CanvasPage]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.EntityPage]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.Document]: ALLOW_NO_PARENT_ONLY
+    [EnumBlockType.Document]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.PluginInstallation]: ALLOW_NO_PARENT_ONLY
   };
 
   private async resolveParentBlock(
