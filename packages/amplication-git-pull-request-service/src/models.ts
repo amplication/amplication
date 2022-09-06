@@ -1637,7 +1637,6 @@ export type RemoteGitRepository = {
 export type Resource = {
   __typename?: 'Resource';
   builds: Array<Build>;
-  color: Scalars['String'];
   createdAt: Scalars['DateTime'];
   description: Scalars['String'];
   entities: Array<Entity>;
@@ -1670,7 +1669,6 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
-  color?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   name: Scalars['String'];
   project: WhereParentIdInput;
@@ -1758,7 +1756,6 @@ export type ResourceRoleWhereInput = {
 };
 
 export type ResourceUpdateInput = {
-  color?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   gitRepositoryOverride?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;

@@ -12,7 +12,7 @@ image:
   repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway
   tag: 0.0.1
   imagePullSecrets: []
-    
+
 volume:
   name: amplication-data
   path: /amplication-data
@@ -20,10 +20,10 @@ volume:
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: "2Gi"
-minMemory: "2Gi"
-maxCPU: 1
-minCPU: 1
+maxMemory: "1.6Gi"
+minMemory: "1.6Gi"
+maxCPU: "0.9"
+minCPU: "0.9"
 
 service:
   type: ClusterIP

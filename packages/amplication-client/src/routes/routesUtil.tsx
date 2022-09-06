@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
+import * as analytics from "../util/analytics";
 
 export type AppRouteProps = {
   moduleName: string | undefined;
@@ -22,7 +23,9 @@ const LazyRouteWrapper: React.FC<{
         path={route.path}
         exact={route.exactPath}
         render={(props) => {
-          const { location } = props;
+          const { location , match } = props;
+
+          route.isAnalytics &&  pageTracking(match.path, match.url, match.params); 
           const nestedRoutes =
             route.routes && routesGenerator(route.routes, route.path);
 
@@ -90,3 +93,11 @@ export const routesGenerator: (
     </Switch>
   );
 };
+
+const pageTracking = (path: string, url: string, params: any)=> {
+  analytics.page(path.replaceAll("/", "-"), {
+    path,
+    url,
+    params: params,
+  });
+}

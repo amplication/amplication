@@ -27,8 +27,8 @@ $modal-menu-top: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
+
     &__project {
-      @include regular-12();
       color: var(--black80);
       margin-right: var(--default-spacing);
 
@@ -44,6 +44,13 @@ $modal-menu-top: 30px;
       justify-content: center;
       align-items: center;
       margin-left: var(--default-spacing);
+
+    &__title {
+      width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
       .select-menu__summary.amp-button.amp-button--text {
         color: var(--black80);
@@ -76,8 +83,12 @@ $modal-menu-top: 30px;
       }
       .select-menu__item {
         padding: 5px;
-        margin-bottom: var(--icon-spacing);
-        margin-top: var(--icon-spacing);
+        height: 42px;
+        width: 210px;
+      }
+
+      .SelectMenu-icon {
+        margin-right: 4px !important;
       }
       &__item {
         margin-left: var(--text-field-label-font-size);
@@ -91,10 +102,22 @@ $modal-menu-top: 30px;
       }
       &__text {
         margin-left: var(--default-spacing-small);
-        @include regular-14();
+        @include regular-12();
         color: var(--black100);
+        &__name {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 130px;
+        }
+
         &__desc {
+          @include regular-10();
           color: var(--black80);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          width: 130px;
         }
       }
     }
@@ -107,7 +130,8 @@ $modal-menu-top: 30px;
   }
 
   &__divider {
-    border: $border-black5;
+    border: none;
+    width: $border-black10;
     margin-left: 10px;
     margin-right: 10px;
     margin-top: 0;
