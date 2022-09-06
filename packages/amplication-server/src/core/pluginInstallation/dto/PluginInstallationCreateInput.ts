@@ -14,4 +14,6 @@ export class PluginInstallationCreateInput extends BlockCreateInput {
     nullable: false
   })
   enabled: boolean;
+
+  order: number; //This field is set by the service, do not expose to the API
 }

@@ -3,8 +3,14 @@ import { EnumResourceType } from "../models";
 export type MenuItemLinks = "entities" | "roles" | "github" | "settings";
 
 export const resourceMenuLayout: { [key: string]: string[] } = {
-  [EnumResourceType.Service]: ["entities", "roles", "github", "settings"],
-  [EnumResourceType.ProjectConfiguration]: ["github", "settings"],
+  [EnumResourceType.Service]: [
+    "entities",
+    "roles",
+    "github",
+    "settings",
+    "plugins",
+  ],
+  [EnumResourceType.ProjectConfiguration]: ["github", "settings", "plugins"],
 };
 
 export const linksMap = {
@@ -27,6 +33,11 @@ export const linksMap = {
     title: "Settings",
     icon: "settings",
     to: "/settings/update",
+  },
+  plugins: {
+    title: "Plugins",
+    icon: "plugins",
+    to: "/plugins/catalog",
   },
 };
 

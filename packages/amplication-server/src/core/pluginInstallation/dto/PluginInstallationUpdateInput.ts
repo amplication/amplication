@@ -9,4 +9,7 @@ export class PluginInstallationUpdateInput extends BlockUpdateInput {
     nullable: false
   })
   enabled!: boolean;
+
+  pluginId!: string; //This field is set by the service, do not expose to the API
+  order: number; //This field is set by the service, do not expose to the API
 }
