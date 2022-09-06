@@ -1326,7 +1326,7 @@ input ServiceMessageBrokerConnectionCreateInput {
   outputParameters: [BlockInputOutputInput!]
   messageBrokerId: String!
   enabled: Boolean!
-  patterns: [MessagePatternCreateInput!]!
+  patterns: [MessagePatternCreateInput!]
 }
 
 input MessagePatternCreateInput {
@@ -1339,4 +1339,5 @@ input ServiceMessageBrokerConnectionUpdateInput {
   description: String
   messageBrokerId: String!
   enabled: Boolean!
+  patterns: [MessagePatternCreateInput!]
 }

@@ -1588,7 +1588,7 @@ export type ServiceMessageBrokerConnectionCreateInput = {
   messageBrokerId: Scalars['String'];
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  patterns: Array<MessagePatternCreateInput>;
+  patterns?: InputMaybe<Array<MessagePatternCreateInput>>;
   resource: WhereParentIdInput;
 };
 
@@ -1606,6 +1606,7 @@ export type ServiceMessageBrokerConnectionUpdateInput = {
   displayName?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
   messageBrokerId: Scalars['String'];
+  patterns?: InputMaybe<Array<MessagePatternCreateInput>>;
 };
 
 export type ServiceMessageBrokerConnectionWhereInput = {

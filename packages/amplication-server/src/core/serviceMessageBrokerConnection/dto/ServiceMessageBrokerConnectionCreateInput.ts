@@ -17,6 +17,6 @@ export class ServiceMessageBrokerConnectionCreateInput extends BlockCreateInput 
   })
   enabled!: boolean;
 
-  @Field(() => [MessagePatternCreateInput], { nullable: false })
-  patterns!: MessagePatternCreateInput[] & JsonValue;
+  @Field(() => [MessagePatternCreateInput], { nullable: true })
+  patterns?: MessagePatternCreateInput[] & JsonValue;
 }
