@@ -42,7 +42,7 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
         />
       );
 
-    const data = getEntityLinkByChangeType(change);
+    const data = changeOriginMap[change.originType](change.origin);
 
     return (
       <PendingChangeContent
@@ -85,41 +85,36 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
 
 export default PendingChange;
 
-const getEntityLinkByChangeType = (
-  change: models.PendingChange
-): entityLinkAndDisplayName | undefined => {
-  const changeOriginMap = {
-    [models.EnumPendingChangeOriginType.Entity]: (
-      origin: models.PendingChangeOrigin
-    ): entityLinkAndDisplayName => ({
-      relativeUrl: `entities/${change.originId}`,
-      icon: "",
-      displayName: change.origin.displayName,
-    }),
-    [models.EnumPendingChangeOriginType.Block]: (
-      origin: models.PendingChangeOrigin
-    ) => {
-      const blockTypeMap: {
-        [key in models.EnumBlockType]?: entityLinkAndDisplayName;
-      } = {
-        [models.EnumBlockType.ServiceSettings]: {
-          relativeUrl: `settings/update`,
-          icon: "",
-          displayName: "Service Settings",
-        },
-        [models.EnumBlockType.ProjectConfigurationSettings]: {
-          relativeUrl: `settings/update`,
-          icon: "",
-          displayName: "Project Settings",
-        },
-        [models.EnumBlockType.Topic]: {
-          relativeUrl: `settings/update`,
-          icon: "",
-          displayName: change.origin.displayName,
-        },
-      };
-      return blockTypeMap[(origin as models.Block).blockType];
-    },
-  };
-  return changeOriginMap[change.originType](change.origin);
+const changeOriginMap = {
+  [models.EnumPendingChangeOriginType.Entity]: (
+    change: models.PendingChangeOrigin
+  ): entityLinkAndDisplayName => ({
+    relativeUrl: `entities/${change.id}`,
+    icon: "",
+    displayName: change.displayName,
+  }),
+  [models.EnumPendingChangeOriginType.Block]: (
+    change: models.PendingChangeOrigin
+  ) => {
+    const blockTypeMap: {
+      [key in models.EnumBlockType]?: entityLinkAndDisplayName;
+    } = {
+      [models.EnumBlockType.ServiceSettings]: {
+        relativeUrl: `settings/update`,
+        icon: "",
+        displayName: "Service Settings",
+      },
+      [models.EnumBlockType.ProjectConfigurationSettings]: {
+        relativeUrl: `settings/update`,
+        icon: "",
+        displayName: "Project Settings",
+      },
+      [models.EnumBlockType.Topic]: {
+        relativeUrl: `topics/${change.id}`,
+        icon: "",
+        displayName: change.displayName,
+      },
+    };
+    return blockTypeMap[(change as models.Block).blockType];
+  },
 };
