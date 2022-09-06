@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
+import * as models from "../../models";
 import {
-  GET_SERVICE_MESSAGE_BROKER_CONNECTIONS,
   CREATE_SERVICE_MESSAGE_BROKER_CONNECTION,
+  GET_SERVICE_MESSAGE_BROKER_CONNECTIONS,
   UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION,
 } from "../queries/serviceMessageBrokerConnectionQueries";
-import * as models from "../../models";
 
 const useServiceConnection = (resourceId: string) => {
   const {

@@ -8,6 +8,7 @@ import { formatError } from "../util/error";
 import { AppContext } from "../context/appContext";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import "./ServiceMessageBrokerConnection.scss";
+import TopicsList from "./topics/TopicsList";
 const CLASS_NAME = "service-message-broker-connection";
 
 const ServiceMessageBrokerConnection = () => {
@@ -79,6 +80,12 @@ const ServiceMessageBrokerConnection = () => {
   );
 
   const errorMessage = formatError(updateError || createError);
+  console.log(
+    { resources },
+    { serviceMessageBrokerConnection },
+    { data },
+    { connectedResourceId }
+  );
 
   return (
     <div className={CLASS_NAME}>
@@ -104,6 +111,11 @@ const ServiceMessageBrokerConnection = () => {
       </div>
 
       <HorizontalRule />
+      <TopicsList
+        messageBrokerId={connectedResourceId}
+        resourceId={resource}
+        enabled={Boolean(serviceMessageBrokerConnection?.enabled)}
+      />
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}
