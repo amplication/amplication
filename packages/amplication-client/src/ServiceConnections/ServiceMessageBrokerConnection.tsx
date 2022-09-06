@@ -113,7 +113,6 @@ const ServiceMessageBrokerConnection = () => {
       <HorizontalRule />
       <TopicsList
         messageBrokerId={connectedResourceId}
-        resourceId={resource}
         enabled={Boolean(serviceMessageBrokerConnection?.enabled)}
       />
       <Snackbar
