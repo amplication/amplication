@@ -3,6 +3,7 @@
 spec:
   template:
     spec:
+      replicas: 1
       {{- with .Values.image.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
