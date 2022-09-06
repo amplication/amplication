@@ -24,7 +24,7 @@ export class AuthService {
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
       const { roles } = user;
-      return { username, roles };
+      return { id: user.id, username, roles };
     }
     return null;
   }
@@ -38,7 +38,11 @@ export class AuthService {
       throw new UnauthorizedException("The passed credentials are incorrect");
     }
     //@ts-ignore
-    const accessToken = await this.tokenService.createToken(username, password);
+    const accessToken = await this.tokenService.createToken({
+      id: user.id,
+      username,
+      password,
+    });
     return {
       accessToken,
       ...user,
