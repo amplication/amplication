@@ -2,7 +2,13 @@ import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
-import { Entity, EntityLookupField, Module } from "@amplication/code-gen-types";
+import {
+  Entity,
+  EntityLookupField,
+  Module,
+  NamedClassDeclaration,
+  DTOs,
+} from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import {
@@ -17,7 +23,6 @@ import {
   removeESLintComments,
   importContainedIdentifiers,
   removeImportsTSIgnoreComments,
-  NamedClassDeclaration,
   getMethods,
   deleteClassMemberByKey,
   memberExpression,
@@ -27,7 +32,7 @@ import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../util/field";
-import { DTOs, getDTONameToPath } from "../create-dtos";
+import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
   createServiceId,
