@@ -14,10 +14,6 @@ $before-spacing: -6px;
     margin-bottom: var(--large-spacing);
   }
 
-  &__link {
-    @include regular-12;
-  }
-
   &__spacer {
     flex: 1;
   }

@@ -61,6 +61,7 @@ export const GET_PENDING_CHANGES_STATUS = gql`
           id
           displayName
           updatedAt
+          blockType
         }
       }
       resource {

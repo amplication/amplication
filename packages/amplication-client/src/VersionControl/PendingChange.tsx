@@ -1,14 +1,19 @@
-import React, { useContext } from "react";
 import { Tooltip } from "@amplication/design-system";
 import classNames from "classnames";
-import { Link } from "react-router-dom";
-
+import React, { useMemo } from "react";
 import * as models from "../models";
 import "./PendingChange.scss";
-import { AppContext } from "../context/appContext";
+import PendingChangeContent from "./PendingChangeContent";
+import PendingChangeServiceMessageBrokerConnection from "./PendingChangeServiceMessageBrokerConnection";
 
 const CLASS_NAME = "pending-change";
 const TOOLTIP_DIRECTION = "ne";
+
+type entityLinkAndDisplayName = {
+  relativeUrl: string;
+  icon: string;
+  displayName: string;
+};
 
 type Props = {
   change: models.PendingChange;
@@ -24,48 +29,32 @@ const ACTION_TO_LABEL: {
 };
 
 const PendingChange = ({ change, linkToOrigin = false }: Props) => {
-  const { currentWorkspace, currentProject } = useContext(AppContext);
-  /**@todo: update the url for other types of blocks  */
-  const baseUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}`;
-  // const url =
-  //   change.originType === models.EnumPendingChangeOriginType.Entity
-  //     ? `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/entities/${change.originId}`
-  //     : `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/settings/update`;
-
-  const isDeletedEntity =
-    change.action === models.EnumPendingChangeAction.Delete;
-
-  const getEntityHeading = () => {
-    if (isDeletedEntity) {
+  const content = useMemo((): React.ReactElement | null => {
+    if (
+      change.originType === models.EnumPendingChangeOriginType.Block &&
+      (change.origin as models.Block).blockType ===
+        models.EnumBlockType.ServiceMessageBrokerConnection
+    )
       return (
-        <Tooltip
-          wrap
-          direction={TOOLTIP_DIRECTION}
-          aria-label="The entity has been deleted"
-          className={`${CLASS_NAME}__tooltip_deleted`}
-        >
-          <div className={classNames(`${CLASS_NAME}__deleted`)}>
-            {change.origin.displayName}
-          </div>
-        </Tooltip>
+        <PendingChangeServiceMessageBrokerConnection
+          change={change}
+          linkToOrigin={linkToOrigin}
+        />
       );
-    }
-    if (linkToOrigin) {
-      return (
-        <Link
-          to={getEntityLinkByChangeType(
-            change.originType,
-            change.originId,
-            baseUrl
-          )}
-          className={`${CLASS_NAME}__link`}
-        >
-          {change.origin.displayName}
-        </Link>
-      );
-    }
-    return change.origin.displayName;
-  };
+
+    const data = changeOriginMap[change.originType](change.origin);
+
+    return (
+      <PendingChangeContent
+        change={change}
+        name={data?.displayName || ""}
+        linkToOrigin={linkToOrigin}
+        relativeUrl={data?.relativeUrl || ""}
+      />
+    );
+  }, [change, linkToOrigin]);
+
+  const isDeleted = change.action === models.EnumPendingChangeAction.Delete;
 
   return (
     <div className={CLASS_NAME}>
@@ -77,7 +66,18 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
       >
         {ACTION_TO_LABEL[change.action]}
       </div>
-      {getEntityHeading()}
+      {isDeleted ? (
+        <Tooltip
+          wrap
+          direction={TOOLTIP_DIRECTION}
+          aria-label="The entity has been deleted"
+          className={`${CLASS_NAME}__tooltip_deleted`}
+        >
+          <div className={classNames(`${CLASS_NAME}__deleted`)}>{content}</div>
+        </Tooltip>
+      ) : (
+        content
+      )}
       <div className={`${CLASS_NAME}__spacer`} />
     </div>
   );
@@ -85,22 +85,36 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
 
 export default PendingChange;
 
-const getEntityLinkByChangeType = (
-  type: models.EnumPendingChangeOriginType,
-  originId: string,
-  baseUrl: string
-): string => {
-  switch (type) {
-    case models.EnumPendingChangeOriginType.Entity: {
-      return `${baseUrl}/entities/${originId}`;
-    }
-    case models.EnumPendingChangeOriginType.Block: {
-      return `${baseUrl}/topics/${originId}`;
-    }
-    default: {
-      return `${baseUrl}/settings/update`;
-    }
-
-    //todo: handle: service-connections and settings from the type
-  }
+const changeOriginMap = {
+  [models.EnumPendingChangeOriginType.Entity]: (
+    change: models.PendingChangeOrigin
+  ): entityLinkAndDisplayName => ({
+    relativeUrl: `entities/${change.id}`,
+    icon: "",
+    displayName: change.displayName,
+  }),
+  [models.EnumPendingChangeOriginType.Block]: (
+    change: models.PendingChangeOrigin
+  ) => {
+    const blockTypeMap: {
+      [key in models.EnumBlockType]?: entityLinkAndDisplayName;
+    } = {
+      [models.EnumBlockType.ServiceSettings]: {
+        relativeUrl: `settings/update`,
+        icon: "",
+        displayName: "Service Settings",
+      },
+      [models.EnumBlockType.ProjectConfigurationSettings]: {
+        relativeUrl: `settings/update`,
+        icon: "",
+        displayName: "Project Settings",
+      },
+      [models.EnumBlockType.Topic]: {
+        relativeUrl: `topics/${change.id}`,
+        icon: "",
+        displayName: change.displayName,
+      },
+    };
+    return blockTypeMap[(change as models.Block).blockType];
+  },
 };
