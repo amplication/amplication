@@ -5,6 +5,7 @@ $search-header-width: 52px;
 $user-header-width: 90px; // 64px after remove signout
 $modal-menu-width: 220px;
 $modal-menu-top: 30px;
+$select-menu-max-width: 300px;
 
 .workspace-header {
   @include flexFullRowWithSpacing;
@@ -45,12 +46,12 @@ $modal-menu-top: 30px;
       align-items: center;
       margin-left: var(--default-spacing);
 
-    &__title {
-      width: 130px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+      &__title {
+        max-width: $select-menu-max-width;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
 
       .select-menu__summary.amp-button.amp-button--text {
         color: var(--black80);
