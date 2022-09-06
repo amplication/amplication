@@ -685,6 +685,11 @@ export enum EnumGitProvider {
   Github = "Github",
 }
 
+export enum EnumMessagePatternConnectionOptions {
+  Receive = "Receive",
+  Send = "Send",
+}
+
 export enum EnumPendingChangeAction {
   Create = "Create",
   Delete = "Delete",
@@ -817,6 +822,17 @@ export type InviteUserInput = {
 export type LoginInput = {
   email: Scalars["String"];
   password: Scalars["String"];
+};
+
+export type MessagePattern = {
+  __typename?: "MessagePattern";
+  pattern: Scalars["String"];
+  type: EnumMessagePatternConnectionOptions;
+};
+
+export type MessagePatternCreateInput = {
+  pattern: Scalars["String"];
+  type: EnumMessagePatternConnectionOptions;
 };
 
 export type Mutation = {
@@ -1558,6 +1574,7 @@ export type ServiceMessageBrokerConnection = IBlock & {
   messageBrokerId: Scalars["String"];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  patterns: Array<MessagePattern>;
   updatedAt: Scalars["DateTime"];
   versionNumber: Scalars["Float"];
 };
@@ -1570,6 +1587,7 @@ export type ServiceMessageBrokerConnectionCreateInput = {
   messageBrokerId: Scalars["String"];
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
+  patterns: Array<MessagePatternCreateInput>;
   resource: WhereParentIdInput;
 };
 

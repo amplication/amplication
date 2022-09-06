@@ -17,6 +17,16 @@ type AuthorizeResourceWithGitResult {
   url: String!
 }
 
+type MessagePattern {
+  pattern: String!
+  type: EnumMessagePatternConnectionOptions!
+}
+
+enum EnumMessagePatternConnectionOptions {
+  Receive
+  Send
+}
+
 type Query {
   account: Account!
   workspaces: [Workspace!]!
@@ -949,6 +959,7 @@ type ServiceMessageBrokerConnection implements IBlock {
   lockedAt: DateTime
   messageBrokerId: String!
   enabled: Boolean!
+  patterns: [MessagePattern!]!
 }
 
 input ServiceMessageBrokerConnectionWhereInput {
@@ -1314,6 +1325,12 @@ input ServiceMessageBrokerConnectionCreateInput {
   outputParameters: [BlockInputOutputInput!]
   messageBrokerId: String!
   enabled: Boolean!
+  patterns: [MessagePatternCreateInput!]!
+}
+
+input MessagePatternCreateInput {
+  pattern: String!
+  type: EnumMessagePatternConnectionOptions!
 }
 
 input ServiceMessageBrokerConnectionUpdateInput {

@@ -1,5 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IBlock } from 'src/models';
+import { MessagePattern } from './messagePattern/MessagePattern';
 
 @ObjectType({
   isAbstract: true,
@@ -15,4 +16,7 @@ export class ServiceMessageBrokerConnection extends IBlock {
     nullable: false
   })
   enabled!: boolean;
+
+  @Field(() => [MessagePattern], { nullable: false })
+  patterns!: MessagePattern[];
 }
