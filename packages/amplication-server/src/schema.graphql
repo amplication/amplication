@@ -50,8 +50,6 @@ type Query {
   Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
   ServiceMessageBrokerConnection(where: WhereUniqueInput!): ServiceMessageBrokerConnection
   ServiceMessageBrokerConnections(where: ServiceMessageBrokerConnectionWhereInput, orderBy: ServiceMessageBrokerConnectionOrderByInput, skip: Int, take: Int): [ServiceMessageBrokerConnection!]!
-  ServiceConnectionTopic(where: WhereUniqueInput!): ServiceConnectionTopic
-  ServiceConnectionTopics(where: ServiceConnectionTopicWhereInput, orderBy: ServiceConnectionTopicOrderByInput, skip: Int, take: Int): [ServiceConnectionTopic!]!
 }
 
 type Account {
@@ -972,46 +970,6 @@ input ServiceMessageBrokerConnectionOrderByInput {
   description: SortOrder
 }
 
-type ServiceConnectionTopic implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  messagePattern: EnumServiceConnectionTopicMessagePattern!
-}
-
-enum EnumServiceConnectionTopicMessagePattern {
-  Send
-  Receive
-}
-
-input ServiceConnectionTopicWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-input ServiceConnectionTopicOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1068,8 +1026,6 @@ type Mutation {
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   createServiceMessageBrokerConnection(data: ServiceMessageBrokerConnectionCreateInput!): ServiceMessageBrokerConnection!
   updateServiceMessageBrokerConnection(data: ServiceMessageBrokerConnectionUpdateInput!, where: WhereUniqueInput!): ServiceMessageBrokerConnection!
-  createServiceConnectionTopic(data: ServiceConnectionTopicCreateInput!): ServiceConnectionTopic!
-  updateServiceConnectionTopic(data: ServiceConnectionTopicUpdateInput!, where: WhereUniqueInput!): ServiceConnectionTopic!
 }
 
 input UpdateAccountInput {
@@ -1365,20 +1321,4 @@ input ServiceMessageBrokerConnectionUpdateInput {
   description: String
   messageBrokerId: String!
   enabled: Boolean!
-}
-
-input ServiceConnectionTopicCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  messagePattern: EnumServiceConnectionTopicMessagePattern!
-}
-
-input ServiceConnectionTopicUpdateInput {
-  displayName: String
-  description: String
-  messagePattern: EnumServiceConnectionTopicMessagePattern!
 }
