@@ -89,6 +89,7 @@ const Entity = ({ match }: Props) => {
       sideContent={
         data && (
           <>
+            <h2>{data?.entity.displayName}</h2>
             <InnerTabLink
               to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/entities/${data.entity.id}`}
               icon="settings"
