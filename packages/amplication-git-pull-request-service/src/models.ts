@@ -688,6 +688,7 @@ export enum EnumGitProvider {
 }
 
 export enum EnumMessagePatternConnectionOptions {
+  None = 'None',
   Receive = 'Receive',
   Send = 'Send',
 }
