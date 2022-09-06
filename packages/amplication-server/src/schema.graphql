@@ -18,7 +18,7 @@ type AuthorizeResourceWithGitResult {
 }
 
 type MessagePattern {
-  pattern: String!
+  topicId: String!
   type: EnumMessagePatternConnectionOptions!
 }
 
@@ -1329,7 +1329,7 @@ input ServiceMessageBrokerConnectionCreateInput {
 }
 
 input MessagePatternCreateInput {
-  pattern: String!
+  topicId: String!
   type: EnumMessagePatternConnectionOptions!
 }
 

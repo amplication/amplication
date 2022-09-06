@@ -826,12 +826,12 @@ export type LoginInput = {
 
 export type MessagePattern = {
   __typename?: 'MessagePattern';
-  pattern: Scalars['String'];
+  topicId: Scalars['String'];
   type: EnumMessagePatternConnectionOptions;
 };
 
 export type MessagePatternCreateInput = {
-  pattern: Scalars['String'];
+  topicId: Scalars['String'];
   type: EnumMessagePatternConnectionOptions;
 };
 

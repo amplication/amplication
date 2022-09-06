@@ -4,7 +4,7 @@ import { EnumMessagePatternConnectionOptions } from './EnumMessagePatternConnect
 @ObjectType()
 export class MessagePattern {
   @Field(() => String, { nullable: false })
-  pattern!: string;
+  topicId!: string;
 
   @Field(() => EnumMessagePatternConnectionOptions, { nullable: false })
   type!: keyof typeof EnumMessagePatternConnectionOptions;
