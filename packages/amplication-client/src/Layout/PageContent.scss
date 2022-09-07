@@ -7,18 +7,19 @@ $tabs-width: 300px;
   display: flex;
   flex: 1;
   gap: var(--large-spacing);
-  padding: var(--large-spacing);
+  padding-left: var(--large-spacing);
   background: var(--page-content-background);
   box-sizing: border-box;
   overflow: hidden;
 
   &__tabs {
-    @include scrollbars(10px, var(--black60), transparent);
+    @include scrollbars(16px, var(--black60), transparent);
     width: $tabs-width;
     background: var(--page-content-tab-background);
     border-radius: var(--default-border-radius);
     border: $border-black10;
     padding: var(--large-spacing);
+    padding-right: 0;
     box-sizing: border-box;
     overflow: auto;
 
@@ -28,7 +29,7 @@ $tabs-width: 300px;
   }
 
   &__main {
-    @include scrollbars(10px, var(--black60), transparent);
+    @include scrollbars(16px, var(--black60), transparent);
     flex: 1;
     overflow: auto;
     position: relative;
