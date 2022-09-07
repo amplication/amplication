@@ -1,4 +1,5 @@
 import { HorizontalRule, Panel } from "@amplication/design-system";
+import classNames from "classnames";
 import React, { useMemo } from "react";
 import {
   EnumMessagePatternConnectionOptions,
@@ -28,7 +29,12 @@ export default function ServiceTopicPanel({
   return (
     <Panel>
       <div className={`${CLASS_NAME}__header`}>
-        <span className={`${CLASS_NAME}__header__title`}>
+        <span
+          className={classNames([
+            `${CLASS_NAME}__header__title`,
+            ...[!enabled && `${CLASS_NAME}-disable`],
+          ])}
+        >
           {topic.displayName}
         </span>
         <StatusText patternType={selectedPatternType.type} enable={enabled} />
