@@ -17,14 +17,6 @@
       &:last-child {
         margin-bottom: 0;
       }
-      &__inner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        @include body2;
-        color: var(--black100);
-      }
     }
   }
 
