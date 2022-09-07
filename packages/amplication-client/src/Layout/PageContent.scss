@@ -2,16 +2,15 @@
 
 $side-min-width: 500px;
 $tabs-width: 300px;
+
 .amp-page-content {
   display: flex;
-  flex-direction: row;
-  align-items: stretch;
+  flex: 1;
+  gap: var(--large-spacing);
   padding-left: var(--large-spacing);
   background: var(--page-content-background);
   box-sizing: border-box;
-  flex: 1;
   overflow: hidden;
-  height: 100%;
 
   &__tabs {
     @include scrollbars(16px, var(--black60), transparent);
@@ -33,20 +32,16 @@ $tabs-width: 300px;
     @include scrollbars(16px, var(--black60), transparent);
     flex: 1;
     overflow: auto;
-    height: 100%;
-    flex: 1;
-    padding: var(--large-spacing);
     position: relative;
     box-sizing: border-box;
-    height: 100%;
 
     @media only screen and (max-width: $page-content-min-width) {
       min-width: calc(#{$page-content-min-width} - var(--menu-width));
     }
   }
+
   .log-container {
     flex: 1;
-    width: 50%;
     min-width: $side-min-width;
   }
 }
