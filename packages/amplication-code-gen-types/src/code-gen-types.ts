@@ -19,6 +19,7 @@ export type WorkerParam = {
   entities: Entity[];
   roles: Role[];
   appInfo: AppInfo;
+  plugins: Plugin[];
 };
 
 export type ServiceSettings = Omit<
