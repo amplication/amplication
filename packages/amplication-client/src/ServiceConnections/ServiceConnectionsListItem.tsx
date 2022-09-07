@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import InnerTabLink from "../Layout/InnerTabLink";
 import { Resource } from "../models";
 
@@ -19,18 +19,6 @@ export default function ServiceConnectionsListItem({
   enabled,
   connectionResource,
 }: Props) {
-  const circle = useMemo(() => {
-    return (
-      <svg height="8" width="8">
-        <circle
-          cx="4"
-          cy="4"
-          r="3"
-          fill={enabled ? "var(--positive-default)" : "var(--negative-light)"}
-        />
-      </svg>
-    );
-  }, [enabled]);
   return (
     <div key={connectionResource.id} className={`${CLASS_NAME}`}>
       <InnerTabLink
@@ -38,7 +26,16 @@ export default function ServiceConnectionsListItem({
       >
         <div className={`${CLASS_NAME}__inner`}>
           <span>{connectionResource.name}</span>
-          {circle}
+          <svg height="8" width="8">
+            <circle
+              cx="4"
+              cy="4"
+              r="3"
+              fill={
+                enabled ? "var(--positive-default)" : "var(--negative-light)"
+              }
+            />
+          </svg>
         </div>
       </InnerTabLink>
     </div>
