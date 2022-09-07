@@ -63,7 +63,7 @@
   color: var(--black40);
 }
 
-@bold-14 bold {
+@mixin bold {
   font-weight: 600;
 }
 
