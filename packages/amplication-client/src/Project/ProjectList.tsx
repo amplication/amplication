@@ -1,5 +1,6 @@
 import React from "react";
 import { Project } from "../models";
+import AddNewProject from "./AddNewProject";
 import "./ProjectList.scss";
 import { ProjectListItem } from "./ProjectListItem";
 
@@ -24,6 +25,7 @@ export const ProjectList = ({
             workspaceId={workspaceId}
           />
         ))}
+        <AddNewProject />
       </div>
     </div>
   );
