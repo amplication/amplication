@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { FindOneArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { User } from '../../models';
 import { BlockTypeService } from '../block/blockType.service';
