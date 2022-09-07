@@ -8,6 +8,7 @@
 
   &__header {
     margin-bottom: var(--default-spacing);
+    @include bold-14;
   }
 
   &__list {
@@ -21,6 +22,8 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
+        @include body2;
+        color: var(--black100);
       }
     }
   }
