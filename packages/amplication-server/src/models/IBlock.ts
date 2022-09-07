@@ -16,8 +16,7 @@ export abstract class IBlock {
   })
   createdAt!: Date;
 
-  @IsString()
-  resourceId!: string;
+  resourceId?: string;
 
   @Field(() => Date, {
     nullable: false
