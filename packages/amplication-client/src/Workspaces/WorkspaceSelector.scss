@@ -5,7 +5,6 @@
   flex: 1;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
   cursor: pointer;
   padding: var(--default-spacing);
 
@@ -19,11 +18,13 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    width: 170px;
   }
 
   &__plan {
     font-size: 10px;
     color: var(--black60);
+    width: 170px;
   }
 
   &__details {
