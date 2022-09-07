@@ -5,11 +5,11 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import useServiceConnection from "./hooks/useServiceConnection";
-import "./ServiceMessageBrokerConnection.scss";
-import ServiceMessageBrokerConnectionForm from "./ServiceMessageBrokerConnectionForm";
-const CLASS_NAME = "service-message-broker-connection";
+import "./ServiceTopics.scss";
+import ServiceTopicsForm from "./ServiceTopicsForm";
+const CLASS_NAME = "service-topics";
 
-const ServiceMessageBrokerConnection = () => {
+const ServiceTopics = () => {
   const match = useRouteMatch<{
     resource: string;
     connectedResourceId: string;
@@ -27,26 +27,26 @@ const ServiceMessageBrokerConnection = () => {
   }, [resources, connectedResourceId]);
 
   const {
-    serviceMessageBrokerConnections: data,
-    updateServiceMessageBrokerConnection: update,
+    serviceTopicsList: data,
+    updateServiceTopics: update,
     updateError,
-    createServiceMessageBrokerConnection: create,
+    createServiceTopics: create,
     createError,
   } = useServiceConnection(resource);
 
-  const serviceMessageBrokerConnection = useMemo(() => {
-    return data?.ServiceMessageBrokerConnections.find(
+  const serviceTopics = useMemo(() => {
+    return data?.ServiceTopicsList.find(
       (connection) => connection.messageBrokerId === connectedResourceId
     );
   }, [data, connectedResourceId]);
 
   const handleSubmit = useCallback(
-    (data: models.ServiceMessageBrokerConnection) => {
-      if (serviceMessageBrokerConnection?.id) {
+    (data: models.ServiceTopics) => {
+      if (serviceTopics?.id) {
         update({
           variables: {
             where: {
-              id: serviceMessageBrokerConnection?.id,
+              id: serviceTopics?.id,
             },
             data,
           },
@@ -68,23 +68,17 @@ const ServiceMessageBrokerConnection = () => {
         }).catch(console.error);
       }
     },
-    [
-      update,
-      create,
-      serviceMessageBrokerConnection,
-      connectedResourceId,
-      resource,
-    ]
+    [update, create, serviceTopics, connectedResourceId, resource]
   );
 
   const errorMessage = formatError(updateError || createError);
 
   return (
     <div className={CLASS_NAME}>
-      {connectedResource && serviceMessageBrokerConnection && (
-        <ServiceMessageBrokerConnectionForm
+      {connectedResource && (
+        <ServiceTopicsForm
           onSubmit={handleSubmit}
-          defaultValues={serviceMessageBrokerConnection}
+          defaultValues={serviceTopics}
           connectedResource={connectedResource}
         />
       )}
@@ -97,4 +91,4 @@ const ServiceMessageBrokerConnection = () => {
   );
 };
 
-export default ServiceMessageBrokerConnection;
+export default ServiceTopics;

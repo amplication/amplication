@@ -11,7 +11,7 @@ import ServiceConnectionsListItem from "./ServiceConnectionsListItem";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
-  connection: models.ServiceMessageBrokerConnection | undefined;
+  connection: models.ServiceTopics | undefined;
 };
 
 const CLASS_NAME = "service-connections-list";
@@ -30,9 +30,9 @@ export const ServiceConnectionsList = React.memo(
     const history = useHistory();
 
     const {
-      serviceMessageBrokerConnections: data,
-      loadingServiceMessageBrokerConnections: loading,
-      errorServiceMessageBrokerConnections: error,
+      serviceTopicsList: data,
+      loadingServiceTopics: loading,
+      errorServiceTopics: error,
     } = useServiceConnection(resourceId);
 
     const errorMessage = formatError(error);
@@ -47,13 +47,13 @@ export const ServiceConnectionsList = React.memo(
           (resource): MessageBrokerListItem => {
             return {
               resource,
-              connection: data?.ServiceMessageBrokerConnections.find(
+              connection: data?.ServiceTopicsList.find(
                 (connection) => connection.messageBrokerId === resource.id
               ),
             };
           }
         );
-    }, [resources, data?.ServiceMessageBrokerConnections]);
+    }, [resources, data?.ServiceTopicsList]);
 
     useEffect(() => {
       if (selectFirst && !isEmpty(messageBrokerList)) {
@@ -76,19 +76,16 @@ export const ServiceConnectionsList = React.memo(
         {loading && <CircularProgress />}
         <div className={`${CLASS_NAME}__list`}>
           {messageBrokerList.map((connection, index) => {
-            if (
-              !currentProject?.id ||
-              !currentWorkspace?.id ||
-              connection?.connection?.enabled === undefined
-            ) {
+            if (!currentProject?.id || !currentWorkspace?.id) {
               return null;
             }
+
             return (
               <ServiceConnectionsListItem
                 key={index}
                 currentProjectId={currentProject.id}
                 currentWorkspaceId={currentWorkspace.id}
-                enabled={connection.connection.enabled}
+                enabled={connection.connection?.enabled || false}
                 resourceId={resourceId}
                 connectionResource={connection.resource}
               />

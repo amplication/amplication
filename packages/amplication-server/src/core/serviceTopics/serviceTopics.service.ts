@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockTypeService } from '../block/blockType.service';
-import { CreateServiceMessageBrokerConnectionArgs } from './dto/CreateServiceMessageBrokerConnectionArgs';
-import { FindManyServiceMessageBrokerConnectionArgs } from './dto/FindManyServiceMessageBrokerConnectionArgs';
-import { ServiceMessageBrokerConnection } from './dto/ServiceMessageBrokerConnection';
-import { UpdateServiceMessageBrokerConnectionArgs } from './dto/UpdateServiceMessageBrokerConnectionArgs';
+import { CreateServiceTopicsArgs } from './dto/CreateServiceTopicsArgs';
+import { FindManyServiceTopicsArgs } from './dto/FindManyServiceTopicsArgs';
+import { ServiceTopics } from './dto/ServiceTopics';
+import { UpdateServiceTopicsArgs } from './dto/UpdateServiceTopicsArgs';
 import { User } from '../../models';
 import { ResourceService } from '../resource/resource.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
@@ -13,13 +13,13 @@ import { BlockService } from '../block/block.service';
 import { validateOrReject } from 'class-validator';
 
 @Injectable()
-export class ServiceMessageBrokerConnectionService extends BlockTypeService<
-  ServiceMessageBrokerConnection,
-  FindManyServiceMessageBrokerConnectionArgs,
-  CreateServiceMessageBrokerConnectionArgs,
-  UpdateServiceMessageBrokerConnectionArgs
+export class ServiceTopicsService extends BlockTypeService<
+  ServiceTopics,
+  FindManyServiceTopicsArgs,
+  CreateServiceTopicsArgs,
+  UpdateServiceTopicsArgs
 > {
-  blockType = EnumBlockType.ServiceMessageBrokerConnection;
+  blockType = EnumBlockType.ServiceTopics;
 
   constructor(
     private resourceService: ResourceService,
@@ -59,9 +59,9 @@ export class ServiceMessageBrokerConnectionService extends BlockTypeService<
   }
 
   async create(
-    args: CreateServiceMessageBrokerConnectionArgs,
+    args: CreateServiceTopicsArgs,
     user: User
-  ): Promise<ServiceMessageBrokerConnection> {
+  ): Promise<ServiceTopics> {
     await this.validateConnectedResource(
       args.data.resource.connect.id,
       args.data.messageBrokerId
@@ -71,9 +71,9 @@ export class ServiceMessageBrokerConnectionService extends BlockTypeService<
   }
 
   async update(
-    args: UpdateServiceMessageBrokerConnectionArgs,
+    args: UpdateServiceTopicsArgs,
     user: User
-  ): Promise<ServiceMessageBrokerConnection> {
+  ): Promise<ServiceTopics> {
     const block = await this.blockService.findOne({
       where: args.where
     });

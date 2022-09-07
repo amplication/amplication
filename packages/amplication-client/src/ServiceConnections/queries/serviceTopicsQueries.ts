@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_SERVICE_MESSAGE_BROKER_CONNECTIONS = gql`
-  query ServiceMessageBrokerConnections($resourceId: String!) {
-    ServiceMessageBrokerConnections(
+  query ServiceTopicsList($resourceId: String!) {
+    ServiceTopicsList(
       where: { resource: { id: $resourceId } }
       orderBy: { createdAt: Asc }
     ) {
@@ -19,11 +19,11 @@ export const GET_SERVICE_MESSAGE_BROKER_CONNECTIONS = gql`
 `;
 
 export const UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION = gql`
-  mutation updateServiceMessageBrokerConnection(
-    $data: ServiceMessageBrokerConnectionUpdateInput!
+  mutation updateServiceTopics(
+    $data: ServiceTopicsUpdateInput!
     $where: WhereUniqueInput!
   ) {
-    updateServiceMessageBrokerConnection(data: $data, where: $where) {
+    updateServiceTopics(data: $data, where: $where) {
       id
       displayName
       messageBrokerId
@@ -37,10 +37,8 @@ export const UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION = gql`
 `;
 
 export const CREATE_SERVICE_MESSAGE_BROKER_CONNECTION = gql`
-  mutation createServiceMessageBrokerConnection(
-    $data: ServiceMessageBrokerConnectionCreateInput!
-  ) {
-    createServiceMessageBrokerConnection(data: $data) {
+  mutation createServiceTopics($data: ServiceTopicsCreateInput!) {
+    createServiceTopics(data: $data) {
       id
       displayName
       messageBrokerId

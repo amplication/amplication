@@ -4,26 +4,23 @@ import {
   CREATE_SERVICE_MESSAGE_BROKER_CONNECTION,
   GET_SERVICE_MESSAGE_BROKER_CONNECTIONS,
   UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION,
-} from "../queries/serviceMessageBrokerConnectionQueries";
+} from "../queries/serviceTopicsQueries";
 
 const useServiceConnection = (resourceId: string) => {
   const {
-    data: serviceMessageBrokerConnections,
-    loading: loadingServiceMessageBrokerConnections,
-    error: errorServiceMessageBrokerConnections,
+    data: serviceTopicsList,
+    loading: loadingServiceTopics,
+    error: errorServiceTopics,
   } = useQuery<{
-    ServiceMessageBrokerConnections: models.ServiceMessageBrokerConnection[];
+    ServiceTopicsList: models.ServiceTopics[];
   }>(GET_SERVICE_MESSAGE_BROKER_CONNECTIONS, {
     variables: {
       resourceId: resourceId,
     },
   });
 
-  const [
-    updateServiceMessageBrokerConnection,
-    { error: updateError },
-  ] = useMutation<{
-    updateServiceMessageBrokerConnection: models.ServiceMessageBrokerConnection;
+  const [updateServiceTopics, { error: updateError }] = useMutation<{
+    updateServiceTopics: models.ServiceTopics;
   }>(UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION, {
     refetchQueries: [
       {
@@ -35,11 +32,8 @@ const useServiceConnection = (resourceId: string) => {
     ],
   });
 
-  const [
-    createServiceMessageBrokerConnection,
-    { error: createError },
-  ] = useMutation<{
-    createServiceMessageBrokerConnection: models.ServiceMessageBrokerConnection;
+  const [createServiceTopics, { error: createError }] = useMutation<{
+    createServiceTopics: models.ServiceTopics;
   }>(CREATE_SERVICE_MESSAGE_BROKER_CONNECTION, {
     refetchQueries: [
       {
@@ -52,12 +46,12 @@ const useServiceConnection = (resourceId: string) => {
   });
 
   return {
-    serviceMessageBrokerConnections,
-    loadingServiceMessageBrokerConnections,
-    errorServiceMessageBrokerConnections,
-    updateServiceMessageBrokerConnection,
+    serviceTopicsList,
+    loadingServiceTopics,
+    errorServiceTopics,
+    updateServiceTopics,
     updateError,
-    createServiceMessageBrokerConnection,
+    createServiceTopics,
     createError,
   };
 };

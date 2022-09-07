@@ -79,9 +79,7 @@ const resourceRoutes = [
       {
         path:
           "/:workspace/:project/:resource/service-connections/:connectedResourceId",
-        Component: lazy(
-          () => import("../ServiceConnections/ServiceMessageBrokerConnection")
-        ),
+        Component: lazy(() => import("../ServiceConnections/ServiceTopics")),
         moduleName: "",
         routeTrackType: "",
         exactPath: true,

@@ -7,20 +7,20 @@ import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import * as models from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
-import "./ServiceMessageBrokerConnection.scss";
+import "./ServiceTopics.scss";
 import TopicsList from "./topics/TopicsList";
 
-const CLASS_NAME = "service-message-broker-connection";
+const CLASS_NAME = "service-topics";
 
 type Props = {
-  onSubmit: (values: models.ServiceMessageBrokerConnection) => void;
-  defaultValues: models.ServiceMessageBrokerConnection;
+  onSubmit: (values: models.ServiceTopics) => void;
+  defaultValues?: models.ServiceTopics;
   connectedResource: models.Resource;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = ["id", "__typename"];
 
-export const INITIAL_VALUES: Partial<models.ServiceMessageBrokerConnection> = {
+export const INITIAL_VALUES: Partial<models.ServiceTopics> = {
   displayName: "",
   description: "",
   enabled: false,
@@ -36,26 +36,26 @@ const FORM_SCHEMA = {
   },
 };
 
-const ServiceMessageBrokerConnectionForm = ({
+const ServiceTopicsForm = ({
   onSubmit,
   defaultValues,
   connectedResource,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
-      defaultValues,
+      defaultValues || {},
       NON_INPUT_GRAPHQL_PROPERTIES
     );
     return {
       ...INITIAL_VALUES,
       ...sanitizedDefaultValues,
-    } as models.ServiceMessageBrokerConnection;
+    } as models.ServiceTopics;
   }, [defaultValues]);
 
   return (
     <Formik
       initialValues={initialValues}
-      validate={(values: models.ServiceMessageBrokerConnection) => {
+      validate={(values: models.ServiceTopics) => {
         return validate(values, FORM_SCHEMA);
       }}
       enableReinitialize
@@ -87,7 +87,7 @@ const ServiceMessageBrokerConnectionForm = ({
 
           <TopicsList
             messageBrokerId={connectedResource.id}
-            enabled={Boolean(defaultValues.enabled)}
+            enabled={Boolean(defaultValues?.enabled || false)}
             messagePatterns={values.patterns}
           />
         </Form>
@@ -96,4 +96,4 @@ const ServiceMessageBrokerConnectionForm = ({
   );
 };
 
-export default ServiceMessageBrokerConnectionForm;
+export default ServiceTopicsForm;

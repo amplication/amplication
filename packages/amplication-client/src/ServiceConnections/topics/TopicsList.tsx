@@ -28,29 +28,27 @@ export default function TopicsList({
   });
 
   return data ? (
-    <div>
-      <FieldArray
-        validateOnChange
-        name="patterns"
-        render={({ replace }) => {
-          return data.Topics.map((topic, i) => (
-            <ServiceConnectionTopicItem
-              enabled={enabled}
-              key={i}
-              topic={topic}
-              selectedPatternType={
-                messagePatterns[i] || {
-                  type: EnumMessagePatternConnectionOptions.None,
-                  topicId: topic.id,
-                }
+    <FieldArray
+      validateOnChange
+      name="patterns"
+      render={({ replace }) => {
+        return data.Topics.map((topic, i) => (
+          <ServiceConnectionTopicItem
+            enabled={enabled}
+            key={i}
+            topic={topic}
+            selectedPatternType={
+              messagePatterns[i] || {
+                type: EnumMessagePatternConnectionOptions.None,
+                topicId: topic.id,
               }
-              onMessagePatternTypeChange={(pattern) => {
-                replace(i, { type: pattern, topicId: topic.id });
-              }}
-            />
-          ));
-        }}
-      />
-    </div>
+            }
+            onMessagePatternTypeChange={(pattern) => {
+              replace(i, { type: pattern, topicId: topic.id });
+            }}
+          />
+        ));
+      }}
+    />
   ) : null;
 }
