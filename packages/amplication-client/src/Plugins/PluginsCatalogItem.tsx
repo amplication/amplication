@@ -71,7 +71,8 @@ function PluginsCatalogItem({
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
         </>
       )}
-      <div className={`${CLASS_NAME}__row`}>
+      <div className={`${CLASS_NAME}__row `}>
+        <span className={`${CLASS_NAME}__logo`} />
         <span className={`${CLASS_NAME}__title`}>{name}</span>
         <span className="spacer" />
         {!pluginInstallation && (
