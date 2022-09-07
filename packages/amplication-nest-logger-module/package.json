@@ -1,6 +1,6 @@
 {
   "name": "@amplication/nest-logger-module",
-  "version": "0.15.3",
+  "version": "0.16.0",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
