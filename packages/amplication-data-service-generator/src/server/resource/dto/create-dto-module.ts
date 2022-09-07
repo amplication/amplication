@@ -1,13 +1,12 @@
 import { print } from "recast";
 import { namedTypes, builders } from "ast-types";
 import { DeclarationKind } from "ast-types/gen/kinds";
-import { Module } from "@amplication/code-gen-types";
+import { NamedClassDeclaration, Module } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 import {
   addAutoGenerationComment,
   addImports,
   importContainedIdentifiers,
-  NamedClassDeclaration,
   exportNames,
 } from "../../../util/ast";
 import {
