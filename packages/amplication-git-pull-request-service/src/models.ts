@@ -687,6 +687,12 @@ export enum EnumGitProvider {
   Github = 'Github',
 }
 
+export enum EnumMessagePatternConnectionOptions {
+  None = 'None',
+  Receive = 'Receive',
+  Send = 'Send',
+}
+
 export enum EnumPendingChangeAction {
   Create = 'Create',
   Delete = 'Delete',
@@ -819,6 +825,17 @@ export type InviteUserInput = {
 export type LoginInput = {
   email: Scalars['String'];
   password: Scalars['String'];
+};
+
+export type MessagePattern = {
+  __typename?: 'MessagePattern';
+  topicId: Scalars['String'];
+  type: EnumMessagePatternConnectionOptions;
+};
+
+export type MessagePatternCreateInput = {
+  topicId: Scalars['String'];
+  type: EnumMessagePatternConnectionOptions;
 };
 
 export type Mutation = {
@@ -1560,6 +1577,7 @@ export type ServiceMessageBrokerConnection = IBlock & {
   messageBrokerId: Scalars['String'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  patterns: Array<MessagePattern>;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
@@ -1572,6 +1590,7 @@ export type ServiceMessageBrokerConnectionCreateInput = {
   messageBrokerId: Scalars['String'];
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
+  patterns?: InputMaybe<Array<MessagePatternCreateInput>>;
   resource: WhereParentIdInput;
 };
 
@@ -1589,6 +1608,7 @@ export type ServiceMessageBrokerConnectionUpdateInput = {
   displayName?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
   messageBrokerId: Scalars['String'];
+  patterns?: InputMaybe<Array<MessagePatternCreateInput>>;
 };
 
 export type ServiceMessageBrokerConnectionWhereInput = {
