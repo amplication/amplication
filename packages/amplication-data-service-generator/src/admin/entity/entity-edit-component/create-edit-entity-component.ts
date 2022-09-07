@@ -6,6 +6,7 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
+  DTOs,
 } from "@amplication/code-gen-types";
 import {
   addImports,
@@ -15,7 +16,6 @@ import {
   interpolate,
 } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { DTOs } from "../../../server/resource/create-dtos";
 import { EntityComponent } from "../../types";
 import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";

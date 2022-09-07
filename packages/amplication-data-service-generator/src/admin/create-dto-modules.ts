@@ -1,9 +1,12 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
-import { Module } from "@amplication/code-gen-types";
-import { DTOs } from "../server/resource/create-dtos";
+import {
+  Module,
+  NamedClassDeclaration,
+  DTOs,
+} from "@amplication/code-gen-types";
 import { createDTOFile } from "../server/resource/dto/create-dto-module";
-import { getNamedProperties, NamedClassDeclaration } from "../util/ast";
+import { getNamedProperties } from "../util/ast";
 
 export function createDTOModules(
   dtos: DTOs,
