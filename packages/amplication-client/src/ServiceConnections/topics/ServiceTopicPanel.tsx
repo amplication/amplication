@@ -31,27 +31,34 @@ export default function ServiceTopicPanel({
         <span className={`${CLASS_NAME}__header__title`}>
           {topic.displayName}
         </span>
-        <StatusText patternType={selectedPatternType.type} />
+        <StatusText patternType={selectedPatternType.type} enable={enabled} />
       </div>
       <div className={`${CLASS_NAME}__description`}>{topic.description}</div>
 
       <HorizontalRule />
-      <ServiceTopicPatternMenu
-        onMessagePatternTypeChange={onMessagePatternTypeChange}
-        selectedPatternType={selectedPatternType.type}
-      />
+
+      {enabled && (
+        <ServiceTopicPatternMenu
+          onMessagePatternTypeChange={onMessagePatternTypeChange}
+          selectedPatternType={selectedPatternType.type}
+        />
+      )}
     </Panel>
   );
 }
 
 type StatusTextProps = {
   patternType: EnumMessagePatternConnectionOptions;
+  enable: boolean;
 };
-const StatusText = ({ patternType }: StatusTextProps) => {
+const StatusText = ({ patternType, enable }: StatusTextProps) => {
   const color = useMemo(() => {
+    if (!enable) {
+      return "var(--black40)";
+    }
     return patternType === EnumMessagePatternConnectionOptions.None
       ? "var(--negative-light)"
       : "var(--positive-default)";
-  }, [patternType]);
+  }, [enable, patternType]);
   return <span style={{ color }}>{patternType}</span>;
 };
