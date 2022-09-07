@@ -9,7 +9,7 @@
     "build": "npx rollup -c",
     "watch": "npm run build -- --watch",
     "prepare": "npm run build",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -p 6006 -c .storybook watch-css -s ./src",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
