@@ -7,7 +7,7 @@ $tabs-width: 300px;
   display: flex;
   flex: 1;
   gap: var(--large-spacing);
-  padding-left: var(--large-spacing);
+  padding: var(--large-spacing) 0 var(--large-spacing) var(--large-spacing);
   background: var(--page-content-background);
   box-sizing: border-box;
   overflow: hidden;
@@ -18,8 +18,7 @@ $tabs-width: 300px;
     background: var(--page-content-tab-background);
     border-radius: var(--default-border-radius);
     border: $border-black10;
-    padding: var(--large-spacing);
-    padding-right: 0;
+    padding: var(--large-spacing) 0 var(--large-spacing) var(--large-spacing);
     box-sizing: border-box;
     overflow: auto;
 
