@@ -21,25 +21,18 @@
     color: var(--black80);
   }
 
-  &__recently-used {
-    margin-left: var(--default-spacing-small);
-    height: var(--medium-button-height);
-    border-radius: var(--medium-button-radius);
-    @include flexFullRow;
-    box-sizing: border-box;
-    white-space: nowrap;
-    .user-and-time {
-      margin-left: var(--default-spacing-small);
-    }
-  }
+  &__order {
+    @include flexVerticalCenter;
 
-  &__last-build {
-    font-weight: normal;
-    &__title {
-      color: var(--black100);
-    }
-    &__not-yet {
-      color: var(--black80);
+    span {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--black2);
+      padding: var(--icon-spacing);
+      border-radius: var(--small-border-radius);
+      width: 14px;
+      height: 14px;
     }
   }
 }

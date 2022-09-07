@@ -3,7 +3,13 @@ import * as models from "../models";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 
-import { EnumPanelStyle, Panel, Toggle } from "@amplication/design-system";
+import {
+  EnumHorizontalRuleStyle,
+  EnumPanelStyle,
+  HorizontalRule,
+  Panel,
+  Toggle,
+} from "@amplication/design-system";
 import "./PluginsCatalogItem.scss";
 import { Plugin } from "./hooks/usePlugins";
 
@@ -24,6 +30,10 @@ function PluginsCatalogItem({
 }: Props) {
   const { name, description } = plugin || {};
 
+  const handlePromote = useCallback(() => {}, []);
+
+  const handleDemote = useCallback(() => {}, []);
+
   const handleInstall = useCallback(() => {
     onInstall && onInstall(plugin);
   }, [onInstall, plugin]);
@@ -37,13 +47,29 @@ function PluginsCatalogItem({
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
       {pluginInstallation && (
-        <div className={`${CLASS_NAME}__row`}>
-          <Toggle
-            title="enabled"
-            onValueChange={handleEnableStateChange}
-            checked={pluginInstallation.enabled}
-          />
-        </div>
+        <>
+          <div className={`${CLASS_NAME}__row`}>
+            <Toggle
+              title="enabled"
+              onValueChange={handleEnableStateChange}
+              checked={pluginInstallation.enabled}
+            />
+            <div className={`${CLASS_NAME}__order`}>
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                onClick={handlePromote}
+                icon="arrow_up"
+              />
+              <span>{pluginInstallation.order}</span>
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                onClick={handleDemote}
+                icon="arrow_down"
+              />
+            </div>
+          </div>
+          <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
+        </>
       )}
       <div className={`${CLASS_NAME}__row`}>
         <span className={`${CLASS_NAME}__title`}>{name}</span>
