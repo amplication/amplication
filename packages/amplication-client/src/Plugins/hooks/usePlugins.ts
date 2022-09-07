@@ -38,6 +38,27 @@ const PLUGINS: Plugin[] = [
     logo: "logo",
     name: "NX monorepo",
   },
+  {
+    id: "@amplication/plugin-db-postgres",
+    description:
+      "Connects your service to a PostgreSQL DB, and adds the required docker file",
+    logo: "logo",
+    name: "PostgreSQL DB",
+  },
+  {
+    id: "@amplication/plugin-db-mongo",
+    description:
+      "Connects your service to a Mongo DB, and adds the required docker file",
+    logo: "logo",
+    name: "Mongo DB",
+  },
+  {
+    id: "@amplication/plugin-db-mysql",
+    description:
+      "Connects your service to a mySQL, and adds the required docker file",
+    logo: "logo",
+    name: "MySQL DB",
+  },
 ];
 
 const usePlugins = (resourceId: string) => {

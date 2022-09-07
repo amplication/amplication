@@ -10,7 +10,8 @@ import {
   EnumDataType,
   LookupResolvedProperties,
   types,
-  DsgPlugin,
+  Plugin
+  
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -25,7 +26,7 @@ export async function createDataServiceImpl(
   roles: Role[],
   appInfo: AppInfo,
   logger: winston.Logger,
-  resourcePlugins: DsgPlugin[] = []
+  resourcePlugins: Plugin[] = []
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const timer = logger.startTimer();

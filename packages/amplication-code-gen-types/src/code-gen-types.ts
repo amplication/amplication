@@ -186,3 +186,20 @@ export type ResourceGenerationConfig = {
   dataServiceGeneratorVersion: string;
   appInfo: AppInfo;
 };
+
+export type Plugin = Omit<
+  models.PluginInstallation,
+  | "__typename"
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "parentBlock"
+  | "displayName"
+  | "description"
+  | "blockType"
+  | "versionNumber"
+  | "inputParameters"
+  | "outputParameters"
+  | "lockedByUserId"
+  | "lockedAt"
+>;
