@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { FindOneArgs } from 'src/dto';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { User } from '../../models';
 import { BlockTypeService } from '../block/blockType.service';
@@ -25,7 +26,19 @@ export class PluginInstallationService extends BlockTypeService<
     args: CreatePluginInstallationArgs,
     user: User
   ): Promise<PluginInstallation> {
-    args.data.order = 1;
+    const installations = await super.findMany({
+      where: {
+        resource: {
+          id: args.data.resource.connect.id
+        }
+      }
+    });
+
+    installations.sort(plugin => plugin.order);
+
+    args.data.order = installations.length
+      ? installations[installations.length - 1].order + 1
+      : 1;
 
     return super.create(args, user);
   }
