@@ -1,7 +1,6 @@
-import { Entity, EntityField } from "@amplication/code-gen-types";
+import { Entity, EntityField, DTOs } from "@amplication/code-gen-types";
 import { isEnumField, isToManyRelationField } from "./field";
 import { camelCase } from "camel-case";
-import { DTOs } from "../server/resource/create-dtos";
 import { getNamedProperties } from "./ast";
 
 export const ENTITY_NAME_REGEX = /^[A-Z][A-Za-z0-9]+$/;

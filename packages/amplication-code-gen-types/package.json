@@ -43,5 +43,10 @@
     "dsg",
     "code generation",
     "low code"
-  ]
+  ],
+  "dependencies": {
+    "@nestjs/core": "^9.0.9",
+    "ast-types": "^0.14.2",
+    "lodash": "^4.17.21"
+  }
 }
