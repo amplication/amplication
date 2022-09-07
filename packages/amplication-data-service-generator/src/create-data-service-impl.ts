@@ -10,8 +10,7 @@ import {
   EnumDataType,
   LookupResolvedProperties,
   types,
-  Plugin
-  
+  Plugin,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";

@@ -54,6 +54,12 @@ export async function createDataService(
     console.warn(
       "Creating data service without a worker. It is recommended to always use useWorker=true "
     );
-    return await createDataServiceImpl(entities, roles, appInfo, logger, plugins);
+    return await createDataServiceImpl(
+      entities,
+      roles,
+      appInfo,
+      logger,
+      plugins
+    );
   }
 }
