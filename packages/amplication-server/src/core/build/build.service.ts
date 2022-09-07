@@ -326,9 +326,11 @@ export class BuildService {
         //#region getting all the resource data
         const entities = await this.getOrderedEntities(build.id);
         const roles = await this.getResourceRoles(build);
-        const plugins = await this.pluginInstallationService.findMany({
+        const allPlugins = await this.pluginInstallationService.findMany({
           where: { resource: { id: build.resourceId } }
-        })
+        });
+        const plugins = allPlugins.filter(plugin => plugin.enabled);
+
         const resource = await this.resourceService.resource({
           where: { id: build.resourceId }
         });
@@ -360,7 +362,7 @@ export class BuildService {
             settings: serviceSettings
           },
           dataServiceGeneratorLogger,
-          plugins,
+          plugins
         );
 
         await Promise.all(logPromises);
