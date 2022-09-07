@@ -18,25 +18,25 @@ export type Plugin = {
 
 const PLUGINS: Plugin[] = [
   {
-    id: "111",
+    id: "auth-jwt",
     description:
-      "description description description description description description",
+      "A Passport strategy for authenticating with a JSON Web Token (JWT).",
     logo: "logo",
-    name: "plugin name 1",
+    name: "Passport JWT Authentication",
   },
   {
-    id: "222",
+    id: "auth-basic",
     description:
-      "description description description description description description",
+      "A Passport strategy for authenticating using the standard basic HTTP scheme.",
     logo: "logo",
-    name: "plugin name 2",
+    name: "Passport Basic Authentication",
   },
   {
-    id: "333",
+    id: "monorepo-nx",
     description:
-      "description description description description description description",
+      "Add the required configurations and files to use nx to manage your monorepo",
     logo: "logo",
-    name: "plugin name 3",
+    name: "NX monorepo",
   },
 ];
 
