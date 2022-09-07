@@ -7,7 +7,7 @@ import {
   Topic,
 } from "../../models";
 import { topicsOfBroker } from "./queries/topicsQueries";
-import ServiceConnectionTopicItem from "./ServiceConnectionTopicItem";
+import ServiceTopicPanel from "./ServiceTopicPanel";
 
 type Props = {
   messageBrokerId: string;
@@ -33,7 +33,7 @@ export default function TopicsList({
       name="patterns"
       render={({ replace }) => {
         return data.Topics.map((topic, i) => (
-          <ServiceConnectionTopicItem
+          <ServiceTopicPanel
             enabled={enabled}
             key={i}
             topic={topic}

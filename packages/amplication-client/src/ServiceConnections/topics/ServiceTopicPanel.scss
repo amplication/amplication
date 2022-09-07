@@ -1,0 +1,17 @@
+@import "../../style/index.scss";
+
+.service-topic-panel {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &__title {
+      @include bold-14;
+    }
+  }
+  &__description {
+    @include body2;
+    margin-bottom: var(--default-spacing);
+    margin-right: 140px;
+  }
+}

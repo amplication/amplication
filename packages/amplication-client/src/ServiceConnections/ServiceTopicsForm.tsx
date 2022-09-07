@@ -79,7 +79,8 @@ const ServiceTopicsForm = ({
 
           <div className={`${CLASS_NAME}__row`}>
             <span className={`${CLASS_NAME}__description`}>
-              description about message broker and topic{" "}
+              description about message broker and topic
+              {/* //TODO change description */}
             </span>
           </div>
 
