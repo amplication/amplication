@@ -1,5 +1,4 @@
 import { InterfaceType, Field } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { Block } from 'src/models';
 import { BlockInputOutput } from './BlockInputOutput';
