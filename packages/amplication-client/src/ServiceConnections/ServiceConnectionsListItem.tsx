@@ -24,19 +24,15 @@ export default function ServiceConnectionsListItem({
       <InnerTabLink
         to={`/${currentWorkspaceId}/${currentProjectId}/${resourceId}/service-connections/${connectionResource.id}`}
       >
-        <div>
-          <span>{connectionResource.name}</span>
-          <svg height="8" width="8">
-            <circle
-              cx="4"
-              cy="4"
-              r="3"
-              fill={
-                enabled ? "var(--positive-default)" : "var(--negative-light)"
-              }
-            />
-          </svg>
-        </div>
+        <span>{connectionResource.name}</span>
+        <svg height="8" width="8">
+          <circle
+            cx="4"
+            cy="4"
+            r="3"
+            fill={enabled ? "var(--positive-default)" : "var(--negative-light)"}
+          />
+        </svg>
       </InnerTabLink>
     </div>
   );
