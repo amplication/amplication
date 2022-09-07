@@ -6,6 +6,7 @@ import {
   Role,
   AppInfo,
   Module,
+  Plugin,
   WorkerResult,
 } from "@amplication/code-gen-types";
 import { createDataServiceImpl } from "./create-data-service-impl";
@@ -17,6 +18,7 @@ export async function createDataService(
   roles: Role[],
   appInfo: AppInfo,
   logger: winston.Logger = defaultLogger,
+  plugins: Plugin[] = [],
   useWorker = true
 ): Promise<Module[]> {
   if (useWorker) {
@@ -45,12 +47,13 @@ export async function createDataService(
         entities,
         roles,
         appInfo,
+        plugins,
       });
     });
   } else {
     console.warn(
       "Creating data service without a worker. It is recommended to always use useWorker=true "
     );
-    return await createDataServiceImpl(entities, roles, appInfo, logger);
+    return await createDataServiceImpl(entities, roles, appInfo, logger, plugins);
   }
 }
