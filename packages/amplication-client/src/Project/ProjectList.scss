@@ -7,4 +7,10 @@
   &__items {
     flex: 1;
   }
+
+  .amp-button {
+    .amp-button__icon {
+      margin: 0 var(--default-spacing-small);
+    }
+  }
 }
