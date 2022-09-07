@@ -26,8 +26,7 @@ export default function ServiceConnectionsListItem({
           cx="4"
           cy="4"
           r="3"
-          stroke-width="2"
-          fill={enabled ? "#31c587" : "#f85b6e"}
+          fill={enabled ? "var(--positive-default)" : "var(--negative-light)"}
         />
       </svg>
     );
