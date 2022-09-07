@@ -709,11 +709,6 @@ export type EnumResourceTypeFilter = {
   notIn?: InputMaybe<Array<EnumResourceType>>;
 };
 
-export enum EnumServiceConnectionTopicMessagePattern {
-  Receive = "Receive",
-  Send = "Send",
-}
-
 export enum EnumSubscriptionPlan {
   Business = "Business",
   Enterprise = "Enterprise",
@@ -844,7 +839,6 @@ export type Mutation = {
   createProject: Project;
   createResourceRole: ResourceRole;
   createService: Resource;
-  createServiceConnectionTopic: ServiceConnectionTopic;
   createServiceMessageBrokerConnection: ServiceMessageBrokerConnection;
   createServiceWithEntities: Resource;
   createTopic: Topic;
@@ -878,7 +872,6 @@ export type Mutation = {
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
   updateResourceRole?: Maybe<ResourceRole>;
-  updateServiceConnectionTopic: ServiceConnectionTopic;
   updateServiceMessageBrokerConnection: ServiceMessageBrokerConnection;
   updateServiceSettings?: Maybe<ServiceSettings>;
   updateTopic: Topic;
@@ -959,10 +952,6 @@ export type MutationCreateResourceRoleArgs = {
 
 export type MutationCreateServiceArgs = {
   data: ResourceCreateInput;
-};
-
-export type MutationCreateServiceConnectionTopicArgs = {
-  data: ServiceConnectionTopicCreateInput;
 };
 
 export type MutationCreateServiceMessageBrokerConnectionArgs = {
@@ -1106,11 +1095,6 @@ export type MutationUpdateResourceRoleArgs = {
   where: WhereUniqueInput;
 };
 
-export type MutationUpdateServiceConnectionTopicArgs = {
-  data: ServiceConnectionTopicUpdateInput;
-  where: WhereUniqueInput;
-};
-
 export type MutationUpdateServiceMessageBrokerConnectionArgs = {
   data: ServiceMessageBrokerConnectionUpdateInput;
   where: WhereUniqueInput;
@@ -1236,8 +1220,6 @@ export type Query = {
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
-  ServiceConnectionTopic?: Maybe<ServiceConnectionTopic>;
-  ServiceConnectionTopics: Array<ServiceConnectionTopic>;
   ServiceMessageBrokerConnection?: Maybe<ServiceMessageBrokerConnection>;
   ServiceMessageBrokerConnections: Array<ServiceMessageBrokerConnection>;
   serviceSettings: ServiceSettings;
@@ -1352,17 +1334,6 @@ export type QueryResourcesArgs = {
   skip?: InputMaybe<Scalars["Int"]>;
   take?: InputMaybe<Scalars["Int"]>;
   where?: InputMaybe<ResourceWhereInput>;
-};
-
-export type QueryServiceConnectionTopicArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryServiceConnectionTopicsArgs = {
-  orderBy?: InputMaybe<ServiceConnectionTopicOrderByInput>;
-  skip?: InputMaybe<Scalars["Int"]>;
-  take?: InputMaybe<Scalars["Int"]>;
-  where?: InputMaybe<ServiceConnectionTopicWhereInput>;
 };
 
 export type QueryServiceMessageBrokerConnectionArgs = {
@@ -1571,58 +1542,6 @@ export type ServerSettingsUpdateInput = {
   generateGraphQL?: InputMaybe<Scalars["Boolean"]>;
   generateRestApi?: InputMaybe<Scalars["Boolean"]>;
   serverPath?: InputMaybe<Scalars["String"]>;
-};
-
-export type ServiceConnectionTopic = IBlock & {
-  __typename?: "ServiceConnectionTopic";
-  blockType: EnumBlockType;
-  createdAt: Scalars["DateTime"];
-  description?: Maybe<Scalars["String"]>;
-  displayName: Scalars["String"];
-  id: Scalars["String"];
-  inputParameters: Array<BlockInputOutput>;
-  lockedAt?: Maybe<Scalars["DateTime"]>;
-  lockedByUserId?: Maybe<Scalars["String"]>;
-  messagePattern: EnumServiceConnectionTopicMessagePattern;
-  outputParameters: Array<BlockInputOutput>;
-  parentBlock?: Maybe<Block>;
-  updatedAt: Scalars["DateTime"];
-  versionNumber: Scalars["Float"];
-};
-
-export type ServiceConnectionTopicCreateInput = {
-  description?: InputMaybe<Scalars["String"]>;
-  displayName: Scalars["String"];
-  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
-  messagePattern: EnumServiceConnectionTopicMessagePattern;
-  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
-  parentBlock?: InputMaybe<WhereParentIdInput>;
-  resource: WhereParentIdInput;
-};
-
-export type ServiceConnectionTopicOrderByInput = {
-  blockType?: InputMaybe<SortOrder>;
-  createdAt?: InputMaybe<SortOrder>;
-  description?: InputMaybe<SortOrder>;
-  displayName?: InputMaybe<SortOrder>;
-  id?: InputMaybe<SortOrder>;
-  updatedAt?: InputMaybe<SortOrder>;
-};
-
-export type ServiceConnectionTopicUpdateInput = {
-  description?: InputMaybe<Scalars["String"]>;
-  displayName?: InputMaybe<Scalars["String"]>;
-  messagePattern: EnumServiceConnectionTopicMessagePattern;
-};
-
-export type ServiceConnectionTopicWhereInput = {
-  createdAt?: InputMaybe<DateTimeFilter>;
-  description?: InputMaybe<StringFilter>;
-  displayName?: InputMaybe<StringFilter>;
-  id?: InputMaybe<StringFilter>;
-  parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
-  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type ServiceMessageBrokerConnection = IBlock & {
