@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
 
-import { Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/design-system";
 
 import "./PermissionsForm.scss";
 
@@ -45,18 +45,20 @@ const PermissionsForm = ({
 
   return (
     <div className="permissions-form">
-      {loading
-        ? "Loading..."
-        : availableActions.map((action) => (
-            <EntityPermissionAction
-              key={action.action}
-              entityId={entityId}
-              permission={permissionsByAction[action.action]}
-              resourceId={resourceId}
-              permissionAction={action}
-              entityDisplayName={objectDisplayName}
-            />
-          ))}
+      {loading ? (
+        <CircularProgress centerToParent />
+      ) : (
+        availableActions.map((action) => (
+          <EntityPermissionAction
+            key={action.action}
+            entityId={entityId}
+            permission={permissionsByAction[action.action]}
+            resourceId={resourceId}
+            permissionAction={action}
+            entityDisplayName={objectDisplayName}
+          />
+        ))
+      )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );

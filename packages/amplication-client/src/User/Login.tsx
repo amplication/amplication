@@ -94,7 +94,7 @@ const Login = () => {
       let { from } = location.state || { from: { pathname: "/" } };
       if (from === "login") {
         from = "/";
-      }  
+      }
       history.replace(from);
     }
   }, [data, history, location]);
@@ -164,7 +164,7 @@ const Login = () => {
             .
           </div>
 
-          {loading && <CircularProgress />}
+          {loading && <CircularProgress centerToParent />}
           <Snackbar open={Boolean(error)} message={errorMessage} />
         </Form>
       </Formik>

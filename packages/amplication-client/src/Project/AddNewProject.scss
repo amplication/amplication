@@ -2,6 +2,6 @@
 
 .add-new-project {
     &__label {
-        @include bold-12;
+        color: var(--black100);
     }
 }

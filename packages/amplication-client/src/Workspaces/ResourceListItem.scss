@@ -2,7 +2,6 @@
 
 .resource-list-item {
   margin: 0;
-  margin-bottom: var(--default-spacing);
 
   &__row {
     @include flexFullRowWithSpacing;
@@ -12,10 +11,12 @@
       margin-bottom: 0;
     }
   }
+
   &__title {
     @include body1;
     color: var(--black100);
   }
+  
   &__description {
     @include body2;
     color: var(--black80);

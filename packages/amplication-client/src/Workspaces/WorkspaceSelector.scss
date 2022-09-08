@@ -3,15 +3,10 @@
 @mixin workspaceItem {
   display: flex;
   flex: 1;
-  flex-direction: row;
-  justify-content: space-between;
+  align-items: center;
   cursor: pointer;
   padding: var(--default-spacing);
-
-  .circle-badge {
-    margin-left: 0;
-    margin-right: var(--default-spacing);
-  }
+  gap: var(--default-spacing);
 
   &__name {
     @include regular-12;
@@ -36,16 +31,11 @@
 
 .workspaces-selector {
   position: relative;
-  box-sizing: border-box;
   display: flex;
-  flex-direction: row;
-  align-items: center;
   background-color: var(--surface);
   border: $border-black5;
   border-top-left-radius: var(--default-spacing-small);
   border-top-right-radius: var(--default-spacing-small);
-  width: 100%;
-  margin-bottom: var(--large-spacing);
 
   &__current {
     @include workspaceItem;
@@ -97,7 +87,6 @@
     }
 
     &__divider {
-      flex-grow: 1;
       height: 1px;
       margin: 0 var(--default-spacing) var(--icon-spacing);
       background-color: var(--black30);
