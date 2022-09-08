@@ -1,4 +1,5 @@
 import {
+  HorizontalRule,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
@@ -116,10 +117,10 @@ const WorkspaceHeader: React.FC<{}> = () => {
                   openIcon="chevron_up"
                   className={`${CLASS_NAME}__breadcrumbs__menu`}
                 >
-                  <SelectMenuModal>
-                    {resources.length > 0 && (
-                      <>
-                        <SelectMenuList>
+                  <SelectMenuModal align="right">
+                    <SelectMenuList>
+                      {resources.length > 0 && (
+                        <>
                           {resources.length &&
                             resources.map((resource: models.Resource) => (
                               <SelectMenuItem
@@ -156,20 +157,21 @@ const WorkspaceHeader: React.FC<{}> = () => {
                                 </div>
                               </SelectMenuItem>
                             ))}
-                        </SelectMenuList>
-                        <hr className={`${CLASS_NAME}__divider`} />
-                      </>
-                    )}
 
-                    <HeaderMenuStaticOptions
-                      currentProjectConfigurationId={
-                        currentProjectConfiguration?.id
-                      }
-                      currentProjectId={currentProject.id}
-                      currentWorkspaceId={currentWorkspace?.id}
-                      history={history}
-                      path={isCommitsRoute?.url}
-                    />
+                          <HorizontalRule />
+                        </>
+                      )}
+
+                      <HeaderMenuStaticOptions
+                        currentProjectConfigurationId={
+                          currentProjectConfiguration?.id
+                        }
+                        currentProjectId={currentProject.id}
+                        currentWorkspaceId={currentWorkspace?.id}
+                        history={history}
+                        path={isCommitsRoute?.url}
+                      />
+                    </SelectMenuList>
                   </SelectMenuModal>
                 </SelectMenu>
               </div>
