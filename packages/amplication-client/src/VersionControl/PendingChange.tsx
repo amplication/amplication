@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import * as models from "../models";
 import "./PendingChange.scss";
 import PendingChangeContent from "./PendingChangeContent";
-import PendingChangeServiceMessageBrokerConnection from "./PendingChangeServiceMessageBrokerConnection";
+import PendingChangeServiceTopics from "./PendingChangeServiceTopics";
 
 const CLASS_NAME = "pending-change";
 const TOOLTIP_DIRECTION = "ne";
@@ -33,10 +33,10 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
     if (
       change.originType === models.EnumPendingChangeOriginType.Block &&
       (change.origin as models.Block).blockType ===
-        models.EnumBlockType.ServiceMessageBrokerConnection
+        models.EnumBlockType.ServiceTopics
     )
       return (
-        <PendingChangeServiceMessageBrokerConnection
+        <PendingChangeServiceTopics
           change={change}
           linkToOrigin={linkToOrigin}
         />

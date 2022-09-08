@@ -1,12 +1,12 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { JsonValue } from 'type-fest';
-import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
+import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
 import { MessagePatternCreateInput } from './messagePattern/MessagePatternCreateInput';
 
 @InputType({
   isAbstract: true
 })
-export class ServiceMessageBrokerConnectionUpdateInput extends BlockUpdateInput {
+export class ServiceTopicsCreateInput extends BlockCreateInput {
   @Field(() => String, {
     nullable: false
   })

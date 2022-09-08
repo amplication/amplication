@@ -3,15 +3,15 @@ import { isEmpty } from "lodash";
 import React, { useContext, useEffect, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
-import InnerTabLink from "../Layout/InnerTabLink";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import "./ServiceConnectionsList.scss";
 import useServiceConnection from "./hooks/useServiceConnection";
+import "./ServiceConnectionsList.scss";
+import ServiceConnectionsListItem from "./ServiceConnectionsListItem";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
-  connection: models.ServiceMessageBrokerConnection | undefined;
+  connection: models.ServiceTopics | undefined;
 };
 
 const CLASS_NAME = "service-connections-list";
@@ -30,9 +30,9 @@ export const ServiceConnectionsList = React.memo(
     const history = useHistory();
 
     const {
-      serviceMessageBrokerConnections: data,
-      loadingServiceMessageBrokerConnections: loading,
-      errorServiceMessageBrokerConnections: error,
+      serviceTopicsList: data,
+      loadingServiceTopics: loading,
+      errorServiceTopics: error,
     } = useServiceConnection(resourceId);
 
     const errorMessage = formatError(error);
@@ -47,13 +47,13 @@ export const ServiceConnectionsList = React.memo(
           (resource): MessageBrokerListItem => {
             return {
               resource,
-              connection: data?.ServiceMessageBrokerConnections.find(
+              connection: data?.ServiceTopicsList.find(
                 (connection) => connection.messageBrokerId === resource.id
               ),
             };
           }
         );
-    }, [resources, data?.ServiceMessageBrokerConnections]);
+    }, [resources, data?.ServiceTopicsList]);
 
     useEffect(() => {
       if (selectFirst && !isEmpty(messageBrokerList)) {
@@ -75,20 +75,22 @@ export const ServiceConnectionsList = React.memo(
         <div className={`${CLASS_NAME}__header`}>Message Brokers</div>
         {loading && <CircularProgress />}
         <div className={`${CLASS_NAME}__list`}>
-          {messageBrokerList.map((connection) => (
-            <div
-              key={connection.resource.id}
-              className={`${CLASS_NAME}__list__item`}
-            >
-              <InnerTabLink
-                icon="connection"
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/service-connections/${connection.resource.id}`}
-              >
-                <span>{connection.resource.name}</span>
-                <span>{connection.connection?.enabled ? "yes" : "no"}</span>
-              </InnerTabLink>
-            </div>
-          ))}
+          {messageBrokerList.map((connection, index) => {
+            if (!currentProject?.id || !currentWorkspace?.id) {
+              return null;
+            }
+
+            return (
+              <ServiceConnectionsListItem
+                key={index}
+                currentProjectId={currentProject.id}
+                currentWorkspaceId={currentWorkspace.id}
+                enabled={connection.connection?.enabled || false}
+                resourceId={resourceId}
+                connectionResource={connection.resource}
+              />
+            );
+          })}
         </div>
 
         <Snackbar open={Boolean(error)} message={errorMessage} />

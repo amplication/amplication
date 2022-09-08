@@ -80,10 +80,8 @@ export class BlockService {
     [EnumBlockType.ServiceSettings]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ProjectConfigurationSettings]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Topic]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.ServiceMessageBrokerConnection]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.ServiceConnectionTopic]: new Set([
-      EnumBlockType.ServiceMessageBrokerConnection
-    ]),
+    [EnumBlockType.ServiceTopics]: ALLOW_NO_PARENT_ONLY,
+
     [EnumBlockType.Flow]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorSoapApi]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorFile]: ALLOW_NO_PARENT_ONLY,

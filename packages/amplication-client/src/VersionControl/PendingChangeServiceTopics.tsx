@@ -9,26 +9,21 @@ type Props = {
   linkToOrigin: boolean;
 };
 
-const PendingChangeServiceMessageBrokerConnection = ({
-  change,
-  linkToOrigin,
-}: Props) => {
+const PendingChangeServiceTopics = ({ change, linkToOrigin }: Props) => {
   const { origin } = change;
   const { resources } = useContext(AppContext);
 
-  const {
-    serviceMessageBrokerConnections: serviceConnectionList,
-  } = useServiceConnection(change.resource.id);
+  const { serviceTopicsList } = useServiceConnection(change.resource.id);
 
   const connectedBroker = useMemo(() => {
-    const connection = serviceConnectionList?.ServiceMessageBrokerConnections.find(
+    const connection = serviceTopicsList?.ServiceTopicsList.find(
       (item) => item.id === origin.id
     );
 
     return resources.find(
       (resource) => resource.id === connection?.messageBrokerId
     );
-  }, [serviceConnectionList, resources, origin.id]);
+  }, [serviceTopicsList, resources, origin.id]);
 
   const url = `service-connections/${connectedBroker?.id}`;
 
@@ -42,4 +37,4 @@ const PendingChangeServiceMessageBrokerConnection = ({
   );
 };
 
-export default PendingChangeServiceMessageBrokerConnection;
+export default PendingChangeServiceTopics;

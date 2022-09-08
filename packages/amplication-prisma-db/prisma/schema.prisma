@@ -453,8 +453,7 @@ enum EnumBlockType {
   ServiceSettings
   ProjectConfigurationSettings
   Topic
-  ServiceMessageBrokerConnection
-  ServiceConnectionTopic
+  ServiceTopics
   Flow
   ConnectorRestApi
   ConnectorRestApiCall

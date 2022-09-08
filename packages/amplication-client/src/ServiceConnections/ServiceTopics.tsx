@@ -1,16 +1,15 @@
-import * as models from "../models";
-import { HorizontalRule, Snackbar } from "@amplication/design-system";
+import { Snackbar } from "@amplication/design-system";
 import React, { useCallback, useContext, useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
-import useServiceConnection from "./hooks/useServiceConnection";
-import ServiceMessageBrokerConnectionForm from "./ServiceMessageBrokerConnectionForm";
-import { formatError } from "../util/error";
 import { AppContext } from "../context/appContext";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import "./ServiceMessageBrokerConnection.scss";
-const CLASS_NAME = "service-message-broker-connection";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import useServiceConnection from "./hooks/useServiceConnection";
+import "./ServiceTopics.scss";
+import ServiceTopicsForm from "./ServiceTopicsForm";
+const CLASS_NAME = "service-topics";
 
-const ServiceMessageBrokerConnection = () => {
+const ServiceTopics = () => {
   const match = useRouteMatch<{
     resource: string;
     connectedResourceId: string;
@@ -28,26 +27,26 @@ const ServiceMessageBrokerConnection = () => {
   }, [resources, connectedResourceId]);
 
   const {
-    serviceMessageBrokerConnections: data,
-    updateServiceMessageBrokerConnection: update,
+    serviceTopicsList: data,
+    updateServiceTopics: update,
     updateError,
-    createServiceMessageBrokerConnection: create,
+    createServiceTopics: create,
     createError,
   } = useServiceConnection(resource);
 
-  const serviceMessageBrokerConnection = useMemo(() => {
-    return data?.ServiceMessageBrokerConnections.find(
+  const serviceTopics = useMemo(() => {
+    return data?.ServiceTopicsList.find(
       (connection) => connection.messageBrokerId === connectedResourceId
     );
   }, [data, connectedResourceId]);
 
   const handleSubmit = useCallback(
-    (data: models.ServiceMessageBrokerConnection) => {
-      if (serviceMessageBrokerConnection?.id) {
+    (data: models.ServiceTopics) => {
+      if (serviceTopics?.id) {
         update({
           variables: {
             where: {
-              id: serviceMessageBrokerConnection?.id,
+              id: serviceTopics?.id,
             },
             data,
           },
@@ -69,41 +68,21 @@ const ServiceMessageBrokerConnection = () => {
         }).catch(console.error);
       }
     },
-    [
-      update,
-      create,
-      serviceMessageBrokerConnection,
-      connectedResourceId,
-      resource,
-    ]
+    [update, create, serviceTopics, connectedResourceId, resource]
   );
 
   const errorMessage = formatError(updateError || createError);
 
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__row`}>
-        <ResourceCircleBadge
-          type={models.EnumResourceType.MessageBroker}
-          size="medium"
-        />
-        <span className={`${CLASS_NAME}__title`}>
-          {connectedResource?.name}
-        </span>
-        <span className="spacer" />
-
-        <ServiceMessageBrokerConnectionForm
+      {connectedResource && (
+        <ServiceTopicsForm
           onSubmit={handleSubmit}
-          defaultValues={serviceMessageBrokerConnection}
+          defaultValues={serviceTopics}
+          connectedResource={connectedResource}
         />
-      </div>
-      <div className={`${CLASS_NAME}__row`}>
-        <span className={`${CLASS_NAME}__description`}>
-          description about message broker and topic{" "}
-        </span>
-      </div>
+      )}
 
-      <HorizontalRule />
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}
@@ -112,4 +91,4 @@ const ServiceMessageBrokerConnection = () => {
   );
 };
 
-export default ServiceMessageBrokerConnection;
+export default ServiceTopics;

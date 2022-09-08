@@ -8,6 +8,7 @@
 
   &__header {
     margin-bottom: var(--default-spacing);
+    @include bold-14;
   }
 
   &__list {

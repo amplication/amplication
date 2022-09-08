@@ -6,7 +6,7 @@ import { MessagePattern } from './messagePattern/MessagePattern';
   isAbstract: true,
   implements: [IBlock]
 })
-export class ServiceMessageBrokerConnection extends IBlock {
+export class ServiceTopics extends IBlock {
   @Field(() => String, {
     nullable: false
   })

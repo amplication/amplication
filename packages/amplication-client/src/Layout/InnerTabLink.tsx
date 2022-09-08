@@ -6,7 +6,7 @@ import "./InnerTabLink.scss";
 
 type Props = {
   children: React.ReactNode;
-  icon: string;
+  icon?: string;
   to: string;
   className?: string;
 };
@@ -15,13 +15,9 @@ const CLASS_NAME = "inner-tab-link";
 
 function InnerTabLink({ children, icon, to, className }: Props) {
   return (
-    <NavLink
-      to={to}
-      exact
-      className={classNames(CLASS_NAME, className)}
-    >
-      <Icon icon={icon} size="medium" />
-      <span>{children}</span>
+    <NavLink to={to} exact className={classNames(CLASS_NAME, className)}>
+      {icon && <Icon icon={icon} size="medium" />}
+      <span className={`${CLASS_NAME}__inner-span`}>{children}</span>
     </NavLink>
   );
 }

@@ -4,4 +4,4 @@ import { BlockOrderByInput } from '../../block/dto/BlockOrderByInput';
 @InputType({
   isAbstract: true
 })
-export class ServiceMessageBrokerConnectionOrderByInput extends BlockOrderByInput {}
+export class ServiceTopicsOrderByInput extends BlockOrderByInput {}

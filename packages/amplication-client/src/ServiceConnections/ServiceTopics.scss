@@ -1,6 +1,6 @@
 @import "../style/index.scss";
 
-.service-message-broker-connection {
+.service-topics {
   &__row {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);
