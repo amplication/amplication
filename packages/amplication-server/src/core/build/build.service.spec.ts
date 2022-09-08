@@ -40,6 +40,8 @@ import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationP
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
+import { TopicService } from '../topic/topic.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -443,6 +445,16 @@ describe('BuildService', () => {
           useValue: {
             emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
           }
+        },
+        {
+          provide: TopicService,
+          useValue: {}
+        },
+        {
+          provide: ServiceTopicsService,
+          useValue: {
+            findMany: jest.fn(() => [])
+          }
         }
       ]
     }).compile();
@@ -573,6 +585,9 @@ describe('BuildService', () => {
         id: EXAMPLE_SERVICE_RESOURCE.id,
         url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
         settings: EXAMPLE_APP_SETTINGS_VALUES
+      },
+      {
+        messageBrokers: []
       },
       MOCK_LOGGER
     );
