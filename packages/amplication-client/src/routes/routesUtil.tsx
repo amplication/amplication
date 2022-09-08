@@ -19,7 +19,7 @@ const LazyRouteWrapper: React.FC<{
 
   return (
     // fallback component will be individual per component
-    <Suspense fallback={<CircularProgress />}>
+    <Suspense fallback={<CircularProgress centerToParent />}>
       <Route
         path={route.path}
         exact={route.exactPath}
