@@ -51,7 +51,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
       (isResourceRoute && currentResource) ||
       (isResourceRoute && currentProjectConfiguration)
     )
-      return currentResource?.name || currentProjectConfiguration?.name;
+      return currentResource?.resourceType ===  models.EnumResourceType.Service ?  currentResource?.name : 'Project Configuration'
 
     if (isCommitsRoute) return "Commits";
 

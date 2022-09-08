@@ -1053,6 +1053,7 @@ type Mutation {
   resendInvitation(where: WhereUniqueInput!): Invitation
   deleteUser(where: WhereUniqueInput!): User
   createProject(data: ProjectCreateInput!): Project!
+  updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   createResource(data: ResourceCreateInput!): Resource!
@@ -1121,6 +1122,10 @@ input InviteUserInput {
 
 input ProjectCreateInput {
   name: String!
+}
+
+input ProjectUpdateInput {
+  name: String
 }
 
 input CommitCreateInput {

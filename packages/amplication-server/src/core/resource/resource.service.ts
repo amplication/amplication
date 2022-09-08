@@ -42,7 +42,6 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
 import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 import { ProjectService } from '../project/project.service';
 
-const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   'This resource is used to store project configuration.';
 
@@ -60,6 +59,7 @@ export class ResourceService {
 
   async createProjectConfiguration(
     projectId: string,
+    projectName: string,
     userId: string
   ): Promise<Resource> {
     const existingProjectConfiguration = await this.prisma.resource.findFirst({
@@ -74,7 +74,7 @@ export class ResourceService {
       data: {
         resourceType: EnumResourceType.ProjectConfiguration,
         description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
-        name: DEFAULT_PROJECT_CONFIGURATION_NAME,
+        name: projectName,
         project: { connect: { id: projectId } }
       }
     });
@@ -392,6 +392,13 @@ export class ResourceService {
 
     if (isEmpty(resource)) {
       throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
+      await this.projectService.updateProject({
+        data: { name: args.data.name },
+        where: { id: resource.projectId }
+      });
     }
 
     return this.prisma.resource.update(args);
