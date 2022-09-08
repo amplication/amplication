@@ -21,7 +21,7 @@ export default async function generateTestDataService(
   destination: string,
   appInfo: AppInfo
 ): Promise<void> {
-  const modules = await createDataService(entities, roles, appInfo);
+  const modules = await createDataService(entities, roles, appInfo, {});
   await writeModules(modules, destination);
 }
 
