@@ -10,6 +10,7 @@ import {
   EnumDataType,
   LookupResolvedProperties,
   types,
+  ExternalApis,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -22,6 +23,7 @@ export async function createDataServiceImpl(
   entities: Entity[],
   roles: Role[],
   appInfo: AppInfo,
+  apis: ExternalApis,
   logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating application...");

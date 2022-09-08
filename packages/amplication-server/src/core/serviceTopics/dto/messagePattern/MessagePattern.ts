@@ -1,5 +1,9 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { EnumMessagePatternConnectionOptions } from './EnumMessagePatternConnectionOptions';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { EnumMessagePatternConnectionOptions } from '@amplication/code-gen-types';
+
+registerEnumType(EnumMessagePatternConnectionOptions, {
+  name: 'EnumMessagePatternConnectionOptions'
+});
 
 @ObjectType()
 export class MessagePattern {
@@ -7,5 +11,5 @@ export class MessagePattern {
   topicId!: string;
 
   @Field(() => EnumMessagePatternConnectionOptions, { nullable: false })
-  type!: keyof typeof EnumMessagePatternConnectionOptions;
+  type!: EnumMessagePatternConnectionOptions;
 }

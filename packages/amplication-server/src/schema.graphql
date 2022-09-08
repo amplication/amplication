@@ -12,11 +12,6 @@ type AdminUISettings {
   adminUIPath: String!
 }
 
-type AuthorizeResourceWithGitResult {
-  """"""
-  url: String!
-}
-
 type MessagePattern {
   topicId: String!
   type: EnumMessagePatternConnectionOptions!
@@ -26,6 +21,11 @@ enum EnumMessagePatternConnectionOptions {
   None
   Receive
   Send
+}
+
+type AuthorizeResourceWithGitResult {
+  """"""
+  url: String!
 }
 
 type Query {
@@ -51,16 +51,16 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  Topic(where: WhereUniqueInput!): Topic
+  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
+  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
+  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
-  Topic(where: WhereUniqueInput!): Topic
-  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
-  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
-  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
 }
 
 type Account {
@@ -865,50 +865,6 @@ input CommitOrderByInput {
   message: SortOrder
 }
 
-type ProjectConfigurationSettings implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  baseDirectory: String!
-}
-
-type ApiToken {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  userId: String!
-  token: String
-  previewChars: String!
-  lastAccessAt: DateTime!
-}
-
-type RemoteGitRepository {
-  name: String!
-  url: String!
-  private: Boolean!
-  fullName: String!
-  admin: Boolean!
-}
-
-input RemoteGitRepositoriesWhereUniqueInput {
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-}
-
-input GitOrganizationWhereInput {
-  id: String
-}
-
 type Topic implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -981,6 +937,50 @@ input ServiceTopicsOrderByInput {
   description: SortOrder
 }
 
+type ProjectConfigurationSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  baseDirectory: String!
+}
+
+type ApiToken {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  userId: String!
+  token: String
+  previewChars: String!
+  lastAccessAt: DateTime!
+}
+
+type RemoteGitRepository {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+}
+
+input RemoteGitRepositoriesWhereUniqueInput {
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitOrganizationWhereInput {
+  id: String
+}
+
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1017,6 +1017,10 @@ type Mutation {
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  createTopic(data: TopicCreateInput!): Topic!
+  updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
+  createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
+  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -1033,10 +1037,6 @@ type Mutation {
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   disconnectResourceGitRepository(resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
-  createTopic(data: TopicCreateInput!): Topic!
-  updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
-  createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
-  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
 }
 
 input UpdateAccountInput {
@@ -1229,62 +1229,6 @@ input ResourceRoleUpdateInput {
   displayName: String!
 }
 
-input ProjectConfigurationSettingsUpdateInput {
-  displayName: String
-  description: String
-  baseDirectory: String
-}
-
-input SignupInput {
-  email: String!
-  password: String!
-  firstName: String!
-  lastName: String!
-  workspaceName: String!
-}
-
-input LoginInput {
-  email: String!
-  password: String!
-}
-
-input ApiTokenCreateInput {
-  name: String!
-}
-
-input ChangePasswordInput {
-  oldPassword: String!
-  newPassword: String!
-}
-
-input CompleteInvitationInput {
-  token: String!
-}
-
-input CreateGitRepositoryInput {
-  name: String!
-  public: Boolean!
-  resourceId: String!
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-  gitOrganizationType: EnumGitOrganizationType!
-}
-
-input ConnectGitRepositoryInput {
-  name: String!
-  resourceId: String!
-  gitOrganizationId: String!
-}
-
-input GitOrganizationCreateInput {
-  installationId: String!
-  gitProvider: EnumGitProvider!
-}
-
-input GitGetInstallationUrlInput {
-  gitProvider: EnumGitProvider!
-}
-
 input TopicCreateInput {
   displayName: String!
   description: String
@@ -1339,4 +1283,60 @@ input ServiceTopicsUpdateInput {
   messageBrokerId: String!
   enabled: Boolean!
   patterns: [MessagePatternCreateInput!]
+}
+
+input ProjectConfigurationSettingsUpdateInput {
+  displayName: String
+  description: String
+  baseDirectory: String
+}
+
+input SignupInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  workspaceName: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input ApiTokenCreateInput {
+  name: String!
+}
+
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
+input CompleteInvitationInput {
+  token: String!
+}
+
+input CreateGitRepositoryInput {
+  name: String!
+  public: Boolean!
+  resourceId: String!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+}
+
+input ConnectGitRepositoryInput {
+  name: String!
+  resourceId: String!
+  gitOrganizationId: String!
+}
+
+input GitOrganizationCreateInput {
+  installationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitGetInstallationUrlInput {
+  gitProvider: EnumGitProvider!
 }

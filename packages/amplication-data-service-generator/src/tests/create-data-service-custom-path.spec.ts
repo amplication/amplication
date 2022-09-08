@@ -24,7 +24,7 @@ jest.setTimeout(100000);
 
 describe("createDataService", () => {
   test("creates app as expected", async () => {
-    const modules = await createDataService(entities, roles, newAppInfo);
+    const modules = await createDataService(entities, roles, newAppInfo, {});
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)

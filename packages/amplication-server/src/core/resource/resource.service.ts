@@ -8,25 +8,28 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { pascalCase } from 'pascal-case';
 import pluralize from 'pluralize';
+import { AmplicationError } from 'src/errors/AmplicationError';
 import { FindOneArgs } from '../../dto';
 import { EnumDataType } from '../../enums/EnumDataType';
 import { QueryMode } from '../../enums/QueryMode';
-import { Project, Resource, User, GitOrganization } from '../../models';
+import { GitOrganization, Project, Resource, User } from '../../models';
 import { prepareDeletedItemName } from '../../util/softDelete';
-import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
+import { BlockService } from '../block/block.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
 import { EntityService } from '../entity/entity.service';
 import { EnvironmentService } from '../environment/environment.service';
+import { ProjectService } from '../project/project.service';
+import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
+import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import {
   CreateOneResourceArgs,
   FindManyResourceArgs,
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs
 } from './dto';
-import { ReservedEntityNameError } from './ReservedEntityNameError';
+import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
-import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { ReservedEntityNameError } from './ReservedEntityNameError';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -39,8 +42,6 @@ export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   'The resource of type `ProjectConfiguration` cannot be deleted';
-import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
-import { ProjectService } from '../project/project.service';
 
 const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
@@ -55,7 +56,8 @@ export class ResourceService {
     private serviceSettingsService: ServiceSettingsService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    protected readonly blockService: BlockService
   ) {}
 
   async createProjectConfiguration(

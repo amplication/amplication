@@ -41,6 +41,11 @@ import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { GitResourceMeta } from './dto/GitResourceMeta';
+import { ExternalApis, MessagePattern } from '@amplication/code-gen-types';
+import { ServiceTopics } from '../serviceTopics/dto/ServiceTopics';
+import { MessagePattern as MessagePatternWithTopicId } from '../serviceTopics/dto/messagePattern/MessagePattern';
+import { TopicService } from '../topic/topic.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -155,6 +160,8 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
+    private readonly topicService: TopicService,
+    private readonly serviceTopicsService: ServiceTopicsService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -327,6 +334,8 @@ export class BuildService {
         const resource = await this.resourceService.resource({
           where: { id: build.resourceId }
         });
+        const messageBrokers = await this.getMessageBrokers(resource.id);
+        const apis: ExternalApis = { messageBrokers };
         const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
           {
             where: { id: build.resourceId }
@@ -354,6 +363,7 @@ export class BuildService {
             url,
             settings: serviceSettings
           },
+          apis,
           dataServiceGeneratorLogger
         );
 
@@ -582,5 +592,58 @@ export class BuildService {
       where: { id: buildId, AND: { userId } }
     });
     return Boolean(build);
+  }
+
+  private async getMessageBrokers(
+    resourceId: string
+  ): Promise<
+    {
+      patterns: MessagePattern[];
+    }[]
+  > {
+    const serviceTopics = await this.serviceTopicsService.findMany({
+      where: { resource: { id: resourceId } }
+    });
+    const populatedServiceTopics = await this.populateServiceTopicsWithName(
+      serviceTopics
+    );
+    return populatedServiceTopics;
+  }
+
+  async fromTopicIdToName(
+    serviceTopicPattern: MessagePatternWithTopicId
+  ): Promise<MessagePattern> {
+    const serviceTopic = await this.topicService.findOne({
+      where: { id: serviceTopicPattern.topicId }
+    });
+    if (!serviceTopic) {
+      throw new Error(`Topic not found: ${serviceTopicPattern.topicId}`);
+    }
+
+    return {
+      name: serviceTopic.name,
+      type: serviceTopicPattern.type
+    };
+  }
+
+  async populateServiceTopicsWithName(
+    serviceTopics: ServiceTopics[]
+  ): Promise<
+    {
+      patterns: MessagePattern[];
+    }[]
+  > {
+    return await Promise.all(
+      serviceTopics.map(async serviceTopic => {
+        const patterns = await Promise.all(
+          (serviceTopic.patterns || []).map(pattern => {
+            return this.fromTopicIdToName(pattern);
+          })
+        );
+        return {
+          patterns
+        };
+      })
+    );
   }
 }

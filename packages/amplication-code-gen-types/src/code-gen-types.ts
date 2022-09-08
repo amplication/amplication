@@ -18,6 +18,7 @@ export type WorkerParam = {
   entities: Entity[];
   roles: Role[];
   appInfo: AppInfo;
+  apis: ExternalApis;
 };
 
 export type ServiceSettings = Omit<
@@ -147,4 +148,21 @@ export type Module = {
 export type ResourceGenerationConfig = {
   dataServiceGeneratorVersion: string;
   appInfo: AppInfo;
+};
+
+export enum EnumMessagePatternConnectionOptions {
+  "None" = "None",
+  "Receive" = "Receive",
+  "Send" = "Send",
+}
+
+export type MessagePattern = {
+  name: string;
+  type: EnumMessagePatternConnectionOptions;
+};
+
+export type ExternalApis = {
+  messageBrokers?: {
+    patterns: MessagePattern[];
+  }[];
 };
