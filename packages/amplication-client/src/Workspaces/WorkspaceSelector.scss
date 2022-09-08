@@ -3,7 +3,6 @@
 @mixin workspaceItem {
   display: flex;
   flex: 1;
-  align-items: center;
   cursor: pointer;
   padding: var(--default-spacing);
   gap: var(--default-spacing);
@@ -13,6 +12,8 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    flex: 1;
+    min-width: 0;
   }
 
   &__plan {
@@ -21,9 +22,11 @@
   }
 
   &__details {
-    @include flexColumn;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
     font-weight: 400;
-    margin-right: auto;
   }
 }
 
@@ -37,6 +40,7 @@
 
   &__current {
     @include workspaceItem;
+    width: calc(100% - var(--double-spacing));
 
     .amp-button {
       min-width: var(--button-min-width);

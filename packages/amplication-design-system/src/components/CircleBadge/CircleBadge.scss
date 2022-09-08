@@ -1,5 +1,12 @@
 @import "../../style/index.scss";
 
+@mixin circleSize($size) {
+  width: var($size);
+  height: var($size);
+  min-width: var($size);
+  min-height: var($size);
+}
+
 .circle-badge {
   @include title1;
   box-sizing: border-box;
@@ -15,8 +22,7 @@
   background-color: var(--secondary-turquoise);
 
   &.xxsmall {
-    width: var(--icon-size-xxsmall);
-    height: var(--icon-size-xxsmall);
+    @include circleSize(--icon-size-xxsmall);
     .amp-icon {
       color: var(--black2);
       font-size: var(--text-field-label-font-size);
@@ -24,8 +30,7 @@
   }
 
   &.xsmall {
-    width: var(--icon-size-xsmall);
-    height: var(--icon-size-xsmall);
+    @include circleSize(--icon-size-xsmall);
     .amp-icon {
       color: var(--black2);
       font-size: var(--text-field-label-font-size);
@@ -33,8 +38,7 @@
   }
 
   &.small {
-    width: var(--icon-size-small);
-    height: var(--icon-size-small);
+    @include circleSize(--icon-size-small);
     .amp-icon {
       color: var(--black2);
       font-size: var(--title3-font-size);
@@ -42,8 +46,7 @@
   }
 
   &.medium {
-    width: var(--icon-size-medium);
-    height: var(--icon-size-medium);
+    @include circleSize(--icon-size-medium);
     .amp-icon {
       color: var(--black2);
       font-size: var(--title3-font-size);
@@ -51,8 +54,7 @@
   }
 
   &.large {
-    width: var(--icon-size-large);
-    height: var(--icon-size-large);
+    @include circleSize(--icon-size-large);
     .amp-icon {
       color: var(--black2);
       font-size: var(--large-icon-font-size);
@@ -60,8 +62,7 @@
   }
 
   &.xlarge {
-    width: var(--icon-size-xlarge);
-    height: var(--icon-size-xlarge);
+    @include circleSize(--icon-size-xlarge);
     .amp-icon {
       color: var(--black2);
       font-size: var(--title4-font-size);
@@ -69,8 +70,7 @@
   }
 
   &.xxlarge {
-    width: var(--icon-size-xxlarge);
-    height: var(--icon-size-xxlarge);
+    @include circleSize(--icon-size-xxlarge);
     .amp-icon {
       color: var(--black2);
       font-size: var(--title4-font-size);
