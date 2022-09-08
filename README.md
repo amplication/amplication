@@ -11,7 +11,7 @@
      <span>&nbsp;|&nbsp;</span>
     <a href="https://twitter.com/amplication">Twitter</a>
      <span>&nbsp;|&nbsp;</span>
-    <a href="https://discord.com/invite/Z2CG3rUFnu">Discord</a>
+    <a href="https://amplication.com/discord">Discord</a>
 </p>
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
