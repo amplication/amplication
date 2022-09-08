@@ -228,11 +228,6 @@ $bullet-size: 6px;
   $foreground-color,
   $background-color: mix($foreground-color, white, 50%)
 ) {
-
-  & {
-    scrollbar-gutter: stable;
-  }
-
   // For Google Chrome
   &::-webkit-scrollbar {
     width: $size;

@@ -13,15 +13,15 @@ $tabs-width: 300px;
   overflow: hidden;
 
   &__tabs {
-    @include scrollbars(16px, var(--black60), transparent);
+    display: flex;
+    flex-direction: column;
     width: $tabs-width;
     background: var(--page-content-tab-background);
     border-radius: var(--default-border-radius);
     border: $border-black10;
-    padding: var(--large-spacing) 0 var(--large-spacing) var(--large-spacing);
+    padding: var(--large-spacing);
     box-sizing: border-box;
-    overflow: auto;
-
+    
     .sub-list {
       margin-left: var(--triple-spacing);
     }
@@ -29,6 +29,7 @@ $tabs-width: 300px;
 
   &__main {
     @include scrollbars(16px, var(--black60), transparent);
+    scrollbar-gutter: stable;
     flex: 1;
     overflow: auto;
     position: relative;

@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { AppContext } from "../context/appContext";
 import InnerTabLink from "../Layout/InnerTabLink";
-import "./WorkspaceSettingsNavigation.scss";
 
 const CLASS_NAME = "workspace-settings-navigation";
 
