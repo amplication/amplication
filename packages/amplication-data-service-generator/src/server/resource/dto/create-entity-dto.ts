@@ -1,6 +1,6 @@
 import { builders } from "ast-types";
-import { Entity } from "@amplication/code-gen-types";
-import { classDeclaration, NamedClassDeclaration } from "../../../util/ast";
+import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
+import { classDeclaration } from "../../../util/ast";
 import { isPasswordField } from "../../../util/field";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";

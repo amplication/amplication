@@ -2,7 +2,9 @@
 
 .commit-resource-list-item {
   &__divider {
-    border: $border-black10;
+    border: none;
+    background-color: var(--black10);
+    height: 1px;
     width: 100%;
     margin-top: auto;
   }

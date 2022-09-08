@@ -6,7 +6,8 @@ import {
   Entity,
   EntityLookupField,
   Module,
-  AppInfo,
+  NamedClassDeclaration,
+  DTOs,
 } from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
@@ -21,11 +22,10 @@ import {
   removeESLintComments,
   importContainedIdentifiers,
   getMethods,
-  NamedClassDeclaration,
   removeTSIgnoreComments,
 } from "../../../util/ast";
 import { isToManyRelationField } from "../../../util/field";
-import { DTOs, getDTONameToPath } from "../create-dtos";
+import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
 import {
   createServiceId,
@@ -36,6 +36,7 @@ import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
+import DsgContext from "../../../dsg-context";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
@@ -53,18 +54,17 @@ const controllerBaseTemplatePath = require.resolve(
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createControllerModules(
-  appInfo: AppInfo,
   resource: string,
   entityName: string,
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
-  dtos: DTOs,
   srcDirectory: string
 ): Promise<Module[]> {
-  const { settings } = appInfo;
+  const context = DsgContext.getInstance;
+  const { settings } = context.appInfo;
   const { authProvider } = settings;
-  const entityDTOs = dtos[entity.name];
+  const entityDTOs = context.DTOs[entity.name];
   const entityDTO = entityDTOs.entity;
 
   const controllerId = createControllerId(entityType);
@@ -119,7 +119,7 @@ export async function createControllerModules(
       entityType,
       entityServiceModule,
       entity,
-      dtos,
+      context.DTOs,
       mapping,
       controllerBaseId,
       serviceId,
@@ -132,7 +132,7 @@ export async function createControllerModules(
       entityType,
       entityServiceModule,
       entity,
-      dtos,
+      context.DTOs,
       mapping,
       controllerBaseId,
       serviceId,

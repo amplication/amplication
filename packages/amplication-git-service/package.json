@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-service",
-  "version": "0.15.2",
+  "version": "0.16.0",
   "main": "dist/index.js",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -30,7 +30,7 @@
     "graphql": "15.7.2",
     "minimatch": "5.1.0",
     "octokit": "^1.7.1",
-    "octokit-plugin-create-pull-request": "^3.11.0",
+    "octokit-plugin-create-pull-request": "3.12.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

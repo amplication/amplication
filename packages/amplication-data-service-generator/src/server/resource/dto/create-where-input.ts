@@ -1,6 +1,9 @@
 import { builders, namedTypes } from "ast-types";
-import { Entity, EntityField } from "@amplication/code-gen-types";
-import { NamedClassDeclaration } from "../../../util/ast";
+import {
+  Entity,
+  EntityField,
+  NamedClassDeclaration,
+} from "@amplication/code-gen-types";
 import { isScalarListField, isPasswordField } from "../../../util/field";
 import { createInput } from "./create-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";

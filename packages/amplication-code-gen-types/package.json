@@ -1,6 +1,6 @@
 {
   "name": "@amplication/code-gen-types",
-  "version": "0.15.2",
+  "version": "0.16.0",
   "description": "This library supplies all the contracts for Amplication Code Generation. The purpose is to make the contracts available for inclusion in plugins.",
   "main": "dist/index.js",
   "author": {
@@ -43,5 +43,10 @@
     "dsg",
     "code generation",
     "low code"
-  ]
+  ],
+  "dependencies": {
+    "@nestjs/core": "^9.0.9",
+    "ast-types": "^0.14.2",
+    "lodash": "^4.17.21"
+  }
 }
