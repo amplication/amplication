@@ -6,7 +6,8 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-  Pagination
+  HorizontalRule,
+  EnumHorizontalRuleStyle
 } from "@amplication/design-system";
 import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useState } from "react";
@@ -26,21 +27,6 @@ type Props = {
   gitProvider: EnumGitProvider;
 };
 
-interface limit {
-  id: string,
-  value: number,
-}
-const limits = [{
-  id: "repos-limit-1",
-  value: 10,
-}, {
-  id: "repos-limit-2",
-  value: 20,
-}, {
-  id: "repos-limit-1",
-  value: 30,
-}]
-
 function GitRepos({
   resourceId,
   gitOrganizationId,
@@ -48,7 +34,6 @@ function GitRepos({
   gitProvider,
 }: Props) {
   const { trackEvent } = useTracking();
-  const [limit, setLimit] = useState<limit>(limits[0])
   const [page, setPage] = useState(1)
   const {
     data,
@@ -60,7 +45,7 @@ function GitRepos({
     variables: {
       gitOrganizationId,
       gitProvider,
-      limit: limit.value,
+      limit: 10,
       page: page
     },
     notifyOnNetworkStatusChange: true,
@@ -99,52 +84,48 @@ function GitRepos({
 
   return (
     <div className={CLASS_NAME}>
+      <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
       <div className={`${CLASS_NAME}__header`}>
-        <h4>Select a {gitProvider} repository to sync your resource with.</h4>
-        {loadingRepos || networkStatus === NetworkStatus.refetch ? (
-          <CircularProgress />
-        ) : (
-          <Tooltip aria-label="Refresh repositories" direction="w" noDelay wrap>
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              onClick={(e) => {
-                handleRefresh();
-              }}
-              type="button"
-              icon="refresh_cw"
-            />
-          </Tooltip>
-        )}
+        {true && <div className={`${CLASS_NAME}__header-left`}>
+          <h4>Select {gitProvider} repository</h4>
+          {loadingRepos || networkStatus === NetworkStatus.refetch ? (
+            <CircularProgress />
+          ) : (
+            <Tooltip aria-label="Refresh repositories" direction="w" noDelay wrap>
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                onClick={(e) => {
+                  handleRefresh();
+                }}
+                type="button"
+                icon="refresh_cw"
+              />
+            </Tooltip>
+          )}
+        </div>}
+        <div className={`${CLASS_NAME}__header-right`}>
+          <h4>Page</h4>
+          <SelectMenu title={page.toString()} buttonStyle={EnumButtonStyle.Secondary} icon="chevron_down">
+            <SelectMenuModal>
+              <SelectMenuList>
+                {Array.from({length: Math.ceil(data?.remoteGitRepositories.totalRepos / data?.remoteGitRepositories.pageSize)}, (_, index) => index + 1).map((item, i) => {
+                  return (
+                    <SelectMenuItem
+                      closeAfterSelectionChange
+                      selected={item === page}
+                      onSelectionChange={() => {
+                        setPage(item)
+                      }} key={i}
+                    >
+                      {item}
+                    </SelectMenuItem>
+                  )
+                })}
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
+        </div>
       </div>
-      {!loadingRepos && <div className={`${CLASS_NAME}__pagination`}>
-        <SelectMenu title={limit.value.toString()} buttonStyle={EnumButtonStyle.Secondary} icon="chevron_down">
-          <SelectMenuModal>
-            <SelectMenuList>
-              {limits.map((item, index) => {
-                return (
-                  <SelectMenuItem
-                    closeAfterSelectionChange
-                    selected={item.value === limit.value}
-                    onSelectionChange={() => {
-                      setLimit(limits[index])
-                      setPage(1)
-                    }} key={item.id}
-                  >
-                    {item.value}
-                  </SelectMenuItem>
-                )
-              })}
-
-            </SelectMenuList>
-          </SelectMenuModal>
-        </SelectMenu>
-        {data && <Pagination pageCount={Math.ceil(data?.remoteGitRepositories?.totalRepos / data?.remoteGitRepositories?.pageSize)} currentPage={page} onPageChange={(e, page) => {
-          console.log(page)
-          setPage(page)
-        }}
-          sx={{ marginTop: 0, marginBottom: 0 }}
-        />}
-      </div>}
       {
         networkStatus !== NetworkStatus.refetch && // hide data if refetch
         data?.remoteGitRepositories?.repos?.map((repo) => (

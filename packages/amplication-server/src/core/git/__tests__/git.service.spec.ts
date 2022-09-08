@@ -121,7 +121,7 @@ describe('GitService', () => {
           gitOrganizationId: 'exampleGitOrganizationId',
           gitProvider: EnumGitProvider.Github,
           limit: 2,
-          page: 1,
+          page: 1
         };
         const remoteGitRepositories = await gitService.getReposOfOrganization(
           remoteGitRepositoriesWhereUniqueInput
