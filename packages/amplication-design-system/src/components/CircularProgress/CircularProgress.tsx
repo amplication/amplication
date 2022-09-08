@@ -4,9 +4,16 @@ import "./CircularProgress.scss";
 
 const CLASS_NAME = "amp-circular-progress";
 
-export type Props = CircularProgressProps & HTMLProps<HTMLElement>;
+export type Props = CircularProgressProps &
+  HTMLProps<HTMLElement> & {
+    centerToParent?: boolean;
+  };
 
-export function CircularProgress({ size = 20, ...rest }: Props) {
+export function CircularProgress({
+  size = 20,
+  centerToParent = false,
+  ...rest
+}: Props) {
   return (
     <span className={CLASS_NAME}>
       <CP {...rest} size={size} />
