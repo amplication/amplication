@@ -106,9 +106,11 @@ function ResourceList() {
       <div className={`${CLASS_NAME}__title`}>Project Settings</div>
 
       <div className={`${CLASS_NAME}__settings`}>
-        <ResourceListItem resource={projectConfigurationResource} />
+        {projectConfigurationResource && (
+          <ResourceListItem resource={projectConfigurationResource} />
+        )}
       </div>
-      <hr className={`${CLASS_NAME}__separator`} />      
+      <hr className={`${CLASS_NAME}__separator`} />
       <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
       {loadingResources && <CircularProgress centerToParent />}
 
