@@ -7,7 +7,6 @@ import { AppContext } from "../context/appContext";
 import { CommitListItem } from "./CommitListItem";
 import "./CommitList.scss";
 
-
 type Props = {
   commits: models.Commit[];
   error: ApolloError | undefined;
@@ -16,13 +15,12 @@ type Props = {
 
 const CommitList = ({ commits, error, loading }: Props) => {
   const { currentProject } = useContext(AppContext);
- 
 
   const errorMessage = formatError(error);
 
   return (
     <>
-      {loading && <CircularProgress />}
+      {loading && <CircularProgress centerToParent />}
       {currentProject &&
         commits.map((commit) => (
           <CommitListItem

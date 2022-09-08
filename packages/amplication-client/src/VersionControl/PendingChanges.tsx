@@ -4,7 +4,12 @@ import { Link } from "react-router-dom";
 import { formatError } from "../util/error";
 import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Dialog, Snackbar, Tooltip } from "@amplication/design-system";
+import {
+  CircularProgress,
+  Dialog,
+  Snackbar,
+  Tooltip,
+} from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
@@ -62,7 +67,7 @@ const PendingChanges = ({ projectId }: Props) => {
 
       <div className={`${CLASS_NAME}__changes-wrapper`}>
         {pendingChangesDataLoading ? (
-          <span>Loading...</span>
+          <CircularProgress centerToParent />
         ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
           <div className={`${CLASS_NAME}__empty-state`}>
             <SvgThemeImage image={EnumImages.NoChanges} />
@@ -112,7 +117,7 @@ const PendingChanges = ({ projectId }: Props) => {
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 disabled={pendingChangesDataLoading || noChanges}
-                icon="compare"  
+                icon="compare"
               />
             </Link>
           </Tooltip>
