@@ -9,6 +9,7 @@ $resource-name-max-width: 180px;
   display: flex;
   flex-direction: column;
   flex: 1;
+  
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -22,7 +23,6 @@ $resource-name-max-width: 180px;
     border: none;
     background-color: var(--black10);
     height: 1px;
-    width: 100%;
     margin-top: auto;
   }
 
@@ -106,17 +106,10 @@ $resource-name-max-width: 180px;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+    
+    overflow-y: auto;
+    @include scrollbars(16px, var(--black60), transparent);
 
-    &::-webkit-scrollbar-track {
-      background-color: transparent;
-      border-radius: var(--scrollbar-radius);
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--black60);
-      border-radius: var(--scrollbar-radius);
-      width: var(--grid-row-gap);
-    }
 
     &__resource {
       @include bold-12;

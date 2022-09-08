@@ -2,8 +2,11 @@
 
 .project-list {
   display: flex;
-  flex: 1;
-
+  flex-grow: 1;
+  flex-basis: 0px;
+  @include scrollbars(16px, var(--black60), transparent);
+  overflow: auto;
+  
   &__items {
     flex: 1;
   }
