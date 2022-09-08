@@ -138,7 +138,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
       )}
     </AppContextProvider>
   ) : (
-    <CircularProgress />
+    <CircularProgress centerToParent />
   );
 };
 

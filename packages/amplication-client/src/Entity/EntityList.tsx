@@ -114,7 +114,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         <div className={`${CLASS_NAME}__title`}>
           {data?.entities.length} Entities
         </div>
-        {loading && <CircularProgress />}
+        {loading && <CircularProgress centerToParent />}
 
         {data?.entities.map((entity) => (
           <EntityListItem

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Switch, match } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import { Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/design-system";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
@@ -33,7 +33,9 @@ type UpdateData = {
 const Entity = ({ match }: Props) => {
   const { entityId, resource } = match.params;
   const { trackEvent } = useTracking();
-  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(
+    AppContext
+  );
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
@@ -116,7 +118,7 @@ const Entity = ({ match }: Props) => {
       }
     >
       {loading ? (
-        <span>Loading...</span>
+        <CircularProgress centerToParent />
       ) : !data ? (
         <span>can't find</span> /**@todo: Show formatted error message */
       ) : (

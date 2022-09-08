@@ -111,7 +111,7 @@ function ResourceList() {
       )}
       <HorizontalRule />
       <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
-      {loadingResources && <CircularProgress />}
+      {loadingResources && <CircularProgress centerToParent />}
 
       {isEmpty(resources) && !loadingResources ? (
         <div className={`${CLASS_NAME}__empty-state`}>
