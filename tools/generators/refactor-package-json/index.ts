@@ -19,7 +19,7 @@ export default async function (tree: Tree, schema: any) {
 					const newVersion = val;
 					if (rootVersion !== newVersion) {
 						console.warn(`[dependency] root package.json has dependency ${key} with
-version ${rootVersion}, subpackage ${dir} has version ${val}`);
+version ${rootVersion}, subpackage ${dir} has version ${val}\n`);
 					}
 				}
 				rootPackageJSON.dependencies[key] = val
@@ -32,7 +32,7 @@ version ${rootVersion}, subpackage ${dir} has version ${val}`);
 					const newVersion = val;
 					if (rootVersion !== newVersion) {
 						console.warn(`[devDependencies] root package.json has devDependencies ${key} with
-version ${rootVersion}, subpackage ${dir} has version ${val}`);
+version ${rootVersion}, subpackage ${dir} has version ${val}\n`);
 					}
 				}
 				rootPackageJSON.devDependencies[key] = val
