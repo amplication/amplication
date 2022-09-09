@@ -1,6 +1,8 @@
 
 
 ### Backlog for install nx
+
+#### refactor package json
 - add nx and update nx.
 - add nx generator to run scripts.
 - remove all node_modules in packages.
@@ -18,4 +20,17 @@
   yarn add -D typescript
   yarn nx g @nrwl/node:app test
   yarn nx g @nrwl/node:remove test
+  rm -rf packages/test
   ```
+
+- working on `refactor-package-json`
+  >
+  > ```bash
+  > yarn nx workspace-generator refactor-package-json
+  > ```
+
+
+  ```bash
+  yarn add -D fs-extra @types/fs-extra
+  ```
+
