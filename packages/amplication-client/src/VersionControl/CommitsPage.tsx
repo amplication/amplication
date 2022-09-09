@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { match, useHistory } from "react-router-dom";
+import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import { Commit } from "../models";
@@ -26,6 +27,8 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   const { currentProject, currentWorkspace } = useContext(AppContext);
   const { commits, commitsError, commitsLoading } = useCommit();
   const commitIdx = getCommitIdx(commits, commitId);
+  const commitsBuilds =
+    commits.length > 0 && commitIdx > -1 && commits[commitIdx].builds?.length;
 
   useEffect(() => {
     if (commitId) return;
@@ -40,21 +43,26 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
       className={moduleClass}
       pageTitle={`Commit Page ${commitId ? commitId : ""}`}
       sideContent={
-        <CommitList
-          commits={commits}
-          error={commitsError}
-          loading={commitsLoading}
-        />
+        commitsBuilds ? (
+          <CommitList
+            commits={commits}
+            error={commitsError}
+            loading={commitsLoading}
+          />
+        ) : null
       }
     >
-      {commits.length > 0 &&
-        commitIdx > -1 &&
-        commits[commitIdx].builds?.length && (
-          <CommitResourceList
-            builds={commits[commitIdx].builds}
-            commitId={commitId}
-          />
-        )}
+      {commitsBuilds ? (
+        <CommitResourceList
+          builds={commits[commitIdx].builds}
+          commitId={commitId}
+        />
+      ) : (
+        <div className="commit-page-empty-state">
+          <SvgThemeImage image={EnumImages.CommitEmptyState} />
+          <p>There are not commits to show</p>
+        </div>
+      )}
     </PageContent>
   );
 };

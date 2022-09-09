@@ -40,8 +40,8 @@
   --image-drop-excel: url("../assets/images/mono/drop-excel-dark.svg");
   --image-my-resources: url("../assets/images/mono/my-resources-dark.svg");
   --image-generating: url("../assets/images/mono/generating-dark.svg");
-  --image-create-service-wizard : url("../assets/images/mono/service-wizard-create.svg");
-
+  --image-create-service-wizard: url("../assets/images/mono/service-wizard-create.svg");
+  --image-commit-empty-state: url("../assets/images/mono/commit-empty-state.svg");
 
   --diffViewerBackground: var(--white);
   --diffViewerColor: var(--black100);

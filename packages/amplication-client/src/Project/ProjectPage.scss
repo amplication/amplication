@@ -4,4 +4,21 @@
   display: flex;
   height: 100%;
   flex: 1 auto;
+
+  .commit-page-empty-state {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 44%;
+    top: 28%;
+    p {
+      @include regular-12;
+      color: var(--black20);
+      margin: 0 auto;
+    }
+    .svg-theme-image {
+      width: 200px;
+      height: 200px;
+    }
+  }
 }
