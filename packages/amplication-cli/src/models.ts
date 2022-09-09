@@ -1394,6 +1394,7 @@ export type PluginInstallation = IBlock & {
 export type PluginInstallationCreateInput = {
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
+  enabled: Scalars['Boolean'];
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
