@@ -1,6 +1,11 @@
 @import "../style/index.scss";
 
 .commit-resource-list-item {
+  &:hover {
+    > hr {
+      background-color: var(--black20);
+    }
+  }
   &__divider {
     border: none;
     background-color: var(--black10);
@@ -21,8 +26,9 @@
 
     .clickable-id {
       color: var(--black80);
+      margin-left: var(--default-spacing-small);
       a {
-        color: var(--black100);
+        @include regular-12;
         margin-left: var(--default-spacing-small);
       }
     }
@@ -36,13 +42,11 @@
     margin-right: auto;
     display: flex;
     align-items: center;
-
-    p {
-      padding: 0 var(--default-spacing-small);
-    }
+    padding: 0 var(--default-spacing-small);
   }
 
   &__changes-count {
-    margin-right: auto;
+    @include regular-12;
+    text-decoration: underline;
   }
 }
