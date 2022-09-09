@@ -54,6 +54,8 @@ type Query {
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  PluginInstallation(where: WhereUniqueInput!): PluginInstallation
+  PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
 }
 
 type Account {
@@ -1083,6 +1085,43 @@ input GitOrganizationWhereInput {
   id: String
 }
 
+type PluginInstallation implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String!
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  pluginId: String!
+  enabled: Boolean!
+  order: Int!
+}
+
+input PluginInstallationWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input PluginInstallationOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1142,6 +1181,8 @@ type Mutation {
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   disconnectResourceGitRepository(resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
+  updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
 }
 
 input UpdateAccountInput {
@@ -1497,4 +1538,21 @@ input GitOrganizationCreateInput {
 
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
+}
+
+input PluginInstallationCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  pluginId: String!
+  enabled: Boolean!
+}
+
+input PluginInstallationUpdateInput {
+  displayName: String
+  description: String
+  enabled: Boolean!
 }
