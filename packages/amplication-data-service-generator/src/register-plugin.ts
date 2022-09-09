@@ -1,5 +1,5 @@
 import {
-  DsgPlugin,
+  Plugin,
   Events,
   EventNames,
   PluginMap,
@@ -15,14 +15,14 @@ const functionsObject = ["[object Function]", "[object AsyncFunction]"];
  * @returns Plugin class
  */
 async function* getPluginFuncGenerator(
-  pluginList: DsgPlugin[]
+  pluginList: Plugin[]
 ): AsyncGenerator<new () => any> {
   try {
     const pluginListLength = pluginList.length;
     let index = 0;
 
     do {
-      const packageName = pluginList[index].packageName;
+      const packageName = pluginList[index].pluginId;
       const func = await import(packageName);
 
       ++index;
@@ -39,7 +39,7 @@ async function* getPluginFuncGenerator(
 /**
  * loop through all plugin list and set the plugin under each event
  */
-const getAllPlugins = async (pluginList: DsgPlugin[]): Promise<Events[]> => {
+const getAllPlugins = async (pluginList: Plugin[]): Promise<Events[]> => {
   if (!pluginList.length) return [];
   const pluginFuncsArr: Events[] = [];
 
@@ -61,7 +61,7 @@ const getAllPlugins = async (pluginList: DsgPlugin[]): Promise<Events[]> => {
  * main plugin manger function. it trigger plugin import and set the structure for plugin context
  */
 const registerPlugins = async (
-  pluginList: DsgPlugin[]
+  pluginList: Plugin[]
 ): Promise<{ [K in EventNames]?: any }> => {
   const pluginMap: PluginMap = {};
 

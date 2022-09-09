@@ -128,6 +128,33 @@ const resourceRoutes = [
     exactPath: false,
     routes: resourceSettingsRoutes,
   },
+  {
+    path: "/:workspace/:project/:resource/plugins",
+    Component: lazy(() => import("../Plugins/PluginsPage")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [
+      {
+        path: "/:workspace/:project/:resource/plugins/catalog",
+        Component: lazy(() => import("../Plugins/PluginsCatalog")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+      {
+        path: "/:workspace/:project/:resource/plugins/installed",
+        Component: lazy(() => import("../Plugins/InstalledPlugins")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+    ],
+  },
 ];
 
 export default resourceRoutes;
