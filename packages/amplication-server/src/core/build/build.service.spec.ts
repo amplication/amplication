@@ -5,7 +5,6 @@ import * as winston from 'winston';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { orderBy } from 'lodash';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -28,7 +27,7 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
 import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { Resource, Commit, Entity } from 'src/models';
+import { Resource, Commit, Entity, Block } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,
@@ -36,12 +35,12 @@ import {
 } from '../action/dto';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
-import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
 import { PluginInstallation } from '../pluginInstallation/dto/PluginInstallation';
+import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 jest.mock('winston');
@@ -241,6 +240,10 @@ const prismaBuildFindOneMock = jest.fn();
 
 const prismaBuildFindManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
+});
+
+const prismaPluginFindManyMock = jest.fn(() => {
+  return [EXAMPLE_PLUGIN_INSTALLATION];
 });
 
 const entityServiceGetLatestVersionsMock = jest.fn(() => {
@@ -466,7 +469,7 @@ describe('BuildService', () => {
         {
           provide: PluginInstallationService,
           useValue: {
-            findMany: () => [EXAMPLE_PLUGIN_INSTALLATION]
+            findMany: prismaPluginFindManyMock
           }
         }
       ]
