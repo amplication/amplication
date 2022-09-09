@@ -18,6 +18,15 @@ export default async function (tree: Tree, schema: any) {
 	await fse.copy(`packages/test/tsconfig.lib.json`, `packages/${schema.name}/tsconfig.lib.json`)
 	await fse.copy(`packages/test/tsconfig.spec.json`, `packages/${schema.name}/tsconfig.spec.json`)
 
+	await fse.outputFile(`packages/${schema.name}/ng-package.json`, JSON.stringify({
+			'$schema': '../../node_modules/ng-packagr/ng-package.schema.json',
+			'dest': `../../dist/libs/${schema.name}`,
+			'lib': {
+				'entryFile': 'src/index.ts'
+			}
+		}
+		, null, 2))
+
 	await fse.outputFile(`packages/${schema.name}/project.json`,
 		JSON.stringify(templateProjectFile(schema.name), null, 2))
 	await fse.outputFile(`packages/${schema.name}/tsconfig.prod.json`, `{
