@@ -11,9 +11,7 @@ import { ITokenService, ITokenPayload } from "../ITokenService";
 export class TokenServiceBase implements ITokenService {
   /**
    *
-   * @param id
-   * @param username
-   * @param password
+   * @object { username: String, password: String }
    * @returns a base64 string of the username and password
    */
   createToken({ username, password }: ITokenPayload): Promise<string> {

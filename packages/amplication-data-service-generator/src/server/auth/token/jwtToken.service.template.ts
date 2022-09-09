@@ -13,9 +13,7 @@ export class TokenServiceBase implements ITokenService {
   constructor(protected readonly jwtService: JwtService) {}
   /**
    *
-   * @param id
-   * @param username
-   * @param password
+   * @object { id: String, username: String, password: String}
    * @returns a jwt token sign with the username
    */
   createToken({ id, username, password }: ITokenPayload): Promise<string> {
