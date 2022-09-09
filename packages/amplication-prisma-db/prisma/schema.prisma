@@ -135,9 +135,9 @@ model Resource {
   roles                 ResourceRole[]
   blocks                Block[]
   builds                Build[]
-  entities          Entity[]
-  environments      Environment[]
-  gitRepository     GitRepository?@relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
+  entities              Entity[]
+  environments          Environment[]
+  gitRepository         GitRepository?   @relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
   projectId             String
   project               Project          @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
   resourceType          EnumResourceType
@@ -452,6 +452,8 @@ enum EnumDataType {
 enum EnumBlockType {
   ServiceSettings
   ProjectConfigurationSettings
+  Topic
+  ServiceTopics
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -534,6 +536,7 @@ model Subscription {
 enum EnumResourceType {
   Service
   ProjectConfiguration
+  MessageBroker
 }
 
 enum EnumGitProvider {

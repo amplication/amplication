@@ -44,7 +44,7 @@ type ImportField = {
 };
 
 type TData = {
-  createResourceWithEntities: models.Resource;
+  createServiceWithEntities: models.Resource;
 };
 
 enum Steps {
@@ -118,7 +118,7 @@ export function CreateResourceFromExcel() {
     return resourcesData && !isEmpty(resourcesData.resources);
   }, [resourcesData]);
 
-  const [createResourceWithEntities, { loading, data, error }] = useMutation<
+  const [createServiceWithEntities, { loading, data, error }] = useMutation<
     TData
   >(CREATE_RESOURCE_WITH_ENTITIES, {
     update(cache, { data }) {
@@ -133,7 +133,7 @@ export function CreateResourceFromExcel() {
         query: GET_RESOURCES,
         data: {
           resources: queryData.resources.concat([
-            data.createResourceWithEntities,
+            data.createServiceWithEntities,
           ]),
         },
       });
@@ -196,9 +196,9 @@ export function CreateResourceFromExcel() {
         eventName: "createResourceFromFile",
         resourceName: data.resource.name,
       });
-      createResourceWithEntities({ variables: { data } }).catch(console.error);
+      createServiceWithEntities({ variables: { data } }).catch(console.error);
     },
-    [createResourceWithEntities, trackEvent]
+    [createServiceWithEntities, trackEvent]
   );
 
   const errorMessage = formatError(error) || formatError(generalError);
@@ -207,23 +207,23 @@ export function CreateResourceFromExcel() {
     trackEvent({
       eventName: "createResourceFromSample",
     });
-    createResourceWithEntities({
+    createServiceWithEntities({
       variables: { data: sampleServiceResourceWithEntities },
     }).catch(console.error);
-  }, [createResourceWithEntities, trackEvent]);
+  }, [createServiceWithEntities, trackEvent]);
 
   const handleStartFromScratch = useCallback(() => {
     trackEvent({
       eventName: "createResourceFromScratch",
     });
-    createResourceWithEntities({
+    createServiceWithEntities({
       variables: { data: sampleServiceResourceWithoutEntities },
     }).catch(console.error);
-  }, [createResourceWithEntities, trackEvent]);
+  }, [createServiceWithEntities, trackEvent]);
 
   useEffect(() => {
     if (data) {
-      const resourceId = data.createResourceWithEntities.id;
+      const resourceId = data.createServiceWithEntities.id;
 
       history.push(`/${resourceId}`);
     }

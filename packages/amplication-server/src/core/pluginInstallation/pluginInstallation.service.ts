@@ -6,6 +6,7 @@ import { CreatePluginInstallationArgs } from './dto/CreatePluginInstallationArgs
 import { FindManyPluginInstallationArgs } from './dto/FindManyPluginInstallationArgs';
 import { PluginInstallation } from './dto/PluginInstallation';
 import { UpdatePluginInstallationArgs } from './dto/UpdatePluginInstallationArgs';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class PluginInstallationService extends BlockTypeService<
@@ -16,9 +17,8 @@ export class PluginInstallationService extends BlockTypeService<
 > {
   blockType = EnumBlockType.PluginInstallation;
 
-  constructor() {
-    super();
-    //super(blockService); return this after merging with the message broker branch
+  constructor(protected readonly blockService: BlockService) {
+    super(blockService);
   }
 
   async create(

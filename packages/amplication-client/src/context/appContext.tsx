@@ -16,7 +16,7 @@ export interface AppContextInterface {
   setNewProject: (data: models.ProjectCreateInput) => void;
   onNewProjectCompleted: (data: models.Project) => void;
   resources: models.Resource[];
-  setNewResource: (
+  setNewService: (
     data: models.ResourceCreateWithEntitiesInput,
     eventName: string,
     addEntity: (id: string) => void
@@ -26,8 +26,8 @@ export interface AppContextInterface {
   handleSearchChange: (searchResults: string) => void;
   loadingResources: boolean;
   errorResources: Error | undefined;
-  loadingCreateResource: boolean;
-  errorCreateResource: Error | undefined;
+  loadingCreateService: boolean;
+  errorCreateService: Error | undefined;
   currentResource: models.Resource | undefined;
   pendingChanges: PendingChangeItem[];
   commitRunning: boolean;
@@ -41,6 +41,12 @@ export interface AppContextInterface {
   refreshCurrentWorkspace: () => void;
   gitRepositoryFullName: string;
   gitRepositoryUrl: string;
+  createMessageBroker: (
+    data: models.ResourceCreateInput,
+    eventName: string
+  ) => void;
+  loadingCreateMessageBroker: boolean;
+  errorCreateMessageBroker: Error | undefined;
 }
 
 const initialContext: AppContextInterface = {
@@ -55,14 +61,14 @@ const initialContext: AppContextInterface = {
   setNewProject: () => {},
   onNewProjectCompleted: () => {},
   resources: [],
-  setNewResource: () => {},
+  setNewService: () => {},
   setResource: () => {},
   projectConfigurationResource: undefined,
   handleSearchChange: () => {},
   loadingResources: true,
   errorResources: undefined,
-  loadingCreateResource: true,
-  errorCreateResource: undefined,
+  loadingCreateService: true,
+  errorCreateService: undefined,
   currentResource: undefined,
   pendingChanges: [],
   commitRunning: false,
@@ -76,6 +82,9 @@ const initialContext: AppContextInterface = {
   refreshCurrentWorkspace: () => {},
   gitRepositoryFullName: "",
   gitRepositoryUrl: "",
+  createMessageBroker: () => {},
+  loadingCreateMessageBroker: false,
+  errorCreateMessageBroker: undefined,
 };
 
 export const AppContext = React.createContext<AppContextInterface>(
