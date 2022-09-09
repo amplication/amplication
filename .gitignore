@@ -11,3 +11,6 @@ lib/
 values-secret*
 dist/
 packages/.server-id
+
+#todo removeme ignore for yarn.lock first
+yarn.lock
