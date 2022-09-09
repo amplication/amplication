@@ -3,6 +3,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
 import * as analytics from "../util/analytics";
+import { CircularProgress } from "@amplication/design-system";
 
 export type AppRouteProps = {
   moduleName: string | undefined;
@@ -18,14 +19,15 @@ const LazyRouteWrapper: React.FC<{
 
   return (
     // fallback component will be individual per component
-    <Suspense fallback={<div>...Loading</div>}>
+    <Suspense fallback={<CircularProgress centerToParent />}>
       <Route
         path={route.path}
         exact={route.exactPath}
         render={(props) => {
-          const { location , match } = props;
+          const { location, match } = props;
 
-          route.isAnalytics &&  pageTracking(match.path, match.url, match.params); 
+          route.isAnalytics &&
+            pageTracking(match.path, match.url, match.params);
           const nestedRoutes =
             route.routes && routesGenerator(route.routes, route.path);
 
@@ -94,10 +96,10 @@ export const routesGenerator: (
   );
 };
 
-const pageTracking = (path: string, url: string, params: any)=> {
+const pageTracking = (path: string, url: string, params: any) => {
   analytics.page(path.replaceAll("/", "-"), {
     path,
     url,
     params: params,
   });
-}
+};

@@ -74,7 +74,7 @@ function WorkspaceSelector() {
             />
           </>
         ) : (
-          <CircularProgress />
+          <CircularProgress centerToParent />
         )}
       </div>
       {isOpen && currentWorkspace && (

@@ -80,7 +80,7 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
       <div className={`${CLASS_NAME}__title`}>
         {data?.entity.fields?.length} Fields
       </div>
-      {loading && <CircularProgress />}
+      {loading && <CircularProgress centerToParent />}
       {data?.entity.fields?.map((field) => (
         <EntityFieldListItem
           key={field.id}
