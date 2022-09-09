@@ -1,0 +1,62 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-kafka/src",
+  "projectType": "library",
+  "targets": {
+    "ng-packagr-build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": [
+        "dist/libs/amplication-kafka"
+      ],
+      "options": {
+        "project": "libs/amplication-kafka/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/amplication-kafka/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/amplication-kafka/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-kafka",
+        "tsConfig": "packages/amplication-kafka/tsconfig.lib.json",
+        "packageJson": "packages/amplication-kafka/package.json",
+        "main": "packages/amplication-kafka/src/index.ts",
+        "assets": [
+          "packages/amplication-kafka/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-kafka/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/amplication-kafka"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-kafka/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

@@ -65,3 +65,18 @@
   ```bash
   yarn nx workspace-generator refactor-nx-package
   ```
+  ```bash
+  yarn nx workspace-generator refactor-nx-package amplication-cli
+  yarn nx workspace-generator refactor-nx-package amplication-client
+  yarn nx workspace-generator refactor-nx-package amplication-code-gen-types
+  yarn nx workspace-generator refactor-nx-package amplication-data-service-generator
+  yarn nx workspace-generator refactor-nx-package amplication-design-system
+  yarn nx workspace-generator refactor-nx-package amplication-git-pull-request-service
+  yarn nx workspace-generator refactor-nx-package amplication-git-service
+  yarn nx workspace-generator refactor-nx-package amplication-kafka
+  yarn nx workspace-generator refactor-nx-package amplication-nest-logger-module
+  yarn nx workspace-generator refactor-nx-package amplication-prisma-db
+  yarn nx workspace-generator refactor-nx-package amplication-scheduler
+  yarn nx workspace-generator refactor-nx-package amplication-server
+  yarn nx workspace-generator refactor-nx-package amplication-storage-gateway
+  ```

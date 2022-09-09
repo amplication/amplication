@@ -1,0 +1,62 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-scheduler/src",
+  "projectType": "library",
+  "targets": {
+    "ng-packagr-build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": [
+        "dist/libs/amplication-scheduler"
+      ],
+      "options": {
+        "project": "libs/amplication-scheduler/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/amplication-scheduler/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/amplication-scheduler/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-scheduler",
+        "tsConfig": "packages/amplication-scheduler/tsconfig.lib.json",
+        "packageJson": "packages/amplication-scheduler/package.json",
+        "main": "packages/amplication-scheduler/src/index.ts",
+        "assets": [
+          "packages/amplication-scheduler/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-scheduler/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/amplication-scheduler"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-scheduler/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

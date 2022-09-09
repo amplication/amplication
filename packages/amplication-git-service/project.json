@@ -1,0 +1,62 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-git-service/src",
+  "projectType": "library",
+  "targets": {
+    "ng-packagr-build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": [
+        "dist/libs/amplication-git-service"
+      ],
+      "options": {
+        "project": "libs/amplication-git-service/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/amplication-git-service/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/amplication-git-service/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-git-service",
+        "tsConfig": "packages/amplication-git-service/tsconfig.lib.json",
+        "packageJson": "packages/amplication-git-service/package.json",
+        "main": "packages/amplication-git-service/src/index.ts",
+        "assets": [
+          "packages/amplication-git-service/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-git-service/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/amplication-git-service"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-git-service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

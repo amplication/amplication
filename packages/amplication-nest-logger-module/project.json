@@ -1,0 +1,62 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-nest-logger-module/src",
+  "projectType": "library",
+  "targets": {
+    "ng-packagr-build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": [
+        "dist/libs/amplication-nest-logger-module"
+      ],
+      "options": {
+        "project": "libs/amplication-nest-logger-module/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/amplication-nest-logger-module/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/amplication-nest-logger-module/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-nest-logger-module",
+        "tsConfig": "packages/amplication-nest-logger-module/tsconfig.lib.json",
+        "packageJson": "packages/amplication-nest-logger-module/package.json",
+        "main": "packages/amplication-nest-logger-module/src/index.ts",
+        "assets": [
+          "packages/amplication-nest-logger-module/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-nest-logger-module/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/amplication-nest-logger-module"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-nest-logger-module/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

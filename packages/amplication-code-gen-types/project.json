@@ -1,0 +1,62 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-code-gen-types/src",
+  "projectType": "library",
+  "targets": {
+    "ng-packagr-build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": [
+        "dist/libs/amplication-code-gen-types"
+      ],
+      "options": {
+        "project": "libs/amplication-code-gen-types/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/amplication-code-gen-types/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/amplication-code-gen-types/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-code-gen-types",
+        "tsConfig": "packages/amplication-code-gen-types/tsconfig.lib.json",
+        "packageJson": "packages/amplication-code-gen-types/package.json",
+        "main": "packages/amplication-code-gen-types/src/index.ts",
+        "assets": [
+          "packages/amplication-code-gen-types/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-code-gen-types/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/amplication-code-gen-types"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-code-gen-types/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

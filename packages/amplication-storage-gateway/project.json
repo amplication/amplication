@@ -1,0 +1,62 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-storage-gateway/src",
+  "projectType": "library",
+  "targets": {
+    "ng-packagr-build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": [
+        "dist/libs/amplication-storage-gateway"
+      ],
+      "options": {
+        "project": "libs/amplication-storage-gateway/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/amplication-storage-gateway/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/amplication-storage-gateway/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-storage-gateway",
+        "tsConfig": "packages/amplication-storage-gateway/tsconfig.lib.json",
+        "packageJson": "packages/amplication-storage-gateway/package.json",
+        "main": "packages/amplication-storage-gateway/src/index.ts",
+        "assets": [
+          "packages/amplication-storage-gateway/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-storage-gateway/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/amplication-storage-gateway"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-storage-gateway/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

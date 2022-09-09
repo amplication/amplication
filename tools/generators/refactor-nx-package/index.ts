@@ -4,10 +4,19 @@ import * as fse from 'fs-extra';
 
 
 export default async function (tree: Tree, schema: any) {
+	const rootTsconfig = readJson(tree, 'tsconfig.base.json');
+	rootTsconfig.compilerOptions.paths[`@${schema.name}`] = [`packages/${schema.name}/src/index.ts`];
+
+	tree.write('tsconfig.base.json', JSON.stringify(rootTsconfig, null, 2));
+
+	const workspaceJson = readJson(tree, 'workspace.json');
+	workspaceJson.projects[schema.name] = `packages/${schema.name}`;
+	tree.write('workspace.json', JSON.stringify(workspaceJson, null, 2));
+
 	//cp tsconfig.lib.json
-	await fse.copy(`libs/test/tsconfig.json`, `packages/${schema.name}/tsconfig.json`)
-	await fse.copy(`libs/test/tsconfig.lib.json`, `packages/${schema.name}/tsconfig.lib.json`)
-	await fse.copy(`libs/test/tsconfig.spec.json`, `packages/${schema.name}/tsconfig.spec.json`)
+	await fse.copy(`packages/test/tsconfig.json`, `packages/${schema.name}/tsconfig.json`)
+	await fse.copy(`packages/test/tsconfig.lib.json`, `packages/${schema.name}/tsconfig.lib.json`)
+	await fse.copy(`packages/test/tsconfig.spec.json`, `packages/${schema.name}/tsconfig.spec.json`)
 
 	await fse.outputFile(`packages/${schema.name}/project.json`,
 		JSON.stringify(templateProjectFile(schema.name), null, 2))

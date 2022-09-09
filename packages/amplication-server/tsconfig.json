@@ -1,21 +1,13 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": false,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "noImplicitUseStrict": true,
-    "resolveJsonModule": true
-  },
-  "exclude": ["node_modules", "dist", "graphql", "migration-scripts"]
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
 }

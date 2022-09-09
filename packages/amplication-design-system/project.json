@@ -1,0 +1,62 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-design-system/src",
+  "projectType": "library",
+  "targets": {
+    "ng-packagr-build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": [
+        "dist/libs/amplication-design-system"
+      ],
+      "options": {
+        "project": "libs/amplication-design-system/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/amplication-design-system/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/amplication-design-system/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-design-system",
+        "tsConfig": "packages/amplication-design-system/tsconfig.lib.json",
+        "packageJson": "packages/amplication-design-system/package.json",
+        "main": "packages/amplication-design-system/src/index.ts",
+        "assets": [
+          "packages/amplication-design-system/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-design-system/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/amplication-design-system"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-design-system/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
