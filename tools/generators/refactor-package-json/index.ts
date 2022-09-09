@@ -2,15 +2,19 @@ import { readJson, Tree } from '@nrwl/devkit';
 import * as fse from 'fs-extra';
 
 export default async function (tree: Tree, schema: any) {
-
-	const dirs = await fse.readdir(`packages`, { withFileTypes: false });
+	const rootPackageJSON = readJson(tree, 'package.json');
+	const dirs = await fse.readdir(`packages`, { withFileTypes: false, encoding: 'utf8' });
 
 	for (let dir of dirs) {
 		console.log(dir);
+
+		if (dir === 'test') {
+			continue
+		}
+
 		const packageJsonPath = `packages/${dir}/package.json`;
 
 		const packageJSON = readJson(tree, packageJsonPath);
-		const rootPackageJSON = readJson(tree, 'package.json');
 
 		if (packageJSON.dependencies) {
 			for (let [key, val] of Object.entries(packageJSON.dependencies)) {
@@ -44,8 +48,22 @@ version ${rootVersion}, subpackage ${dir} has version ${val}\n`);
 		delete packageJSON.devDependencies;
 		tree.write(packageJsonPath, JSON.stringify(packageJSON, null, 2));
 
-		tree.write('package.json', JSON.stringify(rootPackageJSON, null, 2));
 	}
 
+	for (let dir of dirs) {
+		delete rootPackageJSON.dependencies['@amplication/' + dir.replace(/^amplication-/, '')];
+		delete rootPackageJSON.devDependencies['@amplication/' + dir.replace(/^amplication-/, '')];
+	}
+
+	for (let dependency of Object.keys(rootPackageJSON.devDependencies)) {
+		if (rootPackageJSON.dependencies[dependency]) {
+			delete rootPackageJSON.dependencies[dependency];
+		}
+	}
+
+	//enforce typescript version
+	rootPackageJSON.devDependencies.typescript = '4.7.4';
+
+	tree.write('package.json', JSON.stringify(rootPackageJSON, null, 2));
 
 }
