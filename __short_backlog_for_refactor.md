@@ -34,3 +34,20 @@
   yarn add -D fs-extra @types/fs-extra
   ```
 
+#### remove lerna
+
+
+### nx workspace library generator
+- by default will use @nrwl/node:lib or @nrwl/angular:lib to generate all package in packages directory.
+  - why?
+    - because I need use ng-packagr to build all packages. make sure it can build successfully.
+    - avoid use webpack build. it bundle all together, but currently I just need to check package circle dependency.
+  - why use ng-packagr?
+    - because ng-packagr has circle dependency check.
+  - why not use ng-packagr to check node build?
+    - newest ng-packagr use mjs output. it can't run perfect in current nodejs environment
+
+- bash backlog
+  ```bash
+  yarn nx workspace-generator refactor-nx-package
+  ```
