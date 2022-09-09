@@ -12,6 +12,7 @@
     "redhat.vscode-yaml",
     "streetsidesoftware.code-spell-checker",
     "hashicorp.terraform",
-    "sleistner.vscode-fileutils"
+    "sleistner.vscode-fileutils",
+    "firsttris.vscode-jest-runner"
   ]
 }

@@ -11,3 +11,11 @@
   ```bash
   yarn nx workspace-generator refactor-package-json
   ```
+- nx can't run properly, so we need to add `@nrwl/workspace` to root package.json,
+  and try to dry run generate a project successfully
+  ```bash
+  yarn add -D @nrwl/node
+  yarn add -D typescript
+  yarn nx g @nrwl/node:app test
+  yarn nx g @nrwl/node:remove test
+  ```

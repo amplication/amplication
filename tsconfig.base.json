@@ -29,10 +29,14 @@
       "ES2019.Object",
       "ES2016.Array.Include"
     ],
-    "types": ["jest"],
+    "types": [
+      "jest"
+    ],
     "baseUrl": ".",
-    "paths": {
-    }
+    "paths": {}
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }
