@@ -53,7 +53,8 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettings = {
   adminUISettings: {
     generateAdminUI: true,
     adminUIPath: ''
-  }
+  },
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const createMock = jest.fn(() => {

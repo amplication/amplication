@@ -4,7 +4,7 @@ export const GET_RESOURCES = gql`
   query getResources($projectId: String!, $whereName: StringFilter) {
     resources(
       where: { project: { id: $projectId }, name: $whereName }
-      orderBy: { createdAt: Desc }
+      orderBy: [{ resourceType: Asc }, { createdAt: Desc }]
     ) {
       id
       name
@@ -62,9 +62,22 @@ export const GET_RESOURCES = gql`
   }
 `;
 
-export const CREATE_RESOURCE_WITH_ENTITIES = gql`
-  mutation createResourceWithEntities($data: ResourceCreateWithEntitiesInput!) {
-    createResourceWithEntities(data: $data) {
+export const CREATE_SERVICE_WITH_ENTITIES = gql`
+  mutation createServiceWithEntities($data: ResourceCreateWithEntitiesInput!) {
+    createServiceWithEntities(data: $data) {
+      id
+      name
+      description
+      builds(orderBy: { createdAt: Desc }, take: 1) {
+        id
+      }
+    }
+  }
+`;
+
+export const CREATE_MESSAGE_BROKER = gql`
+  mutation createMessageBroker($data: ResourceCreateInput!) {
+    createMessageBroker(data: $data) {
       id
       name
       description

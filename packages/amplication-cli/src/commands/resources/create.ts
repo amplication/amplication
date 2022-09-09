@@ -2,7 +2,7 @@ import cli from 'cli-ux';
 import { flags } from '@oclif/command';
 import { ConfiguredCommand } from '../../configured-command';
 import chalk from 'chalk';
-import { createResource } from '../../api';
+import { createService } from '../../api';
 import { format } from '../../flags/format-flag';
 import { RESOURCE_COLUMNS } from './index';
 import { AMP_CURRENT_RESOURCE } from '../../properties';
@@ -51,7 +51,7 @@ export default class ResourcesCreate extends ConfiguredCommand {
 
     cli.action.start(`Creating new resource ${chalk.green.bold(name)} `);
 
-    const data = await createResource(
+    const data = await createService(
       this.client,
       name,
       description || '',

@@ -59,11 +59,14 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     errorResources,
     currentResource,
     setResource,
-    createResource,
-    loadingCreateResource,
-    errorCreateResource,
+    createService,
+    loadingCreateService,
+    errorCreateService,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    createMessageBroker,
+    errorCreateMessageBroker,
+    loadingCreateMessageBroker,
   } = useResources(currentWorkspace, currentProject);
 
   const {
@@ -92,13 +95,13 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         setNewProject: createProject,
         onNewProjectCompleted,
         resources,
-        setNewResource: createResource,
+        setNewService: createService,
         projectConfigurationResource,
         handleSearchChange,
         loadingResources,
         errorResources,
-        loadingCreateResource,
-        errorCreateResource,
+        loadingCreateService,
+        errorCreateService,
         currentResource,
         setResource,
         pendingChanges,
@@ -113,6 +116,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         refreshCurrentWorkspace,
         gitRepositoryFullName,
         gitRepositoryUrl,
+        createMessageBroker,
+        errorCreateMessageBroker,
+        loadingCreateMessageBroker,
       }}
     >
       {isMobileOnly ? (
