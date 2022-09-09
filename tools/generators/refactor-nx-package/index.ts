@@ -20,7 +20,7 @@ export default async function (tree: Tree, schema: any) {
 
 	await fse.outputFile(`packages/${schema.name}/ng-package.json`, JSON.stringify({
 			'$schema': '../../node_modules/ng-packagr/ng-package.schema.json',
-			'dest': `../../dist/libs/${schema.name}`,
+			'dest': `../../dist/packages/${schema.name}`,
 			'lib': {
 				'entryFile': 'src/index.ts'
 			}
@@ -50,16 +50,16 @@ function templateProjectFile(pkgName: string): any {
 		'targets': {
 			'ng-packagr-build': {
 				'executor': '@nrwl/angular:ng-packagr-lite',
-				'outputs': [`dist/libs/${pkgName}`],
+				'outputs': [`dist/packages/${pkgName}`],
 				'options': {
-					'project': `libs/${pkgName}/ng-package.json`
+					'project': `packages/${pkgName}/ng-package.json`
 				},
 				'configurations': {
 					'production': {
-						'tsConfig': `libs/${pkgName}/tsconfig.lib.prod.json`
+						'tsConfig': `packages/${pkgName}/tsconfig.lib.prod.json`
 					},
 					'development': {
-						'tsConfig': `libs/${pkgName}/tsconfig.lib.json`
+						'tsConfig': `packages/${pkgName}/tsconfig.lib.json`
 					}
 				},
 				'defaultConfiguration': 'production'
