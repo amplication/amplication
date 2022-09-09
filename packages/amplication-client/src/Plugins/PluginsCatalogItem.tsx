@@ -7,6 +7,7 @@ import {
   EnumHorizontalRuleStyle,
   EnumPanelStyle,
   HorizontalRule,
+  Icon,
   Panel,
   Toggle,
 } from "@amplication/design-system";
@@ -72,17 +73,28 @@ function PluginsCatalogItem({
         </>
       )}
       <div className={`${CLASS_NAME}__row `}>
-        <span className={`${CLASS_NAME}__logo`} />
-        <span className={`${CLASS_NAME}__title`}>{name}</span>
-        <span className="spacer" />
+        <span className={`${CLASS_NAME}__logo`}>
+          {plugin.icon ? (
+            <img src="" alt="plugin logo" />
+          ) : (
+            <Icon icon="plugin" />
+          )}
+        </span>
+        <div className={`${CLASS_NAME}__details`}>
+          <div className={`${CLASS_NAME}__details__title`}>{name}</div>
+          <span className={`${CLASS_NAME}__details__description`}>
+            {description}
+          </span>
+        </div>
         {!pluginInstallation && (
-          <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleInstall}>
+          <Button
+            className={`${CLASS_NAME}__install`}
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleInstall}
+          >
             Install
           </Button>
         )}{" "}
-      </div>
-      <div className={`${CLASS_NAME}__row`}>
-        <span className={`${CLASS_NAME}__description`}>{description}</span>
       </div>
     </Panel>
   );

@@ -13,7 +13,13 @@ export type Plugin = {
   id: string;
   name: string;
   description: string;
-  logo: string;
+  repo: string;
+  npm: string;
+  icon: string;
+  github: string;
+  website: string
+  category: string;
+  type: string;
 };
 
 const PLUGINS: Plugin[] = [
@@ -21,43 +27,79 @@ const PLUGINS: Plugin[] = [
     id: "@amplication/plugin-auth-jwt",
     description:
       "A Passport strategy for authenticating with a JSON Web Token (JWT).",
-    logo: "logo",
+    icon: "",
     name: "Passport JWT Authentication",
+    repo: "test",
+    npm: "test",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
     id: "@amplication/plugin-auth-basic",
     description:
       "A Passport strategy for authenticating using the standard basic HTTP scheme.",
-    logo: "logo",
+    icon: "",
     name: "Passport Basic Authentication",
+    repo: "test",
+    npm: "test",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
     id: "@amplication/plugin-monorepo-nx",
     description:
       "Add the required configurations and files to use nx to manage your monorepo",
-    logo: "logo",
+    icon: "",
     name: "NX monorepo",
+    repo: "test",
+    npm: "test",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
     id: "@amplication/plugin-db-postgres",
     description:
       "Connects your service to a PostgreSQL DB, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "PostgreSQL DB",
+    repo: "test",
+    npm: "test",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
     id: "@amplication/plugin-db-mongo",
     description:
       "Connects your service to a Mongo DB, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "Mongo DB",
+    repo: "test",
+    npm: "test",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
     id: "@amplication/plugin-db-mysql",
     description:
       "Connects your service to a mySQL, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "MySQL DB",
+    repo: "test",
+    npm: "test",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
 ];
 
