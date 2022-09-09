@@ -5,7 +5,13 @@
   </a>
 </p>
 <p align="center">
-    <a href="https://docs.amplication.com/docs/">Docs</a> <a href="https://twitter.com/amplication">Twitter</a>
+    <a href="https://docs.amplication.com/docs/">Docs</a>
+    <span>&nbsp;|&nbsp;</span>
+    <a href="https://amplication.com/blog">Blog</a>
+     <span>&nbsp;|&nbsp;</span>
+    <a href="https://twitter.com/amplication">Twitter</a>
+     <span>&nbsp;|&nbsp;</span>
+    <a href="https://amplication.com/discord">Discord</a>
 </p>
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">

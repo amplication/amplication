@@ -6,6 +6,7 @@ import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
 import { EnumCompareType, DIFF_STYLES } from "./PendingChangeDiffEntity";
 import "./PendingChangeDiff.scss";
+import { CircularProgress } from "@amplication/design-system";
 
 const CLASS_NAME = "pending-change-diff";
 const CURRENT_VERSION_NUMBER = 0;
@@ -76,7 +77,7 @@ const PendingChangeDiffBlock = ({
   return (
     <div className={CLASS_NAME}>
       {loadingCurrentVersion || loadingOtherVersion ? (
-        "Loading..."
+        <CircularProgress centerToParent />
       ) : (
         <ReactDiffViewer
           styles={DIFF_STYLES}

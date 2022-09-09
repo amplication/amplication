@@ -8,7 +8,6 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
-  HorizontalRule,
 } from "@amplication/design-system";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
@@ -85,15 +84,17 @@ function ResourceList() {
 
         <CreateResourceButton />
       </div>
-      <HorizontalRule />
+      <hr className={`${CLASS_NAME}__separator`} />
       <div className={`${CLASS_NAME}__title`}>Project Settings</div>
 
-      {projectConfigurationResource && (
-        <ResourceListItem resource={projectConfigurationResource} />
-      )}
-      <HorizontalRule />
+      <div className={`${CLASS_NAME}__settings`}>
+        {projectConfigurationResource && (
+          <ResourceListItem resource={projectConfigurationResource} />
+        )}
+      </div>
+      <hr className={`${CLASS_NAME}__separator`} />
       <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
-      {loadingResources && <CircularProgress />}
+      {loadingResources && <CircularProgress centerToParent />}
 
       {isEmpty(resources) && !loadingResources ? (
         <div className={`${CLASS_NAME}__empty-state`}>
@@ -103,15 +104,15 @@ function ResourceList() {
           </div>
         </div>
       ) : (
-        resources.map((resource) => {
-          return (
+        <div className={`${CLASS_NAME}__content`}>
+          {resources.map((resource) => (
             <ResourceListItem
               key={resource.id}
               resource={resource}
               onDelete={handleDelete}
             />
-          );
-        })
+          ))}
+        </div>
       )}
 
       <Snackbar

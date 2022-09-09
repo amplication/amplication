@@ -27,7 +27,7 @@ function WorkspaceSelectorList({
   return (
     <div className={CLASS_NAME}>
       {loading ? (
-        <CircularProgress />
+        <CircularProgress centerToParent />
       ) : (
         <>
           {data?.workspaces.map((workspace) => (
@@ -37,10 +37,10 @@ function WorkspaceSelectorList({
               selected={selectedWorkspace.id === workspace.id}
               key={workspace.id}
             />
-            ))}
-            
+          ))}
+
           <hr className={`${CLASS_NAME}__divider`} />
-          
+
           <div className={`${CLASS_NAME}__new`}>
             <Button
               buttonStyle={EnumButtonStyle.Text}

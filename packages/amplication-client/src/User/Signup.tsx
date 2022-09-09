@@ -118,7 +118,7 @@ const Signup = () => {
           <p className={`${CLASS_NAME}__signup`}>
             Already have an account? <Link to="/login">Sign In</Link>
           </p>
-          {loading && <CircularProgress />}
+          {loading && <CircularProgress centerToParent />}
           <Snackbar open={Boolean(error)} message={errorMessage} />
         </Form>
       </Formik>
