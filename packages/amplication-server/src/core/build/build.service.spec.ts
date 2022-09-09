@@ -27,7 +27,7 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
 import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { Resource, Commit, Entity, Block } from 'src/models';
+import { Resource, Commit, Entity } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,
@@ -42,6 +42,7 @@ import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock'
 import { PluginInstallation } from '../pluginInstallation/dto/PluginInstallation';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { orderBy } from 'lodash';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
