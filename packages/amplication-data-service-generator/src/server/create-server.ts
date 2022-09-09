@@ -1,11 +1,17 @@
 import * as path from "path";
 import winston from "winston";
 import { paramCase } from "param-case";
-import { Entity, Role, AppInfo, Module } from "@amplication/code-gen-types";
+import {
+  Entity,
+  Role,
+  AppInfo,
+  Module,
+  DTOs,
+} from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode } from "../util/module";
 import { updatePackageJSONs } from "../update-package-jsons";
-import { createDTOModules, DTOs } from "./resource/create-dtos";
+import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -70,7 +76,7 @@ export async function createServerModules(
   );
 
   logger.info("Creating Auth module...");
-  const authModules = await createAuthModules(directoryManager.SRC, appInfo);
+  const authModules = await createAuthModules({ srcDir: directoryManager.SRC });
 
   logger.info("Creating application module...");
   const appModule = await createAppModule(
