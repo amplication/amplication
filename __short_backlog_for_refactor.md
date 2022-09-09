@@ -61,11 +61,6 @@
   yarn nx g @nrwl/node:lib --buildable --publishable --importPath @amplication/test
   ```
 
-- generate package
-  ```bash
-  yarn nx run amplication-cli:ng-packagr-build
-  ```
-
 - all bash backlog in refactor-nx-package
   ```bash
   yarn nx workspace-generator refactor-nx-package
@@ -84,4 +79,9 @@
   yarn nx workspace-generator refactor-nx-package amplication-scheduler
   yarn nx workspace-generator refactor-nx-package amplication-server
   yarn nx workspace-generator refactor-nx-package amplication-storage-gateway
+  ```
+
+- generate package
+  ```bash
+  yarn nx run amplication-cli:ng-packagr-build
   ```

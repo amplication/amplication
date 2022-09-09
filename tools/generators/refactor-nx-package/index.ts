@@ -29,7 +29,9 @@ export default async function (tree: Tree, schema: any) {
 
 	await fse.outputFile(`packages/${schema.name}/project.json`,
 		JSON.stringify(templateProjectFile(schema.name), null, 2))
-	await fse.outputFile(`packages/${schema.name}/tsconfig.prod.json`, `{
+
+	// await fse.rm(`packages/${schema.name}/tsconfig.prod.json`)
+	await fse.outputFile(`packages/${schema.name}/tsconfig.lib.prod.json`, `{
   "extends": "./tsconfig.lib.json",
   "compilerOptions": {
     "declarationMap": false

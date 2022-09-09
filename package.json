@@ -23,6 +23,8 @@
     "docker:dev": "docker-compose -f docker-compose.dev.yml up -d"
   },
   "dependencies": {
+    "@angular/compiler": "^14.2.1",
+    "@angular/compiler-cli": "^14.2.1",
     "@apollo/client": "3.3.16",
     "@apollo/gateway": "0.42.3",
     "@babel/parser": "7.14.7",
@@ -164,7 +166,6 @@
     "ts-morph": "^13.0.2",
     "ts-node": "9.1.1",
     "tslib": "1.14.1",
-    "typescript": "4.1.2",
     "url-join": "4.0.1",
     "use-debounce": "3.4.3",
     "uuid": "8.3.2",
@@ -332,7 +333,7 @@
     "ts-node": "9.1.1",
     "tsconfig-paths": "3.12.0",
     "type-fest": "0.11.0",
-    "typescript": "4.2.3",
+    "typescript": "4.7.4",
     "web-vitals": "0.2.4",
     "webpack": "5.65.0"
   },
