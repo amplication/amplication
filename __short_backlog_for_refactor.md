@@ -47,6 +47,20 @@
   - why not use ng-packagr to check node build?
     - newest ng-packagr use mjs output. it can't run perfect in current nodejs environment
 
+- generate test repo first
+
+  ```bash
+  tee -a workspace.json <<EOF
+  {
+    "version": 2,
+    "projects": {
+    }
+  }
+  EOF
+  cat node_modules/nx/presets/npm.json > nx.json
+  yarn nx g @nrwl/node:lib --buildable --publishable --importPath @amplication/test
+  ```
+
 - bash backlog
   ```bash
   yarn nx workspace-generator refactor-nx-package

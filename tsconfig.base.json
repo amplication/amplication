@@ -33,7 +33,11 @@
       "jest"
     ],
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@amplication/test": [
+        "packages/test/src/index.ts"
+      ]
+    }
   },
   "exclude": [
     "node_modules",

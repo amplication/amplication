@@ -1,72 +1,22 @@
 {
-  "extends": "nx/presets/npm.json",
+  "implicitDependencies": {
+    "package.json": "*"
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "posttest",
-          "prepare",
-          "check-format",
-          "format",
-          "test",
-          "seed",
-          "migrate:save",
-          "migrate:up",
-          "db:migrate-save",
-          "db:migrate-up",
-          "db:clean",
-          "db:init",
-          "prisma:generate",
-          "prisma:studio",
-          "docker:db",
-          "docker:build",
-          "prebuild",
-          "lint",
-          "docker",
-          "docker:down",
-          "postpack",
-          "prepack-manual",
-          "eject",
-          "lint:fix",
-          "build:compile",
-          "build:generate-types",
-          "build:copy-files",
-          "build:update-version",
-          "test:watch",
-          "test:e2e",
-          "generate-test-data-service",
-          "update-test-data-service-snapshot",
-          "compose:up",
-          "compose:down",
-          "watch",
-          "storybook",
-          "build-storybook",
-          "test:cov",
-          "test:debug",
-          "migrate:rollback",
-          "prisma:generate:watch",
-          "build:generate-help",
-          "generate-graphql-schema",
-          "check-graphql-schema"
-        ]
+        "cacheableOperations": []
       }
     }
   },
-  "targetDefaults": {
-    "build": {
-      "dependsOn": [
-        "^build"
-      ]
-    },
-    "prepare": {
-      "dependsOn": [
-        "^prepare"
-      ]
-    }
+  "workspaceLayout": {
+    "libsDir": "packages",
+    "appsDir": "packages"
   },
-  "affected": {
-    "defaultBase": "master"
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": false
+    }
   }
 }
