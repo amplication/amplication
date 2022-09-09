@@ -6,7 +6,15 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": []
+        "cacheableOperations": [
+		  "ng-packagr-build",
+		  "ng-packagr",
+		  "build",
+		  "lint",
+		  "test",
+		  "e2e",
+		  "extract-i18n"
+		]
       }
     }
   },

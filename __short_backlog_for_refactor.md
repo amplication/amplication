@@ -103,3 +103,14 @@
 
 - react build problem
   - @types/react 17.0.43
+  - ```js
+	"resolutions": {
+	  "**/@types/react": "17.0.34"
+	}
+	```
+
+- amplication-server
+  ```bash
+  mkdir -p node_modules/@amplication
+  find dist/packages -type d -depth 1|while read FILE;do  ln -sf ../../$FILE "node_modules/@amplication/$(basename $FILE |cut -b 13-)";done
+  ```
