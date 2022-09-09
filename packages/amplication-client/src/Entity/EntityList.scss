@@ -9,8 +9,15 @@
       width: var(--form-field-long);
     }
   }
+
   &__title {
     @include body2;
     margin-bottom: var(--large-spacing);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
   }
 }

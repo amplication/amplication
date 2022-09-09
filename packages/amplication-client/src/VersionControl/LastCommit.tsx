@@ -3,12 +3,7 @@ import { useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
 import * as models from "../models";
-import {
-  Tooltip,
-  SkeletonWrapper,
-  Button,
-  EnumButtonStyle,
-} from "@amplication/design-system";
+import { Tooltip, Button, EnumButtonStyle } from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";
@@ -90,10 +85,7 @@ const LastCommit = ({ projectId }: Props) => {
         </p>
 
         <div className={`${CLASS_NAME}__status`}>
-          <SkeletonWrapper
-            showSkeleton={generating}
-            className={`${CLASS_NAME}__skeleton`}
-          >
+          <div>
             {isEmpty(lastCommit?.message) ? (
               ClickableCommitId
             ) : (
@@ -101,10 +93,10 @@ const LastCommit = ({ projectId }: Props) => {
                 {ClickableCommitId}
               </Tooltip>
             )}
-            <span className={classNames("clickable-id")}>
-              {formatTimeToNow(lastCommit?.createdAt)}
-            </span>
-          </SkeletonWrapper>
+          </div>
+          <span className={classNames("clickable-id")}>
+            {formatTimeToNow(lastCommit?.createdAt)}
+          </span>
         </div>
         {build && (
           <Link

@@ -15,10 +15,6 @@
     color: var(--black90);
   }
 
-  // .amp-button {
-  //   width: 100%;
-  // }
-
   &__last-sync {
     @include flexFullRow;
     height: var(--medium-button-height);
@@ -30,11 +26,6 @@
 
     i {
       padding-right: calc(var(--default-spacing-small) / 2);
-    }
-  }
-  &__connect {
-    &__button {
-      width: 100%;
     }
   }
 }
