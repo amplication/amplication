@@ -34,7 +34,7 @@ export function validate<T>(
   if (!isValid && ajv.errors) {
     for (const error of ajv.errors) {
       //remove the first dot from dataPath
-      const fieldName = error.instancePath.substring(1).replaceAll("/", ".");
+      const fieldName = (error as any).instancePath.substring(1).replaceAll("/", ".");
       set(errors, fieldName, error.message);
     }
   }

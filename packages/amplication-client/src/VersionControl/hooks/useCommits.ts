@@ -39,7 +39,10 @@ const useCommits = () => {
       const changesByResource = groupBy(
         commits[commitIdx]?.changes,
         (originChange) => {
-          if (!originChange.origin.resource) return;
+          if (!originChange.origin.resource) {
+			  // @ts-ignore
+			  return;
+		  }
           return originChange.origin.resource.id;
         }
       );
