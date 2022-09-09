@@ -31,13 +31,6 @@ export interface DsgContext {
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
 
-export interface DsgPlugin {
-  id?: string;
-  name?: string;
-  description?: string;
-  packageName: string;
-}
-
 export type PluginMap = {
   [K in EventNames]?: {
     before?: (<T>(context: DsgContext, params: EventParams | Module[]) => T)[];
