@@ -15,7 +15,8 @@ async function checkGraphQLSchema() {
   const generatedSchema = await readGraphQLSchema();
   await fs.promises.writeFile(SCHEMA_PATH, existingSchema);
   if (existingSchema !== generatedSchema) {
-    console.log(diffDefault(existingSchema, generatedSchema));
+    // @ts-ignore
+	  console.log(diffDefault(existingSchema, generatedSchema));
     throw new Error('Generated schema does not match the existing schema');
   }
 }

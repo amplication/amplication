@@ -70,6 +70,7 @@ async function main() {
               displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
               resource: {
                 create: {
+					// @ts-ignore
                   color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
                   resourceType: EnumResourceType.ProjectConfiguration,
                   description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,

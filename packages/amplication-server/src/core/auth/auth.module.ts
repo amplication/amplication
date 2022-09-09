@@ -57,7 +57,8 @@ import { GitHubAuthGuard } from './github.guard';
         );
         const options = await githubConfigService.getOptions();
         if (options === null) {
-          return;
+			// @ts-ignore
+			return;
         }
         return new GitHubStrategy(authService, options);
       },

@@ -4,8 +4,9 @@ import { PrismaClient, EnumDataType } from '@amplication/prisma-db';
 
 async function main() {
   const client = new PrismaClient();
-  await client.entityField.deleteMany({
+	await client.entityField.deleteMany({
     where: {
+  // @ts-ignore
       dataType: EnumDataType.AutoNumber
     }
   });

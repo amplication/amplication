@@ -1,15 +1,16 @@
 // 2020-01-04 Script to add related field id to lookup fields
 
-import { PrismaClient, EnumDataType } from '@amplication/prisma-db';
+import { PrismaClient } from '@amplication/prisma-db';
 import { types } from '@amplication/code-gen-types';
 import { camelCase } from 'camel-case';
 import cuid from 'cuid';
+import { EnumDataType } from 'src/enums/EnumDataType';
 
 // For every existing lookup field create a related field
 async function main() {
   const client = new PrismaClient();
   // Find all lookup fields in the database
-  const lookupFields = await client.entityField.findMany({
+	const lookupFields = await client.entityField.findMany({
     where: {
       dataType: EnumDataType.Lookup,
       entityVersion: {
@@ -21,6 +22,7 @@ async function main() {
         include: {
           entity: {
             include: {
+			  // @ts-ignore
               app: {
                 include: {
                   workspace: {
@@ -48,7 +50,8 @@ async function main() {
   await Promise.all(
     fieldsToUpdate.map(async field => {
       const properties = (field.properties as unknown) as types.Lookup;
-      const { entity } = field.entityVersion;
+      // @ts-ignore
+		const { entity } = field.entityVersion;
       const [user] = entity.app.workspace.users;
       console.info(`Adding related field for ${field.id}...`);
       let relatedFieldName = camelCase(entity.name);
@@ -133,6 +136,7 @@ async function main() {
             },
             properties: {
               allowMultipleSelection: !properties.allowMultipleSelection,
+				// @ts-ignore
               relatedEntityId: field.entityVersion.entity.id,
               relatedFieldId: field.permanentId
             }
@@ -159,6 +163,7 @@ async function main() {
             },
             properties: {
               allowMultipleSelection: !properties.allowMultipleSelection,
+				// @ts-ignore
               relatedEntityId: field.entityVersion.entity.id,
               relatedFieldId: field.permanentId
             }
