@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../dist/libs/amplication-prisma-db",
+  "dest": "../../dist/packages/amplication-prisma-db",
   "lib": {
     "entryFile": "src/index.ts"
   }

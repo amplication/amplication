@@ -6,17 +6,17 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/libs/amplication-data-service-generator"
+        "dist/packages/amplication-data-service-generator"
       ],
       "options": {
-        "project": "libs/amplication-data-service-generator/ng-package.json"
+        "project": "packages/amplication-data-service-generator/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/amplication-data-service-generator/tsconfig.lib.prod.json"
+          "tsConfig": "packages/amplication-data-service-generator/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/amplication-data-service-generator/tsconfig.lib.json"
+          "tsConfig": "packages/amplication-data-service-generator/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"

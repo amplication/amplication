@@ -6,17 +6,17 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/libs/amplication-prisma-db"
+        "dist/packages/amplication-prisma-db"
       ],
       "options": {
-        "project": "libs/amplication-prisma-db/ng-package.json"
+        "project": "packages/amplication-prisma-db/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/amplication-prisma-db/tsconfig.lib.prod.json"
+          "tsConfig": "packages/amplication-prisma-db/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/amplication-prisma-db/tsconfig.lib.json"
+          "tsConfig": "packages/amplication-prisma-db/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"

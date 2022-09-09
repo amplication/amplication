@@ -6,17 +6,17 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/libs/amplication-nest-logger-module"
+        "dist/packages/amplication-nest-logger-module"
       ],
       "options": {
-        "project": "libs/amplication-nest-logger-module/ng-package.json"
+        "project": "packages/amplication-nest-logger-module/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/amplication-nest-logger-module/tsconfig.lib.prod.json"
+          "tsConfig": "packages/amplication-nest-logger-module/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/amplication-nest-logger-module/tsconfig.lib.json"
+          "tsConfig": "packages/amplication-nest-logger-module/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"

@@ -66,7 +66,7 @@
   yarn nx run amplication-cli:ng-packagr-build
   ```
 
-- bash backlog
+- all bash backlog in refactor-nx-package
   ```bash
   yarn nx workspace-generator refactor-nx-package
   ```

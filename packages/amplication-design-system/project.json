@@ -6,17 +6,17 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/libs/amplication-design-system"
+        "dist/packages/amplication-design-system"
       ],
       "options": {
-        "project": "libs/amplication-design-system/ng-package.json"
+        "project": "packages/amplication-design-system/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/amplication-design-system/tsconfig.lib.prod.json"
+          "tsConfig": "packages/amplication-design-system/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/amplication-design-system/tsconfig.lib.json"
+          "tsConfig": "packages/amplication-design-system/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"

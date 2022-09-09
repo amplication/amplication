@@ -6,17 +6,17 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/libs/amplication-scheduler"
+        "dist/packages/amplication-scheduler"
       ],
       "options": {
-        "project": "libs/amplication-scheduler/ng-package.json"
+        "project": "packages/amplication-scheduler/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/amplication-scheduler/tsconfig.lib.prod.json"
+          "tsConfig": "packages/amplication-scheduler/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/amplication-scheduler/tsconfig.lib.json"
+          "tsConfig": "packages/amplication-scheduler/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"

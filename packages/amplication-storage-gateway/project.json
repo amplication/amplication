@@ -6,17 +6,17 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/libs/amplication-storage-gateway"
+        "dist/packages/amplication-storage-gateway"
       ],
       "options": {
-        "project": "libs/amplication-storage-gateway/ng-package.json"
+        "project": "packages/amplication-storage-gateway/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/amplication-storage-gateway/tsconfig.lib.prod.json"
+          "tsConfig": "packages/amplication-storage-gateway/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/amplication-storage-gateway/tsconfig.lib.json"
+          "tsConfig": "packages/amplication-storage-gateway/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"

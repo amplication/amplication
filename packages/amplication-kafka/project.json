@@ -6,17 +6,17 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/libs/amplication-kafka"
+        "dist/packages/amplication-kafka"
       ],
       "options": {
-        "project": "libs/amplication-kafka/ng-package.json"
+        "project": "packages/amplication-kafka/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/amplication-kafka/tsconfig.lib.prod.json"
+          "tsConfig": "packages/amplication-kafka/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/amplication-kafka/tsconfig.lib.json"
+          "tsConfig": "packages/amplication-kafka/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"

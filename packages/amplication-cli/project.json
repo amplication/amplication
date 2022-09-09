@@ -6,17 +6,17 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/libs/amplication-cli"
+        "dist/packages/amplication-cli"
       ],
       "options": {
-        "project": "libs/amplication-cli/ng-package.json"
+        "project": "packages/amplication-cli/ng-package.json"
       },
       "configurations": {
         "production": {
-          "tsConfig": "libs/amplication-cli/tsconfig.lib.prod.json"
+          "tsConfig": "packages/amplication-cli/tsconfig.lib.prod.json"
         },
         "development": {
-          "tsConfig": "libs/amplication-cli/tsconfig.lib.json"
+          "tsConfig": "packages/amplication-cli/tsconfig.lib.json"
         }
       },
       "defaultConfiguration": "production"

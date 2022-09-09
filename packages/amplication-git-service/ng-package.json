@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../dist/libs/amplication-git-service",
+  "dest": "../../dist/packages/amplication-git-service",
   "lib": {
     "entryFile": "src/index.ts"
   }
