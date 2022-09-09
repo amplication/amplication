@@ -36,10 +36,13 @@ import {
 } from '../action/dto';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service/';
+import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
+import { PluginInstallation } from '../pluginInstallation/dto/PluginInstallation';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -88,6 +91,22 @@ const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
     generateAdminUI: true,
     adminUIPath: ''
   }
+};
+
+const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
+  id: 'ExamplePluginInstallation',
+  updatedAt: new Date(),
+  createdAt: new Date(),
+  description: null,
+  inputParameters: [],
+  outputParameters: [],
+  displayName: 'example Plugin installation',
+  parentBlock: null,
+  versionNumber: 0,
+  enabled: true,
+  order: 1,
+  pluginId: '@amplication/example-plugin',
+  blockType: EnumBlockType.PluginInstallation
 };
 
 const EXAMPLE_COMMIT: Commit = {
@@ -443,6 +462,12 @@ describe('BuildService', () => {
           useValue: {
             emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
           }
+        },
+        {
+          provide: PluginInstallationService,
+          useValue: {
+            findMany: () => [EXAMPLE_PLUGIN_INSTALLATION]
+          }
         }
       ]
     }).compile();
@@ -574,7 +599,8 @@ describe('BuildService', () => {
         url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
         settings: EXAMPLE_APP_SETTINGS_VALUES
       },
-      MOCK_LOGGER
+      MOCK_LOGGER,
+      [EXAMPLE_PLUGIN_INSTALLATION]
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
