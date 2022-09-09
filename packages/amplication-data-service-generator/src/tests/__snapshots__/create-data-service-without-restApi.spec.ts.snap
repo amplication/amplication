@@ -3184,8 +3184,14 @@ export interface IAuthStrategy {
   validate: (...any: any) => Promise<UserInfo>;
 }
 ",
-  "server/src/auth/ITokenService.ts": "export interface ITokenService {
-  createToken: (username: string, password: string) => Promise<string>;
+  "server/src/auth/ITokenService.ts": "export interface ITokenPayload {
+  id: string;
+  username: string;
+  password: string;
+}
+
+export interface ITokenService {
+  createToken: ({ id, username, password }: ITokenPayload) => Promise<string>;
 }
 ",
   "server/src/auth/LoginArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
@@ -3204,6 +3210,8 @@ import { User } from \\"../user/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
+  @Field(() => String)
+  id!: string;
   @Field(() => String)
   username!: string;
   @Field(() => [String])
@@ -3478,7 +3486,7 @@ export class AuthService {
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
       const { roles } = user;
-      return { username, roles };
+      return { id: user.id, username, roles };
     }
     return null;
   }
@@ -3492,7 +3500,11 @@ export class AuthService {
       throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
     }
     //@ts-ignore
-    const accessToken = await this.tokenService.createToken(username, password);
+    const accessToken = await this.tokenService.createToken({
+      id: user.id,
+      username,
+      password,
+    });
     return {
       accessToken,
       ...user,
@@ -3503,7 +3515,7 @@ export class AuthService {
   "server/src/auth/base/token.service.base.ts": "/* eslint-disable import/no-unresolved */
 import { Injectable } from \\"@nestjs/common\\";
 import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from \\"../constants\\";
-import { ITokenService } from \\"../ITokenService\\";
+import { ITokenService, ITokenPayload } from \\"../ITokenService\\";
 /**
  * TokenServiceBase is a basic http implementation of ITokenService
  */
@@ -3511,15 +3523,16 @@ import { ITokenService } from \\"../ITokenService\\";
 export class TokenServiceBase implements ITokenService {
   /**
    *
+   * @param id
    * @param username
    * @param password
    * @returns a base64 string of the username and password
    */
-  createToken(username: string, password: string): Promise<string> {
+  createToken({ id, username, password }: ITokenPayload): Promise<string> {
     if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
     if (!password) return Promise.reject(INVALID_PASSWORD_ERROR);
     return Promise.resolve(
-      Buffer.from(\`\${username}:\${password}\`).toString(\\"base64\\")
+      Buffer.from(\`\${id}:\${username}:\${password}\`).toString(\\"base64\\")
     );
   }
 }
@@ -9579,7 +9592,11 @@ describe(\\"Testing the basicStrategyBase.validate()\\", () => {
   "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
 import { UserInfo } from \\"../../auth/UserInfo\\";
 
-export const TEST_USER: UserInfo = { roles: [\\"User\\"], username: \\"ofek\\" };
+export const TEST_USER: UserInfo = {
+  id: \\"cl7qmjh4h0000tothyjqapgj5\\",
+  roles: [\\"User\\"],
+  username: \\"ofek\\",
+};
 export const SIGN_TOKEN = \\"SIGN_TOKEN\\";
 export const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
@@ -9611,6 +9628,7 @@ describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
       .mockReturnValue(Promise.resolve(null));
     //ACT
     const result = jwtStrategy.validate({
+      id: TEST_USER.id,
       username: TEST_USER.username,
       roles: TEST_USER.roles,
     });
