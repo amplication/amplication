@@ -5,7 +5,11 @@
     "outDir": "../../dist/out-tsc",
     "declaration": true,
     "types": ["node"],
-	"esModuleInterop": true
+	"noImplicitAny": false,
+	"allowSyntheticDefaultImports": true,
+	"resolveJsonModule": true,
+	"esModuleInterop": true,
+	"jsx": "react"
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
   "include": ["**/*.ts"]

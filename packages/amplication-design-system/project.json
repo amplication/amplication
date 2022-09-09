@@ -19,7 +19,13 @@
           "tsConfig": "packages/amplication-design-system/tsconfig.lib.json"
         }
       },
-      "defaultConfiguration": "production"
+      "defaultConfiguration": "production",
+      "dependsOn": [
+        {
+          "target": "ng-packagr-build",
+          "projects": "dependencies"
+        }
+      ]
     },
     "build": {
       "executor": "@nrwl/js:tsc",
@@ -58,5 +64,6 @@
       }
     }
   },
-  "tags": []
+  "tags": [],
+  "implicitDependencies": []
 }

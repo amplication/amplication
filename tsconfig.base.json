@@ -27,7 +27,9 @@
       "dom.iterable",
       "ES2017.Object",
       "ES2019.Object",
-      "ES2016.Array.Include"
+      "ES2016.Array.Include",
+      "ES2019.Array",
+      "ES2021.String"
     ],
     "types": [
       "jest"
@@ -37,43 +39,43 @@
       "@amplication/test": [
         "packages/test/src/index.ts"
       ],
-      "@amplication-cli": [
+      "@amplication/cli": [
         "packages/amplication-cli/src/index.ts"
       ],
-      "@amplication-client": [
+      "@amplication/client": [
         "packages/amplication-client/src/index.ts"
       ],
-      "@amplication-code-gen-types": [
+      "@amplication/code-gen-types": [
         "packages/amplication-code-gen-types/src/index.ts"
       ],
-      "@amplication-data-service-generator": [
+      "@amplication/data-service-generator": [
         "packages/amplication-data-service-generator/src/index.ts"
       ],
-      "@amplication-design-system": [
+      "@amplication/design-system": [
         "packages/amplication-design-system/src/index.ts"
       ],
-      "@amplication-git-pull-request-service": [
+      "@amplication/git-pull-request-service": [
         "packages/amplication-git-pull-request-service/src/index.ts"
       ],
-      "@amplication-git-service": [
+      "@amplication/git-service": [
         "packages/amplication-git-service/src/index.ts"
       ],
-      "@amplication-kafka": [
+      "@amplication/kafka": [
         "packages/amplication-kafka/src/index.ts"
       ],
-      "@amplication-nest-logger-module": [
+      "@amplication/nest-logger-module": [
         "packages/amplication-nest-logger-module/src/index.ts"
       ],
-      "@amplication-prisma-db": [
+      "@amplication/prisma-db": [
         "packages/amplication-prisma-db/src/index.ts"
       ],
-      "@amplication-scheduler": [
+      "@amplication/scheduler": [
         "packages/amplication-scheduler/src/index.ts"
       ],
-      "@amplication-server": [
+      "@amplication/server": [
         "packages/amplication-server/src/index.ts"
       ],
-      "@amplication-storage-gateway": [
+      "@amplication/storage-gateway": [
         "packages/amplication-storage-gateway/src/index.ts"
       ]
     }
