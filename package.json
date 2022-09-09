@@ -174,7 +174,15 @@
     "xlsx": "0.16.9",
     "yaml": "1.10.2",
     "yup": "0.32.11",
-    "zlib": "1.0.5"
+    "zlib": "1.0.5",
+    "@amplication/code-gen-types": "^0.16.1",
+    "@amplication/design-system": "^0.16.1",
+    "@amplication/git-service": "^0.16.1",
+    "@amplication/kafka": "^0.16.1",
+    "@amplication/nest-logger-module": "^0.16.1",
+    "typescript": "4.1.2",
+    "@amplication/data-service-generator": "^0.16.1",
+    "@amplication/prisma-db": "^0.16.1"
   },
   "devDependencies": {
     "@apollo/client": "3.6.9",
@@ -333,7 +341,7 @@
     "ts-node": "9.1.1",
     "tsconfig-paths": "3.12.0",
     "type-fest": "0.11.0",
-    "typescript": "4.7.4",
+    "typescript": "4.2.3",
     "web-vitals": "0.2.4",
     "webpack": "5.65.0"
   },
