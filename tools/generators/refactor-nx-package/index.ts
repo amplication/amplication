@@ -5,7 +5,7 @@ import * as fse from 'fs-extra';
 
 export default async function (tree: Tree, schema: any) {
 	const rootTsconfig = readJson(tree, 'tsconfig.base.json');
-	rootTsconfig.compilerOptions.paths[`@${schema.name}`] = [`packages/${schema.name}/src/index.ts`];
+	rootTsconfig.compilerOptions.paths[`@amplication/${schema.name.replace(/^amplication-/, '')}`] = [`packages/${schema.name}/src/index.ts`];
 
 	tree.write('tsconfig.base.json', JSON.stringify(rootTsconfig, null, 2));
 
@@ -18,17 +18,26 @@ export default async function (tree: Tree, schema: any) {
 	await fse.copy(`packages/test/tsconfig.lib.json`, `packages/${schema.name}/tsconfig.lib.json`)
 	await fse.copy(`packages/test/tsconfig.spec.json`, `packages/${schema.name}/tsconfig.spec.json`)
 
+	const indexTsxFile = await fse.pathExists(`packages/${schema.name}/src/index.tsx`);
+	const mainTsFile = await fse.pathExists(`packages/${schema.name}/src/main.ts`);
+
 	await fse.outputFile(`packages/${schema.name}/ng-package.json`, JSON.stringify({
 			'$schema': '../../node_modules/ng-packagr/ng-package.schema.json',
 			'dest': `../../dist/packages/${schema.name}`,
 			'lib': {
-				'entryFile': 'src/index.ts'
+				'entryFile': indexTsxFile ? 'src/index.tsx' :
+					(mainTsFile ? 'src/main.ts' : 'src/index.ts')
 			}
 		}
 		, null, 2))
 
+	let implicitDependencies = [];
+	if (await fse.pathExists(`packages/${schema.name}/project.json`)) {
+		implicitDependencies = readJson(tree, `packages/${schema.name}/project.json`).implicitDependencies;
+	}
+
 	await fse.outputFile(`packages/${schema.name}/project.json`,
-		JSON.stringify(templateProjectFile(schema.name), null, 2))
+		JSON.stringify(templateProjectFile(schema.name, implicitDependencies), null, 2))
 
 	// await fse.rm(`packages/${schema.name}/tsconfig.prod.json`)
 	await fse.outputFile(`packages/${schema.name}/tsconfig.lib.prod.json`, `{
@@ -44,7 +53,7 @@ export default async function (tree: Tree, schema: any) {
 }
 
 
-function templateProjectFile(pkgName: string): any {
+function templateProjectFile(pkgName: string, implicitDependencies: string[] = []): any {
 	return {
 		'$schema': '../../node_modules/nx/schemas/project-schema.json',
 		'sourceRoot': `packages/${pkgName}/src`,
@@ -64,7 +73,13 @@ function templateProjectFile(pkgName: string): any {
 						'tsConfig': `packages/${pkgName}/tsconfig.lib.json`
 					}
 				},
-				'defaultConfiguration': 'production'
+				'defaultConfiguration': 'production',
+				'dependsOn': [
+					{
+						'target': 'ng-packagr-build',
+						'projects': 'dependencies'
+					}
+				]
 			},
 			'build': {
 				'executor': '@nrwl/js:tsc',
@@ -103,6 +118,7 @@ function templateProjectFile(pkgName: string): any {
 				}
 			}
 		},
-		'tags': []
+		'tags': [],
+		'implicitDependencies': implicitDependencies || []
 	}
 }

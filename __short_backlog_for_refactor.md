@@ -85,3 +85,21 @@
   ```bash
   yarn nx run amplication-cli:ng-packagr-build
   ```
+
+  ```bash
+  yarn nx run-many --target=ng-packagr-build --all
+  ```
+
+
+
+- react build problem
+  - @types/react 17.0.43
+
+  ```bash
+  yarn nx run-many --target=ng-packagr-build --all
+  ```
+
+
+
+- react build problem
+  - @types/react 17.0.43
