@@ -17,21 +17,6 @@
     "test": "jest",
     "prebuild": "rimraf dist"
   },
-  "devDependencies": {
-    "@types/jest": "26.0.19",
-    "@types/json-schema": "7.0.9",
-    "@types/normalize-path": "3.0.0",
-    "fast-glob": "3.2.10",
-    "jest": "27.0.6",
-    "json-schema-to-typescript": "10.1.5",
-    "normalize-path": "3.0.0",
-    "npm-run-all": "4.1.5",
-    "prettier": "2.1.1",
-    "rimraf": "3.0.2",
-    "ts-jest": "27.0.3",
-    "ts-node": "9.1.1",
-    "typescript": "4.0.2"
-  },
   "jest": {
     "preset": "ts-jest",
     "modulePathIgnorePatterns": [
@@ -43,10 +28,5 @@
     "dsg",
     "code generation",
     "low code"
-  ],
-  "dependencies": {
-    "@nestjs/core": "^9.0.9",
-    "ast-types": "^0.14.2",
-    "lodash": "^4.17.21"
-  }
+  ]
 }

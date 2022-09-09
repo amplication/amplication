@@ -39,6 +39,11 @@ version ${rootVersion}, subpackage ${dir} has version ${val}\n`);
 			}
 		}
 
+		//delete packageJSON.dependencies;
+		delete packageJSON.dependencies;
+		delete packageJSON.devDependencies;
+		tree.write(packageJsonPath, JSON.stringify(packageJSON, null, 2));
+
 		tree.write('package.json', JSON.stringify(rootPackageJSON, null, 2));
 	}
 
