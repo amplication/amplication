@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": false,
+    "strictNullChecks": false,
+    "noImplicitReturns": true,
+    "strictFunctionTypes": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "skipLibCheck": true,
+    "strictBindCallApply": true,
+    "target": "es2015",
+    "lib": [
+      "es5",
+      "es2015",
+      "dom",
+      "dom.iterable",
+      "ES2017.Object",
+      "ES2019.Object",
+      "ES2016.Array.Include"
+    ],
+    "types": ["jest"],
+    "baseUrl": ".",
+    "paths": {
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

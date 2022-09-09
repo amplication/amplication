@@ -8,3 +8,6 @@
 	find ./packages -type d -name "node_modules" |while read DIR; do rm -rf $DIR;done
   ```
 - collect all package.json dependencies and devDependencies into root package.json.
+  ```bash
+  yarn nx workspace-generator refactor-package-json
+  ```
