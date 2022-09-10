@@ -31,21 +31,21 @@ function CodeViewPage() {
       sideContent={<CodeViewBar onFileSelected={setFileDetails} />}
     >
       <div className={CLASS_NAME}>
-        <div className={`${CLASS_NAME}__code-container`}>
-          {fileDetails?.isFile ? (
+        {fileDetails?.isFile ? (
+          <div className={`${CLASS_NAME}__code-container`}>
             <CodeViewEditor
               resourceId={fileDetails.resourceId}
               buildId={fileDetails.buildId}
               filePath={fileDetails.filePath}
               fileName={fileDetails.fileName}
             />
-          ) : (
-            <div className={`${CLASS_NAME}__empty-state`}>
-              <SvgThemeImage image={EnumImages.CodeViewEmptyState} />
-              <span>There is no code to show</span>
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className={`${CLASS_NAME}__empty-state`}>
+            <SvgThemeImage image={EnumImages.CodeViewEmptyState} />
+            <span>There is no code to view</span>
+          </div>
+        )}
       </div>
     </PageContent>
   );
