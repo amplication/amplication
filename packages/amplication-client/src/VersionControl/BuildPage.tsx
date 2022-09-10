@@ -3,7 +3,7 @@ import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
 import PageContent from "../Layout/PageContent";
-import { Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import BuildSteps from "./BuildSteps";
 import ActionLog from "./ActionLog";
@@ -69,7 +69,7 @@ const BuildPage = ({ match }: Props) => {
     <>
       <PageContent className={CLASS_NAME} pageTitle={`Build ${truncatedId}`}>
         {!data ? (
-          "loading..."
+          <CircularProgress centerToParent />
         ) : (
           <>
             <BackNavigation

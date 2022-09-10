@@ -41,6 +41,7 @@ import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { GitResourceMeta } from './dto/GitResourceMeta';
+import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -155,6 +156,7 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
+    private readonly pluginInstallationService: PluginInstallationService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
@@ -324,6 +326,11 @@ export class BuildService {
         //#region getting all the resource data
         const entities = await this.getOrderedEntities(build.id);
         const roles = await this.getResourceRoles(build);
+        const allPlugins = await this.pluginInstallationService.findMany({
+          where: { resource: { id: build.resourceId } }
+        });
+        const plugins = allPlugins.filter(plugin => plugin.enabled);
+
         const resource = await this.resourceService.resource({
           where: { id: build.resourceId }
         });
@@ -354,7 +361,8 @@ export class BuildService {
             url,
             settings: serviceSettings
           },
-          dataServiceGeneratorLogger
+          dataServiceGeneratorLogger,
+          plugins
         );
 
         await Promise.all(logPromises);
@@ -465,7 +473,14 @@ export class BuildService {
       `Amplication build ${truncateBuildId}`;
 
     const clientHost = this.configService.get(CLIENT_HOST_VAR);
-    const url = `${clientHost}/${build.resourceId}/builds/${build.id}`;
+
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: build.resource.projectId
+      }
+    });
+
+    const url = `${clientHost}/${project.workspaceId}/${build.resource.projectId}/${build.resourceId}/builds/${build.id}`;
 
     return this.actionService.run(
       build.actionId,

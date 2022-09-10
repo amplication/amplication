@@ -31,7 +31,7 @@ function ThemeProvider({ children }: Props) {
   );
 
   useEffect(() => {
-    const nextThemeClass = `amp-theme-${currentTheme}`;
+    const nextThemeClass = `amp-theme-dark`;
     document.body.classList.add(nextThemeClass);
   }, [currentTheme]);
 

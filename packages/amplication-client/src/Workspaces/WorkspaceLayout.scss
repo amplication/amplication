@@ -10,14 +10,12 @@
   &__page_content {
     display: flex;
     flex: 1;
-    flex-direction: row;
-    flex-grow: 1;
-    height: 100%;
     overflow: hidden;
   }
 
   &__main_content {
-    flex-grow: 1;
+    flex: 1;
+    display: flex;
   }
 
   &__changes_menu {

@@ -10,7 +10,7 @@ import { CircleBadge, Icon } from "@amplication/design-system";
 import * as models from "../models";
 import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
-import { resourceThemeMap } from "../util/resourceThemeMap";
+import { resourceThemeMap } from "../Resource/constants";
 
 export type ResourceDescriptor = Pick<
   models.Resource,

@@ -43,9 +43,11 @@ function NewVersionTile({ resourceId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${currentWorkspace?.id}/${currentProject?.id}${resourceId}/fix-related-entities`);
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}${resourceId}/fix-related-entities`
+      );
     },
-    [history, trackEvent, resourceId,currentWorkspace,currentProject]
+    [history, trackEvent, resourceId, currentWorkspace, currentProject]
   );
 
   const requiredFixesCount = useMemo(() => {
@@ -79,7 +81,7 @@ function NewVersionTile({ resourceId }: Props) {
               Version 0.3.2 includes big improvements in how we manage related
               entities. The changes require your attention.
               {loading ? (
-                <CircularProgress />
+                <CircularProgress centerToParent />
               ) : (
                 <span className={`${CLASS_NAME}__content__details__summary`}>
                   <Icon icon="info_circle" size="medium" />

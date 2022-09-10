@@ -75,8 +75,7 @@ export default function GitCreateRepo({
         <Form>
           <div className={`${CLASS_NAME}__header`}>
             <h4>
-              Create a new {gitProvider} repository to sync your resource
-              with
+              Create a new {gitProvider} repository to sync your resource with
             </h4>
             <br />
           </div>
@@ -96,7 +95,12 @@ export default function GitCreateRepo({
             <tr>
               <td>{gitOrganizationName}/</td>
               <td>
-                <TextField autoFocus name="name" autoComplete="off" showError={false} />
+                <TextField
+                  autoFocus
+                  name="name"
+                  autoComplete="off"
+                  showError={false}
+                />
               </td>
             </tr>
           </table>
@@ -106,7 +110,10 @@ export default function GitCreateRepo({
             disabled={loading}
           >
             {loading ? (
-              <CircularProgress className={`${CLASS_NAME}__progress`} />
+              <CircularProgress
+                className={`${CLASS_NAME}__progress`}
+                centerToParent
+              />
             ) : (
               "Create new repository"
             )}
