@@ -2,9 +2,8 @@ import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { flatten } from "lodash";
 import * as winston from "winston";
-import { Entity, Module, AppInfo } from "@amplication/code-gen-types";
+import { Entity, Module, AppInfo, DTOs } from "@amplication/code-gen-types";
 import { validateEntityName } from "../../util/entity";
-import { DTOs } from "./create-dtos";
 import { createServiceModules } from "./service/create-service";
 import { createControllerModules } from "./controller/create-controller";
 import { createModules } from "./module/create-module";
@@ -55,13 +54,11 @@ async function createResourceModules(
   const controllerModules =
     (appInfo.settings.serverSettings.generateRestApi &&
       (await createControllerModules(
-        appInfo,
         resource,
         entityName,
         entityType,
         serviceModule.path,
         entity,
-        dtos,
         srcDirectory
       ))) ||
     [];

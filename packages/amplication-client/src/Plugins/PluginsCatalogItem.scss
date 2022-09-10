@@ -1,0 +1,51 @@
+@import "../style/index.scss";
+
+$logo-size: 44px;
+$logo-background: #dcb21a;
+$order-badge-size: 14px;
+
+.plugins-catalog-item {
+  margin: 0;
+  margin-bottom: var(--default-spacing);
+
+  &__row {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+    align-items: flex-start;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  &__title {
+    @include body1;
+    color: var(--black100);
+    margin-top: var(--default-spacing-small);
+  }
+  &__description {
+    @include body2;
+    color: var(--black80);
+  }
+
+  &__logo {
+    width: $logo-size;
+    height: $logo-size;
+    background-color: $logo-background;
+    border-radius: var(--default-border-radius);
+  }
+
+  &__order {
+    @include flexVerticalCenter;
+
+    span {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--black2);
+      padding: var(--icon-spacing);
+      border-radius: var(--small-border-radius);
+      width: $order-badge-size;
+      height: $order-badge-size;
+    }
+  }
+}

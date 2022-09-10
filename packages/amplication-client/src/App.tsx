@@ -25,9 +25,7 @@ export const enhance = track<keyof typeof context>(
 
 function App() {
   const authenticated = useAuthenticated();
-  const { currentWorkspaceLoad } = useCurrentWorkspace(
-    authenticated
-  );
+  const { currentWorkspaceLoad } = useCurrentWorkspace(authenticated);
 
   useEffect(() => {
     initAnalytics();
@@ -45,7 +43,11 @@ function App() {
 
   return (
     <ThemeProvider>
-      {currentWorkspaceLoad ? <CircularProgress /> : GeneratedRoutes}
+      {currentWorkspaceLoad ? (
+        <CircularProgress centerToParent />
+      ) : (
+        GeneratedRoutes
+      )}
     </ThemeProvider>
   );
 }

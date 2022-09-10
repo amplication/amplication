@@ -20,6 +20,7 @@ import { QueueModule } from '../queue/queue.module';
 import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
 import { TopicModule } from '../topic/topic.module';
 import { ServiceTopicsModule } from '../serviceTopics/serviceTopics.module';
+import { PluginInstallationModule } from '../pluginInstallation/pluginInstallation.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ServiceTopicsModule } from '../serviceTopics/serviceTopics.module';
     forwardRef(() => ResourceModule),
     ServiceSettingsModule,
     QueueModule,
+    PluginInstallationModule,
     forwardRef(() => CommitModule),
     TopicModule,
     ServiceTopicsModule

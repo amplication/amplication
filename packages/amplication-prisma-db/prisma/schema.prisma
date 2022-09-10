@@ -466,6 +466,7 @@ enum EnumBlockType {
   CanvasPage
   EntityPage
   Document
+  PluginInstallation
 }
 
 enum ActionStepStatus {

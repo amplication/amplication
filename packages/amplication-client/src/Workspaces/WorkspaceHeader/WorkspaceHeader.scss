@@ -5,6 +5,7 @@ $search-header-width: 52px;
 $user-header-width: 90px; // 64px after remove signout
 $modal-menu-width: 220px;
 $modal-menu-top: 30px;
+$select-menu-max-width: 300px;
 
 .workspace-header {
   @include flexFullRowWithSpacing;
@@ -45,12 +46,12 @@ $modal-menu-top: 30px;
       align-items: center;
       margin-left: var(--default-spacing);
 
-    &__title {
-      width: 130px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+      &__title {
+        max-width: $select-menu-max-width;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
 
       .select-menu__summary.amp-button.amp-button--text {
         color: var(--black80);
@@ -61,37 +62,32 @@ $modal-menu-top: 30px;
           color: var(--black100);
         }
       }
+
+      .select-menu {
+        position: relative;
+      }
       .select-menu__modal {
         width: $modal-menu-width;
         background-color: var(--black2);
         border: $border-black30;
         box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
-        border-radius: var(--default-spacing-small);
-        right: 45%;
+        border-radius: var(--default-border-radius);
       }
       .select-menu__modal > div {
-        border: none;
         width: $modal-menu-width;
-        display: flex;
-        flex-direction: column;
+        border: none;
+        margin: 0;
+        border-radius: var(--default-border-radius);
       }
       .select-menu__list {
         width: $modal-menu-width;
-        display: flex;
-        flex-direction: column;
-        border: none;
+        @include scrollbars($default-scroll-width, var(--black60), transparent);
       }
       .select-menu__item {
-        padding: 5px;
-        height: 42px;
-        width: 210px;
+        padding: var(--default-spacing);
       }
 
-      .SelectMenu-icon {
-        margin-right: 4px !important;
-      }
       &__item {
-        margin-left: var(--text-field-label-font-size);
         display: flex;
         flex-direction: row;
         justify-content: center;

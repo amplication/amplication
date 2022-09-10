@@ -16,10 +16,10 @@ image:
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: "2Gi"
-minMemory: "2Gi"
-maxCPU: 1
-minCPU: 1
+maxMemory: "1.6Gi"
+minMemory: "1.6Gi"
+maxCPU: "0.9"
+minCPU: "0.9"
 
 service:
   type: ClusterIP

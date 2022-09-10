@@ -5,6 +5,7 @@ import omitDeep from "deepdash-es/omitDeep";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
 import "./PendingChangeDiff.scss";
+import { CircularProgress } from "@amplication/design-system";
 
 export enum EnumCompareType {
   Pending = "Pending",
@@ -111,7 +112,7 @@ const PendingChangeDiffEntity = ({
   return (
     <div className={CLASS_NAME}>
       {loadingCurrentVersion || loadingOtherVersion ? (
-        "Loading..."
+        <CircularProgress centerToParent />
       ) : (
         <ReactDiffViewer
           styles={DIFF_STYLES}

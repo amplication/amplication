@@ -612,6 +612,7 @@ export enum EnumBlockType {
   Flow = 'Flow',
   FlowApi = 'FlowApi',
   Layout = 'Layout',
+  PluginInstallation = 'PluginInstallation',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
@@ -852,6 +853,7 @@ export type Mutation = {
   createMessageBroker: Resource;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
+  createPluginInstallation: PluginInstallation;
   createProject: Project;
   createResourceRole: ResourceRole;
   createService: Resource;
@@ -885,6 +887,7 @@ export type Mutation = {
   updateEntityPermission: EntityPermission;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
+  updatePluginInstallation: PluginInstallation;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
   updateResourceRole?: Maybe<ResourceRole>;
@@ -956,6 +959,10 @@ export type MutationCreateOneEntityArgs = {
 
 export type MutationCreateOrganizationArgs = {
   data: GitOrganizationCreateInput;
+};
+
+export type MutationCreatePluginInstallationArgs = {
+  data: PluginInstallationCreateInput;
 };
 
 export type MutationCreateProjectArgs = {
@@ -1096,6 +1103,11 @@ export type MutationUpdateEntityPermissionRolesArgs = {
   data: EntityUpdatePermissionRolesInput;
 };
 
+export type MutationUpdatePluginInstallationArgs = {
+  data: PluginInstallationUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationUpdateProjectConfigurationSettingsArgs = {
   data: ProjectConfigurationSettingsUpdateInput;
   where: WhereUniqueInput;
@@ -1149,6 +1161,61 @@ export type PendingChangesDiscardInput = {
 
 export type PendingChangesFindInput = {
   project: WhereUniqueInput;
+};
+
+export type PluginInstallation = IBlock & {
+  __typename?: 'PluginInstallation';
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime'];
+  description?: Maybe<Scalars['String']>;
+  displayName: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  id: Scalars['String'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  order: Scalars['Int'];
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  pluginId: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+  versionNumber: Scalars['Float'];
+};
+
+export type PluginInstallationCreateInput = {
+  description?: InputMaybe<Scalars['String']>;
+  displayName: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  pluginId: Scalars['String'];
+  resource: WhereParentIdInput;
+};
+
+export type PluginInstallationOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type PluginInstallationUpdateInput = {
+  description?: InputMaybe<Scalars['String']>;
+  displayName?: InputMaybe<Scalars['String']>;
+  enabled: Scalars['Boolean'];
+};
+
+export type PluginInstallationWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<WhereUniqueInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
 export type Project = {
@@ -1228,6 +1295,8 @@ export type Query = {
   gitOrganizations: Array<GitOrganization>;
   me: User;
   pendingChanges: Array<PendingChange>;
+  PluginInstallation?: Maybe<PluginInstallation>;
+  PluginInstallations: Array<PluginInstallation>;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
@@ -1308,6 +1377,17 @@ export type QueryGitOrganizationsArgs = {
 
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
+};
+
+export type QueryPluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryPluginInstallationsArgs = {
+  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<PluginInstallationWhereInput>;
 };
 
 export type QueryProjectArgs = {

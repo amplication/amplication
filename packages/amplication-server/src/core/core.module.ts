@@ -19,6 +19,7 @@ import { GitModule } from '@amplication/git-service';
 import { GitProviderModule } from './git/git.provider.module';
 import { ProjectModule } from './project/project.module';
 import { HealthModule } from './health/health.module';
+import { PluginInstallationModule } from './pluginInstallation/pluginInstallation.module';
 import { TopicModule } from './topic/topic.module';
 import { ServiceTopicsModule } from './serviceTopics/serviceTopics.module';
 
@@ -45,6 +46,7 @@ import { ServiceTopicsModule } from './serviceTopics/serviceTopics.module';
     SubscriptionModule,
     ProjectModule,
     HealthModule,
+    PluginInstallationModule,
     TopicModule,
     ServiceTopicsModule
   ],
@@ -69,6 +71,7 @@ import { ServiceTopicsModule } from './serviceTopics/serviceTopics.module';
     MailModule,
     SubscriptionModule,
     ProjectModule,
+    PluginInstallationModule,
     TopicModule,
     ServiceTopicsModule
   ]

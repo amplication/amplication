@@ -51,6 +51,8 @@ type Query {
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  PluginInstallation(where: WhereUniqueInput!): PluginInstallation
+  PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
   Topic(where: WhereUniqueInput!): Topic
   Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
   ServiceTopics(where: WhereUniqueInput!): ServiceTopics
@@ -394,6 +396,7 @@ enum EnumBlockType {
   CanvasPage
   EntityPage
   Document
+  PluginInstallation
 }
 
 type BlockVersion {
@@ -865,6 +868,43 @@ input CommitOrderByInput {
   message: SortOrder
 }
 
+type PluginInstallation implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  pluginId: String!
+  enabled: Boolean!
+  order: Int!
+}
+
+input PluginInstallationWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input PluginInstallationOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
 type Topic implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -1017,6 +1057,8 @@ type Mutation {
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
+  updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   createTopic(data: TopicCreateInput!): Topic!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
@@ -1229,14 +1271,15 @@ input ResourceRoleUpdateInput {
   displayName: String!
 }
 
-input TopicCreateInput {
+input PluginInstallationCreateInput {
   displayName: String!
   description: String
   resource: WhereParentIdInput!
   parentBlock: WhereParentIdInput
   inputParameters: [BlockInputOutputInput!]
   outputParameters: [BlockInputOutputInput!]
-  name: String
+  pluginId: String!
+  enabled: Boolean!
 }
 
 input BlockInputOutputInput {
@@ -1252,6 +1295,22 @@ input BlockInputOutputInput {
 input PropertySelectorInput {
   propertyName: String!
   include: Boolean!
+}
+
+input PluginInstallationUpdateInput {
+  displayName: String
+  description: String
+  enabled: Boolean!
+}
+
+input TopicCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  name: String
 }
 
 input TopicUpdateInput {
