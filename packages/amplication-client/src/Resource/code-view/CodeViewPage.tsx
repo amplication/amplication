@@ -4,6 +4,7 @@ import CodeViewEditor from "./CodeViewEditor";
 import PageContent from "../../Layout/PageContent";
 
 import "./CodeViewPage.scss";
+import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 
 const CLASS_NAME = "code-view-page";
 
@@ -31,13 +32,18 @@ function CodeViewPage() {
     >
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__code-container`}>
-          {fileDetails?.isFile && (
+          {fileDetails?.isFile ? (
             <CodeViewEditor
               resourceId={fileDetails.resourceId}
               buildId={fileDetails.buildId}
               filePath={fileDetails.filePath}
               fileName={fileDetails.fileName}
             />
+          ) : (
+            <div className={`${CLASS_NAME}__empty-state`}>
+              <SvgThemeImage image={EnumImages.CodeViewEmptyState} />
+              <span>There is no code to show</span>
+            </div>
           )}
         </div>
       </div>
