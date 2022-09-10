@@ -43,6 +43,15 @@
     display: flex;
     align-items: center;
     padding: 0 var(--default-spacing-small);
+
+    a {
+      display: flex;
+      align-items: center;
+    }
+    .amp-icon {
+      margin-left: var(--icon-spacing);
+      transform: rotate(45deg);
+    }
   }
 
   &__changes-count {

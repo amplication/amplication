@@ -1,4 +1,4 @@
-import { EnumPanelStyle, Panel } from "@amplication/design-system";
+import { EnumPanelStyle, Icon, Panel } from "@amplication/design-system";
 import React, { useCallback, useContext, useMemo } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { ClickableId } from "../Components/ClickableId";
@@ -31,51 +31,54 @@ const CommitResourceListItem = ({ build }: Props) => {
   }, [build.commitId, build.resourceId, commitChangesByResource]);
 
   return (
-    
-      
-        <NavLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build?.resourceId}`}
+    <NavLink
+      to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
+    >
+      {build && build.resource && (
+        <Panel
+          className={CLASS_NAME}
+          clickable
+          panelStyle={EnumPanelStyle.Bordered}
         >
-          {build && build.resource && (
-          <Panel
-            className={CLASS_NAME}
-            clickable
-            panelStyle={EnumPanelStyle.Bordered}
-          >
-            <div className={`${CLASS_NAME}__row`}>
-              <ResourceCircleBadge type={build.resource.resourceType} />
+          <div className={`${CLASS_NAME}__row`}>
+            <ResourceCircleBadge type={build.resource.resourceType} />
 
-              <span className={`${CLASS_NAME}__title`}>
-                {build.resource.name}
-              </span>
-
-              <span className="spacer" />
+            <div className={`${CLASS_NAME}__title`}>
               <Link
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
-                className={`${CLASS_NAME}__changes-count`}
-              >
-                {resourceChangesCount && resourceChangesCount > 0
-                  ? resourceChangesCount
-                  : 0}{" "}
-                changes
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}`}
+                >
+                {build.resource.name}
+                <Icon icon="link" size="xsmall" />
               </Link>
             </div>
-            <hr className={`${CLASS_NAME}__divider`} />
-            <div className={`${CLASS_NAME}__row`}>
-              <BuildStatusIcons build={build} showIcon={false} />
-              <ClickableId
-                label="Build ID"
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
-                id={build.id}
-                onClick={handleBuildLinkClick}
-                eventData={{
-                  eventName: "commitListBuildIdClick",
-                }}
-              />
-            </div>
-          </Panel>
+
+            <span className="spacer" />
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
+              className={`${CLASS_NAME}__changes-count`}
+            >
+              {resourceChangesCount && resourceChangesCount > 0
+                ? resourceChangesCount
+                : 0}{" "}
+              changes
+            </Link>
+          </div>
+          <hr className={`${CLASS_NAME}__divider`} />
+          <div className={`${CLASS_NAME}__row`}>
+            <BuildStatusIcons build={build} showIcon={false} />
+            <ClickableId
+              label="Build ID"
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
+              id={build.id}
+              onClick={handleBuildLinkClick}
+              eventData={{
+                eventName: "commitListBuildIdClick",
+              }}
+            />
+          </div>
+        </Panel>
       )}
-        </NavLink>
+    </NavLink>
   );
 };
 
