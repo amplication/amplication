@@ -8,6 +8,7 @@ import { AppRouteProps } from "../routes/routesUtil";
 import CommitList from "./CommitList";
 import CommitResourceList from "./CommitResourceList";
 import useCommit from "./hooks/useCommits";
+import "./CommitsPage.scss";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -27,8 +28,10 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   const { currentProject, currentWorkspace } = useContext(AppContext);
   const { commits, commitsError, commitsLoading } = useCommit();
   const commitIdx = getCommitIdx(commits, commitId);
-  const commitsBuilds =
+  const commitsBuildsState =
     commits.length > 0 && commitIdx > -1 && commits[commitIdx].builds?.length;
+
+  const commitsState = commits.length > 0;
 
   useEffect(() => {
     if (commitId) return;
@@ -43,7 +46,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
       className={moduleClass}
       pageTitle={`Commit Page ${commitId ? commitId : ""}`}
       sideContent={
-        commitsBuilds ? (
+        commitsState ? (
           <CommitList
             commits={commits}
             error={commitsError}
@@ -52,15 +55,16 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
         ) : null
       }
     >
-      {commitsBuilds ? (
+      {commitsBuildsState ? (
         <CommitResourceList
           builds={commits[commitIdx].builds}
           commitId={commitId}
         />
       ) : (
-        <div className="commit-page-empty-state">
+        <div className={`${moduleClass}__empty-state`}>
           <SvgThemeImage image={EnumImages.CommitEmptyState} />
-          <p>There are no commits to show</p>
+          {!commitsState && <p>There are no commits to show</p>}
+          {commitsState && !commitsBuildsState && <p>There are no builds to show</p>}
         </div>
       )}
     </PageContent>
