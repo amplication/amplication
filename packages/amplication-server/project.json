@@ -9,6 +9,43 @@
         "command": "mkdir -p node_modules/@amplication && find dist/packages/@amplication -type d -depth 1|while read FILE;do  ln -sf ../../$FILE \"node_modules/@amplication/$(basename $FILE)\";done"
       }
     },
+    "webpack-build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/@amplication/server",
+        "main": "packages/amplication-server/src/main.ts",
+        "tsConfig": "packages/amplication-server/tsconfig.app.json",
+        "assets": [
+          "packages/amplication-server/src/assets"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "packages/amplication-server/src/environments/environment.ts",
+              "with": "packages/amplication-server/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "dependencies"
+        },
+        {
+          "target": "link-amplication-deps",
+          "projects": "self"
+        }
+      ]
+    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": [

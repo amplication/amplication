@@ -1,21 +1,44 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/test/src",
-  "projectType": "library",
+  "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nrwl/node:webpack",
       "outputs": [
         "{options.outputPath}"
       ],
       "options": {
         "outputPath": "dist/packages/test",
-        "tsConfig": "packages/test/tsconfig.lib.json",
-        "packageJson": "packages/test/package.json",
-        "main": "packages/test/src/index.ts",
+        "main": "packages/test/src/main.ts",
+        "tsConfig": "packages/test/tsconfig.app.json",
         "assets": [
-          "packages/test/*.md"
+          "packages/test/src/assets"
         ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "packages/test/src/environments/environment.ts",
+              "with": "packages/test/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "test:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "test:build:production"
+        }
       }
     },
     "lint": {

@@ -3,12 +3,18 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
-    "types": ["jest", "node"]
+    "types": [
+      "node"
+    ],
+    "emitDecoratorMetadata": true,
+    "target": "es2015"
   },
-  "include": [
+  "exclude": [
     "jest.config.ts",
-    "**/*.test.ts",
     "**/*.spec.ts",
-    "**/*.d.ts"
+    "**/*.test.ts"
+  ],
+  "include": [
+    "**/*.ts"
   ]
 }

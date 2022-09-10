@@ -11,6 +11,6 @@
 	"esModuleInterop": true,
 	"jsx": "react"
   },
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts", "dist"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts", "dist", "src/server"],
   "include": ["**/*.ts"]
 }

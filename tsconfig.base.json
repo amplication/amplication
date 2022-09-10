@@ -36,9 +36,6 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@amplication/test": [
-        "packages/test/src/index.ts"
-      ],
       "@amplication/cli": [
         "packages/amplication-cli/src/index.ts"
       ],
@@ -77,6 +74,9 @@
       ],
       "@amplication/storage-gateway": [
         "packages/amplication-storage-gateway/src/index.ts"
+      ],
+      "@amplication/test": [
+        "packages/test/src/index.ts"
       ]
     }
   },

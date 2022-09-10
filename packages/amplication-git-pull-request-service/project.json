@@ -5,17 +5,13 @@
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/@amplication/git-pull-request-service",
         "tsConfig": "packages/amplication-git-pull-request-service/tsconfig.lib.json",
         "packageJson": "packages/amplication-git-pull-request-service/package.json",
         "main": "packages/amplication-git-pull-request-service/src/index.ts",
-        "assets": [
-          "packages/amplication-git-pull-request-service/*.md"
-        ]
+        "assets": ["packages/amplication-git-pull-request-service/*.md"]
       },
       "dependsOn": [
         {
@@ -26,9 +22,7 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
           "packages/amplication-git-pull-request-service/**/*.ts"
@@ -37,9 +31,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/packages/amplication-git-pull-request-service"
-      ],
+      "outputs": ["coverage/packages/amplication-git-pull-request-service"],
       "options": {
         "jestConfig": "packages/amplication-git-pull-request-service/jest.config.ts",
         "passWithNoTests": true

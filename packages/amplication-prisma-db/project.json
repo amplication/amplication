@@ -5,17 +5,13 @@
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/@amplication/prisma-db",
         "tsConfig": "packages/amplication-prisma-db/tsconfig.lib.json",
         "packageJson": "packages/amplication-prisma-db/package.json",
         "main": "packages/amplication-prisma-db/src/index.ts",
-        "assets": [
-          "packages/amplication-prisma-db/*.md"
-        ]
+        "assets": ["packages/amplication-prisma-db/*.md"]
       },
       "dependsOn": [
         {
@@ -26,20 +22,14 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "packages/amplication-prisma-db/**/*.ts"
-        ]
+        "lintFilePatterns": ["packages/amplication-prisma-db/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/packages/amplication-prisma-db"
-      ],
+      "outputs": ["coverage/packages/amplication-prisma-db"],
       "options": {
         "jestConfig": "packages/amplication-prisma-db/jest.config.ts",
         "passWithNoTests": true

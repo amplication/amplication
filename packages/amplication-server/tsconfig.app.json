@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+	"outDir": "../../dist/out-tsc",
+	"module": "commonjs",
+	"types": [
+	  "node"
+	],
+	"emitDecoratorMetadata": true,
+	"target": "es2015",
+	"noImplicitAny": false,
+	"allowSyntheticDefaultImports": true,
+	"resolveJsonModule": true,
+	"esModuleInterop": true,
+	"jsx": "react"
+  },
+  "exclude": [
+	"jest.config.ts",
+	"**/*.spec.ts",
+	"**/*.test.ts",
+	"prisma",
+	"test",
+	"dist",
+	"migration-scripts"
+  ],
+  "include": [
+	"**/*.ts"
+  ]
+}

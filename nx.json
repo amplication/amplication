@@ -7,14 +7,14 @@
       "runner": "nx/tasks-runners/default",
       "options": {
         "cacheableOperations": [
-		  "ng-packagr-build",
-		  "ng-packagr",
-		  "build",
-		  "lint",
-		  "test",
-		  "e2e",
-		  "extract-i18n"
-		]
+          "ng-packagr-build",
+          "ng-packagr",
+          "build",
+          "lint",
+          "test",
+          "e2e",
+          "extract-i18n"
+        ]
       }
     }
   },
@@ -26,5 +26,6 @@
     "@nrwl/js": {
       "analyzeSourceFiles": false
     }
-  }
+  },
+  "defaultProject": "test"
 }

@@ -5,17 +5,13 @@
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/@amplication/cli",
         "tsConfig": "packages/amplication-cli/tsconfig.lib.json",
         "packageJson": "packages/amplication-cli/package.json",
         "main": "packages/amplication-cli/src/index.ts",
-        "assets": [
-          "packages/amplication-cli/*.md"
-        ]
+        "assets": ["packages/amplication-cli/*.md"]
       },
       "dependsOn": [
         {
@@ -26,20 +22,14 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "packages/amplication-cli/**/*.ts"
-        ]
+        "lintFilePatterns": ["packages/amplication-cli/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/packages/amplication-cli"
-      ],
+      "outputs": ["coverage/packages/amplication-cli"],
       "options": {
         "jestConfig": "packages/amplication-cli/jest.config.ts",
         "passWithNoTests": true

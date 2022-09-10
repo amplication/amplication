@@ -167,6 +167,7 @@
     "@nrwl/jest": "14.6.5",
     "@nrwl/js": "14.6.5",
     "@nrwl/linter": "14.6.5",
+    "@nrwl/nest": "^14.7.3",
     "@nrwl/node": "^14.6.5",
     "@oclif/dev-cli": "1.26.10",
     "@prisma/client": "3.15.2",
