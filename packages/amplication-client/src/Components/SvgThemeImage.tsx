@@ -15,7 +15,7 @@ export enum EnumImages {
   MyResources = "--image-my-resources",
   Generating = "--image-generating",
   CreateServiceWizard = "--image-create-service-wizard",
-  CodeViewEmptyState = "--image-code-view-empty-state",
+  CodeViewEmptyState = "--image-code-view-empty-state-dark",
 }
 
 type Props = {
