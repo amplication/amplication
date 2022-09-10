@@ -1,4 +1,6 @@
 @import "../style/index.scss";
+$svg-img-width: 200px;
+$svg-img-height: 200px;
 
 .project-page {
   display: flex;
@@ -17,8 +19,8 @@
       margin: 0 auto;
     }
     .svg-theme-image {
-      width: 200px;
-      height: 200px;
+      width: $svg-img-width;
+      height: $svg-img-height;
     }
   }
 }

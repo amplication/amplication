@@ -60,7 +60,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
       ) : (
         <div className="commit-page-empty-state">
           <SvgThemeImage image={EnumImages.CommitEmptyState} />
-          <p>There are not commits to show</p>
+          <p>There are no commits to show</p>
         </div>
       )}
     </PageContent>
