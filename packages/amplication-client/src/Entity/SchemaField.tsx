@@ -66,6 +66,7 @@ export const SchemaField = ({
         throw new Error("Array schema must define items");
       }
 
+      // @ts-ignore
       switch (propertySchema.items.type) {
         case "object": {
           return (

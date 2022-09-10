@@ -42,6 +42,7 @@ const DataTypeSelectField = (props: Props) => {
       const defaultValues = Object.fromEntries(
         Object.entries(schema.properties).map(([name, property]) => [
           name,
+            // @ts-ignore
           property.default,
         ])
       );

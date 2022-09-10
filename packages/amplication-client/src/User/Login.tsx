@@ -71,14 +71,14 @@ const Login = () => {
   );
 
   const urlError = useMemo(() => {
-    const params = queryString.parse(location.search);
+    const params: any = queryString.parse(location.search);
     console.log("params", params);
     console.log("params.error", params.error);
     return params.error;
   }, [location.search]);
 
   useEffect(() => {
-    const params = queryString.parse(location.search);
+    const params: any = queryString.parse(location.search);
     if (params.invitation) {
       //save the invitation token in local storage to be validated by
       //<CompleteInvitation/> after signup or sign in

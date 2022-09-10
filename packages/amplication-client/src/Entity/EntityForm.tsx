@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
 
-import omitDeep from "deepdash-es/omitDeep";
 
 import * as models from "../models";
 import { TextField } from "@amplication/design-system";
@@ -12,6 +11,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { USER_ENTITY } from "./constants";
 import { validate } from "../util/formikValidateJsonSchema";
 import { isEqual } from "../util/customValidations";
+import { omitDeep } from '../util/deepOmit';
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 

@@ -784,19 +784,19 @@ export enum EnumActionLogLevel {
   Debug = 'Debug',
   Error = 'Error',
   Info = 'Info',
-  Warning = 'Warning',
+  Warning = 'Warning'
 }
 
 export enum EnumActionStepStatus {
   Failed = 'Failed',
   Running = 'Running',
   Success = 'Success',
-  Waiting = 'Waiting',
+  Waiting = 'Waiting'
 }
 
 export enum EnumAuthProviderType {
   Http = 'Http',
-  Jwt = 'Jwt',
+  Jwt = 'Jwt'
 }
 
 export enum EnumBlockType {
@@ -813,7 +813,7 @@ export enum EnumBlockType {
   FlowApi = 'FlowApi',
   Layout = 'Layout',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
-  ServiceSettings = 'ServiceSettings',
+  ServiceSettings = 'ServiceSettings'
 }
 
 export type EnumBlockTypeFilter = {
@@ -827,7 +827,7 @@ export enum EnumBuildStatus {
   Completed = 'Completed',
   Failed = 'Failed',
   Invalid = 'Invalid',
-  Running = 'Running',
+  Running = 'Running'
 }
 
 export enum EnumConnectorRestApiAuthenticationType {
@@ -835,7 +835,7 @@ export enum EnumConnectorRestApiAuthenticationType {
   None = 'None',
   OAuth2PasswordFlow = 'OAuth2PasswordFlow',
   OAuth2UserAgentFlow = 'OAuth2UserAgentFlow',
-  PrivateKey = 'PrivateKey',
+  PrivateKey = 'PrivateKey'
 }
 
 export enum EnumDataType {
@@ -856,7 +856,7 @@ export enum EnumDataType {
   SingleLineText = 'SingleLineText',
   UpdatedAt = 'UpdatedAt',
   Username = 'Username',
-  WholeNumber = 'WholeNumber',
+  WholeNumber = 'WholeNumber'
 }
 
 export type EnumDataTypeFilter = {
@@ -871,51 +871,51 @@ export enum EnumEntityAction {
   Delete = 'Delete',
   Search = 'Search',
   Update = 'Update',
-  View = 'View',
+  View = 'View'
 }
 
 export enum EnumEntityPageType {
   List = 'List',
   MasterDetails = 'MasterDetails',
-  SingleRecord = 'SingleRecord',
+  SingleRecord = 'SingleRecord'
 }
 
 export enum EnumEntityPermissionType {
   AllRoles = 'AllRoles',
   Disabled = 'Disabled',
   Granular = 'Granular',
-  Public = 'Public',
+  Public = 'Public'
 }
 
 export enum EnumGitOrganizationType {
   Organization = 'Organization',
-  User = 'User',
+  User = 'User'
 }
 
 export enum EnumGitProvider {
-  Github = 'Github',
+  Github = 'Github'
 }
 
 export enum EnumPendingChangeAction {
   Create = 'Create',
   Delete = 'Delete',
-  Update = 'Update',
+  Update = 'Update'
 }
 
 export enum EnumPendingChangeOriginType {
   Block = 'Block',
-  Entity = 'Entity',
+  Entity = 'Entity'
 }
 
 export enum EnumResourceType {
   ProjectConfiguration = 'ProjectConfiguration',
-  Service = 'Service',
+  Service = 'Service'
 }
 
 export enum EnumSubscriptionPlan {
   Business = 'Business',
   Enterprise = 'Enterprise',
-  Pro = 'Pro',
+  Pro = 'Pro'
 }
 
 export enum EnumSubscriptionStatus {
@@ -923,12 +923,12 @@ export enum EnumSubscriptionStatus {
   Deleted = 'Deleted',
   PastDue = 'PastDue',
   Paused = 'Paused',
-  Trailing = 'Trailing',
+  Trailing = 'Trailing'
 }
 
 export enum EnumWorkspaceMemberType {
   Invitation = 'Invitation',
-  User = 'User',
+  User = 'User'
 }
 
 export type Environment = {
@@ -1619,7 +1619,7 @@ export type QueryWorkspaceArgs = {
 
 export enum QueryMode {
   Default = 'Default',
-  Insensitive = 'Insensitive',
+  Insensitive = 'Insensitive'
 }
 
 export type RemoteGitRepositoriesWhereUniqueInput = {
@@ -1777,7 +1777,7 @@ export enum Role {
   Admin = 'Admin',
   OrganizationAdmin = 'OrganizationAdmin',
   ProjectAdmin = 'ProjectAdmin',
-  User = 'User',
+  User = 'User'
 }
 
 export type ServerSettings = {
@@ -1840,7 +1840,7 @@ export type SignupInput = {
 
 export enum SortOrder {
   Asc = 'Asc',
-  Desc = 'Desc',
+  Desc = 'Desc'
 }
 
 export type StringFilter = {

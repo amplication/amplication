@@ -19,7 +19,6 @@ import {
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
-import { GET_RESOURCES } from "../Workspaces/ResourceList";
 import "./CreateResourceFromExcel.scss";
 import { CreateResourceFromExcelForm } from "./CreateResourceFromExcelForm";
 import {
@@ -27,6 +26,7 @@ import {
   sampleServiceResourceWithoutEntities,
 } from "./constants";
 import ProgressBar from "../Components/ProgressBar";
+import { GET_RESOURCES } from "../Workspaces/queries/resourcesQueries";
 
 type ColumnKey = {
   name: string;
@@ -375,6 +375,7 @@ export function CreateResourceFromExcel() {
         </Link>
       );
     }
+    return (<></>)
   };
 
   return (
@@ -483,10 +484,10 @@ const SheetAcceptedFormats = [
 
 const generateColumnKeys = (range: string | undefined): ColumnKey[] => {
   if (undefined === range) return [];
-  let keys = [],
+  const keys = [],
     TotalColumns = XLSX.utils.decode_range(range).e.c + 1;
 
-  for (var i = 0; i < TotalColumns; ++i)
+  for (let i = 0; i < TotalColumns; ++i)
     keys[i] = { name: XLSX.utils.encode_col(i), key: i };
 
   return keys;

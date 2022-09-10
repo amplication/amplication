@@ -29,6 +29,7 @@ const SECOND_STRING = "s";
 const LOG_ROW_HEIGHT = 19;
 
 // Make chalk work
+// @ts-ignore
 chalk.enabled = true;
 /** @see https://github.com/chalk/chalk#chalklevel */
 chalk.level = 3;

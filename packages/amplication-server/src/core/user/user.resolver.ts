@@ -6,8 +6,8 @@ import { UseGuards, UseFilters } from '@nestjs/common';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 
 @Resolver(() => User)
-@UseFilters(GqlResolverExceptionsFilter)
-@UseGuards(GqlAuthGuard)
+// @UseFilters(GqlResolverExceptionsFilter)
+// @UseGuards(GqlAuthGuard)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 

@@ -35,7 +35,7 @@ import {
   EnumActionStepStatus
 } from '../action/dto';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
-import { GitService } from '@amplication/git-service/';
+import { GitService } from '@amplication/git-service';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';

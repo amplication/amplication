@@ -36,6 +36,7 @@ type ButtonProps = {
   iconStyle?: string;
   /** Icon can have left or right position. Default position is right */
   iconPosition?: EnumIconPosition;
+  eventData?: any;
 };
 
 export type Props = PrimerButtonProps & ButtonProps;

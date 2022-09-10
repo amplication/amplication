@@ -49,6 +49,7 @@ const MenuItem = ({
       buttonStyle={EnumButtonStyle.Text}
       as={to ? NavLink : Button}
       onClick={onClick}
+        // @ts-ignore
       to={to}
     >
       {children ? children : <Icon icon={icon || ""} size={ICON_SIZE} />}

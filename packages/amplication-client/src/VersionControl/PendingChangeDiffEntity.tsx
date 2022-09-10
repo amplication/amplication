@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
 import YAML from "yaml";
 import { gql, useQuery } from "@apollo/client";
-import omitDeep from "deepdash-es/omitDeep";
 import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
 import * as models from "../models";
 import "./PendingChangeDiff.scss";
 import { CircularProgress } from "@amplication/design-system";
+import { omitDeep } from "../util/deepOmit";
 
 export enum EnumCompareType {
   Pending = "Pending",

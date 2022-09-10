@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { FormControlLabel, Radio, FormControlLabelProps } from "@mui/material";
 import "./RadioButtonField.scss";
 
-export type Props = FormControlLabelProps & { name: string; label: string };
+export type Props = Omit<FormControlLabelProps, 'control'> & { name: string; label: string };
 
 export const RadioButtonField = ({ className, ...props }: Props) => {
   const { name } = props;

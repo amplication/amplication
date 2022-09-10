@@ -16,10 +16,10 @@ import { ProjectModule } from '../project/project.module';
     PermissionsModule,
     MailModule,
     UserModule,
-    ProjectModule,
-    SubscriptionModule
+    // ProjectModule,
+    // SubscriptionModule
   ],
-  providers: [WorkspaceService, WorkspaceResolver],
-  exports: [WorkspaceService, WorkspaceResolver]
+  // providers: [WorkspaceService, WorkspaceResolver],
+  // exports: [WorkspaceService, WorkspaceResolver]
 })
 export class WorkspaceModule {}

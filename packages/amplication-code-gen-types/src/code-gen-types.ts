@@ -6,6 +6,8 @@ export {
   EnumEntityPermissionType,
   EnumEntityAction,
   EnumDataType,
+  EnumResourceType,
+  Resource
 } from "./models";
 
 export type WorkerResult = {

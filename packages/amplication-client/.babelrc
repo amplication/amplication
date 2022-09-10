@@ -1,0 +1,26 @@
+{
+  "presets": [
+    [
+      "@babel/preset-flow",
+      {
+        "all": true
+      }
+    ],
+    [
+      "@nrwl/web/babel",
+      {
+        "useBuiltIns": "usage"
+      }
+    ],
+    [
+      "@nrwl/react/babel",
+      {
+        "runtime": "automatic"
+      }
+    ]
+  ],
+  "plugins": [
+    "file-loader",
+    "@babel/plugin-syntax-flow"
+  ]
+}

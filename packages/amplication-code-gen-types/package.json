@@ -2,7 +2,7 @@
   "name": "@amplication/code-gen-types",
   "version": "0.16.1",
   "description": "This library supplies all the contracts for Amplication Code Generation. The purpose is to make the contracts available for inclusion in plugins.",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "author": {
     "name": "Amplication",
     "email": "contact@amplication.com",

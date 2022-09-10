@@ -13,42 +13,5 @@
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
-  "proxy": "http://localhost:3000",
-  "eslintConfig": {
-    "extends": "react-app",
-    "rules": {
-      "react/self-closing-comp": "error",
-      "react/jsx-boolean-value": "error",
-      "react/jsx-key": "error",
-      "react/jsx-no-useless-fragment": "error",
-      "no-duplicate-imports": "error",
-      "no-undef": "error",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "args": "none"
-        }
-      ]
-    }
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "/node_modules/(?!react-command-palette)"
-    ],
-    "moduleNameMapper": {
-      "\\.css$": "<rootDir>/__mocks__/styleMock.js"
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "proxy": "http://localhost:3000"
 }

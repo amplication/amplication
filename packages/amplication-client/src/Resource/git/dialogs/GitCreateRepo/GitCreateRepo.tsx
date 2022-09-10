@@ -1,4 +1,4 @@
-import { Resource } from "@amplication/code-gen-types/dist/models";
+import { Resource } from "@amplication/code-gen-types";
 import {
   Button,
   CircularProgress,
@@ -32,6 +32,7 @@ export default function GitCreateRepo({
   onCompleted,
   gitOrganizationName,
 }: Props) {
+  // @ts-ignore
   const initialValues: CreateGitRepositoryInput = { name: "", public: true };
   const { trackEvent } = useTracking();
 

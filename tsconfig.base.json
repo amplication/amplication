@@ -31,17 +31,10 @@
       "ES2019.Array",
       "ES2021.String"
     ],
-    "types": [
-      "jest"
-    ],
+    "types": ["jest"],
     "baseUrl": ".",
     "paths": {
-      "@amplication/cli": [
-        "packages/amplication-cli/src/index.ts"
-      ],
-      "@amplication/client": [
-        "packages/amplication-client/src/index.ts"
-      ],
+      "@amplication/cli": ["packages/amplication-cli/src/index.ts"],
       "@amplication/code-gen-types": [
         "packages/amplication-code-gen-types/src/index.ts"
       ],
@@ -51,37 +44,26 @@
       "@amplication/design-system": [
         "packages/amplication-design-system/src/index.ts"
       ],
+      "@amplication/design-system/icons": [
+        "packages/amplication-design-system/icons/amplicationicon.css"
+      ],
       "@amplication/git-pull-request-service": [
         "packages/amplication-git-pull-request-service/src/index.ts"
       ],
       "@amplication/git-service": [
         "packages/amplication-git-service/src/index.ts"
       ],
-      "@amplication/kafka": [
-        "packages/amplication-kafka/src/index.ts"
-      ],
+      "@amplication/kafka": ["packages/amplication-kafka/src/index.ts"],
       "@amplication/nest-logger-module": [
         "packages/amplication-nest-logger-module/src/index.ts"
       ],
-      "@amplication/prisma-db": [
-        "packages/amplication-prisma-db/src/index.ts"
-      ],
-      "@amplication/scheduler": [
-        "packages/amplication-scheduler/src/index.ts"
-      ],
-      "@amplication/server": [
-        "packages/amplication-server/src/index.ts"
-      ],
+      "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
+      "@amplication/scheduler": ["packages/amplication-scheduler/src/index.ts"],
       "@amplication/storage-gateway": [
         "packages/amplication-storage-gateway/src/index.ts"
       ],
-      "@amplication/test": [
-        "packages/test/src/index.ts"
-      ]
+      "@amplication/test": ["packages/test/src/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

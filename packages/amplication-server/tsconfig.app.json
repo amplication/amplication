@@ -14,14 +14,18 @@
 	"esModuleInterop": true,
 	"jsx": "react"
   },
+  "paths": {
+
+  },
   "exclude": [
-	"jest.config.ts",
-	"**/*.spec.ts",
-	"**/*.test.ts",
-	"prisma",
-	"test",
-	"dist",
-	"migration-scripts"
+    "jest.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "prisma",
+    "test",
+    "dist",
+    "migration-scripts",
+    "**/*.template.ts"
   ],
   "include": [
 	"**/*.ts"

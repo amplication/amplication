@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { MouseEventHandler, useCallback } from 'react';
 import * as designSystem from "@amplication/design-system";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 

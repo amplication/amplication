@@ -71,6 +71,17 @@
         }
       ]
     },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "amplication-server:webpack-build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-server:webpack-build:production"
+        }
+      }
+    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": [

@@ -1,4 +1,4 @@
-import { EnumResourceType } from "@amplication/code-gen-types/dist/models";
+import { EnumResourceType } from "@amplication/code-gen-types";
 import { CircleBadge } from "@amplication/design-system";
 import { gql } from "@apollo/client";
 import React, { useContext } from "react";

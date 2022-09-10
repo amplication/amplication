@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import React from "react";
 import * as models from "../models";
-import { GET_CURRENT_WORKSPACE } from "../Workspaces/WorkspaceSelector";
+import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import PlanListItem from "./PlanListItem";
 import { default as plans } from "./plans.json";
 

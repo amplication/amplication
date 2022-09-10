@@ -1,5 +1,4 @@
 import { Icon, SelectMenuItem } from "@amplication/design-system";
-import { join } from "path";
 import React, { useMemo } from "react";
 import { WORK_SPACE_HEADER_CLASS_NAME } from "./WorkspaceHeader";
 
@@ -43,7 +42,7 @@ export default function HeaderMenuStaticOptions({
     <>
       {MENU_OPTIONS.map((option, index) => {
         const link =
-          "/" + join(currentWorkspaceId || "", currentProjectId, option.link);
+          "/" + [currentWorkspaceId || "", currentProjectId, option.link].join("/");
 
         return (
           <SelectMenuItem

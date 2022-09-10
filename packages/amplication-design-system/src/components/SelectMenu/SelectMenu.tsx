@@ -18,13 +18,13 @@ import "./SelectMenu.scss";
 interface ButtonProps {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
-  title: string | Element;
+  title: string | Element | JSX.Element;
   icon?: string;
   openIcon?: string;
   buttonClassName?: string;
 }
 
-export type Props = SelectMenuProps & ButtonProps;
+export type Props = Omit<SelectMenuProps, keyof ButtonProps> & ButtonProps;
 
 const SelectButton: React.FC<ButtonProps> = ({
   disabled,

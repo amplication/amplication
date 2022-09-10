@@ -199,9 +199,12 @@ const EntityField = () => {
         <RelatedFieldDialog
           isOpen={lookupPendingData !== null}
           onDismiss={hideRelatedFieldDialog}
+          // @ts-ignore
           onSubmit={handleRelatedFieldFormSubmit}
+            // @ts-ignore
           relatedEntityId={lookupPendingData?.properties?.relatedEntityId}
           allowMultipleSelection={
+              // @ts-ignore
             !lookupPendingData?.properties?.allowMultipleSelection
           }
           entity={data.entity}

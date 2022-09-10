@@ -58,6 +58,7 @@ export const CreateResourceFromExcelForm = ({
             <Button
               buttonStyle={EnumButtonStyle.Primary}
               disabled={loading}
+              // @ts-ignore
               onClick={handleSubmit}
               type="button"
             >

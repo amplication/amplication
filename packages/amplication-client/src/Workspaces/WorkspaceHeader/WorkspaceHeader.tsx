@@ -23,7 +23,7 @@ import "./WorkspaceHeader.scss";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
-const WorkspaceHeader: React.FC<{}> = () => {
+const WorkspaceHeader: React.FC = () => {
   const {
     currentWorkspace,
     currentProject,
@@ -104,6 +104,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
               <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
                 <SelectMenu
                   css={undefined}
+                  // @ts-ignore
                   title={
                     <p
                       className={`${CLASS_NAME}__breadcrumbs__resource__title`}

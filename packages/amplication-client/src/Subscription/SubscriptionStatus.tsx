@@ -1,15 +1,15 @@
-import React from "react";
-import { Icon } from "@amplication/design-system";
+import React from 'react';
+import { Icon } from '@amplication/design-system';
 
-import * as models from "../models";
-import "./SubscriptionStatus.scss";
+import * as models from '../models';
+import './SubscriptionStatus.scss';
 
-import { SUBSCRIPTION_STATUS_TO_STYLE } from "./constants";
+import { SUBSCRIPTION_STATUS_TO_STYLE } from './constants';
 
-const CLASS_NAME = "subscription-status";
+const CLASS_NAME = 'subscription-status';
 
 type Props = {
-  status: models.EnumSubscriptionStatus;
+    status: models.EnumSubscriptionStatus;
 };
 
 export const SubscriptionStatus = ({ status }: Props) => {
@@ -18,10 +18,8 @@ export const SubscriptionStatus = ({ status }: Props) => {
   return (
     <span className={`${CLASS_NAME} ${CLASS_NAME}--${data.style}`}>
       <Icon
-        icon={{
-          size: "xsmall",
-          icon: data.icon,
-        }}
+          size="xsmall"
+          icon={data.icon}
       />
       {data.text}
     </span>

@@ -1,16 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: 'amplication-client',
-  preset: '../../jest.preset.js',
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.spec.json',
-    }
-  },
-  testEnvironment: 'node',
+  displayName: "amplication-client",
+  preset: "../../jest.preset.js",
   transform: {
-    '^.+\\.[tj]sx?$': 'ts-jest'
+    "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "@nrwl/react/plugins/jest",
+    "^.+\\.[tj]sx?$": "babel-jest"
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/packages/amplication-client'
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+  coverageDirectory: "../../coverage/packages/amplication-client"
 };

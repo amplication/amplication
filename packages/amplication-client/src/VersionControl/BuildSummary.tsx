@@ -108,6 +108,7 @@ const BuildSummary = ({ generating, build, onError }: Props) => {
               Open GitHub
             </Button>
           </a>
+            // @ts-ignore
         ) : !resourceData?.resource.githubSyncEnabled ? ( //resource is not connected to github
           <HelpPopover
             onDismiss={handleDismissHelpGitHub}

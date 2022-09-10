@@ -183,7 +183,6 @@ export const EntityPermissionFields = ({
             <SelectMenuList>
               {data?.entity?.fields?.map((field) => (
                 <SelectMenuItem
-                  css=""
                   key={field.id}
                   selected={selectedFieldIds.has(field.id)}
                   onSelectionChange={handleFieldSelected}
