@@ -3,65 +3,65 @@
   "sourceRoot": "packages/amplication-server/src",
   "projectType": "library",
   "targets": {
-	"link-amplication-deps": {
-	  "executor": "@nrwl/workspace:run-commands",
-	  "options": {
-		"command": "mkdir -p node_modules/@amplication && find dist/packages/@amplication -type d -depth 1|while read FILE;do  ln -sf ../../$FILE \"node_modules/@amplication/$(basename $FILE |cut -b 13-)\";done"
-	  }
-	},
-	"build": {
-	  "executor": "@nrwl/js:tsc",
-	  "outputs": [
-		"{options.outputPath}"
-	  ],
-	  "options": {
-		"outputPath": "dist/packages/@amplication/server",
-		"tsConfig": "packages/amplication-server/tsconfig.lib.json",
-		"packageJson": "packages/amplication-server/package.json",
-		"main": "packages/amplication-server/src/main.ts",
-		"assets": [
-		  "packages/amplication-server/*.md"
-		]
-	  },
-	  "dependsOn": [
-		{
-		  "target": "build",
-		  "projects": "dependencies"
-		},
-		{
-		  "target": "link-amplication-deps",
-		  "projects": "self"
-		}
-	  ]
-	},
-	"lint": {
-	  "executor": "@nrwl/linter:eslint",
-	  "outputs": [
-		"{options.outputFile}"
-	  ],
-	  "options": {
-		"lintFilePatterns": [
-		  "packages/amplication-server/**/*.ts"
-		]
-	  }
+    "link-amplication-deps": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "mkdir -p node_modules/@amplication && find dist/packages/@amplication -type d -depth 1|while read FILE;do  ln -sf ../../$FILE \"node_modules/@amplication/$(basename $FILE)\";done"
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/@amplication/server",
+        "tsConfig": "packages/amplication-server/tsconfig.lib.json",
+        "packageJson": "packages/amplication-server/package.json",
+        "main": "packages/amplication-server/src/main.ts",
+        "assets": [
+          "packages/amplication-server/*.md"
+        ]
+      },
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "dependencies"
+        },
+        {
+          "target": "link-amplication-deps",
+          "projects": "self"
+        }
+      ]
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-server/**/*.ts"
+        ]
+      }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-	  "outputs": [
-		"coverage/packages/amplication-server"
-	  ],
-	  "options": {
-		"jestConfig": "packages/amplication-server/jest.config.ts",
-		"passWithNoTests": true
-	  }
-	}
+      "outputs": [
+        "coverage/packages/amplication-server"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-server/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
   },
   "tags": [],
   "implicitDependencies": [
-	"amplication-code-gen-types",
-	"amplication-data-service-generator",
-	"amplication-git-service",
-	"amplication-kafka",
-	"amplication-prisma-db"
+    "amplication-code-gen-types",
+    "amplication-data-service-generator",
+    "amplication-git-service",
+    "amplication-kafka",
+    "amplication-prisma-db"
   ]
 }

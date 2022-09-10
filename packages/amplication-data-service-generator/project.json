@@ -3,30 +3,6 @@
   "sourceRoot": "packages/amplication-data-service-generator/src",
   "projectType": "library",
   "targets": {
-    "ng-packagr-build": {
-      "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": [
-        "dist/packages/@amplication/data-service-generator"
-      ],
-      "options": {
-        "project": "packages/amplication-data-service-generator/ng-package.json"
-      },
-      "configurations": {
-        "production": {
-          "tsConfig": "packages/amplication-data-service-generator/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "packages/amplication-data-service-generator/tsconfig.lib.json"
-        }
-      },
-      "defaultConfiguration": "production",
-      "dependsOn": [
-        {
-          "target": "ng-packagr-build",
-          "projects": "dependencies"
-        }
-      ]
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": [
@@ -41,12 +17,12 @@
           "packages/amplication-data-service-generator/*.md"
         ]
       },
-	  "dependsOn": [
-		{
-		  "target": "build",
-		  "projects": "dependencies"
-		}
-	  ]
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "dependencies"
+        }
+      ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

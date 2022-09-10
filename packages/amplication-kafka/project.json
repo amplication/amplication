@@ -3,30 +3,6 @@
   "sourceRoot": "packages/amplication-kafka/src",
   "projectType": "library",
   "targets": {
-    "ng-packagr-build": {
-      "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": [
-        "dist/packages/@amplication/kafka"
-      ],
-      "options": {
-        "project": "packages/amplication-kafka/ng-package.json"
-      },
-      "configurations": {
-        "production": {
-          "tsConfig": "packages/amplication-kafka/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "packages/amplication-kafka/tsconfig.lib.json"
-        }
-      },
-      "defaultConfiguration": "production",
-      "dependsOn": [
-        {
-          "target": "ng-packagr-build",
-          "projects": "dependencies"
-        }
-      ]
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": [
@@ -41,12 +17,12 @@
           "packages/amplication-kafka/*.md"
         ]
       },
-	  "dependsOn": [
-		{
-		  "target": "build",
-		  "projects": "dependencies"
-		}
-	  ]
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "dependencies"
+        }
+      ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

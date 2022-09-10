@@ -3,30 +3,6 @@
   "sourceRoot": "packages/amplication-git-service/src",
   "projectType": "library",
   "targets": {
-    "ng-packagr-build": {
-      "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": [
-        "dist/packages/@amplication/git-service"
-      ],
-      "options": {
-        "project": "packages/amplication-git-service/ng-package.json"
-      },
-      "configurations": {
-        "production": {
-          "tsConfig": "packages/amplication-git-service/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "packages/amplication-git-service/tsconfig.lib.json"
-        }
-      },
-      "defaultConfiguration": "production",
-      "dependsOn": [
-        {
-          "target": "ng-packagr-build",
-          "projects": "dependencies"
-        }
-      ]
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": [
@@ -41,12 +17,12 @@
           "packages/amplication-git-service/*.md"
         ]
       },
-	  "dependsOn": [
-		{
-		  "target": "build",
-		  "projects": "dependencies"
-		}
-	  ]
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "dependencies"
+        }
+      ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

@@ -3,30 +3,6 @@
   "sourceRoot": "packages/amplication-prisma-db/src",
   "projectType": "library",
   "targets": {
-    "ng-packagr-build": {
-      "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": [
-        "dist/packages/@amplication/prisma-db"
-      ],
-      "options": {
-        "project": "packages/amplication-prisma-db/ng-package.json"
-      },
-      "configurations": {
-        "production": {
-          "tsConfig": "packages/amplication-prisma-db/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "packages/amplication-prisma-db/tsconfig.lib.json"
-        }
-      },
-      "defaultConfiguration": "production",
-      "dependsOn": [
-        {
-          "target": "ng-packagr-build",
-          "projects": "dependencies"
-        }
-      ]
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": [
@@ -41,12 +17,12 @@
           "packages/amplication-prisma-db/*.md"
         ]
       },
-	  "dependsOn": [
-		{
-		  "target": "build",
-		  "projects": "dependencies"
-		}
-	  ]
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "dependencies"
+        }
+      ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

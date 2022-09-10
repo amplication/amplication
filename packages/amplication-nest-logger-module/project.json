@@ -3,30 +3,6 @@
   "sourceRoot": "packages/amplication-nest-logger-module/src",
   "projectType": "library",
   "targets": {
-    "ng-packagr-build": {
-      "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": [
-        "dist/packages/@amplication/nest-logger-module"
-      ],
-      "options": {
-        "project": "packages/amplication-nest-logger-module/ng-package.json"
-      },
-      "configurations": {
-        "production": {
-          "tsConfig": "packages/amplication-nest-logger-module/tsconfig.lib.prod.json"
-        },
-        "development": {
-          "tsConfig": "packages/amplication-nest-logger-module/tsconfig.lib.json"
-        }
-      },
-      "defaultConfiguration": "production",
-      "dependsOn": [
-        {
-          "target": "ng-packagr-build",
-          "projects": "dependencies"
-        }
-      ]
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": [
@@ -41,12 +17,12 @@
           "packages/amplication-nest-logger-module/*.md"
         ]
       },
-	  "dependsOn": [
-		{
-		  "target": "build",
-		  "projects": "dependencies"
-		}
-	  ]
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "dependencies"
+        }
+      ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
