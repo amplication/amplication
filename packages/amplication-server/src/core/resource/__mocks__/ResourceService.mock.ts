@@ -1,6 +1,6 @@
 import { Matcher, mock } from 'jest-mock-extended';
-import { ResourceService } from 'src/core';
-import { FindOneArgs } from 'src/dto';
+import { ResourceService } from '../..';
+import { FindOneArgs } from '../../../dto';
 import {
   MOCK_SERVICE_RESOURCE_WITHOUT_GITHUB_TOKEN,
   TEST_SERVICE_RESOURCE_MOCK

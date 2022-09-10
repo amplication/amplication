@@ -4,7 +4,7 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { WorkspaceService } from './workspace.service';
 import { WorkspaceResolver } from './workspace.resolver';
-import { Resource, Workspace, User, Project } from 'src/models';
+import { Resource, Workspace, User, Project } from '../../models';
 import { Invitation } from './dto/Invitation';
 import { ResourceService } from '../resource/resource.service';
 import { EnumResourceType } from '@amplication/prisma-db';

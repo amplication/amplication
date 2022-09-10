@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BlockService } from 'src/core/block/block.service';
+import { BlockService } from '../block/block.service';
 import { ServiceSettingsService } from './serviceSettings.service';
 import { ServiceSettings } from './dto';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import { DEFAULT_SERVICE_SETTINGS } from './constants';
-import { User } from 'src/models';
+import { User } from '../../models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];

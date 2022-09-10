@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Test, TestingModule } from '@nestjs/testing';
 import Ajv from 'ajv';
-import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
+import { SchemaValidationResult } from '../dto/schemaValidationResult';
 import { JsonSchemaValidationService } from './jsonSchemaValidation.service';
 
 jest.mock('ajv');

@@ -131,7 +131,7 @@
     "styled-components": "5.1.1",
     "swagger-ui-express": "4.3.0",
     "tar-stream": "2.2.0",
-    "ts-morph": "^13.0.2",
+    "ts-morph": "^16.0.0",
     "tslib": "1.14.1",
     "url-join": "4.0.1",
     "use-debounce": "3.4.3",
@@ -312,6 +312,6 @@
     "url": "https://github.com/amplication/amplication/issues"
   },
   "resolutions": {
-  	"**/@types/react": "17.0.34"
+    "**/@types/react": "17.0.34"
   }
 }

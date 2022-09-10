@@ -1,5 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Resource } from 'src/models'; // eslint-disable-line import/no-cycle
+import { Resource } from '../../../models'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
   isAbstract: true

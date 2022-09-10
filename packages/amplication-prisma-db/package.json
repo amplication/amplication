@@ -4,7 +4,7 @@
   "description": "",
   "author": "",
   "private": true,
-  "main": "./lib/index.js",
+  "main": "./src/index.js",
   "scripts": {
     "prebuild": "rimraf lib",
     "build": "npm run prisma:generate && tsc",

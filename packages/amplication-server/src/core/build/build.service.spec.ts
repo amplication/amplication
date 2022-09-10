@@ -27,8 +27,8 @@ import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
 import { QueueService } from '../queue/queue.service';
-import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { Resource, Commit, Entity } from 'src/models';
+import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { Resource, Commit, Entity } from '../../models';
 import {
   ActionStep,
   EnumActionLogLevel,

@@ -5,7 +5,7 @@ import cuid from 'cuid';
 
 import { Prisma, PrismaService } from '@amplication/prisma-db';
 import { Profile as GitHubProfile } from 'passport-github2';
-import { Account, User, UserRole, Workspace } from 'src/models';
+import { Account, User, UserRole, Workspace } from '../../models';
 import { AccountService } from '../account/account.service';
 import { WorkspaceService } from '../workspace/workspace.service';
 import { PasswordService } from '../account/password.service';
@@ -17,8 +17,8 @@ import {
   JwtDto,
   EnumTokenType
 } from './dto';
-import { AmplicationError } from 'src/errors/AmplicationError';
-import { FindOneArgs } from 'src/dto';
+import { AmplicationError } from '../../errors/AmplicationError';
+import { FindOneArgs } from '../../dto';
 import { CompleteInvitationArgs } from '../workspace/dto';
 import { ProjectService } from '../project/project.service';
 

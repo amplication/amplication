@@ -1,15 +1,15 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { IBlock, User } from 'src/models';
-import { FindOneArgs } from 'src/dto';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { IBlock, User } from '../../models';
+import { FindOneArgs } from '../../dto';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
 import { BlockTypeService } from './blockType.service';
 import {
   FindManyBlockArgs,
   CreateBlockArgs,
   UpdateBlockArgs
 } from '../block/dto';
-import { UserEntity } from 'src/decorators/user.decorator';
+import { UserEntity } from '../../decorators/user.decorator';
 
 type Constructor<T> = {
   new (...args: any): T;

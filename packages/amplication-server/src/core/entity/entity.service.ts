@@ -830,8 +830,8 @@ export class EntityService {
       }
     });
 
-    const firstEntityVersion = head(entityVersions);
-    const lastEntityVersion = last(entityVersions);
+    const firstEntityVersion: any = head(entityVersions);
+    const lastEntityVersion: any = last(entityVersions);
     if (!firstEntityVersion || !lastEntityVersion) {
       throw new AmplicationError(`Entity ${entityId} has no versions`);
     }
@@ -879,8 +879,8 @@ export class EntityService {
       }
     });
 
-    const firstEntityVersion = head(entityVersions);
-    const lastEntityVersion = last(entityVersions);
+    const firstEntityVersion: any = head(entityVersions);
+    const lastEntityVersion: any = last(entityVersions);
 
     if (!firstEntityVersion || !lastEntityVersion) {
       throw new AmplicationError(`Entity ${entityId} has no versions `);
@@ -1170,7 +1170,7 @@ export class EntityService {
       select: { name: true }
     });
 
-    const matchingNames = new Set(matchingFields.map(({ name }) => name));
+    const matchingNames = new Set<string>(matchingFields.map(({ name }) => name));
 
     return difference(uniqueNames, matchingNames);
   }

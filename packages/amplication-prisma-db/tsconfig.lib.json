@@ -12,5 +12,5 @@
 	"jsx": "react"
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["**/*.ts"]
+  "include": ["src/index.ts"]
 }

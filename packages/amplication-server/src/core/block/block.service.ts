@@ -348,8 +348,8 @@ export class BlockService {
         versionNumber: Prisma.SortOrder.asc
       }
     });
-    const currentVersion = head(versions); // Version 0
-    const lastVersion = last(versions);
+    const currentVersion: any = head(versions); // Version 0
+    const lastVersion: any = last(versions);
     if (!currentVersion) {
       throw new Error(`Block ${blockId} has no current version`);
     }
@@ -692,8 +692,8 @@ export class BlockService {
       }
     });
 
-    const firstBlockVersion = head(blockVersions);
-    const lastBlockVersion = last(blockVersions);
+    const firstBlockVersion: any = head(blockVersions);
+    const lastBlockVersion: any = last(blockVersions);
 
     if (!firstBlockVersion || !lastBlockVersion) {
       throw new Error(`Block ${blockId} has no versions `);

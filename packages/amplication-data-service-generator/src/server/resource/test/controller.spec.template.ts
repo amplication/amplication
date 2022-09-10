@@ -56,6 +56,7 @@ const service = {
       case NON_EXISTING_PARAM_ID:
         return null;
     }
+	return null
   },
 };
 

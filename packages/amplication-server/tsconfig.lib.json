@@ -11,6 +11,11 @@
 	"esModuleInterop": true,
 	"jsx": "react"
   },
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["**/*.ts"]
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts",
+	  "prisma",
+	  "test",
+	  "dist",
+	  "migration-scripts"
+	],
+  "include": ["**/*.ts", "prisma-runtime.d.ts"]
 }
