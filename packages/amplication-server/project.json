@@ -6,14 +6,8 @@
 	"link-amplication-deps": {
 	  "executor": "@nrwl/workspace:run-commands",
 	  "options": {
-		"command": "mkdir -p node_modules/@amplication && find dist/packages -type d -depth 1|while read FILE;do  ln -sf ../../$FILE \"node_modules/@amplication/$(basename $FILE |cut -b 13-)\";done"
-	  },
-	  "dependsOn": [
-		{
-		  "target": "ng-packagr-build",
-		  "projects": "dependencies"
-		}
-	  ]
+		"command": "mkdir -p node_modules/@amplication && find dist/packages/@amplication -type d -depth 1|while read FILE;do  ln -sf ../../$FILE \"node_modules/@amplication/$(basename $FILE |cut -b 13-)\";done"
+	  }
 	},
 	"build": {
 	  "executor": "@nrwl/js:tsc",
@@ -21,7 +15,7 @@
 		"{options.outputPath}"
 	  ],
 	  "options": {
-		"outputPath": "dist/packages/amplication-server",
+		"outputPath": "dist/packages/@amplication/server",
 		"tsConfig": "packages/amplication-server/tsconfig.lib.json",
 		"packageJson": "packages/amplication-server/package.json",
 		"main": "packages/amplication-server/src/main.ts",
@@ -31,7 +25,7 @@
 	  },
 	  "dependsOn": [
 		{
-		  "target": "ng-packagr-build",
+		  "target": "build",
 		  "projects": "dependencies"
 		},
 		{

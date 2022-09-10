@@ -9,9 +9,7 @@
 	"allowSyntheticDefaultImports": true,
 	"resolveJsonModule": true,
 	"esModuleInterop": true,
-	"jsx": "react",
-	"baseUrl": ".",
-	"rootDirs": ["./", "node_modules"]
+	"jsx": "react"
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
   "include": ["**/*.ts"]

@@ -6,7 +6,7 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/packages/amplication-storage-gateway"
+        "dist/packages/@amplication/storage-gateway"
       ],
       "options": {
         "project": "packages/amplication-storage-gateway/ng-package.json"
@@ -33,14 +33,20 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/amplication-storage-gateway",
+        "outputPath": "dist/packages/@amplication/storage-gateway",
         "tsConfig": "packages/amplication-storage-gateway/tsconfig.lib.json",
         "packageJson": "packages/amplication-storage-gateway/package.json",
         "main": "packages/amplication-storage-gateway/src/index.ts",
         "assets": [
           "packages/amplication-storage-gateway/*.md"
         ]
-      }
+      },
+	  "dependsOn": [
+		{
+		  "target": "build",
+		  "projects": "dependencies"
+		}
+	  ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

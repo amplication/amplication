@@ -6,7 +6,7 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/packages/amplication-git-pull-request-service"
+        "dist/packages/@amplication/git-pull-request-service"
       ],
       "options": {
         "project": "packages/amplication-git-pull-request-service/ng-package.json"
@@ -33,14 +33,20 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/amplication-git-pull-request-service",
+        "outputPath": "dist/packages/@amplication/git-pull-request-service",
         "tsConfig": "packages/amplication-git-pull-request-service/tsconfig.lib.json",
         "packageJson": "packages/amplication-git-pull-request-service/package.json",
         "main": "packages/amplication-git-pull-request-service/src/index.ts",
         "assets": [
           "packages/amplication-git-pull-request-service/*.md"
         ]
-      }
+      },
+	  "dependsOn": [
+		{
+		  "target": "build",
+		  "projects": "dependencies"
+		}
+	  ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -66,8 +72,8 @@
   },
   "tags": [],
   "implicitDependencies": [
-	"amplication-nest-logger-module",
-	"amplication-kafka",
-	"amplication-git-service"
+    "amplication-nest-logger-module",
+    "amplication-kafka",
+    "amplication-git-service"
   ]
 }

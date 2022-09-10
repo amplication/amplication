@@ -6,7 +6,7 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/packages/amplication-scheduler"
+        "dist/packages/@amplication/scheduler"
       ],
       "options": {
         "project": "packages/amplication-scheduler/ng-package.json"
@@ -33,14 +33,20 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/amplication-scheduler",
+        "outputPath": "dist/packages/@amplication/scheduler",
         "tsConfig": "packages/amplication-scheduler/tsconfig.lib.json",
         "packageJson": "packages/amplication-scheduler/package.json",
         "main": "packages/amplication-scheduler/src/index.ts",
         "assets": [
           "packages/amplication-scheduler/*.md"
         ]
-      }
+      },
+	  "dependsOn": [
+		{
+		  "target": "build",
+		  "projects": "dependencies"
+		}
+	  ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

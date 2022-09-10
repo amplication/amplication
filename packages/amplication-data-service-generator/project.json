@@ -6,7 +6,7 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/packages/amplication-data-service-generator"
+        "dist/packages/@amplication/data-service-generator"
       ],
       "options": {
         "project": "packages/amplication-data-service-generator/ng-package.json"
@@ -33,14 +33,20 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/amplication-data-service-generator",
+        "outputPath": "dist/packages/@amplication/data-service-generator",
         "tsConfig": "packages/amplication-data-service-generator/tsconfig.lib.json",
         "packageJson": "packages/amplication-data-service-generator/package.json",
         "main": "packages/amplication-data-service-generator/src/index.ts",
         "assets": [
           "packages/amplication-data-service-generator/*.md"
         ]
-      }
+      },
+	  "dependsOn": [
+		{
+		  "target": "build",
+		  "projects": "dependencies"
+		}
+	  ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -66,6 +72,6 @@
   },
   "tags": [],
   "implicitDependencies": [
-	"amplication-code-gen-types"
+    "amplication-code-gen-types"
   ]
 }

@@ -23,7 +23,7 @@ export default async function (tree: Tree, schema: any) {
 
 	await fse.outputFile(`packages/${schema.name}/ng-package.json`, JSON.stringify({
 			'$schema': '../../node_modules/ng-packagr/ng-package.schema.json',
-			'dest': `../../dist/packages/${schema.name}`,
+			'dest': `../../dist/packages/@amplication/${schema.name.replace(/^amplication-/, '')}`,
 			'lib': {
 				'entryFile': indexTsxFile ? 'src/index.tsx' :
 					(mainTsFile ? 'src/main.ts' : 'src/index.ts')
@@ -61,7 +61,7 @@ function templateProjectFile(pkgName: string, implicitDependencies: string[] = [
 		'targets': {
 			'ng-packagr-build': {
 				'executor': '@nrwl/angular:ng-packagr-lite',
-				'outputs': [`dist/packages/${pkgName}`],
+				'outputs': [`dist/packages/@amplication/${pkgName.replace(/^amplication-/, '')}`],
 				'options': {
 					'project': `packages/${pkgName}/ng-package.json`
 				},
@@ -87,7 +87,7 @@ function templateProjectFile(pkgName: string, implicitDependencies: string[] = [
 					'{options.outputPath}'
 				],
 				'options': {
-					'outputPath': `dist/packages/${pkgName}`,
+					'outputPath': `dist/packages/@amplication/${pkgName.replace(/^amplication-/, '')}`,
 					'tsConfig': `packages/${pkgName}/tsconfig.lib.json`,
 					'packageJson': `packages/${pkgName}/package.json`,
 					'main': `packages/${pkgName}/src/index.ts`,

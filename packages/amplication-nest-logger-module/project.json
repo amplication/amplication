@@ -6,7 +6,7 @@
     "ng-packagr-build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
-        "dist/packages/amplication-nest-logger-module"
+        "dist/packages/@amplication/nest-logger-module"
       ],
       "options": {
         "project": "packages/amplication-nest-logger-module/ng-package.json"
@@ -33,14 +33,20 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/amplication-nest-logger-module",
+        "outputPath": "dist/packages/@amplication/nest-logger-module",
         "tsConfig": "packages/amplication-nest-logger-module/tsconfig.lib.json",
         "packageJson": "packages/amplication-nest-logger-module/package.json",
         "main": "packages/amplication-nest-logger-module/src/index.ts",
         "assets": [
           "packages/amplication-nest-logger-module/*.md"
         ]
-      }
+      },
+	  "dependsOn": [
+		{
+		  "target": "build",
+		  "projects": "dependencies"
+		}
+	  ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
