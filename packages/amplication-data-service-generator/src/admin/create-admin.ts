@@ -43,119 +43,116 @@ const dynamicPathCreator = (adminPath: string) => {
 /**
  * responsible of the Admin ui modules generation
  */
-export const createAdminModules = async (): Promise<Module[]> =>
-  pluginWrapper(
-    async (): Promise<Module[]> => {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const { appInfo, logger, entities, roles, DTOs } = DsgContext.getInstance;
-      const directoryManager = dynamicPathCreator(
-        get(appInfo, "settings.adminUISettings.adminUIPath", "")
-      );
-      logger.info(`Admin path: ${directoryManager.BASE}`);
-      logger.info("Creating admin...");
-      logger.info("Copying static modules...");
-      const rawStaticModules = await readStaticModules(
-        STATIC_MODULES_PATH,
-        directoryManager.BASE
-      );
-      const staticModules = updatePackageJSONs(
-        rawStaticModules,
-        directoryManager.BASE,
-        {
-          name: `@${paramCase(appInfo.name)}/admin`,
-          version: appInfo.version,
-        }
-      );
-
-      /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
-       * currently the files were manually copied to /admin/static/src/util
-       */
-
-      const entityToPath = Object.fromEntries(
-        entities.map((entity) => [
-          entity.name,
-          `/${paramCase(plural(entity.name))}`,
-        ])
-      );
-      const entityToResource = Object.fromEntries(
-        entities.map((entity) => [
-          entity.name,
-          `${API_PATHNAME}/${paramCase(plural(entity.name))}`,
-        ])
-      );
-      const entityNameToEntity = Object.fromEntries(
-        entities.map((entity) => [entity.name, entity])
-      );
-
-      const publicFilesModules = await createPublicFiles(
-        appInfo,
-        directoryManager.PUBLIC
-      );
-      const entityToDirectory = createEntityToDirectory(
-        entities,
-        directoryManager.SRC
-      );
-      const dtoNameToPath = createDTONameToPath(DTOs, directoryManager.API);
-      const dtoModules = createDTOModules(DTOs, dtoNameToPath);
-      const enumRolesModule = createEnumRolesModule(
-        roles,
-        directoryManager.SRC
-      );
-      const rolesModule = createRolesModule(roles, directoryManager.SRC);
-      // Create title components first so they are available when creating entity modules
-      const entityToTitleComponent = await createEntityTitleComponents(
-        entities,
-        DTOs,
-        entityToDirectory,
-        entityToResource,
-        dtoNameToPath
-      );
-
-      const entityTitleComponentsModules = await createEntityTitleComponentsModules(
-        entityToTitleComponent
-      );
-
-      const entitiesComponents = await createEntitiesComponents(
-        entities,
-        DTOs,
-        entityToDirectory,
-        entityToTitleComponent,
-        entityNameToEntity
-      );
-      const entityComponentsModules = await createEntityComponentsModules(
-        entitiesComponents
-      );
-      const appModule = await createAppModule(
-        appInfo,
-        entityToPath,
-        entitiesComponents,
-        directoryManager
-      );
-      const createdModules = [
-        appModule,
-        enumRolesModule,
-        rolesModule,
-        ...dtoModules,
-        ...entityTitleComponentsModules,
-        ...entityComponentsModules,
-      ];
-      const dotEnvModule = await createDotEnvModule(
-        appInfo,
-        directoryManager.BASE
-      );
-
-      logger.info("Formatting code...");
-      const formattedModules = createdModules.map((module) => ({
-        ...module,
-        code: formatCode(module.code),
-      }));
-      return [
-        ...staticModules,
-        ...publicFilesModules,
-        ...formattedModules,
-        dotEnvModule,
-      ];
-    },
+export function createAdminModules(): Promise<Module[]> {
+  return pluginWrapper(
+    createAdminModulesInternal,
     EventNames.CreateAdminModules,
     {}
   );
+}
+
+async function createAdminModulesInternal(): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { appInfo, logger, entities, roles, DTOs } = DsgContext.getInstance;
+  const directoryManager = dynamicPathCreator(
+    get(appInfo, "settings.adminUISettings.adminUIPath", "")
+  );
+  logger.info(`Admin path: ${directoryManager.BASE}`);
+  logger.info("Creating admin...");
+  logger.info("Copying static modules...");
+  const rawStaticModules = await readStaticModules(
+    STATIC_MODULES_PATH,
+    directoryManager.BASE
+  );
+  const staticModules = updatePackageJSONs(
+    rawStaticModules,
+    directoryManager.BASE,
+    {
+      name: `@${paramCase(appInfo.name)}/admin`,
+      version: appInfo.version,
+    }
+  );
+
+  /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
+   * currently the files were manually copied to /admin/static/src/util
+   */
+
+  const entityToPath = Object.fromEntries(
+    entities.map((entity) => [
+      entity.name,
+      `/${paramCase(plural(entity.name))}`,
+    ])
+  );
+  const entityToResource = Object.fromEntries(
+    entities.map((entity) => [
+      entity.name,
+      `${API_PATHNAME}/${paramCase(plural(entity.name))}`,
+    ])
+  );
+  const entityNameToEntity = Object.fromEntries(
+    entities.map((entity) => [entity.name, entity])
+  );
+
+  const publicFilesModules = await createPublicFiles(
+    appInfo,
+    directoryManager.PUBLIC
+  );
+  const entityToDirectory = createEntityToDirectory(
+    entities,
+    directoryManager.SRC
+  );
+  const dtoNameToPath = createDTONameToPath(DTOs, directoryManager.API);
+  const dtoModules = createDTOModules(DTOs, dtoNameToPath);
+  const enumRolesModule = createEnumRolesModule(roles, directoryManager.SRC);
+  const rolesModule = createRolesModule(roles, directoryManager.SRC);
+  // Create title components first so they are available when creating entity modules
+  const entityToTitleComponent = await createEntityTitleComponents(
+    entities,
+    DTOs,
+    entityToDirectory,
+    entityToResource,
+    dtoNameToPath
+  );
+
+  const entityTitleComponentsModules = await createEntityTitleComponentsModules(
+    entityToTitleComponent
+  );
+
+  const entitiesComponents = await createEntitiesComponents(
+    entities,
+    DTOs,
+    entityToDirectory,
+    entityToTitleComponent,
+    entityNameToEntity
+  );
+  const entityComponentsModules = await createEntityComponentsModules(
+    entitiesComponents
+  );
+  const appModule = await createAppModule(
+    appInfo,
+    entityToPath,
+    entitiesComponents,
+    directoryManager
+  );
+  const createdModules = [
+    appModule,
+    enumRolesModule,
+    rolesModule,
+    ...dtoModules,
+    ...entityTitleComponentsModules,
+    ...entityComponentsModules,
+  ];
+  const dotEnvModule = await createDotEnvModule(appInfo, directoryManager.BASE);
+
+  logger.info("Formatting code...");
+  const formattedModules = createdModules.map((module) => ({
+    ...module,
+    code: formatCode(module.code),
+  }));
+  return [
+    ...staticModules,
+    ...publicFilesModules,
+    ...formattedModules,
+    dotEnvModule,
+  ];
+}
