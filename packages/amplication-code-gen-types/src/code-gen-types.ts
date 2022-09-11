@@ -1,6 +1,7 @@
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { namedTypes } from "ast-types";
+import { DSGResourceData } from "./dsg-resource-data";
 
 export {
   EnumEntityPermissionType,
@@ -13,14 +14,6 @@ export type WorkerResult = {
   message?: string;
   modules?: Module[];
   error?: any;
-};
-
-export type WorkerParam = {
-  entities: Entity[];
-  roles: Role[];
-  appInfo: AppInfo;
-  apis: ExternalApis;
-  plugins: Plugin[];
 };
 
 export type ServiceSettings = Omit<
@@ -195,17 +188,6 @@ export enum EnumMessagePatternConnectionOptions {
   "Send" = "Send",
 }
 
-export type MessagePattern = {
-  name: string;
-  type: EnumMessagePatternConnectionOptions;
-};
-
-export type ExternalApis = {
-  messageBrokers?: {
-    patterns: MessagePattern[];
-  }[];
-};
-
 export type Plugin = Omit<
   models.PluginInstallation,
   | "__typename"
@@ -222,3 +204,5 @@ export type Plugin = Omit<
   | "lockedByUserId"
   | "lockedAt"
 >;
+
+export * from "./dsg-resource-data";

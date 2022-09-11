@@ -10,6 +10,7 @@ import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
 import path, { join } from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
+import * as CodeGenTypes from '@amplication/code-gen-types';
 import { ResourceRole, User } from 'src/models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
@@ -41,7 +42,7 @@ import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { GitResourceMeta } from './dto/GitResourceMeta';
-import { ExternalApis, MessagePattern } from '@amplication/code-gen-types';
+
 import { ServiceTopics } from '../serviceTopics/dto/ServiceTopics';
 import { MessagePattern as MessagePatternWithTopicId } from '../serviceTopics/dto/messagePattern/MessagePattern';
 import { TopicService } from '../topic/topic.service';
@@ -169,7 +170,12 @@ export class BuildService {
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
+    this.host = this.configService.get(HOST_VAR);
+    if (!this.host) {
+      throw new Error('Missing HOST_VAR in env');
+    }
   }
+  host: string;
 
   /**
    * create function creates a new build for given resource in the DB
@@ -330,49 +336,28 @@ export class BuildService {
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       async step => {
+        const { resourceId, id: buildId, version: buildVersion } = build;
         //#region getting all the resource data
-        const entities = await this.getOrderedEntities(build.id);
-        const roles = await this.getResourceRoles(build);
-        const allPlugins = await this.pluginInstallationService.findMany({
-          where: { resource: { id: build.resourceId } }
-        });
-        const plugins = allPlugins.filter(plugin => plugin.enabled);
-
+        const dSGResourceData = await this.getDSGResourceData(
+          resourceId,
+          buildId,
+          buildVersion,
+          user
+        );
+        const { entities, plugins, roles, resourceInfo } = dSGResourceData;
         const resource = await this.resourceService.resource({
           where: { id: build.resourceId }
         });
-        const messageBrokers = await this.getMessageBrokers(resource.id);
-        const apis: ExternalApis = { messageBrokers };
-        const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
-          {
-            where: { id: build.resourceId }
-          },
-          user
-        );
+
         //#endregion
         const [
           dataServiceGeneratorLogger,
           logPromises
         ] = this.createDataServiceLogger(build, step);
 
-        const host = this.configService.get(HOST_VAR);
-
-        const url = `${host}/${build.resourceId}`;
-
         const modules = await DataServiceGenerator.createDataService(
-          entities,
-          roles,
-          {
-            name: resource.name,
-            description: resource.description,
-            version: build.version,
-            id: build.resourceId,
-            url,
-            settings: serviceSettings
-          },
-          apis,
-          dataServiceGeneratorLogger,
-          plugins
+          dSGResourceData,
+          dataServiceGeneratorLogger
         );
 
         await Promise.all(logPromises);
@@ -385,13 +370,13 @@ export class BuildService {
         const tarballURL = await this.save(build, modules);
 
         await this.buildFilesSaver.saveFiles(
-          join(resource.id, build.id),
+          join(resourceId, build.id),
           modules
         );
 
         await this.saveToGitHub(build, oldBuildId, {
-          adminUIPath: serviceSettings.adminUISettings.adminUIPath,
-          serverPath: serviceSettings.serverSettings.serverPath
+          adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
+          serverPath: resourceInfo.settings.serverSettings.serverPath
         });
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
@@ -401,11 +386,11 @@ export class BuildService {
     );
   }
 
-  private async getResourceRoles(build: Build): Promise<ResourceRole[]> {
+  private async getResourceRoles(resourceId: string): Promise<ResourceRole[]> {
     return this.resourceRoleService.getResourceRoles({
       where: {
         resource: {
-          id: build.resourceId
+          id: resourceId
         }
       }
     });
@@ -440,7 +425,7 @@ export class BuildService {
    */
   private async save(
     build: Build,
-    modules: DataServiceGenerator.Module[]
+    modules: CodeGenTypes.Module[]
   ): Promise<string> {
     const zipFilePath = getBuildZipFilePath(build.id);
     const tarFilePath = getBuildTarGzFilePath(build.id);
@@ -582,7 +567,7 @@ export class BuildService {
    */
   private async getOrderedEntities(
     buildId: string
-  ): Promise<DataServiceGenerator.Entity[]> {
+  ): Promise<CodeGenTypes.Entity[]> {
     const entities = await this.entityService.getEntitiesByVersions({
       where: {
         builds: {
@@ -596,7 +581,7 @@ export class BuildService {
     return (orderBy(
       entities,
       entity => entity.createdAt
-    ) as unknown) as DataServiceGenerator.Entity[];
+    ) as unknown) as CodeGenTypes.Entity[];
   }
   async canUserAccess({
     userId,
@@ -609,56 +594,93 @@ export class BuildService {
     return Boolean(build);
   }
 
-  private async getMessageBrokers(
-    resourceId: string
-  ): Promise<
-    {
-      patterns: MessagePattern[];
-    }[]
-  > {
-    const serviceTopics = await this.serviceTopicsService.findMany({
+  // private async getMessageBrokers(
+  //   resourceId: string
+  // ): Promise<
+  //   {
+  //     patterns: MessagePattern[];
+  //   }[]
+  // > {
+  //   const serviceTopics = await this.serviceTopicsService.findMany({
+  //     where: { resource: { id: resourceId } }
+  //   });
+  //   const populatedServiceTopics = await this.populateServiceTopicsWithName(
+  //     serviceTopics
+  //   );
+  //   return populatedServiceTopics;
+  // }
+
+  // async fromTopicIdToName(
+  //   serviceTopicPattern: MessagePatternWithTopicId
+  // ): Promise<MessagePattern> {
+  //   const serviceTopic = await this.topicService.findOne({
+  //     where: { id: serviceTopicPattern.topicId }
+  //   });
+  //   if (!serviceTopic) {
+  //     throw new Error(`Topic not found: ${serviceTopicPattern.topicId}`);
+  //   }
+
+  //   return {
+  //     name: serviceTopic.name,
+  //     type: serviceTopicPattern.type
+  //   };
+  // }
+
+  // async populateServiceTopicsWithName(
+  //   serviceTopics: ServiceTopics[]
+  // ): Promise<
+  //   {
+  //     patterns: MessagePattern[];
+  //   }[]
+  // > {
+  //   return await Promise.all(
+  //     serviceTopics.map(async serviceTopic => {
+  //       const patterns = await Promise.all(
+  //         (serviceTopic.patterns || []).map(pattern => {
+  //           return this.fromTopicIdToName(pattern);
+  //         })
+  //       );
+  //       return {
+  //         patterns
+  //       };
+  //     })
+  //   );
+  // }
+  async getDSGResourceData(
+    resourceId: string,
+    buildId: string,
+    buildVersion: string,
+    user: User
+  ): Promise<CodeGenTypes.DSGResourceData> {
+    const resource = await this.resourceService.resource({
+      where: { id: resourceId }
+    });
+    const allPlugins = await this.pluginInstallationService.findMany({
       where: { resource: { id: resourceId } }
     });
-    const populatedServiceTopics = await this.populateServiceTopicsWithName(
-      serviceTopics
-    );
-    return populatedServiceTopics;
-  }
+    const plugins = allPlugins.filter(plugin => plugin.enabled);
+    const url = `${this.host}/${resourceId}`;
 
-  async fromTopicIdToName(
-    serviceTopicPattern: MessagePatternWithTopicId
-  ): Promise<MessagePattern> {
-    const serviceTopic = await this.topicService.findOne({
-      where: { id: serviceTopicPattern.topicId }
-    });
-    if (!serviceTopic) {
-      throw new Error(`Topic not found: ${serviceTopicPattern.topicId}`);
-    }
+    const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
+      {
+        where: { id: resourceId }
+      },
+      user
+    );
 
     return {
-      name: serviceTopic.name,
-      type: serviceTopicPattern.type
+      entities: await this.getOrderedEntities(buildId),
+      roles: await this.getResourceRoles(resourceId),
+      plugins,
+      resourceType: resource.resourceType,
+      resourceInfo: {
+        name: resource.name,
+        description: resource.description,
+        version: buildVersion,
+        id: resourceId,
+        url,
+        settings: serviceSettings
+      }
     };
-  }
-
-  async populateServiceTopicsWithName(
-    serviceTopics: ServiceTopics[]
-  ): Promise<
-    {
-      patterns: MessagePattern[];
-    }[]
-  > {
-    return await Promise.all(
-      serviceTopics.map(async serviceTopic => {
-        const patterns = await Promise.all(
-          (serviceTopic.patterns || []).map(pattern => {
-            return this.fromTopicIdToName(pattern);
-          })
-        );
-        return {
-          patterns
-        };
-      })
-    );
   }
 }
