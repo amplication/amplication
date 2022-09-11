@@ -14,7 +14,6 @@ import * as models from "../../models";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { formatError } from "../../util/error";
 import { prepareMessageBrokerObject } from "../constants";
-import { CreateMessageBrokerForm } from "./CreateMessageBrokerForm";
 import "./CreateMessageBroker.scss";
 
 type Props = AppRouteProps & {
@@ -79,8 +78,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
           </div>
         </div>
       ) : (
-        <div className={`${moduleClass}__splitWrapper`}>
-          <div className={`${moduleClass}__left`}>
+          <div className={`${moduleClass}__wrapper`}>
             <div className={`${moduleClass}__description`}>
               <ResourceCircleBadge
                 type={models.EnumResourceType.MessageBroker}
@@ -97,10 +95,6 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
               </div>
             </div>
           </div>
-          <div className={`${moduleClass}__right`}>
-            <CreateMessageBrokerForm handleSubmitResource={() => {}} />
-          </div>
-        </div>
       )}
       <div className={`${moduleClass}__footer`}>
         <Button
@@ -115,7 +109,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
           buttonStyle={EnumButtonStyle.Primary}
           onClick={handleCreateServiceClick}
         >
-          <label>Create Service</label>
+          <label>Create Message broker</label>
         </Button>
       </div>
       <Snackbar
