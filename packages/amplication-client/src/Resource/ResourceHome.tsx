@@ -15,6 +15,7 @@ import OverviewTile from "./OverviewTile";
 import "./ResourceHome.scss";
 import ResourceMenu from "./ResourceMenu";
 import RolesTile from "./RolesTile";
+import { TopicsTile } from "./TopicsTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 
@@ -35,51 +36,51 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
   return (
     <>
       <ResourceMenu />
-      {match.isExact
-        ? currentResource && (
-            <PageContent
-              className={CLASS_NAME}
-              sideContent=""
-              pageTitle={currentResource?.name}
-            >
-              <div
-                className={`${CLASS_NAME}__header`}
-                style={{
-                  backgroundColor:
-                    resourceThemeMap[currentResource?.resourceType].color,
-                }}
-              >
-                {currentResource?.name}
-                <CircleBadge
-                  name={currentResource?.name || ""}
-                  color={
-                    resourceThemeMap[currentResource?.resourceType].color ||
-                    "transparent"
-                  }
-                />
-              </div>
-              <div className={`${CLASS_NAME}__tiles`}>
-                <NewVersionTile resourceId={resourceId} />
-                {currentResource?.resourceType !==
-                  EnumResourceType.ProjectConfiguration && (
-                  <OverviewTile resourceId={resourceId} />
-                )}
-                <SyncWithGithubTile resourceId={resourceId} />
-                <ViewCodeViewTile resourceId={resourceId} />
-                {currentResource?.resourceType !==
-                  EnumResourceType.ProjectConfiguration && (
-                  <EntitiesTile resourceId={resourceId} />
-                )}
-                {currentResource?.resourceType !==
-                  EnumResourceType.ProjectConfiguration && (
-                  <RolesTile resourceId={resourceId} />
-                )}
-                <DocsTile />
-                <FeatureRequestTile />
-              </div>
-            </PageContent>
-          )
-        : innerRoutes}
+      {match.isExact && currentResource ? (
+        <PageContent
+          className={CLASS_NAME}
+          sideContent=""
+          pageTitle={currentResource?.name}
+        >
+          <div
+            className={`${CLASS_NAME}__header`}
+            style={{
+              backgroundColor:
+                resourceThemeMap[currentResource?.resourceType].color,
+            }}
+          >
+            {currentResource?.name}
+            <CircleBadge
+              name={currentResource?.name || ""}
+              color={
+                resourceThemeMap[currentResource?.resourceType].color ||
+                "transparent"
+              }
+            />
+          </div>
+          <div className={`${CLASS_NAME}__tiles`}>
+            <NewVersionTile resourceId={resourceId} />
+            {currentResource?.resourceType === EnumResourceType.Service && (
+              <OverviewTile resourceId={resourceId} />
+            )}
+            <SyncWithGithubTile resourceId={resourceId} />
+            <ViewCodeViewTile resourceId={resourceId} />
+            {currentResource?.resourceType === EnumResourceType.Service && (
+              <EntitiesTile resourceId={resourceId} />
+            )}
+            {currentResource?.resourceType === EnumResourceType.Service && (
+              <RolesTile resourceId={resourceId} />
+            )}
+            {currentResource?.resourceType === EnumResourceType.MessageBroker && (
+              <TopicsTile resourceId={resourceId} />
+            )}
+            <DocsTile />
+            <FeatureRequestTile />
+          </div>
+        </PageContent>
+      ) : (
+        innerRoutes
+      )}
     </>
   );
 };
