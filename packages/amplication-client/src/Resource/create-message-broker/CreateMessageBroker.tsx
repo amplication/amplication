@@ -85,12 +85,11 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
                 size="large"
               />
               <div className={`${moduleClass}__description_top`}>
-                <h2>Broker Creation Wizard</h2>
+                <h2>Message Broker Creation Wizard</h2>
               </div>
               <div className={`${moduleClass}__description_bottom`}>
                 <h3>
-                  Create a message broker to communicate between services with
-                  messages and events
+                  Select which components to include in your message broker
                 </h3>
               </div>
             </div>
