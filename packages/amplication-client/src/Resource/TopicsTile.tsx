@@ -38,7 +38,7 @@ function TopicsTile({ resourceId }: Props) {
     (event) => {
       trackEvent(EVENT_DATA);
       history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles`
+        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics`
       );
     },
     [history, trackEvent, resourceId, currentWorkspace, currentProject]
