@@ -39,19 +39,18 @@ export const TopicList = React.memo(
     );
     const history = useHistory();
 
-    const { data, loading, error } = useQuery<TData>(GET_ROLES, {
+    const { data, loading, error } = useQuery<TData>(GET_TOPICS, {
       variables: {
-        id: resourceId,
+        where: { 
+          resource: { id: resourceId }, 
+          displayName: {
+            contains: searchPhrase,
+            mode: models.QueryMode.Insensitive,
+          }
+        },
         orderBy: {
           [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-        },
-        whereName:
-          searchPhrase !== ""
-            ? {
-                contains: searchPhrase,
-                mode: models.QueryMode.Insensitive,
-              }
-            : undefined,
+        }
       },
     });
 
@@ -112,14 +111,13 @@ export const TopicList = React.memo(
   }
 );
 
-export const GET_ROLES = gql`
+export const GET_TOPICS = gql`
   query Topics(
-    $id: String!
+    $where: TopicWhereInput
     $orderBy: TopicOrderByInput
-    $whereName: StringFilter
   ) {
     Topics(
-      where: { resource: { id: $id }, displayName: $whereName }
+      where: $where
       orderBy: $orderBy
     ) {
       id

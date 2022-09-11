@@ -15,9 +15,10 @@ import OverviewTile from "./OverviewTile";
 import "./ResourceHome.scss";
 import ResourceMenu from "./ResourceMenu";
 import RolesTile from "./RolesTile";
-import { TopicsTile } from "./TopicsTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
+import { TopicsTile } from "./TopicsTile";
+import { ServicesTile } from "./ServicesTile";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -73,6 +74,9 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
             )}
             {currentResource?.resourceType === EnumResourceType.MessageBroker && (
               <TopicsTile resourceId={resourceId} />
+            )}
+            {currentResource?.resourceType === EnumResourceType.MessageBroker && (
+              <ServicesTile resourceId={resourceId} />
             )}
             <DocsTile />
             <FeatureRequestTile />

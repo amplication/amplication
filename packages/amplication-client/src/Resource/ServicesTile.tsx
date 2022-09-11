@@ -22,7 +22,7 @@ const EVENT_DATA: TrackEvent = {
   eventName: "rolesTileClick",
 };
 
-function TopicsTile({ resourceId }: Props) {
+function ServicesTile({ resourceId }: Props) {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const { data, loading } = useQuery<{
@@ -37,36 +37,36 @@ function TopicsTile({ resourceId }: Props) {
   const handleClick = useCallback(() => {
     trackEvent(EVENT_DATA);
     history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics`
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/services`
     );
   }, [history, trackEvent, resourceId, currentWorkspace, currentProject]);
 
   return (
     <OverviewSecondaryTile
-      icon="topics_outline"
-      title="Topics"
+      icon="services_outline"
+      title="Services"
       headerExtra={
         loading ? (
           <CircularProgress centerToParent />
         ) : (
           <>
             {data?.Topics.length}
-            {data && data?.Topics.length > 1 ? " topics" : " topic"}
+            {data && data?.Topics.length > 1 ? " services" : " service"}
           </>
         )
       }
-      message="Create topics and define properties."
+      message="See connected services."
       footer={
         <Button
           buttonStyle={EnumButtonStyle.Secondary}
           type="button"
           onClick={handleClick}
         >
-          Go to topics
+          Go to services
         </Button>
       }
     />
   );
 }
 
-export { TopicsTile };
+export { ServicesTile };
