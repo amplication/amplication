@@ -2,6 +2,29 @@
 
 $logo-size: 44px;
 $order-badge-size: 14px;
+$image-size: 220px;
+
+.plugin-installation-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - $image-size);
+
+  .plugin-installation-empty {
+    width: $image-size;
+    height: $image-size;
+    display: block;
+    align-self: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    
+  }
+  .plugin-installation-empty-text {
+    color: var(--black80);
+  }
+}
+
 
 .plugins-catalog-item {
   margin: 0;
@@ -11,7 +34,7 @@ $order-badge-size: 14px;
     display: flex;
     margin-bottom: var(--default-spacing);
     flex-direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
 
     &:last-child {
@@ -45,7 +68,16 @@ $order-badge-size: 14px;
 
   &__install {
     padding: 5px 12px;
+    min-width: 86px;
+  }
+
+  &__uninstall {
+    padding: 5px 12px;
     min-width: 60px;
+    &:hover {
+      background-color: transparent !important;
+      border-color: var(--black100) !important;
+    }
   }
 
   &__order {

@@ -6,7 +6,7 @@ import {
 } from "../queries/pluginsQueries";
 import * as models from "../../models";
 import { keyBy } from "lodash";
-import { useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { AppContext } from "../../context/appContext";
 
 export type Plugin = {
@@ -21,6 +21,8 @@ export type Plugin = {
   category: string;
   type: string;
 };
+
+export type OnPluginDropped = (dragItem: models.PluginInstallation, hoverItem: models.PluginInstallation) => void;
 
 const PLUGINS: Plugin[] = [
   {
@@ -154,6 +156,10 @@ const usePlugins = (resourceId: string) => {
     ],
   });
 
+  const onPluginDropped = useCallback((dragPlugin: models.PluginInstallation, hoverPlugin: models.PluginInstallation) => {
+    console.log(dragPlugin, hoverPlugin)
+  }, []);
+
   return {
     pluginInstallations,
     loadingPluginInstallations,
@@ -163,6 +169,7 @@ const usePlugins = (resourceId: string) => {
     createPluginInstallation,
     createError,
     pluginCatalog,
+    onPluginDropped,
   };
 };
 

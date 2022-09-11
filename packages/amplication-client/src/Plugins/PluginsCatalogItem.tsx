@@ -9,7 +9,6 @@ import {
   HorizontalRule,
   Icon,
   Panel,
-  Toggle,
 } from "@amplication/design-system";
 import "./PluginsCatalogItem.scss";
 import { Plugin } from "./hooks/usePlugins";
@@ -18,7 +17,8 @@ type Props = {
   plugin: Plugin;
   pluginInstallation: models.PluginInstallation | null;
   onInstall?: (plugin: Plugin) => void;
-  onEnableStateChange?: (pluginInstallation: models.PluginInstallation) => void;
+  onUninstall?: (pluginInstallation: models.PluginInstallation) => void;
+  isDraggable?: boolean;
 };
 
 const CLASS_NAME = "plugins-catalog-item";
@@ -27,46 +27,31 @@ function PluginsCatalogItem({
   plugin,
   pluginInstallation,
   onInstall,
-  onEnableStateChange,
+  onUninstall,
+  isDraggable,
 }: Props) {
   const { name, description } = plugin || {};
 
-  const handlePromote = useCallback(() => {}, []);
+  // const handlePromote = useCallback(() => {}, []);
 
-  const handleDemote = useCallback(() => {}, []);
+  // const handleDemote = useCallback(() => {}, []);
 
   const handleInstall = useCallback(() => {
     onInstall && onInstall(plugin);
   }, [onInstall, plugin]);
 
-  const handleEnableStateChange = useCallback(() => {
-    onEnableStateChange &&
-      pluginInstallation &&
-      onEnableStateChange(pluginInstallation);
-  }, [onEnableStateChange, pluginInstallation]);
+  const handleUninstall = useCallback(() => {
+    pluginInstallation && onUninstall && onUninstall(pluginInstallation);
+  }, [onUninstall, pluginInstallation])
 
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
-      {pluginInstallation && (
+      {pluginInstallation && isDraggable && (
         <>
           <div className={`${CLASS_NAME}__row`}>
-            <Toggle
-              title="enabled"
-              onValueChange={handleEnableStateChange}
-              checked={pluginInstallation.enabled}
-            />
+            <Icon icon="drag" />
             <div className={`${CLASS_NAME}__order`}>
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                onClick={handlePromote}
-                icon="arrow_up"
-              />
               <span>{pluginInstallation.order}</span>
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                onClick={handleDemote}
-                icon="arrow_down"
-              />
             </div>
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
@@ -95,6 +80,15 @@ function PluginsCatalogItem({
             Install
           </Button>
         )}{" "}
+        {pluginInstallation && (
+          <Button
+            className={`${CLASS_NAME}__uninstall`}
+            buttonStyle={EnumButtonStyle.Outline}
+            onClick={handleUninstall}
+          >
+            Uninstall
+          </Button>
+        )}
       </div>
     </Panel>
   );

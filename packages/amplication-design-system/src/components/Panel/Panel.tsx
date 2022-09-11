@@ -19,7 +19,7 @@ export type Props = {
   onClick?: (event: any) => void;
 };
 
-export const Panel = ({
+export const Panel = React.forwardRef(({
   panelStyle = EnumPanelStyle.Default,
   className,
   children,
@@ -27,7 +27,7 @@ export const Panel = ({
   style,
   clickable,
   onClick,
-}: Props) => {
+}: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       onClick={onClick}
@@ -40,11 +40,12 @@ export const Panel = ({
         { "amp-panel--clickable": clickable },
         { "amp-panel--shadow": shadow }
       )}
+      ref={ref}
     >
       {children}
     </div>
   );
-};
+});
 
 export type PanelHeaderProps = {
   /** Pass multiple children, directly or wrapped with a fragment, to automatically use flex with space between */
