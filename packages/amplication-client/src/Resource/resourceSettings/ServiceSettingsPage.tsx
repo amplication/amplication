@@ -1,6 +1,9 @@
 import React, { useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
+import "./ServiceSettingsPage.scss";
+
+const CLASS_NAME = "service-settings";
 
 const ServiceSettingsPage: React.FC<{}> = () => {
   const { currentWorkspace, currentProject, currentResource } = useContext(
@@ -8,7 +11,7 @@ const ServiceSettingsPage: React.FC<{}> = () => {
   );
 
   return (
-    <div>
+    <div className={CLASS_NAME}>
       <div>
         <InnerTabLink
           to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/update`}
