@@ -5,8 +5,10 @@ import { BlockTypeResolver } from '../block/blockType.resolver';
 import { PluginInstallation } from './dto/PluginInstallation';
 import { CreatePluginInstallationArgs } from './dto/CreatePluginInstallationArgs';
 import { UpdatePluginInstallationArgs } from './dto/UpdatePluginInstallationArgs';
+import { SetPluginInstallationOrder } from './dto/SetPluginInstallationOrder';
+import { PluginOrder } from './dto/pluginOrder';
 
-@Resolver(() => PluginInstallation)
+@Resolver(() => PluginInstallation && PluginOrder)
 export class PluginInstallationResolver extends BlockTypeResolver(
   PluginInstallation,
   'PluginInstallations',
@@ -14,7 +16,9 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   'createPluginInstallation',
   CreatePluginInstallationArgs,
   'updatePluginInstallation',
-  UpdatePluginInstallationArgs
+  UpdatePluginInstallationArgs,
+  'setPluginInstallationOrder',
+  SetPluginInstallationOrder
 ) {
   constructor(private readonly service: PluginInstallationService) {
     super();
