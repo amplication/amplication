@@ -125,6 +125,7 @@ export async function createServerModules(
   );
   const dotEnvModule = await createDotEnvModule({
     baseDirectory: directoryManager.BASE,
+    additionalVariables: [],
   });
 
   return [

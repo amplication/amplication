@@ -2,6 +2,7 @@ import {
   Module,
   EventNames,
   CreateServerDotEnvParams,
+  VariableDictionary,
 } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";
 import { isEmpty } from "lodash";
@@ -28,11 +29,19 @@ export function createDotEnvModule(
  */
 export async function createDotEnvModuleInternal({
   baseDirectory,
+  additionalVariables,
 }: CreateServerDotEnvParams["before"]): Promise<Module[]> {
   const context = DsgContext.getInstance;
   const { appInfo } = context;
 
   const code = await readCode(templatePath);
+  const formattedAdditionalVariables = convertToKeyValueSting(
+    additionalVariables
+  );
+  const codeWithAdditionalVariables = appendAdditionalVariables(
+    code,
+    formattedAdditionalVariables
+  );
 
   if (
     !isEmpty(appInfo.settings.dbName) &&
@@ -44,7 +53,24 @@ export async function createDotEnvModuleInternal({
   return [
     {
       path: `${baseDirectory}/.env`,
-      code: replacePlaceholdersInCode(code, appInfo.settings),
+      code: replacePlaceholdersInCode(
+        codeWithAdditionalVariables,
+        appInfo.settings
+      ),
     },
   ];
+}
+
+function convertToKeyValueSting(arr: VariableDictionary): string {
+  if (!arr.length) return "";
+  return arr
+    .map((item) =>
+      Object.entries(item).map(([key, value]) => `${key}=${value}`)
+    )
+    .join("\n");
+}
+
+function appendAdditionalVariables(file: string, variable: string): string {
+  if (!variable.trim()) return file;
+  return file.concat(`\n${variable}`);
 }

@@ -33,8 +33,13 @@ export interface CreateAdminModulesParams extends EventParams {
   before: {};
 }
 
+export type VariableDictionary = {
+  [variable: string]: string;
+}[];
+
 export interface CreateServerDotEnvParams extends EventParams {
   before: {
     baseDirectory: string;
+    additionalVariables: VariableDictionary;
   };
 }
