@@ -3,7 +3,6 @@ import { IBlock } from 'src/models';
 import { JsonValue } from 'type-fest';
 import { PluginOrderItem } from './PluginOrderItem';
 
-
 @ObjectType({
   isAbstract: true,
   implements: [IBlock]

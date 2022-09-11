@@ -104,7 +104,6 @@ const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
   parentBlock: null,
   versionNumber: 0,
   enabled: true,
-  order: 1,
   pluginId: '@amplication/example-plugin',
   blockType: EnumBlockType.PluginInstallation
 };

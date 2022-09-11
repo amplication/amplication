@@ -10,7 +10,6 @@ export const GET_PLUGIN_INSTALLATIONS = gql`
       displayName
       pluginId
       enabled
-      order
     }
   }
 `;
@@ -25,7 +24,6 @@ export const UPDATE_PLUGIN_INSTALLATION = gql`
       displayName
       pluginId
       enabled
-      order
     }
   }
 `;
@@ -37,7 +35,6 @@ export const CREATE_PLUGIN_INSTALLATION = gql`
       displayName
       pluginId
       enabled
-      order
     }
   }
 `;
