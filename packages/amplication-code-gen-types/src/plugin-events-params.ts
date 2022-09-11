@@ -1,4 +1,5 @@
-import { Entity, Module } from "./code-gen-types";
+import { namedTypes } from "ast-types";
+import { DTOs, Entity, EntityField, Module } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
 export interface CreateServiceModulesParams extends EventParams {
@@ -7,7 +8,12 @@ export interface CreateServiceModulesParams extends EventParams {
     entityType: string;
     entity: Entity;
     srcDirectory: string;
+    serviceId: namedTypes.Identifier;
+    serviceBaseId: namedTypes.Identifier;
+    delegateId: namedTypes.Identifier;
+    passwordFields: EntityField[];
     extraMapping: { [key: string]: any };
+    dtos: DTOs;
   };
 }
 

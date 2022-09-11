@@ -4,11 +4,16 @@ import { flatten } from "lodash";
 import * as winston from "winston";
 import { Entity, Module, AppInfo, DTOs } from "@amplication/code-gen-types";
 import { validateEntityName } from "../../util/entity";
-import { createServiceModules } from "./service/create-service";
+import {
+  createServiceBaseId,
+  createServiceId,
+  createServiceModules,
+} from "./service/create-service";
 import { createControllerModules } from "./controller/create-controller";
 import { createModules } from "./module/create-module";
 import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
+import { builders } from "ast-types";
 
 export async function createResourcesModules(
   appInfo: AppInfo,
@@ -40,14 +45,22 @@ async function createResourceModules(
   logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
   const resource = camelCase(plural(entityName));
+  const serviceId = createServiceId(entityType);
+  const serviceBaseId = createServiceBaseId(entityType);
+  const delegateId = builders.identifier(entityName);
 
-  const serviceModules = await createServiceModules(
+  const serviceModules = await createServiceModules({
     entityName,
     entityType,
     entity,
+    serviceId,
+    serviceBaseId,
+    delegateId,
     dtos,
-    srcDirectory
-  );
+    srcDirectory,
+    extraMapping: {},
+    passwordFields: [],
+  });
 
   const [serviceModule] = serviceModules;
 

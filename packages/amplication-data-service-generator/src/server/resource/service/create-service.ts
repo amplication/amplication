@@ -8,6 +8,8 @@ import {
   Module,
   NamedClassDeclaration,
   DTOs,
+  EventNames,
+  CreateServiceModulesParams,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -28,12 +30,13 @@ import {
   removeTSVariableDeclares,
 } from "../../../util/ast";
 import {
-  isPasswordField,
   isOneToOneRelationField,
+  isPasswordField,
   isToManyRelationField,
 } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
+import pluginWrapper from "../../../plugin-wrapper";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -51,75 +54,19 @@ const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createServiceModules(
-  entityName: string,
-  entityType: string,
-  entity: Entity,
-  dtos: DTOs,
-  srcDirectory: string
+  eventParams: CreateServiceModulesParams["before"]
 ): Promise<Module[]> {
-  const serviceId = createServiceId(entityType);
-  const serviceBaseId = createServiceBaseId(entityType);
-  const delegateId = builders.identifier(entityName);
-  const passwordFields = entity.fields.filter(isPasswordField);
-  const entityDTOs = dtos[entity.name];
-  const { entity: entityDTO } = entityDTOs;
+  eventParams.passwordFields = eventParams.entity.fields.filter(
+    isPasswordField
+  );
 
-  const mapping = {
-    SERVICE: serviceId,
-    SERVICE_BASE: serviceBaseId,
-    ENTITY: builders.identifier(entityType),
-    FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
-    FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),
-    CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),
-    UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
-    DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
-    DELEGATE: delegateId,
-    CREATE_ARGS_MAPPING: createMutationDataMapping(
-      passwordFields.map((field) => {
-        const fieldId = builders.identifier(field.name);
-        return builders.objectProperty(
-          fieldId,
-          awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
-        );
-      })
-    ),
-    UPDATE_ARGS_MAPPING: createMutationDataMapping(
-      passwordFields.map((field) => {
-        const fieldId = builders.identifier(field.name);
-        const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
-        return builders.objectProperty(
-          fieldId,
-          logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
-            ${ARGS_ID}.${DATA_ID}.${fieldId},
-            (password) => ${HASH_MEMBER_EXPRESSION}(password)
-          )`
-        );
-      })
-    ),
-  };
+  eventParams.extraMapping = createExtraMapping(eventParams);
 
-  return [
-    await createServiceModule(
-      entityName,
-      mapping,
-      passwordFields,
-      serviceId,
-      serviceBaseId,
-      srcDirectory
-    ),
-    await createServiceBaseModule(
-      entityName,
-      entity,
-      entityDTO,
-      mapping,
-      passwordFields,
-      serviceId,
-      serviceBaseId,
-      dtos,
-      delegateId,
-      srcDirectory
-    ),
-  ];
+  return pluginWrapper(
+    createServiceModulesInternal,
+    EventNames.CreateServiceModules,
+    eventParams
+  );
 }
 
 async function createServiceModule(
@@ -390,4 +337,84 @@ async function createToManyRelationFile(
   });
 
   return toManyFile;
+}
+
+async function createServiceModulesInternal({
+  entityName,
+  entity,
+  serviceId,
+  serviceBaseId,
+  delegateId,
+  srcDirectory,
+  extraMapping,
+  passwordFields,
+  dtos,
+}: CreateServiceModulesParams["before"]): Promise<Module[]> {
+  const entityDTOs = dtos[entity.name];
+  const { entity: entityDTO } = entityDTOs;
+
+  return [
+    await createServiceModule(
+      entityName,
+      extraMapping,
+      passwordFields,
+      serviceId,
+      serviceBaseId,
+      srcDirectory
+    ),
+    await createServiceBaseModule(
+      entityName,
+      entity,
+      entityDTO,
+      extraMapping,
+      passwordFields,
+      serviceId,
+      serviceBaseId,
+      dtos,
+      delegateId,
+      srcDirectory
+    ),
+  ];
+}
+
+function createExtraMapping({
+  entityType,
+  serviceId,
+  serviceBaseId,
+  delegateId,
+  passwordFields,
+}: CreateServiceModulesParams["before"]): { [key: string]: any } {
+  return {
+    SERVICE: serviceId,
+    SERVICE_BASE: serviceBaseId,
+    ENTITY: builders.identifier(entityType),
+    FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
+    FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),
+    CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),
+    UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
+    DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
+    DELEGATE: delegateId,
+    CREATE_ARGS_MAPPING: createMutationDataMapping(
+      passwordFields.map((field) => {
+        const fieldId = builders.identifier(field.name);
+        return builders.objectProperty(
+          fieldId,
+          awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
+        );
+      })
+    ),
+    UPDATE_ARGS_MAPPING: createMutationDataMapping(
+      passwordFields.map((field) => {
+        const fieldId = builders.identifier(field.name);
+        const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
+        return builders.objectProperty(
+          fieldId,
+          logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
+            ${ARGS_ID}.${DATA_ID}.${fieldId},
+            (password) => ${HASH_MEMBER_EXPRESSION}(password)
+          )`
+        );
+      })
+    ),
+  };
 }
