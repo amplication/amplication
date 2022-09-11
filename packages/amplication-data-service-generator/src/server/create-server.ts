@@ -6,6 +6,7 @@ import {
   Role,
   AppInfo,
   Module,
+  ServiceTopics,
   DTOs,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
@@ -17,7 +18,7 @@ import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
-import { createDotEnvModule } from "./create-dotenv";
+import { createDotEnvModule } from "./env/create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
 import { BASE_DIRECTORY } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
@@ -43,6 +44,7 @@ export async function createServerModules(
   appInfo: AppInfo,
   dtos: DTOs,
   userEntity: Entity,
+  serviceTopics: ServiceTopics[],
   logger: winston.Logger
 ): Promise<Module[]> {
   const directoryManager = dynamicPathCreator(
@@ -123,7 +125,11 @@ export async function createServerModules(
     roles,
     directoryManager.SRC
   );
-  const dotEnvModule = await createDotEnvModule(appInfo, directoryManager.BASE);
+  const dotEnvModule = await createDotEnvModule(
+    appInfo,
+    directoryManager.BASE,
+    serviceTopics.length > 0
+  );
 
   return [
     ...staticModules,
