@@ -18,7 +18,7 @@ const PendingChangeContent = ({
 }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
-  const url = `/${currentWorkspace?.id}/${currentProject?.id}/${change.origin.resource?.id}/${relativeUrl}`;
+  const url = `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/${relativeUrl}`;
 
   return linkToOrigin ? <Link to={url}>{name}</Link> : <span>name</span>;
 };
