@@ -27,7 +27,7 @@ import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
 import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from 'src/core/build/dto/EnumBuildStatus';
-import { Resource, Commit, Entity, Block } from 'src/models';
+import { Resource, Commit, Entity } from 'src/models';
 import {
   ActionStep,
   EnumActionLogLevel,
@@ -39,8 +39,10 @@ import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationP
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
+import { PluginInstallation } from '../pluginInstallation/dto/PluginInstallation';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { orderBy } from 'lodash';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -91,6 +93,22 @@ const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
   }
 };
 
+const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
+  id: 'ExamplePluginInstallation',
+  updatedAt: new Date(),
+  createdAt: new Date(),
+  description: null,
+  inputParameters: [],
+  outputParameters: [],
+  displayName: 'example Plugin installation',
+  parentBlock: null,
+  versionNumber: 0,
+  enabled: true,
+  order: 1,
+  pluginId: '@amplication/example-plugin',
+  blockType: EnumBlockType.PluginInstallation
+};
+
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
@@ -131,15 +149,6 @@ const EXAMPLE_BUILD: Build = {
   actionId: EXAMPLE_ACTION.id,
   commitId: EXAMPLE_COMMIT_ID,
   action: EXAMPLE_ACTION
-};
-
-const EXAMPLE_PLUGIN: Block = {
-  resourceId: EXAMPLE_RESOURCE_ID,
-  blockType: EnumBlockType.PluginInstallation,
-  displayName: 'my plugin',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  id: 'example-plugin-id'
 };
 
 const EXAMPLE_COMPLETED_BUILD: Build = {
@@ -235,7 +244,7 @@ const prismaBuildFindManyMock = jest.fn(() => {
 });
 
 const prismaPluginFindManyMock = jest.fn(() => {
-  return [EXAMPLE_PLUGIN];
+  return [EXAMPLE_PLUGIN_INSTALLATION];
 });
 
 const entityServiceGetLatestVersionsMock = jest.fn(() => {
@@ -583,19 +592,20 @@ describe('BuildService', () => {
       }
     });
     expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
-    // expect(DataServiceGenerator.createDataService).toBeCalledWith(
-    //   orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
-    //   EXAMPLE_APP_ROLES,
-    //   {
-    //     name: EXAMPLE_SERVICE_RESOURCE.name,
-    //     description: EXAMPLE_SERVICE_RESOURCE.description,
-    //     version: EXAMPLE_BUILD.version,
-    //     id: EXAMPLE_SERVICE_RESOURCE.id,
-    //     url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
-    //     settings: EXAMPLE_APP_SETTINGS_VALUES
-    //   },
-    //   MOCK_LOGGER
-    // );
+    expect(DataServiceGenerator.createDataService).toBeCalledWith(
+      orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
+      EXAMPLE_APP_ROLES,
+      {
+        name: EXAMPLE_SERVICE_RESOURCE.name,
+        description: EXAMPLE_SERVICE_RESOURCE.description,
+        version: EXAMPLE_BUILD.version,
+        id: EXAMPLE_SERVICE_RESOURCE.id,
+        url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
+        settings: EXAMPLE_APP_SETTINGS_VALUES
+      },
+      MOCK_LOGGER,
+      [EXAMPLE_PLUGIN_INSTALLATION]
+    );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(1);
