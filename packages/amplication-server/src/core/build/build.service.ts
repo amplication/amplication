@@ -43,8 +43,6 @@ import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { GitResourceMeta } from './dto/GitResourceMeta';
 
-import { ServiceTopics } from '../serviceTopics/dto/ServiceTopics';
-import { MessagePattern as MessagePatternWithTopicId } from '../serviceTopics/dto/messagePattern/MessagePattern';
 import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
@@ -345,11 +343,7 @@ export class BuildService {
           buildVersion,
           user
         );
-        const { entities, plugins, roles, resourceInfo } = dSGResourceData;
-        const resource = await this.resourceService.resource({
-          where: { id: build.resourceId }
-        });
-
+        const { resourceInfo } = dSGResourceData;
         //#endregion
         const [
           dataServiceGeneratorLogger,
@@ -595,58 +589,6 @@ export class BuildService {
     return Boolean(build);
   }
 
-  // private async getMessageBrokers(
-  //   resourceId: string
-  // ): Promise<
-  //   {
-  //     patterns: MessagePattern[];
-  //   }[]
-  // > {
-  //   const serviceTopics = await this.serviceTopicsService.findMany({
-  //     where: { resource: { id: resourceId } }
-  //   });
-  //   const populatedServiceTopics = await this.populateServiceTopicsWithName(
-  //     serviceTopics
-  //   );
-  //   return populatedServiceTopics;
-  // }
-
-  // async fromTopicIdToName(
-  //   serviceTopicPattern: MessagePatternWithTopicId
-  // ): Promise<MessagePattern> {
-  //   const serviceTopic = await this.topicService.findOne({
-  //     where: { id: serviceTopicPattern.topicId }
-  //   });
-  //   if (!serviceTopic) {
-  //     throw new Error(`Topic not found: ${serviceTopicPattern.topicId}`);
-  //   }
-
-  //   return {
-  //     name: serviceTopic.name,
-  //     type: serviceTopicPattern.type
-  //   };
-  // }
-
-  // async populateServiceTopicsWithName(
-  //   serviceTopics: ServiceTopics[]
-  // ): Promise<
-  //   {
-  //     patterns: MessagePattern[];
-  //   }[]
-  // > {
-  //   return await Promise.all(
-  //     serviceTopics.map(async serviceTopic => {
-  //       const patterns = await Promise.all(
-  //         (serviceTopic.patterns || []).map(pattern => {
-  //           return this.fromTopicIdToName(pattern);
-  //         })
-  //       );
-  //       return {
-  //         patterns
-  //       };
-  //     })
-  //   );
-  // }
   async getDSGResourceData(
     resourceId: string,
     buildId: string,
