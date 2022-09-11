@@ -15,10 +15,11 @@ export enum EnumImages {
   MyResources = "--image-my-resources",
   Generating = "--image-generating",
   CreateServiceWizard = "--image-create-service-wizard",
+  CommitEmptyState = "--image-commit-empty-state",
   CodeViewEmptyState = "--image-code-view-empty-state",
 }
 
-type Props = {
+export type Props = {
   image: EnumImages;
 };
 
