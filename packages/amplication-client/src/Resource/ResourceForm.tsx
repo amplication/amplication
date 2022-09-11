@@ -1,9 +1,8 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { match } from "react-router-dom";
 import { validate } from "../util/formikValidateJsonSchema";
-
 import { Snackbar, TextField } from "@amplication/design-system";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
@@ -12,6 +11,9 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import "./ResourceForm.scss";
 import { GET_RESOURCE } from "./ResourceHome";
+import useProjectSelector from '../Workspaces/hooks/useProjectSelector'
+import useAuthenticated from '../authentication/use-authenticated'
+import { AppContext } from "../context/appContext";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -37,7 +39,11 @@ const FORM_SCHEMA = {
 const CLASS_NAME = "resource-form";
 
 function ResourceForm({ match }: Props) {
+
+  const { currentResource, currentWorkspace } = useContext(AppContext);
   const resourceId = match.params.resource;
+  const authenticated = useAuthenticated();
+  const { refetchProjects } = useProjectSelector(authenticated, currentWorkspace)
 
   const { data, error } = useQuery<{
     resource: models.Resource;
@@ -67,9 +73,15 @@ function ResourceForm({ match }: Props) {
           },
           resourceId: resourceId,
         },
-      }).catch(console.error);
+      })
+        .then(() => {
+          if (currentResource?.resourceType === models.EnumResourceType.ProjectConfiguration) {
+            refetchProjects()
+          }
+        })
+        .catch(console.error);
     },
-    [updateResource, resourceId, trackEvent]
+    [updateResource, resourceId, trackEvent, refetchProjects, currentResource]
   );
 
   const errorMessage = formatError(error || updateError);
