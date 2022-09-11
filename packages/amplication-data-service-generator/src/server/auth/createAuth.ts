@@ -9,14 +9,15 @@ import { createDefaultGuard } from "./guards/createDefaultGuard";
 import { createTokenServiceTests } from "./token/createTokenSerivceTests";
 import { createTokenService } from "./token/createTokenService";
 
-export const createAuthModules = (
+export function createAuthModules(
   eventParams: CreateAuthModulesParams["before"]
-): Module[] =>
-  pluginWrapper(
+): Module[] {
+  return pluginWrapper(
     createAuthModulesInternal,
     EventNames.CreateAuthModules,
     eventParams
   );
+}
 
 async function createAuthModulesInternal({
   srcDir,
