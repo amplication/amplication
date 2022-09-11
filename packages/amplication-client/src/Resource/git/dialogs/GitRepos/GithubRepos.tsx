@@ -19,6 +19,7 @@ import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 
 const CLASS_NAME = "git-repos";
+const MAX_ITEMS_PER_PAGE = 50;
 
 type Props = {
   gitOrganizationId: string;
@@ -45,7 +46,7 @@ function GitRepos({
     variables: {
       gitOrganizationId,
       gitProvider,
-      limit: 10,
+      limit: MAX_ITEMS_PER_PAGE,
       page: page
     },
     notifyOnNetworkStatusChange: true,
