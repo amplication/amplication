@@ -673,6 +673,12 @@ export class BuildService {
       roles: await this.getResourceRoles(resourceId),
       plugins,
       resourceType: resource.resourceType,
+      topics: await this.topicService.findMany({
+        where: { resource: { id: resourceId } }
+      }),
+      serviceTopics: await this.serviceTopicsService.findMany({
+        where: { resource: { id: resourceId } }
+      }),
       resourceInfo: {
         name: resource.name,
         description: resource.description,

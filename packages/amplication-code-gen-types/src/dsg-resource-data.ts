@@ -1,5 +1,12 @@
-import { AppInfo, Entity, Plugin, Role } from "./code-gen-types";
-import { EnumResourceType, ServiceTopics, Topic } from "./models";
+import {
+  AppInfo,
+  Entity,
+  Plugin,
+  Role,
+  ServiceTopics,
+  Topic,
+} from "./code-gen-types";
+import { EnumResourceType } from "./models";
 
 export class DSGResourceData {
   resourceType!: keyof typeof EnumResourceType;

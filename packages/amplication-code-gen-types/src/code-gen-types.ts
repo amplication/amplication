@@ -16,22 +16,7 @@ export type WorkerResult = {
   error?: any;
 };
 
-export type ServiceSettings = Omit<
-  models.ServiceSettings,
-  | "__typename"
-  | "id"
-  | "createdAt"
-  | "updatedAt"
-  | "parentBlock"
-  | "displayName"
-  | "description"
-  | "blockType"
-  | "versionNumber"
-  | "inputParameters"
-  | "outputParameters"
-  | "lockedByUserId"
-  | "lockedAt"
->;
+export type ServiceSettings = BlockOmittedFields<models.ServiceSettings>;
 
 export type AppInfo = {
   name: string;
@@ -188,8 +173,12 @@ export enum EnumMessagePatternConnectionOptions {
   "Send" = "Send",
 }
 
-export type Plugin = Omit<
-  models.PluginInstallation,
+export type Plugin = BlockOmittedFields<models.PluginInstallation>;
+
+export * from "./dsg-resource-data";
+
+type BlockOmittedFields<T> = Omit<
+  T,
   | "__typename"
   | "id"
   | "createdAt"
@@ -205,4 +194,5 @@ export type Plugin = Omit<
   | "lockedAt"
 >;
 
-export * from "./dsg-resource-data";
+export type Topic = BlockOmittedFields<models.Topic>;
+export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
