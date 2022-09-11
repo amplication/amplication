@@ -29,15 +29,13 @@ export function createDotEnvModule(
  */
 export async function createDotEnvModuleInternal({
   baseDirectory,
-  additionalVariables,
+  envVariables,
 }: CreateServerDotEnvParams["before"]): Promise<Module[]> {
   const context = DsgContext.getInstance;
   const { appInfo } = context;
 
   const code = await readCode(templatePath);
-  const formattedAdditionalVariables = convertToKeyValueSting(
-    additionalVariables
-  );
+  const formattedAdditionalVariables = convertToKeyValueSting(envVariables);
   const codeWithAdditionalVariables = appendAdditionalVariables(
     code,
     formattedAdditionalVariables
@@ -70,7 +68,8 @@ function convertToKeyValueSting(arr: VariableDictionary): string {
     .join("\n");
 }
 
-function appendAdditionalVariables(file: string, variable: string): string {
-  if (!variable.trim()) return file;
-  return file.concat(`\n${variable}`);
+function appendAdditionalVariables(file: string, variables: string): string {
+  if (!variables.trim()) return file;
+  if (!file.trim()) file.concat(variables);
+  return file.concat(`\n${variables}`);
 }
