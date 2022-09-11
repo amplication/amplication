@@ -37,9 +37,11 @@ function RolesTile({ resourceId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles`);
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles`
+      );
     },
-    [history, trackEvent, resourceId,currentWorkspace,currentProject]
+    [history, trackEvent, resourceId, currentWorkspace, currentProject]
   );
 
   return (
@@ -48,7 +50,7 @@ function RolesTile({ resourceId }: Props) {
       title="Roles"
       headerExtra={
         loading ? (
-          <CircularProgress />
+          <CircularProgress centerToParent />
         ) : (
           <>
             {data?.resourceRoles.length}

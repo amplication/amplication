@@ -29,7 +29,7 @@ function MemberList() {
   }, [refetch]);
 
   return (
-    <PageContent pageTitle="workspace members" sideContent={ <ProjectSideBar />}>
+    <PageContent pageTitle="workspace members" sideContent={<ProjectSideBar />}>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__header`}>
           <h2>Workspace Members</h2>
@@ -39,7 +39,7 @@ function MemberList() {
         <div className={`${CLASS_NAME}__title`}>
           {data?.workspaceMembers.length} Members
         </div>
-        {loading && <CircularProgress />}
+        {loading && <CircularProgress centerToParent />}
 
         {isEmpty(data?.workspaceMembers) && !loading ? (
           <div className={`${CLASS_NAME}__empty-state`}>

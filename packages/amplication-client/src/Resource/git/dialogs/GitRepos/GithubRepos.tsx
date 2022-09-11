@@ -86,7 +86,7 @@ function GitRepos({
     <div className={CLASS_NAME}>
       <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
       <div className={`${CLASS_NAME}__header`}>
-        {true && <div className={`${CLASS_NAME}__header-left`}>
+        <div className={`${CLASS_NAME}__header-left`}>
           <h4>Select {gitProvider} repository</h4>
           {loadingRepos || networkStatus === NetworkStatus.refetch ? (
             <CircularProgress />
@@ -102,7 +102,7 @@ function GitRepos({
               />
             </Tooltip>
           )}
-        </div>}
+        </div>
         <div className={`${CLASS_NAME}__header-right`}>
           <h4>Page</h4>
           <SelectMenu title={page.toString()} buttonStyle={EnumButtonStyle.Secondary} icon="chevron_down">
