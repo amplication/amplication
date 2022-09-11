@@ -63,11 +63,7 @@ function convertToKeyValueSting(arr: VariableDictionary): string {
   if (!arr.length) return "";
   return arr
     .map((item) =>
-      Object.entries(item).map(([key, value]) => {
-        if (!key.trim() || !value.trim())
-          throw new Error("key or value are missing");
-        return `${key}=${value}`;
-      })
+      Object.entries(item).map(([key, value]) => `${key}=${value}`)
     )
     .join("\n");
 }
