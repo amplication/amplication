@@ -1,5 +1,4 @@
-import { Module } from "./code-gen-types";
-import { Entity } from "./models";
+import { Entity, Module } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
 export interface CreateServiceModulesParams extends EventParams {

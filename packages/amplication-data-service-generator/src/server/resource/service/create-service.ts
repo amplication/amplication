@@ -97,6 +97,7 @@ export async function createServiceModules(
       })
     ),
   };
+
   return [
     await createServiceModule(
       entityName,

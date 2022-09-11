@@ -8,6 +8,8 @@ import {
   Module,
   NamedClassDeclaration,
   DTOs,
+  CreateControllerModulesParams,
+  EventNames,
 } from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
@@ -37,6 +39,7 @@ import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
@@ -54,92 +57,13 @@ const controllerBaseTemplatePath = require.resolve(
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createControllerModules(
-  resource: string,
-  entityName: string,
-  entityType: string,
-  entityServiceModule: string,
-  entity: Entity,
-  srcDirectory: string
+  eventParams: CreateControllerModulesParams["before"]
 ): Promise<Module[]> {
-  const context = DsgContext.getInstance;
-  const { settings } = context.appInfo;
-  const { authProvider } = settings;
-  const entityDTOs = context.DTOs[entity.name];
-  const entityDTO = entityDTOs.entity;
-
-  const controllerId = createControllerId(entityType);
-  const controllerBaseId = createControllerBaseId(entityType);
-  const serviceId = createServiceId(entityType);
-  const createEntityId = builders.identifier("create");
-  const findManyEntityId = builders.identifier("findMany");
-  const findOneEntityId = builders.identifier("findOne");
-  const updateEntityId = builders.identifier("update");
-  const deleteEntityId = builders.identifier("delete");
-
-  const mapping = {
-    RESOURCE: builders.stringLiteral(resource),
-    CONTROLLER: controllerId,
-    CONTROLLER_BASE: controllerBaseId,
-    SERVICE: serviceId,
-    ENTITY: entityDTO.id,
-    ENTITY_NAME: builders.stringLiteral(entityType),
-    SELECT: createSelect(entityDTO, entity),
-
-    CREATE_INPUT: entityDTOs.createInput.id,
-    CREATE_DATA_MAPPING: createDataMapping(
-      entity,
-      entityDTOs.createInput,
-      DATA_ID
-    ),
-    UPDATE_INPUT: entityDTOs.updateInput.id,
-    UPDATE_DATA_MAPPING: createDataMapping(
-      entity,
-      entityDTOs.updateInput,
-      DATA_ID
-    ),
-    FIND_MANY_ARGS: entityDTOs.findManyArgs.id,
-    WHERE_INPUT: entityDTOs.whereInput.id,
-    CREATE_ENTITY_FUNCTION: createEntityId,
-    FIND_MANY_ENTITY_FUNCTION: findManyEntityId,
-    FIND_ONE_ENTITY_FUNCTION: findOneEntityId,
-    UPDATE_ENTITY_FUNCTION: updateEntityId,
-    DELETE_ENTITY_FUNCTION: deleteEntityId,
-    /** @todo make dynamic */
-    FINE_ONE_PATH: builders.stringLiteral("/:id"),
-    UPDATE_PATH: builders.stringLiteral("/:id"),
-    DELETE_PATH: builders.stringLiteral("/:id"),
-    WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
-
-    SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
-  };
-  return [
-    await createControllerModule(
-      controllerTemplatePath,
-      entityName,
-      entityType,
-      entityServiceModule,
-      entity,
-      context.DTOs,
-      mapping,
-      controllerBaseId,
-      serviceId,
-      false,
-      srcDirectory
-    ),
-    await createControllerModule(
-      controllerBaseTemplatePath,
-      entityName,
-      entityType,
-      entityServiceModule,
-      entity,
-      context.DTOs,
-      mapping,
-      controllerBaseId,
-      serviceId,
-      true,
-      srcDirectory
-    ),
-  ];
+  return pluginWrapper(
+    createControllerModulesInternal,
+    EventNames.CreateControllerModules,
+    eventParams
+  );
 }
 
 async function createControllerModule(
@@ -339,4 +263,93 @@ async function createToManyRelationMethods(
   });
 
   return getMethods(classDeclaration);
+}
+
+async function createControllerModulesInternal({
+  resource,
+  entityName,
+  entityType,
+  entityServiceModule,
+  entity,
+  srcDirectory,
+}: CreateControllerModulesParams["before"]): Promise<Module[]> {
+  const context = DsgContext.getInstance;
+  const { settings } = context.appInfo;
+  const { authProvider } = settings;
+  const entityDTOs = context.DTOs[entity.name];
+  const entityDTO = entityDTOs.entity;
+
+  const controllerId = createControllerId(entityType);
+  const controllerBaseId = createControllerBaseId(entityType);
+  const serviceId = createServiceId(entityType);
+  const createEntityId = builders.identifier("create");
+  const findManyEntityId = builders.identifier("findMany");
+  const findOneEntityId = builders.identifier("findOne");
+  const updateEntityId = builders.identifier("update");
+  const deleteEntityId = builders.identifier("delete");
+
+  const mapping = {
+    RESOURCE: builders.stringLiteral(resource),
+    CONTROLLER: controllerId,
+    CONTROLLER_BASE: controllerBaseId,
+    SERVICE: serviceId,
+    ENTITY: entityDTO.id,
+    ENTITY_NAME: builders.stringLiteral(entityType),
+    SELECT: createSelect(entityDTO, entity),
+
+    CREATE_INPUT: entityDTOs.createInput.id,
+    CREATE_DATA_MAPPING: createDataMapping(
+      entity,
+      entityDTOs.createInput,
+      DATA_ID
+    ),
+    UPDATE_INPUT: entityDTOs.updateInput.id,
+    UPDATE_DATA_MAPPING: createDataMapping(
+      entity,
+      entityDTOs.updateInput,
+      DATA_ID
+    ),
+    FIND_MANY_ARGS: entityDTOs.findManyArgs.id,
+    WHERE_INPUT: entityDTOs.whereInput.id,
+    CREATE_ENTITY_FUNCTION: createEntityId,
+    FIND_MANY_ENTITY_FUNCTION: findManyEntityId,
+    FIND_ONE_ENTITY_FUNCTION: findOneEntityId,
+    UPDATE_ENTITY_FUNCTION: updateEntityId,
+    DELETE_ENTITY_FUNCTION: deleteEntityId,
+    /** @todo make dynamic */
+    FINE_ONE_PATH: builders.stringLiteral("/:id"),
+    UPDATE_PATH: builders.stringLiteral("/:id"),
+    DELETE_PATH: builders.stringLiteral("/:id"),
+    WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,
+
+    SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
+  };
+  return [
+    await createControllerModule(
+      controllerTemplatePath,
+      entityName,
+      entityType,
+      entityServiceModule,
+      entity,
+      context.DTOs,
+      mapping,
+      controllerBaseId,
+      serviceId,
+      false,
+      srcDirectory
+    ),
+    await createControllerModule(
+      controllerBaseTemplatePath,
+      entityName,
+      entityType,
+      entityServiceModule,
+      entity,
+      context.DTOs,
+      mapping,
+      controllerBaseId,
+      serviceId,
+      true,
+      srcDirectory
+    ),
+  ];
 }
