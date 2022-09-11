@@ -2,7 +2,7 @@ import { EventNames, Module, EventParams } from "@amplication/code-gen-types";
 import DsgContext from "./dsg-context";
 
 export type PluginWrapper = (
-  func: (...args: any) => any,
+  func: (...args: any) => Module[] | Promise<Module[]>,
   event: EventNames,
   ...args: any
 ) => any;
@@ -36,9 +36,10 @@ const pluginWrapper: PluginWrapper = async (
   func,
   event,
   args
-): Promise<any> => {
+): Promise<Module[]> => {
+  const context = DsgContext.getInstance;
+
   try {
-    const context = DsgContext.getInstance;
     context.utils.skipDefaultBehavior = false;
     if (!context.plugins.hasOwnProperty(event)) return func(args);
 
@@ -61,8 +62,10 @@ const pluginWrapper: PluginWrapper = async (
     context.modules.push(finalModules);
     return finalModules;
   } catch (error) {
-    console.log(error);
-    return Error(JSON.stringify({ event, msg: error }));
+    context.logger.error(`failed to execute plugin event ${event}`, {
+      errorMessage: JSON.stringify(error),
+    });
+    return [];
   }
 };
 
