@@ -45,7 +45,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     [createPluginInstallation, resource]
   );
 
-  const handleUninstall = useCallback(
+  const onEnableStateChange = useCallback(
     (pluginInstallation: models.PluginInstallation) => {
       const { enabled, id } = pluginInstallation;
 
@@ -80,7 +80,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           plugin={plugin}
           pluginInstallation={installedPlugins[plugin.id]}
           onInstall={handleInstall}
-          onUninstall={handleUninstall}
+          onEnableStateChange={onEnableStateChange}
         />
       ))}
       <Snackbar

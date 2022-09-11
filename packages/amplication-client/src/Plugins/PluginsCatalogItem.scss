@@ -3,6 +3,7 @@
 $logo-size: 44px;
 $order-badge-size: 14px;
 $image-size: 220px;
+$install-width: 86px;
 
 .plugin-installation-wrapper {
   display: flex;
@@ -18,13 +19,11 @@ $image-size: 220px;
     align-self: center;
     background-repeat: no-repeat;
     background-size: contain;
-    
   }
   .plugin-installation-empty-text {
     color: var(--black80);
   }
 }
-
 
 .plugins-catalog-item {
   margin: 0;
@@ -40,6 +39,10 @@ $image-size: 220px;
     &:last-child {
       margin-bottom: 0;
     }
+  }
+
+  &__drag {
+    flex: 1;
   }
 
   &__logo {
@@ -68,20 +71,12 @@ $image-size: 220px;
 
   &__install {
     padding: 5px 12px;
-    min-width: 86px;
-  }
-
-  &__uninstall {
-    padding: 5px 12px;
-    min-width: 60px;
-    &:hover {
-      background-color: transparent !important;
-      border-color: var(--black100) !important;
-    }
+    min-width: $install-width;
   }
 
   &__order {
     @include flexVerticalCenter;
+    margin-left: var(--large-spacing);
 
     span {
       display: inline-flex;
@@ -93,5 +88,8 @@ $image-size: 220px;
       width: $order-badge-size;
       height: $order-badge-size;
     }
+  }
+  .toggle-field {
+    margin-bottom: 0px;
   }
 }

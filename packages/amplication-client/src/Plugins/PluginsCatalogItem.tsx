@@ -9,6 +9,7 @@ import {
   HorizontalRule,
   Icon,
   Panel,
+  Toggle,
 } from "@amplication/design-system";
 import "./PluginsCatalogItem.scss";
 import { Plugin } from "./hooks/usePlugins";
@@ -17,7 +18,7 @@ type Props = {
   plugin: Plugin;
   pluginInstallation: models.PluginInstallation | null;
   onInstall?: (plugin: Plugin) => void;
-  onUninstall?: (pluginInstallation: models.PluginInstallation) => void;
+  onEnableStateChange?: (pluginInstallation: models.PluginInstallation) => void;
   isDraggable?: boolean;
 };
 
@@ -27,7 +28,7 @@ function PluginsCatalogItem({
   plugin,
   pluginInstallation,
   onInstall,
-  onUninstall,
+  onEnableStateChange,
   isDraggable,
 }: Props) {
   const { name, description } = plugin || {};
@@ -40,16 +41,23 @@ function PluginsCatalogItem({
     onInstall && onInstall(plugin);
   }, [onInstall, plugin]);
 
-  const handleUninstall = useCallback(() => {
-    pluginInstallation && onUninstall && onUninstall(pluginInstallation);
-  }, [onUninstall, pluginInstallation])
+  const handleEnableStateChange = useCallback(() => {
+    onEnableStateChange &&
+      pluginInstallation &&
+      onEnableStateChange(pluginInstallation);
+  }, [onEnableStateChange, pluginInstallation]);
 
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
       {pluginInstallation && isDraggable && (
         <>
           <div className={`${CLASS_NAME}__row`}>
-            <Icon icon="drag" />
+            <Icon icon="drag" className={`${CLASS_NAME}__drag`} />
+            <Toggle
+              title="enabled"
+              onValueChange={handleEnableStateChange}
+              checked={pluginInstallation.enabled}
+            />
             <div className={`${CLASS_NAME}__order`}>
               <span>{pluginInstallation.order}</span>
             </div>
@@ -80,15 +88,6 @@ function PluginsCatalogItem({
             Install
           </Button>
         )}{" "}
-        {pluginInstallation && (
-          <Button
-            className={`${CLASS_NAME}__uninstall`}
-            buttonStyle={EnumButtonStyle.Outline}
-            onClick={handleUninstall}
-          >
-            Uninstall
-          </Button>
-        )}
       </div>
     </Panel>
   );
