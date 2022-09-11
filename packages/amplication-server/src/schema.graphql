@@ -709,7 +709,7 @@ input ResourceWhereInput {
   updatedAt: DateTimeFilter
   name: StringFilter
   description: StringFilter
-  project: WhereUniqueInput
+  project: ProjectWhereInput
   projectId: String
   resourceType: EnumResourceTypeFilter
 }

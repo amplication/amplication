@@ -48,6 +48,7 @@ import { MessagePattern as MessagePatternWithTopicId } from '../serviceTopics/dt
 import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
+import { EnumResourceType } from '../resource/dto/EnumResourceType';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -650,23 +651,46 @@ export class BuildService {
     resourceId: string,
     buildId: string,
     buildVersion: string,
-    user: User
+    user: User,
+    rootGeneration = true
   ): Promise<CodeGenTypes.DSGResourceData> {
-    const resource = await this.resourceService.resource({
-      where: { id: resourceId }
+    const resources = await this.resourceService.resources({
+      where: { project: { resources: { some: { id: resourceId } } } }
     });
+
+    const resource = resources.find(({ id }) => id === resourceId);
+
     const allPlugins = await this.pluginInstallationService.findMany({
       where: { resource: { id: resourceId } }
     });
     const plugins = allPlugins.filter(plugin => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
-    const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
-      {
-        where: { id: resourceId }
-      },
-      user
-    );
+    const serviceSettings =
+      resource.resourceType === EnumResourceType.Service
+        ? await this.serviceSettingsService.getServiceSettingsValues(
+            {
+              where: { id: resourceId }
+            },
+            user
+          )
+        : undefined;
+
+    const otherResources = rootGeneration
+      ? await Promise.all(
+          resources
+            .filter(({ id }) => id !== resourceId)
+            .map(resource =>
+              this.getDSGResourceData(
+                resource.id,
+                buildId,
+                buildVersion,
+                user,
+                false
+              )
+            )
+        )
+      : undefined;
 
     return {
       entities: await this.getOrderedEntities(buildId),
@@ -686,7 +710,8 @@ export class BuildService {
         id: resourceId,
         url,
         settings: serviceSettings
-      }
+      },
+      otherResources
     };
   }
 }
