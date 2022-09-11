@@ -1,23 +1,39 @@
-import { Module, AppInfo } from "@amplication/code-gen-types";
+import {
+  Module,
+  EventNames,
+  CreateServerDotEnvParams,
+  VariableDictionary,
+} from "@amplication/code-gen-types";
+import DsgContext from "../dsg-context";
 import { isEmpty } from "lodash";
+import pluginWrapper from "../plugin-wrapper";
 import { readCode } from "../util/module";
 import { replacePlaceholdersInCode } from "../util/text-file-parser";
 
 const templatePath = require.resolve("./create-dotenv.template.env");
 
-type AdditionalVariables = {
-  [variable: string]: string;
-}[];
+export function createDotEnvModule(
+  eventParams: CreateServerDotEnvParams["before"]
+): Module[] {
+  return pluginWrapper(
+    createDotEnvModuleInternal,
+    EventNames.CreateServerDotEnv,
+    eventParams
+  );
+}
+
 /**
  * Creates the .env file based on the given template with placeholder.
  * The function replaces any placeholder in a ${name} format based on the key in the appInfo.settings
  * @returns grants JSON module
  */
-export async function createDotEnvModule(
-  appInfo: AppInfo,
-  baseDirectory: string,
-  additionalVariables: AdditionalVariables
-): Promise<Module> {
+export async function createDotEnvModuleInternal({
+  baseDirectory,
+  additionalVariables,
+}: CreateServerDotEnvParams["before"]): Promise<Module[]> {
+  const context = DsgContext.getInstance;
+  const { appInfo } = context;
+
   const code = await readCode(templatePath);
   const formattedAdditionalVariables = convertToKeyValueSting(
     additionalVariables
@@ -34,16 +50,18 @@ export async function createDotEnvModule(
     appInfo.settings.dbName = `/${appInfo.settings.dbName}`;
   }
 
-  return {
-    path: `${baseDirectory}/.env`,
-    code: replacePlaceholdersInCode(
-      codeWithAdditionalVariables,
-      appInfo.settings
-    ),
-  };
+  return [
+    {
+      path: `${baseDirectory}/.env`,
+      code: replacePlaceholdersInCode(
+        codeWithAdditionalVariables,
+        appInfo.settings
+      ),
+    },
+  ];
 }
 
-function convertToKeyValueSting(arr: AdditionalVariables): string {
+function convertToKeyValueSting(arr: VariableDictionary): string {
   if (!arr.length) return "";
   return arr
     .map((item) =>
