@@ -19,7 +19,7 @@ export enum EnumImages {
   CodeViewEmptyState = "--image-code-view-empty-state",
 }
 
-type Props = {
+export type Props = {
   image: EnumImages;
 };
 

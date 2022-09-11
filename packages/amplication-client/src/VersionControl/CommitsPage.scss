@@ -3,24 +3,6 @@ $svg-img-width: 200px;
 $svg-img-height: 200px;
 
 .commits-page {
-  &__empty-state {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-
-    p {
-      @include regular-12;
-      color: var(--black20);
-    }
-    .svg-theme-image {
-      width: $svg-img-width;
-      height: $svg-img-height;
-    }
-  }
-
   &__header {
     @include flexFullRowWithSpacing;
     color: var(--black80);

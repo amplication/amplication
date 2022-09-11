@@ -1,14 +1,14 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { match, useHistory } from "react-router-dom";
-import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import { EnumImages } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
-import { Commit } from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import CommitList from "./CommitList";
 import CommitResourceList from "./CommitResourceList";
 import useCommit from "./hooks/useCommits";
 import "./CommitsPage.scss";
+import { EmptyState } from "../Components/EmptyState";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -19,19 +19,15 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const getCommitIdx = (commits: Commit[], commitId: string): number =>
-  commits.findIndex((commit) => commit.id === commitId);
-
 const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   const commitId = match.params.commit;
   const history = useHistory();
   const { currentProject, currentWorkspace } = useContext(AppContext);
   const { commits, commitsError, commitsLoading } = useCommit();
-  const commitIdx = getCommitIdx(commits, commitId);
-  const commitsBuildsState =
-    commits.length > 0 && commitIdx > -1 && commits[commitIdx].builds?.length;
-
-  const commitsState = commits.length > 0;
+  const currentCommit = useMemo(() => {
+    return commits.find((commit) => commit.id === commitId);
+  }, [commitId, commits]);
+  const hasCommits = commits.length > 0;
 
   useEffect(() => {
     if (commitId) return;
@@ -46,7 +42,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
       className={moduleClass}
       pageTitle={`Commit Page ${commitId ? commitId : ""}`}
       sideContent={
-        commitsState ? (
+        hasCommits ? (
           <CommitList
             commits={commits}
             error={commitsError}
@@ -55,17 +51,13 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
         ) : null
       }
     >
-      {commitsBuildsState ? (
-        <CommitResourceList
-          builds={commits[commitIdx].builds}
-          commitId={commitId}
-        />
+      {hasCommits && currentCommit ? (
+        <CommitResourceList commit={currentCommit} />
       ) : (
-        <div className={`${moduleClass}__empty-state`}>
-          <SvgThemeImage image={EnumImages.CommitEmptyState} />
-          {!commitsState && <p>There are no commits to show</p>}
-          {commitsState && !commitsBuildsState && <p>There are no builds to show</p>}
-        </div>
+        <EmptyState
+          message="There are no commits to show"
+          image={EnumImages.CommitEmptyState}
+        />
       )}
     </PageContent>
   );
