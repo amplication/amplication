@@ -123,7 +123,11 @@ export async function createServerModules(
     roles,
     directoryManager.SRC
   );
-  const dotEnvModule = await createDotEnvModule(appInfo, directoryManager.BASE);
+  const dotEnvModule = await createDotEnvModule(
+    appInfo,
+    directoryManager.BASE,
+    []
+  );
 
   return [
     ...staticModules,
