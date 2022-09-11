@@ -79,6 +79,9 @@ export class BlockService {
     [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.Flow, null]),
     [EnumBlockType.ServiceSettings]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ProjectConfigurationSettings]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.Topic]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.ServiceTopics]: ALLOW_NO_PARENT_ONLY,
+
     [EnumBlockType.Flow]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorSoapApi]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ConnectorFile]: ALLOW_NO_PARENT_ONLY,
@@ -88,7 +91,8 @@ export class BlockService {
     [EnumBlockType.Layout]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.CanvasPage]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.EntityPage]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.Document]: ALLOW_NO_PARENT_ONLY
+    [EnumBlockType.Document]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.PluginInstallation]: ALLOW_NO_PARENT_ONLY
   };
 
   private async resolveParentBlock(
@@ -158,14 +162,13 @@ export class BlockService {
 
     // validate the parent block type
     if (
-      parentBlock &&
       !this.canUseParentType(
         EnumBlockType[blockType],
-        EnumBlockType[parentBlock.blockType]
+        parentBlock && EnumBlockType[parentBlock.blockType]
       )
     ) {
       throw new ConflictException(
-        parentBlock.blockType
+        parentBlock?.blockType
           ? `Block type ${parentBlock.blockType} is not allowed as a parent for block type ${blockType}`
           : `Block type ${blockType} cannot be created without a parent block`
       );
@@ -218,6 +221,7 @@ export class BlockService {
     const block: IBlock = {
       displayName,
       description,
+      resourceId: resourceConnect.connect.id,
       blockType: blockData.blockType,
       id: version.block.id,
       createdAt: version.block.createdAt,
@@ -249,7 +253,8 @@ export class BlockService {
       description,
       blockType,
       lockedAt,
-      lockedByUserId
+      lockedByUserId,
+      resourceId
     } = version.block;
     const block: IBlock = {
       id,
@@ -259,6 +264,7 @@ export class BlockService {
       displayName,
       description,
       blockType,
+      resourceId,
       lockedAt,
       lockedByUserId,
       versionNumber: version.versionNumber,
@@ -388,7 +394,7 @@ export class BlockService {
 
   private canUseParentType(
     blockType: EnumBlockType,
-    parentType: EnumBlockType
+    parentType: EnumBlockType | null
   ): boolean {
     return this.blockTypeAllowedParents[blockType].has(parentType);
   }

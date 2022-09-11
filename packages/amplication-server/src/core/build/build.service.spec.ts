@@ -5,7 +5,6 @@ import * as winston from 'winston';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { orderBy } from 'lodash';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -40,6 +39,10 @@ import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationP
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
+import { PluginInstallation } from '../pluginInstallation/dto/PluginInstallation';
+import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
+import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { orderBy } from 'lodash';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -88,6 +91,22 @@ const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
     generateAdminUI: true,
     adminUIPath: ''
   }
+};
+
+const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
+  id: 'ExamplePluginInstallation',
+  updatedAt: new Date(),
+  createdAt: new Date(),
+  description: null,
+  inputParameters: [],
+  outputParameters: [],
+  displayName: 'example Plugin installation',
+  parentBlock: null,
+  versionNumber: 0,
+  enabled: true,
+  order: 1,
+  pluginId: '@amplication/example-plugin',
+  blockType: EnumBlockType.PluginInstallation
 };
 
 const EXAMPLE_COMMIT: Commit = {
@@ -222,6 +241,10 @@ const prismaBuildFindOneMock = jest.fn();
 
 const prismaBuildFindManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
+});
+
+const prismaPluginFindManyMock = jest.fn(() => {
+  return [EXAMPLE_PLUGIN_INSTALLATION];
 });
 
 const entityServiceGetLatestVersionsMock = jest.fn(() => {
@@ -443,6 +466,12 @@ describe('BuildService', () => {
           useValue: {
             emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
           }
+        },
+        {
+          provide: PluginInstallationService,
+          useValue: {
+            findMany: prismaPluginFindManyMock
+          }
         }
       ]
     }).compile();
@@ -574,7 +603,8 @@ describe('BuildService', () => {
         url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
         settings: EXAMPLE_APP_SETTINGS_VALUES
       },
-      MOCK_LOGGER
+      MOCK_LOGGER,
+      [EXAMPLE_PLUGIN_INSTALLATION]
     );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
