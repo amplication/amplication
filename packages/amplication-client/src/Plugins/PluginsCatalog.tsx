@@ -24,6 +24,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     createError,
     updatePluginInstallation,
     updateError,
+    // onPluginDropped,
   } = usePlugins(resource);
 
   const handleInstall = useCallback(

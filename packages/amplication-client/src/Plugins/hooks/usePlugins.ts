@@ -6,58 +6,105 @@ import {
 } from "../queries/pluginsQueries";
 import * as models from "../../models";
 import { keyBy } from "lodash";
-import { useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { AppContext } from "../../context/appContext";
 
 export type Plugin = {
   id: string;
   name: string;
   description: string;
-  logo: string;
+  repo: string;
+  npm: string;
+  icon: string;
+  github: string;
+  website: string;
+  category: string;
+  type: string;
 };
+
+export type OnPluginDropped = (
+  dragItem: models.PluginInstallation,
+  hoverItem: models.PluginInstallation
+) => void;
 
 const PLUGINS: Plugin[] = [
   {
-    id: "@amplication/plugin-auth-jwt",
+    id: "auth-jwt",
     description:
       "A Passport strategy for authenticating with a JSON Web Token (JWT).",
-    logo: "logo",
+    icon: "",
     name: "Passport JWT Authentication",
+    repo: "test",
+    npm: "@amplication/plugin-auth-jwt",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-auth-basic",
+    id: "auth-basic",
     description:
       "A Passport strategy for authenticating using the standard basic HTTP scheme.",
-    logo: "logo",
+    icon: "",
     name: "Passport Basic Authentication",
+    repo: "test",
+    npm: "test",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-monorepo-nx",
+    id: "monorepo-nx",
     description:
       "Add the required configurations and files to use nx to manage your monorepo",
-    logo: "logo",
+    icon: "",
     name: "NX monorepo",
+    repo: "test",
+    npm: "@amplication/plugin-monorepo-nx",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-db-postgres",
+    id: "db-postgres",
     description:
       "Connects your service to a PostgreSQL DB, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "PostgreSQL DB",
+    repo: "test",
+    npm: "@amplication/plugin-db-postgres",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-db-mongo",
+    id: "db-mongo",
     description:
       "Connects your service to a Mongo DB, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "Mongo DB",
+    repo: "test",
+    npm: "@amplication/plugin-db-mongo",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-db-mysql",
+    id: "db-mysql",
     description:
       "Connects your service to a mySQL, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "MySQL DB",
+    repo: "test",
+    npm: "@amplication/plugin-db-mysql",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
 ];
 
@@ -112,6 +159,16 @@ const usePlugins = (resourceId: string) => {
     ],
   });
 
+  const onPluginDropped = useCallback(
+    (
+      dragPlugin: models.PluginInstallation,
+      hoverPlugin: models.PluginInstallation
+    ) => {
+      console.log(dragPlugin, hoverPlugin);
+    },
+    []
+  );
+
   return {
     pluginInstallations,
     loadingPluginInstallations,
@@ -121,6 +178,7 @@ const usePlugins = (resourceId: string) => {
     createPluginInstallation,
     createError,
     pluginCatalog,
+    onPluginDropped,
   };
 };
 

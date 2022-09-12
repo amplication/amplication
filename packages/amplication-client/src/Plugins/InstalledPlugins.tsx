@@ -1,11 +1,16 @@
 import { Snackbar } from "@amplication/design-system";
 import React, { useCallback } from "react";
 import { match } from "react-router-dom";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import usePlugins, { Plugin } from "./hooks/usePlugins";
-import PluginsCatalogItem from "./PluginsCatalogItem";
 import * as models from "../models";
+import PluginsCatalogItem from "./PluginsCatalogItem";
+import { EnumImages } from "../Components/SvgThemeImage";
+import { EmptyState } from "../Components/EmptyState";
+// import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -25,6 +30,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     createError,
     updatePluginInstallation,
     updateError,
+    // onPluginDropped,
   } = usePlugins(resource);
 
   const handleInstall = useCallback(
@@ -66,7 +72,8 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   const errorMessage = formatError(createError) || formatError(updateError);
 
   return (
-    <div>
+    pluginInstallations?.PluginInstallations.length ? (
+      <DndProvider backend={HTML5Backend}>
       {pluginInstallations?.PluginInstallations.map((installation) => (
         <PluginsCatalogItem
           key={installation.id}
@@ -74,13 +81,16 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
           pluginInstallation={installation}
           onInstall={handleInstall}
           onEnableStateChange={onEnableStateChange}
+          isDraggable
         />
       ))}
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}
       />
-    </div>
+    </DndProvider>
+    ) : (<EmptyState image={EnumImages.PluginInstallationEmpty} message="There are no plugins to show"/>)
+    
   );
 };
 
