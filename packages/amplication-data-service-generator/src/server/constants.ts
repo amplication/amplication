@@ -19,3 +19,6 @@ export const ENV_VARIABLES: VariableDictionary = [
   { JWT_EXPIRATION: "2d" },
   { SERVER_PORT: "3000" },
 ];
+
+export const DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
+export const DOCKER_COMPOSE_DB_FILE_NAME = "docker-compose.db.yml";

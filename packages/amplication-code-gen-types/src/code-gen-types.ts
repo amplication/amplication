@@ -167,15 +167,7 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
-export enum EnumMessagePatternConnectionOptions {
-  "None" = "None",
-  "Receive" = "Receive",
-  "Send" = "Send",
-}
-
 export type Plugin = BlockOmittedFields<models.PluginInstallation>;
-
-export * from "./dsg-resource-data";
 
 type BlockOmittedFields<T> = Omit<
   T,
