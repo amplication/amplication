@@ -93,6 +93,7 @@ export class PluginInstallationService extends BlockTypeService<
     });
 
     args.data.pluginId = installation.pluginId;
+    args.data.npm = installation.npm;
 
     return super.update(args, user);
   }

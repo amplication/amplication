@@ -15,4 +15,9 @@ export class PluginInstallation extends IBlock {
     nullable: false
   })
   enabled!: boolean;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  npm!: string;
 }
