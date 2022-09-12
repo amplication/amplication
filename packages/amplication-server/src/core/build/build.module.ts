@@ -18,6 +18,8 @@ import { StorageOptionsModule } from '../storage/storage-options.module';
 import { BuildFilesSaver } from './utils';
 import { QueueModule } from '../queue/queue.module';
 import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
+import { TopicModule } from '../topic/topic.module';
+import { ServiceTopicsModule } from '../serviceTopics/serviceTopics.module';
 import { PluginInstallationModule } from '../pluginInstallation/pluginInstallation.module';
 
 @Module({
@@ -37,7 +39,9 @@ import { PluginInstallationModule } from '../pluginInstallation/pluginInstallati
     ServiceSettingsModule,
     QueueModule,
     PluginInstallationModule,
-    forwardRef(() => CommitModule)
+    forwardRef(() => CommitModule),
+    TopicModule,
+    ServiceTopicsModule
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

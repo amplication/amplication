@@ -9,8 +9,7 @@ import {
   DTOs,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
-import { formatCode } from "../util/module";
-import { updatePackageJSONs } from "../update-package-jsons";
+import { formatCode, formatJson } from "../util/module";
 import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
@@ -27,6 +26,8 @@ import {
 } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
 import { createDockerComposeFile } from "./create-docker-compose";
+import { createPackageJson } from "./package-json/create-package-json";
+
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -58,18 +59,17 @@ export async function createServerModules(
   logger.info(`Server path: ${directoryManager.BASE}`);
   logger.info("Creating server...");
   logger.info("Copying static modules...");
-  const rawStaticModules = await readStaticModules(
+  const staticModules = await readStaticModules(
     STATIC_DIRECTORY,
     directoryManager.BASE
   );
-  const staticModules = updatePackageJSONs(
-    rawStaticModules,
-    directoryManager.BASE,
-    {
+  const packageJsonModule = await createPackageJson({
+    update: {
       name: `@${paramCase(appInfo.name)}/server`,
       version: appInfo.version,
-    }
-  );
+    },
+    baseDirectory: directoryManager.BASE,
+  });
 
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos, directoryManager.SRC);
@@ -116,6 +116,10 @@ export async function createServerModules(
     ...module,
     code: formatCode(module.code),
   }));
+  const formattedJsonFiles = [...packageJsonModule].map((module) => ({
+    ...module,
+    code: formatJson(module.code),
+  }));
 
   logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(
@@ -146,6 +150,7 @@ export async function createServerModules(
 
   return [
     ...staticModules,
+    ...formattedJsonFiles,
     ...formattedModules,
     prismaSchemaModule,
     grantsModule,

@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { IBlock } from 'src/models';
 
 @ObjectType({
@@ -16,8 +16,8 @@ export class PluginInstallation extends IBlock {
   })
   enabled!: boolean;
 
-  @Field(() => Int, {
+  @Field(() => String, {
     nullable: false
   })
-  order!: number;
+  npm!: string;
 }
