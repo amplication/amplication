@@ -4,13 +4,11 @@ import { createDTOs } from "./server/resource/create-dtos";
 import {
   Entity,
   EntityField,
-  Role,
-  AppInfo,
   Module,
   EnumDataType,
   LookupResolvedProperties,
   types,
-  Plugin,
+  DSGResourceData,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -21,15 +19,20 @@ import { camelCase } from "camel-case";
 import registerPlugins from "./register-plugin";
 
 export async function createDataServiceImpl(
-  entities: Entity[],
-  roles: Role[],
-  appInfo: AppInfo,
-  logger: winston.Logger,
-  resourcePlugins: Plugin[] = []
+  dSGResourceData: DSGResourceData,
+  logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating application...");
+  const {
+    plugins: resourcePlugins,
+    entities,
+    roles,
+    resourceInfo: appInfo,
+  } = dSGResourceData;
   const timer = logger.startTimer();
-
+  if (!entities || !roles || !appInfo) {
+    throw new Error("Missing required data");
+  }
   // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
     entities

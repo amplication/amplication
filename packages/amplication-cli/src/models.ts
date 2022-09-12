@@ -1181,6 +1181,7 @@ export type PluginInstallation = IBlock & {
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']>;
   lockedByUserId?: Maybe<Scalars['String']>;
+  npm: Scalars['String'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   pluginId: Scalars['String'];
@@ -1193,6 +1194,7 @@ export type PluginInstallationCreateInput = {
   displayName: Scalars['String'];
   enabled: Scalars['Boolean'];
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  npm: Scalars['String'];
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
   pluginId: Scalars['String'];
@@ -1330,6 +1332,7 @@ export type Query = {
   pendingChanges: Array<PendingChange>;
   PluginInstallation?: Maybe<PluginInstallation>;
   PluginInstallations: Array<PluginInstallation>;
+  pluginOrder: PluginOrder;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
@@ -1421,6 +1424,10 @@ export type QueryPluginInstallationsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<PluginInstallationWhereInput>;
+};
+
+export type QueryPluginOrderArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryProjectArgs = {
@@ -1647,7 +1654,7 @@ export type ResourceWhereInput = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<StringFilter>;
-  project?: InputMaybe<WhereUniqueInput>;
+  project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
