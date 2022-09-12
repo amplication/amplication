@@ -186,7 +186,7 @@ $split-icon-font-size: 20px;
     background-color: transparent;
     color: var(--black100);
     border: 1px solid var(--black100);
-    border-radius: 4px;
+    border-radius: 20px !important; //overwrite the amp-button radius
     padding: 4px 12px;
     transition: all 0.5s;
 
