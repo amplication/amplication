@@ -15,6 +15,6 @@ export async function createDockerComposeFile(
 
   return {
     path: path.join(baseDirectory, fileName),
-    code: YAML.stringify(updated, {nullStr: "~"}),
+    code: YAML.stringify(updated, { nullStr: "~" }),
   };
 }
