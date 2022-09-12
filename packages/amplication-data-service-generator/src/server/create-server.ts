@@ -21,6 +21,7 @@ import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
 import { BASE_DIRECTORY, ENV_VARIABLES } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
+import { createMessageBrokerModules } from "./message-broker/create-service-message-broker-modules";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -95,6 +96,8 @@ export async function createServerModules(
     directoryManager.SCRIPTS,
     directoryManager.SRC
   );
+  logger.info("Creating kakfa modules...");
+  const kafkaModules = await createMessageBrokerModules(directoryManager.SRC);
 
   const createdModules = [
     ...resourcesModules,
@@ -103,6 +106,7 @@ export async function createServerModules(
     appModule,
     seedModule,
     ...authModules,
+    ...kafkaModules,
   ];
 
   logger.info("Formatting code...");
