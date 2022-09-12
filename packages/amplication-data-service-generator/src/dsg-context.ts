@@ -1,11 +1,11 @@
 import * as types from "@amplication/code-gen-types";
 import { ContextUtil } from "@amplication/code-gen-types";
-import { readStaticModules } from "./read-static-modules";
 import winston from "winston";
+import { readPluginStaticModules } from "./read-static-modules";
 
 const contextUtil = {
   skipDefaultBehavior: false,
-  importStaticModules: readStaticModules,
+  importStaticModules: readPluginStaticModules,
 };
 
 class DsgContext implements types.DsgContext {

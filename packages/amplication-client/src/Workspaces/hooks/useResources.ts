@@ -4,13 +4,21 @@ import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import {
-  CREATE_RESOURCE_WITH_ENTITIES,
+  CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
+  CREATE_MESSAGE_BROKER,
 } from "../queries/resourcesQueries";
 
-type TData = {
+type TGetResources = {
   resources: models.Resource[];
-  createResourceWithEntities: models.Resource;
+};
+
+type TCreateService = {
+  createServiceWithEntities: models.Resource;
+};
+
+type TCreateMessageBroker = {
+  createMessageBroker: models.Resource;
 };
 
 const createGitRepositoryFullName = (
@@ -58,7 +66,7 @@ const useResources = (
     loading: loadingResources,
     error: errorResources,
     refetch,
-  } = useQuery<TData>(GET_RESOURCES, {
+  } = useQuery<TGetResources>(GET_RESOURCES, {
     variables: {
       projectId: currentProject?.id,
       whereName:
@@ -78,11 +86,11 @@ const useResources = (
   );
 
   const [
-    createResourceWithEntities,
-    { loading: loadingCreateResource, error: errorCreateResource },
-  ] = useMutation<TData>(CREATE_RESOURCE_WITH_ENTITIES);
+    createServiceWithEntities,
+    { loading: loadingCreateService, error: errorCreateService },
+  ] = useMutation<TCreateService>(CREATE_SERVICE_WITH_ENTITIES);
 
-  const createResource = (
+  const createService = (
     data: models.ResourceCreateWithEntitiesInput,
     eventName: string,
     addEntity: (id: string) => void
@@ -90,16 +98,35 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
-    createResourceWithEntities({ variables: { data: data } }).then((result) => {
-      result.data?.createResourceWithEntities.id &&
-        addEntity(result.data?.createResourceWithEntities.id);
-      result.data?.createResourceWithEntities.id &&
+    createServiceWithEntities({ variables: { data: data } }).then((result) => {
+      result.data?.createServiceWithEntities.id &&
+        addEntity(result.data?.createServiceWithEntities.id);
+      result.data?.createServiceWithEntities.id &&
         refetch().then(() =>
-          resourceRedirect(result.data?.createResourceWithEntities.id as string)
+          resourceRedirect(result.data?.createServiceWithEntities.id as string)
         );
     });
   };
 
+  const [
+    createBroker,
+    { loading: loadingCreateMessageBroker, error: errorCreateMessageBroker },
+  ] = useMutation<TCreateMessageBroker>(CREATE_MESSAGE_BROKER);
+
+  const createMessageBroker = (
+    data: models.ResourceCreateInput,
+    eventName: string
+  ) => {
+    trackEvent({
+      eventName: eventName,
+    });
+    createBroker({ variables: { data: data } }).then((result) => {
+      result.data?.createMessageBroker.id &&
+        refetch().then(() =>
+          resourceRedirect(result.data?.createMessageBroker.id as string)
+        );
+    });
+  };
   useEffect(() => {
     if (resourceMatch) return;
 
@@ -179,9 +206,12 @@ const useResources = (
     errorResources,
     currentResource,
     setResource,
-    createResource,
-    loadingCreateResource,
-    errorCreateResource,
+    createService,
+    loadingCreateService,
+    errorCreateService,
+    createMessageBroker,
+    loadingCreateMessageBroker,
+    errorCreateMessageBroker,
     gitRepositoryFullName,
     gitRepositoryUrl,
   };

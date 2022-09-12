@@ -1,14 +1,13 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import {
   createPrismaSchema,
-  CLIENT_GENERATOR,
-  DATA_SOURCE,
   createPrismaFields,
   CUID_CALL_EXPRESSION,
   NOW_CALL_EXPRESSION,
   createRelationName,
 } from "./create-prisma-schema";
 import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
+import { CLIENT_GENERATOR, DATA_SOURCE } from "./constants";
 
 const GENERATOR_CODE = `generator ${CLIENT_GENERATOR.name} {
   provider = "${CLIENT_GENERATOR.provider}"
@@ -153,7 +152,11 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
     ],
   ];
   test.each(cases)("%s", async (name, entities: Entity[], expected: string) => {
-    const schema = await createPrismaSchema(entities);
+    const schema = await createPrismaSchema(
+      entities,
+      DATA_SOURCE,
+      CLIENT_GENERATOR
+    );
     expect(schema).toBe(expected);
   });
 });

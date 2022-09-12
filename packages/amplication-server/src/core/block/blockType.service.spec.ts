@@ -42,7 +42,8 @@ const EXAMPLE_IBLOCK: IBlock = {
   blockType: EXAMPLE_BLOCK_TYPE,
   versionNumber: EXAMPLE_VERSION_NUMBER,
   inputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT],
-  outputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT]
+  outputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT],
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_USER: User = {

@@ -230,6 +230,7 @@ const EXAMPLE_BUILD: Build = {
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
+  resourceId: EXAMPLE_RESOURCE_ID,
   dbHost: 'exampleDbHost',
   dbName: 'exampleDbName',
   dbUser: 'exampleDbUser',
@@ -280,6 +281,9 @@ const prismaEntityFindManyMock = jest.fn(() => {
 });
 const prismaCommitCreateMock = jest.fn(() => {
   return EXAMPLE_COMMIT;
+});
+const prismaResourceRoleCreateMock = jest.fn(() => {
+  return null;
 });
 
 const prismaGitRepositoryCreateMock = jest.fn(() => {
@@ -362,6 +366,9 @@ describe('ResourceService', () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock
+            },
+            resourceRole: {
+              create: prismaResourceRoleCreateMock
             }
           }))
         },
@@ -440,7 +447,7 @@ describe('ResourceService', () => {
       user: EXAMPLE_USER
     };
     expect(
-      await service.createResource(
+      await service.createService(
         createResourceArgs.args,
         createResourceArgs.user
       )
@@ -460,7 +467,7 @@ describe('ResourceService', () => {
 
   it('should fail to create resource with entities with a reserved name', async () => {
     await expect(
-      service.createResourceWithEntities(
+      service.createServiceWithEntities(
         {
           resource: SAMPLE_SERVICE_DATA,
           commitMessage: 'commitMessage',
@@ -511,7 +518,7 @@ describe('ResourceService', () => {
       }
     };
     await expect(
-      service.createResourceWithEntities(
+      service.createServiceWithEntities(
         {
           resource: SAMPLE_SERVICE_DATA,
           commitMessage: commitMessage,
@@ -545,7 +552,7 @@ describe('ResourceService', () => {
             deletedAt: null,
             name: {
               mode: QueryMode.Insensitive,
-              startsWith: SAMPLE_SERVICE_DATA.name
+              startsWith: SAMPLE_SERVICE_DATA.name.toLowerCase()
             },
             projectId: EXAMPLE_PROJECT_ID
           },

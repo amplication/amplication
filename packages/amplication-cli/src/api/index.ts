@@ -1,6 +1,6 @@
 export { getResource } from './resources-get';
 export { getResources } from './resources-list';
-export { createResource } from './resources-create';
+export { createService } from './resources-create';
 export { updateResource } from './resources-update';
 export { commitChanges } from './resources-commit';
 

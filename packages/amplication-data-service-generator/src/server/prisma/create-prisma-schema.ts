@@ -11,17 +11,7 @@ import {
 import { countBy } from "lodash";
 
 import { getEnumFields } from "../../util/entity";
-
-export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
-  "client",
-  "prisma-client-js"
-);
-
-export const DATA_SOURCE = {
-  name: "postgres",
-  provider: PrismaSchemaDSL.DataSourceProvider.PostgreSQL,
-  url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
-};
+import { PrismaDataSource } from "./constants";
 
 export const CUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.CUID
@@ -31,7 +21,11 @@ export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.NOW
 );
 
-export async function createPrismaSchema(entities: Entity[]): Promise<string> {
+export async function createPrismaSchema(
+  entities: Entity[],
+  dataSource: PrismaDataSource,
+  clientGenerator: PrismaSchemaDSL.Generator
+): Promise<string> {
   const fieldNamesCount = countBy(
     entities.flatMap((entity) => entity.fields),
     "name"
@@ -45,8 +39,8 @@ export async function createPrismaSchema(entities: Entity[]): Promise<string> {
     return enumFields.map((field) => createPrismaEnum(field, entity));
   });
 
-  const schema = PrismaSchemaDSL.createSchema(models, enums, DATA_SOURCE, [
-    CLIENT_GENERATOR,
+  const schema = PrismaSchemaDSL.createSchema(models, enums, dataSource, [
+    clientGenerator,
   ]);
 
   return PrismaSchemaDSL.print(schema);
