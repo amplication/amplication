@@ -3,13 +3,11 @@ import {
   Ctx,
   EventPattern,
   KafkaContext,
-  Transport,
+
 } from '@nestjs/microservices';
 
 @Controller()
 export class CommitController {
-  constructor(/*@Inject("QUEUE_SERVICE")
-                    private readonly kafkaService: ClientKafka*/) {}
 
   @EventPattern('test-topic')
   async handleCommit(@Ctx() context: KafkaContext) {

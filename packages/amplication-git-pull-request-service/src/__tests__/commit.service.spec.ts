@@ -73,17 +73,17 @@ afterAll(async () => {
 
 describe.skip('add commit repository', () => {
   test('first commit create pull request and branch', async () => {
-    const input_build = 'build-id';
-    const input_commit = 'commit-id';
+    const inputBuild = 'build-id';
+    const inputCommit = 'commit-id';
 
     const { buildId, commit, pullRequest, pullRequestComment } =
       await commitService.addCommitToRepository(
         INSTALLATION_ID.toString(),
         {
-          buildId: input_build,
+          buildId: inputBuild,
           resourceId: 'resource-id',
           resourceName: '',
-          commitId: input_commit,
+          commitId: inputCommit,
           owner: OWNER,
           repo: REPO,
         },
@@ -96,7 +96,7 @@ describe.skip('add commit repository', () => {
         ]
       );
 
-    expect(buildId).toEqual(input_build);
+    expect(buildId).toEqual(inputBuild);
     expect(commit).toBeTruthy();
     expect(commit.sha).toBeTruthy();
     expect(Date.parse(commit.timestamp)).toBeLessThanOrEqual(
@@ -111,16 +111,16 @@ describe.skip('add commit repository', () => {
   });
 
   test('second commit add commit to branch and add new comment', async () => {
-    const input_build = 'build-id';
-    const input_commit = 'commit-id';
+    const inputBuild = 'build-id';
+    const inputCommit = 'commit-id';
 
     const firstCommit = await commitService.addCommitToRepository(
       INSTALLATION_ID.toString(),
       {
-        buildId: input_build,
+        buildId: inputBuild,
         resourceId: 'resource-id',
         resourceName: '',
-        commitId: input_commit,
+        commitId: inputCommit,
         owner: OWNER,
         repo: REPO,
       },
@@ -136,10 +136,10 @@ describe.skip('add commit repository', () => {
     const secondCommit = await commitService.addCommitToRepository(
       INSTALLATION_ID.toString(),
       {
-        buildId: input_build,
+        buildId: inputBuild,
         resourceId: 'resource-id',
         resourceName: '',
-        commitId: input_commit,
+        commitId: inputCommit,
         owner: OWNER,
         repo: REPO,
       },

@@ -1,4 +1,4 @@
-interface CommitContext {
+export interface CommitContext {
   owner: string;
   repo: string;
   buildId: string;
