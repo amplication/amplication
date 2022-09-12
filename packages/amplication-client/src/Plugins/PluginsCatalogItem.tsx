@@ -58,7 +58,8 @@ function PluginsCatalogItem({
       {pluginInstallation && isDraggable && (
         <>
           <div className={`${CLASS_NAME}__row`}>
-            <Icon icon="drag" className={`${CLASS_NAME}__drag`} />
+            {/* <Icon icon="drag" className={`${CLASS_NAME}__drag`} /> */}
+            <div className={`${CLASS_NAME}__drag`}> </div>
             <Toggle
               title="enabled"
               onValueChange={handleEnableStateChange}
