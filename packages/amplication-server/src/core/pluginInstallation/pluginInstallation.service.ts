@@ -7,6 +7,43 @@ import { FindManyPluginInstallationArgs } from './dto/FindManyPluginInstallation
 import { PluginInstallation } from './dto/PluginInstallation';
 import { UpdatePluginInstallationArgs } from './dto/UpdatePluginInstallationArgs';
 import { BlockService } from '../block/block.service';
+import { PluginOrderService } from './pluginOrder.service';
+import { PluginOrder } from './dto/PluginOrder';
+import { SetPluginOrderArgs } from './dto/SetPluginOrderArgs';
+import { PluginOrderItem } from './dto/PluginOrderItem';
+
+const reOrderPlugins = (
+  argsData: PluginOrderItem,
+  pluginArr: PluginOrderItem[]
+) => {
+  const currId = argsData.pluginId;
+  const currOrder = argsData.order;
+  let orderIndex = 1;
+  const sortHelperMap = { [currOrder]: currId };
+  const newOrderArr = [{ pluginId: currId, order: currOrder }];
+
+  pluginArr.reduce(
+    (orderedObj: { [key: string]: string }, plugin: PluginOrderItem) => {
+      if (currId === plugin.pluginId) return orderedObj;
+
+      orderIndex = orderedObj.hasOwnProperty(orderIndex)
+        ? orderIndex + 1
+        : orderIndex;
+
+      orderedObj[orderIndex] = plugin.pluginId;
+      newOrderArr.push({ pluginId: plugin.pluginId, order: orderIndex });
+      orderIndex++;
+
+      return orderedObj;
+    },
+    sortHelperMap
+  );
+
+  return newOrderArr;
+};
+
+const sortPluginsArr = (pluginArr: PluginOrderItem[]) =>
+  pluginArr.sort((a, b) => (a.order > b.order ? 1 : -1));
 
 @Injectable()
 export class PluginInstallationService extends BlockTypeService<
@@ -17,7 +54,10 @@ export class PluginInstallationService extends BlockTypeService<
 > {
   blockType = EnumBlockType.PluginInstallation;
 
-  constructor(protected readonly blockService: BlockService) {
+  constructor(
+    protected readonly blockService: BlockService,
+    protected readonly pluginOrderService: PluginOrderService
+  ) {
     super(blockService);
   }
 
@@ -25,21 +65,21 @@ export class PluginInstallationService extends BlockTypeService<
     args: CreatePluginInstallationArgs,
     user: User
   ): Promise<PluginInstallation> {
-    const installations = await super.findMany({
-      where: {
-        resource: {
-          id: args.data.resource.connect.id
+    const newPlugin = await super.create(args, user);
+
+    await this.setOrder(
+      {
+        data: {
+          order: -1
+        },
+        where: {
+          id: newPlugin.id
         }
-      }
-    });
+      },
+      user
+    );
 
-    installations.sort(plugin => plugin.order);
-
-    args.data.order = installations.length
-      ? installations[installations.length - 1].order + 1
-      : 1;
-
-    return super.create(args, user);
+    return newPlugin;
   }
 
   async update(
@@ -53,8 +93,70 @@ export class PluginInstallationService extends BlockTypeService<
     });
 
     args.data.pluginId = installation.pluginId;
-    args.data.order = installation.order;
+    args.data.npm = installation.npm;
 
     return super.update(args, user);
+  }
+
+  async setOrder(args: SetPluginOrderArgs, user: User): Promise<PluginOrder> {
+    const installation = await super.findOne({
+      where: {
+        id: args.where.id
+      }
+    });
+
+    const [currentOrder] = await this.pluginOrderService.findMany({
+      where: {
+        resource: {
+          id: installation.resourceId
+        }
+      }
+    });
+
+    if (!currentOrder) {
+      return await this.pluginOrderService.create(
+        {
+          data: {
+            displayName: 'Plugin Order',
+            order: [
+              {
+                pluginId: installation.pluginId,
+                order: 1
+              }
+            ],
+            resource: {
+              connect: {
+                id: installation.resourceId
+              }
+            }
+          }
+        },
+        user
+      );
+    }
+
+    const orderedPluginArr = sortPluginsArr(currentOrder.order);
+    const newOrderedPlugins = reOrderPlugins(
+      {
+        pluginId: installation.pluginId,
+        order:
+          args.data.order === -1
+            ? currentOrder.order.length + 1
+            : args.data.order
+      },
+      orderedPluginArr
+    );
+
+    return this.pluginOrderService.update(
+      {
+        data: {
+          order: newOrderedPlugins
+        },
+        where: {
+          id: currentOrder.id
+        }
+      },
+      user
+    );
   }
 }

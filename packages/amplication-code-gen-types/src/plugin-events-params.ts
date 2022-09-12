@@ -64,6 +64,6 @@ export type VariableDictionary = {
 export interface CreateServerDotEnvParams extends EventParams {
   before: {
     baseDirectory: string;
-    additionalVariables: VariableDictionary;
+    envVariables: VariableDictionary;
   };
 }
