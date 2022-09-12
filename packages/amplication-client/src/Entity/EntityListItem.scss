@@ -2,7 +2,6 @@
 
 .entity-list-item {
   margin: 0;
-  margin-bottom: var(--default-spacing);
 
   &__divider {
     @include flexFullRowWithSpacing;

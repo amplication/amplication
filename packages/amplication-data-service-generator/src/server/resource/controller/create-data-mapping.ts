@@ -1,7 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { ExpressionKind } from "ast-types/gen/kinds";
-import { Entity } from "@amplication/code-gen-types";
-import { NamedClassDeclaration } from "../../../util/ast";
+import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
 import { isOneToOneRelationField } from "../../../util/field";
 
 export const CONNECT_ID = builders.identifier("connect");
