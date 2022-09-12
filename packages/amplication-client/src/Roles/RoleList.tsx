@@ -91,7 +91,7 @@ export const RoleList = React.memo(
         <div className={`${CLASS_NAME}__header`}>
           {data?.resourceRoles.length} Roles
         </div>
-        {loading && <CircularProgress />}
+        {loading && <CircularProgress centerToParent />}
         <div className={`${CLASS_NAME}__list`}>
           {data?.resourceRoles?.map((role) => (
             <div key={role.id} className={`${CLASS_NAME}__list__item`}>

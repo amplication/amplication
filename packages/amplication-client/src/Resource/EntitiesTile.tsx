@@ -52,7 +52,7 @@ function EntitiesTile({ resourceId }: Props) {
       title="Entities"
       headerExtra={
         loading ? (
-          <CircularProgress />
+          <CircularProgress centerToParent />
         ) : (
           <>
             {data?.entities.length}

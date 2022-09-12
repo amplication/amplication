@@ -6,6 +6,8 @@ import {
   EntityField,
   EntityLookupField,
   Module,
+  NamedClassDeclaration,
+  DTOs,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -19,7 +21,6 @@ import {
   interpolate,
   logicalExpression,
   memberExpression,
-  NamedClassDeclaration,
   removeESLintComments,
   removeTSClassDeclares,
   removeTSIgnoreComments,
@@ -33,7 +34,6 @@ import {
 } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
-import { DTOs } from "../create-dtos";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
