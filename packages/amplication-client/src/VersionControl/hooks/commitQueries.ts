@@ -142,20 +142,17 @@ export const GET_COMMITS = gql`
             id
             displayName
             updatedAt
-            resource {
-              id
-              name
-            }
           }
           ... on Block {
             id
             displayName
             updatedAt
-            resource {
-              id
-              name
-            }
           }
+        }
+        resource {
+          id
+          name
+          resourceType
         }
       }
       builds {
