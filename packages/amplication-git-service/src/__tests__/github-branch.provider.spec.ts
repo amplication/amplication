@@ -5,7 +5,7 @@ import {
   GITHUB_APP_APP_ID_VAR,
   GITHUB_APP_PRIVATE_KEY_VAR
 } from '../providers/github.service';
-import {GitProvider} from "../providers/git-provider.interface";
+import { GitProvider } from '../providers/git-provider.interface';
 
 //TODO: Add environments to GitHub workflow tests
 const APP_ID = 230968;
@@ -22,7 +22,7 @@ const COMMIT_MESSAGE = 'test commit';
 const PULL_REQUEST__MESSAGE = 'PULL_REQUEST__MESSAGE';
 const PULL_REQUEST_TITLE = 'PULL_REQUEST_TITLE';
 
-const files = (value = "json") => [
+const files = (value = 'json') => [
   {
     path: 'test.json',
     content: `{"test":"${value}"}`

@@ -21,9 +21,9 @@ export class GithubProvider implements GitProvider {
         owner,
         repo,
         tree: files.map(file => ({
-            ...file,
-            type: 'blob',
-            mode: '100644'
+          ...file,
+          type: 'blob',
+          mode: '100644'
         })),
         base_tree: latestCommitSha
       })
@@ -135,7 +135,8 @@ export class GithubProvider implements GitProvider {
     body: string
   ): Promise<string> {
     try {
-      return (await this.octokit.rest.issues.createComment({
+      return (
+        await this.octokit.rest.issues.createComment({
           owner: this.owner,
           repo: this.repo,
           issue_number: pullRequestNumber,

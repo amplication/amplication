@@ -4,9 +4,9 @@ import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from '@amplication/nest-logger-module';
-import {PullRequestDetails} from "./dto/pull-request-details.dto";
-import {CommitContext} from "./dto/commit-context.dto";
-import {CommitCreated} from "./dto/commit-created.dto";
+import { PullRequestDetails } from './dto/pull-request-details.dto';
+import { CommitContext } from './dto/commit-context.dto';
+import { CommitCreated } from './dto/commit-created.dto';
 
 const BRANCH_NAME = 'amplication';
 
@@ -30,7 +30,7 @@ export class CommitsService {
         context
       );
       return {
-        headCommit
+        headCommit,
       };
     }
     this.logger.warn(
