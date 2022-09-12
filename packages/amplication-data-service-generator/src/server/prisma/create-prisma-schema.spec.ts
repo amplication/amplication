@@ -357,8 +357,8 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.String,
-        true,
+        PrismaSchemaDSL.ScalarType.Json,
+        false,
         true
       ),
     ],
