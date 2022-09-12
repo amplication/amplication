@@ -16,13 +16,13 @@ export const PluginTree = React.memo(
     const location = useLocation();
     const history = useHistory();
     const { currentWorkspace, currentProject } = useContext(AppContext);
-    
+
     useEffect(() => {
       if (/catalog|installed/.test(location.pathname)) return;
-      
+
       history.push(`${location.pathname}/catalog`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location]);
 
     return (
       <div className={CLASS_NAME}>
