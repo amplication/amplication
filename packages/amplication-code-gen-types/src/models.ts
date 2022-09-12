@@ -1614,7 +1614,7 @@ export type ResourceWhereInput = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<StringFilter>;
-  project?: InputMaybe<WhereUniqueInput>;
+  project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars["String"]>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;

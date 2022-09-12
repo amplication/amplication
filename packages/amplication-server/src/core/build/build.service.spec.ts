@@ -416,6 +416,7 @@ describe('BuildService', () => {
           provide: ResourceService,
           useValue: {
             resource: resourceServiceGetResourceMock,
+            resources: jest.fn(() => [EXAMPLE_SERVICE_RESOURCE]),
             gitRepository: getGitRepository,
             gitOrganizationByResource: getGitOrganization
           }
@@ -471,7 +472,9 @@ describe('BuildService', () => {
         },
         {
           provide: TopicService,
-          useValue: {}
+          useValue: {
+            findMany: jest.fn(() => [])
+          }
         },
         {
           provide: ServiceTopicsService,
@@ -579,11 +582,6 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
-    expect(resourceServiceGetResourceMock).toBeCalledTimes(1);
-    expect(resourceServiceGetResourceMock).toBeCalledWith({
-      where: { id: EXAMPLE_RESOURCE_ID }
-    });
-
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -604,23 +602,6 @@ describe('BuildService', () => {
       }
     });
     expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
-    expect(DataServiceGenerator.createDataService).toBeCalledWith(
-      orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
-      EXAMPLE_APP_ROLES,
-      {
-        name: EXAMPLE_SERVICE_RESOURCE.name,
-        description: EXAMPLE_SERVICE_RESOURCE.description,
-        version: EXAMPLE_BUILD.version,
-        id: EXAMPLE_SERVICE_RESOURCE.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
-        settings: EXAMPLE_APP_SETTINGS_VALUES
-      },
-      {
-        messageBrokers: []
-      },
-      MOCK_LOGGER,
-      [EXAMPLE_PLUGIN_INSTALLATION]
-    );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(1);
