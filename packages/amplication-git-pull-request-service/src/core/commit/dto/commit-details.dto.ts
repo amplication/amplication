@@ -1,4 +1,4 @@
-interface CommitDetails{
-    sha: string,
-    timestamp: string
+interface CommitDetails {
+  sha: string;
+  timestamp: string;
 }

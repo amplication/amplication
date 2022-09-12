@@ -1,1 +1,1 @@
-export * from "./commit.module"
+export * from './commit.module';

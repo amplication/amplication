@@ -1,4 +1,4 @@
-export interface PullRequestMeta{
-    url: string,
-    number: number
+export interface PullRequestMeta {
+  url: string;
+  number: number;
 }

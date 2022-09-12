@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import {GithubFactory} from "./providers/github.factory";
+import { GithubFactory } from './providers/github.factory';
 
 @Global()
 @Module({

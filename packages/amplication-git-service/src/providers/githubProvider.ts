@@ -1,13 +1,12 @@
 import { Octokit } from 'octokit';
-import {GitProvider} from "./git-provider.interface";
-import {PullRequestMeta} from "../Dto/entities/pull-request-meta.dto";
-
+import { GitProvider } from './git-provider.interface';
+import { PullRequestMeta } from '../Dto/entities/pull-request-meta.dto';
 
 export class GithubProvider implements GitProvider {
   constructor(
     private octokit: Octokit,
     private owner: string,
-    private repo: string,
+    private repo: string
   ) {}
 
   private static async createFilesTree(
@@ -70,32 +69,32 @@ export class GithubProvider implements GitProvider {
   }
 
   public async commit(
-      branch: string,
-      message: string,
-      files: { path: string; content: string }[],
-      headCommit: string,
+    branch: string,
+    message: string,
+    files: { path: string; content: string }[],
+    headCommit: string
   ): Promise<string> {
     const fileTreeSha = await GithubProvider.createFilesTree(
-        this.octokit,
-        this.owner,
-        this.repo,
-        headCommit,
-        files
+      this.octokit,
+      this.owner,
+      this.repo,
+      headCommit,
+      files
     );
     const commitSha = await GithubProvider.createCommit(
-        this.octokit,
-        this.owner,
-        this.repo,
-        message,
-        headCommit,
-        fileTreeSha
+      this.octokit,
+      this.owner,
+      this.repo,
+      message,
+      headCommit,
+      fileTreeSha
     );
     await GithubProvider.updateRef(
-        this.octokit,
-        this.owner,
-        this.repo,
-        branch,
-        commitSha
+      this.octokit,
+      this.owner,
+      this.repo,
+      branch,
+      commitSha
     );
     return commitSha;
   }
@@ -107,115 +106,121 @@ export class GithubProvider implements GitProvider {
     base: string
   ): Promise<PullRequestMeta> {
     try {
-      const {html_url:url, number} = (
-          await this.octokit.rest.pulls.create({
-            owner: this.owner,
-            repo: this.repo,
-            title,
-            body,
-            base,
-            head: branch
-          })
-      ).data
+      const { html_url: url, number } = (
+        await this.octokit.rest.pulls.create({
+          owner: this.owner,
+          repo: this.repo,
+          title,
+          body,
+          base,
+          head: branch
+        })
+      ).data;
       return {
-        url ,
+        url,
         number
-      }
+      };
     } catch (err) {
       switch (err?.response?.data?.errors[0]?.message) {
         case `No commits between ${base.toLowerCase()} and ${branch.toLowerCase()}`:
           throw new Error(`There is no new commit in branch ${branch}`);
         case `A pull request already exists for ${this.owner}:${branch}.`:
-          throw new Error("Branch already has pull request");
+          throw new Error('Branch already has pull request');
         default:
-          throw err
+          throw err;
       }
     }
   }
 
-  public async addPullRequestComment(pullRequestNumber: number, body:string):Promise<string> {
-    try{
-      const { html_url } = (await this.octokit.rest.issues.createComment({
-        owner: this.owner,
-        repo: this.repo,
-        issue_number: pullRequestNumber,
-        body,
-      })).data
+  public async addPullRequestComment(
+    pullRequestNumber: number,
+    body: string
+  ): Promise<string> {
+    try {
+      const { html_url } = (
+        await this.octokit.rest.issues.createComment({
+          owner: this.owner,
+          repo: this.repo,
+          issue_number: pullRequestNumber,
+          body
+        })
+      ).data;
       return html_url;
-    } catch (err){
-      switch (err.message){
-        case "Not Found":
-          throw new Error("Cannot add comment to pull request: pull request not found")
+    } catch (err) {
+      switch (err.message) {
+        case 'Not Found':
+          throw new Error(
+            'Cannot add comment to pull request: pull request not found'
+          );
         default:
-          console.log(err)
-          throw err
+          console.log(err);
+          throw err;
       }
     }
   }
 
-
-  public async getOpenedPullRequest(
-      branch: string
-  ): Promise<PullRequestMeta> {
+  public async getOpenedPullRequest(branch: string): Promise<PullRequestMeta> {
     try {
       const [pullRequest] = (
-          (
-              await this.octokit.rest.pulls.list({
-                owner: this.owner,
-                repo: this.repo,
-                head: `${this.owner}:${branch}`,
-                state: 'open'
-              })
-          ).data
-      );
+        await this.octokit.rest.pulls.list({
+          owner: this.owner,
+          repo: this.repo,
+          head: `${this.owner}:${branch}`,
+          state: 'open'
+        })
+      ).data;
       if (pullRequest) {
         return {
           url: pullRequest.html_url,
           number: pullRequest.number
-        }
+        };
       } else {
-        return null
+        return null;
       }
     } catch (err) {
       switch (err.message) {
         default:
-          throw err
+          throw err;
       }
     }
   }
 
-  public async updatePullRequest(number: number,state:boolean): Promise<void> {
-     await (this.octokit.rest.pulls.update({
-      owner:this.owner,
-      repo:this.repo,
-      pull_number:number,
-      state: state ? "open" : "closed"
-    }))
+  public async updatePullRequest(
+    number: number,
+    state: boolean
+  ): Promise<void> {
+    await this.octokit.rest.pulls.update({
+      owner: this.owner,
+      repo: this.repo,
+      pull_number: number,
+      state: state ? 'open' : 'closed'
+    });
   }
-  
 
-  public async createBranch(branch:string,headCommit:string): Promise<string> {
+  public async createBranch(
+    branch: string,
+    headCommit: string
+  ): Promise<string> {
     try {
       return (
-          await this.octokit.rest.git.createRef({
-            owner: this.owner,
-            repo: this.repo,
-            ref: `refs/heads/${branch}`,
-            sha: headCommit
-          })
+        await this.octokit.rest.git.createRef({
+          owner: this.owner,
+          repo: this.repo,
+          ref: `refs/heads/${branch}`,
+          sha: headCommit
+        })
       ).data.ref;
-    } catch (err){
-      switch (err.message){
-        case "Reference already exists":
-          return null
+    } catch (err) {
+      switch (err.message) {
+        case 'Reference already exists':
+          return null;
         default:
-          throw err
+          throw err;
       }
     }
-
   }
 
-  public async deleteBranch(branch:string): Promise<boolean> {
+  public async deleteBranch(branch: string): Promise<boolean> {
     try {
       const { status } = await this.octokit.rest.git.deleteRef({
         owner: this.owner,
@@ -233,9 +238,9 @@ export class GithubProvider implements GitProvider {
     }
   }
 
-  public async getBranch(branch:string): Promise<{ headCommit: string }> {
+  public async getBranch(branch: string): Promise<{ headCommit: string }> {
     try {
-      const {data} = await this.octokit.rest.repos.getBranch({
+      const { data } = await this.octokit.rest.repos.getBranch({
         owner: this.owner,
         repo: this.repo,
         branch
@@ -264,7 +269,7 @@ export class GithubProvider implements GitProvider {
 
   public async createRepository(_private: boolean): Promise<string> {
     try {
-      const {data: repo} = await this.octokit.rest.repos.createInOrg({
+      const { data: repo } = await this.octokit.rest.repos.createInOrg({
         name: this.repo,
         org: this.owner,
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -277,9 +282,8 @@ export class GithubProvider implements GitProvider {
         case 422:
           return null;
         default:
-          throw err
+          throw err;
       }
-
     }
   }
 
@@ -292,13 +296,12 @@ export class GithubProvider implements GitProvider {
       return repo;
     } catch (err) {
       switch (err.message) {
-        case "Not Found":
-          return null
+        case 'Not Found':
+          return null;
         default:
-          throw err
+          throw err;
       }
     }
-
   }
 
   public async getRepository(): Promise<{ private: boolean }> {

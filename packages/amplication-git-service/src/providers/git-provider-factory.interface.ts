@@ -1,9 +1,9 @@
-import {GitProvider} from "./git-provider.interface";
+import { GitProvider } from './git-provider.interface';
 
 export interface GitFactory {
-    getClient(
-        installationId: string,
-        owner: string,
-        repo: string
-    ): Promise<GitProvider>
+  getClient(
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<GitProvider>;
 }

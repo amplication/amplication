@@ -5,9 +5,9 @@ import {
   GITHUB_APP_PRIVATE_KEY_VAR
 } from './github.service';
 import { ConverterUtil } from '../utils/ConverterUtil';
-import {GitProvider} from "./git-provider.interface";
-import {GitFactory} from "./git-provider-factory.interface";
-import {GithubProvider} from "./githubProvider";
+import { GitProvider } from './git-provider.interface';
+import { GitFactory } from './git-provider-factory.interface';
+import { GithubProvider } from './githubProvider';
 
 export class GithubFactory implements GitFactory {
   private app: App;

@@ -1,3 +1,3 @@
-interface PullRequestCommentDetails{
-    url:string
+interface PullRequestCommentDetails {
+  url: string;
 }

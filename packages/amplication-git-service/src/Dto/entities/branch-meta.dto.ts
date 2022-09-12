@@ -1,3 +1,3 @@
-export interface BranchMeta{
-    headCommit: string
+export interface BranchMeta {
+  headCommit: string;
 }
