@@ -174,11 +174,12 @@ const usePlugins = (resourceId: string) => {
 
     const pluginOrderArr = [...pluginOrder?.pluginOrder.order];
 
-    return pluginOrderArr.map((plugin: models.PluginOrderItem) => {
+    return (pluginOrderArr.map((plugin: models.PluginOrderItem) => {
       return pluginInstallations?.PluginInstallations.find(
-        (installationPlugin: models.PluginInstallation) => installationPlugin.pluginId === plugin.pluginId
+        (installationPlugin: models.PluginInstallation) =>
+          installationPlugin.pluginId === plugin.pluginId
       );
-    }) as unknown as models.PluginInstallation[];
+    }) as unknown) as models.PluginInstallation[];
   }, [pluginInstallations, pluginOrder]);
 
   const [updatePluginOrder, { error: UpdatePluginOrderError }] = useMutation<{
