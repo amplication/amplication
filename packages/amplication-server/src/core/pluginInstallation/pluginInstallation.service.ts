@@ -10,6 +10,40 @@ import { BlockService } from '../block/block.service';
 import { PluginOrderService } from './pluginOrder.service';
 import { PluginOrder } from './dto/PluginOrder';
 import { SetPluginOrderArgs } from './dto/SetPluginOrderArgs';
+import { PluginOrderItem } from './dto/PluginOrderItem';
+
+const reOrderPlugins = (
+  argsData: PluginOrderItem,
+  pluginArr: PluginOrderItem[]
+) => {
+  const currId = argsData.pluginId;
+  const currOrder = argsData.order;
+  let orderIndex = 1;
+  const sortHelperMap = { [currOrder]: currId };
+  const newOrderArr = [{ pluginId: currId, order: currOrder }];
+
+  pluginArr.reduce(
+    (orderedObj: { [key: string]: string }, plugin: PluginOrderItem) => {
+      if (currId === plugin.pluginId) return orderedObj;
+
+      orderIndex = orderedObj.hasOwnProperty(orderIndex)
+        ? orderIndex + 1
+        : orderIndex;
+
+      orderedObj[orderIndex] = plugin.pluginId;
+      newOrderArr.push({ pluginId: plugin.pluginId, order: orderIndex });
+      orderIndex++;
+
+      return orderedObj;
+    },
+    sortHelperMap
+  );
+
+  return newOrderArr;
+};
+
+const sortPluginsArr = (pluginArr: PluginOrderItem[]) =>
+  pluginArr.sort((a, b) => (a.order > b.order ? 1 : -1));
 
 @Injectable()
 export class PluginInstallationService extends BlockTypeService<
@@ -100,25 +134,22 @@ export class PluginInstallationService extends BlockTypeService<
       );
     }
 
-    let newOrder = [];
-
-    if (args.data.order === -1) {
-      newOrder = [
-        ...currentOrder.order,
-        {
-          pluginId: installation.pluginId,
-          order: currentOrder.order.length + 1
-        }
-      ];
-    } else {
-      //todo: manipulate currentOrder.order
-      newOrder = [...currentOrder.order];
-    }
+    const orderedPluginArr = sortPluginsArr(currentOrder.order);
+    const newOrderedPlugins = reOrderPlugins(
+      {
+        pluginId: installation.pluginId,
+        order:
+          args.data.order === -1
+            ? currentOrder.order.length + 1
+            : args.data.order
+      },
+      orderedPluginArr
+    );
 
     return this.pluginOrderService.update(
       {
         data: {
-          order: newOrder
+          order: newOrderedPlugins
         },
         where: {
           id: currentOrder.id
