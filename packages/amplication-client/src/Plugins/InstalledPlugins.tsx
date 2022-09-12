@@ -8,7 +8,8 @@ import { formatError } from "../util/error";
 import usePlugins, { Plugin } from "./hooks/usePlugins";
 import * as models from "../models";
 import PluginsCatalogItem from "./PluginsCatalogItem";
-import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import { EnumImages } from "../Components/SvgThemeImage";
+import { EmptyState } from "../Components/EmptyState";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
@@ -88,10 +89,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
         message={errorMessage}
       />
     </DndProvider>
-    ) : (<div className="plugin-installation-wrapper">
-      <SvgThemeImage css="plugin-installation-empty " image={EnumImages.PLuginInstallationEmpty} />
-      <div className="plugin-installation-empty-text">There are no plugins to show</div>
-    </div>)
+    ) : (<EmptyState image={EnumImages.PluginInstallationEmpty} message="There are no plugins to show"/>)
     
   );
 };

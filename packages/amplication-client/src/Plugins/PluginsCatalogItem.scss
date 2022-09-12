@@ -2,29 +2,8 @@
 
 $logo-size: 44px;
 $order-badge-size: 14px;
-$image-size: 220px;
 $install-width: 86px;
 $button-padding:  5px 12px;
-
-.plugin-installation-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - $image-size);
-
-  .plugin-installation-empty {
-    width: $image-size;
-    height: $image-size;
-    display: block;
-    align-self: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-  }
-  .plugin-installation-empty-text {
-    color: var(--black80);
-  }
-}
 
 .plugins-catalog-item {
   margin: 0;
