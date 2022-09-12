@@ -29,7 +29,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   const handleInstall = useCallback(
     (plugin: Plugin) => {
-      const { name, id } = plugin;
+      const { name, id, npm } = plugin;
 
       createPluginInstallation({
         variables: {
@@ -37,6 +37,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
             displayName: name,
             pluginId: id,
             enabled: true,
+            npm,
             resource: { connect: { id: resource } },
           },
         },
@@ -64,9 +65,11 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   );
 
   const installedPlugins = useMemo(() => {
+    if (!pluginInstallations) return {};
+
     return keyBy(
-      pluginInstallations?.PluginInstallations,
-      (plugin) => plugin.pluginId
+      pluginInstallations,
+      (plugin) => plugin && plugin.pluginId
     );
   }, [pluginInstallations]);
 
@@ -74,7 +77,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   return (
     <div>
-      {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
+      {pluginInstallations && Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
         <PluginsCatalogItem
           key={pluginId}
           plugin={plugin}
