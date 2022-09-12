@@ -38,3 +38,29 @@ export const CREATE_PLUGIN_INSTALLATION = gql`
     }
   }
 `;
+
+export const GET_PLUGIN_ORDER = gql`
+  query pluginOrder($resourceId: String!) {
+    pluginOrder(where: { id: $resourceId }) {
+      order {
+        pluginId
+        order
+      }
+    }
+  }
+`;
+
+export const UPDATE_PLUGIN_ORDER = gql`
+  mutation setPluginOrder(
+    $data: PluginSetOrderInput!
+    $where: WhereUniqueInput!
+  ) {
+    setPluginOrder(data: $data, where: $where) {
+      order {
+        pluginId
+        order
+      }
+      id
+    }
+  }
+`;
