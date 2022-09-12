@@ -1,11 +1,17 @@
 import * as path from "path";
 import winston from "winston";
 import { paramCase } from "param-case";
-import { Entity, Role, AppInfo, Module } from "@amplication/code-gen-types";
+import {
+  Entity,
+  Role,
+  AppInfo,
+  Module,
+  DTOs,
+} from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode } from "../util/module";
 import { updatePackageJSONs } from "../update-package-jsons";
-import { createDTOModules, DTOs } from "./resource/create-dtos";
+import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -13,7 +19,7 @@ import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
-import { BASE_DIRECTORY } from "./constants";
+import { BASE_DIRECTORY, ENV_VARIABLES } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
@@ -70,7 +76,7 @@ export async function createServerModules(
   );
 
   logger.info("Creating Auth module...");
-  const authModules = await createAuthModules(directoryManager.SRC, appInfo);
+  const authModules = await createAuthModules({ srcDir: directoryManager.SRC });
 
   logger.info("Creating application module...");
   const appModule = await createAppModule(
@@ -117,13 +123,16 @@ export async function createServerModules(
     roles,
     directoryManager.SRC
   );
-  const dotEnvModule = await createDotEnvModule(appInfo, directoryManager.BASE);
+  const dotEnvModule = await createDotEnvModule({
+    baseDirectory: directoryManager.BASE,
+    envVariables: ENV_VARIABLES,
+  });
 
   return [
     ...staticModules,
     ...formattedModules,
     prismaSchemaModule,
     grantsModule,
-    dotEnvModule,
+    ...dotEnvModule,
   ];
 }

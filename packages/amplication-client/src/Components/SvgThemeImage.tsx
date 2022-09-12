@@ -8,22 +8,27 @@ export enum EnumImages {
   SyncWithGitHub = "--image-sync-github",
   Commit = "--image-commit",
   NoChanges = "--image-no-changes",
-  AddApp = "--image-add-app",
+  AddResource = "--image-add-resource",
   Relations = "--image-relations",
   ImportExcel = "--image-import-excel",
   DropExcel = "--image-drop-excel",
-  MyApps = "--image-my-apps",
+  MyResources = "--image-my-resources",
   Generating = "--image-generating",
+  CreateServiceWizard = "--image-create-service-wizard",
+  PluginInstallationEmpty = "--plugin-installation-empty",
+  CommitEmptyState = "--image-commit-empty-state",
+  CodeViewEmptyState = "--image-code-view-empty-state",
 }
 
-type Props = {
+export type Props = {
   image: EnumImages;
+  className?: string;
 };
 
-export const SvgThemeImage = ({ image }: Props) => {
+export const SvgThemeImage = ({ image, className }: Props) => {
   return (
     <span
-      className="svg-theme-image"
+      className={className || "svg-theme-image"}
       style={{
         backgroundImage: `var(${image})`,
       }}

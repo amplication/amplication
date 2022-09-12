@@ -58,9 +58,10 @@ const Signup = () => {
   useEffect(() => {
     if (data) {
       setToken(data.signup.token);
-      // @ts-ignore
-      const { from } = location.state || { from: { pathname: "/create-app" } };
-      history.replace(from);
+      history.push({
+        pathname: "/",
+        search: "?complete-signup=1",
+      });
     }
   }, [data, history, location]);
 
@@ -117,7 +118,7 @@ const Signup = () => {
           <p className={`${CLASS_NAME}__signup`}>
             Already have an account? <Link to="/login">Sign In</Link>
           </p>
-          {loading && <CircularProgress />}
+          {loading && <CircularProgress centerToParent />}
           <Snackbar open={Boolean(error)} message={errorMessage} />
         </Form>
       </Formik>

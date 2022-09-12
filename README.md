@@ -5,7 +5,13 @@
   </a>
 </p>
 <p align="center">
-    <a href="https://docs.amplication.com/docs/">Docs</a> <a href="https://twitter.com/amplication">Twitter</a>
+    <a href="https://docs.amplication.com/docs/">Docs</a>
+    <span>&nbsp;|&nbsp;</span>
+    <a href="https://amplication.com/blog">Blog</a>
+     <span>&nbsp;|&nbsp;</span>
+    <a href="https://twitter.com/amplication">Twitter</a>
+     <span>&nbsp;|&nbsp;</span>
+    <a href="https://amplication.com/discord">Discord</a>
 </p>
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
@@ -120,7 +126,7 @@ The client is based on React, Apollo client, Primer components, React Material W
 
 Amplication is currently in Beta version. This means that we are still working on essential features like production-ready hosting, migrations, and stability to our console.
 
-How does it affect you? Well... mostly it doesn't. Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open-source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on. You can read more about the generated app and its stack here https://docs.amplication.com/docs/getting-started
+How does it affect you? Well... mostly it doesn't. Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open-source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on. You can read more about the generated app and its stack in our [Getting Started documentation](https://docs.amplication.com/docs/getting-started).
 
 # Support
 

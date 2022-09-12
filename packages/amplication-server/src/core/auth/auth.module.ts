@@ -2,14 +2,12 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { AccountModule } from '../account/account.module';
 import { PrismaModule } from '@amplication/prisma-db';
 import { UserModule } from '../user/user.module';
 import { WorkspaceModule } from '../workspace/workspace.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
-
 import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
@@ -19,6 +17,8 @@ import { GitHubStrategy } from './github.strategy';
 import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
 import { GitHubStrategyConfigService } from './githubStrategyConfig.service';
 import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { ProjectModule } from '../project/project.module';
+import { GitHubAuthGuard } from './github.guard';
 
 @Module({
   imports: [
@@ -31,17 +31,19 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
       }),
       inject: [ConfigService]
     }),
-    AccountModule, // (AccountService, PasswordService)
-    PrismaModule, // (PrismaService)
+    AccountModule,
+    PrismaModule,
     PermissionsModule,
     ExceptionFiltersModule,
     WorkspaceModule,
     UserModule,
-    GoogleSecretsManagerModule
+    GoogleSecretsManagerModule,
+    ProjectModule
   ],
   providers: [
     AuthService,
     JwtStrategy,
+    GitHubAuthGuard,
     {
       provide: 'GitHubStrategy',
       useFactory: async (

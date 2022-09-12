@@ -9,7 +9,7 @@ RUN npm install -g pkg
 
 COPY package*.json ./
 
-RUN npm ci --silent
+RUN npm ci
 
 ADD . .
 

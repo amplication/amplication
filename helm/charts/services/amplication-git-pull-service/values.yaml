@@ -2,17 +2,17 @@ name: amplication-git-pull-service
 
 replicaCount: 1
 autoscaling:
-  enabled: false
+  enabled: true
   minReplicas: 1
   maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 60
+  targetMemoryUtilizationPercentage: 60
 image:
   pullPolicy: Always
   repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service-dev
   tag: 0.0.1
   imagePullSecrets: []
-    
+
 volume:
   name: amplication-data
   path: /amplication-data
@@ -20,7 +20,7 @@ volume:
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: "2Gi"
-minMemory: "2Gi"
-maxCPU: 1
-minCPU: 1
+maxMemory: "1.6Gi"
+minMemory: "1.6Gi"
+maxCPU: "0.9"
+minCPU: "0.9"

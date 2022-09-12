@@ -118,7 +118,7 @@ export function createUserEntityIfNotExist(
     if (entity.name === USER_ENTITY_NAME) {
       userEntity = entity;
       const missingAuthFields = getMissingAuthFields(entity.fields);
-      //Add any missing auth field for backward compatibility with previously created apps
+      //Add any missing auth field for backward compatibility with previously created resources
       return {
         ...entity,
         fields: [...missingAuthFields, ...entity.fields],

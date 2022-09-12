@@ -1,0 +1,19 @@
+@import "../style/index.scss";
+
+.project-list {
+  display: flex;
+  flex-grow: 1;
+  flex-basis: 0px;
+  @include scrollbars(16px, var(--black60), transparent);
+  overflow: auto;
+  
+  &__items {
+    flex: 1;
+  }
+
+  .amp-button {
+    .amp-button__icon {
+      margin: 0 var(--default-spacing-small);
+    }
+  }
+}

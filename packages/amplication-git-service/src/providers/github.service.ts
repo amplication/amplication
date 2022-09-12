@@ -17,6 +17,8 @@ import {
 import { components } from '@octokit/openapi-types';
 import { join } from 'path';
 import { AmplicationIgnoreManger } from '../utils/AmplicationIgnoreManger';
+import { GitResourceMeta } from '../contracts/GitResourceMeta';
+import { PrModule } from '../types';
 
 const GITHUB_FILE_TYPE = 'file';
 export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
@@ -165,13 +167,13 @@ export class GithubService implements IGitClient {
   async createPullRequest(
     userName: string,
     repoName: string,
-    modules: { path: string; code: string }[],
+    modules: PrModule[],
     commitName: string,
     commitMessage: string,
     commitDescription: string,
     baseBranchName: string,
     installationId: string,
-    amplicationBuildId: string
+    gitResourceMeta: GitResourceMeta
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
@@ -201,23 +203,40 @@ export class GithubService implements IGitClient {
     //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
     //do not override server/scripts/customSeed.ts
     const doNotOverride = [
-      /^server\/src\/[^\/]+\/.+\.controller.ts$/,
-      /^server\/src\/[^\/]+\/.+\.resolver.ts$/,
-      /^server\/src\/[^\/]+\/.+\.service.ts$/,
-      /^server\/src\/[^\/]+\/.+\.module.ts$/,
-      /^server\/scripts\/customSeed.ts$/
+      new RegExp(
+        `^${gitResourceMeta.serverPath ||
+          'server'}\/src\/[^\/]+\/.+\.controller.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath ||
+          'server'}\/src\/[^\/]+\/.+\.resolver.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath ||
+          'server'}\/src\/[^\/]+\/.+\.service.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath ||
+          'server'}\/src\/[^\/]+\/.+\.module.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || 'server'}\/scripts\/customSeed.ts$`
+      )
     ];
 
     const authFolder = 'server/src/auth';
 
     const files = Object.fromEntries(
       modules.map(module => {
+        // ignored file
         if (amplicationIgnoreManger.isIgnored(module.path)) {
-          return [
-            join(AMPLICATION_IGNORED_FOLDER, amplicationBuildId, module.path),
-            module.code
-          ];
+          return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
         }
+        // Deleted file
+        if (module.code === null) {
+          return [module.path, module.code];
+        }
+        // Regex ignored file
         if (
           !module.path.startsWith(authFolder) &&
           doNotOverride.some(rx => rx.test(module.path))
@@ -232,12 +251,10 @@ export class GithubService implements IGitClient {
             }
           ];
         }
-
+        // Regular file
         return [module.path, module.code];
       })
     );
-
-    //todo: delete files that are no longer part of the app
 
     // Returns a normal Octokit PR response
     // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
@@ -290,12 +307,11 @@ export class GithubService implements IGitClient {
   private async getInstallationAuthToken(
     installationId: string
   ): Promise<string> {
-    const auth = createAppAuth({
-      appId: this.configService.get(GITHUB_APP_APP_ID_VAR),
-      privateKey: this.configService
-        .get(GITHUB_APP_PRIVATE_KEY_VAR)
-        .replace(/\\n/g, '\n')
-    });
+    const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
+    const privateKey = this.configService
+      .get(GITHUB_APP_PRIVATE_KEY_VAR)
+      .replace(/\\n/g, '\n');
+    const auth = createAppAuth({ appId, privateKey });
     // Retrieve installation access token
     return (
       await auth({

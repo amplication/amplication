@@ -8,6 +8,7 @@ import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
 import { User } from 'src/models';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
@@ -18,17 +19,20 @@ export class EntityPageService extends BlockTypeService<
 > {
   blockType = EnumBlockType.EntityPage;
 
-  constructor(private readonly entityService: EntityService) {
-    super();
+  constructor(
+    private readonly entityService: EntityService,
+    protected readonly blockService: BlockService
+  ) {
+    super(blockService);
   }
 
-  private async validateEntityInApp(
+  private async validateEntityInResource(
     entityId: string,
-    appId: string
+    resourceId: string
   ): Promise<void> {
-    if (!this.entityService.isEntityInSameApp(entityId, appId)) {
+    if (!this.entityService.isEntityInSameResource(entityId, resourceId)) {
       throw new NotFoundException(
-        `Can't find persistent entity with ID ${entityId} in ${appId}`
+        `Can't find persistent entity with ID ${entityId} in ${resourceId}`
       );
     }
   }
@@ -65,7 +69,10 @@ export class EntityPageService extends BlockTypeService<
 
   async create(args: CreateEntityPageArgs, user: User): Promise<EntityPage> {
     await Promise.all([
-      this.validateEntityInApp(args.data.entityId, args.data.app.connect.id),
+      this.validateEntityInResource(
+        args.data.entityId,
+        args.data.resource.connect.id
+      ),
       this.validatePageType(
         args.data.pageType,
         args.data.entityId,

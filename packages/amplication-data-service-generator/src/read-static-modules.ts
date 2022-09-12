@@ -28,3 +28,22 @@ export async function readStaticModules(
     }))
   );
 }
+
+export async function readPluginStaticModules(
+  source: string,
+  basePath: string
+): Promise<Module[]> {
+  const directory = `${normalize(source)}/`;
+  const staticModules = await fg(`${directory}**/*`, {
+    absolute: false,
+    dot: true,
+    ignore: ["**.js", "**.js.map", "**.d.ts"],
+  });
+
+  return Promise.all(
+    staticModules.sort().map(async (module) => ({
+      path: module.replace(directory, basePath ? basePath + "/" : ""),
+      code: await fs.promises.readFile(module, "utf-8"),
+    }))
+  );
+}

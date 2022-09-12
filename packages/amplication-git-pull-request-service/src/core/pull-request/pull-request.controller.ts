@@ -9,10 +9,11 @@ import {
   MessagePattern,
   Payload,
 } from '@nestjs/microservices';
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 import { KafkaMessage } from 'kafkajs';
-import { EnvironmentVariables } from 'src/services/environmentVariables';
 import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
+import { EnvironmentVariables } from '../../services/environmentVariables';
 import { ResultMessage } from './dto/ResultMessage';
 import { SendPullRequestArgs } from './dto/sendPullRequest';
 import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
@@ -31,13 +32,16 @@ export class PullRequestController {
     @Payload() message: KafkaMessage,
     @Ctx() context: KafkaContext
   ): Promise<{ value: ResultMessage<SendPullRequestResponse> }> {
+    const validArgs = plainToInstance(SendPullRequestArgs, message.value);
+    await validateOrReject(validArgs);
     this.logger.info(`Got a new generate pull request item from queue.`, {
       topic: context.getTopic(),
       partition: context.getPartition(),
       offset: message.offset,
       class: this.constructor.name,
+      args: validArgs,
     });
-    const validArgs = plainToClass(SendPullRequestArgs, message.value);
+
     try {
       const pullRequest = await this.pullRequestService.createPullRequest(
         validArgs

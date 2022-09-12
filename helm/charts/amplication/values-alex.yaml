@@ -10,7 +10,6 @@ global:
       operator: "Equal"
       value: "true"
 
-
 postgres:
   primary:
     service:
@@ -32,7 +31,6 @@ amplication-server:
     hostname: server-alex.amplication-dev.com
   config:
     env:
-
       HOST: "https://server-alex.amplication-dev.com"
       CLIENT_HOST: "https://app-alex.amplication-dev.com"
 
@@ -48,7 +46,6 @@ amplication-server:
       GITHUB_CLIENT_ID: "b792d890f40f60170c82"
       GITHUB_REDIRECT_URI: "https://server-alex.amplication-dev.com/github/callback"
 
-
 amplication-git-push-webhook-service:
   ingress:
     hostname: webhook-alex.amplication-dev.com
@@ -56,23 +53,30 @@ amplication-git-push-webhook-service:
     env:
       KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
 
-
 amplication-git-pull-service:
   config:
     env:
-    #GitHub App
-    GITHUB_APP_APP_ID: "217654"
-    GITHUB_APP_CLIENT_ID: "Iv1.6aca4dc2d00fbedf"
+      NODE_ENV: "production"
 
-    KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
+      #EFS
+      STORAGE_PATH: /amplication-data/git-data
+      MAX_SNAPSHOTS: "100"
 
+      #GitHub App
+      GIT_DEFAULT_ORIGIN_NAME: origin
+      GITHUB_APP_APP_ID: "217654"
+      GITHUB_APP_CLIENT_ID: "Iv1.6aca4dc2d00fbedf"
+      KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: git-pull-service
+      KAFKA_GROUP_ID: git-pull-service-group
+
+      KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
   config:
     env:
       KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
       GITHUB_APP_APP_ID: "217654"
-
 
 amplication-storage-gateway:
   ingress:

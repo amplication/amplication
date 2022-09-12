@@ -1,0 +1,378 @@
+@use "sass:math";
+
+@import "../style/index.scss";
+
+$max-width: 700px;
+$dropzone-height: 250px;
+$options-max-width: 1000px;
+$import-image-size: 40px;
+$option-image-size: 70px;
+$divider-or-font-size: 14px;
+
+.create-resource-from-excel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+
+  // Transition screen
+  // enter
+  &__options_screen_fade-enter {
+    opacity: 0;
+  }
+  &__options_screen_fade-enter-active {
+    opacity: 1;
+    transition: all 500ms ease-in;
+  }
+  // exit
+  &__options_screen_fade-exit {
+    opacity: 1;
+  }
+  &__options_screen_fade-exit-active {
+    opacity: 0;
+    transition: all 500ms ease-in;
+  }
+
+  &__header {
+    margin: var(--double-spacing);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .svg-theme-image {
+      height: $import-image-size;
+      background-position: center;
+    }
+  }
+
+  &__excel_option {
+    cursor: pointer;
+  }
+
+  &__message {
+    @include body1;
+    line-height: 1.5;
+    color: var(--black80);
+    margin-bottom: var(--triple-spacing);
+    max-width: $max-width;
+    text-align: center;
+    margin: var(--default-spacing);
+  }
+
+  &__option_container {
+    padding: var(--double-spacing);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  &__option_content {
+    width: 100%;
+    margin: auto;
+  }
+  &__divider {
+    max-width: $options-max-width;
+    width: 100%;
+    margin: var(--default-spacing) auto;
+    text-align: center;
+    position: relative;
+
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      border-top: $border-black20;
+      width: calc(50% - var(--double-spacing));
+      right: 0;
+      top: 50%;
+    }
+
+    &:after {
+      right: auto;
+      left: 0;
+    }
+    span {
+      font-size: $divider-or-font-size;
+    }
+  }
+
+  &__start_text {
+    @include headline1;
+    text-align: center;
+  }
+  &__welcome_text {
+    @include sectionTitle;
+    text-align: center;
+  }
+  &__excel_start_title {
+    @include pageTitle;
+    font-weight: 700;
+  }
+
+  &__other-options {
+    max-width: $options-max-width;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    padding: 51px 0 43px 0;
+
+    %__option {
+      @include optionCard;
+      @include body1;
+      min-height: 170px;
+      flex: 1;
+      position: relative;
+      justify-content: center;
+      cursor: pointer;
+
+      &:hover::before {
+        content: "";
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        border-radius: var(--default-border-radius);
+        background-size: cover;
+        opacity: 0.3;
+      }
+    }
+
+    &__scratch_option {
+      @extend %__option;
+
+      &:hover::before {
+        background-image: url("../assets/gifs/start-scratch.gif");
+      }
+    }
+
+    &__sample_option {
+      @extend %__option;
+
+      &:hover::before {
+        background-image: url("../assets/gifs/start-sample-app.gif");
+      }
+    }
+
+    &__option_text {
+      @include sectionTitle;
+      position: relative;
+      font-weight: 700;
+    }
+
+    &__option_code_text {
+      @include pageTitle;
+      position: relative;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+  }
+  &__dropzone {
+    @include body2;
+    margin: var(--double-spacing) auto;
+    height: $dropzone-height;
+    max-width: $options-max-width;
+
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--default-border-radius);
+    border: $border-black10;
+    border-style: dashed;
+    background-color: var(--white);
+    color: var(--black80);
+    outline: none;
+    transition: border 0.1s ease-in-out;
+    transition: background-color 0.2s ease-in-out;
+    cursor: pointer;
+
+    &:hover,
+    &--active {
+      border-color: var(--black100);
+      color: var(--black100);
+      background-color: var(--black5);
+    }
+
+    .svg-theme-image {
+      height: $import-image-size;
+      background-position: center;
+    }
+
+    &__active_content {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+
+      .svg-theme-image {
+        width: 50px;
+      }
+    }
+  }
+
+  &__notice {
+    @include highlightPanel;
+    text-align: left;
+    color: var(--black100);
+    margin-top: var(--double-spacing);
+    margin-left: 0;
+    margin-right: 0;
+
+    &__title {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      > * {
+        margin-right: var(--default-spacing-small);
+      }
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      color: var(--black90);
+
+      li {
+        @include flexFullRow;
+        list-style: none;
+        margin: 0;
+        margin-top: var(--default-spacing);
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+    }
+
+    a {
+      color: var(--primary);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__entities {
+    width: 100%;
+    flex: 1;
+
+    overflow: visible;
+  }
+  &__layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: stretch;
+    justify-content: center;
+    background: var(--black2);
+    overflow: auto;
+
+    &__body {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      justify-content: stretch;
+      align-items: stretch;
+      width: 100%;
+
+      &__side {
+        order: 2;
+        width: 300px;
+        background-color: var(--black5);
+        padding: var(--default-spacing);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        &__message {
+          @include body2;
+        }
+
+        h2 {
+          color: var(--black60);
+        }
+
+        h3 {
+          margin: var(--double-spacing) 0;
+        }
+
+        .text-input {
+          width: 100%;
+        }
+        .amp-button {
+          margin-top: auto;
+          width: 100%;
+        }
+      }
+
+      &__content {
+        order: 1;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+        align-items: stretch;
+
+        &__toolbar {
+          padding: var(--default-spacing);
+        }
+      }
+    }
+  }
+
+  &__back {
+    display: flex;
+    cursor: pointer;
+    .amp-icon {
+      padding-right: var(--default-spacing-small);
+    }
+  }
+  &__processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: $max-width;
+    margin: auto;
+
+    &__title {
+      @include headline1;
+      text-align: center;
+      padding: 0 var(--default-spacing);
+    }
+
+    &__message {
+      @include sectionTitle;
+      color: var(--black80);
+      margin-top: var(--double-spacing);
+    }
+
+    &__tagline {
+      @include body2;
+      color: var(--black100);
+      max-width: $max-width;
+      text-align: center;
+      max-width: math.div($max-width, 1.5);
+    }
+
+    .svg-theme-image {
+      width: 200px;
+      height: 200px;
+      margin: 50px;
+    }
+    &__loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: var(--double-spacing);
+    }
+  }
+}

@@ -18,7 +18,7 @@ const EXAMPLE_INPUT_OUTPUT_NAME = 'exampleInputOutputName';
 const EXAMPLE_BLOCK_INPUT_OUTPUT: BlockInputOutput = {
   name: EXAMPLE_INPUT_OUTPUT_NAME
 };
-const EXAMPLE_APP_ID = 'exampleAppId';
+const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 const EXAMPLE_BLOCK_TYPE = EnumBlockType.ConnectorRestApi;
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
@@ -29,7 +29,7 @@ const EXAMPLE_BLOCK: Block = {
   updatedAt: new Date(),
   displayName: EXAMPLE_DISPLAY_NAME,
   blockType: EXAMPLE_BLOCK_TYPE,
-  appId: EXAMPLE_APP_ID
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_IBLOCK: IBlock = {
@@ -42,7 +42,8 @@ const EXAMPLE_IBLOCK: IBlock = {
   blockType: EXAMPLE_BLOCK_TYPE,
   versionNumber: EXAMPLE_VERSION_NUMBER,
   inputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT],
-  outputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT]
+  outputParameters: [EXAMPLE_BLOCK_INPUT_OUTPUT],
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_USER: User = {
@@ -137,7 +138,7 @@ describe('BlockTypeService', () => {
     const args: CreateBlockArgs = {
       data: {
         displayName: EXAMPLE_DISPLAY_NAME,
-        app: { connect: { id: EXAMPLE_APP_ID } }
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } }
       }
     };
     const createArgs = {
@@ -149,7 +150,7 @@ describe('BlockTypeService', () => {
     };
     expect(await service.create(args, EXAMPLE_USER)).toEqual(EXAMPLE_IBLOCK);
     expect(blockServiceCreateMock).toBeCalledTimes(1);
-    expect(blockServiceCreateMock).toBeCalledWith(createArgs, EXAMPLE_USER);
+    expect(blockServiceCreateMock).toBeCalledWith(createArgs, EXAMPLE_USER.id);
   });
 
   it('should update a block service', async () => {

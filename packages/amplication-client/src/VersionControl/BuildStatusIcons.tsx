@@ -4,23 +4,32 @@ import { Icon, Tooltip } from "@amplication/design-system";
 import { GENERATE_STEP_NAME, EMPTY_STEP } from "./BuildSteps";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 import "./BuildStatusIcons.scss";
+import useBuildWatchStatus from "./useBuildWatchStatus";
 
 const CLASS_NAME = "build-status-icons";
 const TOOLTIP_DIRECTION = "nw";
 
 type BuildStatusIconsProps = {
   build: models.Build;
+  showIcon?: boolean;
 };
-export const BuildStatusIcons = ({ build }: BuildStatusIconsProps) => {
+
+const BuildStatusIconWithBuild: React.FC<BuildStatusIconsProps> = ({
+  build,
+  showIcon,
+}) => {
+  const { data } = useBuildWatchStatus(build);
+
   const stepGenerateCode = useMemo(() => {
-    if (!build?.action?.steps?.length) {
+    if (!data.build?.action?.steps?.length) {
       return EMPTY_STEP;
     }
     return (
-      build.action.steps.find((step) => step.name === GENERATE_STEP_NAME) ||
-      EMPTY_STEP
+      data.build.action.steps.find(
+        (step) => step.name === GENERATE_STEP_NAME
+      ) || EMPTY_STEP
     );
-  }, [build]);
+  }, [data.build.action]);
 
   return (
     <Tooltip
@@ -30,7 +39,16 @@ export const BuildStatusIcons = ({ build }: BuildStatusIconsProps) => {
       className={`${CLASS_NAME}__status`}
     >
       <BuildStepsStatus status={stepGenerateCode.status} />
-      <Icon icon="code1" />
+      {showIcon && <Icon icon="code1" />}
     </Tooltip>
   );
+};
+export const BuildStatusIcons = ({
+  build,
+  showIcon = true,
+}: BuildStatusIconsProps) => {
+  if (!build?.id) {
+    return <div />;
+  }
+  return <BuildStatusIconWithBuild build={build} showIcon={showIcon} />;
 };

@@ -10,6 +10,9 @@ import {
   UpdateBlockArgs
 } from '../block/dto';
 import { UserEntity } from 'src/decorators/user.decorator';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { UseFilters, UseGuards } from '@nestjs/common';
 
 type Constructor<T> = {
   new (...args: any): T;
@@ -31,13 +34,14 @@ export function BlockTypeResolver<
   updateArgsRef: Constructor<UpdateArgs>
 ): any {
   @Resolver({ isAbstract: true })
+  @UseFilters(GqlResolverExceptionsFilter)
+  @UseGuards(GqlAuthGuard)
   abstract class BaseResolverHost {
     abstract service: BlockTypeService<T, FindManyArgs, CreateArgs, UpdateArgs>;
 
     @Query(() => classRef, {
       name: classRef.name,
-      nullable: true,
-      description: undefined
+      nullable: true
     })
     @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
     async findOne(@Args() args: FindOneArgs): Promise<T | null> {
@@ -46,10 +50,12 @@ export function BlockTypeResolver<
 
     @Query(() => [classRef], {
       name: findManyName,
-      nullable: false,
-      description: undefined
+      nullable: false
     })
-    @AuthorizeContext(AuthorizableOriginParameter.AppId, 'where.app.id')
+    @AuthorizeContext(
+      AuthorizableOriginParameter.ResourceId,
+      'where.resource.id'
+    )
     async findMany(
       @Args({ type: () => findManyArgsRef }) args: FindManyArgs
     ): Promise<T[]> {
@@ -58,10 +64,12 @@ export function BlockTypeResolver<
 
     @Mutation(() => classRef, {
       name: createName,
-      nullable: false,
-      description: undefined
+      nullable: false
     })
-    @AuthorizeContext(AuthorizableOriginParameter.AppId, 'data.app.connect.id')
+    @AuthorizeContext(
+      AuthorizableOriginParameter.ResourceId,
+      'data.resource.connect.id'
+    )
     async [createName](
       @Args({ type: () => createArgsRef }) args: CreateArgs,
       @UserEntity() user: User
@@ -71,8 +79,7 @@ export function BlockTypeResolver<
 
     @Mutation(() => classRef, {
       name: updateName,
-      nullable: false,
-      description: undefined
+      nullable: false
     })
     @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
     async [updateName](

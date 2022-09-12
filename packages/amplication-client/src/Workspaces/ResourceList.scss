@@ -1,0 +1,60 @@
+@import "../style/index.scss";
+$empty-state-image-size: 120px;
+
+.resource-list {
+  
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    @include flexFullRowWithSpacing;
+
+    .search-field {
+      width: var(--form-field-long);
+    }
+  }
+
+  &__separator {
+    margin: var(--large-spacing) 0;
+    height: 1px;
+    border: none;
+    background-color: var(--black5);
+  }
+  
+  &__title {
+    @include body2;
+    margin-bottom: var(--default-spacing-small);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
+  }
+
+  &__empty-state {
+    .svg-theme-image {
+      width: 250px;
+      height: 250px;
+    }
+
+    margin-bottom: 50px;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    img {
+      height: $empty-state-image-size;
+    }
+
+    &__title {
+      @include pageTitle;
+      color: var(--black60);
+      text-align: center;
+      margin-bottom: var(--large-spacing);
+      font-size: 18px;
+    }
+  }
+}

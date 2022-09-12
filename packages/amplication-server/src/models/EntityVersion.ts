@@ -5,87 +5,73 @@ import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycl
 import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
 
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class EntityVersion {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   entityId: string;
 
   @Field(() => Entity, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   entity?: Entity;
 
   @Field(() => Int, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   versionNumber!: number;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   pluralDisplayName!: string;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string;
 
   commitId?: string | null;
 
   @Field(() => Commit, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   commit?: Commit;
 
   @Field(() => [EntityField], {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   fields?: EntityField[] | null;
 
   @Field(() => [EntityPermission], {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   permissions?: EntityPermission[] | null;
 }

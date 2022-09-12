@@ -10,9 +10,9 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import { USER_ENTITY } from "./constants";
 import "./EntityListItem.scss";
+import { AppContext } from "../context/appContext";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -22,7 +22,7 @@ type DType = {
 };
 
 type Props = {
-  applicationId: string;
+  resourceId: string;
   entity: models.Entity;
   onDelete?: () => void;
   onError: (error: Error) => void;
@@ -32,11 +32,11 @@ const CLASS_NAME = "entity-list-item";
 
 export const EntityListItem = ({
   entity,
-  applicationId,
+  resourceId,
   onDelete,
   onError,
 }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
   const history = useHistory();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -60,7 +60,7 @@ export const EntityListItem = ({
         });
       },
       onCompleted: (data) => {
-        pendingChangesContext.addEntity(data.deleteEntity.id);
+        addEntity(data.deleteEntity.id);
         onDelete && onDelete();
       },
     }
@@ -88,10 +88,12 @@ export const EntityListItem = ({
   }, [entity, deleteEntity, onError]);
 
   const handleRowClick = useCallback(() => {
-    history.push(`/${applicationId}/entities/${entity.id}`);
-  }, [history, applicationId, entity]);
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`
+    );
+  }, [history, resourceId, entity, currentWorkspace, currentProject]);
 
-  const [latestVersion] = entity.versions;
+  const [latestVersion] = entity.versions || [];
 
   return (
     <>
@@ -114,7 +116,7 @@ export const EntityListItem = ({
           <Link
             className={`${CLASS_NAME}__title`}
             title={entity.displayName}
-            to={`/${applicationId}/entities/${entity.id}`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`}
           >
             {entity.displayName}
           </Link>

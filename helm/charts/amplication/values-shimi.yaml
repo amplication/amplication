@@ -10,7 +10,6 @@ global:
       operator: "Equal"
       value: "true"
 
-
 postgres:
   primary:
     service:
@@ -32,7 +31,6 @@ amplication-server:
     hostname: server-shimi.amplication-dev.com
   config:
     env:
-
       HOST: "https://server-shimi.amplication-dev.com"
       CLIENT_HOST: "https://app-shimi.amplication-dev.com"
 

@@ -2,7 +2,7 @@ import { useEffect, useContext } from "react";
 import NavigationTabsContext from "../Layout/NavigationTabsContext";
 
 export default function useNavigationTabs(
-  applicationId: string,
+  resourceId: string,
   key: string,
   url: string,
   name?: string | null
@@ -11,7 +11,7 @@ export default function useNavigationTabs(
 
   useEffect(() => {
     navigationTabsContext.registerItem({
-      applicationId,
+      resourceId,
       key,
       name: name || "Loading...",
       url,

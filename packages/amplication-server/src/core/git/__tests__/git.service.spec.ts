@@ -5,8 +5,8 @@ import {
   GitServiceFactory
 } from '@amplication/git-service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '@amplication/prisma-db';
-import { App } from 'src/models/App';
+import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
+import { Resource } from 'src/models/Resource';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { GitProviderService } from '../git.provider.service';
@@ -16,6 +16,7 @@ import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput
 import { GitRepository } from 'src/models/GitRepository';
 import { GitOrganization } from 'src/models/GitOrganization';
 import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
+import { ResourceService } from 'src/core/resource/resource.service';
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: 'exampleGitRepositoryId',
   name: 'repositoryTest',
@@ -34,18 +35,20 @@ const EXAMPLE_GIT_ORGANIZATION: GitOrganization = {
   updatedAt: new Date()
 };
 
-const DEFAULT_APP_DATA = {
-  color: 'DEFAULT_APP_COLOR'
+const DEFAULT_RESOURCE_DATA = {
+  color: 'DEFAULT_RESOURCE_COLOR'
 };
 
-const EXAMPLE_APP: App = {
-  ...DEFAULT_APP_DATA,
-  id: 'EXAMPLE_APP_ID',
+const EXAMPLE_SERVICE_RESOURCE: Resource = {
+  ...DEFAULT_RESOURCE_DATA,
+  id: 'EXAMPLE_RESOURCE_ID',
+  resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: 'EXAMPLE_APP_NAME',
-  description: 'EXAMPLE_APP_DESCRIPTION',
-  deletedAt: null
+  name: 'EXAMPLE_RESOURCE_NAME',
+  description: 'EXAMPLE_RESOURCE_DESCRIPTION',
+  deletedAt: null,
+  gitRepositoryOverride: false
 };
 
 const prismaGitRepositoryCreateMock = jest.fn(() => {
@@ -56,8 +59,8 @@ const prismaGitOrganizationCreateMock = jest.fn(() => {
   return EXAMPLE_GIT_ORGANIZATION;
 });
 
-const prismaAppCreateMock = jest.fn(() => {
-  return EXAMPLE_APP;
+const prismaResourceCreateMock = jest.fn(() => {
+  return EXAMPLE_SERVICE_RESOURCE;
 });
 
 const prismaGitRepositoryReturnEmptyMock = jest.fn(() => {
@@ -79,19 +82,26 @@ describe('GitService', () => {
           useValue: {
             gitRepository: {
               create: prismaGitRepositoryCreateMock,
-              findUnique: prismaGitRepositoryReturnEmptyMock
+              findUnique: prismaGitRepositoryReturnEmptyMock,
+              findFirst: () => null
             },
             gitOrganization: {
               findUnique: prismaGitOrganizationCreateMock
             },
-            app: {
-              findUnique: prismaAppCreateMock
+            resource: {
+              findUnique: prismaResourceCreateMock
             }
           }
         },
         {
           provide: GitServiceFactory,
           useValue: MOCK_GIT_SERVICE_FACTORY
+        },
+        {
+          provide: ResourceService,
+          useValue: {
+            resource: () => EXAMPLE_SERVICE_RESOURCE
+          }
         }
       ],
       imports: [GitModule]
@@ -118,19 +128,19 @@ describe('GitService', () => {
       });
     });
     describe('GitService.createRepo()', () => {
-      it('should return App', async () => {
+      it('should return Resource', async () => {
         const createGitRepositoryInput: CreateGitRepositoryInput = {
-          name: 'EXAMPLE_APP_NAME',
-          appId: 'EXAMPLE_APP_DESCRIPTION',
-          gitOrganizationId: 'DEFAULT_APP_COLOR',
+          name: 'EXAMPLE_RESOURCE_NAME',
+          resourceId: 'EXAMPLE_RESOURCE_DESCRIPTION',
+          gitOrganizationId: 'exampleGitOrganizationId',
           gitProvider: EnumGitProvider.Github,
           public: true,
           gitOrganizationType: EnumGitOrganizationType.Organization
         };
         expect(
-          await gitService.createGitRepository(createGitRepositoryInput)
-        ).toEqual(EXAMPLE_APP);
-        expect(prismaAppCreateMock).toBeCalledTimes(1);
+          await gitService.createRemoteGitRepository(createGitRepositoryInput)
+        ).toEqual(EXAMPLE_SERVICE_RESOURCE);
+        expect(prismaResourceCreateMock).toBeCalledTimes(1);
       });
     });
   }

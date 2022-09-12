@@ -48,6 +48,7 @@ $inverted-border-radius: 6px;
     transition: all var(--menu-expand-animation-duration) ease-in;
     box-sizing: border-box;
     color: var(--menu-item-color);
+    height: auto;
   }
 
   &--active {
@@ -65,6 +66,10 @@ $inverted-border-radius: 6px;
     content: "";
     position: absolute;
     left: calc(50% - #{$select-item-width * 0.5});
+  }
+
+  &--no-hover:before {
+    display: none;
   }
 
   &--with-fixed-panel {

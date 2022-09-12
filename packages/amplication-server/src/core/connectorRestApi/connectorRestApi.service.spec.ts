@@ -11,7 +11,7 @@ import { User } from 'src/models';
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
 const EXAMPLE_NAME = 'Example Connector REST API';
-const EXAMPLE_APP_ID = 'ExampleApp';
+const EXAMPLE_RESOURCE_ID = 'ExampleResource';
 
 const EXAMPLE_USER_ID = 'exampleUserId';
 const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
@@ -42,7 +42,8 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApi = {
   versionNumber: 0,
   authenticationType: EnumConnectorRestApiAuthenticationType.None,
   privateKeyAuthenticationSettings: null,
-  httpBasicAuthenticationSettings: null
+  httpBasicAuthenticationSettings: null,
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
@@ -110,9 +111,9 @@ describe('ConnectorRestApiService', () => {
             authenticationType: EnumConnectorRestApiAuthenticationType.None,
             privateKeyAuthenticationSettings: null,
             httpBasicAuthenticationSettings: null,
-            app: {
+            resource: {
               connect: {
-                id: EXAMPLE_APP_ID
+                id: EXAMPLE_RESOURCE_ID
               }
             }
           }

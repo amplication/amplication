@@ -1,34 +1,31 @@
 import React, { useCallback, useContext } from "react";
 import { Snackbar } from "@amplication/design-system";
 import * as models from "../models";
-
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
-import { GET_PENDING_CHANGES } from "./PendingChanges";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import PendingChangesContext from "../VersionControl/PendingChangesContext";
 import "./DiscardChanges.scss";
+import { AppContext } from "../context/appContext";
 
 type Props = {
-  applicationId: string;
+  projectId: string;
   onComplete: () => void;
   onCancel: () => void;
 };
 
 const CLASS_NAME = "discard-changes";
 
-const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
-  const pendingChangesContext = useContext(PendingChangesContext);
-
+const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
+  const { pendingChanges, resetPendingChanges, addChange } = useContext(
+    AppContext
+  );
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
       if (!data) return;
 
       //remove entities from cache to reflect discarded changes
-      for (var change of pendingChangesContext.pendingChanges) {
-        if (
-          change.originType === models.EnumPendingChangeOriginType.Entity
-        ) {
+      for (var change of pendingChanges) {
+        if (change.originType === models.EnumPendingChangeOriginType.Entity) {
           cache.evict({
             id: cache.identify({
               id: change.originId,
@@ -40,33 +37,26 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
           cache.evict({
             id: cache.identify({
               id: change.originId,
-              __typename: "AppSettings",
+              __typename: "ServiceSettings",
             }),
           });
         }
       }
     },
     onCompleted: (data) => {
-      pendingChangesContext.reset();
+      resetPendingChanges();
       onComplete();
+      addChange(data.project.connect.id);
     },
-    refetchQueries: [
-      {
-        query: GET_PENDING_CHANGES,
-        variables: {
-          applicationId: applicationId,
-        },
-      },
-    ],
   });
 
   const handleConfirm = useCallback(() => {
     discardChanges({
       variables: {
-        appId: applicationId,
+        projectId,
       },
     }).catch(console.error);
-  }, [applicationId, discardChanges]);
+  }, [projectId, discardChanges]);
 
   const errorMessage = formatError(error);
 
@@ -107,7 +97,7 @@ const DiscardChanges = ({ applicationId, onComplete, onCancel }: Props) => {
 export default DiscardChanges;
 
 const DISCARD_CHANGES = gql`
-  mutation discardChanges($appId: String!) {
-    discardPendingChanges(data: { app: { connect: { id: $appId } } })
+  mutation discardChanges($projectId: String!) {
+    discardPendingChanges(data: { project: { connect: { id: $projectId } } })
   }
 `;

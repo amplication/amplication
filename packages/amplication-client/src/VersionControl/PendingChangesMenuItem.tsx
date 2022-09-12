@@ -3,12 +3,12 @@ import classNames from "classnames";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
 import "./PendingChangesMenuItem.scss";
 import { AsidePanel } from "../util/teleporter";
-import PendingChangesContext from "./PendingChangesContext";
 import { Tooltip } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { AppContext } from "../context/appContext";
 
 type Props = {
-  applicationId: string;
+  projectId: string;
 };
 
 const CLASS_NAME = "pending-changes-menu-item";
@@ -16,16 +16,13 @@ const CLASS_NAME = "pending-changes-menu-item";
 const DIRECTION = "nw";
 const ICON_SIZE = "medium";
 
-const PendingChangesMenuItem = ({ applicationId }: Props) => {
+const PendingChangesMenuItem = ({ projectId }: Props) => {
   const [panelOpen, setPanelOpen] = useState<boolean>(true);
-
-  const pendingChangesContext = useContext(PendingChangesContext);
+  const { pendingChanges } = useContext(AppContext);
 
   const handleClick = useCallback(() => {
     setPanelOpen(!panelOpen);
   }, [panelOpen, setPanelOpen]);
-
-  const pendingChanges = pendingChangesContext.pendingChanges;
 
   const pendingChangesBadge =
     (pendingChanges.length && pendingChanges.length.toString()) || null;
@@ -55,7 +52,7 @@ const PendingChangesMenuItem = ({ applicationId }: Props) => {
       {panelOpen && (
         <AsidePanel.Source>
           <PendingChangesBar
-            applicationId={applicationId}
+            projectId={projectId}
             handleClick={handleClick}
           />
         </AsidePanel.Source>

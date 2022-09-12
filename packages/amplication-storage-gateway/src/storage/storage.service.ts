@@ -19,18 +19,22 @@ export class StorageService {
 
   private static buildFolder(
     buildsFolder: string,
-    appId: string,
+    resourceId: string,
     buildId: string
   ) {
-    return join(buildsFolder, appId, buildId);
+    return join(buildsFolder, resourceId, buildId);
   }
 
-  getBuildFilesList(appId: string, buildId: string, relativePath: string = "") {
+  getBuildFilesList(
+    resourceId: string,
+    buildId: string,
+    relativePath: string = ""
+  ) {
     const results: FilesDictionary = {};
 
     const cwd = `${StorageService.buildFolder(
       this.buildsFolder,
-      appId,
+      resourceId,
       buildId
     )}/${relativePath || ""}`;
 
@@ -74,9 +78,9 @@ export class StorageService {
     });
   }
 
-  fileContent(appId: string, buildId: string, path: string = ""): string {
+  fileContent(resourceId: string, buildId: string, path: string = ""): string {
     const filePath = join(
-      StorageService.buildFolder(this.buildsFolder, appId, buildId),
+      StorageService.buildFolder(this.buildsFolder, resourceId, buildId),
       path
     );
     return readFileSync(filePath).toString();

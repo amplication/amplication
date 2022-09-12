@@ -1,0 +1,31 @@
+@import "../style/index.scss";
+
+.project-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  &__project-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    
+    .amp-button {
+      justify-content: flex-start;
+    }
+  }
+
+  &__label {
+    @include regular-12;
+    margin-top: 0;
+    margin-bottom: var(--default-spacing-small);
+    color: var(--black80);
+  }
+
+  &__divider {
+    height: 1px;
+    background-color: var(--black5);
+    margin: var(--large-spacing) 0;
+    border: none;
+  }
+}

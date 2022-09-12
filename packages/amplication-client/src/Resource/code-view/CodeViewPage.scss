@@ -1,0 +1,38 @@
+@import "../../style/index.scss";
+$svg-img-width: 200px;
+$svg-img-height: 200px;
+
+.code-view-page {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+
+  &__code-container {
+    flex: 1;
+    background: var(--page-content-tab-background);
+    border-radius: var(--default-border-radius);
+    border: $border-black10;
+    box-sizing: border-box;
+    overflow: auto;
+    height: 100%;
+  }
+
+  &__empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    .svg-theme-image {
+      width: $svg-img-width;
+      height: $svg-img-height;
+    }
+
+    span {
+      @include regular-12;
+      color: var(--black20);
+    }
+  }
+}

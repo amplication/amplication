@@ -4,63 +4,53 @@ import { JsonValue } from 'type-fest';
 import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycle
 import { Block } from './Block'; // eslint-disable-line import/no-cycle
 @ObjectType({
-  isAbstract: true,
-  description: undefined
+  isAbstract: true
 })
 export class BlockVersion {
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   updatedAt!: Date;
 
   @Field(() => String, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   description?: string;
 
   @Field(() => Block, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   block?: Block;
 
   @Field(() => Int, {
-    nullable: false,
-    description: undefined
+    nullable: false
   })
   versionNumber!: number;
 
   commitId?: string | null;
 
   @Field(() => Commit, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   commit?: Commit;
 
   @Field(() => GraphQLJSONObject, {
-    nullable: true,
-    description: undefined
+    nullable: true
   })
   settings?: JsonValue;
 
