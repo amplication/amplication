@@ -19,3 +19,21 @@ export const ENV_VARIABLES: VariableDictionary = [
   { JWT_EXPIRATION: "2d" },
   { SERVER_PORT: "3000" },
 ];
+
+export const MYSQL_DOCKER_COMPOSE_DB_IMAGE = {
+  version: "3.1",
+  services: {
+    db: {
+      image: "mysql",
+      ports: ["3306:3306"],
+      environment: {
+        MYSQL_ROOT_PASSWORD: "example",
+        MYSQL_USER: "root",
+      },
+    },
+  },
+  volumes: { mysql: null },
+};
+
+export const DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
+export const DOCKER_COMPOSE_DB_FILE_NAME = "docker-compose.db.yml";
