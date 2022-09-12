@@ -40,6 +40,7 @@
   --image-drop-excel: url("../assets/images/mono/drop-excel-dark.svg");
   --image-my-resources: url("../assets/images/mono/my-resources.svg");
   --image-generating: url("../assets/images/mono/generating.svg");
+  --plugin-installation-empty: url("../assets/images/mono/plugin-installation-empty.svg");
 
   --diffViewerBackground: var(--white);
   --diffViewerColor: var(--black100);
