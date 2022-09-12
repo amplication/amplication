@@ -3,3 +3,4 @@ dist/
 package-lock.json
 coverage/
 *.md
+src/models.ts

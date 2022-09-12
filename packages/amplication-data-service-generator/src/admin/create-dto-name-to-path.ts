@@ -1,5 +1,5 @@
 import { camelCase } from "camel-case";
-import { DTOs } from "../server/resource/create-dtos";
+import { DTOs } from "@amplication/code-gen-types";
 
 export function createDTONameToPath(
   dtos: DTOs,

@@ -3,22 +3,17 @@
 @mixin workspaceItem {
   display: flex;
   flex: 1;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
   cursor: pointer;
   padding: var(--default-spacing);
-
-  .circle-badge {
-    margin-left: 0;
-    margin-right: var(--default-spacing);
-  }
+  gap: var(--default-spacing);
 
   &__name {
     @include regular-12;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    flex: 1;
+    min-width: 0;
   }
 
   &__plan {
@@ -27,27 +22,25 @@
   }
 
   &__details {
-    @include flexColumn;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
     font-weight: 400;
-    margin-right: auto;
   }
 }
 
 .workspaces-selector {
   position: relative;
-  box-sizing: border-box;
   display: flex;
-  flex-direction: row;
-  align-items: center;
   background-color: var(--surface);
   border: $border-black5;
   border-top-left-radius: var(--default-spacing-small);
   border-top-right-radius: var(--default-spacing-small);
-  width: 100%;
-  margin-bottom: var(--large-spacing);
 
   &__current {
     @include workspaceItem;
+    width: calc(100% - var(--double-spacing));
 
     .amp-button {
       min-width: var(--button-min-width);
@@ -96,7 +89,6 @@
     }
 
     &__divider {
-      flex-grow: 1;
       height: 1px;
       margin: 0 var(--default-spacing) var(--icon-spacing);
       background-color: var(--black30);

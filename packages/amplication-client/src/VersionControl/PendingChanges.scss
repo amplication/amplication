@@ -9,8 +9,6 @@ $resource-name-max-width: 180px;
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
 
   &__title {
     @include bold-14;
@@ -20,10 +18,9 @@ $resource-name-max-width: 180px;
 
   &__divider {
     border: none;
+    margin: auto 0 0 0;
     background-color: var(--black10);
     height: 1px;
-    width: 100%;
-    margin-top: auto;
   }
 
   &__header {
@@ -44,6 +41,7 @@ $resource-name-max-width: 180px;
     :last-child {
       margin-left: 0;
     }
+
     .amp-button {
       margin-left: 0;
     }
@@ -78,6 +76,7 @@ $resource-name-max-width: 180px;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+
     img {
       height: $empty-state-image-size;
     }
@@ -92,31 +91,18 @@ $resource-name-max-width: 180px;
   &__changes-wrapper {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    gap: var(--default-spacing);
     border: $border-black10;
     padding: var(--default-spacing);
     border-radius: var(--small-border-radius);
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
   }
 
   &__changes {
-    position: relative;
-    margin-bottom: var(--large-spacing);
-    height: 100%;
-    overflow-x: hidden;
+    flex-grow: 1;
+    flex-basis: 0px;
     overflow-y: auto;
-
-    &::-webkit-scrollbar-track {
-      background-color: transparent;
-      border-radius: var(--scrollbar-radius);
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--black60);
-      border-radius: var(--scrollbar-radius);
-      width: var(--grid-row-gap);
-    }
+    @include scrollbars(16px, var(--black60), transparent);
 
     &__resource {
       @include bold-12;

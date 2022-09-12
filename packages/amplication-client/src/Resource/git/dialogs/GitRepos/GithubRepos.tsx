@@ -81,7 +81,7 @@ function GitRepos({
       <div className={`${CLASS_NAME}__header`}>
         <h4>Select a {gitProvider} repository to sync your resource with.</h4>
         {loadingRepos || networkStatus === NetworkStatus.refetch ? (
-          <CircularProgress />
+          <CircularProgress centerToParent />
         ) : (
           <Tooltip aria-label="Refresh repositories" direction="w" noDelay wrap>
             <Button
