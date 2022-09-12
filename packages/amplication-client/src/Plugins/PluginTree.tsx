@@ -1,4 +1,5 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import InnerTabLink from "../Layout/InnerTabLink";
 import "./PluginTree.scss";
@@ -12,7 +13,16 @@ type Props = {
 
 export const PluginTree = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
+    const location = useLocation();
+    const history = useHistory();
     const { currentWorkspace, currentProject } = useContext(AppContext);
+    
+    useEffect(() => {
+      if (/catalog|installed/.test(location.pathname)) return;
+      
+      history.push(`${location.pathname}/catalog`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
       <div className={CLASS_NAME}>
