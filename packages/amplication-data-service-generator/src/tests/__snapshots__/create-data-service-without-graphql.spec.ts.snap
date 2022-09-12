@@ -2762,8 +2762,7 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
-  "server/.env": "
-POSTGRESQL_USER=testUsername
+  "server/.env": "POSTGRESQL_USER=testUsername
 POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
 POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
