@@ -3,22 +3,13 @@ import {
   CreateAdminModulesParams,
   CreateAuthModulesParams,
   CreateControllerModulesParams,
+  CreateEntityBaseServiceParams,
+  CreateEntityServiceParams,
   CreateServerDotEnvParams,
-  CreateServiceModulesParams,
 } from "./plugin-events-params";
 import { DsgContext, EventNames } from "./plugins-types";
 
 export type Events = {
-  [EventNames.CreateServiceModules]?: {
-    before?: (
-      dsgContext: DsgContext,
-      eventParams: CreateServiceModulesParams["before"]
-    ) => CreateServiceModulesParams["before"];
-    after?: (
-      dsgContext: DsgContext,
-      modules: CreateServiceModulesParams["after"]
-    ) => Module[];
-  };
   [EventNames.CreateControllerModules]?: {
     before?: (
       dsgContext: DsgContext,
@@ -57,6 +48,26 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDotEnvParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateEntityService]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateEntityServiceParams["before"]
+    ) => CreateEntityServiceParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateEntityServiceParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateEntityBaseService]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateEntityBaseServiceParams["before"]
+    ) => CreateEntityBaseServiceParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateEntityBaseServiceParams["after"]
     ) => Module[];
   };
 };

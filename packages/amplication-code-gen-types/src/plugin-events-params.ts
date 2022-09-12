@@ -1,19 +1,38 @@
 import { namedTypes } from "ast-types";
-import { DTOs, Entity, EntityField, Module } from "./code-gen-types";
+import {
+  DTOs,
+  Entity,
+  EntityField,
+  Module,
+  NamedClassDeclaration,
+} from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
-export interface CreateServiceModulesParams extends EventParams {
+export interface CreateEntityBaseServiceParams extends EventParams {
   before: {
     entityName: string;
-    entityType: string;
     entity: Entity;
+    templateMapping: { [key: string]: any };
+    passwordFields: EntityField[];
     srcDirectory: string;
     serviceId: namedTypes.Identifier;
     serviceBaseId: namedTypes.Identifier;
     delegateId: namedTypes.Identifier;
-    passwordFields: EntityField[];
-    extraMapping: { [key: string]: any };
+    entityDTO: NamedClassDeclaration;
     dtos: DTOs;
+    file: namedTypes.File;
+  };
+}
+
+export interface CreateEntityServiceParams extends EventParams {
+  before: {
+    entityName: string;
+    templateMapping: { [key: string]: any };
+    passwordFields: EntityField[];
+    srcDirectory: string;
+    serviceId: namedTypes.Identifier;
+    serviceBaseId: namedTypes.Identifier;
+    file: namedTypes.File;
   };
 }
 

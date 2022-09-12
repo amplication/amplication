@@ -1,4 +1,4 @@
-import { ASTNode, builders, namedTypes } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
 import { print } from "recast";
 import {
@@ -9,7 +9,8 @@ import {
   NamedClassDeclaration,
   DTOs,
   EventNames,
-  CreateServiceModulesParams,
+  CreateEntityServiceParams,
+  CreateEntityBaseServiceParams,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -54,34 +55,78 @@ const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createServiceModules(
-  eventParams: CreateServiceModulesParams["before"]
-): Promise<Module[]> {
-  eventParams.passwordFields = eventParams.entity.fields.filter(
-    isPasswordField
-  );
-
-  eventParams.extraMapping = createExtraMapping(eventParams);
-
-  return pluginWrapper(
-    createServiceModulesInternal,
-    EventNames.CreateServiceModules,
-    eventParams
-  );
-}
-
-async function createServiceModule(
   entityName: string,
-  mapping: { [key: string]: ASTNode | undefined },
-  passwordFields: EntityField[],
+  entityType: string,
+  entity: Entity,
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
+  delegateId: namedTypes.Identifier,
+  dtos: DTOs,
   srcDirectory: string
-): Promise<Module> {
+): Promise<Module[]> {
+  const passwordFields = entity.fields.filter(isPasswordField);
+  const file = await readFile(serviceTemplatePath);
+  const fileBase = await readFile(serviceBaseTemplatePath);
+
+  const templateMapping = createTemplateMapping(
+    entityType,
+    serviceId,
+    serviceBaseId,
+    delegateId,
+    passwordFields
+  );
+
+  const entityDTOs = dtos[entity.name];
+  const { entity: entityDTO } = entityDTOs;
+
+  return [
+    ...(await pluginWrapper(
+      createServiceModule,
+      EventNames.CreateEntityService,
+      {
+        entityName,
+        templateMapping,
+        passwordFields,
+        serviceId,
+        serviceBaseId,
+        srcDirectory,
+        file,
+      }
+    )),
+
+    ...(await pluginWrapper(
+      createServiceBaseModule,
+      EventNames.CreateEntityBaseService,
+      {
+        entityName,
+        entity,
+        entityDTO,
+        templateMapping,
+        passwordFields,
+        serviceId,
+        serviceBaseId,
+        dtos,
+        delegateId,
+        srcDirectory,
+        file: fileBase,
+      }
+    )),
+  ];
+}
+
+async function createServiceModule({
+  entityName,
+  templateMapping,
+  passwordFields,
+  serviceId,
+  serviceBaseId,
+  srcDirectory,
+  file,
+}: CreateEntityServiceParams["before"]): Promise<Module[]> {
   const modulePath = `${srcDirectory}/${entityName}/${entityName}.service.ts`;
   const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
-  const file = await readFile(serviceTemplatePath);
 
-  interpolate(file, mapping);
+  interpolate(file, templateMapping);
   removeTSClassDeclares(file);
 
   //add import to base class
@@ -131,28 +176,30 @@ async function createServiceModule(
   removeTSVariableDeclares(file);
   removeTSInterfaceDeclares(file);
 
-  return {
-    path: modulePath,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: modulePath,
+      code: print(file).code,
+    },
+  ];
 }
 
-async function createServiceBaseModule(
-  entityName: string,
-  entity: Entity,
-  entityDTO: NamedClassDeclaration,
-  mapping: { [key: string]: ASTNode | undefined },
-  passwordFields: EntityField[],
-  serviceId: namedTypes.Identifier,
-  serviceBaseId: namedTypes.Identifier,
-  dtos: DTOs,
-  delegateId: namedTypes.Identifier,
-  srcDirectory: string
-): Promise<Module> {
+async function createServiceBaseModule({
+  entityName,
+  entity,
+  entityDTO,
+  templateMapping,
+  passwordFields,
+  serviceId,
+  serviceBaseId,
+  dtos,
+  delegateId,
+  srcDirectory,
+  file,
+}: CreateEntityBaseServiceParams["before"]): Promise<Module[]> {
   const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
-  const file = await readFile(serviceBaseTemplatePath);
 
-  interpolate(file, mapping);
+  interpolate(file, templateMapping);
 
   const classDeclaration = getClassDeclarationById(file, serviceBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
@@ -257,10 +304,12 @@ async function createServiceBaseModule(
   removeTSInterfaceDeclares(file);
   addAutoGenerationComment(file);
 
-  return {
-    path: moduleBasePath,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: moduleBasePath,
+      code: print(file).code,
+    },
+  ];
 }
 
 function createMutationDataMapping(
@@ -339,51 +388,13 @@ async function createToManyRelationFile(
   return toManyFile;
 }
 
-async function createServiceModulesInternal({
-  entityName,
-  entity,
-  serviceId,
-  serviceBaseId,
-  delegateId,
-  srcDirectory,
-  extraMapping,
-  passwordFields,
-  dtos,
-}: CreateServiceModulesParams["before"]): Promise<Module[]> {
-  const entityDTOs = dtos[entity.name];
-  const { entity: entityDTO } = entityDTOs;
-
-  return [
-    await createServiceModule(
-      entityName,
-      extraMapping,
-      passwordFields,
-      serviceId,
-      serviceBaseId,
-      srcDirectory
-    ),
-    await createServiceBaseModule(
-      entityName,
-      entity,
-      entityDTO,
-      extraMapping,
-      passwordFields,
-      serviceId,
-      serviceBaseId,
-      dtos,
-      delegateId,
-      srcDirectory
-    ),
-  ];
-}
-
-function createExtraMapping({
-  entityType,
-  serviceId,
-  serviceBaseId,
-  delegateId,
-  passwordFields,
-}: CreateServiceModulesParams["before"]): { [key: string]: any } {
+function createTemplateMapping(
+  entityType: string,
+  serviceId: namedTypes.Identifier,
+  serviceBaseId: namedTypes.Identifier,
+  delegateId: namedTypes.Identifier,
+  passwordFields: EntityField[]
+): { [key: string]: any } {
   return {
     SERVICE: serviceId,
     SERVICE_BASE: serviceBaseId,

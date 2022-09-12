@@ -49,7 +49,7 @@ async function createResourceModules(
   const serviceBaseId = createServiceBaseId(entityType);
   const delegateId = builders.identifier(entityName);
 
-  const serviceModules = await createServiceModules({
+  const serviceModules = await createServiceModules(
     entityName,
     entityType,
     entity,
@@ -57,10 +57,8 @@ async function createResourceModules(
     serviceBaseId,
     delegateId,
     dtos,
-    srcDirectory,
-    extraMapping: {},
-    passwordFields: [],
-  });
+    srcDirectory
+  );
 
   const [serviceModule] = serviceModules;
 

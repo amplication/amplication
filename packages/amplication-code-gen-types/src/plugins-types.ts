@@ -37,11 +37,12 @@ export type PluginMap = {
 };
 
 export enum EventNames {
-  CreateServiceModules = "createServiceModules",
   CreateControllerModules = "createControllerModules",
   CreateAuthModules = "createAuthModules",
   CreateAdminModules = "createAdminModules",
   CreateServerDotEnv = "CreateServerDotEnv",
+  CreateEntityService = "CreateEntityService",
+  CreateEntityBaseService = "CreateEntityBaseService",
 }
 
 export interface AmplicationPlugin {
