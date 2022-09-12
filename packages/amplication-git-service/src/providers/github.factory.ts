@@ -4,13 +4,12 @@ import {
   GITHUB_APP_APP_ID_VAR,
   GITHUB_APP_PRIVATE_KEY_VAR
 } from './github.service';
-import {
-  GithubBranchProvider,
-  GitProviderBranch
-} from './github-branch.provider';
 import { ConverterUtil } from '../utils/ConverterUtil';
+import {GitProvider} from "./git-provider.interface";
+import {GitFactory} from "./git-provider-factory.interface";
+import {GithubProvider} from "./githubProvider";
 
-export class GithubBranchFactory {
+export class GithubFactory implements GitFactory {
   private app: App;
 
   constructor(private readonly configService: ConfigService) {
@@ -28,11 +27,10 @@ export class GithubBranchFactory {
   public async getClient(
     installationId: string,
     owner: string,
-    repo: string,
-    branch: string
-  ): Promise<GitProviderBranch> {
+    repo: string
+  ): Promise<GitProvider> {
     const installationIdNumber = ConverterUtil.convertToNumber(installationId);
     const octokit = await this.app.getInstallationOctokit(installationIdNumber);
-    return new GithubBranchProvider(octokit, owner, repo, branch);
+    return new GithubProvider(octokit, owner, repo);
   }
 }
