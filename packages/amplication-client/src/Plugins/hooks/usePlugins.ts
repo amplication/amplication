@@ -183,8 +183,11 @@ const usePlugins = (resourceId: string) => {
   }, [pluginInstallations, pluginOrder]);
 
   const [updatePluginOrder, { error: UpdatePluginOrderError }] = useMutation<{
-    setPluginOrder: models.PluginSetOrderInput;
+    setPluginOrder: models.PluginOrder;
   }>(UPDATE_PLUGIN_ORDER, {
+    onCompleted: (data) => {
+      addBlock(data.setPluginOrder.id);
+    },
     refetchQueries: [
       {
         query: GET_PLUGIN_ORDER,

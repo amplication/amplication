@@ -1330,6 +1330,7 @@ export type Query = {
   pendingChanges: Array<PendingChange>;
   PluginInstallation?: Maybe<PluginInstallation>;
   PluginInstallations: Array<PluginInstallation>;
+  pluginOrder: PluginOrder;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
@@ -1421,6 +1422,10 @@ export type QueryPluginInstallationsArgs = {
   skip?: InputMaybe<Scalars["Int"]>;
   take?: InputMaybe<Scalars["Int"]>;
   where?: InputMaybe<PluginInstallationWhereInput>;
+};
+
+export type QueryPluginOrderArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryProjectArgs = {

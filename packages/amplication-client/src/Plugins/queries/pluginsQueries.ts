@@ -60,6 +60,7 @@ export const UPDATE_PLUGIN_ORDER = gql`
         pluginId
         order
       }
+      id
     }
   }
 `;
