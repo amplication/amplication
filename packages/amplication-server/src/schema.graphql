@@ -12,6 +12,11 @@ type AdminUISettings {
   adminUIPath: String!
 }
 
+type PluginOrderItem {
+  pluginId: String!
+  order: Int!
+}
+
 type AuthorizeResourceWithGitResult {
   """"""
   url: String!
@@ -53,6 +58,7 @@ type Query {
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
+  pluginOrder(where: WhereUniqueInput!): PluginOrder!
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
@@ -397,6 +403,7 @@ enum EnumBlockType {
   EntityPage
   Document
   PluginInstallation
+  PluginOrder
 }
 
 type BlockVersion {
@@ -883,7 +890,6 @@ type PluginInstallation implements IBlock {
   lockedAt: DateTime
   pluginId: String!
   enabled: Boolean!
-  order: Int!
 }
 
 input PluginInstallationWhereInput {
@@ -903,6 +909,22 @@ input PluginInstallationOrderByInput {
   blockType: SortOrder
   displayName: SortOrder
   description: SortOrder
+}
+
+type PluginOrder implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  order: [PluginOrderItem!]!
 }
 
 type ProjectConfigurationSettings implements IBlock {
@@ -1059,6 +1081,7 @@ type Mutation {
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
+  setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -1301,6 +1324,10 @@ input PluginInstallationUpdateInput {
   displayName: String
   description: String
   enabled: Boolean!
+}
+
+input PluginSetOrderInput {
+  order: Int!
 }
 
 input ProjectConfigurationSettingsUpdateInput {
