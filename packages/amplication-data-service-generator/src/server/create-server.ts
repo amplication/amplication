@@ -28,7 +28,6 @@ import { createAuthModules } from "./auth/createAuth";
 import { createDockerComposeFile } from "./create-docker-compose";
 import { createPackageJson } from "./package-json/create-package-json";
 
-
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
 const validatePath = (serverPath: string) => serverPath.trim() || null;
