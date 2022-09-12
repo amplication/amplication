@@ -5,7 +5,7 @@ import {
   AMPLICATION_LOGGER_PROVIDER,
 } from '@amplication/nest-logger-module';
 
-const AMPLICATION = 'amplication';
+const BRANCH_NAME = 'amplication';
 
 export class CommitsService {
   constructor(
@@ -27,8 +27,7 @@ export class CommitsService {
         context
       );
       return {
-        headCommit,
-        defaultBranchName: undefined,
+        headCommit
       };
     }
     this.logger.warn(
@@ -39,7 +38,7 @@ export class CommitsService {
     const defaultBranchName = await gitClient.getDefaultBranchName();
     headCommit = (await gitClient.getBranch(defaultBranchName)).headCommit;
     await gitClient.createBranch(branch, headCommit);
-    this.logger.info(`BRANCH ${branch} was created`, {
+    this.logger.info(`Branch ${branch} was created`, {
       ...context,
       repository_master_branch: defaultBranchName,
       headCommit,
@@ -100,11 +99,11 @@ export class CommitsService {
       context.repo
     );
 
-    const branch = await this.getBranch(gitClient, AMPLICATION, context);
+    const branch = await this.getBranch(gitClient, BRANCH_NAME, context);
 
     const commit = await this.createCommit(
       gitClient,
-      AMPLICATION,
+      BRANCH_NAME,
       branch.headCommit,
       message,
       files,
@@ -113,7 +112,7 @@ export class CommitsService {
 
     const pullRequest = await this.getPullRequest(
       gitClient,
-      AMPLICATION,
+      BRANCH_NAME,
       message,
       branch.defaultBranchName,
       context
