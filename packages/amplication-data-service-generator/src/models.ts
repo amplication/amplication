@@ -613,6 +613,7 @@ export enum EnumBlockType {
   FlowApi = "FlowApi",
   Layout = "Layout",
   PluginInstallation = "PluginInstallation",
+  PluginOrder = "PluginOrder",
   ProjectConfigurationSettings = "ProjectConfigurationSettings",
   ServiceSettings = "ServiceSettings",
   ServiceTopics = "ServiceTopics",
@@ -880,6 +881,7 @@ export type Mutation = {
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
+  setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
   updateAccount: Account;
   updateEntity?: Maybe<Entity>;
@@ -1070,6 +1072,11 @@ export type MutationSetCurrentWorkspaceArgs = {
   data: WhereUniqueInput;
 };
 
+export type MutationSetPluginOrderArgs = {
+  data: PluginSetOrderInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
@@ -1174,7 +1181,6 @@ export type PluginInstallation = IBlock & {
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars["DateTime"]>;
   lockedByUserId?: Maybe<Scalars["String"]>;
-  order: Scalars["Int"];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   pluginId: Scalars["String"];
@@ -1216,6 +1222,33 @@ export type PluginInstallationWhereInput = {
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type PluginOrder = IBlock & {
+  __typename?: "PluginOrder";
+  blockType: EnumBlockType;
+  createdAt: Scalars["DateTime"];
+  description?: Maybe<Scalars["String"]>;
+  displayName: Scalars["String"];
+  id: Scalars["String"];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars["DateTime"]>;
+  lockedByUserId?: Maybe<Scalars["String"]>;
+  order: Array<PluginOrderItem>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  updatedAt: Scalars["DateTime"];
+  versionNumber: Scalars["Float"];
+};
+
+export type PluginOrderItem = {
+  __typename?: "PluginOrderItem";
+  order: Scalars["Int"];
+  pluginId: Scalars["String"];
+};
+
+export type PluginSetOrderInput = {
+  order: Scalars["Int"];
 };
 
 export type Project = {
