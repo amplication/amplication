@@ -4,6 +4,7 @@ $logo-size: 44px;
 $order-badge-size: 14px;
 $image-size: 220px;
 $install-width: 86px;
+$button-padding:  5px 12px;
 
 .plugin-installation-wrapper {
   display: flex;
@@ -56,7 +57,7 @@ $install-width: 86px;
   }
 
   &__details {
-    margin-left: 16px;
+    margin-left: var(--large-spacing);
     flex: 1;
 
     &__title {
@@ -70,7 +71,7 @@ $install-width: 86px;
   }
 
   &__install {
-    padding: 5px 12px;
+    padding: $button-padding;
     min-width: $install-width;
   }
 

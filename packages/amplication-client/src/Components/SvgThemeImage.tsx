@@ -15,18 +15,18 @@ export enum EnumImages {
   MyResources = "--image-my-resources",
   Generating = "--image-generating",
   CreateServiceWizard = "--image-create-service-wizard",
-  PLuginInstallationEmpty = "--plugin-installation-empty",
+  PluginInstallationEmpty = "--plugin-installation-empty",
 }
 
 type Props = {
   image: EnumImages;
-  css?: string;
+  className?: string;
 };
 
-export const SvgThemeImage = ({ image, css }: Props) => {
+export const SvgThemeImage = ({ image, className }: Props) => {
   return (
     <span
-      className={css || "svg-theme-image"}
+      className={className || "svg-theme-image"}
       style={{
         backgroundImage: `var(${image})`,
       }}

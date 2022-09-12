@@ -41,7 +41,7 @@
   --image-my-resources: url("../assets/images/mono/my-resources-dark.svg");
   --image-generating: url("../assets/images/mono/generating-dark.svg");
   --image-create-service-wizard : url("../assets/images/mono/service-wizard-create.svg");
-  --plugin-installation-empty: url("../assets/images/mono/plugin-installation-empty.svg");
+  --plugin-installation-empty: url("../assets/images/mono/plugin-installation-empty-dark.svg");
 
 
   --diffViewerBackground: var(--white);
