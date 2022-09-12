@@ -67,25 +67,23 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const installedPlugins = useMemo(() => {
     if (!pluginInstallations) return {};
 
-    return keyBy(
-      pluginInstallations,
-      (plugin) => plugin && plugin.pluginId
-    );
+    return keyBy(pluginInstallations, (plugin) => plugin && plugin.pluginId);
   }, [pluginInstallations]);
 
   const errorMessage = formatError(createError) || formatError(updateError);
 
   return (
     <div>
-      {pluginInstallations && Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
-        <PluginsCatalogItem
-          key={pluginId}
-          plugin={plugin}
-          pluginInstallation={installedPlugins[plugin.id]}
-          onInstall={handleInstall}
-          onEnableStateChange={onEnableStateChange}
-        />
-      ))}
+      {pluginInstallations &&
+        Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
+          <PluginsCatalogItem
+            key={pluginId}
+            plugin={plugin}
+            pluginInstallation={installedPlugins[plugin.id]}
+            onInstall={handleInstall}
+            onEnableStateChange={onEnableStateChange}
+          />
+        ))}
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}
