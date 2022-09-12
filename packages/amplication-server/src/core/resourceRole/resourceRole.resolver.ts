@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseFilters } from '@nestjs/common';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
 import {
   CreateResourceRoleArgs,
   FindManyResourceRoleArgs,
@@ -9,8 +9,8 @@ import {
   FindOneResourceRoleArgs,
   DeleteResourceRoleArgs
 } from './dto';
-import { ResourceRole } from 'src/models';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
+import { ResourceRole } from '../../models';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { ResourceRoleService } from './resourceRole.service';
 
 @Resolver(() => ResourceRole)
