@@ -30,10 +30,6 @@ import {
 import { isToManyRelationField } from "../../../util/field";
 import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
-import {
-  createServiceId,
-  createFieldFindManyFunctionId,
-} from "../service/create-service";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
@@ -41,6 +37,10 @@ import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
+import {
+  createFieldFindManyFunctionId,
+  createServiceId,
+} from "../service/create-service";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
@@ -60,8 +60,7 @@ export async function createControllerModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entity: Entity,
-  srcDirectory: string
+  entity: Entity
 ): Promise<Module[]> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { appInfo, DTOs } = DsgContext.getInstance;
@@ -127,7 +126,6 @@ export async function createControllerModules(
         templateMapping,
         controllerBaseId,
         serviceId,
-        srcDirectory,
       }
     )),
     ...(await pluginWrapper(
@@ -142,7 +140,6 @@ export async function createControllerModules(
         templateMapping,
         controllerBaseId,
         serviceId,
-        srcDirectory,
       }
     )),
   ];
@@ -155,10 +152,10 @@ async function createControllerModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-  srcDirectory,
 }: CreateEntityControllerParams["before"]): Promise<Module[]> {
-  const modulePath = `${srcDirectory}/${entityName}/${entityName}.controller.ts`;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.controller.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
 
   const file = await readFile(templatePath);
 
@@ -199,11 +196,10 @@ async function createControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-  srcDirectory,
 }: CreateEntityBaseControllerParams["before"]): Promise<Module[]> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { DTOs } = DsgContext.getInstance;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
+  const { DTOs, serverDirectories } = DsgContext.getInstance;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
   const file = await readFile(baseTemplatePath);
 
   const entityDTOs = DTOs[entity.name];
@@ -276,7 +272,7 @@ async function createControllerBaseModule({
 
   classDeclaration.body.body.push(...toManyRelationMethods);
 
-  const dtoNameToPath = getDTONameToPath(DTOs, srcDirectory);
+  const dtoNameToPath = getDTONameToPath(DTOs, serverDirectories.srcDirectory);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(moduleBasePath, dtoNameToPath)

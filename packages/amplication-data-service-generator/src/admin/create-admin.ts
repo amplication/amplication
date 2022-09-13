@@ -126,8 +126,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   const appModule = await createAppModule(
     appInfo,
     entityToPath,
-    entitiesComponents,
-    clientDirectories
+    entitiesComponents
   );
   const createdModules = [
     appModule,

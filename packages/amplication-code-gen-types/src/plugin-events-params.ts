@@ -14,12 +14,9 @@ export interface CreateEntityServiceBaseParams extends EventParams {
     entity: Entity;
     templateMapping: { [key: string]: any };
     passwordFields: EntityField[];
-    srcDirectory: string;
     serviceId: namedTypes.Identifier;
     serviceBaseId: namedTypes.Identifier;
     delegateId: namedTypes.Identifier;
-    entityDTO: NamedClassDeclaration;
-    dtos: DTOs;
     template: namedTypes.File;
   };
 }
@@ -29,7 +26,6 @@ export interface CreateEntityServiceParams extends EventParams {
     entityName: string;
     templateMapping: { [key: string]: any };
     passwordFields: EntityField[];
-    srcDirectory: string;
     serviceId: namedTypes.Identifier;
     serviceBaseId: namedTypes.Identifier;
     template: namedTypes.File;
@@ -40,7 +36,6 @@ export interface CreateEntityControllerParams extends EventParams {
     templatePath: string;
     entityName: string;
     entityServiceModule: string;
-    srcDirectory: string;
     templateMapping: { [key: string]: any };
     controllerBaseId: namedTypes.Identifier;
     serviceId: namedTypes.Identifier;
@@ -54,7 +49,6 @@ export interface CreateEntityBaseControllerParams extends EventParams {
     entityName: string;
     entityType: string;
     entityServiceModule: string;
-    srcDirectory: string;
     templateMapping: { [key: string]: any };
     controllerBaseId: namedTypes.Identifier;
     serviceId: namedTypes.Identifier;
