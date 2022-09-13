@@ -597,7 +597,7 @@ export class BuildService {
     rootGeneration = true
   ): Promise<CodeGenTypes.DSGResourceData> {
     const resources = await this.resourceService.resources({
-      where: { project: { resources: { some: { id: resourceId } } } }
+      where: { project: { resources: { some: { id: { equals: resourceId } } } } }
     });
 
     const resource = resources.find(({ id }) => id === resourceId);

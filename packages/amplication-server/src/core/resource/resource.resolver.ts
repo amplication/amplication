@@ -29,7 +29,6 @@ import {
   FindManyResourceArgs,
   UpdateOneResourceArgs
 } from './dto';
-import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
 @Resolver(() => Resource)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -39,8 +38,7 @@ export class ResourceResolver {
     private readonly resourceService: ResourceService,
     private readonly entityService: EntityService,
     private readonly buildService: BuildService,
-    private readonly environmentService: EnvironmentService,
-    private readonly serviceTopicsService: ServiceTopicsService
+    private readonly environmentService: EnvironmentService
   ) {}
 
   @Query(() => Resource, { nullable: true })
@@ -59,6 +57,15 @@ export class ResourceResolver {
     return this.resourceService.resources(args);
   }
 
+  @Query(() => [Resource], {
+    nullable: false
+  })
+  @Roles('ORGANIZATION_ADMIN')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
+  async messageBrokerConnectedServices(@Args() args: FindOneArgs): Promise<Resource[]> {
+    return this.resourceService.messageBrokerConnectedServices(args);
+  }
+
   @ResolveField(() => [Entity])
   async entities(
     @Parent() resource: Resource,
@@ -68,29 +75,6 @@ export class ResourceResolver {
       ...args,
       where: { ...args.where, resource: { id: resource.id } }
     });
-  }
-
-  @ResolveField(() => [Resource], { nullable: false })
-  async services(
-    @Parent() resource: Resource,
-    @Args() args: FindManyResourceArgs
-  ): Promise<Resource[]> {
-    //TODO: implement search in json field in block version
-    // const serviceTopicsCollection = await this.serviceTopicsService.findMany({
-    //   where: { messageBrokerId: { equals: resource.id } }
-    // });
-    const serviceTopicsCollection = await this.serviceTopicsService.findMany({});
-    const brokerServiceTopics = serviceTopicsCollection.filter(x => x.messageBrokerId === resource.id && x.enabled);
-
-    const resourcePromises = brokerServiceTopics.map(x => {
-      return this.resourceService.resource({ 
-        ...args,
-        where: { ...args.where, id: x.resourceId } 
-      });
-    });
-
-    const resources = await Promise.all(resourcePromises);
-    return resources;
   }
 
   @ResolveField(() => [Build])

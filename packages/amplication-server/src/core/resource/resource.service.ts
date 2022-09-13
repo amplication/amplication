@@ -41,6 +41,7 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
   'The resource of type `ProjectConfiguration` cannot be deleted';
 import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 import { ProjectService } from '../project/project.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
 const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
@@ -55,7 +56,8 @@ export class ResourceService {
     private serviceSettingsService: ServiceSettingsService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly serviceTopicsService: ServiceTopicsService,
   ) {}
 
   async createProjectConfiguration(
@@ -317,6 +319,16 @@ export class ResourceService {
     });
   }
 
+  async messageBrokerConnectedServices(args: FindOneArgs): Promise<Resource[]> {
+    const resource = await this.resource(args);
+    const serviceTopicsCollection = await this.serviceTopicsService.findMany({});
+    const brokerServiceTopics = serviceTopicsCollection.filter(x => x.messageBrokerId === resource.id && x.enabled);
+
+    const resources = this.resources({ where: { id: { in: brokerServiceTopics.map(x => x.resourceId) } } });
+    
+    return resources;
+  }
+
   async deleteResource(args: FindOneArgs): Promise<Resource | null> {
     const resource = await this.prisma.resource.findUnique({
       where: {
@@ -433,7 +445,7 @@ export class ResourceService {
 
   async project(resourceId: string): Promise<Project> {
     return this.projectService.findFirst({
-      where: { resources: { some: { id: resourceId } } }
+      where: { resources: { some: { id: { equals: resourceId } } } }
     });
   }
 

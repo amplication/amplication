@@ -44,6 +44,7 @@ type Query {
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   resource(where: WhereUniqueInput!): Resource
   resources(where: ResourceWhereInput, orderBy: [ResourceOrderByInput!], skip: Int, take: Int): [Resource!]!
+  messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
@@ -119,7 +120,6 @@ type Resource {
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   environments: [Environment!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
-  services(where: ResourceWhereInput, orderBy: [ResourceOrderByInput!], skip: Int, take: Int): [Resource!]!
   githubLastMessage: String
   githubLastSync: DateTime
   resourceType: EnumResourceType!
@@ -642,50 +642,10 @@ type Environment {
   address: String!
 }
 
-input ResourceWhereInput {
-  id: String
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  description: StringFilter
-  project: ProjectWhereInput
-  projectId: String
-  resourceType: EnumResourceTypeFilter
-}
-
-input ProjectWhereInput {
-  id: String
-  deletedAt: DateTimeFilter
-  name: StringFilter
-  resources: ResourceListRelationFilter
-}
-
-input ResourceListRelationFilter {
-  every: ResourceWhereInput
-  some: ResourceWhereInput
-  none: ResourceWhereInput
-}
-
-input EnumResourceTypeFilter {
-  equals: EnumResourceType
-  not: EnumResourceType
-  in: [EnumResourceType!]
-  notIn: [EnumResourceType!]
-}
-
 enum EnumResourceType {
   Service
   ProjectConfiguration
   MessageBroker
-}
-
-input ResourceOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  description: SortOrder
-  resourceType: SortOrder
 }
 
 type Subscription {
@@ -738,6 +698,37 @@ type Invitation {
   invitedByUser: User
 }
 
+input ProjectWhereInput {
+  id: String
+  deletedAt: DateTimeFilter
+  name: StringFilter
+  resources: ResourceListRelationFilter
+}
+
+input ResourceListRelationFilter {
+  every: ResourceWhereInput
+  some: ResourceWhereInput
+  none: ResourceWhereInput
+}
+
+input ResourceWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  description: StringFilter
+  project: ProjectWhereInput
+  projectId: String
+  resourceType: EnumResourceTypeFilter
+}
+
+input EnumResourceTypeFilter {
+  equals: EnumResourceType
+  not: EnumResourceType
+  in: [EnumResourceType!]
+  notIn: [EnumResourceType!]
+}
+
 input ProjectOrderByInput {
   id: SortOrder
   deletedAt: SortOrder
@@ -746,6 +737,15 @@ input ProjectOrderByInput {
 
 input PendingChangesFindInput {
   project: WhereUniqueInput!
+}
+
+input ResourceOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  description: SortOrder
+  resourceType: SortOrder
 }
 
 type ServiceSettings implements IBlock {

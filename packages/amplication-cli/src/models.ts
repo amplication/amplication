@@ -1329,6 +1329,7 @@ export type Query = {
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
   me: User;
+  messageBrokerConnectedServices: Array<Resource>;
   pendingChanges: Array<PendingChange>;
   PluginInstallation?: Maybe<PluginInstallation>;
   PluginInstallations: Array<PluginInstallation>;
@@ -1409,6 +1410,10 @@ export type QueryGitOrganizationsArgs = {
   skip?: InputMaybe<Scalars['Float']>;
   take?: InputMaybe<Scalars['Float']>;
   where?: InputMaybe<GitOrganizationWhereInput>;
+};
+
+export type QueryMessageBrokerConnectedServicesArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryPendingChangesArgs = {
@@ -1548,7 +1553,6 @@ export type Resource = {
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']>;
   resourceType: EnumResourceType;
-  services: Array<Resource>;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -1564,13 +1568,6 @@ export type ResourceEntitiesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<EntityWhereInput>;
-};
-
-export type ResourceServicesArgs = {
-  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<ResourceWhereInput>;
 };
 
 export type ResourceCreateInput = {

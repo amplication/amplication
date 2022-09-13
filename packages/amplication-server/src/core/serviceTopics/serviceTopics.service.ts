@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
 import { BlockTypeService } from '../block/blockType.service';
 import { CreateServiceTopicsArgs } from './dto/CreateServiceTopicsArgs';
@@ -21,6 +21,7 @@ export class ServiceTopicsService extends BlockTypeService<
   blockType = EnumBlockType.ServiceTopics;
 
   constructor(
+    @Inject(forwardRef(() => ResourceService))
     private resourceService: ResourceService,
     protected readonly blockService: BlockService
   ) {
@@ -43,7 +44,7 @@ export class ServiceTopicsService extends BlockTypeService<
         project: {
           id: resource.projectId
         },
-        id: messageBrokerId,
+        id: { equals: messageBrokerId },
         resourceType: {
           equals: EnumResourceType.MessageBroker
         }

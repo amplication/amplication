@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 import {
   CircularProgress,
@@ -12,6 +12,7 @@ import { useTracking, Event as TrackEvent } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
 import { Resource } from "../models";
+import { GET_MESSAGE_BROKER_CONNECTED_SERVICES } from "../Workspaces/queries/resourcesQueries";
 
 type Props = {
   resourceId: string;
@@ -24,11 +25,12 @@ const EVENT_DATA: TrackEvent = {
 function ServicesTile({ resourceId }: Props) {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  const getResourceVars = { variables: { id: resourceId } };
-  const { data, loading, refetch } = useQuery<{ resource: Resource }>(GET_RESOURCE, getResourceVars);
+  const getResourceVars = { variables: { where: { id: resourceId } } };
+  const { data, loading, refetch } = useQuery<{ messageBrokerConnectedServices: Resource[] }>(
+    GET_MESSAGE_BROKER_CONNECTED_SERVICES, getResourceVars);
   const { trackEvent } = useTracking();
 
-  useEffect(() => { refetch(getResourceVars) });
+  useEffect(() => { refetch(getResourceVars) }, []);
 
   const handleClick = useCallback(() => {
     trackEvent(EVENT_DATA);
@@ -46,8 +48,8 @@ function ServicesTile({ resourceId }: Props) {
           <CircularProgress centerToParent />
         ) : (
           <>
-            {data?.resource.services.length}
-            {data && data?.resource.services.length > 1 ? " services" : " service"}
+            {data?.messageBrokerConnectedServices.length}
+            {data && data?.messageBrokerConnectedServices.length > 1 ? " services" : " service"}
           </>
         )
       }
@@ -64,22 +66,5 @@ function ServicesTile({ resourceId }: Props) {
     />
   );
 }
-
-const GET_RESOURCE = gql`
-  query resource($id: String!) {
-    resource(where: { id: $id }) {
-      id
-      name
-      description
-      services {
-        id
-        name
-        description
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
 
 export { ServicesTile };

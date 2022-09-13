@@ -88,6 +88,16 @@ export const CREATE_MESSAGE_BROKER = gql`
   }
 `;
 
+export const GET_MESSAGE_BROKER_CONNECTED_SERVICES = gql`
+  query getMessageBrokerConnectedServices($where: WhereUniqueInput!) {
+    messageBrokerConnectedServices(where: $where) {
+      id
+      name
+      description
+    }
+  }
+`;
+
 export const DISCONNECT_GIT_REPOSITORY = gql`
   mutation disconnectGitRepository($resourceId: String!) {
     disconnectResourceGitRepository(resourceId: $resourceId) {

@@ -64,11 +64,6 @@ export class Resource {
   })
   builds?: Build[];
 
-  @Field(() => [Resource], {
-    nullable: false
-  })
-  services?: Resource[];
-
   @Field(() => String, {
     nullable: true
   })
