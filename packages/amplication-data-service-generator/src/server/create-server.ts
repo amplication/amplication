@@ -18,15 +18,11 @@ import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
-import {
-  BASE_DIRECTORY,
-  DOCKER_COMPOSE_DB_FILE_NAME,
-  DOCKER_COMPOSE_FILE_NAME,
-  ENV_VARIABLES,
-} from "./constants";
+import { BASE_DIRECTORY, ENV_VARIABLES } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
-import { createDockerComposeFile } from "./create-docker-compose";
 import { createPackageJson } from "./package-json/create-package-json";
+import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
+import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -137,15 +133,8 @@ export async function createServerModules(
     envVariables: ENV_VARIABLES,
   });
 
-  const dockerComposeFile = await createDockerComposeFile(
-    directoryManager.BASE,
-    DOCKER_COMPOSE_FILE_NAME
-  );
-
-  const dockerComposeDbFile = await createDockerComposeFile(
-    directoryManager.BASE,
-    DOCKER_COMPOSE_DB_FILE_NAME
-  );
+  const dockerComposeFile = await createDockerComposeFile();
+  const dockerComposeDBFile = await createDockerComposeDBFile();
 
   return [
     ...staticModules,
@@ -154,7 +143,7 @@ export async function createServerModules(
     prismaSchemaModule,
     grantsModule,
     ...dotEnvModule,
-    dockerComposeFile,
-    dockerComposeDbFile,
+    ...dockerComposeFile,
+    ...dockerComposeDBFile,
   ];
 }

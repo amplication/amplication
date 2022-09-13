@@ -3,6 +3,8 @@ import {
   CreateAdminModulesParams,
   CreateAuthModulesParams,
   CreateControllerModulesParams,
+  CreateServerDockerComposeDBParams,
+  CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
   CreateServiceModulesParams,
 } from "./plugin-events-params";
@@ -57,6 +59,26 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDotEnvParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateServerDockerCompose]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateServerDockerComposeParams["before"]
+    ) => CreateServerDockerComposeParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateServerDockerComposeParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateServerDockerComposeDB]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateServerDockerComposeDBParams["before"]
+    ) => CreateServerDockerComposeDBParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateServerDockerComposeDBParams["after"]
     ) => Module[];
   };
 };
