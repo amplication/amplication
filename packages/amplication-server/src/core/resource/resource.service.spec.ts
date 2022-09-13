@@ -592,7 +592,7 @@ describe('ResourceService', () => {
     const args = {
       where: {
         deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID
+        id: { equals: EXAMPLE_RESOURCE_ID }
       }
     };
     expect(await service.resources(args)).toEqual([EXAMPLE_RESOURCE]);
