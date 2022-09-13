@@ -3078,7 +3078,10 @@ async function seed(bcryptSalt: Salt) {
     priority: EnumUserPriority.High,
     isCurious: false,
     location: \\"(32.085300, 34.781769)\\",
-    extendedProperties: false,
+
+    extendedProperties: {
+      foo: \\"bar\\",
+    },
   };
   await client.user.upsert({
     where: { username: data.username },
