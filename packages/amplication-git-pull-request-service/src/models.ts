@@ -1510,6 +1510,8 @@ export enum QueryMode {
 export type RemoteGitRepositoriesWhereUniqueInput = {
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
+  limit: Scalars['Float'];
+  page: Scalars['Float'];
 };
 
 export type RemoteGitRepository = {

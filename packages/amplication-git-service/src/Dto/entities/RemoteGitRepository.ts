@@ -20,3 +20,21 @@ export class RemoteGitRepository {
   @Field(() => Boolean)
   admin: boolean | null;
 }
+
+@ObjectType({
+  isAbstract: true,
+  description: undefined
+})
+export class RemoteGitRepos {
+  @Field(() => [RemoteGitRepository])
+  repos: RemoteGitRepository[];
+
+  @Field(() => Number)
+  totalRepos: number | null;
+
+  @Field(() => Number)
+  currentPage: number | null;
+
+  @Field(() => Number)
+  pageSize: number | null;
+}
