@@ -45,12 +45,8 @@ jest.setTimeout(10000);
 
 beforeAll(async () => {
   const configService = mock<ConfigService>();
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   configService.get.calledWith(GITHUB_APP_APP_ID_VAR).mockReturnValue(APP_ID);
   configService.get
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     .calledWith(GITHUB_APP_PRIVATE_KEY_VAR)
     .mockReturnValue(APP_PEM);
 
