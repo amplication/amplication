@@ -8,7 +8,7 @@ export async function createDockerComposeFile(
   fileName: string,
   updateProperties: { [key: string]: any } = {}
 ): Promise<Module> {
-  const filePath = path.resolve(__dirname, "static", fileName);
+  const filePath = path.resolve(__dirname, "docker-compose", fileName);
   const content = await fs.readFile(filePath, "utf-8");
   const parsed = YAML.parse(content);
   const updated = Object.assign(parsed, updateProperties);
