@@ -6,11 +6,7 @@ import { PermissionsModule } from '../permissions/permissions.module';
 import { ResourceModule } from '../resource/resource.module';
 
 @Module({
-  imports: [
-    BlockModule, 
-    PermissionsModule, 
-    forwardRef(() => ResourceModule)
-  ],
+  imports: [BlockModule, PermissionsModule, forwardRef(() => ResourceModule)],
   providers: [ServiceTopicsService, ServiceTopicsResolver],
   exports: [ServiceTopicsService, ServiceTopicsResolver]
 })

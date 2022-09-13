@@ -57,7 +57,7 @@ export class ResourceService {
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
     private readonly projectService: ProjectService,
-    private readonly serviceTopicsService: ServiceTopicsService,
+    private readonly serviceTopicsService: ServiceTopicsService
   ) {}
 
   async createProjectConfiguration(
@@ -321,11 +321,17 @@ export class ResourceService {
 
   async messageBrokerConnectedServices(args: FindOneArgs): Promise<Resource[]> {
     const resource = await this.resource(args);
-    const serviceTopicsCollection = await this.serviceTopicsService.findMany({});
-    const brokerServiceTopics = serviceTopicsCollection.filter(x => x.messageBrokerId === resource.id && x.enabled);
+    const serviceTopicsCollection = await this.serviceTopicsService.findMany(
+      {}
+    );
+    const brokerServiceTopics = serviceTopicsCollection.filter(
+      x => x.messageBrokerId === resource.id && x.enabled
+    );
 
-    const resources = this.resources({ where: { id: { in: brokerServiceTopics.map(x => x.resourceId) } } });
-    
+    const resources = this.resources({
+      where: { id: { in: brokerServiceTopics.map(x => x.resourceId) } }
+    });
+
     return resources;
   }
 

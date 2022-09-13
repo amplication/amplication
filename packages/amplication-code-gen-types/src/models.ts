@@ -1667,7 +1667,7 @@ export type ResourceUpdateInput = {
 export type ResourceWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
-  id?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<StringFilter>;
   name?: InputMaybe<StringFilter>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars["String"]>;

@@ -30,6 +30,7 @@ function ServicesTile({ resourceId }: Props) {
     GET_MESSAGE_BROKER_CONNECTED_SERVICES, getResourceVars);
   const { trackEvent } = useTracking();
 
+  // eslint-disable-next-line
   useEffect(() => { refetch(getResourceVars) }, []);
 
   const handleClick = useCallback(() => {

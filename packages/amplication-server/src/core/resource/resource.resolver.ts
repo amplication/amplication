@@ -62,7 +62,9 @@ export class ResourceResolver {
   })
   @Roles('ORGANIZATION_ADMIN')
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
-  async messageBrokerConnectedServices(@Args() args: FindOneArgs): Promise<Resource[]> {
+  async messageBrokerConnectedServices(
+    @Args() args: FindOneArgs
+  ): Promise<Resource[]> {
     return this.resourceService.messageBrokerConnectedServices(args);
   }
 
