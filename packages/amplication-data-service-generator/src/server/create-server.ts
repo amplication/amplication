@@ -61,8 +61,7 @@ export async function createServerModules(
     appInfo,
     entities,
     dtos,
-    logger,
-    serverDirectories.srcDirectory
+    logger
   );
 
   logger.info("Creating Auth module...");

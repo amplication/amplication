@@ -42,6 +42,7 @@ import {
 import { createDataMapping } from "../controller/create-data-mapping";
 import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
+import DsgContext from "../../../dsg-context";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -55,8 +56,7 @@ export async function createResolverModules(
   entityType: string,
   entityServiceModule: string,
   entity: Entity,
-  dtos: DTOs,
-  srcDirectory: string
+  dtos: DTOs
 ): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
@@ -122,8 +122,7 @@ export async function createResolverModules(
       createMutationId,
       updateMutationId,
       mapping,
-      false,
-      srcDirectory
+      false
     ),
     await createResolverModule(
       templateBasePath,
@@ -140,8 +139,7 @@ export async function createResolverModules(
       createMutationId,
       updateMutationId,
       mapping,
-      true,
-      srcDirectory
+      true
     ),
   ];
 }
@@ -161,11 +159,11 @@ async function createResolverModule(
   createMutationId: namedTypes.Identifier,
   updateMutationId: namedTypes.Identifier,
   mapping: { [key: string]: ASTNode | undefined },
-  isBaseClass: boolean,
-  srcDirectory: string
+  isBaseClass: boolean
 ): Promise<Module> {
-  const modulePath = `${srcDirectory}/${entityName}/${entityName}.resolver.ts`;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
   const file = await readFile(templateFilePath);
 
   interpolate(file, mapping);
@@ -260,7 +258,7 @@ async function createResolverModule(
     ]);
   }
 
-  const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
+  const dtoNameToPath = getDTONameToPath(dtos, serverDirectories.srcDirectory);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)

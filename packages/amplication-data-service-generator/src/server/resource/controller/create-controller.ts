@@ -76,11 +76,11 @@ async function createControllerModule(
   mapping: { [key: string]: ASTNode | undefined },
   controllerBaseId: namedTypes.Identifier,
   serviceId: namedTypes.Identifier,
-  isBaseClass: boolean,
-  srcDirectory: string
+  isBaseClass: boolean
 ): Promise<Module> {
-  const modulePath = `${srcDirectory}/${entityName}/${entityName}.controller.ts`;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.controller.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
   const file = await readFile(templatePath);
 
   const entityDTOs = dtos[entity.name];
@@ -147,7 +147,10 @@ async function createControllerModule(
 
     classDeclaration.body.body.push(...toManyRelationMethods);
 
-    const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
+    const dtoNameToPath = getDTONameToPath(
+      dtos,
+      serverDirectories.srcDirectory
+    );
     const dtoImports = importContainedIdentifiers(
       file,
       getImportableDTOs(moduleBasePath, dtoNameToPath)
@@ -271,12 +274,12 @@ async function createControllerModulesInternal({
   entityType,
   entityServiceModule,
   entity,
-  srcDirectory,
 }: CreateControllerModulesParams["before"]): Promise<Module[]> {
-  const context = DsgContext.getInstance;
-  const { settings } = context.appInfo;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { appInfo, DTOs } = DsgContext.getInstance;
+  const { settings } = appInfo;
   const { authProvider } = settings;
-  const entityDTOs = context.DTOs[entity.name];
+  const entityDTOs = DTOs[entity.name];
   const entityDTO = entityDTOs.entity;
 
   const controllerId = createControllerId(entityType);
@@ -331,12 +334,11 @@ async function createControllerModulesInternal({
       entityType,
       entityServiceModule,
       entity,
-      context.DTOs,
+      DTOs,
       mapping,
       controllerBaseId,
       serviceId,
-      false,
-      srcDirectory
+      false
     ),
     await createControllerModule(
       controllerBaseTemplatePath,
@@ -344,12 +346,11 @@ async function createControllerModulesInternal({
       entityType,
       entityServiceModule,
       entity,
-      context.DTOs,
+      DTOs,
       mapping,
       controllerBaseId,
       serviceId,
-      true,
-      srcDirectory
+      true
     ),
   ];
 }

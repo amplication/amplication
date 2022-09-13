@@ -6,8 +6,6 @@ import {
   EntityField,
   EntityLookupField,
   Module,
-  NamedClassDeclaration,
-  DTOs,
   EventNames,
   CreateEntityServiceParams,
   CreateEntityServiceBaseParams,
@@ -38,6 +36,7 @@ import {
 import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import pluginWrapper from "../../../plugin-wrapper";
+import DsgContext from "../../../dsg-context";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -60,9 +59,7 @@ export async function createServiceModules(
   entity: Entity,
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
-  delegateId: namedTypes.Identifier,
-  dtos: DTOs,
-  srcDirectory: string
+  delegateId: namedTypes.Identifier
 ): Promise<Module[]> {
   const passwordFields = entity.fields.filter(isPasswordField);
   const file = await readFile(serviceTemplatePath);
@@ -76,9 +73,6 @@ export async function createServiceModules(
     passwordFields
   );
 
-  const entityDTOs = dtos[entity.name];
-  const { entity: entityDTO } = entityDTOs;
-
   return [
     ...(await pluginWrapper(
       createServiceModule,
@@ -89,7 +83,6 @@ export async function createServiceModules(
         passwordFields,
         serviceId,
         serviceBaseId,
-        srcDirectory,
         file,
       }
     )),
@@ -100,14 +93,11 @@ export async function createServiceModules(
       {
         entityName,
         entity,
-        entityDTO,
         templateMapping,
         passwordFields,
         serviceId,
         serviceBaseId,
-        dtos,
         delegateId,
-        srcDirectory,
         file: fileBase,
       }
     )),
@@ -120,11 +110,11 @@ async function createServiceModule({
   passwordFields,
   serviceId,
   serviceBaseId,
-  srcDirectory,
   file,
 }: CreateEntityServiceParams["before"]): Promise<Module[]> {
-  const modulePath = `${srcDirectory}/${entityName}/${entityName}.service.ts`;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.service.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
   interpolate(file, templateMapping);
   removeTSClassDeclares(file);
@@ -165,7 +155,7 @@ async function createServiceModule({
         [PASSWORD_SERVICE_ID],
         relativeImportPath(
           modulePath,
-          `${srcDirectory}/auth/password.service.ts`
+          `${serverDirectories.srcDirectory}/auth/password.service.ts`
         )
       ),
     ]);
@@ -187,17 +177,16 @@ async function createServiceModule({
 async function createServiceBaseModule({
   entityName,
   entity,
-  entityDTO,
   templateMapping,
   passwordFields,
   serviceId,
   serviceBaseId,
-  dtos,
   delegateId,
-  srcDirectory,
   file,
 }: CreateEntityServiceBaseParams["before"]): Promise<Module[]> {
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
   interpolate(file, templateMapping);
 
@@ -206,12 +195,7 @@ async function createServiceBaseModule({
   const toManyRelations = (
     await Promise.all(
       toManyRelationFields.map(async (field) => {
-        const toManyFile = await createToManyRelationFile(
-          field,
-          entityDTO,
-          dtos,
-          delegateId
-        );
+        const toManyFile = await createToManyRelationFile(field, delegateId);
 
         const imports = extractImportDeclarations(toManyFile);
         const methods = getMethods(
@@ -285,7 +269,7 @@ async function createServiceBaseModule({
         [PASSWORD_SERVICE_ID],
         relativeImportPath(
           moduleBasePath,
-          `${srcDirectory}/auth/password.service.ts`
+          `${serverDirectories.srcDirectory}/auth/password.service.ts`
         )
       ),
     ]);
@@ -293,7 +277,10 @@ async function createServiceBaseModule({
     addImports(file, [
       importNames(
         [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
-        relativeImportPath(moduleBasePath, `${srcDirectory}/prisma.util.ts`)
+        relativeImportPath(
+          moduleBasePath,
+          `${serverDirectories.srcDirectory}/prisma.util.ts`
+        )
       ),
     ]);
   }
@@ -369,13 +356,13 @@ async function createToOneRelationFile(
 
 async function createToManyRelationFile(
   field: EntityLookupField,
-  entityDTO: NamedClassDeclaration,
-  dtos: DTOs,
   delegateId: namedTypes.Identifier
 ) {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
-  const relatedEntityDTOs = dtos[relatedEntity.name];
+  const relatedEntityDTOs = DTOs[relatedEntity.name];
 
   interpolate(toManyFile, {
     DELEGATE: delegateId,

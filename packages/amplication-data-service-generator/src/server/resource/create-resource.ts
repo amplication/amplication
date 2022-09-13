@@ -19,12 +19,11 @@ export async function createResourcesModules(
   appInfo: AppInfo,
   entities: Entity[],
   dtos: DTOs,
-  logger: winston.Logger,
-  srcDirectory: string
+  logger: winston.Logger
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
     entities.map((entity) =>
-      createResourceModules(appInfo, entity, dtos, logger, srcDirectory)
+      createResourceModules(appInfo, entity, dtos, logger)
     )
   );
   const resourcesModules = flatten(resourceModuleLists);
@@ -35,8 +34,7 @@ async function createResourceModules(
   appInfo: AppInfo,
   entity: Entity,
   dtos: DTOs,
-  logger: winston.Logger,
-  srcDirectory: string
+  logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
 
@@ -55,9 +53,7 @@ async function createResourceModules(
     entity,
     serviceId,
     serviceBaseId,
-    delegateId,
-    dtos,
-    srcDirectory
+    delegateId
   );
 
   const [serviceModule] = serviceModules;
@@ -70,7 +66,6 @@ async function createResourceModules(
         entityType,
         entityServiceModule: serviceModule.path,
         entity,
-        srcDirectory,
       }))) ||
     [];
 
@@ -83,8 +78,7 @@ async function createResourceModules(
         entityType,
         serviceModule.path,
         entity,
-        dtos,
-        srcDirectory
+        dtos
       ))) ||
     [];
   const [resolverModule] = resolverModules;
@@ -94,8 +88,7 @@ async function createResourceModules(
     entityType,
     serviceModule.path,
     controllerModule?.path,
-    resolverModule?.path,
-    srcDirectory
+    resolverModule?.path
   );
 
   const testModule =
