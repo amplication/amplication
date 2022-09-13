@@ -2,72 +2,6 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
-  "server/docker-compose.db.yml": "version: \\"3\\"
-services:
-  db:
-    image: postgres:12
-    ports:
-      - \${POSTGRESQL_PORT}:5432
-    environment:
-      POSTGRES_USER: \${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-volumes:
-  postgres: ~
-",
-  "server/docker-compose.yml": "version: \\"3\\"
-services:
-  server:
-    build:
-      context: .
-      args:
-        NPM_LOG_LEVEL: notice
-    ports:
-      - \${SERVER_PORT}:3000
-    environment:
-      POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5433
-      BCRYPT_SALT: \${BCRYPT_SALT}
-      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
-      JWT_EXPIRATION: \${JWT_EXPIRATION}
-    depends_on:
-      - migrate
-  migrate:
-    build:
-      context: .
-      args:
-        NPM_LOG_LEVEL: notice
-    command: npm run db:init
-    working_dir: /app/server
-    environment:
-      POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432
-      BCRYPT_SALT: \${BCRYPT_SALT}
-    depends_on:
-      db:
-        condition: service_healthy
-  db:
-    image: postgres:12
-    environment:
-      POSTGRES_USER: \${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
-      ports: \${POSTGRESQL_PORT}:5432
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        - CMD
-        - pg_isready
-        - -q
-        - -d
-        - \${POSTGRESQL_DB_NAME}
-        - -U
-        - \${POSTGRESQL_USER}
-      timeout: 45s
-      interval: 10s
-      retries: 10
-volumes:
-  postgres: ~
-",
   "test-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL =http://localhost:3000",
   "test-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
@@ -2837,6 +2771,72 @@ COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
 SERVER_PORT=3000",
+  "test/docker-compose.db.yml": "version: \\"3\\"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \${POSTGRESQL_PORT}:5432
+    environment:
+      POSTGRES_USER: \${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
+",
+  "test/docker-compose.yml": "version: \\"3\\"
+services:
+  server:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    ports:
+      - \${SERVER_PORT}:3000
+    environment:
+      POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5433
+      BCRYPT_SALT: \${BCRYPT_SALT}
+      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
+      JWT_EXPIRATION: \${JWT_EXPIRATION}
+    depends_on:
+      - migrate
+  migrate:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    command: npm run db:init
+    working_dir: /app/server
+    environment:
+      POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432
+      BCRYPT_SALT: \${BCRYPT_SALT}
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: \${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+      ports: \${POSTGRESQL_PORT}:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -q
+        - -d
+        - \${POSTGRESQL_DB_NAME}
+        - -U
+        - \${POSTGRESQL_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~
+",
   "test/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")

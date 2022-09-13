@@ -1,4 +1,12 @@
-import { AppInfo, DTOs, Entity, Module, Role } from "./code-gen-types";
+import {
+  AppInfo,
+  clientDirectories,
+  DTOs,
+  Entity,
+  Module,
+  Role,
+  serverDirectories,
+} from "./code-gen-types";
 import winston from "winston";
 import { Events } from "./plugin-events";
 
@@ -25,6 +33,8 @@ export interface DsgContext {
   plugins: PluginMap;
   logger: winston.Logger;
   utils: ContextUtil;
+  clientDirectories: clientDirectories;
+  serverDirectories: serverDirectories;
 }
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
@@ -37,11 +47,13 @@ export type PluginMap = {
 };
 
 export enum EventNames {
-  CreateServiceModules = "createServiceModules",
-  CreateControllerModules = "createControllerModules",
+  CreateEntityController = "CreateEntityController",
+  CreateEntityControllerBase = "CreateEntityControllerBase",
   CreateAuthModules = "createAuthModules",
   CreateAdminModules = "createAdminModules",
   CreateServerDotEnv = "CreateServerDotEnv",
+  CreateEntityService = "CreateEntityService",
+  CreateEntityServiceBase = "CreateEntityServiceBase",
   CreateServerDockerCompose = "CreateServerDockerCompose",
   CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
 }

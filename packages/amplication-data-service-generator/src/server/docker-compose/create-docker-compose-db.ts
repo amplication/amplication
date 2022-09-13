@@ -8,7 +8,8 @@ import path from "path";
 import { prepareYamlFile } from "../../util/prepare-yaml-file";
 
 import pluginWrapper from "../../plugin-wrapper";
-import { BASE_DIRECTORY, DOCKER_COMPOSE_DB_FILE_NAME } from "../constants";
+import { DOCKER_COMPOSE_DB_FILE_NAME } from "../constants";
+import DsgContext from "../../dsg-context";
 
 export async function createDockerComposeDBFile(): Promise<Module[]> {
   const filePath = path.resolve(__dirname, DOCKER_COMPOSE_DB_FILE_NAME);
@@ -29,7 +30,7 @@ export async function createDockerComposeDBFile(): Promise<Module[]> {
 async function createDockerComposeDBFileInternal(
   eventParams: CreateServerDockerComposeDBParams["before"]
 ): Promise<Module[]> {
-  const baseDirectory = BASE_DIRECTORY;
+  const { serverDirectories } = DsgContext.getInstance;
   const preparedFile = prepareYamlFile(
     eventParams.fileContent,
     eventParams.updateProperties
@@ -37,7 +38,10 @@ async function createDockerComposeDBFileInternal(
 
   return [
     {
-      path: path.join(baseDirectory, eventParams.outputFileName),
+      path: path.join(
+        serverDirectories.baseDirectory,
+        eventParams.outputFileName
+      ),
       code: preparedFile,
     },
   ];
