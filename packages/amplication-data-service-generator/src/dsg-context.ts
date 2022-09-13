@@ -1,5 +1,9 @@
 import * as types from "@amplication/code-gen-types";
-import { ContextUtil } from "@amplication/code-gen-types";
+import {
+  clientDirectories,
+  ContextUtil,
+  serverDirectories,
+} from "@amplication/code-gen-types";
 import winston from "winston";
 import { readPluginStaticModules } from "./read-static-modules";
 
@@ -18,6 +22,9 @@ class DsgContext implements types.DsgContext {
   public plugins: types.PluginMap = {};
   public logger: winston.Logger = winston.createLogger();
   public utils: ContextUtil = contextUtil;
+
+  public clientDirectories!: clientDirectories;
+  public serverDirectories!: serverDirectories;
 
   private static instance: DsgContext;
 

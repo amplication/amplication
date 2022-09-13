@@ -17,7 +17,7 @@ import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyA
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
-import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
+import { RemoteGitRepos } from './dto/objects/RemoteGitRepository';
 import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
 import {
   INVALID_RESOURCE_ID,
@@ -38,13 +38,15 @@ export class GitProviderService {
 
   async getReposOfOrganization(
     args: RemoteGitRepositoriesWhereUniqueInput
-  ): Promise<RemoteGitRepository[]> {
+  ): Promise<RemoteGitRepos> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
     return await this.gitService.getReposOfOrganization(
       args.gitProvider,
-      installationId
+      installationId,
+      args.limit,
+      args.page
     );
   }
 

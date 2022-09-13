@@ -4,22 +4,26 @@ import { flatten } from "lodash";
 import * as winston from "winston";
 import { Entity, Module, AppInfo, DTOs } from "@amplication/code-gen-types";
 import { validateEntityName } from "../../util/entity";
-import { createServiceModules } from "./service/create-service";
+import {
+  createServiceBaseId,
+  createServiceId,
+  createServiceModules,
+} from "./service/create-service";
 import { createControllerModules } from "./controller/create-controller";
 import { createModules } from "./module/create-module";
 import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
+import { builders } from "ast-types";
 
 export async function createResourcesModules(
   appInfo: AppInfo,
   entities: Entity[],
   dtos: DTOs,
-  logger: winston.Logger,
-  srcDirectory: string
+  logger: winston.Logger
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
     entities.map((entity) =>
-      createResourceModules(appInfo, entity, dtos, logger, srcDirectory)
+      createResourceModules(appInfo, entity, dtos, logger)
     )
   );
   const resourcesModules = flatten(resourceModuleLists);
@@ -30,8 +34,7 @@ async function createResourceModules(
   appInfo: AppInfo,
   entity: Entity,
   dtos: DTOs,
-  logger: winston.Logger,
-  srcDirectory: string
+  logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
 
@@ -40,13 +43,17 @@ async function createResourceModules(
   logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
   const resource = camelCase(plural(entityName));
+  const serviceId = createServiceId(entityType);
+  const serviceBaseId = createServiceBaseId(entityType);
+  const delegateId = builders.identifier(entityName);
 
   const serviceModules = await createServiceModules(
     entityName,
     entityType,
     entity,
-    dtos,
-    srcDirectory
+    serviceId,
+    serviceBaseId,
+    delegateId
   );
 
   const [serviceModule] = serviceModules;
@@ -58,8 +65,7 @@ async function createResourceModules(
         entityName,
         entityType,
         serviceModule.path,
-        entity,
-        srcDirectory
+        entity
       ))) ||
     [];
 
@@ -72,8 +78,7 @@ async function createResourceModules(
         entityType,
         serviceModule.path,
         entity,
-        dtos,
-        srcDirectory
+        dtos
       ))) ||
     [];
   const [resolverModule] = resolverModules;
@@ -83,8 +88,7 @@ async function createResourceModules(
     entityType,
     serviceModule.path,
     controllerModule?.path,
-    resolverModule?.path,
-    srcDirectory
+    resolverModule?.path
   );
 
   const testModule =
