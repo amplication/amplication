@@ -23,7 +23,7 @@ const GLOB_SOURCES: string[] = [
   `${SRC_DIRECTORY_GLOB}/**/*.template.env`,
   `${SERVER_SRC_DIRECTORY_GLOB}/**/*.template.(ts|env|json)`,
   `${SERVER_SRC_DIRECTORY_GLOB}/**/*.(yml)`,
-  `${SERVER_SRC_DIRECTORY_GLOB}/**/db.(yml)`,
+  `${SERVER_SRC_DIRECTORY_GLOB}/**.db.(yml)`,
   `${SERVER_SRC_DIRECTORY_GLOB}/static/**`,
   `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html|env)`,
   `${ADMIN_SRC_DIRECTORY_GLOB}/static/**`,
