@@ -12,9 +12,10 @@ export async function createDockerComposeFile(
   const content = await fs.readFile(filePath, "utf-8");
   const parsed = YAML.parse(content);
   const updated = Object.assign(parsed, updateProperties);
+  const fileNameWithoutTemplate = fileName.replace(".template", "");
 
   return {
-    path: path.join(baseDirectory, fileName),
+    path: path.join(baseDirectory, fileNameWithoutTemplate),
     code: YAML.stringify(updated, { nullStr: "~" }),
   };
 }

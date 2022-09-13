@@ -20,5 +20,5 @@ export const ENV_VARIABLES: VariableDictionary = [
   { SERVER_PORT: "3000" },
 ];
 
-export const DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
-export const DOCKER_COMPOSE_DB_FILE_NAME = "docker-compose.db.yml";
+export const DOCKER_COMPOSE_FILE_NAME = "docker-compose.template.yml";
+export const DOCKER_COMPOSE_DB_FILE_NAME = "docker-compose.db.template.yml";
