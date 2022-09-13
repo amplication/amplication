@@ -870,13 +870,13 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { Organization } from \\"../organization/Organization\\";
-import { JsonValue } from \\"type-fest\\";
+  "admin-ui/src/api/user/User.ts": "import { JsonValue } from \\"type-fest\\";
+import { Organization } from \\"../organization/Organization\\";
 import { Profile } from \\"../profile/Profile\\";
 
 export type User = {
   username: string;
-  roles: Array<string>;
+  roles: JsonValue;
   id: string;
   name: string;
   bio: string;
@@ -895,16 +895,16 @@ export type User = {
   profile?: Profile | null;
 };
 ",
-  "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from \\"../../types\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
-import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserCreateInput = {
   username: string;
   password: string;
-  roles: Array<string>;
+  roles: InputJsonValue;
   name: string;
   bio: string;
   email: string;
@@ -974,16 +974,16 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from \\"../../types\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
-import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserUpdateInput = {
   username?: string;
   password?: string;
-  roles?: Array<string>;
+  roles?: InputJsonValue;
   name?: string;
   bio?: string;
   email?: string;
@@ -2362,7 +2362,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <TextInput label=\\"Username\\" source=\\"username\\" />
         <PasswordInput label=\\"Password\\" source=\\"password\\" />
         <SelectArrayInput
-          source=\\"roles\\"
+          source=\\"roles.roles\\"
           choices={ROLES_OPTIONS}
           optionText=\\"label\\"
           optionValue=\\"value\\"
@@ -2453,7 +2453,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <TextInput label=\\"Username\\" source=\\"username\\" />
         <PasswordInput label=\\"Password\\" source=\\"password\\" />
         <SelectArrayInput
-          source=\\"roles\\"
+          source=\\"roles.roles\\"
           choices={ROLES_OPTIONS}
           optionText=\\"label\\"
           optionValue=\\"value\\"
@@ -2849,7 +2849,7 @@ generator client {
 model User {
   username           String              @unique
   password           String
-  roles              String[]
+  roles              Json
   id                 String              @id @default(cuid())
   name               String
   bio                String
@@ -3067,7 +3067,11 @@ async function seed(bcryptSalt: Salt) {
   const data = {
     username: \\"admin\\",
     password: await hash(\\"admin\\", bcryptSalt),
-    roles: [\\"user\\"],
+
+    roles: {
+      roles: [\\"user\\"],
+    },
+
     name: \\"\\",
     bio: \\"\\",
     email: \\"example@example.com\\",
@@ -3217,6 +3221,10 @@ export class UserInfo implements Partial<User> {
   @Field(() => String, { nullable: true })
   accessToken?: string;
 }
+",
+  "server/src/auth/UserRoles.ts": "export type UserRoles = {
+  roles: string[];
+};
 ",
   "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
 
@@ -3465,6 +3473,7 @@ import { UserService } from \\"../user/user.service\\";
 import { Credentials } from \\"./Credentials\\";
 import { PasswordService } from \\"./password.service\\";
 import { TokenService } from \\"./token.service\\";
+import { UserRoles } from \\"./UserRoles\\";
 import { UserInfo } from \\"./UserInfo\\";
 
 @Injectable()
@@ -3483,8 +3492,9 @@ export class AuthService {
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
-      const { roles } = user;
-      return { id: user.id, username, roles };
+      const { id, roles } = user;
+      const roleList = (roles as UserRoles).roles;
+      return { id, username, roles: roleList };
     }
     return null;
   }
@@ -9909,6 +9919,7 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
+  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
@@ -9916,15 +9927,14 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { JsonValue } from \\"type-fest\\";
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { JsonValue } from \\"type-fest\\";
 import { Profile } from \\"../../profile/base/Profile\\";
 @ObjectType()
 class User {
@@ -9938,13 +9948,10 @@ class User {
 
   @ApiProperty({
     required: true,
-    type: [String],
   })
-  @IsString({
-    each: true,
-  })
-  @Field(() => [String])
-  roles!: Array<string>;
+  @IsJSON()
+  @Field(() => GraphQLJSONObject)
+  roles!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -10103,6 +10110,7 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
+  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
@@ -10110,17 +10118,16 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 @InputType()
 class UserCreateInput {
@@ -10142,13 +10149,10 @@ class UserCreateInput {
 
   @ApiProperty({
     required: true,
-    type: [String],
   })
-  @IsString({
-    each: true,
-  })
-  @Field(() => [String])
-  roles!: Array<string>;
+  @IsJSON()
+  @Field(() => GraphQLJSONObject)
+  roles!: InputJsonValue;
 
   @ApiProperty({
     required: true,
@@ -10646,23 +10650,23 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
   IsOptional,
+  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
   ValidateNested,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
+import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 @InputType()
 class UserUpdateInput {
@@ -10690,16 +10694,13 @@ class UserUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: [String],
   })
-  @IsString({
-    each: true,
-  })
+  @IsJSON()
   @IsOptional()
-  @Field(() => [String], {
+  @Field(() => GraphQLJSONObject, {
     nullable: true,
   })
-  roles?: Array<string>;
+  roles?: InputJsonValue;
 
   @ApiProperty({
     required: false,

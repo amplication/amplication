@@ -5,6 +5,7 @@ import { UserService } from "../user/user.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
+import { UserRoles } from "./UserRoles";
 import { UserInfo } from "./UserInfo";
 
 @Injectable()
@@ -23,8 +24,9 @@ export class AuthService {
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
-      const { roles } = user;
-      return { id: user.id, username, roles };
+      const { id, roles } = user;
+      const roleList = (roles as UserRoles).roles;
+      return { id, username, roles: roleList };
     }
     return null;
   }
