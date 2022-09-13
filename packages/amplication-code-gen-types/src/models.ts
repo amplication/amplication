@@ -1498,6 +1498,7 @@ export type Resource = {
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars["String"]>;
   resourceType: EnumResourceType;
+  services: Array<Resource>;
   updatedAt: Scalars["DateTime"];
 };
 
@@ -1513,6 +1514,13 @@ export type ResourceEntitiesArgs = {
   skip?: InputMaybe<Scalars["Int"]>;
   take?: InputMaybe<Scalars["Int"]>;
   where?: InputMaybe<EntityWhereInput>;
+};
+
+export type ResourceServicesArgs = {
+  orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  take?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<ResourceWhereInput>;
 };
 
 export type ResourceCreateInput = {
@@ -1730,6 +1738,7 @@ export type ServiceTopicsWhereInput = {
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
+  messageBrokerId?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;

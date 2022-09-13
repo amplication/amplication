@@ -13,6 +13,7 @@ import { GitModule } from '@amplication/git-service';
 import { ServiceSettingsModule } from '../serviceSettings/serviceSettings.module';
 import { ProjectConfigurationSettingsModule } from '../projectConfigurationSettings/projectConfigurationSettings.module';
 import { ProjectModule } from '../project/project.module';
+import { ServiceTopicsModule } from '../serviceTopics/serviceTopics.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ProjectModule } from '../project/project.module';
     UserModule,
     EntityModule,
     ServiceSettingsModule,
+    ServiceTopicsModule,
     forwardRef(() => BuildModule),
     EnvironmentModule,
     CommitModule,

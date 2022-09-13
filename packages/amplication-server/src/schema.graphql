@@ -12,11 +12,6 @@ type AdminUISettings {
   adminUIPath: String!
 }
 
-type AuthorizeResourceWithGitResult {
-  """"""
-  url: String!
-}
-
 type MessagePattern {
   topicId: String!
   type: EnumMessagePatternConnectionOptions!
@@ -26,6 +21,11 @@ enum EnumMessagePatternConnectionOptions {
   None
   Receive
   Send
+}
+
+type AuthorizeResourceWithGitResult {
+  """"""
+  url: String!
 }
 
 type Query {
@@ -44,6 +44,8 @@ type Query {
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   block(where: WhereUniqueInput!): Block!
+  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
+  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
@@ -61,8 +63,6 @@ type Query {
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
   Topic(where: WhereUniqueInput!): Topic
   Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
-  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
-  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
 }
 
 type Account {
@@ -113,6 +113,7 @@ type Resource {
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   environments: [Environment!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  services(where: ResourceWhereInput, orderBy: [ResourceOrderByInput!], skip: Int, take: Int): [Resource!]!
   githubLastMessage: String
   githubLastSync: DateTime
   resourceType: EnumResourceType!
@@ -634,10 +635,37 @@ type Environment {
   address: String!
 }
 
+input ResourceWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  description: StringFilter
+  project: WhereUniqueInput
+  projectId: String
+  resourceType: EnumResourceTypeFilter
+}
+
+input EnumResourceTypeFilter {
+  equals: EnumResourceType
+  not: EnumResourceType
+  in: [EnumResourceType!]
+  notIn: [EnumResourceType!]
+}
+
 enum EnumResourceType {
   Service
   ProjectConfiguration
   MessageBroker
+}
+
+input ResourceOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  description: SortOrder
+  resourceType: SortOrder
 }
 
 type Subscription {
@@ -703,24 +731,6 @@ input ResourceListRelationFilter {
   none: ResourceWhereInput
 }
 
-input ResourceWhereInput {
-  id: String
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  description: StringFilter
-  project: WhereUniqueInput
-  projectId: String
-  resourceType: EnumResourceTypeFilter
-}
-
-input EnumResourceTypeFilter {
-  equals: EnumResourceType
-  not: EnumResourceType
-  in: [EnumResourceType!]
-  notIn: [EnumResourceType!]
-}
-
 input ProjectOrderByInput {
   id: SortOrder
   deletedAt: SortOrder
@@ -729,15 +739,6 @@ input ProjectOrderByInput {
 
 input PendingChangesFindInput {
   project: WhereUniqueInput!
-}
-
-input ResourceOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  description: SortOrder
-  resourceType: SortOrder
 }
 
 type ServiceSettings implements IBlock {
@@ -823,6 +824,44 @@ input EnumBlockTypeFilter {
 }
 
 input BlockOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+type ServiceTopics implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePattern!]!
+}
+
+input ServiceTopicsWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: WhereUniqueInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+  messageBrokerId: StringFilter
+}
+
+input ServiceTopicsOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
@@ -984,43 +1023,6 @@ input TopicOrderByInput {
   description: SortOrder
 }
 
-type ServiceTopics implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  messageBrokerId: String!
-  enabled: Boolean!
-  patterns: [MessagePattern!]!
-}
-
-input ServiceTopicsWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-input ServiceTopicsOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1053,6 +1055,8 @@ type Mutation {
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
+  createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
+  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   createBuild(data: BuildCreateInput!): Build!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
@@ -1077,8 +1081,6 @@ type Mutation {
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
   createTopic(data: TopicCreateInput!): Topic!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
-  createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
-  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
 }
 
 input UpdateAccountInput {
@@ -1252,6 +1254,46 @@ input ServerSettingsUpdateInput {
   serverPath: String
 }
 
+input ServiceTopicsCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePatternCreateInput!]
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
+}
+
+input MessagePatternCreateInput {
+  topicId: String!
+  type: EnumMessagePatternConnectionOptions!
+}
+
+input ServiceTopicsUpdateInput {
+  displayName: String
+  description: String
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePatternCreateInput!]
+}
+
 input BuildCreateInput {
   resource: WhereParentIdInput!
   message: String!
@@ -1280,21 +1322,6 @@ input PluginInstallationCreateInput {
   outputParameters: [BlockInputOutputInput!]
   pluginId: String!
   enabled: Boolean!
-}
-
-input BlockInputOutputInput {
-  name: String!
-  description: String!
-  dataType: EnumDataType
-  dataTypeEntityName: String
-  isList: Boolean
-  includeAllPropertiesByDefault: Boolean
-  propertyList: [PropertySelectorInput!]
-}
-
-input PropertySelectorInput {
-  propertyName: String!
-  include: Boolean!
 }
 
 input PluginInstallationUpdateInput {
@@ -1373,29 +1400,4 @@ input TopicUpdateInput {
   displayName: String
   description: String
   name: String
-}
-
-input ServiceTopicsCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  messageBrokerId: String!
-  enabled: Boolean!
-  patterns: [MessagePatternCreateInput!]
-}
-
-input MessagePatternCreateInput {
-  topicId: String!
-  type: EnumMessagePatternConnectionOptions!
-}
-
-input ServiceTopicsUpdateInput {
-  displayName: String
-  description: String
-  messageBrokerId: String!
-  enabled: Boolean!
-  patterns: [MessagePatternCreateInput!]
 }

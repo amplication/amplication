@@ -1,18 +1,17 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 
-import * as models from "../models";
 import {
   CircularProgress,
   Button,
   EnumButtonStyle,
 } from "@amplication/design-system";
 
-import { GET_TOPICS } from "../Topics/TopicList";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
+import { Resource } from "../models";
 
 type Props = {
   resourceId: string;
@@ -25,14 +24,11 @@ const EVENT_DATA: TrackEvent = {
 function ServicesTile({ resourceId }: Props) {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  const { data, loading } = useQuery<{
-    Topics: models.Topic[];
-  }>(GET_TOPICS, {
-    variables: {
-      where: { resource: { id: resourceId } },
-    },
-  });
+  const getResourceVars = { variables: { id: resourceId } };
+  const { data, loading, refetch } = useQuery<{ resource: Resource }>(GET_RESOURCE, getResourceVars);
   const { trackEvent } = useTracking();
+
+  useEffect(() => { refetch(getResourceVars) });
 
   const handleClick = useCallback(() => {
     trackEvent(EVENT_DATA);
@@ -50,8 +46,8 @@ function ServicesTile({ resourceId }: Props) {
           <CircularProgress centerToParent />
         ) : (
           <>
-            {data?.Topics.length}
-            {data && data?.Topics.length > 1 ? " services" : " service"}
+            {data?.resource.services.length}
+            {data && data?.resource.services.length > 1 ? " services" : " service"}
           </>
         )
       }
@@ -68,5 +64,22 @@ function ServicesTile({ resourceId }: Props) {
     />
   );
 }
+
+const GET_RESOURCE = gql`
+  query resource($id: String!) {
+    resource(where: { id: $id }) {
+      id
+      name
+      description
+      services {
+        id
+        name
+        description
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
 
 export { ServicesTile };
