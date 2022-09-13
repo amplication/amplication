@@ -2,7 +2,7 @@ import { Module } from "./code-gen-types";
 import {
   CreateAdminModulesParams,
   CreateAuthModulesParams,
-  CreateEntityBaseControllerParams,
+  CreateEntityControllerBaseParams,
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
@@ -71,14 +71,14 @@ export type Events = {
       modules: CreateEntityControllerParams["after"]
     ) => Module[];
   };
-  [EventNames.CreateEntityBaseController]?: {
+  [EventNames.CreateEntityControllerBase]?: {
     before?: (
       dsgContext: DsgContext,
-      eventParams: CreateEntityBaseControllerParams["before"]
-    ) => CreateEntityBaseControllerParams["before"];
+      eventParams: CreateEntityControllerBaseParams["before"]
+    ) => CreateEntityControllerBaseParams["before"];
     after?: (
       dsgContext: DsgContext,
-      modules: CreateEntityBaseControllerParams["after"]
+      modules: CreateEntityControllerBaseParams["after"]
     ) => Module[];
   };
 };

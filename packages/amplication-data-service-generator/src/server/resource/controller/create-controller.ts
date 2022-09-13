@@ -10,7 +10,7 @@ import {
   DTOs,
   EventNames,
   CreateEntityControllerParams,
-  CreateEntityBaseControllerParams,
+  CreateEntityControllerBaseParams,
 } from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
@@ -130,7 +130,7 @@ export async function createControllerModules(
     )),
     ...(await pluginWrapper(
       createControllerBaseModule,
-      EventNames.CreateEntityBaseController,
+      EventNames.CreateEntityControllerBase,
       {
         baseTemplatePath,
         entityName,
@@ -196,7 +196,7 @@ async function createControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-}: CreateEntityBaseControllerParams["before"]): Promise<Module[]> {
+}: CreateEntityControllerBaseParams["before"]): Promise<Module[]> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;

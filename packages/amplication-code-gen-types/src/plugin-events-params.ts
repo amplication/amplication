@@ -42,7 +42,7 @@ export interface CreateEntityControllerParams extends EventParams {
   };
 }
 
-export interface CreateEntityBaseControllerParams extends EventParams {
+export interface CreateEntityControllerBaseParams extends EventParams {
   before: {
     baseTemplatePath: string;
     entity: Entity;
