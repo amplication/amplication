@@ -7,6 +7,7 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
+  Module,
 } from "@amplication/code-gen-types";
 import { countBy } from "lodash";
 
@@ -21,11 +22,20 @@ export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.NOW
 );
 
-export async function createPrismaSchema(
-  entities: Entity[],
-  dataSource: PrismaDataSource,
-  clientGenerator: PrismaSchemaDSL.Generator
-): Promise<string> {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+type check = {
+  entities: Entity[];
+  dataSource: PrismaDataSource;
+  clientGenerator: PrismaSchemaDSL.Generator;
+  modulePath: string;
+};
+
+export async function createPrismaSchema({
+  entities,
+  dataSource,
+  clientGenerator,
+  modulePath,
+}: check): Promise<Module[]> {
   const fieldNamesCount = countBy(
     entities.flatMap((entity) => entity.fields),
     "name"
@@ -43,7 +53,13 @@ export async function createPrismaSchema(
     clientGenerator,
   ]);
 
-  return PrismaSchemaDSL.print(schema);
+  const code = await PrismaSchemaDSL.print(schema);
+  return [
+    {
+      path: modulePath,
+      code: code,
+    },
+  ];
 }
 
 export function createPrismaEnum(

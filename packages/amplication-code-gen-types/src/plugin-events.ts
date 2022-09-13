@@ -8,6 +8,7 @@ import {
   CreateEntityServiceParams,
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
+  CreatePrismaSchemaParams,
   CreateServerDotEnvParams,
 } from "./plugin-events-params";
 import { DsgContext, EventNames } from "./plugins-types";
@@ -101,6 +102,16 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDockerComposeDBParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreatePrismaSchemaService]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreatePrismaSchemaParams["before"]
+    ) => CreatePrismaSchemaParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreatePrismaSchemaParams["after"]
     ) => Module[];
   };
 };

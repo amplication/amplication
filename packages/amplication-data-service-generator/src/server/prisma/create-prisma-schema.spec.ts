@@ -18,6 +18,7 @@ const EXAMPLE_OTHER_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "ExampleEntityFieldName";
 const EXAMPLE_LOOKUP_ENTITY_NAME = "ExampleLookupEntity";
 const EXAMPLE_LOOKUP_FIELD_NAME = "exampleLookupField";
+const EXAMPLE_MODULE_PATH = "ExampleModulePath";
 
 const EXAMPLE_FIELD: EntityField = {
   id: "EXAMPLE_FIELD_ID",
@@ -155,7 +156,8 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
     const schema = await createPrismaSchema(
       entities,
       DATA_SOURCE,
-      CLIENT_GENERATOR
+      CLIENT_GENERATOR,
+      EXAMPLE_MODULE_PATH
     );
     expect(schema).toBe(expected);
   });

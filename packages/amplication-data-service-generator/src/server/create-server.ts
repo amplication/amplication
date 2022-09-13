@@ -107,10 +107,7 @@ export async function createServerModules(
   }));
 
   logger.info("Creating Prisma schema...");
-  const prismaSchemaModule = await createPrismaSchemaModule(
-    entities,
-    serverDirectories.baseDirectory
-  );
+  const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(
@@ -130,7 +127,7 @@ export async function createServerModules(
     ...staticModules,
     ...formattedJsonFiles,
     ...formattedModules,
-    prismaSchemaModule,
+    ...prismaSchemaModule,
     grantsModule,
     ...dotEnvModule,
     ...dockerComposeFile,

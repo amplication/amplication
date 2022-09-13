@@ -56,6 +56,8 @@ export enum EventNames {
   CreateEntityServiceBase = "CreateEntityServiceBase",
   CreateServerDockerCompose = "CreateServerDockerCompose",
   CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
+  CreateEntityBaseService = "CreateEntityBaseService",
+  CreatePrismaSchemaService = "CreatePrismaSchemaService",
 }
 
 export interface AmplicationPlugin {
