@@ -8,7 +8,7 @@ import path from "path";
 import { prepareYamlFile } from "../../util/prepare-yaml-file";
 
 import pluginWrapper from "../../plugin-wrapper";
-import { BASE_DIRECTORY, DOCKER_COMPOSE_FILE_NAME } from "../constants";
+import { SERVER_BASE_DIRECTORY, DOCKER_COMPOSE_FILE_NAME } from "../constants";
 
 export async function createDockerComposeFile(): Promise<Module[]> {
   const filePath = path.resolve(__dirname, DOCKER_COMPOSE_FILE_NAME);
@@ -29,7 +29,7 @@ export async function createDockerComposeFile(): Promise<Module[]> {
 async function createDockerComposeFileInternal(
   eventParams: CreateServerDockerComposeParams["before"]
 ): Promise<Module[]> {
-  const baseDirectory = BASE_DIRECTORY;
+  const baseDirectory = SERVER_BASE_DIRECTORY;
   const preparedFile = prepareYamlFile(
     eventParams.fileContent,
     eventParams.updateProperties
