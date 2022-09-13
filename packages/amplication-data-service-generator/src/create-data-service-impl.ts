@@ -8,6 +8,8 @@ import {
   EnumDataType,
   LookupResolvedProperties,
   types,
+  serverDirectories,
+  clientDirectories,
   DSGResourceData,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
@@ -17,6 +19,9 @@ import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
 import registerPlugins from "./register-plugin";
+import { get } from "lodash";
+import { SERVER_BASE_DIRECTORY } from "./server/constants";
+import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
 
 export async function createDataServiceImpl(
   dSGResourceData: DSGResourceData,
@@ -49,6 +54,12 @@ export async function createDataServiceImpl(
   context.roles = roles;
   context.entities = normalizedEntities;
   const plugins = await registerPlugins(resourcePlugins);
+  context.serverDirectories = dynamicServerPathCreator(
+    get(appInfo, "settings.serverSettings.serverPath", "")
+  );
+  context.clientDirectories = dynamicClientPathCreator(
+    get(appInfo, "settings.adminUISettings.adminUIPath", "")
+  );
 
   context.plugins = plugins;
 
@@ -81,6 +92,32 @@ export async function createDataServiceImpl(
     ...module,
     path: normalize(module.path),
   }));
+}
+function validatePath(path: string): string | null {
+  return path.trim() || null;
+}
+
+function dynamicServerPathCreator(serverPath: string): serverDirectories {
+  const baseDirectory = validatePath(serverPath) || SERVER_BASE_DIRECTORY;
+  const srcDirectory = `${baseDirectory}/src`;
+  return {
+    baseDirectory: baseDirectory,
+    srcDirectory: srcDirectory,
+    scriptsDirectory: `${baseDirectory}/scripts`,
+    authDirectory: `${baseDirectory}/auth`,
+  };
+}
+
+function dynamicClientPathCreator(clientPath: string): clientDirectories {
+  const baseDirectory = validatePath(clientPath) || CLIENT_BASE_DIRECTORY;
+  const srcDirectory = `${baseDirectory}/src`;
+  return {
+    baseDirectory: baseDirectory,
+    srcDirectory: srcDirectory,
+    publicDirectory: `${baseDirectory}/public`,
+    apiDirectory: `${srcDirectory}/api`,
+    authDirectory: `${srcDirectory}/auth-provider`,
+  };
 }
 
 function prepareEntityPluralName(entities: Entity[]): Entity[] {

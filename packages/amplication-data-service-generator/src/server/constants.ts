@@ -1,8 +1,8 @@
 import { VariableDictionary } from "@amplication/code-gen-types";
 
-export const BASE_DIRECTORY = "server";
-export const SRC_DIRECTORY = `${BASE_DIRECTORY}/src`;
-export const SCRIPTS_DIRECTORY = `${BASE_DIRECTORY}/scripts`;
+export const SERVER_BASE_DIRECTORY = "server";
+export const SRC_DIRECTORY = `${SERVER_BASE_DIRECTORY}/src`;
+export const SCRIPTS_DIRECTORY = `${SERVER_BASE_DIRECTORY}/scripts`;
 export const AUTH_PATH = `${SRC_DIRECTORY}/auth`;
 
 export const ENV_VARIABLES: VariableDictionary = [
@@ -20,5 +20,5 @@ export const ENV_VARIABLES: VariableDictionary = [
   { SERVER_PORT: "3000" },
 ];
 
-export const DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
-export const DOCKER_COMPOSE_DB_FILE_NAME = "docker-compose.db.yml";
+export const DOCKER_COMPOSE_FILE_NAME = "docker-compose.template.yml";
+export const DOCKER_COMPOSE_DB_FILE_NAME = "docker-compose.db.template.yml";

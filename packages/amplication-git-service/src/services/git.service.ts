@@ -3,7 +3,10 @@ import { PrModule } from '../types';
 import { GitResourceMeta } from '../contracts/GitResourceMeta';
 import { GithubFile } from '../Dto/entities/GithubFile';
 import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
-import { RemoteGitRepository } from '../Dto/entities/RemoteGitRepository';
+import {
+  RemoteGitRepos,
+  RemoteGitRepository
+} from '../Dto/entities/RemoteGitRepository';
 import { EnumGitOrganizationType } from '../Dto/enums/EnumGitOrganizationType';
 import { EnumGitProvider } from '../Dto/enums/EnumGitProvider';
 import { GitServiceFactory } from '../utils/GitServiceFactory';
@@ -14,10 +17,12 @@ export class GitService {
 
   async getReposOfOrganization(
     gitProvider: EnumGitProvider,
-    installationId: string
-  ): Promise<RemoteGitRepository[]> {
+    installationId: string,
+    limit: number,
+    page: number
+  ): Promise<RemoteGitRepos> {
     const gitService = this.gitServiceFactory.getService(gitProvider);
-    return await gitService.getOrganizationRepos(installationId);
+    return await gitService.getOrganizationRepos(installationId, limit, page);
   }
 
   async createGitRepository(

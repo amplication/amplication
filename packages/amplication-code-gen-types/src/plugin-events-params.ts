@@ -1,28 +1,59 @@
-import { Module } from "./code-gen-types";
-import { Entity } from "./models";
+import { namedTypes } from "ast-types";
+import {
+  DTOs,
+  Entity,
+  EntityField,
+  Module,
+  NamedClassDeclaration,
+} from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
-export interface CreateServiceModulesParams extends EventParams {
+export interface CreateEntityServiceBaseParams extends EventParams {
   before: {
     entityName: string;
-    entityType: string;
     entity: Entity;
-    srcDirectory: string;
-    extraMapping: { [key: string]: any };
+    templateMapping: { [key: string]: any };
+    passwordFields: EntityField[];
+    serviceId: namedTypes.Identifier;
+    serviceBaseId: namedTypes.Identifier;
+    delegateId: namedTypes.Identifier;
+    template: namedTypes.File;
   };
 }
 
-export interface CreateControllerModulesParams extends EventParams {
+export interface CreateEntityServiceParams extends EventParams {
   before: {
-    resource: string;
+    entityName: string;
+    templateMapping: { [key: string]: any };
+    passwordFields: EntityField[];
+    serviceId: namedTypes.Identifier;
+    serviceBaseId: namedTypes.Identifier;
+    template: namedTypes.File;
+  };
+}
+export interface CreateEntityControllerParams extends EventParams {
+  before: {
+    templatePath: string;
+    entityName: string;
+    entityServiceModule: string;
+    templateMapping: { [key: string]: any };
+    controllerBaseId: namedTypes.Identifier;
+    serviceId: namedTypes.Identifier;
+  };
+}
+
+export interface CreateEntityControllerBaseParams extends EventParams {
+  before: {
+    baseTemplatePath: string;
+    entity: Entity;
     entityName: string;
     entityType: string;
     entityServiceModule: string;
-    entity: Entity;
-    srcDirectory: string;
+    templateMapping: { [key: string]: any };
+    controllerBaseId: namedTypes.Identifier;
+    serviceId: namedTypes.Identifier;
   };
 }
-
 export interface CreateAuthModulesParams extends EventParams {
   before: {
     srcDir: string;
@@ -41,5 +72,21 @@ export interface CreateServerDotEnvParams extends EventParams {
   before: {
     baseDirectory: string;
     envVariables: VariableDictionary;
+  };
+}
+
+export interface CreateServerDockerComposeParams extends EventParams {
+  before: {
+    fileContent: string;
+    updateProperties: { [key: string]: any };
+    outputFileName: string;
+  };
+}
+
+export interface CreateServerDockerComposeDBParams extends EventParams {
+  before: {
+    fileContent: string;
+    updateProperties: { [key: string]: any };
+    outputFileName: string;
   };
 }
