@@ -64,14 +64,14 @@ async function createResourceModules(
 
   const controllerModules =
     (appInfo.settings.serverSettings.generateRestApi &&
-      (await createControllerModules({
+      (await createControllerModules(
         resource,
         entityName,
         entityType,
-        entityServiceModule: serviceModule.path,
+        serviceModule.path,
         entity,
-        srcDirectory,
-      }))) ||
+        srcDirectory
+      ))) ||
     [];
 
   const [controllerModule, controllerBaseModule] = controllerModules;

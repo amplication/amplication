@@ -47,7 +47,8 @@ export type PluginMap = {
 };
 
 export enum EventNames {
-  CreateControllerModules = "createControllerModules",
+  CreateEntityController = "CreateEntityController",
+  CreateEntityBaseController = "CreateEntityBaseController",
   CreateAuthModules = "createAuthModules",
   CreateAdminModules = "createAdminModules",
   CreateServerDotEnv = "CreateServerDotEnv",
