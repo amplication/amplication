@@ -65,7 +65,7 @@ async function createResourceModules(
         entityName,
         entityType,
         serviceModule.path,
-        entity,
+        entity
       ))) ||
     [];
 
