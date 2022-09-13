@@ -137,12 +137,10 @@ export async function createServerModules(
     envVariables: ENV_VARIABLES,
   });
 
-  const dockerComposeFile = await createDockerComposeFile(
-    directoryManager.BASE,
-    DOCKER_COMPOSE_FILE_NAME
-  );
 
-  const dockerComposeDbFile = await createDockerComposeFile(
+  const dockerComposeFile = await createDockerComposeFile();
+
+  const dockerComposeDbFile = await createDockerComposeDbFile(
     directoryManager.BASE,
     DOCKER_COMPOSE_DB_FILE_NAME
   );
@@ -158,3 +156,6 @@ export async function createServerModules(
     dockerComposeDbFile,
   ];
 }
+
+
+function create

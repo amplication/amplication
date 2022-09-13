@@ -43,3 +43,11 @@ export interface CreateServerDotEnvParams extends EventParams {
     envVariables: VariableDictionary;
   };
 }
+
+export interface CreateServerDockerComposeParams extends EventParams {
+  before: {
+    fileContent: string;
+    updateProperties: { [key: string]: any };
+    outputFileName: string;
+  };
+}
