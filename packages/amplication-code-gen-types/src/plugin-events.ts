@@ -3,7 +3,7 @@ import {
   CreateAdminModulesParams,
   CreateAuthModulesParams,
   CreateControllerModulesParams,
-  CreateEntityBaseServiceParams,
+  CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
   CreateServerDotEnvParams,
 } from "./plugin-events-params";
@@ -60,14 +60,14 @@ export type Events = {
       modules: CreateEntityServiceParams["after"]
     ) => Module[];
   };
-  [EventNames.CreateEntityBaseService]?: {
+  [EventNames.CreateEntityServiceBase]?: {
     before?: (
       dsgContext: DsgContext,
-      eventParams: CreateEntityBaseServiceParams["before"]
-    ) => CreateEntityBaseServiceParams["before"];
+      eventParams: CreateEntityServiceBaseParams["before"]
+    ) => CreateEntityServiceBaseParams["before"];
     after?: (
       dsgContext: DsgContext,
-      modules: CreateEntityBaseServiceParams["after"]
+      modules: CreateEntityServiceBaseParams["after"]
     ) => Module[];
   };
 };

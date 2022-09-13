@@ -8,7 +8,7 @@ import {
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
-export interface CreateEntityBaseServiceParams extends EventParams {
+export interface CreateEntityServiceBaseParams extends EventParams {
   before: {
     entityName: string;
     entity: Entity;

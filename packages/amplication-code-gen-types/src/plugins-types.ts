@@ -52,7 +52,7 @@ export enum EventNames {
   CreateAdminModules = "createAdminModules",
   CreateServerDotEnv = "CreateServerDotEnv",
   CreateEntityService = "CreateEntityService",
-  CreateEntityBaseService = "CreateEntityBaseService",
+  CreateEntityServiceBase = "CreateEntityServiceBase",
 }
 
 export interface AmplicationPlugin {

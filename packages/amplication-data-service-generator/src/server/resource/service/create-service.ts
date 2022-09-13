@@ -10,7 +10,7 @@ import {
   DTOs,
   EventNames,
   CreateEntityServiceParams,
-  CreateEntityBaseServiceParams,
+  CreateEntityServiceBaseParams,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -96,7 +96,7 @@ export async function createServiceModules(
 
     ...(await pluginWrapper(
       createServiceBaseModule,
-      EventNames.CreateEntityBaseService,
+      EventNames.CreateEntityServiceBase,
       {
         entityName,
         entity,
@@ -196,7 +196,7 @@ async function createServiceBaseModule({
   delegateId,
   srcDirectory,
   file,
-}: CreateEntityBaseServiceParams["before"]): Promise<Module[]> {
+}: CreateEntityServiceBaseParams["before"]): Promise<Module[]> {
   const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
   interpolate(file, templateMapping);
