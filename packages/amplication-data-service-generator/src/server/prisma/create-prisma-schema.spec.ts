@@ -152,11 +152,11 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
     ],
   ];
   test.each(cases)("%s", async (name, entities: Entity[], expected: string) => {
-    const schema = await createPrismaSchema(
+    const schema = await createPrismaSchema({
       entities,
-      DATA_SOURCE,
-      CLIENT_GENERATOR
-    );
+      dataSource: DATA_SOURCE,
+      clientGenerator: CLIENT_GENERATOR,
+    });
     expect(schema).toBe(expected);
   });
 });
