@@ -1,12 +1,10 @@
 import { parentPort } from "worker_threads";
 import { createDataServiceImpl } from "./create-data-service-impl";
 
-import { WorkerParam, WorkerResult } from "@amplication/code-gen-types";
+import { DSGResourceData, WorkerResult } from "@amplication/code-gen-types";
 import { createWorkerLogger } from "./util/worker-logging";
 
-parentPort?.once("message", (params: WorkerParam) => {
-  const { entities, roles, appInfo, plugins } = params;
-
+parentPort?.once("message", (dSGResourceData: DSGResourceData) => {
   const loggerCallback = (message: string) => {
     const messageData: WorkerResult = {
       message,
@@ -17,7 +15,7 @@ parentPort?.once("message", (params: WorkerParam) => {
 
   const logger = createWorkerLogger(loggerCallback);
 
-  createDataServiceImpl(entities, roles, appInfo, logger, plugins)
+  createDataServiceImpl(dSGResourceData, logger)
     .then((modules) => {
       const results: WorkerResult = {
         done: true,

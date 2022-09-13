@@ -23,6 +23,11 @@ enum EnumMessagePatternConnectionOptions {
   Send
 }
 
+type PluginOrderItem {
+  pluginId: String!
+  order: Int!
+}
+
 type AuthorizeResourceWithGitResult {
   """"""
   url: String!
@@ -55,14 +60,15 @@ type Query {
   commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
+  pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  Topic(where: WhereUniqueInput!): Topic
+  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): [RemoteGitRepository!]!
+  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
-  Topic(where: WhereUniqueInput!): Topic
-  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
 }
 
 type Account {
@@ -398,6 +404,7 @@ enum EnumBlockType {
   EntityPage
   Document
   PluginInstallation
+  PluginOrder
 }
 
 type BlockVersion {
@@ -641,9 +648,22 @@ input ResourceWhereInput {
   updatedAt: DateTimeFilter
   name: StringFilter
   description: StringFilter
-  project: WhereUniqueInput
+  project: ProjectWhereInput
   projectId: String
   resourceType: EnumResourceTypeFilter
+}
+
+input ProjectWhereInput {
+  id: String
+  deletedAt: DateTimeFilter
+  name: StringFilter
+  resources: ResourceListRelationFilter
+}
+
+input ResourceListRelationFilter {
+  every: ResourceWhereInput
+  some: ResourceWhereInput
+  none: ResourceWhereInput
 }
 
 input EnumResourceTypeFilter {
@@ -716,19 +736,6 @@ type Invitation {
   email: String!
   workspace: Workspace
   invitedByUser: User
-}
-
-input ProjectWhereInput {
-  id: String
-  deletedAt: DateTimeFilter
-  name: StringFilter
-  resources: ResourceListRelationFilter
-}
-
-input ResourceListRelationFilter {
-  every: ResourceWhereInput
-  some: ResourceWhereInput
-  none: ResourceWhereInput
 }
 
 input ProjectOrderByInput {
@@ -922,7 +929,7 @@ type PluginInstallation implements IBlock {
   lockedAt: DateTime
   pluginId: String!
   enabled: Boolean!
-  order: Int!
+  npm: String!
 }
 
 input PluginInstallationWhereInput {
@@ -944,7 +951,7 @@ input PluginInstallationOrderByInput {
   description: SortOrder
 }
 
-type ProjectConfigurationSettings implements IBlock {
+type PluginOrder implements IBlock {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -957,35 +964,7 @@ type ProjectConfigurationSettings implements IBlock {
   outputParameters: [BlockInputOutput!]!
   lockedByUserId: String
   lockedAt: DateTime
-  baseDirectory: String!
-}
-
-type ApiToken {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  userId: String!
-  token: String
-  previewChars: String!
-  lastAccessAt: DateTime!
-}
-
-type RemoteGitRepository {
-  name: String!
-  url: String!
-  private: Boolean!
-  fullName: String!
-  admin: Boolean!
-}
-
-input RemoteGitRepositoriesWhereUniqueInput {
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-}
-
-input GitOrganizationWhereInput {
-  id: String
+  order: [PluginOrderItem!]!
 }
 
 type Topic implements IBlock {
@@ -1021,6 +1000,59 @@ input TopicOrderByInput {
   blockType: SortOrder
   displayName: SortOrder
   description: SortOrder
+}
+
+type ProjectConfigurationSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  baseDirectory: String!
+}
+
+type ApiToken {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  userId: String!
+  token: String
+  previewChars: String!
+  lastAccessAt: DateTime!
+}
+
+type RemoteGitRepos {
+  repos: [RemoteGitRepository!]!
+  totalRepos: Float!
+  currentPage: Float!
+  pageSize: Float!
+}
+
+type RemoteGitRepository {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+}
+
+input RemoteGitRepositoriesWhereUniqueInput {
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  limit: Float!
+  page: Float!
+}
+
+input GitOrganizationWhereInput {
+  id: String
 }
 
 type Mutation {
@@ -1063,6 +1095,9 @@ type Mutation {
   updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
+  setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  createTopic(data: TopicCreateInput!): Topic!
+  updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -1079,8 +1114,6 @@ type Mutation {
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   disconnectResourceGitRepository(resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
-  createTopic(data: TopicCreateInput!): Topic!
-  updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
 }
 
 input UpdateAccountInput {
@@ -1322,12 +1355,33 @@ input PluginInstallationCreateInput {
   outputParameters: [BlockInputOutputInput!]
   pluginId: String!
   enabled: Boolean!
+  npm: String!
 }
 
 input PluginInstallationUpdateInput {
   displayName: String
   description: String
   enabled: Boolean!
+}
+
+input PluginSetOrderInput {
+  order: Int!
+}
+
+input TopicCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  name: String
+}
+
+input TopicUpdateInput {
+  displayName: String
+  description: String
+  name: String
 }
 
 input ProjectConfigurationSettingsUpdateInput {
@@ -1384,20 +1438,4 @@ input GitOrganizationCreateInput {
 
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
-}
-
-input TopicCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  name: String
-}
-
-input TopicUpdateInput {
-  displayName: String
-  description: String
-  name: String
 }

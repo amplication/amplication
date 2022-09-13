@@ -7,6 +7,7 @@ import {
   EnumHorizontalRuleStyle,
   EnumPanelStyle,
   HorizontalRule,
+  Icon,
   Panel,
   Toggle,
 } from "@amplication/design-system";
@@ -15,9 +16,12 @@ import { Plugin } from "./hooks/usePlugins";
 
 type Props = {
   plugin: Plugin;
-  pluginInstallation: models.PluginInstallation | null;
+  pluginInstallation: models.PluginInstallation;
   onInstall?: (plugin: Plugin) => void;
+  onOrderChange?: (obj: { id: string; order: number; }) => void;
   onEnableStateChange?: (pluginInstallation: models.PluginInstallation) => void;
+  order?: number;
+  isDraggable?: boolean;
 };
 
 const CLASS_NAME = "plugins-catalog-item";
@@ -26,29 +30,36 @@ function PluginsCatalogItem({
   plugin,
   pluginInstallation,
   onInstall,
+  onOrderChange,
   onEnableStateChange,
+  order,
+  isDraggable,
 }: Props) {
   const { name, description } = plugin || {};
 
-  const handlePromote = useCallback(() => {}, []);
+  const handlePromote = useCallback(() => {
+    order && onOrderChange && pluginInstallation && onOrderChange({ id: pluginInstallation?.id, order: order + 1})
+  }, [onOrderChange, order, pluginInstallation]);
 
-  const handleDemote = useCallback(() => {}, []);
+  const handleDemote = useCallback(() => {
+    order && onOrderChange && pluginInstallation && onOrderChange({ id: pluginInstallation?.id, order: order - 1})
+  }, [onOrderChange, order, pluginInstallation]);
 
   const handleInstall = useCallback(() => {
     onInstall && onInstall(plugin);
   }, [onInstall, plugin]);
 
   const handleEnableStateChange = useCallback(() => {
-    onEnableStateChange &&
-      pluginInstallation &&
-      onEnableStateChange(pluginInstallation);
+    onEnableStateChange && onEnableStateChange(pluginInstallation);
   }, [onEnableStateChange, pluginInstallation]);
 
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
-      {pluginInstallation && (
+      {pluginInstallation && isDraggable && (
         <>
           <div className={`${CLASS_NAME}__row`}>
+            {/* <Icon icon="drag" className={`${CLASS_NAME}__drag`} /> */}
+            <div className={`${CLASS_NAME}__drag`}> </div>
             <Toggle
               title="enabled"
               onValueChange={handleEnableStateChange}
@@ -57,13 +68,13 @@ function PluginsCatalogItem({
             <div className={`${CLASS_NAME}__order`}>
               <Button
                 buttonStyle={EnumButtonStyle.Text}
-                onClick={handlePromote}
+                onClick={handleDemote}
                 icon="arrow_up"
               />
-              <span>{pluginInstallation.order}</span>
+              <span>{order}</span>
               <Button
                 buttonStyle={EnumButtonStyle.Text}
-                onClick={handleDemote}
+                onClick={handlePromote}
                 icon="arrow_down"
               />
             </div>
@@ -72,17 +83,28 @@ function PluginsCatalogItem({
         </>
       )}
       <div className={`${CLASS_NAME}__row `}>
-        <span className={`${CLASS_NAME}__logo`} />
-        <span className={`${CLASS_NAME}__title`}>{name}</span>
-        <span className="spacer" />
+        <span className={`${CLASS_NAME}__logo`}>
+          {plugin.icon ? (
+            <img src="" alt="plugin logo" />
+          ) : (
+            <Icon icon="plugin" />
+          )}
+        </span>
+        <div className={`${CLASS_NAME}__details`}>
+          <div className={`${CLASS_NAME}__details__title`}>{name}</div>
+          <span className={`${CLASS_NAME}__details__description`}>
+            {description}
+          </span>
+        </div>
         {!pluginInstallation && (
-          <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleInstall}>
+          <Button
+            className={`${CLASS_NAME}__install`}
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleInstall}
+          >
             Install
           </Button>
         )}{" "}
-      </div>
-      <div className={`${CLASS_NAME}__row`}>
-        <span className={`${CLASS_NAME}__description`}>{description}</span>
       </div>
     </Panel>
   );

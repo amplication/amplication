@@ -1,11 +1,16 @@
 import { Snackbar } from "@amplication/design-system";
 import React, { useCallback } from "react";
 import { match } from "react-router-dom";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import usePlugins, { Plugin } from "./hooks/usePlugins";
-import PluginsCatalogItem from "./PluginsCatalogItem";
 import * as models from "../models";
+import PluginsCatalogItem from "./PluginsCatalogItem";
+import { EnumImages } from "../Components/SvgThemeImage";
+import { EmptyState } from "../Components/EmptyState";
+// import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -25,11 +30,15 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     createError,
     updatePluginInstallation,
     updateError,
+    pluginOrderObj,
+    updatePluginOrder,
+    UpdatePluginOrderError,
+    // onPluginDropped,
   } = usePlugins(resource);
 
   const handleInstall = useCallback(
     (plugin: Plugin) => {
-      const { name, id } = plugin;
+      const { name, id, npm } = plugin;
 
       createPluginInstallation({
         variables: {
@@ -37,6 +46,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
             displayName: name,
             pluginId: id,
             enabled: true,
+            npm,
             resource: { connect: { id: resource } },
           },
         },
@@ -44,6 +54,24 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     },
     [createPluginInstallation, resource]
   );
+
+  const onOrderChange = useCallback(
+    ({ id, order }: { id: string; order: number}) => {
+      if (!pluginInstallations) return;
+
+      if (order < 1 || order > (pluginInstallations.length)) return;
+
+      updatePluginOrder({
+        variables: {
+          data: {
+            order,
+          },
+          where: {
+            id
+          },
+        },
+      }).catch(console.error);
+    } ,[pluginInstallations, updatePluginOrder])
 
   const onEnableStateChange = useCallback(
     (pluginInstallation: models.PluginInstallation) => {
@@ -63,24 +91,30 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     [updatePluginInstallation]
   );
 
-  const errorMessage = formatError(createError) || formatError(updateError);
-
+  const errorMessage = formatError(createError) || formatError(updateError) || formatError(UpdatePluginOrderError);
+ 
   return (
-    <div>
-      {pluginInstallations?.PluginInstallations.map((installation) => (
+    pluginInstallations && pluginOrderObj ? (
+      <DndProvider backend={HTML5Backend}>
+      {pluginInstallations.length && pluginInstallations.map((installation) => (
         <PluginsCatalogItem
           key={installation.id}
           plugin={pluginCatalog[installation.pluginId]}
-          pluginInstallation={installation}
+          pluginInstallation={installation as models.PluginInstallation}
+          onOrderChange={onOrderChange}
           onInstall={handleInstall}
           onEnableStateChange={onEnableStateChange}
+          order={pluginOrderObj[installation.pluginId]}
+          isDraggable
         />
       ))}
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}
       />
-    </div>
+    </DndProvider>
+    ) : (<EmptyState image={EnumImages.PluginInstallationEmpty} message="There are no plugins to show"/>)
+    
   );
 };
 
