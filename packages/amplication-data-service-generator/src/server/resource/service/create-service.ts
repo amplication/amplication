@@ -62,8 +62,8 @@ export async function createServiceModules(
   delegateId: namedTypes.Identifier
 ): Promise<Module[]> {
   const passwordFields = entity.fields.filter(isPasswordField);
-  const file = await readFile(serviceTemplatePath);
-  const fileBase = await readFile(serviceBaseTemplatePath);
+  const template = await readFile(serviceTemplatePath);
+  const templateBase = await readFile(serviceBaseTemplatePath);
 
   const templateMapping = createTemplateMapping(
     entityType,
@@ -83,7 +83,7 @@ export async function createServiceModules(
         passwordFields,
         serviceId,
         serviceBaseId,
-        file,
+        template,
       }
     )),
 
@@ -98,7 +98,7 @@ export async function createServiceModules(
         serviceId,
         serviceBaseId,
         delegateId,
-        file: fileBase,
+        template: templateBase,
       }
     )),
   ];
@@ -110,17 +110,17 @@ async function createServiceModule({
   passwordFields,
   serviceId,
   serviceBaseId,
-  file,
+  template,
 }: CreateEntityServiceParams["before"]): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.service.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
-  interpolate(file, templateMapping);
-  removeTSClassDeclares(file);
+  interpolate(template, templateMapping);
+  removeTSClassDeclares(template);
 
   //add import to base class
-  addImports(file, [
+  addImports(template, [
     importNames(
       [serviceBaseId],
       relativeImportPath(modulePath, moduleBasePath)
@@ -129,7 +129,7 @@ async function createServiceModule({
 
   //if there are any password fields, add imports, injection, and pass service to super
   if (passwordFields.length) {
-    const classDeclaration = getClassDeclarationById(file, serviceId);
+    const classDeclaration = getClassDeclarationById(template, serviceId);
 
     addInjectableDependency(
       classDeclaration,
@@ -138,7 +138,7 @@ async function createServiceModule({
       "protected"
     );
 
-    addIdentifierToConstructorSuperCall(file, PASSWORD_SERVICE_MEMBER_ID);
+    addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
 
     for (const member of classDeclaration.body.body) {
       if (
@@ -150,7 +150,7 @@ async function createServiceModule({
       }
     }
     //add the password service
-    addImports(file, [
+    addImports(template, [
       importNames(
         [PASSWORD_SERVICE_ID],
         relativeImportPath(
@@ -161,15 +161,15 @@ async function createServiceModule({
     ]);
   }
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
 
   return [
     {
       path: modulePath,
-      code: print(file).code,
+      code: print(template).code,
     },
   ];
 }
@@ -182,15 +182,15 @@ async function createServiceBaseModule({
   serviceId,
   serviceBaseId,
   delegateId,
-  file,
+  template,
 }: CreateEntityServiceBaseParams["before"]): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
 
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
-  interpolate(file, templateMapping);
+  interpolate(template, templateMapping);
 
-  const classDeclaration = getClassDeclarationById(file, serviceBaseId);
+  const classDeclaration = getClassDeclarationById(template, serviceBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelations = (
     await Promise.all(
@@ -234,18 +234,18 @@ async function createServiceBaseModule({
   );
 
   addImports(
-    file,
+    template,
     toManyRelations.flatMap((relation) => relation.imports)
   );
   addImports(
-    file,
+    template,
     toOneRelations.flatMap((relation) => relation.imports)
   );
 
-  removeTSClassDeclares(file);
+  removeTSClassDeclares(template);
 
   if (passwordFields.length) {
-    const classDeclaration = getClassDeclarationById(file, serviceBaseId);
+    const classDeclaration = getClassDeclarationById(template, serviceBaseId);
 
     addInjectableDependency(
       classDeclaration,
@@ -264,7 +264,7 @@ async function createServiceBaseModule({
       }
     }
     //add the password service
-    addImports(file, [
+    addImports(template, [
       importNames(
         [PASSWORD_SERVICE_ID],
         relativeImportPath(
@@ -274,7 +274,7 @@ async function createServiceBaseModule({
       ),
     ]);
 
-    addImports(file, [
+    addImports(template, [
       importNames(
         [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
         relativeImportPath(
@@ -285,16 +285,16 @@ async function createServiceBaseModule({
     ]);
   }
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
-  addAutoGenerationComment(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  addAutoGenerationComment(template);
 
   return [
     {
       path: moduleBasePath,
-      code: print(file).code,
+      code: print(template).code,
     },
   ];
 }
