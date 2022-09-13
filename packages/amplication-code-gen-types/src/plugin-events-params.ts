@@ -20,7 +20,7 @@ export interface CreateEntityServiceBaseParams extends EventParams {
     delegateId: namedTypes.Identifier;
     entityDTO: NamedClassDeclaration;
     dtos: DTOs;
-    file: namedTypes.File;
+    template: namedTypes.File;
   };
 }
 
@@ -32,7 +32,7 @@ export interface CreateEntityServiceParams extends EventParams {
     srcDirectory: string;
     serviceId: namedTypes.Identifier;
     serviceBaseId: namedTypes.Identifier;
-    file: namedTypes.File;
+    template: namedTypes.File;
   };
 }
 
