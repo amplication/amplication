@@ -51,7 +51,9 @@ describe('GitService', () => {
         const gitProvider = EnumGitProvider.Github;
         const remoteGitRepositories = await gitService.getReposOfOrganization(
           gitProvider,
-          installationId
+          installationId,
+          2,
+          1
         );
         expect(remoteGitRepositories).toEqual(TEST_GIT_REPOS);
       });

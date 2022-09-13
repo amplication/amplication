@@ -1139,6 +1139,8 @@ type RemoteGitRepository {
 input RemoteGitRepositoriesWhereUniqueInput {
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
+  limit: Float!
+  page: Float!
 }
 
 input GitOrganizationWhereInput {
