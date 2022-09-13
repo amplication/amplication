@@ -40,7 +40,11 @@ export class AuthService {
       throw new UnauthorizedException("The passed credentials are incorrect");
     }
     //@ts-ignore
-    const accessToken = await this.tokenService.createToken(username, password);
+    const accessToken = await this.tokenService.createToken({
+      id: user.id,
+      username,
+      password,
+    });
     return {
       accessToken,
       ...user,

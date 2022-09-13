@@ -42,7 +42,8 @@ import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock'
 import { PluginInstallation } from '../pluginInstallation/dto/PluginInstallation';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { orderBy } from 'lodash';
+import { TopicService } from '../topic/topic.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -104,7 +105,7 @@ const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
   parentBlock: null,
   versionNumber: 0,
   enabled: true,
-  order: 1,
+  npm: '@amplication/example-plugin',
   pluginId: '@amplication/example-plugin',
   blockType: EnumBlockType.PluginInstallation
 };
@@ -414,6 +415,7 @@ describe('BuildService', () => {
           provide: ResourceService,
           useValue: {
             resource: resourceServiceGetResourceMock,
+            resources: jest.fn(() => [EXAMPLE_SERVICE_RESOURCE]),
             gitRepository: getGitRepository,
             gitOrganizationByResource: getGitOrganization
           }
@@ -465,6 +467,18 @@ describe('BuildService', () => {
           provide: QueueService,
           useValue: {
             emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
+          }
+        },
+        {
+          provide: TopicService,
+          useValue: {
+            findMany: jest.fn(() => [])
+          }
+        },
+        {
+          provide: ServiceTopicsService,
+          useValue: {
+            findMany: jest.fn(() => [])
           }
         },
         {
@@ -567,11 +581,6 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
-    expect(resourceServiceGetResourceMock).toBeCalledTimes(1);
-    expect(resourceServiceGetResourceMock).toBeCalledWith({
-      where: { id: EXAMPLE_RESOURCE_ID }
-    });
-
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -592,20 +601,6 @@ describe('BuildService', () => {
       }
     });
     expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
-    expect(DataServiceGenerator.createDataService).toBeCalledWith(
-      orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
-      EXAMPLE_APP_ROLES,
-      {
-        name: EXAMPLE_SERVICE_RESOURCE.name,
-        description: EXAMPLE_SERVICE_RESOURCE.description,
-        version: EXAMPLE_BUILD.version,
-        id: EXAMPLE_SERVICE_RESOURCE.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
-        settings: EXAMPLE_APP_SETTINGS_VALUES
-      },
-      MOCK_LOGGER,
-      [EXAMPLE_PLUGIN_INSTALLATION]
-    );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(1);

@@ -70,6 +70,6 @@ function convertToKeyValueSting(arr: VariableDictionary): string {
 
 function appendAdditionalVariables(file: string, variables: string): string {
   if (!variables.trim()) return file;
-  if (!file.trim()) file.concat(variables);
+  if (!file.trim()) return file.concat(variables);
   return file.concat(`\n${variables}`);
 }
