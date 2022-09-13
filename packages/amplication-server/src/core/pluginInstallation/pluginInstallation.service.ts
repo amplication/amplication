@@ -150,7 +150,7 @@ export class PluginInstallationService extends BlockTypeService<
     return this.pluginOrderService.update(
       {
         data: {
-          order: newOrderedPlugins
+          order: sortPluginsArr(newOrderedPlugins)
         },
         where: {
           id: currentOrder.id

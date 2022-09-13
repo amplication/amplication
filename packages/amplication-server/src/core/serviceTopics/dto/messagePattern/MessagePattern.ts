@@ -7,5 +7,5 @@ export class MessagePattern {
   topicId!: string;
 
   @Field(() => EnumMessagePatternConnectionOptions, { nullable: false })
-  type!: keyof typeof EnumMessagePatternConnectionOptions;
+  type!: EnumMessagePatternConnectionOptions;
 }
