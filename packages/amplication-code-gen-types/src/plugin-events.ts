@@ -6,6 +6,8 @@ import {
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
+  CreateServerDockerComposeDBParams,
+  CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
 } from "./plugin-events-params";
 import { DsgContext, EventNames } from "./plugins-types";
@@ -79,6 +81,26 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityControllerBaseParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateServerDockerCompose]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateServerDockerComposeParams["before"]
+    ) => CreateServerDockerComposeParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateServerDockerComposeParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateServerDockerComposeDB]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateServerDockerComposeDBParams["before"]
+    ) => CreateServerDockerComposeDBParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateServerDockerComposeDBParams["after"]
     ) => Module[];
   };
 };

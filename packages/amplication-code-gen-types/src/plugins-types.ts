@@ -54,6 +54,8 @@ export enum EventNames {
   CreateServerDotEnv = "CreateServerDotEnv",
   CreateEntityService = "CreateEntityService",
   CreateEntityServiceBase = "CreateEntityServiceBase",
+  CreateServerDockerCompose = "CreateServerDockerCompose",
+  CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
 }
 
 export interface AmplicationPlugin {

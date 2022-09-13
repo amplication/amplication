@@ -1336,7 +1336,7 @@ export type Query = {
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
-  remoteGitRepositories: Array<RemoteGitRepository>;
+  remoteGitRepositories: RemoteGitRepos;
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
@@ -1506,6 +1506,14 @@ export enum QueryMode {
   Default = 'Default',
   Insensitive = 'Insensitive',
 }
+
+export type RemoteGitRepos = {
+  __typename?: 'RemoteGitRepos';
+  currentPage: Scalars['Float'];
+  pageSize: Scalars['Float'];
+  repos: Array<RemoteGitRepository>;
+  totalRepos: Scalars['Float'];
+};
 
 export type RemoteGitRepositoriesWhereUniqueInput = {
   gitOrganizationId: Scalars['String'];
