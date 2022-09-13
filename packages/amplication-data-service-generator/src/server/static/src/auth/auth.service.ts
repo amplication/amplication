@@ -24,9 +24,9 @@ export class AuthService {
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
-      const { roles } = user;
+      const { id, roles } = user;
       const roleList = (roles as UserRoles).roles;
-      return { username, roles: roleList };
+      return { id, username, roles: roleList };
     }
     return null;
   }
