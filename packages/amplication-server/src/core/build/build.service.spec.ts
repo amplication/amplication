@@ -487,12 +487,6 @@ describe('BuildService', () => {
             findMany: prismaPluginFindManyMock
           }
         },
-        {
-          provide: ServiceTopicsService,
-          useValue: {
-            findMany: jest.fn(() => [])
-          }
-        }
       ]
     }).compile();
 
