@@ -1,6 +1,5 @@
 import * as path from "path";
 import { paramCase } from "param-case";
-import { get } from "lodash";
 import { plural } from "pluralize";
 import { Module, EventNames } from "@amplication/code-gen-types";
 import { formatCode } from "../util/module";
@@ -16,7 +15,6 @@ import {
 } from "./entity/create-entity-components-modules";
 import { createPublicFiles } from "./public-files/create-public-files";
 import { createDTONameToPath } from "./create-dto-name-to-path";
-import { BASE_DIRECTORY } from "./constants";
 import { createEntityToDirectory } from "./create-entity-to-directory";
 import { createEnumRolesModule } from "./create-enum-roles";
 import { createRolesModule } from "./create-roles-module";
@@ -26,20 +24,6 @@ import DsgContext from "../dsg-context";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
-
-const validatePath = (adminPath: string) => adminPath.trim() || null;
-const dynamicPathCreator = (adminPath: string) => {
-  const baseDirectory = validatePath(adminPath) || BASE_DIRECTORY;
-  const srcDirectory = `${baseDirectory}/src`;
-  return {
-    BASE: baseDirectory,
-    SRC: srcDirectory,
-    PUBLIC: `${baseDirectory}/public`,
-    API: `${srcDirectory}/api`,
-    AUTH: `${srcDirectory}/auth-provider`,
-  };
-};
-
 /**
  * responsible of the Admin ui modules generation
  */
@@ -52,21 +36,26 @@ export function createAdminModules(): Promise<Module[]> {
 }
 
 async function createAdminModulesInternal(): Promise<Module[]> {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { appInfo, logger, entities, roles, DTOs } = DsgContext.getInstance;
-  const directoryManager = dynamicPathCreator(
-    get(appInfo, "settings.adminUISettings.adminUIPath", "")
-  );
-  logger.info(`Admin path: ${directoryManager.BASE}`);
+  const {
+    appInfo,
+    logger,
+    entities,
+    roles,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    DTOs,
+    clientDirectories,
+  } = DsgContext.getInstance;
+
+  logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
   logger.info("Creating admin...");
   logger.info("Copying static modules...");
   const rawStaticModules = await readStaticModules(
     STATIC_MODULES_PATH,
-    directoryManager.BASE
+    clientDirectories.baseDirectory
   );
   const staticModules = updatePackageJSONs(
     rawStaticModules,
-    directoryManager.BASE,
+    clientDirectories.baseDirectory,
     {
       name: `@${paramCase(appInfo.name)}/admin`,
       version: appInfo.version,
@@ -95,16 +84,22 @@ async function createAdminModulesInternal(): Promise<Module[]> {
 
   const publicFilesModules = await createPublicFiles(
     appInfo,
-    directoryManager.PUBLIC
+    clientDirectories.publicDirectory
   );
   const entityToDirectory = createEntityToDirectory(
     entities,
-    directoryManager.SRC
+    clientDirectories.srcDirectory
   );
-  const dtoNameToPath = createDTONameToPath(DTOs, directoryManager.API);
+  const dtoNameToPath = createDTONameToPath(
+    DTOs,
+    clientDirectories.apiDirectory
+  );
   const dtoModules = createDTOModules(DTOs, dtoNameToPath);
-  const enumRolesModule = createEnumRolesModule(roles, directoryManager.SRC);
-  const rolesModule = createRolesModule(roles, directoryManager.SRC);
+  const enumRolesModule = createEnumRolesModule(
+    roles,
+    clientDirectories.srcDirectory
+  );
+  const rolesModule = createRolesModule(roles, clientDirectories.srcDirectory);
   // Create title components first so they are available when creating entity modules
   const entityToTitleComponent = await createEntityTitleComponents(
     entities,
@@ -132,7 +127,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     appInfo,
     entityToPath,
     entitiesComponents,
-    directoryManager
+    clientDirectories
   );
   const createdModules = [
     appModule,
@@ -142,7 +137,10 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     ...entityTitleComponentsModules,
     ...entityComponentsModules,
   ];
-  const dotEnvModule = await createDotEnvModule(appInfo, directoryManager.BASE);
+  const dotEnvModule = await createDotEnvModule(
+    appInfo,
+    clientDirectories.baseDirectory
+  );
 
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({

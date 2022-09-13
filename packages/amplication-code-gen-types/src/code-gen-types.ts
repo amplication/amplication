@@ -186,5 +186,19 @@ type BlockOmittedFields<T> = Omit<
   | "lockedAt"
 >;
 
+export type clientDirectories = {
+  baseDirectory: string;
+  srcDirectory: string;
+  authDirectory: string;
+  publicDirectory: string;
+  apiDirectory: string;
+};
+
+export type serverDirectories = {
+  baseDirectory: string;
+  srcDirectory: string;
+  authDirectory: string;
+  scriptsDirectory: string;
+};
 export type Topic = BlockOmittedFields<models.Topic>;
 export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
