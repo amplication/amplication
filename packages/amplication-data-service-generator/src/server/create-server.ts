@@ -9,8 +9,7 @@ import {
   DTOs,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
-import { formatCode } from "../util/module";
-import { updatePackageJSONs } from "../update-package-jsons";
+import { formatCode, formatJson } from "../util/module";
 import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
@@ -19,9 +18,15 @@ import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
-import { ENV_VARIABLES } from "./constants";
-import { createAuthModules } from "./auth/createAuth";
 import DsgContext from "../dsg-context";
+import {
+  DOCKER_COMPOSE_DB_FILE_NAME,
+  DOCKER_COMPOSE_FILE_NAME,
+  ENV_VARIABLES,
+} from "./constants";
+import { createAuthModules } from "./auth/createAuth";
+import { createDockerComposeFile } from "./create-docker-compose";
+import { createPackageJson } from "./package-json/create-package-json";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -38,18 +43,17 @@ export async function createServerModules(
   logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   logger.info("Creating server...");
   logger.info("Copying static modules...");
-  const rawStaticModules = await readStaticModules(
+  const staticModules = await readStaticModules(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
   );
-  const staticModules = updatePackageJSONs(
-    rawStaticModules,
-    serverDirectories.baseDirectory,
-    {
+  const packageJsonModule = await createPackageJson({
+    update: {
       name: `@${paramCase(appInfo.name)}/server`,
       version: appInfo.version,
-    }
-  );
+    },
+    baseDirectory: serverDirectories.baseDirectory,
+  });
 
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos, serverDirectories.srcDirectory);
@@ -101,6 +105,10 @@ export async function createServerModules(
     ...module,
     code: formatCode(module.code),
   }));
+  const formattedJsonFiles = [...packageJsonModule].map((module) => ({
+    ...module,
+    code: formatJson(module.code),
+  }));
 
   logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(
@@ -119,11 +127,24 @@ export async function createServerModules(
     envVariables: ENV_VARIABLES,
   });
 
+  const dockerComposeFile = await createDockerComposeFile(
+    serverDirectories.baseDirectory,
+    DOCKER_COMPOSE_FILE_NAME
+  );
+
+  const dockerComposeDbFile = await createDockerComposeFile(
+    serverDirectories.baseDirectory,
+    DOCKER_COMPOSE_DB_FILE_NAME
+  );
+
   return [
     ...staticModules,
+    ...formattedJsonFiles,
     ...formattedModules,
     prismaSchemaModule,
     grantsModule,
     ...dotEnvModule,
+    dockerComposeFile,
+    dockerComposeDbFile,
   ];
 }
