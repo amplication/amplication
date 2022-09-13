@@ -2,8 +2,7 @@
 
 exports[`createDataService creates app as expected 1`] = `
 Object {
-  "server/docker-compose.db.yml": "|
-version: \\"3\\"
+  "server/docker-compose.db.yml": "version: \\"3\\"
 services:
   db:
     image: postgres:12
@@ -17,9 +16,7 @@ services:
 volumes:
   postgres: ~
 ",
-  "server/docker-compose.yml": ">
-version: \\"3\\"
-
+  "server/docker-compose.yml": "version: \\"3\\"
 services:
   server:
     build:

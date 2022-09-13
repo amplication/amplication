@@ -5,7 +5,6 @@ import {
 } from "@amplication/code-gen-types";
 import { promises as fs } from "fs";
 import path from "path";
-import YAML from "yaml";
 import { prepareYamlFile } from "../../util/prepare-yaml-file";
 
 import pluginWrapper from "../../plugin-wrapper";
@@ -39,7 +38,7 @@ async function createDockerComposeDBFileInternal(
   return [
     {
       path: path.join(baseDirectory, eventParams.outputFileName),
-      code: YAML.stringify(preparedFile, { nullStr: "~" }),
+      code: preparedFile,
     },
   ];
 }
