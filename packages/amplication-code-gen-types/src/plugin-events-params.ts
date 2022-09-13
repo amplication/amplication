@@ -51,3 +51,11 @@ export interface CreateServerDockerComposeParams extends EventParams {
     outputFileName: string;
   };
 }
+
+export interface CreateServerDockerComposeDBParams extends EventParams {
+  before: {
+    fileContent: string;
+    updateProperties: { [key: string]: any };
+    outputFileName: string;
+  };
+}

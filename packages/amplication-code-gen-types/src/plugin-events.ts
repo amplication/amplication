@@ -3,6 +3,7 @@ import {
   CreateAdminModulesParams,
   CreateAuthModulesParams,
   CreateControllerModulesParams,
+  CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
   CreateServiceModulesParams,
@@ -68,6 +69,16 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDockerComposeParams["after"]
-    ) => Module[] ;
+    ) => Module[];
+  };
+  [EventNames.CreateServerDockerComposeDB]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateServerDockerComposeDBParams["before"]
+    ) => CreateServerDockerComposeDBParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateServerDockerComposeDBParams["after"]
+    ) => Module[];
   };
 };

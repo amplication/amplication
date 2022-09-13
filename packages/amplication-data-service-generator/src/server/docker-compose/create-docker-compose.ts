@@ -6,17 +6,13 @@ import {
 import { promises as fs } from "fs";
 import path from "path";
 import YAML from "yaml";
-import { prepareYamlFile } from "../util/prepare-yaml-file";
+import { prepareYamlFile } from "../../util/prepare-yaml-file";
 
-import pluginWrapper from "../plugin-wrapper";
-import { BASE_DIRECTORY, DOCKER_COMPOSE_FILE_NAME } from "./constants";
+import pluginWrapper from "../../plugin-wrapper";
+import { BASE_DIRECTORY, DOCKER_COMPOSE_FILE_NAME } from "../constants";
 
 export async function createDockerComposeFile(): Promise<Module[]> {
-  const filePath = path.resolve(
-    __dirname,
-    "docker-compose",
-    DOCKER_COMPOSE_FILE_NAME
-  );
+  const filePath = path.resolve(__dirname, DOCKER_COMPOSE_FILE_NAME);
 
   const eventParams: CreateServerDockerComposeParams["before"] = {
     fileContent: await fs.readFile(filePath, "utf-8"),
@@ -26,12 +22,12 @@ export async function createDockerComposeFile(): Promise<Module[]> {
 
   return pluginWrapper(
     createDockerComposeFileInternal,
-    EventNames.CreateServerDotEnv,
+    EventNames.CreateServerDockerCompose,
     eventParams
   );
 }
 
-export async function createDockerComposeFileInternal(
+async function createDockerComposeFileInternal(
   eventParams: CreateServerDockerComposeParams["before"]
 ): Promise<Module[]> {
   const baseDirectory = BASE_DIRECTORY;

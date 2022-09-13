@@ -43,6 +43,7 @@ export enum EventNames {
   CreateAdminModules = "createAdminModules",
   CreateServerDotEnv = "CreateServerDotEnv",
   CreateServerDockerCompose = "CreateServerDockerCompose",
+  CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
 }
 
 export interface AmplicationPlugin {

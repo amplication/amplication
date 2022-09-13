@@ -2771,7 +2771,8 @@ COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
 SERVER_PORT=3000",
-  "server/docker-compose.db.yml": "version: \\"3\\"
+  "server/docker-compose.db.yml": "|
+version: \\"3\\"
 services:
   db:
     image: postgres:12
@@ -2785,7 +2786,9 @@ services:
 volumes:
   postgres: ~
 ",
-  "server/docker-compose.yml": "version: \\"3\\"
+  "server/docker-compose.yml": ">
+version: \\"3\\"
+
 services:
   server:
     build:
