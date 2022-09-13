@@ -7,6 +7,7 @@ import {
   AppInfo,
   Module,
   DTOs,
+  DSGResourceData,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode, formatJson } from "../util/module";
@@ -27,7 +28,9 @@ import {
 import { createAuthModules } from "./auth/createAuth";
 import { createDockerComposeFile } from "./create-docker-compose";
 import { createPackageJson } from "./package-json/create-package-json";
-import { createMessageBrokerModules } from "./message-broker/create-service-message-broker-modules";
+import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
+import { fromServiceTopicsToTopicsWithName } from "../util/message-broker";
+import { EnumResourceType } from "../models";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -50,10 +53,18 @@ export async function createServerModules(
   appInfo: AppInfo,
   dtos: DTOs,
   userEntity: Entity,
+  dSGResourceData: DSGResourceData,
   logger: winston.Logger
 ): Promise<Module[]> {
   const directoryManager = dynamicPathCreator(
     appInfo?.settings?.serverSettings?.serverPath || ""
+  );
+
+  const serviceTopicsWithName = fromServiceTopicsToTopicsWithName(
+    dSGResourceData.serviceTopics || [],
+    dSGResourceData.otherResources?.filter(
+      (resource) => resource.resourceType === EnumResourceType.MessageBroker
+    ) || []
   );
 
   logger.info(`Server path: ${directoryManager.BASE}`);
@@ -102,7 +113,10 @@ export async function createServerModules(
     directoryManager.SRC
   );
   logger.info("Creating kakfa modules...");
-  const kafkaModules = await createMessageBrokerModules(directoryManager.SRC);
+  const kafkaModules = await createMessageBroker({
+    srcFolder: directoryManager.SRC,
+    serviceTopicsWithName: serviceTopicsWithName,
+  });
 
   const createdModules = [
     ...resourcesModules,

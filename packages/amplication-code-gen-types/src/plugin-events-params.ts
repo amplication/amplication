@@ -1,4 +1,4 @@
-import { Module } from "./code-gen-types";
+import { MessageBrokersDataForService, Module } from "./code-gen-types";
 import { Entity } from "./models";
 import { EventParams } from "./plugins-types";
 
@@ -41,5 +41,12 @@ export interface CreateServerDotEnvParams extends EventParams {
   before: {
     baseDirectory: string;
     envVariables: VariableDictionary;
+  };
+}
+
+export interface CreateMessageBrokerParams extends EventParams {
+  before: {
+    srcFolder: string;
+    serviceTopicsWithName: MessageBrokersDataForService;
   };
 }

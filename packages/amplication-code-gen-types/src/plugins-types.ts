@@ -42,6 +42,7 @@ export enum EventNames {
   CreateAuthModules = "createAuthModules",
   CreateAdminModules = "createAdminModules",
   CreateServerDotEnv = "CreateServerDotEnv",
+  CreateMessageBroker = "CreateMessageBroker",
 }
 
 export interface AmplicationPlugin {

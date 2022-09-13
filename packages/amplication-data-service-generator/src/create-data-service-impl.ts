@@ -66,6 +66,7 @@ export async function createDataServiceImpl(
         appInfo,
         dtos,
         userEntity,
+        dSGResourceData,
         logger
       ),
       (appInfo.settings.adminUISettings.generateAdminUI &&

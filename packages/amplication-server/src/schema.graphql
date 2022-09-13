@@ -126,7 +126,7 @@ type Query {
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   remoteGitRepositories(
     where: RemoteGitRepositoriesWhereUniqueInput!
-  ): [RemoteGitRepository!]!
+  ): RemoteGitRepos!
   gitOrganizations(
     where: GitOrganizationWhereInput
     skip: Float
@@ -1126,6 +1126,13 @@ type ApiToken {
   token: String
   previewChars: String!
   lastAccessAt: DateTime!
+}
+
+type RemoteGitRepos {
+  repos: [RemoteGitRepository!]!
+  totalRepos: Float!
+  currentPage: Float!
+  pageSize: Float!
 }
 
 type RemoteGitRepository {

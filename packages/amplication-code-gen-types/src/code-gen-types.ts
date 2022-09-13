@@ -16,7 +16,9 @@ export type WorkerResult = {
   error?: any;
 };
 
-export type ServiceSettings = BlockOmittedFields<models.ServiceSettings>;
+export type ServiceSettings = BlockOmittedFieldsWithoutId<
+  models.ServiceSettings
+>;
 
 export type AppInfo = {
   name: string;
@@ -167,12 +169,11 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
-export type Plugin = BlockOmittedFields<models.PluginInstallation>;
+export type Plugin = BlockOmittedFieldsWithoutId<models.PluginInstallation>;
 
 type BlockOmittedFields<T> = Omit<
   T,
   | "__typename"
-  | "id"
   | "createdAt"
   | "updatedAt"
   | "parentBlock"
@@ -186,5 +187,15 @@ type BlockOmittedFields<T> = Omit<
   | "lockedAt"
 >;
 
+type BlockOmittedFieldsWithoutId<T> = Omit<BlockOmittedFields<T>, "id">;
+
 export type Topic = BlockOmittedFields<models.Topic>;
 export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
+
+export type MessageBrokersDataForService = {
+  messageBrokerName: string;
+  topicsWithNames: {
+    name: string;
+    type: models.EnumMessagePatternConnectionOptions;
+  }[];
+}[];

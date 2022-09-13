@@ -3,6 +3,7 @@ import {
   CreateAdminModulesParams,
   CreateAuthModulesParams,
   CreateControllerModulesParams,
+  CreateMessageBrokerParams,
   CreateServerDotEnvParams,
   CreateServiceModulesParams,
 } from "./plugin-events-params";
@@ -57,6 +58,16 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDotEnvParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateMessageBroker]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerParams["before"]
+    ) => CreateMessageBrokerParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerParams["after"]
     ) => Module[];
   };
 };
