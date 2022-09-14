@@ -102,7 +102,7 @@ export async function createServerModules(
     ...staticModules,
     ...formattedJsonFiles,
     ...formattedModules,
-    prismaSchemaModule,
+    ...prismaSchemaModule,
     grantsModule,
     ...dotEnvModule,
     ...dockerComposeFile,

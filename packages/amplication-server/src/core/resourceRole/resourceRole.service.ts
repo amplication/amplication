@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ResourceRole } from 'src/models';
+import { ResourceRole } from '../../models';
 import { PrismaService } from '@amplication/prisma-db';
 
 import {
@@ -7,7 +7,7 @@ import {
   FindManyResourceRoleArgs,
   UpdateOneResourceRoleArgs
 } from './dto';
-import { FindOneArgs } from 'src/dto';
+import { FindOneArgs } from '../../dto';
 
 @Injectable()
 export class ResourceRoleService {

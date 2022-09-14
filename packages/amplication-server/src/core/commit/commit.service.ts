@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@amplication/prisma-db';
 import { FindOneCommitArgs } from './dto/FindOneCommitArgs';
 import { FindManyCommitArgs } from './dto/FindManyCommitArgs';
-import { Commit } from 'src/models';
+import { Commit } from '../../models';
 import { PendingChange } from '../resource/dto';
 import { EntityService } from '../entity/entity.service';
 import { BlockService } from '../block/block.service';

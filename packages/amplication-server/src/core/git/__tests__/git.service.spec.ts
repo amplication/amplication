@@ -6,17 +6,17 @@ import {
 } from '@amplication/git-service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
-import { Resource } from 'src/models/Resource';
+import { Resource } from '../../../models/Resource';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 import { RemoteGitRepositoriesWhereUniqueInput } from '../dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
 import { GitProviderService } from '../git.provider.service';
 import { TEST_GIT_REPOS } from '../__mocks__/GitRepos';
 import { MOCK_GIT_SERVICE_FACTORY } from '../utils/GitServiceFactory/GitServiceFactory.mock';
 import { CreateGitRepositoryInput } from '../dto/inputs/CreateGitRepositoryInput';
-import { GitRepository } from 'src/models/GitRepository';
-import { GitOrganization } from 'src/models/GitOrganization';
+import { GitRepository } from '../../../models/GitRepository';
+import { GitOrganization } from '../../../models/GitOrganization';
 import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
-import { ResourceService } from 'src/core/resource/resource.service';
+import { ResourceService } from '../../resource/resource.service';
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: 'exampleGitRepositoryId',
   name: 'repositoryTest',

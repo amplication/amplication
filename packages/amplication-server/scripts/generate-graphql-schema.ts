@@ -4,7 +4,7 @@
 
 import { NestFactory } from '@nestjs/core';
 import { PrismaClient } from '@amplication/prisma-db';
-import { AppModule } from 'src/app.module';
+import { AppModule } from '../src/app.module';
 
 export default async function generateGraphQLSchema(): Promise<void> {
   // Override PrismaClient $connect to prevent connections to the database

@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Resource } from './Resource'; // eslint-disable-line import/no-cycle
 import { BlockVersion } from './BlockVersion'; // eslint-disable-line import/no-cycle
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../enums/EnumBlockType';
 
 @ObjectType({
   isAbstract: true

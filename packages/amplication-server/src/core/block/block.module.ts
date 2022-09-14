@@ -4,7 +4,7 @@ import { BlockResolver } from './block.resolver';
 import { PrismaModule } from '@amplication/prisma-db';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { UserModule } from '../user/user.module';
-import { DiffModule } from 'src/services/diff.module';
+import { DiffModule } from '../../services/diff.module';
 
 @Module({
   imports: [PrismaModule, UserModule, PermissionsModule, DiffModule],

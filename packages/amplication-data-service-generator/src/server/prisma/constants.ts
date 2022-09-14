@@ -1,10 +1,5 @@
+import { PrismaDataSource } from "@amplication/code-gen-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
-
-export type PrismaDataSource = {
-  name: string;
-  provider: PrismaSchemaDSL.DataSourceProvider;
-  url: PrismaSchemaDSL.DataSourceURLEnv;
-};
 
 export const CLIENT_GENERATOR: PrismaSchemaDSL.Generator = PrismaSchemaDSL.createGenerator(
   "client",

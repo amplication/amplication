@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
 import { ResourceRole } from './ResourceRole'; // eslint-disable-line import/no-cycle
-import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { EnumEntityAction } from '../enums/EnumEntityAction';
 
 /**
  * Connecting {@codelink EntityPermission} to {@codelink ResourceRole}.

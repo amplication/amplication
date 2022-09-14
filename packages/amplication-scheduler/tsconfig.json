@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "outDir": "./dist",
-    "baseUrl": "./",
     "lib": ["ES2020"],
     "incremental": true,
     "esModuleInterop": true,

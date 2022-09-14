@@ -4,7 +4,7 @@ import {
   SegmentAnalyticsAsyncOptions,
   SegmentAnalyticsOptionsFactory
 } from './segmentAnalytics.interfaces';
-import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
+import { GoogleSecretsManagerModule } from '../googleSecretsManager.module';
 
 @Global()
 @Module({})

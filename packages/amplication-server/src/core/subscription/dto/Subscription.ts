@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Workspace } from 'src/models/Workspace'; // eslint-disable-line import/no-cycle
+import { Workspace } from '../../../models/Workspace'; // eslint-disable-line import/no-cycle
 import {
   EnumSubscriptionPlan,
   EnumSubscriptionStatus,
