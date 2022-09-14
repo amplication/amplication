@@ -19,12 +19,21 @@ import {
 import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
 import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
-import { SRC_DIRECTORY } from "../../constants";
+import { SERVER_BASE_DIRECTORY, SRC_DIRECTORY } from "../../constants";
 import {
   FIELD_ID,
   INPUT_TYPE_ID,
   NESTJS_GRAPHQL_MODULE,
 } from "./nestjs-graphql.util";
+import DsgContext from "../../../dsg-context";
+
+const context = DsgContext.getInstance;
+context.serverDirectories = {
+  srcDirectory: `${SERVER_BASE_DIRECTORY}/src`,
+  scriptsDirectory: "exampleScriptsDirectory",
+  baseDirectory: "exampleBaseDirectory",
+  authDirectory: "exampleAuthDirectory",
+};
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";

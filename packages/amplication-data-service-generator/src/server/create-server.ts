@@ -87,17 +87,10 @@ export async function createServerModules(
   }));
 
   logger.info("Creating Prisma schema...");
-  const prismaSchemaModule = await createPrismaSchemaModule(
-    entities,
-    serverDirectories.baseDirectory
-  );
+  const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
   logger.info("Creating access control grants...");
-  const grantsModule = createGrantsModule(
-    entities,
-    roles,
-    serverDirectories.srcDirectory
-  );
+  const grantsModule = createGrantsModule(entities, roles);
   const dotEnvModule = await createDotEnvModule({
     baseDirectory: serverDirectories.baseDirectory,
     envVariables: ENV_VARIABLES,
