@@ -2,7 +2,7 @@ import { CustomDecorator, SetMetadata } from '@nestjs/common';
 import { InjectableOriginParameter } from '../enums/InjectableOriginParameter';
 import {
   INJECT_CONTEXT_VALUE,
-  InjectContextValueParameters,
+  InjectContextValueParameters
 } from '../interceptors/inject-context.interceptor';
 
 /**
@@ -17,5 +17,5 @@ export const InjectContextValue = (
 ): CustomDecorator<string> =>
   SetMetadata<string, InjectContextValueParameters>(INJECT_CONTEXT_VALUE, {
     parameterType,
-    parameterPath,
+    parameterPath
   });
