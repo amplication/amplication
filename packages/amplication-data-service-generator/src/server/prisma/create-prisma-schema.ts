@@ -7,11 +7,15 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
+  CreatePrismaSchemaParams,
+  EventNames,
+  Module,
 } from "@amplication/code-gen-types";
 import { countBy } from "lodash";
 
 import { getEnumFields } from "../../util/entity";
-import { PrismaDataSource } from "./constants";
+import pluginWrapper from "../../plugin-wrapper";
+import DsgContext from "../../dsg-context";
 
 export const CUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.CUID
@@ -22,10 +26,22 @@ export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
 );
 
 export async function createPrismaSchema(
-  entities: Entity[],
-  dataSource: PrismaDataSource,
-  clientGenerator: PrismaSchemaDSL.Generator
-): Promise<string> {
+  eventParams: CreatePrismaSchemaParams["before"]
+): Promise<Module[]> {
+  return await pluginWrapper(
+    createPrismaSchemaInternal,
+    EventNames.CreatePrismaSchema,
+    eventParams
+  );
+}
+
+export async function createPrismaSchemaInternal({
+  entities,
+  dataSource,
+  clientGenerator,
+}: CreatePrismaSchemaParams["before"]): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const MODULE_PATH = `${serverDirectories.baseDirectory}/prisma/schema.prisma`;
   const fieldNamesCount = countBy(
     entities.flatMap((entity) => entity.fields),
     "name"
@@ -43,7 +59,12 @@ export async function createPrismaSchema(
     clientGenerator,
   ]);
 
-  return PrismaSchemaDSL.print(schema);
+  return [
+    {
+      path: MODULE_PATH,
+      code: await PrismaSchemaDSL.print(schema),
+    },
+  ];
 }
 
 export function createPrismaEnum(
