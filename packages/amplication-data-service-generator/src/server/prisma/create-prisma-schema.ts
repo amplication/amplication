@@ -311,8 +311,8 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
-          true,
+          PrismaSchemaDSL.ScalarType.Json,
+          false,
           true
         ),
       ];

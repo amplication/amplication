@@ -10,6 +10,7 @@ import {
   DEFAULT_NUMBER_LITERAL,
   EMPTY_ARRAY_EXPRESSION,
   NEW_DATE_EXPRESSION,
+  NEW_JSON_EXPRESSION,
 } from "./create-seed";
 import { DEFAULT_USER_ENTITY } from "../user-entity";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
@@ -172,7 +173,7 @@ describe("createDefaultValue", () => {
         ...EXAMPLE_FIELD_BASE,
         dataType: EnumDataType.Json,
       },
-      DEFAULT_BOOLEAN_LITERAL, //boolean is a valid json
+      NEW_JSON_EXPRESSION, //boolean is a valid json
     ],
     [
       "Id",

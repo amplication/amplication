@@ -1,5 +1,5 @@
 import { Injectable, ConflictException } from '@nestjs/common';
-import { Workspace, User } from 'src/models';
+import { Workspace, User } from '../../models';
 import { PrismaService, Prisma } from '@amplication/prisma-db';
 import { Invitation } from './dto/Invitation';
 import {
@@ -13,8 +13,8 @@ import {
   ResendInvitationArgs
 } from './dto';
 
-import { FindOneArgs } from 'src/dto';
-import { Role } from 'src/enums/Role';
+import { FindOneArgs } from '../../dto';
+import { Role } from '../../enums/Role';
 import { UserService } from '../user/user.service';
 import { MailService } from '../mail/mail.service';
 import { SubscriptionService } from '../subscription/subscription.service';
@@ -23,7 +23,7 @@ import { addDays } from 'date-fns';
 import { isEmpty } from 'lodash';
 import { EnumWorkspaceMemberType } from './dto/EnumWorkspaceMemberType';
 import { Subscription } from '../subscription/dto/Subscription';
-import { GitOrganization } from 'src/models/GitOrganization';
+import { GitOrganization } from '../../models/GitOrganization';
 import { ProjectService } from '../project/project.service';
 
 const INVITATION_EXPIRATION_DAYS = 7;

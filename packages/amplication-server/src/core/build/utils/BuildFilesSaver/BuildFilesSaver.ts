@@ -8,7 +8,7 @@ import {
   BASE_BUILDS_FOLDER,
   DEFAULT_BUILDS_FOLDER
 } from '../../../../constants';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { AmplicationError } from '../../../../errors/AmplicationError';
 import { Logger } from 'winston';
 @Injectable()
 export class BuildFilesSaver {

@@ -1,7 +1,6 @@
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { namedTypes } from "ast-types";
-import { DSGResourceData } from "./dsg-resource-data";
 
 export {
   EnumEntityPermissionType,
@@ -186,5 +185,19 @@ type BlockOmittedFields<T> = Omit<
   | "lockedAt"
 >;
 
+export type clientDirectories = {
+  baseDirectory: string;
+  srcDirectory: string;
+  authDirectory: string;
+  publicDirectory: string;
+  apiDirectory: string;
+};
+
+export type serverDirectories = {
+  baseDirectory: string;
+  srcDirectory: string;
+  authDirectory: string;
+  scriptsDirectory: string;
+};
 export type Topic = BlockOmittedFields<models.Topic>;
 export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;

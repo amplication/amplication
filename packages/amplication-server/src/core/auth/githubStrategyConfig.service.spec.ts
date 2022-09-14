@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { GoogleSecretsManagerService } from '../../services/googleSecretsManager.service';
 import {
   GitHubStrategyConfigService,
   GITHUB_CLIENT_ID_VAR,
