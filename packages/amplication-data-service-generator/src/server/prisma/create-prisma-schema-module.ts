@@ -1,5 +1,4 @@
 import { Entity, Module } from "@amplication/code-gen-types";
-import DsgContext from "../../dsg-context";
 import { CLIENT_GENERATOR, DATA_SOURCE } from "./constants";
 import { createPrismaSchema } from "./create-prisma-schema";
 
