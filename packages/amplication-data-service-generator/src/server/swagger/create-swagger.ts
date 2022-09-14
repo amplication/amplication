@@ -8,16 +8,15 @@ import {
   removeTSVariableDeclares,
 } from "../../util/ast";
 import { readFile } from "../../util/module";
+import DsgContext from "../../dsg-context";
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
-export async function createSwagger(
-  appInfo: AppInfo,
-  srcDirectory: string
-): Promise<Module> {
-  const MODULE_PATH = `${srcDirectory}/swagger.ts`;
+export async function createSwagger(): Promise<Module> {
+  const { serverDirectories, appInfo } = DsgContext.getInstance;
+  const MODULE_PATH = `${serverDirectories.srcDirectory}/swagger.ts`;
   const { settings } = appInfo;
   const { authProvider } = settings;
   const file = await readFile(swaggerTemplatePath);

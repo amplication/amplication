@@ -5,8 +5,10 @@ import {
   EntityField,
   Module,
   NamedClassDeclaration,
+  PrismaDataSource,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   before: {
@@ -70,7 +72,6 @@ export type VariableDictionary = {
 
 export interface CreateServerDotEnvParams extends EventParams {
   before: {
-    baseDirectory: string;
     envVariables: VariableDictionary;
   };
 }
@@ -88,5 +89,13 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
     fileContent: string;
     updateProperties: { [key: string]: any };
     outputFileName: string;
+  };
+}
+
+export interface CreatePrismaSchemaParams extends EventParams {
+  before: {
+    entities: Entity[];
+    dataSource: PrismaDataSource;
+    clientGenerator: PrismaSchemaDSL.Generator;
   };
 }

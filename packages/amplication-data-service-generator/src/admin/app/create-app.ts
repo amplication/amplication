@@ -1,7 +1,7 @@
 import * as path from "path";
 import { print } from "recast";
 import { builders } from "ast-types";
-import { Module, AppInfo } from "@amplication/code-gen-types";
+import { Module } from "@amplication/code-gen-types";
 import {
   addImports,
   importNames,
@@ -18,11 +18,9 @@ import DsgContext from "../../dsg-context";
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
 
 export async function createAppModule(
-  appInfo: AppInfo,
-  entityToPath: Record<string, string>,
   entitiesComponents: Record<string, EntityComponents>
 ): Promise<Module> {
-  const { clientDirectories } = DsgContext.getInstance;
+  const { clientDirectories, appInfo } = DsgContext.getInstance;
   const PATH = `${clientDirectories.srcDirectory}/App.tsx`;
   const { settings } = appInfo;
   const { authProvider } = settings;

@@ -272,7 +272,7 @@ async function createControllerBaseModule({
 
   classDeclaration.body.body.push(...toManyRelationMethods);
 
-  const dtoNameToPath = getDTONameToPath(DTOs, serverDirectories.srcDirectory);
+  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(moduleBasePath, dtoNameToPath)

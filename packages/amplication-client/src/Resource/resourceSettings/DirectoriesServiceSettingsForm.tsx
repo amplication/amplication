@@ -84,23 +84,27 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
                     labelType="normal"
                   />
                 </Panel>
-                <Panel panelStyle={EnumPanelStyle.Transparent}>
-                  <h2>Admin UI</h2>
-                  <TextField
-                    className={`${CLASS_NAME}__formWrapper_field`}
-                    name="adminUISettings[adminUIPath]"
-                    placeholder="packages/[SERVICE-NAME]"
-                    label="Admin UI base directory"
-                    disabled={
-                      !data?.serviceSettings.serverSettings.generateGraphQL
-                    }
-                    value={
-                      data?.serviceSettings.adminUISettings.adminUIPath || ""
-                    }
-                    helpText={data?.serviceSettings.adminUISettings.adminUIPath}
-                    labelType="normal"
-                  />
-                </Panel>
+                {data.serviceSettings.adminUISettings.generateAdminUI && (
+                  <Panel panelStyle={EnumPanelStyle.Transparent}>
+                    <h2>Admin UI</h2>
+                    <TextField
+                      className={`${CLASS_NAME}__formWrapper_field`}
+                      name="adminUISettings[adminUIPath]"
+                      placeholder="packages/[SERVICE-NAME]"
+                      label="Admin UI base directory"
+                      disabled={
+                        !data?.serviceSettings.serverSettings.generateGraphQL
+                      }
+                      value={
+                        data?.serviceSettings.adminUISettings.adminUIPath || ""
+                      }
+                      helpText={
+                        data?.serviceSettings.adminUISettings.adminUIPath
+                      }
+                      labelType="normal"
+                    />
+                  </Panel>
+                )}
               </Form>
             );
           }}

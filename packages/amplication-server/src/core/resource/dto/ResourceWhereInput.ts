@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { DateTimeFilter, ProjectWhereInput, StringFilter } from '../../../dto';
+import { DateTimeFilter, StringFilter } from '../../../dto';
+import { ProjectWhereInput } from '../../project/dto/ProjectWhereInput';
 import { EnumResourceTypeFilter } from './EnumResourceTypeFilter';
 
 @InputType({

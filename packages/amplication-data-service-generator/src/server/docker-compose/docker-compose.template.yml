@@ -29,10 +29,11 @@ services:
         condition: service_healthy
   db:
     image: postgres:12
+    ports:
+      - ${POSTGRESQL_PORT}:5432
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      ports: ${POSTGRESQL_PORT}:5432
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:

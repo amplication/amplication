@@ -44,11 +44,14 @@ type Query {
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   resource(where: WhereUniqueInput!): Resource
   resources(where: ResourceWhereInput, orderBy: [ResourceOrderByInput!], skip: Int, take: Int): [Resource!]!
+  messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
   entity(where: WhereUniqueInput!): Entity
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
   blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
   block(where: WhereUniqueInput!): Block!
+  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
+  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
@@ -61,8 +64,6 @@ type Query {
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
   Topic(where: WhereUniqueInput!): Topic
   Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
-  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
-  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
@@ -815,7 +816,7 @@ input BlockWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
+  resource: ResourceWhereInput
   parentBlock: WhereUniqueInput
   blockType: EnumBlockTypeFilter
   displayName: StringFilter
@@ -830,6 +831,43 @@ input EnumBlockTypeFilter {
 }
 
 input BlockOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+type ServiceTopics implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePattern!]!
+}
+
+input ServiceTopicsWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: ResourceWhereInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input ServiceTopicsOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
@@ -897,7 +935,7 @@ input PluginInstallationWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
+  resource: ResourceWhereInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -948,50 +986,13 @@ input TopicWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
+  resource: ResourceWhereInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
 }
 
 input TopicOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
-type ServiceTopics implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  messageBrokerId: String!
-  enabled: Boolean!
-  patterns: [MessagePattern!]!
-}
-
-input ServiceTopicsWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-input ServiceTopicsOrderByInput {
   id: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
@@ -1085,6 +1086,8 @@ type Mutation {
   updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
+  createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
+  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   createBuild(data: BuildCreateInput!): Build!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
@@ -1094,8 +1097,6 @@ type Mutation {
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   createTopic(data: TopicCreateInput!): Topic!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
-  createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
-  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -1285,6 +1286,46 @@ input ServerSettingsUpdateInput {
   serverPath: String
 }
 
+input ServiceTopicsCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePatternCreateInput!]
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
+}
+
+input MessagePatternCreateInput {
+  topicId: String!
+  type: EnumMessagePatternConnectionOptions!
+}
+
+input ServiceTopicsUpdateInput {
+  displayName: String
+  description: String
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePatternCreateInput!]
+}
+
 input BuildCreateInput {
   resource: WhereParentIdInput!
   message: String!
@@ -1316,21 +1357,6 @@ input PluginInstallationCreateInput {
   npm: String!
 }
 
-input BlockInputOutputInput {
-  name: String!
-  description: String!
-  dataType: EnumDataType
-  dataTypeEntityName: String
-  isList: Boolean
-  includeAllPropertiesByDefault: Boolean
-  propertyList: [PropertySelectorInput!]
-}
-
-input PropertySelectorInput {
-  propertyName: String!
-  include: Boolean!
-}
-
 input PluginInstallationUpdateInput {
   displayName: String
   description: String
@@ -1355,31 +1381,6 @@ input TopicUpdateInput {
   displayName: String
   description: String
   name: String
-}
-
-input ServiceTopicsCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  messageBrokerId: String!
-  enabled: Boolean!
-  patterns: [MessagePatternCreateInput!]
-}
-
-input MessagePatternCreateInput {
-  topicId: String!
-  type: EnumMessagePatternConnectionOptions!
-}
-
-input ServiceTopicsUpdateInput {
-  displayName: String
-  description: String
-  messageBrokerId: String!
-  enabled: Boolean!
-  patterns: [MessagePatternCreateInput!]
 }
 
 input ProjectConfigurationSettingsUpdateInput {

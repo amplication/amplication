@@ -55,13 +55,14 @@ export async function createResolverModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entity: Entity,
-  dtos: DTOs
+  entity: Entity
 ): Promise<Module[]> {
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
   const resolverBaseId = createResolverBaseId(entityType);
-  const entityDTOs = dtos[entity.name];
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
+  const entityDTOs = DTOs[entity.name];
   const {
     entity: entityDTO,
     createArgs,
@@ -113,7 +114,7 @@ export async function createResolverModules(
       entityType,
       entityServiceModule,
       entity,
-      dtos,
+      DTOs,
       entityDTO,
       serviceId,
       resolverBaseId,
@@ -130,7 +131,7 @@ export async function createResolverModules(
       entityType,
       entityServiceModule,
       entity,
-      dtos,
+      DTOs,
       entityDTO,
       serviceId,
       resolverBaseId,
@@ -258,7 +259,7 @@ async function createResolverModule(
     ]);
   }
 
-  const dtoNameToPath = getDTONameToPath(dtos, serverDirectories.srcDirectory);
+  const dtoNameToPath = getDTONameToPath(dtos);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)

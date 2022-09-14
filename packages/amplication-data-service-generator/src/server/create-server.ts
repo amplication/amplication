@@ -49,43 +49,23 @@ export async function createServerModules(
       name: `@${paramCase(appInfo.name)}/server`,
       version: appInfo.version,
     },
-    baseDirectory: serverDirectories.baseDirectory,
   });
 
   logger.info("Creating resources...");
-  const dtoModules = createDTOModules(dtos, serverDirectories.srcDirectory);
-  const resourcesModules = await createResourcesModules(
-    appInfo,
-    entities,
-    dtos,
-    logger
-  );
+  const dtoModules = createDTOModules(dtos);
+  const resourcesModules = await createResourcesModules(entities, logger);
 
   logger.info("Creating Auth module...");
-  const authModules = await createAuthModules({
-    srcDir: serverDirectories.srcDirectory,
-  });
+  const authModules = await createAuthModules();
 
   logger.info("Creating application module...");
-  const appModule = await createAppModule(
-    resourcesModules,
-    staticModules,
-    serverDirectories.srcDirectory
-  );
+  const appModule = await createAppModule(resourcesModules, staticModules);
 
   logger.info("Creating swagger...");
-  const swaggerModule = await createSwagger(
-    appInfo,
-    serverDirectories.srcDirectory
-  );
+  const swaggerModule = await createSwagger();
 
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(
-    userEntity,
-    dtos,
-    serverDirectories.scriptsDirectory,
-    serverDirectories.srcDirectory
-  );
+  const seedModule = await createSeedModule(userEntity);
 
   const createdModules = [
     ...resourcesModules,
@@ -107,19 +87,11 @@ export async function createServerModules(
   }));
 
   logger.info("Creating Prisma schema...");
-  const prismaSchemaModule = await createPrismaSchemaModule(
-    entities,
-    serverDirectories.baseDirectory
-  );
+  const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
   logger.info("Creating access control grants...");
-  const grantsModule = createGrantsModule(
-    entities,
-    roles,
-    serverDirectories.srcDirectory
-  );
+  const grantsModule = createGrantsModule(entities, roles);
   const dotEnvModule = await createDotEnvModule({
-    baseDirectory: serverDirectories.baseDirectory,
     envVariables: ENV_VARIABLES,
   });
 
@@ -130,7 +102,7 @@ export async function createServerModules(
     ...staticModules,
     ...formattedJsonFiles,
     ...formattedModules,
-    prismaSchemaModule,
+    ...prismaSchemaModule,
     grantsModule,
     ...dotEnvModule,
     ...dockerComposeFile,

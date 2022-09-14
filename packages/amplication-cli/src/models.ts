@@ -188,7 +188,7 @@ export type BlockWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1222,7 +1222,7 @@ export type PluginInstallationWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1329,6 +1329,7 @@ export type Query = {
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
   me: User;
+  messageBrokerConnectedServices: Array<Resource>;
   pendingChanges: Array<PendingChange>;
   PluginInstallation?: Maybe<PluginInstallation>;
   PluginInstallations: Array<PluginInstallation>;
@@ -1409,6 +1410,10 @@ export type QueryGitOrganizationsArgs = {
   skip?: InputMaybe<Scalars['Float']>;
   take?: InputMaybe<Scalars['Float']>;
   where?: InputMaybe<GitOrganizationWhereInput>;
+};
+
+export type QueryMessageBrokerConnectedServicesArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryPendingChangesArgs = {
@@ -1781,7 +1786,7 @@ export type ServiceTopicsWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1877,7 +1882,7 @@ export type TopicWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 

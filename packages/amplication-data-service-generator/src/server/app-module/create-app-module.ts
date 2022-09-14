@@ -13,6 +13,7 @@ import {
   importDeclaration,
   callExpression,
 } from "../../util/ast";
+import DsgContext from "../../dsg-context";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const MODULE_PATTERN = /\.module\.ts$/;
@@ -27,10 +28,10 @@ const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
 export async function createAppModule(
   resourceModules: Module[],
-  staticModules: Module[],
-  srcDirectory: string
+  staticModules: Module[]
 ): Promise<Module> {
-  const MODULE_PATH = `${srcDirectory}/app.module.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
   const nestModules = [
     ...resourceModules.filter((module) => module.path.match(MODULE_PATTERN)),
     ...staticModules.filter((module) => module.path.match(MODULE_PATTERN)),

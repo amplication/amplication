@@ -41,7 +41,7 @@ import { ServiceSettingsService } from '../serviceSettings/serviceSettings.servi
 import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
 import { PluginInstallation } from '../pluginInstallation/dto/PluginInstallation';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 

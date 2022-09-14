@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import { User } from '../../models';
 import { BlockTypeService } from '../block/blockType.service';
 import { CreatePluginInstallationArgs } from './dto/CreatePluginInstallationArgs';

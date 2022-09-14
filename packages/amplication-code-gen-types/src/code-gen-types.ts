@@ -1,6 +1,7 @@
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { namedTypes } from "ast-types";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 export {
   EnumEntityPermissionType,
@@ -201,3 +202,9 @@ export type serverDirectories = {
 };
 export type Topic = BlockOmittedFields<models.Topic>;
 export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
+
+export type PrismaDataSource = {
+  name: string;
+  provider: PrismaSchemaDSL.DataSourceProvider;
+  url: PrismaSchemaDSL.DataSourceURLEnv;
+};

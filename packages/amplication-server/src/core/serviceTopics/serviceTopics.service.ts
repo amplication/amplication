@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import { BlockTypeService } from '../block/blockType.service';
 import { CreateServiceTopicsArgs } from './dto/CreateServiceTopicsArgs';
 import { FindManyServiceTopicsArgs } from './dto/FindManyServiceTopicsArgs';
@@ -8,7 +8,7 @@ import { UpdateServiceTopicsArgs } from './dto/UpdateServiceTopicsArgs';
 import { User } from '../../models';
 import { ResourceService } from '../resource/resource.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { AmplicationError } from '../../errors/AmplicationError';
 import { BlockService } from '../block/block.service';
 
 @Injectable()
@@ -21,6 +21,7 @@ export class ServiceTopicsService extends BlockTypeService<
   blockType = EnumBlockType.ServiceTopics;
 
   constructor(
+    @Inject(forwardRef(() => ResourceService))
     private resourceService: ResourceService,
     protected readonly blockService: BlockService
   ) {
