@@ -44,6 +44,12 @@ export const EMPTY_ARRAY_EXPRESSION = builders.arrayExpression([]);
 export const DEFAULT_NUMBER_LITERAL = builders.numericLiteral(0);
 export const DEFAULT_EMAIL_LITERAL = builders.stringLiteral(DEFAULT_EMAIL);
 export const NEW_DATE_EXPRESSION = builders.newExpression(DATE_ID, []);
+export const NEW_JSON_EXPRESSION = builders.objectExpression([
+  builders.objectProperty(
+    builders.stringLiteral("foo"),
+    builders.stringLiteral("bar")
+  ),
+]);
 export const AUTH_FIELD_NAMES = new Set(
   USER_AUTH_FIELDS.map((field) => field.name)
 );
@@ -158,7 +164,7 @@ export function createDefaultValue(
       return DEFAULT_ADDRESS_LITERAL;
     }
     case EnumDataType.Json: {
-      return DEFAULT_BOOLEAN_LITERAL;
+      return NEW_JSON_EXPRESSION;
     }
     case EnumDataType.Id:
     case EnumDataType.CreatedAt:
