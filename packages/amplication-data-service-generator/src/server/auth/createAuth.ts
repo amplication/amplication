@@ -1,4 +1,8 @@
-import { EventNames, Module } from "@amplication/code-gen-types";
+import {
+  CreateAuthModulesParams,
+  EventNames,
+  Module,
+} from "@amplication/code-gen-types";
 import pluginWrapper from "../../plugin-wrapper";
 import DsgContext from "../../dsg-context";
 import { createDefaultGuard } from "./guards/createDefaultGuard";
@@ -6,15 +10,16 @@ import { createTokenServiceTests } from "./token/createTokenSerivceTests";
 import { createTokenService } from "./token/createTokenService";
 
 export function createAuthModules(): Module[] {
-  const { serverDirectories } = DsgContext.getInstance;
   return pluginWrapper(
     createAuthModulesInternal,
     EventNames.CreateAuthModules,
-    { srcDirectory: serverDirectories.srcDirectory }
+    {}
   );
 }
 
-async function createAuthModulesInternal(): Promise<Module[]> {
+async function createAuthModulesInternal(
+  eventParams: CreateAuthModulesParams["before"]
+): Promise<Module[]> {
   const { appInfo, serverDirectories } = DsgContext.getInstance;
   const authDir = `${serverDirectories.srcDirectory}/auth`;
   const authTestsDir = `${serverDirectories.srcDirectory}/tests/auth`;
