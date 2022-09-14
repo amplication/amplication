@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
+import { ExceptionFiltersModule } from '../../filters/exceptionFilters.module';
 import { PrismaModule } from '@amplication/prisma-db';
-import { GqlAuthModule } from 'src/guards/gql-auth.module';
-import { PermissionsModule } from 'src/core/permissions/permissions.module';
+import { GqlAuthModule } from '../../guards/gql-auth.module';
+import { PermissionsModule } from '../permissions/permissions.module';
 import { ActionService } from './action.service';
 import { ActionResolver } from './action.resolver';
 

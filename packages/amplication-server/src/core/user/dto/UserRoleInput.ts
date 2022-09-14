@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { Role } from 'src/enums/Role';
+import { Role } from '../../../enums/Role';
 
 @InputType({
   isAbstract: true

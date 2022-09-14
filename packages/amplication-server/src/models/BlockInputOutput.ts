@@ -1,5 +1,5 @@
 import { Field, ObjectType, InputType } from '@nestjs/graphql';
-import { EnumDataType } from 'src/enums/EnumDataType';
+import { EnumDataType } from '../enums/EnumDataType';
 import { PropertySelector } from './PropertySelector';
 
 @ObjectType({

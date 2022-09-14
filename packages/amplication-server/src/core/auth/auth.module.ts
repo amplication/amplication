@@ -7,16 +7,16 @@ import { PrismaModule } from '@amplication/prisma-db';
 import { UserModule } from '../user/user.module';
 import { WorkspaceModule } from '../workspace/workspace.module';
 import { PermissionsModule } from '../permissions/permissions.module';
-import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { ExceptionFiltersModule } from '../../filters/exceptionFilters.module';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { GitHubStrategy } from './github.strategy';
-import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
+import { GoogleSecretsManagerModule } from '../../services/googleSecretsManager.module';
 import { GitHubStrategyConfigService } from './githubStrategyConfig.service';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { GoogleSecretsManagerService } from '../../services/googleSecretsManager.service';
 import { ProjectModule } from '../project/project.module';
 import { GitHubAuthGuard } from './github.guard';
 
@@ -57,7 +57,8 @@ import { GitHubAuthGuard } from './github.guard';
         );
         const options = await githubConfigService.getOptions();
         if (options === null) {
-          return;
+			// @ts-ignore
+			return;
         }
         return new GitHubStrategy(authService, options);
       },

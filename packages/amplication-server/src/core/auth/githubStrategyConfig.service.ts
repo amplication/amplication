@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { GoogleSecretsManagerService } from '../../services/googleSecretsManager.service';
 import { StrategyOptions } from 'passport-github2';
 import { Injectable } from '@nestjs/common';
 
