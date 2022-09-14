@@ -60,13 +60,6 @@ export async function createServerModules(
     appInfo?.settings?.serverSettings?.serverPath || ""
   );
 
-  const serviceTopicsWithName = fromServiceTopicsToTopicsWithName(
-    dSGResourceData.serviceTopics || [],
-    dSGResourceData.otherResources?.filter(
-      (resource) => resource.resourceType === EnumResourceType.MessageBroker
-    ) || []
-  );
-
   logger.info(`Server path: ${directoryManager.BASE}`);
   logger.info("Creating server...");
   logger.info("Copying static modules...");
@@ -115,7 +108,7 @@ export async function createServerModules(
   logger.info("Creating kakfa modules...");
   const kafkaModules = await createMessageBroker({
     srcFolder: directoryManager.SRC,
-    serviceTopicsWithName: serviceTopicsWithName,
+    serviceTopicsWithName: dSGResourceData.serviceTopics || [],
   });
 
   const createdModules = [

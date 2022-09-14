@@ -5,7 +5,7 @@ export type PluginWrapper = (
   func: (...args: any) => Module[] | Promise<Module[]>,
   event: EventNames,
   ...args: any
-) => any;
+) => Promise<Module[]>;
 
 const pipe = (
   ...fns: ((context: DsgContext, res: EventParams | Module[]) => any)[]

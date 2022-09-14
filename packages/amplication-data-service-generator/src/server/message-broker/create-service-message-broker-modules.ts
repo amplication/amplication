@@ -30,7 +30,7 @@ export async function createMessageBrokerInternal({
   );
   const kafkaModule = await createKafkaModule(kafkaFolder);
   const serviceModules = await createKafkaServiceModules(kafkaFolder);
-  const topicsEnum = await createTopicsEnum(kafkaFolder, serviceTopicsWithName);
+  const topicsEnum = await createTopicsEnum(kafkaFolder);
   const modules = [
     generateKafkaClientOptionsModule,
     kafkaModule,

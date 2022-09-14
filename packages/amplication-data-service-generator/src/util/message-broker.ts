@@ -1,18 +1,15 @@
-import {
-  DSGResourceData,
-  MessageBrokersDataForService,
-  ServiceTopics,
-} from "@amplication/code-gen-types";
-import assert from "assert";
+import { DSGResourceData, ServiceTopics } from "@amplication/code-gen-types";
 import { EnumResourceType } from "../models";
 
 export function fromServiceTopicsToTopicsWithName(
-  serviceTopics: ServiceTopics[],
+  serviceTopicsList: ServiceTopics[],
   messageBrokers: DSGResourceData[]
-): MessageBrokersDataForService {
-  messageBrokers.forEach((resource) =>
-    assert(resource.resourceType === EnumResourceType.MessageBroker)
-  );
+): ServiceTopics[] {
+  messageBrokers.forEach((resource) => {
+    if (resource.resourceType === EnumResourceType.MessageBroker) {
+      throw new Error("resourceType is not EnumResourceType.MessageBroker");
+    }
+  });
 
   const topicIdToNameMap = new Map<string, string>();
   messageBrokers.forEach((messageBroker) => {
@@ -24,30 +21,17 @@ export function fromServiceTopicsToTopicsWithName(
     });
   });
 
-  const results = serviceTopics.map((serviceTopic) => {
-    const messageBroker = messageBrokers.find(
-      (messageBroker) =>
-        serviceTopic.messageBrokerId === messageBroker.resourceInfo?.id
-    );
-    const messageBrokerName = messageBroker?.resourceInfo?.name;
-    if (!messageBrokerName) {
-      throw new Error(
-        `Message broker not found for service topic ${serviceTopic.id}`
-      );
-    }
-    const topicsWithNames = serviceTopic.patterns.map((pattern) => {
+  const updatedServiceTopicsList = serviceTopicsList.map((serviceTopic) => {
+    serviceTopic.patterns = serviceTopic.patterns.map((pattern) => {
       const topicName = topicIdToNameMap.get(pattern.topicId);
       if (!topicName) {
         throw new Error(`Topic with id ${pattern.topicId} not found`);
       }
-      return {
-        name: topicName,
-        type: pattern.type,
-      };
+      pattern.topicName = topicName;
+      return pattern;
     });
-
-    return { messageBrokerName, topicsWithNames };
+    return serviceTopic;
   });
 
-  return results;
+  return updatedServiceTopicsList;
 }

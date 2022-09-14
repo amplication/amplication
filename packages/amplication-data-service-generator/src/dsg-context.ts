@@ -1,5 +1,6 @@
 import * as types from "@amplication/code-gen-types";
 import { ContextUtil } from "@amplication/code-gen-types";
+import { EnumResourceType } from "./models";
 import winston from "winston";
 import { readPluginStaticModules } from "./read-static-modules";
 
@@ -18,6 +19,8 @@ class DsgContext implements types.DsgContext {
   public plugins: types.PluginMap = {};
   public logger: winston.Logger = winston.createLogger();
   public utils: ContextUtil = contextUtil;
+  public serviceTopics: types.ServiceTopics[] = [];
+  public topics: types.Topic[] = [];
 
   private static instance: DsgContext;
 
@@ -28,6 +31,10 @@ class DsgContext implements types.DsgContext {
   private constructor() {
     //prevent external code from creating instances of the context
   }
+  public resourceType!: EnumResourceType;
+  public readonly resourceInfo = this.appInfo;
+  public pluginInstallations: types.PluginInstallation[] = [];
+  public otherResources?: types.DSGResourceData[] | undefined;
 }
 
 export default DsgContext;

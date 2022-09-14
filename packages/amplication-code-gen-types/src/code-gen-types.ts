@@ -1,12 +1,11 @@
+import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
-import { namedTypes } from "ast-types";
-import { DSGResourceData } from "./dsg-resource-data";
 
 export {
-  EnumEntityPermissionType,
-  EnumEntityAction,
   EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType,
 } from "./models";
 
 export type WorkerResult = {
@@ -169,7 +168,9 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
-export type Plugin = BlockOmittedFieldsWithoutId<models.PluginInstallation>;
+export type PluginInstallation = BlockOmittedFieldsWithoutId<
+  models.PluginInstallation
+>;
 
 type BlockOmittedFields<T> = Omit<
   T,
@@ -190,12 +191,9 @@ type BlockOmittedFields<T> = Omit<
 type BlockOmittedFieldsWithoutId<T> = Omit<BlockOmittedFields<T>, "id">;
 
 export type Topic = BlockOmittedFields<models.Topic>;
-export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
-
-export type MessageBrokersDataForService = {
-  messageBrokerName: string;
-  topicsWithNames: {
-    name: string;
-    type: models.EnumMessagePatternConnectionOptions;
-  }[];
-}[];
+export type ServiceTopics = Omit<
+  BlockOmittedFields<models.ServiceTopics>,
+  "patterns"
+> & {
+  patterns: Array<models.MessagePattern & { topicName?: string }>;
+};

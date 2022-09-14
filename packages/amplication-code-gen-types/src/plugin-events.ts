@@ -3,7 +3,10 @@ import {
   CreateAdminModulesParams,
   CreateAuthModulesParams,
   CreateControllerModulesParams,
+  CreateMessageBrokerClientOptionsFactoryParams,
+  CreateMessageBrokerNestJSModuleParams,
   CreateMessageBrokerParams,
+  CreateMessageBrokerTopicsEnumParams,
   CreateServerDotEnvParams,
   CreateServiceModulesParams,
 } from "./plugin-events-params";
@@ -68,6 +71,36 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateMessageBrokerTopicsEnum]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerTopicsEnumParams["before"]
+    ) => CreateMessageBrokerTopicsEnumParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerTopicsEnumParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateMessageBrokerNestJSModule]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerNestJSModuleParams["before"]
+    ) => CreateMessageBrokerNestJSModuleParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerNestJSModuleParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateMessageBrokerClientOptionsFactory]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerClientOptionsFactoryParams["before"]
+    ) => CreateMessageBrokerClientOptionsFactoryParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerClientOptionsFactoryParams["after"]
     ) => Module[];
   };
 };

@@ -17,6 +17,8 @@ import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
 import registerPlugins from "./register-plugin";
+import { fromServiceTopicsToTopicsWithName } from "util/message-broker";
+import { EnumResourceType } from "models";
 
 export async function createDataServiceImpl(
   dSGResourceData: DSGResourceData,
@@ -24,7 +26,7 @@ export async function createDataServiceImpl(
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const {
-    plugins: resourcePlugins,
+    pluginInstallations: resourcePlugins,
     entities,
     roles,
     resourceInfo: appInfo,
@@ -44,10 +46,13 @@ export async function createDataServiceImpl(
 
   const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
 
+  const serviceTopicsWithName = prepareServiceTopics(dSGResourceData);
+
   const context = DsgContext.getInstance;
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
+  context.serviceTopics = serviceTopicsWithName;
   const plugins = await registerPlugins(resourcePlugins);
 
   context.plugins = plugins;
@@ -90,6 +95,15 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
     return entity;
   });
   return currentEntities;
+}
+
+function prepareServiceTopics(dSGResourceData: DSGResourceData) {
+  return fromServiceTopicsToTopicsWithName(
+    dSGResourceData.serviceTopics || [],
+    dSGResourceData.otherResources?.filter(
+      (resource) => resource.resourceType === EnumResourceType.MessageBroker
+    ) || []
+  );
 }
 
 function resolveLookupFields(entities: Entity[]): Entity[] {

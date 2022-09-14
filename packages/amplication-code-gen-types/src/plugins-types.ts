@@ -1,6 +1,7 @@
 import { AppInfo, DTOs, Entity, Module, Role } from "./code-gen-types";
 import winston from "winston";
 import { Events } from "./plugin-events";
+import { DSGResourceData } from "./dsg-resource-data";
 
 export interface EventParams {
   after: Module[];
@@ -16,10 +17,7 @@ export interface ContextUtil {
   skipDefaultBehavior: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
-export interface DsgContext {
-  appInfo: AppInfo;
-  entities: Entity[];
-  roles: Role[];
+export interface DsgContext extends DSGResourceData {
   modules: Module[];
   DTOs: DTOs;
   plugins: PluginMap;
@@ -43,6 +41,9 @@ export enum EventNames {
   CreateAdminModules = "createAdminModules",
   CreateServerDotEnv = "CreateServerDotEnv",
   CreateMessageBroker = "CreateMessageBroker",
+  CreateMessageBrokerTopicsEnum = "CreateMessageBrokerTopicsEnum",
+  CreateMessageBrokerNestJSModule = "CreateMessageBrokerNestJSModule",
+  CreateMessageBrokerClientOptionsFactory = "CreateMessageBrokerClientOptionsFactory",
 }
 
 export interface AmplicationPlugin {
