@@ -48,6 +48,7 @@
     "@nestjs/core": "^9.0.9",
     "ast-types": "^0.14.2",
     "json-schema": "0.4.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "winston": "3.8.2"
   }
 }
