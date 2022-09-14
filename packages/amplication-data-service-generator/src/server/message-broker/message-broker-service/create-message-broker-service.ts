@@ -25,12 +25,12 @@ export async function createMessageBrokerServiceModulesInternal(
 ): Promise<Module[]> {
   const serviceModule = await createMessageBrokerServiceModule(false);
   const baseServiceModule = await createMessageBrokerServiceModule(true);
-  return [serviceModule, baseServiceModule];
+  return [...serviceModule, ...baseServiceModule];
 }
 
 async function createMessageBrokerServiceModule(
   baseService: boolean
-): Promise<Module> {
+): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const { messageBrokerDirectory } = serverDirectories;
   const templatePath = resolve(
@@ -50,5 +50,5 @@ async function createMessageBrokerServiceModule(
     baseService ? "base" : "",
     generateFileName
   );
-  return { code, path };
+  return [{ code, path }];
 }

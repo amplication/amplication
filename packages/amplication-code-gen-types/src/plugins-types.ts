@@ -55,6 +55,8 @@ export enum EventNames {
   CreateMessageBrokerNestJSModule = "CreateMessageBrokerNestJSModule",
   CreateMessageBrokerClientOptionsFactory = "CreateMessageBrokerClientOptionsFactory",
   CreateMessageBrokerServices = "CreateMessageBrokerServices",
+  CreateMessageBrokerService = "CreateMessageBrokerService",
+  CreateMessageBrokerBaseService = "CreateMessageBrokerBaseService",
   CreateEntityService = "CreateEntityService",
   CreateEntityServiceBase = "CreateEntityServiceBase",
   CreateServerDockerCompose = "CreateServerDockerCompose",

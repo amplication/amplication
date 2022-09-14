@@ -26,15 +26,17 @@ export async function createMessageBrokerInternal({
   const { serverDirectories } = DsgContext.getInstance;
   const { messageBrokerDirectory } = serverDirectories;
 
-  const generateKafkaClientOptionsModule = await createGenerateMessageBrokerClientOptionsFunction(
+  const generateMessageBrokerClientOptionsModule = await createGenerateMessageBrokerClientOptionsFunction(
     messageBrokerDirectory
   );
-  const kafkaModule = await createMessageBrokerModule(messageBrokerDirectory);
+  const messageBrokerModule = await createMessageBrokerModule(
+    messageBrokerDirectory
+  );
   const serviceModules = await createMessageBrokerServiceModules({});
   const topicsEnum = await createTopicsEnum({ serviceTopicsWithName });
   const modules = [
-    ...generateKafkaClientOptionsModule,
-    ...kafkaModule,
+    ...generateMessageBrokerClientOptionsModule,
+    ...messageBrokerModule,
     ...serviceModules,
   ];
   topicsEnum && modules.push(...topicsEnum);
