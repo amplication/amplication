@@ -42,11 +42,11 @@ export const TopicList = React.memo(
     const { data, loading, error } = useQuery<TData>(GET_TOPICS, {
       variables: {
         where: { 
-          resource: { id: resourceId }, 
-          displayName: {
+          resource: { id: resourceId },
+          displayName: searchPhrase !== "" ? {
             contains: searchPhrase,
             mode: models.QueryMode.Insensitive,
-          }
+          } : undefined,
         },
         orderBy: {
           [DATE_CREATED_FIELD]: models.SortOrder.Asc,

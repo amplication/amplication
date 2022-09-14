@@ -44,7 +44,7 @@ export class ServiceTopicsService extends BlockTypeService<
         project: {
           id: resource.projectId
         },
-        id: { equals: messageBrokerId },
+        id: messageBrokerId,
         resourceType: {
           equals: EnumResourceType.MessageBroker
         }

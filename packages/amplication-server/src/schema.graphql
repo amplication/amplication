@@ -712,7 +712,7 @@ input ResourceListRelationFilter {
 }
 
 input ResourceWhereInput {
-  id: StringFilter
+  id: String
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
@@ -816,7 +816,7 @@ input BlockWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
+  resource: ResourceWhereInput
   parentBlock: WhereUniqueInput
   blockType: EnumBlockTypeFilter
   displayName: StringFilter
@@ -861,7 +861,7 @@ input ServiceTopicsWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
+  resource: ResourceWhereInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -935,7 +935,7 @@ input PluginInstallationWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
+  resource: ResourceWhereInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
@@ -986,7 +986,7 @@ input TopicWhereInput {
   id: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  resource: WhereUniqueInput
+  resource: ResourceWhereInput
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter

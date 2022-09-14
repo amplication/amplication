@@ -7,10 +7,10 @@ import { EnumResourceTypeFilter } from './EnumResourceTypeFilter';
   isAbstract: true
 })
 export class ResourceWhereInput {
-  @Field(() => StringFilter, {
+  @Field(() => String, {
     nullable: true
   })
-  id?: StringFilter | null;
+  id?: string | null;
 
   @Field(() => DateTimeFilter, {
     nullable: true

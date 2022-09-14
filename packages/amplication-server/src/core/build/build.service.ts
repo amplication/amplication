@@ -598,7 +598,7 @@ export class BuildService {
   ): Promise<CodeGenTypes.DSGResourceData> {
     const resources = await this.resourceService.resources({
       where: {
-        project: { resources: { some: { id: { equals: resourceId } } } }
+        project: { resources: { some: { id: resourceId } } }
       }
     });
 

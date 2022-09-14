@@ -188,7 +188,7 @@ export type BlockWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1222,7 +1222,7 @@ export type PluginInstallationWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1667,7 +1667,7 @@ export type ResourceUpdateInput = {
 export type ResourceWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
   description?: InputMaybe<StringFilter>;
-  id?: InputMaybe<StringFilter>;
+  id?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<StringFilter>;
   project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars["String"]>;
@@ -1786,7 +1786,7 @@ export type ServiceTopicsWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1882,7 +1882,7 @@ export type TopicWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 

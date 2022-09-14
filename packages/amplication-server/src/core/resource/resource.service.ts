@@ -321,16 +321,20 @@ export class ResourceService {
 
   async messageBrokerConnectedServices(args: FindOneArgs): Promise<Resource[]> {
     const resource = await this.resource(args);
-    const serviceTopicsCollection = await this.serviceTopicsService.findMany(
-      {}
-    );
+    const serviceTopicsCollection = await this.serviceTopicsService.findMany({
+      where: { resource: { projectId: resource.projectId } }
+    });
     const brokerServiceTopics = serviceTopicsCollection.filter(
       x => x.messageBrokerId === resource.id && x.enabled
     );
 
-    const resources = this.resources({
-      where: { id: { in: brokerServiceTopics.map(x => x.resourceId) } }
-    });
+    const promises = brokerServiceTopics.map(x => {
+      return this.resource({
+        where: { id: x.resourceId }
+      }); 
+    }); 
+
+    const resources = await Promise.all(promises);
 
     return resources;
   }
@@ -451,7 +455,7 @@ export class ResourceService {
 
   async project(resourceId: string): Promise<Project> {
     return this.projectService.findFirst({
-      where: { resources: { some: { id: { equals: resourceId } } } }
+      where: { resources: { some: { id: resourceId } } }
     });
   }
 
