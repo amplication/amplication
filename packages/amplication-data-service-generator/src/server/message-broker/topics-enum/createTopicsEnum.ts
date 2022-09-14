@@ -15,7 +15,7 @@ const { builders } = types;
 
 export function createTopicsEnum(
   eventParams: CreateMessageBrokerParams["before"]
-) {
+): Promise<Module[]> {
   return pluginWrapper(
     createTopicsEnumInternal,
     EventNames.CreateMessageBrokerTopicsEnum,
