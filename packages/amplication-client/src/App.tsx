@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
@@ -7,12 +7,14 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import { CircularProgress } from "@amplication/design-system";
+import { Loader } from "@amplication/design-system";
 
 const GeneratedRoutes = routesGenerator(Routes);
 const context = {
   source: "amplication-client",
 };
+
+const MIN_ANIMATION_TIME = 2000;
 
 export const enhance = track<keyof typeof context>(
   // app-level tracking data
@@ -25,7 +27,10 @@ export const enhance = track<keyof typeof context>(
 
 function App() {
   const authenticated = useAuthenticated();
-  const { currentWorkspaceLoad } = useCurrentWorkspace(authenticated);
+  const { currentWorkspaceLoading } = useCurrentWorkspace(authenticated);
+  const [keepLoadingAnimation, setKeepLoadingAnimation] = useState<boolean>(
+    true
+  );
 
   useEffect(() => {
     initAnalytics();
@@ -41,13 +46,21 @@ function App() {
     ignoreTags: [],
   });
 
+  const showLoadingAnimation = keepLoadingAnimation || currentWorkspaceLoading;
+
   return (
     <ThemeProvider>
-      {currentWorkspaceLoad ? (
-        <CircularProgress centerToParent />
-      ) : (
-        GeneratedRoutes
+      {showLoadingAnimation && (
+        <Loader
+          fullScreen
+          minimumLoadTimeMS={MIN_ANIMATION_TIME}
+          onTimeout={() => {
+            setKeepLoadingAnimation(false);
+          }}
+        />
       )}
+
+      {!currentWorkspaceLoading && GeneratedRoutes}
     </ThemeProvider>
   );
 }

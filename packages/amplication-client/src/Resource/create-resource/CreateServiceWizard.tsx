@@ -4,6 +4,7 @@ import {
   EnumIconPosition,
   Modal,
   Snackbar,
+  Loader,
 } from "@amplication/design-system";
 import React, {
   MutableRefObject,
@@ -23,7 +24,7 @@ import {
   prepareServiceObject,
   serviceSettingsFieldsInitValues,
 } from "../constants";
-import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
+
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
@@ -111,7 +112,10 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
               It should only take a few seconds to finish. Don't go away!
             </div>
           </div>
-          <SvgThemeImage image={EnumImages.CreateServiceWizard} />
+          <div className={`${moduleClass}__processing__loader`}>
+            <Loader fullScreen={false} />
+          </div>
+
           <div className={`${moduleClass}__processing__tagline`}>
             <div>For a full experience, connect with a GitHub repository</div>
             <div>

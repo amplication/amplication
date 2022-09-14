@@ -43,7 +43,7 @@ const useCurrentWorkspace = (authenticated: boolean) => {
   }, [data, history, location]);
 
   return {
-    currentWorkspaceLoad: location.pathname === "/" ? loading : null,
+    currentWorkspaceLoading: location.pathname === "/" ? loading : null,
   };
 };
 

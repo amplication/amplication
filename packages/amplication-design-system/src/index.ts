@@ -164,3 +164,5 @@ export {
   HorizontalRule,
   EnumHorizontalRuleStyle,
 } from "./components/HorizontalRule/HorizontalRule";
+
+export { Loader, Props as LoaderProps } from "./components/Loader/Loader";
