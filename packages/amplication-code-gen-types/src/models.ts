@@ -1785,7 +1785,6 @@ export type ServiceTopicsWhereInput = {
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
-  messageBrokerId?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;

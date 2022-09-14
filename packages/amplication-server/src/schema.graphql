@@ -865,7 +865,6 @@ input ServiceTopicsWhereInput {
   parentBlock: WhereUniqueInput
   displayName: StringFilter
   description: StringFilter
-  messageBrokerId: StringFilter
 }
 
 input ServiceTopicsOrderByInput {

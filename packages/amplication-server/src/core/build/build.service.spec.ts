@@ -486,7 +486,7 @@ describe('BuildService', () => {
           useValue: {
             findMany: prismaPluginFindManyMock
           }
-        },
+        }
       ]
     }).compile();
 

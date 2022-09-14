@@ -4,5 +4,4 @@ import { BlockTypeWhereInput } from '../../block/dto';
 @InputType({
   isAbstract: true
 })
-export class ServiceTopicsWhereInput extends BlockTypeWhereInput {
-}
+export class ServiceTopicsWhereInput extends BlockTypeWhereInput {}
