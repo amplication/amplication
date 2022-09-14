@@ -1,34 +1,27 @@
-import {
-  CreateAuthModulesParams,
-  EventNames,
-  Module,
-} from "@amplication/code-gen-types";
+import { EventNames, Module } from "@amplication/code-gen-types";
 import pluginWrapper from "../../plugin-wrapper";
 import DsgContext from "../../dsg-context";
 import { createDefaultGuard } from "./guards/createDefaultGuard";
 import { createTokenServiceTests } from "./token/createTokenSerivceTests";
 import { createTokenService } from "./token/createTokenService";
 
-export function createAuthModules(
-  eventParams: CreateAuthModulesParams["before"]
-): Module[] {
+export function createAuthModules(): Module[] {
+  const { serverDirectories } = DsgContext.getInstance;
   return pluginWrapper(
     createAuthModulesInternal,
     EventNames.CreateAuthModules,
-    eventParams
+    { srcDirectory: serverDirectories.srcDirectory }
   );
 }
 
-async function createAuthModulesInternal({
-  srcDir,
-}: CreateAuthModulesParams["before"]): Promise<Module[]> {
-  const context = DsgContext.getInstance;
-  const authDir = `${srcDir}/auth`;
-  const authTestsDir = `${srcDir}/tests/auth`;
+async function createAuthModulesInternal(): Promise<Module[]> {
+  const { appInfo, serverDirectories } = DsgContext.getInstance;
+  const authDir = `${serverDirectories.srcDirectory}/auth`;
+  const authTestsDir = `${serverDirectories.srcDirectory}/tests/auth`;
 
   const {
     settings: { authProvider },
-  } = context.appInfo;
+  } = appInfo;
   const defaultGuardFile = await createDefaultGuard(authProvider, authDir);
 
   return Promise.all([
