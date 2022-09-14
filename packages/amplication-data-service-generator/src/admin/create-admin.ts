@@ -77,19 +77,10 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   );
 
   const publicFilesModules = await createPublicFiles();
-  const entityToDirectory = createEntityToDirectory(
-    entities,
-    clientDirectories.srcDirectory
-  );
-  const dtoNameToPath = createDTONameToPath(
-    DTOs,
-    clientDirectories.apiDirectory
-  );
+  const entityToDirectory = createEntityToDirectory(entities);
+  const dtoNameToPath = createDTONameToPath(DTOs);
   const dtoModules = createDTOModules(DTOs, dtoNameToPath);
-  const enumRolesModule = createEnumRolesModule(
-    roles,
-    clientDirectories.srcDirectory
-  );
+  const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles, clientDirectories.srcDirectory);
   // Create title components first so they are available when creating entity modules
   const entityToTitleComponent = await createEntityTitleComponents(
