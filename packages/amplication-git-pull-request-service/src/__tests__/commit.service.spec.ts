@@ -1,11 +1,15 @@
 import { mock } from 'jest-mock-extended';
-import { GithubConfig, GithubFactory, GitProvider } from '@amplication/git-service';
+import {
+  GithubConfig,
+  GithubFactory,
+  GitProvider,
+} from '@amplication/git-service';
 import { CommitsService } from '../core/commit/commits.service';
 import { AmplicationLogger } from '@amplication/nest-logger-module';
 
 //TODO: Add environments to GitHub workflow tests
-const APP_ID = "230968";
-const APP_PEM = "";
+const APP_ID = '230968';
+const APP_PEM = '';
 const INSTALLATION_ID = 28672211;
 const OWNER = 'matan-test-org';
 const REPO = 'integration-test';
@@ -14,10 +18,10 @@ let githubFactory: GithubFactory;
 let client: GitProvider;
 let commitService: CommitsService;
 
-jest.setTimeout(100000)
+jest.setTimeout(100000);
 
 beforeAll(async () => {
-  githubFactory = new GithubFactory(new GithubConfig(APP_ID,APP_PEM));
+  githubFactory = new GithubFactory(new GithubConfig(APP_ID, APP_PEM));
   client = await githubFactory.getClient(
     INSTALLATION_ID.toString(),
     OWNER,
@@ -62,7 +66,7 @@ afterAll(async () => {
   await client.deleteRepository();
 });
 
-describe.skip('add commit repository',   () => {
+describe.skip('add commit repository', () => {
   test('first commit create pull request and branch', async () => {
     const inputBuild = 'build-id';
     const inputCommit = 'commit-id';

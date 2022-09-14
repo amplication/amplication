@@ -8,7 +8,7 @@ import {
 import { GitProvider } from '../providers/git-provider.interface';
 
 //TODO: Add environments to GitHub workflow tests
-const APP_ID = "230968";
+const APP_ID = '230968';
 const APP_PEM = '';
 const INSTALLATION_ID = 28672211;
 const OWNER = 'matan-test-org';
@@ -46,7 +46,7 @@ jest.setTimeout(1000000);
 beforeAll(async () => {
   githubFactory = new GithubFactory({
     appId: APP_ID,
-    pem:APP_PEM
+    pem: APP_PEM
   });
   client = await githubFactory.getClient(
     INSTALLATION_ID.toString(),
