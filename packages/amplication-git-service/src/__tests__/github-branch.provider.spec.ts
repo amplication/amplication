@@ -8,7 +8,7 @@ import {
 import { GitProvider } from '../providers/git-provider.interface';
 
 //TODO: Add environments to GitHub workflow tests
-const APP_ID = 230968;
+const APP_ID = "230968";
 const APP_PEM = '';
 const INSTALLATION_ID = 28672211;
 const OWNER = 'matan-test-org';
@@ -41,20 +41,13 @@ const mainHeadCommit = async (): Promise<string> => {
   return await branchHeadCommit(await defaultBranch());
 };
 
-jest.setTimeout(10000);
+jest.setTimeout(1000000);
 
 beforeAll(async () => {
-  const configService = mock<ConfigService>();
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  configService.get.calledWith(GITHUB_APP_APP_ID_VAR).mockReturnValue(APP_ID);
-  configService.get
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    .calledWith(GITHUB_APP_PRIVATE_KEY_VAR)
-    .mockReturnValue(APP_PEM);
-
-  githubFactory = new GithubFactory(configService);
+  githubFactory = new GithubFactory({
+    appId: APP_ID,
+    pem:APP_PEM
+  });
   client = await githubFactory.getClient(
     INSTALLATION_ID.toString(),
     OWNER,

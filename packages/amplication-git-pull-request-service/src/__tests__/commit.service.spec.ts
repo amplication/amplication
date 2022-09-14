@@ -1,12 +1,11 @@
 import { mock } from 'jest-mock-extended';
-import { ConfigService } from '@nestjs/config';
-import { GithubFactory, GitProvider } from '@amplication/git-service';
+import { GithubConfig, GithubFactory, GitProvider } from '@amplication/git-service';
 import { CommitsService } from '../core/commit/commits.service';
 import { AmplicationLogger } from '@amplication/nest-logger-module';
 
 //TODO: Add environments to GitHub workflow tests
-const APP_ID = 230968;
-const APP_PEM = '';
+const APP_ID = "230968";
+const APP_PEM = "";
 const INSTALLATION_ID = 28672211;
 const OWNER = 'matan-test-org';
 const REPO = 'integration-test';
@@ -15,18 +14,10 @@ let githubFactory: GithubFactory;
 let client: GitProvider;
 let commitService: CommitsService;
 
-beforeAll(async () => {
-  const configService = mock<ConfigService>();
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  configService.get.calledWith('GITHUB_APP_APP_ID').mockReturnValue(APP_ID);
-  configService.get
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    .calledWith('GITHUB_APP_PRIVATE_KEY')
-    .mockReturnValue(APP_PEM);
+jest.setTimeout(100000)
 
-  githubFactory = new GithubFactory(configService);
+beforeAll(async () => {
+  githubFactory = new GithubFactory(new GithubConfig(APP_ID,APP_PEM));
   client = await githubFactory.getClient(
     INSTALLATION_ID.toString(),
     OWNER,
@@ -71,7 +62,7 @@ afterAll(async () => {
   await client.deleteRepository();
 });
 
-describe.skip('add commit repository', () => {
+describe.skip('add commit repository',   () => {
   test('first commit create pull request and branch', async () => {
     const inputBuild = 'build-id';
     const inputCommit = 'commit-id';
