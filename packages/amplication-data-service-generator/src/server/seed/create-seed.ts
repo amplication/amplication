@@ -36,6 +36,7 @@ const ADMIN_ROLE = "user";
 const DEFAULT_ADDRESS = "(32.085300, 34.781769)";
 const DEFAULT_EMAIL = "example@example.com";
 const DATE_ID = builders.identifier("Date");
+const ROLES_PROPERTY_NAME = "roles";
 export const DEFAULT_EMPTY_STRING_LITERAL = builders.stringLiteral("");
 export const DEFAULT_ADDRESS_LITERAL = builders.stringLiteral(DEFAULT_ADDRESS);
 export const DEFAULT_BOOLEAN_LITERAL = builders.booleanLiteral(false);
@@ -43,6 +44,12 @@ export const EMPTY_ARRAY_EXPRESSION = builders.arrayExpression([]);
 export const DEFAULT_NUMBER_LITERAL = builders.numericLiteral(0);
 export const DEFAULT_EMAIL_LITERAL = builders.stringLiteral(DEFAULT_EMAIL);
 export const NEW_DATE_EXPRESSION = builders.newExpression(DATE_ID, []);
+export const NEW_JSON_EXPRESSION = builders.objectExpression([
+  builders.objectProperty(
+    builders.stringLiteral("foo"),
+    builders.stringLiteral("bar")
+  ),
+]);
 export const AUTH_FIELD_NAMES = new Set(
   USER_AUTH_FIELDS.map((field) => field.name)
 );
@@ -57,7 +64,12 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
   builders.objectProperty(
     builders.identifier(USER_ROLES_FIELD.name),
-    builders.arrayExpression([builders.stringLiteral(ADMIN_ROLE)])
+    builders.objectExpression([
+      builders.objectProperty(
+        builders.identifier(ROLES_PROPERTY_NAME),
+        builders.arrayExpression([builders.stringLiteral(ADMIN_ROLE)])
+      ),
+    ])
   ),
 ];
 
@@ -152,7 +164,7 @@ export function createDefaultValue(
       return DEFAULT_ADDRESS_LITERAL;
     }
     case EnumDataType.Json: {
-      return DEFAULT_BOOLEAN_LITERAL;
+      return NEW_JSON_EXPRESSION;
     }
     case EnumDataType.Id:
     case EnumDataType.CreatedAt:

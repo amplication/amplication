@@ -15,6 +15,7 @@ import { removeIdentifierFromModuleDecorator } from "../../../util/nestjs-code-g
 import { createControllerId } from "../controller/create-controller";
 import { createServiceId } from "../service/create-service";
 import { createResolverId } from "../resolver/create-resolver";
+import DsgContext from "../../../dsg-context";
 
 const moduleTemplatePath = require.resolve("./module.template.ts");
 const moduleBaseTemplatePath = require.resolve("./module.base.template.ts");
@@ -24,8 +25,7 @@ export async function createModules(
   entityType: string,
   entityServiceModule: string,
   entityControllerModule: string | undefined,
-  entityResolverModule: string | undefined,
-  srcDirectory: string
+  entityResolverModule: string | undefined
 ): Promise<Module[]> {
   const moduleBaseId = createBaseModuleId(entityType);
 
@@ -36,10 +36,9 @@ export async function createModules(
       entityServiceModule,
       entityControllerModule,
       entityResolverModule,
-      moduleBaseId,
-      srcDirectory
+      moduleBaseId
     ),
-    await createBaseModule(entityName, moduleBaseId, srcDirectory),
+    await createBaseModule(entityName, moduleBaseId),
   ];
 }
 
@@ -49,11 +48,11 @@ async function createModule(
   entityServiceModule: string,
   entityControllerModule: string | undefined,
   entityResolverModule: string | undefined,
-  moduleBaseId: namedTypes.Identifier,
-  srcDirectory: string
+  moduleBaseId: namedTypes.Identifier
 ): Promise<Module> {
-  const modulePath = `${srcDirectory}/${entityName}/${entityName}.module.ts`;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.module.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleTemplatePath);
   const controllerId = createControllerId(entityType);
   const serviceId = createServiceId(entityType);
@@ -122,10 +121,10 @@ async function createModule(
 
 async function createBaseModule(
   entityName: string,
-  moduleBaseId: namedTypes.Identifier,
-  srcDirectory: string
+  moduleBaseId: namedTypes.Identifier
 ): Promise<Module> {
-  const modulePath = `${srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleBaseTemplatePath);
 
   interpolate(file, {

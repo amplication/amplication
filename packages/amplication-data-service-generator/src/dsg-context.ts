@@ -1,5 +1,9 @@
 import * as types from "@amplication/code-gen-types";
-import { ContextUtil } from "@amplication/code-gen-types";
+import {
+  clientDirectories,
+  ContextUtil,
+  serverDirectories,
+} from "@amplication/code-gen-types";
 import { EnumResourceType } from "./models";
 import winston from "winston";
 import { readPluginStaticModules } from "./read-static-modules";
@@ -21,6 +25,9 @@ class DsgContext implements types.DsgContext {
   public utils: ContextUtil = contextUtil;
   public serviceTopics: types.ServiceTopics[] = [];
   public topics: types.Topic[] = [];
+
+  public clientDirectories!: clientDirectories;
+  public serverDirectories!: serverDirectories;
 
   private static instance: DsgContext;
 

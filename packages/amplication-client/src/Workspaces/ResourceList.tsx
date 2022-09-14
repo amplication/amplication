@@ -9,13 +9,14 @@ import {
   Snackbar,
   CircularProgress,
 } from "@amplication/design-system";
-import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
+import { EnumImages } from "../Components/SvgThemeImage";
 
 import * as models from "../models";
 import ResourceListItem from "./ResourceListItem";
 import "./ResourceList.scss";
 import { AppContext } from "../context/appContext";
 import CreateResourceButton from "../Components/CreateResourceButton";
+import { EmptyState } from "../Components/EmptyState";
 
 type TDeleteData = {
   deleteResource: models.Resource;
@@ -96,24 +97,24 @@ function ResourceList() {
       <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
       {loadingResources && <CircularProgress centerToParent />}
 
-      {isEmpty(resources) && !loadingResources ? (
-        <div className={`${CLASS_NAME}__empty-state`}>
-          <SvgThemeImage image={EnumImages.AddResource} />
-          <div className={`${CLASS_NAME}__empty-state__title`}>
-            There are no resources to show
-          </div>
-        </div>
-      ) : (
-        <div className={`${CLASS_NAME}__content`}>
-          {resources.map((resource) => (
-            <ResourceListItem
-              key={resource.id}
-              resource={resource}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      )}
+      <div className={`${CLASS_NAME}__content`}>
+        {isEmpty(resources) && !loadingResources ? (
+          <EmptyState
+            message="There are no resources to show"
+            image={EnumImages.AddResource}
+          />
+        ) : (
+          <>
+            {resources.map((resource) => (
+              <ResourceListItem
+                key={resource.id}
+                resource={resource}
+                onDelete={handleDelete}
+              />
+            ))}
+          </>
+        )}
+      </div>
 
       <Snackbar
         open={Boolean(error || errorResources)}
