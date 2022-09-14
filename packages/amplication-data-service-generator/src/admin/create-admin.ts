@@ -76,10 +76,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     entities.map((entity) => [entity.name, entity])
   );
 
-  const publicFilesModules = await createPublicFiles(
-    appInfo,
-    clientDirectories.publicDirectory
-  );
+  const publicFilesModules = await createPublicFiles();
   const entityToDirectory = createEntityToDirectory(
     entities,
     clientDirectories.srcDirectory
