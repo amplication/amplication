@@ -56,10 +56,11 @@ import { GitHubAuthGuard } from './github.guard';
           googleSecretsManagerService
         );
         const options = await githubConfigService.getOptions();
+
         if (options === null) {
-			// @ts-ignore
-			return;
+          return;
         }
+
         return new GitHubStrategy(authService, options);
       },
       inject: [AuthService, ConfigService, GoogleSecretsManagerService]
