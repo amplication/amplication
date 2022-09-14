@@ -1,7 +1,7 @@
 import { Icon, SelectMenuItem } from "@amplication/design-system";
 import { join } from "path";
 import React, { useMemo } from "react";
-import { WORK_SPACE_HEADER_CLASS_NAME } from "./WorkspaceHeader";
+import { WORK_SPACE_HEADER_CLASS_NAME, PROJECT_CONFIGURATION_RESOURCE_NAME } from "./WorkspaceHeader";
 
 type Props = {
   currentProjectConfigurationId: string | undefined;
@@ -21,7 +21,7 @@ export default function HeaderMenuStaticOptions({
   const MENU_OPTIONS = useMemo(
     () => [
       {
-        title: "Project settings",
+        title: PROJECT_CONFIGURATION_RESOURCE_NAME,
         link: `${currentProjectConfigurationId}/settings/update`,
         icon: "app-settings",
       },
