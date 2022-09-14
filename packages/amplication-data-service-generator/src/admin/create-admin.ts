@@ -85,7 +85,6 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   // Create title components first so they are available when creating entity modules
   const entityToTitleComponent = await createEntityTitleComponents(
     entities,
-    DTOs,
     entityToDirectory,
     entityToResource,
     dtoNameToPath
@@ -97,7 +96,6 @@ async function createAdminModulesInternal(): Promise<Module[]> {
 
   const entitiesComponents = await createEntitiesComponents(
     entities,
-    DTOs,
     entityToDirectory,
     entityToTitleComponent,
     entityNameToEntity
