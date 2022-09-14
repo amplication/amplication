@@ -5,8 +5,9 @@ import {
 } from "@amplication/code-gen-types";
 import { readFile } from "fs/promises";
 import { join, resolve } from "path";
-import pluginWrapper from "../../../plugin-wrapper";
 import { print } from "recast";
+import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
 import { parse, removeTSIgnoreComments } from "../../../util/ast";
 
 const templatePath = resolve(__dirname, "kafka.module.template.ts");
@@ -24,6 +25,7 @@ export function createKafkaModule(
 export async function createKafkaModuleInternal(
   eventParams: CreateMessageBrokerNestJSModuleParams["before"]
 ): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
   const template = await readFile(templatePath, "utf8");
   const generateFileName = "kafka.module.ts";
   const astFile = parse(template);
@@ -34,7 +36,7 @@ export async function createKafkaModuleInternal(
   return [
     {
       code: code,
-      path: join(kafkaFolder, generateFileName), //TODO get it from context
+      path: join(serverDirectories.messageBrokerDirectory, generateFileName), //TODO get it from context
     },
   ];
 }

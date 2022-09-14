@@ -3,16 +3,16 @@ import {
   EventNames,
   Module,
 } from "@amplication/code-gen-types";
-import { join } from "path";
+import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 import { createGenerateKafkaClientOptionsFunction } from "./generate-kafka-client-options/generate-kafka-client-options";
 import { createKafkaModule } from "./kafka-module/create-kafka-module";
 import { createKafkaServiceModules } from "./kafka-service/create-kafka-service";
 import { createTopicsEnum } from "./topics-enum/createTopicsEnum";
 
-export function createMessageBroker(
+export async function createMessageBroker(
   eventParams: CreateMessageBrokerParams["before"]
-): Module[] {
+): Promise<Module[]> {
   return pluginWrapper(
     createMessageBrokerInternal,
     EventNames.CreateMessageBroker,
@@ -22,20 +22,23 @@ export function createMessageBroker(
 
 export async function createMessageBrokerInternal({
   serviceTopicsWithName,
-  srcFolder,
 }: CreateMessageBrokerParams["before"]): Promise<Module[]> {
-  const kafkaFolder = join(srcFolder, "kafka");
+  const { serverDirectories } = DsgContext.getInstance;
+  const { messageBrokerDirectory } = serverDirectories;
+
   const generateKafkaClientOptionsModule = await createGenerateKafkaClientOptionsFunction(
-    kafkaFolder
+    messageBrokerDirectory
   );
-  const kafkaModule = await createKafkaModule(kafkaFolder);
-  const serviceModules = await createKafkaServiceModules(kafkaFolder);
-  const topicsEnum = await createTopicsEnum(kafkaFolder);
+  const kafkaModule = await createKafkaModule(messageBrokerDirectory);
+  const serviceModules = await createKafkaServiceModules(
+    messageBrokerDirectory
+  );
+  const topicsEnum = await createTopicsEnum({ serviceTopicsWithName });
   const modules = [
-    generateKafkaClientOptionsModule,
-    kafkaModule,
+    ...generateKafkaClientOptionsModule,
+    ...kafkaModule,
     ...serviceModules,
   ];
-  topicsEnum && modules.push(topicsEnum);
+  topicsEnum && modules.push(...topicsEnum);
   return [...modules];
 }

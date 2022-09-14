@@ -3,6 +3,7 @@ import {
   EventNames,
   Module,
 } from "@amplication/code-gen-types";
+import DsgContext from "../../../dsg-context";
 import { readFile } from "fs/promises";
 import { join, resolve } from "path";
 import pluginWrapper from "../../../plugin-wrapper";
@@ -25,12 +26,13 @@ export async function createGenerateKafkaClientOptionsFunction(
 export async function createGenerateKafkaClientOptionsFunctionInternal(
   eventParams: CreateMessageBrokerClientOptionsFactoryParams["before"]
 ): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
   const template = await readFile(templatePath, "utf8");
   const generateFileName = "generateKafkaClientOptions.ts";
   return [
     {
       code: template,
-      path: join(kafkaFolder, generateFileName),
+      path: join(serverDirectories.messageBrokerDirectory, generateFileName),
     },
   ];
 }

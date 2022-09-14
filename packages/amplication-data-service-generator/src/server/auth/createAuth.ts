@@ -11,7 +11,7 @@ import { createTokenService } from "./token/createTokenService";
 
 export function createAuthModules(
   eventParams: CreateAuthModulesParams["before"]
-): Module[] {
+): Promise<Module[]> {
   return pluginWrapper(
     createAuthModulesInternal,
     EventNames.CreateAuthModules,

@@ -94,7 +94,6 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
 
 export interface CreateMessageBrokerParams extends EventParams {
   before: {
-    srcFolder: string;
     serviceTopicsWithName: ServiceTopics[];
   };
 }

@@ -24,6 +24,7 @@ import { EnumResourceType } from "./models";
 import { get } from "lodash";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
+import { join } from "path";
 
 export async function createDataServiceImpl(
   dSGResourceData: DSGResourceData,
@@ -111,6 +112,7 @@ function dynamicServerPathCreator(serverPath: string): serverDirectories {
     srcDirectory: srcDirectory,
     scriptsDirectory: `${baseDirectory}/scripts`,
     authDirectory: `${baseDirectory}/auth`,
+    messageBrokerDirectory: join(srcDirectory, "message-broker"),
   };
 }
 

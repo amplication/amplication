@@ -201,6 +201,7 @@ export type serverDirectories = {
   srcDirectory: string;
   authDirectory: string;
   scriptsDirectory: string;
+  messageBrokerDirectory: string;
 };
 type BlockOmittedFieldsWithoutId<T> = Omit<BlockOmittedFields<T>, "id">;
 

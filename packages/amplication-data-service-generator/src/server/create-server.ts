@@ -91,7 +91,6 @@ export async function createServerModules(
   );
   logger.info("Creating kakfa modules...");
   const kafkaModules = await createMessageBroker({
-    srcFolder: directoryManager.SRC,
     serviceTopicsWithName: dSGResourceData.serviceTopics || [],
   });
 

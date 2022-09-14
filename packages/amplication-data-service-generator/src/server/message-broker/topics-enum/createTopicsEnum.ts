@@ -27,7 +27,7 @@ export async function createTopicsEnumInternal(
   eventParams: CreateMessageBrokerParams["before"]
 ): Promise<Module[]> {
   const context = DsgContext.getInstance;
-  const { serviceTopics, otherResources } = context;
+  const { serviceTopics, otherResources, serverDirectories } = context;
   if (!serviceTopics.length) {
     return [];
   }
@@ -55,6 +55,6 @@ export async function createTopicsEnumInternal(
   });
   astFile.program.body.push(...topics);
 
-  const path = join(kafkaFolder, "topics.ts"); //TODO get the folder form context
+  const path = join(serverDirectories.messageBrokerDirectory, "topics.ts"); //TODO get the folder form context
   return [{ code: print(astFile).code, path }];
 }
