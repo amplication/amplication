@@ -66,12 +66,6 @@ async function createAdminModulesInternal(): Promise<Module[]> {
    * currently the files were manually copied to /admin/static/src/util
    */
 
-  const entityToPath = Object.fromEntries(
-    entities.map((entity) => [
-      entity.name,
-      `/${paramCase(plural(entity.name))}`,
-    ])
-  );
   const entityToResource = Object.fromEntries(
     entities.map((entity) => [
       entity.name,
@@ -123,11 +117,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
   );
-  const appModule = await createAppModule(
-    appInfo,
-    entityToPath,
-    entitiesComponents
-  );
+  const appModule = await createAppModule(entitiesComponents);
   const createdModules = [
     appModule,
     enumRolesModule,
