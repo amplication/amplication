@@ -45,13 +45,11 @@ const EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME = createCreateInputID(
 const EXAMPLE_DTO_NAME_TO_PATH = {
   [EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME]: createDTOModulePath(
     EXAMPLE_ENTITY_NAME_DIRECTORY,
-    EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME,
-    SRC_DIRECTORY
+    EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME
   ),
   [EXAMPLE_OTHER_ENTITY.name]: createDTOModulePath(
     EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
-    EXAMPLE_OTHER_ENTITY.name,
-    SRC_DIRECTORY
+    EXAMPLE_OTHER_ENTITY.name
   ),
 };
 
@@ -60,8 +58,7 @@ describe("createDTOModule", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY);
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
-      dto.id.name,
-      SRC_DIRECTORY
+      dto.id.name
     );
     const file = createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH);
     addAutoGenerationComment(file);
@@ -77,8 +74,7 @@ describe("createDTOFile", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY);
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
-      dto.id.name,
-      SRC_DIRECTORY
+      dto.id.name
     );
     expect(
       print(createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH)).code
@@ -101,9 +97,7 @@ describe("createDTOFile", () => {
 describe("createDTOModulePath", () => {
   test("creates path", () => {
     const dtoName = createCreateInputID(EXAMPLE_ENTITY_NAME).name;
-    expect(
-      createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dtoName, SRC_DIRECTORY)
-    ).toEqual(
+    expect(createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dtoName)).toEqual(
       `${SRC_DIRECTORY}/${EXAMPLE_ENTITY_NAME_DIRECTORY}/base/${dtoName}.ts`
     );
   });

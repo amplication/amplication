@@ -52,7 +52,7 @@ export async function createServerModules(
   });
 
   logger.info("Creating resources...");
-  const dtoModules = createDTOModules(dtos, serverDirectories.srcDirectory);
+  const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
 
   logger.info("Creating Auth module...");
@@ -65,12 +65,7 @@ export async function createServerModules(
   const swaggerModule = await createSwagger();
 
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(
-    userEntity,
-    dtos,
-    serverDirectories.scriptsDirectory,
-    serverDirectories.srcDirectory
-  );
+  const seedModule = await createSeedModule(userEntity);
 
   const createdModules = [
     ...resourcesModules,

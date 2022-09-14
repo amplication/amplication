@@ -259,7 +259,7 @@ async function createResolverModule(
     ]);
   }
 
-  const dtoNameToPath = getDTONameToPath(dtos, serverDirectories.srcDirectory);
+  const dtoNameToPath = getDTONameToPath(dtos);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)
