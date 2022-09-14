@@ -1,10 +1,9 @@
 import { namedTypes, builders } from "ast-types";
-import { Entity } from "@amplication/code-gen-types";
+import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
 import { readFile } from "../../../../../util/module";
 import {
   getClassDeclarationById,
   interpolate,
-  NamedClassDeclaration,
   removeTSClassDeclares,
 } from "../../../../../util/ast";
 

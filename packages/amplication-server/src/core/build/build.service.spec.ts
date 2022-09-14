@@ -178,7 +178,6 @@ const EXAMPLE_SERVICE_RESOURCE: Resource = {
   updatedAt: new Date(),
   name: 'exampleResourceName',
   description: 'example Resources Description',
-  color: '#20A4F3',
   gitRepositoryOverride: false
 };
 

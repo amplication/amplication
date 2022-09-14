@@ -2,7 +2,7 @@
  * Decorators for authorizing and injecting resources to a query / mutation
  */
 
-import { SetMetadata } from '@nestjs/common';
+import { CustomDecorator, SetMetadata } from '@nestjs/common';
 import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
 import {
   AUTHORIZE_CONTEXT,
@@ -21,7 +21,7 @@ import {
 export const AuthorizeContext = (
   parameterType: AuthorizableOriginParameter,
   parameterPath: string
-) =>
+): CustomDecorator<string> =>
   SetMetadata<string, AuthorizeContextParameters>(AUTHORIZE_CONTEXT, {
     parameterType,
     parameterPath

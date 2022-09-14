@@ -9,14 +9,16 @@ import {
   Inject
 } from '@nestjs/common';
 import { MorganInterceptor } from 'nest-morgan';
-import { AuthGuard } from '@nestjs/passport';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AuthService, AuthUser } from './auth.service';
 import { GithubAuthExceptionFilter } from 'src/filters/github-auth-exception.filter';
 import {
   AMPLICATION_LOGGER_PROVIDER,
   AmplicationLogger
 } from '@amplication/nest-logger-module';
+import { GitHubAuthGuard } from './github.guard';
+import { GitHubRequest } from './types';
+import { stringifyUrl } from 'query-string';
 
 @Controller('/')
 export class AuthController {
@@ -31,7 +33,7 @@ export class AuthController {
 
   @UseInterceptors(MorganInterceptor('combined'))
   @Get('/github')
-  @UseGuards(AuthGuard('github'))
+  @UseGuards(GitHubAuthGuard)
   async github() {
     return;
   }
@@ -39,14 +41,24 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor('combined'))
   @UseFilters(GithubAuthExceptionFilter)
   @Get('/github/callback')
-  @UseGuards(AuthGuard('github'))
-  async githubCallback(@Req() request: Request, @Res() response: Response) {
+  @UseGuards(GitHubAuthGuard)
+  async githubCallback(
+    @Req() request: GitHubRequest,
+    @Res() response: Response
+  ) {
     const user: AuthUser = request.user as AuthUser;
+    const isNew = request.isNew;
+
     this.logger.log({
       level: 'info',
       message: `receive login callback from github account_id=${user.account.id}`
     });
+
     const token = await this.authService.prepareToken(user);
-    response.redirect(301, `${this.host}?token=${token}`);
+    const url = stringifyUrl({
+      url: this.host,
+      query: { token, 'complete-signup': isNew ? '1' : '0' }
+    });
+    response.redirect(301, url);
   }
 }

@@ -1,9 +1,13 @@
 import { builders, namedTypes } from "ast-types";
-import { Entity, EnumDataType, types } from "@amplication/code-gen-types";
+import {
+  Entity,
+  EnumDataType,
+  types,
+  NamedClassDeclaration,
+} from "@amplication/code-gen-types";
 import { readFile } from "../../../../../util/module";
 import {
   interpolate,
-  NamedClassDeclaration,
   getClassDeclarationById,
   classProperty,
 } from "../../../../../util/ast";

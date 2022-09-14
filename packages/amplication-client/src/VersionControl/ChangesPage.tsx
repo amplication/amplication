@@ -1,5 +1,4 @@
 import { MultiStateToggle, Snackbar } from "@amplication/design-system";
-import { gql } from "@apollo/client";
 import React, { useCallback, useContext, useState } from "react";
 import { match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";
@@ -88,83 +87,3 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
 };
 
 export default ChangesPage;
-
-export const GET_COMMIT = gql`
-  query Commit($commitId: String!) {
-    commit(where: { id: $commitId }) {
-      id
-      message
-      createdAt
-      user {
-        id
-        account {
-          firstName
-          lastName
-        }
-      }
-      changes {
-        originId
-        action
-        originType
-        versionNumber
-        origin {
-          __typename
-          ... on Entity {
-            id
-            displayName
-            updatedAt
-            lockedByUser {
-              account {
-                firstName
-                lastName
-              }
-            }
-          }
-          ... on Block {
-            id
-            displayName
-            updatedAt
-          }
-        }
-      }
-      builds(orderBy: { createdAt: Desc }, take: 1) {
-        id
-        createdAt
-        resourceId
-        version
-        message
-        createdAt
-        commitId
-        actionId
-        action {
-          id
-          createdAt
-          steps {
-            id
-            name
-            createdAt
-            message
-            status
-            completedAt
-            logs {
-              id
-              createdAt
-              message
-              meta
-              level
-            }
-          }
-        }
-        createdBy {
-          id
-          account {
-            firstName
-            lastName
-          }
-        }
-        status
-        archiveURI
-      }
-    }
-  }
-`;

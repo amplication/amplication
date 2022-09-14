@@ -62,7 +62,7 @@ import { SERVICE_NAME } from './constants';
   ]
 })
 export class AppModule implements OnApplicationShutdown {
-  onApplicationShutdown(signal: string) {
+  onApplicationShutdown(signal: string): void {
     console.trace(`Application shut down (signal: ${signal})`);
   }
 }

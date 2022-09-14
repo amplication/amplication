@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useContext } from "react";
 // @ts-ignore
 import ReactCommandPalette from "react-command-palette";
-// @ts-ignore
 import { useQuery, gql } from "@apollo/client";
 import { History } from "history";
 
@@ -11,8 +10,12 @@ import { CircleBadge, Icon } from "@amplication/design-system";
 import * as models from "../models";
 import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
+import { resourceThemeMap } from "../util/resourceThemeMap";
 
-export type ResourceDescriptor = Pick<models.Resource, "id" | "name" | "color">;
+export type ResourceDescriptor = Pick<
+  models.Resource,
+  "id" | "name" | "resourceType"
+>;
 export type EntityDescriptor = Pick<models.Entity, "id" | "displayName">;
 export type ResourceDescriptorWithEntityDescriptors = ResourceDescriptor & {
   entities: EntityDescriptor[];
@@ -27,7 +30,7 @@ export interface Command {
   isCurrentResource: boolean;
   type: string;
   resourceName?: string;
-  resourceColor?: string;
+  resourceType?: models.EnumResourceType;
   highlight?: string;
   command(): void;
 }
@@ -45,8 +48,8 @@ export class NavigationCommand implements Command {
     public readonly type: string,
     public readonly isCurrentResource: boolean,
     public readonly showResourceData: boolean,
-    public readonly resourceName?: string,
-    public readonly resourceColor?: string
+    public readonly resourceType?: models.EnumResourceType,
+    public readonly resourceName?: string
   ) {}
   command() {
     this.history.push(this.link);
@@ -150,18 +153,24 @@ export default CommandPalette;
 function CommandPaletteItem(suggestion: Command) {
   // A suggestion object will be passed to your custom component for each command
   const {
-    resourceColor,
     resourceName,
     name,
     highlight,
     showResourceData,
     type,
+    resourceType,
   } = suggestion;
   return (
     <>
       {showResourceData && (
         <>
-          <CircleBadge name={resourceName || ""} color={resourceColor} />
+          <CircleBadge
+            name={resourceName || ""}
+            color={
+              resourceThemeMap[resourceType || models.EnumResourceType.Service]
+                .color
+            }
+          />
           <span className="command-palette__resource-name">{resourceName}</span>
         </>
       )}
@@ -225,8 +234,8 @@ export function getResourceCommands(
     TYPE_RESOURCE,
     isCurrentResource,
     true,
-    resource.name,
-    resource.color
+    resource.resourceType,
+    resource.name
   );
   const resourceCommands = RESOURCE_COMMANDS.map(
     (command) =>
@@ -237,8 +246,8 @@ export function getResourceCommands(
         command.type,
         isCurrentResource,
         true,
-        resource.name,
-        resource.color
+        resource.resourceType,
+        resource.name
       )
   );
   return [resourceCommand, ...resourceCommands];
@@ -259,8 +268,8 @@ export function getEntityCommands(
       TYPE_ENTITY,
       isCurrentResource,
       true,
-      resource.name,
-      resource.color
+      resource.resourceType,
+      resource.name
     ),
   ];
 }
@@ -299,7 +308,7 @@ const SEARCH = gql`
     resources(where: { project: { id: $projectId } }) {
       id
       name
-      color
+      resourceType
       entities {
         id
         displayName

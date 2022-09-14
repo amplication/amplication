@@ -164,7 +164,7 @@ const Login = () => {
             .
           </div>
 
-          {loading && <CircularProgress />}
+          {loading && <CircularProgress centerToParent />}
           <Snackbar open={Boolean(error)} message={errorMessage} />
         </Form>
       </Formik>

@@ -4,7 +4,12 @@ import { Link } from "react-router-dom";
 import { formatError } from "../util/error";
 import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Dialog, Snackbar, Tooltip } from "@amplication/design-system";
+import {
+  CircularProgress,
+  Dialog,
+  Snackbar,
+  Tooltip,
+} from "@amplication/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
@@ -45,7 +50,7 @@ const PendingChanges = ({ projectId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <h2>Pending changes</h2>
+      <h5 className={`${CLASS_NAME}__title`}>Pending changes</h5>
       <Commit projectId={projectId} noChanges={noChanges} />
       <Dialog
         className="discard-dialog"
@@ -62,7 +67,7 @@ const PendingChanges = ({ projectId }: Props) => {
 
       <div className={`${CLASS_NAME}__changes-wrapper`}>
         {pendingChangesDataLoading ? (
-          <span>Loading...</span>
+          <CircularProgress centerToParent />
         ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
           <div className={`${CLASS_NAME}__empty-state`}>
             <SvgThemeImage image={EnumImages.NoChanges} />
@@ -85,7 +90,6 @@ const PendingChanges = ({ projectId }: Props) => {
                   <PendingChange
                     key={change.originId}
                     change={change}
-                    resourceId={projectId}
                     linkToOrigin
                   />
                 ))}
@@ -106,7 +110,7 @@ const PendingChanges = ({ projectId }: Props) => {
             {pendingChanges.length}
           </span>
           <div className="spacer" />
-          <Tooltip aria-label={"Compare Changes"} direction="sw">
+          <Tooltip aria-label={"Compare Changes"} direction="nw">
             <Link
               to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
             >
@@ -117,7 +121,7 @@ const PendingChanges = ({ projectId }: Props) => {
               />
             </Link>
           </Tooltip>
-          <Tooltip aria-label={"Discard Pending Changes"} direction="sw">
+          <Tooltip aria-label={"Discard Pending Changes"} direction="nw">
             <Button
               buttonStyle={EnumButtonStyle.Text}
               onClick={handleToggleDiscardDialog}

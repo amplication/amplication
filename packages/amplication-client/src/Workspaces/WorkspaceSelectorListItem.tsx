@@ -2,7 +2,7 @@ import { CircleBadge, Icon } from "@amplication/design-system";
 import classNames from "classnames";
 import React, { useCallback } from "react";
 import * as models from "../models";
-import { COLOR } from "./WorkspaceSelector";
+import { WORKSPACE_COLOR } from "./WorkspaceSelector";
 
 const CLASS_NAME = "workspaces-selector__list__item";
 
@@ -28,14 +28,16 @@ function WorkspaceSelectorListItem({
       })}
       onClick={handleClick}
     >
-      <CircleBadge name={workspace.name} color={COLOR} />
+      <CircleBadge name={workspace.name} color={WORKSPACE_COLOR} />
       <div className={`${CLASS_NAME}__details`}>
         <span className={`${CLASS_NAME}__name`}>{workspace.name}</span>
         <span className={`${CLASS_NAME}__plan`}>
           {workspace.subscription?.subscriptionPlan || "Community"} Plan
         </span>
       </div>
-      {selected && <Icon icon="check" size="xsmall" className={`${CLASS_NAME}__icon`} />}
+      {selected && (
+        <Icon icon="check" size="xsmall" className={`${CLASS_NAME}__icon`} />
+      )}
     </div>
   );
 }
