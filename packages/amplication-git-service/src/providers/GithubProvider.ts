@@ -25,7 +25,7 @@ export class GithubProvider implements GitProvider {
         mode: '100644'
       })),
       base_tree: latestCommitSha
-    })
+    });
     return data.sha;
   }
 
@@ -37,13 +37,13 @@ export class GithubProvider implements GitProvider {
     latestCommitSha: string,
     fileTreeSha: string
   ): Promise<string> {
-    const {data} = await octokit.rest.git.createCommit({
+    const { data } = await octokit.rest.git.createCommit({
       owner,
       repo,
       message,
       tree: fileTreeSha,
       parents: [latestCommitSha]
-    })
+    });
     return data.sha;
   }
 
@@ -55,11 +55,11 @@ export class GithubProvider implements GitProvider {
     commitSha: string
   ): Promise<string> {
     const { data } = await octokit.rest.git.updateRef({
-        owner,
-        repo,
-        ref: `heads/${branch}`,
-        sha: commitSha
-      })
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+      sha: commitSha
+    });
     return data.url;
   }
 
@@ -70,26 +70,26 @@ export class GithubProvider implements GitProvider {
     headCommit: string
   ): Promise<string> {
     const fileTreeSha = await GithubProvider.createFilesTree(
-        this.octokit,
-        this.owner,
-        this.repo,
-        headCommit,
-        files
+      this.octokit,
+      this.owner,
+      this.repo,
+      headCommit,
+      files
     );
     const commitSha = await GithubProvider.createCommit(
-        this.octokit,
-        this.owner,
-        this.repo,
-        message,
-        headCommit,
-        fileTreeSha
+      this.octokit,
+      this.owner,
+      this.repo,
+      message,
+      headCommit,
+      fileTreeSha
     );
     await GithubProvider.updateRef(
-        this.octokit,
-        this.owner,
-        this.repo,
-        branch,
-        commitSha
+      this.octokit,
+      this.owner,
+      this.repo,
+      branch,
+      commitSha
     );
     return commitSha;
   }
@@ -101,16 +101,14 @@ export class GithubProvider implements GitProvider {
     base: string
   ): Promise<PullRequestMeta> {
     try {
-      const { data } = (
-        await this.octokit.rest.pulls.create({
-          owner: this.owner,
-          repo: this.repo,
-          title,
-          body,
-          base,
-          head: branch
-        })
-      );
+      const { data } = await this.octokit.rest.pulls.create({
+        owner: this.owner,
+        repo: this.repo,
+        title,
+        body,
+        base,
+        head: branch
+      });
       return {
         url: data.html_url,
         number: data.number
@@ -133,11 +131,11 @@ export class GithubProvider implements GitProvider {
   ): Promise<string> {
     try {
       const { data } = await this.octokit.rest.issues.createComment({
-          owner: this.owner,
-          repo: this.repo,
-          issue_number: pullRequestNumber,
-          body
-        })
+        owner: this.owner,
+        repo: this.repo,
+        issue_number: pullRequestNumber,
+        body
+      });
       return data.html_url;
     } catch (error) {
       switch (error.message) {
@@ -158,9 +156,9 @@ export class GithubProvider implements GitProvider {
         repo: this.repo,
         head: `${this.owner}:${branch}`,
         state: 'open'
-      })
+      });
 
-      const pullRequest = data.shift()
+      const pullRequest = data.shift();
       if (pullRequest) {
         return {
           url: pullRequest.html_url,
@@ -197,12 +195,12 @@ export class GithubProvider implements GitProvider {
   ): Promise<string> {
     try {
       const { data } = await this.octokit.rest.git.createRef({
-          owner: this.owner,
-          repo: this.repo,
-          ref: `refs/heads/${branch}`,
-          sha: headCommit
-        })
-      return data.ref
+        owner: this.owner,
+        repo: this.repo,
+        ref: `refs/heads/${branch}`,
+        sha: headCommit
+      });
+      return data.ref;
     } catch (error) {
       switch (error.message) {
         case 'Reference already exists':
@@ -225,7 +223,8 @@ export class GithubProvider implements GitProvider {
       switch (error.status) {
         case 422:
           return false;
-        default: //422 - Validation failed
+        default:
+          //422 - Validation failed
           throw error;
       }
     }
@@ -252,10 +251,10 @@ export class GithubProvider implements GitProvider {
   }
 
   public async getDefaultBranchName(): Promise<string> {
-    const {data} = await this.octokit.rest.repos.get({
+    const { data } = await this.octokit.rest.repos.get({
       owner: this.owner,
       repo: this.repo
-    })
+    });
     return data.default_branch;
   }
 
