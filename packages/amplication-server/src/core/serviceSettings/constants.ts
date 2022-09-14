@@ -1,5 +1,5 @@
 import { ServiceSettings } from './dto';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 import { BlockValues, BlockValuesExtended } from '../block/types';
 

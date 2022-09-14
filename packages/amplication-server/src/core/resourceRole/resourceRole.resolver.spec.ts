@@ -5,14 +5,14 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { ResourceRoleService } from './resourceRole.service';
 import { ResourceRoleResolver } from './resourceRole.resolver';
-import { ResourceRole } from 'src/models';
+import { ResourceRole } from '../../models';
 
 const EXAMPLE_RESOURCE_ROLE_ID = 'EXAMPLE_APP_ROLE_ID';
 const EXAMPLE_NAME = 'EXAMPLE_NAME';

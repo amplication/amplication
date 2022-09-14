@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionsService } from './permissions.service';
 import { PrismaService } from '@amplication/prisma-db';
-import { User, Workspace } from 'src/models';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { User, Workspace } from '../../models';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
 
 const UNEXPECTED_ORIGIN_TYPE = -1;
 const UNEXPECTED_ORIGIN_ID = 'unexpectedOriginId';

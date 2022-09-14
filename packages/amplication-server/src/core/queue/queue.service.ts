@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientKafka } from '@nestjs/microservices';
-import { GENERATE_PULL_REQUEST_TOPIC } from 'src/constants';
+import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
 import assert from 'assert';
 import { SendPullRequestResponse } from '../build/dto/sendPullRequestResponse';
 import { SendPullRequestArgs } from '../build/dto/sendPullRequest';

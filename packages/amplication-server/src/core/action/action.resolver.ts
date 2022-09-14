@@ -1,13 +1,13 @@
 import { UseGuards, UseFilters } from '@nestjs/common';
 import { Args, Resolver, Query, Parent, ResolveField } from '@nestjs/graphql';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { Action } from './dto/Action';
 import { ActionStep } from './dto/ActionStep';
 import { FindOneActionArgs } from './dto/FindOneActionArgs';
 import { ActionService } from './action.service';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
 
 @Resolver(() => Action)
 @UseFilters(GqlResolverExceptionsFilter)

@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { WhereUniqueInput } from 'src/dto/';
+import { WhereUniqueInput } from '../../../dto';
 
 @InputType({
   isAbstract: true
