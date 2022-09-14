@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@amplication/prisma-db';
-import { User } from 'src/models';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { User } from '../../models';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
 
 @Injectable()
 export class PermissionsService {

@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PaddleService } from './paddle.service';
 import { SubscriptionService } from './subscription.service';
 import { PermissionsModule } from '../permissions/permissions.module';
-import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
+import { GoogleSecretsManagerModule } from '../../services/googleSecretsManager.module';
 import { PaddleController } from './paddle.controller';
 @Module({
   imports: [

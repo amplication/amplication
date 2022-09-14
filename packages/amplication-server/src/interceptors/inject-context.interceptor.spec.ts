@@ -6,7 +6,7 @@ import {
   INJECT_CONTEXT_VALUE
 } from './inject-context.interceptor';
 import { Reflector } from '@nestjs/core';
-import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
+import { InjectableOriginParameter } from '../enums/InjectableOriginParameter';
 
 const EXAMPLE_HANDLER = () => null;
 const EXAMPLE_INJECT_CONTEXT_VALUE_PARAMETERS: InjectContextValueParameters = {

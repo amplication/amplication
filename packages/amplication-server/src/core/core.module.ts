@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
+import { ExceptionFiltersModule } from '../filters/exceptionFilters.module';
 import { AccountModule } from './account/account.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { ResourceModule } from './resource/resource.module';

@@ -8,7 +8,6 @@
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

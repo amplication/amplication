@@ -3,9 +3,9 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { get } from 'lodash';
-import { User } from 'src/models';
-import { PermissionsService } from 'src/core/permissions/permissions.service';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { User } from '../models';
+import { PermissionsService } from '../core/permissions/permissions.service';
+import { AuthorizableOriginParameter } from '../enums/AuthorizableOriginParameter';
 
 export const AUTHORIZE_CONTEXT = 'authorizeContext';
 

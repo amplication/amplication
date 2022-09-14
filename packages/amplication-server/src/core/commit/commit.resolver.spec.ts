@@ -4,13 +4,13 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { INestApplication } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { CommitService } from './commit.service';
-import { Commit, User } from 'src/models';
+import { Commit, User } from '../../models';
 import { UserService } from '../user/user.service';
 import { BuildService } from '../build/build.service';
 

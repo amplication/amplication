@@ -8,7 +8,6 @@
     "target": "es2017",
     "lib": ["es2020", "dom"],
     "sourceMap": true,
-    "baseUrl": "./src",
     "outDir": "dist",
     "incremental": true,
     "skipLibCheck": true,
