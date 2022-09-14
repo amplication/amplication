@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FindOneArgs } from '../../dto';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import { BlockService } from '../block/block.service';
 import { BlockTypeService } from '../block/blockType.service';
 import { CreatePluginOrderArgs } from './dto/CreatePluginOrderArgs';
