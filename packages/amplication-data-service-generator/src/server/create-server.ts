@@ -62,10 +62,7 @@ export async function createServerModules(
   const appModule = await createAppModule(resourcesModules, staticModules);
 
   logger.info("Creating swagger...");
-  const swaggerModule = await createSwagger(
-    appInfo,
-    serverDirectories.srcDirectory
-  );
+  const swaggerModule = await createSwagger();
 
   logger.info("Creating seed script...");
   const seedModule = await createSeedModule(
