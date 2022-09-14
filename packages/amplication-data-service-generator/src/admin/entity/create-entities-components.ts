@@ -15,7 +15,6 @@ export async function createEntitiesComponents(
         async (entity): Promise<[string, EntityComponents]> => {
           const components = await createEntityComponents(
             entity,
-            dtos,
             entityToDirectory,
             entityToTitleComponent,
             entityNameToEntity
