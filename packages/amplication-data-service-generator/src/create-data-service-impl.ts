@@ -4,13 +4,13 @@ import { createDTOs } from "./server/resource/create-dtos";
 import {
   Entity,
   EntityField,
-  Role,
-  AppInfo,
   Module,
   EnumDataType,
   LookupResolvedProperties,
   types,
-  Plugin,
+  serverDirectories,
+  clientDirectories,
+  DSGResourceData,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -19,17 +19,25 @@ import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
 import registerPlugins from "./register-plugin";
+import { get } from "lodash";
+import { SERVER_BASE_DIRECTORY } from "./server/constants";
+import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
 
 export async function createDataServiceImpl(
-  entities: Entity[],
-  roles: Role[],
-  appInfo: AppInfo,
-  logger: winston.Logger,
-  resourcePlugins: Plugin[] = []
+  dSGResourceData: DSGResourceData,
+  logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating application...");
+  const {
+    plugins: resourcePlugins,
+    entities,
+    roles,
+    resourceInfo: appInfo,
+  } = dSGResourceData;
   const timer = logger.startTimer();
-
+  if (!entities || !roles || !appInfo) {
+    throw new Error("Missing required data");
+  }
   // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
     entities
@@ -46,6 +54,12 @@ export async function createDataServiceImpl(
   context.roles = roles;
   context.entities = normalizedEntities;
   const plugins = await registerPlugins(resourcePlugins);
+  context.serverDirectories = dynamicServerPathCreator(
+    get(appInfo, "settings.serverSettings.serverPath", "")
+  );
+  context.clientDirectories = dynamicClientPathCreator(
+    get(appInfo, "settings.adminUISettings.adminUIPath", "")
+  );
 
   context.plugins = plugins;
 
@@ -78,6 +92,32 @@ export async function createDataServiceImpl(
     ...module,
     path: normalize(module.path),
   }));
+}
+function validatePath(path: string): string | null {
+  return path.trim() || null;
+}
+
+function dynamicServerPathCreator(serverPath: string): serverDirectories {
+  const baseDirectory = validatePath(serverPath) || SERVER_BASE_DIRECTORY;
+  const srcDirectory = `${baseDirectory}/src`;
+  return {
+    baseDirectory: baseDirectory,
+    srcDirectory: srcDirectory,
+    scriptsDirectory: `${baseDirectory}/scripts`,
+    authDirectory: `${baseDirectory}/auth`,
+  };
+}
+
+function dynamicClientPathCreator(clientPath: string): clientDirectories {
+  const baseDirectory = validatePath(clientPath) || CLIENT_BASE_DIRECTORY;
+  const srcDirectory = `${baseDirectory}/src`;
+  return {
+    baseDirectory: baseDirectory,
+    srcDirectory: srcDirectory,
+    publicDirectory: `${baseDirectory}/public`,
+    apiDirectory: `${srcDirectory}/api`,
+    authDirectory: `${srcDirectory}/auth-provider`,
+  };
 }
 
 function prepareEntityPluralName(entities: Entity[]): Entity[] {

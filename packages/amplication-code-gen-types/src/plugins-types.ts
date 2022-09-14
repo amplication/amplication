@@ -1,12 +1,18 @@
-import { AppInfo, DTOs, Entity, Module, Role } from "./code-gen-types";
-import winston from "winston";
 import {
-  CreateAdminModulesParams,
-  CreateAuthModulesParams,
-  CreateControllerModulesParams,
-  CreateServiceModulesParams,
-} from "./eventsParams";
-import { EventParams } from "./plugin-generic";
+  AppInfo,
+  clientDirectories,
+  DTOs,
+  Entity,
+  Module,
+  Role,
+  serverDirectories,
+} from "./code-gen-types";
+import winston from "winston";
+import { Events } from "./plugin-events";
+
+export interface EventParams {
+  after: Module[];
+}
 
 export interface PrintResultType {
   code: string;
@@ -27,66 +33,31 @@ export interface DsgContext {
   plugins: PluginMap;
   logger: winston.Logger;
   utils: ContextUtil;
+  clientDirectories: clientDirectories;
+  serverDirectories: serverDirectories;
 }
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
 
 export type PluginMap = {
   [K in EventNames]?: {
-    before?: (<T>(context: DsgContext, params: EventParams | Module[]) => T)[];
-    after?: (<T>(context: DsgContext, modules: EventParams | Module[]) => T)[];
+    before?: (<T>(context: DsgContext, params: Module[] | EventParams) => T)[];
+    after?: (<T>(context: DsgContext, modules: Module[] | EventParams) => T)[];
   };
 };
 
 export enum EventNames {
-  CreateServiceModules = "createServiceModules",
-  CreateControllerModules = "createControllerModules",
+  CreateEntityController = "CreateEntityController",
+  CreateEntityControllerBase = "CreateEntityControllerBase",
   CreateAuthModules = "createAuthModules",
   CreateAdminModules = "createAdminModules",
+  CreateServerDotEnv = "CreateServerDotEnv",
+  CreateEntityService = "CreateEntityService",
+  CreateEntityServiceBase = "CreateEntityServiceBase",
+  CreateServerDockerCompose = "CreateServerDockerCompose",
+  CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
+  CreatePrismaSchema = "CreatePrismaSchema",
 }
-
-export type Events = {
-  [EventNames.CreateServiceModules]?: {
-    before?: (
-      dsgContext: DsgContext,
-      eventParams: CreateServiceModulesParams["before"]
-    ) => CreateServiceModulesParams["before"];
-    after?: (
-      dsgContext: DsgContext,
-      eventParams: CreateServiceModulesParams["after"]
-    ) => CreateServiceModulesParams["after"];
-  };
-  [EventNames.CreateControllerModules]?: {
-    before?: (
-      dsgContext: DsgContext,
-      eventParams: CreateControllerModulesParams["before"]
-    ) => CreateControllerModulesParams["before"];
-    after?: (
-      dsgContext: DsgContext,
-      eventParams: CreateControllerModulesParams["after"]
-    ) => CreateControllerModulesParams["after"];
-  };
-  [EventNames.CreateAuthModules]?: {
-    before?: (
-      dsgContext: DsgContext,
-      eventParams: CreateAuthModulesParams["before"]
-    ) => CreateAuthModulesParams["before"];
-    after?: (
-      dsgContext: DsgContext,
-      eventParams: CreateAuthModulesParams["after"]
-    ) => void;
-  };
-  [EventNames.CreateAdminModules]?: {
-    before?: (
-      dsgContext: DsgContext,
-      eventParams: CreateAdminModulesParams["before"]
-    ) => CreateAdminModulesParams["before"];
-    after?: (
-      dsgContext: DsgContext,
-      eventParams: CreateAdminModulesParams["after"]
-    ) => void;
-  };
-};
 
 export interface AmplicationPlugin {
   init?: (name: string, version: string) => void;

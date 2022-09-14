@@ -3,65 +3,131 @@ import {
   GET_PLUGIN_INSTALLATIONS,
   CREATE_PLUGIN_INSTALLATION,
   UPDATE_PLUGIN_INSTALLATION,
+  GET_PLUGIN_ORDER,
+  UPDATE_PLUGIN_ORDER,
 } from "../queries/pluginsQueries";
 import * as models from "../../models";
 import { keyBy } from "lodash";
-import { useContext, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../context/appContext";
 
 export type Plugin = {
   id: string;
   name: string;
   description: string;
-  logo: string;
+  repo: string;
+  npm: string;
+  icon: string;
+  github: string;
+  website: string;
+  category: string;
+  type: string;
 };
+
+export type OnPluginDropped = (
+  dragItem: models.PluginInstallation,
+  hoverItem: models.PluginInstallation
+) => void;
 
 const PLUGINS: Plugin[] = [
   {
-    id: "@amplication/plugin-auth-jwt",
+    id: "auth-jwt",
     description:
       "A Passport strategy for authenticating with a JSON Web Token (JWT).",
-    logo: "logo",
+    icon: "",
     name: "Passport JWT Authentication",
+    repo: "test",
+    npm: "@amplication/plugin-auth-jwt",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-auth-basic",
+    id: "auth-basic",
     description:
       "A Passport strategy for authenticating using the standard basic HTTP scheme.",
-    logo: "logo",
+    icon: "",
     name: "Passport Basic Authentication",
+    repo: "test",
+    npm: "test",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-monorepo-nx",
+    id: "monorepo-nx",
     description:
       "Add the required configurations and files to use nx to manage your monorepo",
-    logo: "logo",
+    icon: "",
     name: "NX monorepo",
+    repo: "test",
+    npm: "@amplication/plugin-monorepo-nx",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-db-postgres",
+    id: "db-postgres",
     description:
       "Connects your service to a PostgreSQL DB, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "PostgreSQL DB",
+    repo: "test",
+    npm: "@amplication/plugin-db-postgres",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-db-mongo",
+    id: "db-mongo",
     description:
       "Connects your service to a Mongo DB, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "Mongo DB",
+    repo: "test",
+    npm: "@amplication/plugin-db-mongo",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
   {
-    id: "@amplication/plugin-db-mysql",
+    id: "db-mysql",
     description:
       "Connects your service to a mySQL, and adds the required docker file",
-    logo: "logo",
+    icon: "",
     name: "MySQL DB",
+    repo: "test",
+    npm: "@amplication/plugin-db-mysql",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
   },
 ];
 
+const setPluginOrderMap = (pluginOrder: models.PluginOrderItem[]) => {
+  return pluginOrder.reduce(
+    (
+      pluginOrderObj: { [key: string]: number },
+      plugin: models.PluginOrderItem
+    ) => {
+      pluginOrderObj[plugin.pluginId] = plugin.order;
+
+      return pluginOrderObj;
+    },
+    {}
+  );
+};
+
 const usePlugins = (resourceId: string) => {
+  const [pluginOrderObj, setPluginOrderObj] = useState<{
+    [key: string]: number;
+  }>();
   const { addBlock } = useContext(AppContext);
 
   const {
@@ -76,9 +142,61 @@ const usePlugins = (resourceId: string) => {
     },
   });
 
+  const {
+    data: pluginOrder,
+    loading: loadingPluginOrder,
+    error: pluginOrderError,
+  } = useQuery<{ pluginOrder: models.PluginOrder }>(GET_PLUGIN_ORDER, {
+    variables: {
+      resourceId: resourceId,
+    },
+  });
+
+  useEffect(() => {
+    if (!pluginOrder || loadingPluginOrder) return;
+
+    const setPluginOrder = setPluginOrderMap(pluginOrder?.pluginOrder.order);
+    setPluginOrderObj(setPluginOrder);
+  }, [pluginOrder, loadingPluginOrder]);
+
+  useEffect(() => {
+    if (pluginOrderError) {
+      setPluginOrderObj({});
+    }
+  }, [pluginOrderError]);
+
   const pluginCatalog = useMemo(() => {
     return keyBy(PLUGINS, (plugin) => plugin.id);
   }, []);
+
+  const sortedPluginInstallation = useMemo(() => {
+    if (!pluginOrder || !pluginInstallations) return undefined;
+
+    const pluginOrderArr = [...pluginOrder?.pluginOrder.order];
+
+    return (pluginOrderArr.map((plugin: models.PluginOrderItem) => {
+      return pluginInstallations?.PluginInstallations.find(
+        (installationPlugin: models.PluginInstallation) =>
+          installationPlugin.pluginId === plugin.pluginId
+      );
+    }) as unknown) as models.PluginInstallation[];
+  }, [pluginInstallations, pluginOrder]);
+
+  const [updatePluginOrder, { error: UpdatePluginOrderError }] = useMutation<{
+    setPluginOrder: models.PluginOrder;
+  }>(UPDATE_PLUGIN_ORDER, {
+    onCompleted: (data) => {
+      addBlock(data.setPluginOrder.id);
+    },
+    refetchQueries: [
+      {
+        query: GET_PLUGIN_ORDER,
+        variables: {
+          resourceId: resourceId,
+        },
+      },
+    ],
+  });
 
   const [updatePluginInstallation, { error: updateError }] = useMutation<{
     updatePluginInstallation: models.PluginInstallation;
@@ -89,6 +207,12 @@ const usePlugins = (resourceId: string) => {
     refetchQueries: [
       {
         query: GET_PLUGIN_INSTALLATIONS,
+        variables: {
+          resourceId: resourceId,
+        },
+      },
+      {
+        query: GET_PLUGIN_ORDER,
         variables: {
           resourceId: resourceId,
         },
@@ -109,11 +233,27 @@ const usePlugins = (resourceId: string) => {
           resourceId: resourceId,
         },
       },
+      {
+        query: GET_PLUGIN_ORDER,
+        variables: {
+          resourceId: resourceId,
+        },
+      },
     ],
   });
 
+  const onPluginDropped = useCallback(
+    (
+      dragPlugin: models.PluginInstallation,
+      hoverPlugin: models.PluginInstallation
+    ) => {
+      console.log(dragPlugin, hoverPlugin);
+    },
+    []
+  );
+
   return {
-    pluginInstallations,
+    pluginInstallations: sortedPluginInstallation,
     loadingPluginInstallations,
     errorPluginInstallations,
     updatePluginInstallation,
@@ -121,6 +261,10 @@ const usePlugins = (resourceId: string) => {
     createPluginInstallation,
     createError,
     pluginCatalog,
+    onPluginDropped,
+    pluginOrderObj,
+    updatePluginOrder,
+    UpdatePluginOrderError,
   };
 };
 

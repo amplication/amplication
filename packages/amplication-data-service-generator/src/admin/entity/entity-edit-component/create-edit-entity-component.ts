@@ -6,7 +6,6 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
-  DTOs,
 } from "@amplication/code-gen-types";
 import {
   addImports,
@@ -24,6 +23,7 @@ import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
+import DsgContext from "../../../dsg-context";
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
   [REACT_ADMIN_MODULE]: REACT_ADMIN_COMPONENTS_ID,
@@ -32,13 +32,14 @@ const template = path.resolve(__dirname, "entity-edit-component.template.tsx");
 
 export async function createEditEntityComponent(
   entity: Entity,
-  dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
   const name = `${entity.name}Edit`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const dto = dtos[entity.name].updateInput;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
+  const dto = DTOs[entity.name].updateInput;
   const dtoProperties = getNamedProperties(dto);
   const fieldsByName = Object.fromEntries(
     entity.fields.map((field) => [field.name, field])

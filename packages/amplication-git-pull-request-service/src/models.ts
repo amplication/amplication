@@ -188,7 +188,7 @@ export type BlockWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -613,6 +613,7 @@ export enum EnumBlockType {
   FlowApi = 'FlowApi',
   Layout = 'Layout',
   PluginInstallation = 'PluginInstallation',
+  PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
@@ -880,6 +881,7 @@ export type Mutation = {
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
+  setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
   updateAccount: Account;
   updateEntity?: Maybe<Entity>;
@@ -1070,6 +1072,11 @@ export type MutationSetCurrentWorkspaceArgs = {
   data: WhereUniqueInput;
 };
 
+export type MutationSetPluginOrderArgs = {
+  data: PluginSetOrderInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
@@ -1174,7 +1181,7 @@ export type PluginInstallation = IBlock & {
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']>;
   lockedByUserId?: Maybe<Scalars['String']>;
-  order: Scalars['Int'];
+  npm: Scalars['String'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   pluginId: Scalars['String'];
@@ -1187,6 +1194,7 @@ export type PluginInstallationCreateInput = {
   displayName: Scalars['String'];
   enabled: Scalars['Boolean'];
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  npm: Scalars['String'];
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
   pluginId: Scalars['String'];
@@ -1214,8 +1222,35 @@ export type PluginInstallationWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type PluginOrder = IBlock & {
+  __typename?: 'PluginOrder';
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime'];
+  description?: Maybe<Scalars['String']>;
+  displayName: Scalars['String'];
+  id: Scalars['String'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']>;
+  lockedByUserId?: Maybe<Scalars['String']>;
+  order: Array<PluginOrderItem>;
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  updatedAt: Scalars['DateTime'];
+  versionNumber: Scalars['Float'];
+};
+
+export type PluginOrderItem = {
+  __typename?: 'PluginOrderItem';
+  order: Scalars['Int'];
+  pluginId: Scalars['String'];
+};
+
+export type PluginSetOrderInput = {
+  order: Scalars['Int'];
 };
 
 export type Project = {
@@ -1294,13 +1329,15 @@ export type Query = {
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
   me: User;
+  messageBrokerConnectedServices: Array<Resource>;
   pendingChanges: Array<PendingChange>;
   PluginInstallation?: Maybe<PluginInstallation>;
   PluginInstallations: Array<PluginInstallation>;
+  pluginOrder: PluginOrder;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
   projects: Array<Project>;
-  remoteGitRepositories: Array<RemoteGitRepository>;
+  remoteGitRepositories: RemoteGitRepos;
   resource?: Maybe<Resource>;
   resourceRole?: Maybe<ResourceRole>;
   resourceRoles: Array<ResourceRole>;
@@ -1375,6 +1412,10 @@ export type QueryGitOrganizationsArgs = {
   where?: InputMaybe<GitOrganizationWhereInput>;
 };
 
+export type QueryMessageBrokerConnectedServicesArgs = {
+  where: WhereUniqueInput;
+};
+
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
@@ -1388,6 +1429,10 @@ export type QueryPluginInstallationsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<PluginInstallationWhereInput>;
+};
+
+export type QueryPluginOrderArgs = {
+  where: WhereUniqueInput;
 };
 
 export type QueryProjectArgs = {
@@ -1467,9 +1512,19 @@ export enum QueryMode {
   Insensitive = 'Insensitive',
 }
 
+export type RemoteGitRepos = {
+  __typename?: 'RemoteGitRepos';
+  currentPage: Scalars['Float'];
+  pageSize: Scalars['Float'];
+  repos: Array<RemoteGitRepository>;
+  totalRepos: Scalars['Float'];
+};
+
 export type RemoteGitRepositoriesWhereUniqueInput = {
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
+  limit: Scalars['Float'];
+  page: Scalars['Float'];
 };
 
 export type RemoteGitRepository = {
@@ -1614,7 +1669,7 @@ export type ResourceWhereInput = {
   description?: InputMaybe<StringFilter>;
   id?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<StringFilter>;
-  project?: InputMaybe<WhereUniqueInput>;
+  project?: InputMaybe<ProjectWhereInput>;
   projectId?: InputMaybe<Scalars['String']>;
   resourceType?: InputMaybe<EnumResourceTypeFilter>;
   updatedAt?: InputMaybe<DateTimeFilter>;
@@ -1731,7 +1786,7 @@ export type ServiceTopicsWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
@@ -1827,7 +1882,7 @@ export type TopicWhereInput = {
   displayName?: InputMaybe<StringFilter>;
   id?: InputMaybe<StringFilter>;
   parentBlock?: InputMaybe<WhereUniqueInput>;
-  resource?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 

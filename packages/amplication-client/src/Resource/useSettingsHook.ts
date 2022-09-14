@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 export interface SettingsHookParams {
   trackEvent: (event: { eventName: string; [key: string]: any }) => void;
-  resourceId: string;
+  resourceId: string | undefined;
   updateResourceSettings: any;
 }
 

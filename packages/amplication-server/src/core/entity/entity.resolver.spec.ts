@@ -4,7 +4,7 @@ import {
   ApolloServerTestClient,
   createTestClient
 } from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
 import { EntityResolver } from './entity.resolver';
 import { EntityService } from './entity.service';
@@ -13,17 +13,17 @@ import { UserService } from '../user/user.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import { Entity } from 'src/models/Entity';
-import { User } from 'src/models/User';
-import { EntityField } from 'src/models/EntityField';
+import { Entity } from '../../models/Entity';
+import { User } from '../../models/User';
+import { EntityField } from '../../models/EntityField';
 import {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType
 } from '@amplication/prisma-db';
-import { EntityPermission } from 'src/models/EntityPermission';
-import { EntityVersion } from 'src/models/EntityVersion';
-import { Commit, EntityPermissionField } from 'src/models';
+import { EntityPermission } from '../../models/EntityPermission';
+import { EntityVersion } from '../../models/EntityVersion';
+import { Commit, EntityPermissionField } from '../../models';
 import { EntityVersionResolver } from './entityVersion.resolver';
 
 const EXAMPLE_ID = 'exampleId';

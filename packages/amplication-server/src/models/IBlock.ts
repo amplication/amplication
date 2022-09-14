@@ -1,6 +1,6 @@
 import { InterfaceType, Field } from '@nestjs/graphql';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { Block } from 'src/models';
+import { EnumBlockType } from '../enums/EnumBlockType';
+import { Block } from './Block';
 import { BlockInputOutput } from './BlockInputOutput';
 
 @InterfaceType()

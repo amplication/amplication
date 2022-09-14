@@ -467,6 +467,7 @@ enum EnumBlockType {
   EntityPage
   Document
   PluginInstallation
+  PluginOrder
 }
 
 enum ActionStepStatus {

@@ -7,21 +7,15 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
+  CreatePrismaSchemaParams,
+  EventNames,
+  Module,
 } from "@amplication/code-gen-types";
 import { countBy } from "lodash";
 
 import { getEnumFields } from "../../util/entity";
-
-export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
-  "client",
-  "prisma-client-js"
-);
-
-export const DATA_SOURCE = {
-  name: "postgres",
-  provider: PrismaSchemaDSL.DataSourceProvider.PostgreSQL,
-  url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
-};
+import pluginWrapper from "../../plugin-wrapper";
+import DsgContext from "../../dsg-context";
 
 export const CUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.CUID
@@ -31,7 +25,23 @@ export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.NOW
 );
 
-export async function createPrismaSchema(entities: Entity[]): Promise<string> {
+export async function createPrismaSchema(
+  eventParams: CreatePrismaSchemaParams["before"]
+): Promise<Module[]> {
+  return await pluginWrapper(
+    createPrismaSchemaInternal,
+    EventNames.CreatePrismaSchema,
+    eventParams
+  );
+}
+
+export async function createPrismaSchemaInternal({
+  entities,
+  dataSource,
+  clientGenerator,
+}: CreatePrismaSchemaParams["before"]): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const MODULE_PATH = `${serverDirectories.baseDirectory}/prisma/schema.prisma`;
   const fieldNamesCount = countBy(
     entities.flatMap((entity) => entity.fields),
     "name"
@@ -45,11 +55,16 @@ export async function createPrismaSchema(entities: Entity[]): Promise<string> {
     return enumFields.map((field) => createPrismaEnum(field, entity));
   });
 
-  const schema = PrismaSchemaDSL.createSchema(models, enums, DATA_SOURCE, [
-    CLIENT_GENERATOR,
+  const schema = PrismaSchemaDSL.createSchema(models, enums, dataSource, [
+    clientGenerator,
   ]);
 
-  return PrismaSchemaDSL.print(schema);
+  return [
+    {
+      path: MODULE_PATH,
+      code: await PrismaSchemaDSL.print(schema),
+    },
+  ];
 }
 
 export function createPrismaEnum(
@@ -317,8 +332,8 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
-          true,
+          PrismaSchemaDSL.ScalarType.Json,
+          false,
           true
         ),
       ];

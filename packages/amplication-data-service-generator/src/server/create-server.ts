@@ -9,8 +9,7 @@ import {
   DTOs,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
-import { formatCode } from "../util/module";
-import { updatePackageJSONs } from "../update-package-jsons";
+import { formatCode, formatJson } from "../util/module";
 import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
@@ -19,23 +18,14 @@ import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
 import { createSeedModule } from "./seed/create-seed";
-import { BASE_DIRECTORY } from "./constants";
+import DsgContext from "../dsg-context";
+import { ENV_VARIABLES } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
+import { createPackageJson } from "./package-json/create-package-json";
+import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
+import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
-
-const validatePath = (serverPath: string) => serverPath.trim() || null;
-
-const dynamicPathCreator = (serverPath: string) => {
-  const baseDirectory = validatePath(serverPath) || BASE_DIRECTORY;
-  const srcDirectory = `${baseDirectory}/src`;
-  return {
-    BASE: baseDirectory,
-    SRC: srcDirectory,
-    SCRIPTS: `${baseDirectory}/scripts`,
-    AUTH: `${baseDirectory}/auth`,
-  };
-};
 
 export async function createServerModules(
   entities: Entity[],
@@ -45,56 +35,37 @@ export async function createServerModules(
   userEntity: Entity,
   logger: winston.Logger
 ): Promise<Module[]> {
-  const directoryManager = dynamicPathCreator(
-    appInfo?.settings?.serverSettings?.serverPath || ""
-  );
+  const { serverDirectories } = DsgContext.getInstance;
 
-  logger.info(`Server path: ${directoryManager.BASE}`);
+  logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   logger.info("Creating server...");
   logger.info("Copying static modules...");
-  const rawStaticModules = await readStaticModules(
+  const staticModules = await readStaticModules(
     STATIC_DIRECTORY,
-    directoryManager.BASE
+    serverDirectories.baseDirectory
   );
-  const staticModules = updatePackageJSONs(
-    rawStaticModules,
-    directoryManager.BASE,
-    {
+  const packageJsonModule = await createPackageJson({
+    update: {
       name: `@${paramCase(appInfo.name)}/server`,
       version: appInfo.version,
-    }
-  );
+    },
+  });
 
   logger.info("Creating resources...");
-  const dtoModules = createDTOModules(dtos, directoryManager.SRC);
-  const resourcesModules = await createResourcesModules(
-    appInfo,
-    entities,
-    dtos,
-    logger,
-    directoryManager.SRC
-  );
+  const dtoModules = createDTOModules(dtos);
+  const resourcesModules = await createResourcesModules(entities, logger);
 
   logger.info("Creating Auth module...");
-  const authModules = await createAuthModules({ srcDir: directoryManager.SRC });
+  const authModules = await createAuthModules();
 
   logger.info("Creating application module...");
-  const appModule = await createAppModule(
-    resourcesModules,
-    staticModules,
-    directoryManager.SRC
-  );
+  const appModule = await createAppModule(resourcesModules, staticModules);
 
   logger.info("Creating swagger...");
-  const swaggerModule = await createSwagger(appInfo, directoryManager.SRC);
+  const swaggerModule = await createSwagger();
 
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(
-    userEntity,
-    dtos,
-    directoryManager.SCRIPTS,
-    directoryManager.SRC
-  );
+  const seedModule = await createSeedModule(userEntity);
 
   const createdModules = [
     ...resourcesModules,
@@ -110,26 +81,31 @@ export async function createServerModules(
     ...module,
     code: formatCode(module.code),
   }));
+  const formattedJsonFiles = [...packageJsonModule].map((module) => ({
+    ...module,
+    code: formatJson(module.code),
+  }));
 
   logger.info("Creating Prisma schema...");
-  const prismaSchemaModule = await createPrismaSchemaModule(
-    entities,
-    directoryManager.BASE
-  );
+  const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
   logger.info("Creating access control grants...");
-  const grantsModule = createGrantsModule(
-    entities,
-    roles,
-    directoryManager.SRC
-  );
-  const dotEnvModule = await createDotEnvModule(appInfo, directoryManager.BASE);
+  const grantsModule = createGrantsModule(entities, roles);
+  const dotEnvModule = await createDotEnvModule({
+    envVariables: ENV_VARIABLES,
+  });
+
+  const dockerComposeFile = await createDockerComposeFile();
+  const dockerComposeDBFile = await createDockerComposeDBFile();
 
   return [
     ...staticModules,
+    ...formattedJsonFiles,
     ...formattedModules,
-    prismaSchemaModule,
+    ...prismaSchemaModule,
     grantsModule,
-    dotEnvModule,
+    ...dotEnvModule,
+    ...dockerComposeFile,
+    ...dockerComposeDBFile,
   ];
 }

@@ -1,6 +1,7 @@
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { namedTypes } from "ast-types";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 export {
   EnumEntityPermissionType,
@@ -15,29 +16,7 @@ export type WorkerResult = {
   error?: any;
 };
 
-export type WorkerParam = {
-  entities: Entity[];
-  roles: Role[];
-  appInfo: AppInfo;
-  plugins: Plugin[];
-};
-
-export type ServiceSettings = Omit<
-  models.ServiceSettings,
-  | "__typename"
-  | "id"
-  | "createdAt"
-  | "updatedAt"
-  | "parentBlock"
-  | "displayName"
-  | "description"
-  | "blockType"
-  | "versionNumber"
-  | "inputParameters"
-  | "outputParameters"
-  | "lockedByUserId"
-  | "lockedAt"
->;
+export type ServiceSettings = BlockOmittedFields<models.ServiceSettings>;
 
 export type AppInfo = {
   name: string;
@@ -188,8 +167,10 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
-export type Plugin = Omit<
-  models.PluginInstallation,
+export type Plugin = BlockOmittedFields<models.PluginInstallation>;
+
+type BlockOmittedFields<T> = Omit<
+  T,
   | "__typename"
   | "id"
   | "createdAt"
@@ -204,3 +185,26 @@ export type Plugin = Omit<
   | "lockedByUserId"
   | "lockedAt"
 >;
+
+export type clientDirectories = {
+  baseDirectory: string;
+  srcDirectory: string;
+  authDirectory: string;
+  publicDirectory: string;
+  apiDirectory: string;
+};
+
+export type serverDirectories = {
+  baseDirectory: string;
+  srcDirectory: string;
+  authDirectory: string;
+  scriptsDirectory: string;
+};
+export type Topic = BlockOmittedFields<models.Topic>;
+export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
+
+export type PrismaDataSource = {
+  name: string;
+  provider: PrismaSchemaDSL.DataSourceProvider;
+  url: PrismaSchemaDSL.DataSourceURLEnv;
+};

@@ -5,10 +5,10 @@ import {
   Prisma,
   PrismaService
 } from '@amplication/prisma-db';
-import { FindOneArgs } from 'src/dto';
-import { AmplicationError } from 'src/errors/AmplicationError';
-import { Resource } from 'src/models/Resource';
-import { GitOrganization } from 'src/models/GitOrganization';
+import { FindOneArgs } from '../../dto';
+import { AmplicationError } from '../../errors/AmplicationError';
+import { Resource } from '../../models/Resource';
+import { GitOrganization } from '../../models/GitOrganization';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
@@ -17,7 +17,7 @@ import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyA
 import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
 import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
 import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
-import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
+import { RemoteGitRepos } from './dto/objects/RemoteGitRepository';
 import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
 import {
   INVALID_RESOURCE_ID,
@@ -38,13 +38,15 @@ export class GitProviderService {
 
   async getReposOfOrganization(
     args: RemoteGitRepositoriesWhereUniqueInput
-  ): Promise<RemoteGitRepository[]> {
+  ): Promise<RemoteGitRepos> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
     return await this.gitService.getReposOfOrganization(
       args.gitProvider,
-      installationId
+      installationId,
+      args.limit,
+      args.page
     );
   }
 

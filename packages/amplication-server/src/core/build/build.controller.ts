@@ -17,7 +17,7 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { plainToInstance } from 'class-transformer';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CHECK_USER_ACCESS_TOPIC } from 'src/constants';
+import { CHECK_USER_ACCESS_TOPIC } from '../../constants';
 import { KafkaMessage } from 'kafkajs';
 import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';

@@ -10,7 +10,8 @@ import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
 import path, { join } from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { ResourceRole, User } from 'src/models';
+import * as CodeGenTypes from '@amplication/code-gen-types';
+import { ResourceRole, User } from '../../models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
@@ -41,7 +42,11 @@ import { previousBuild, BuildFilesSaver } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { GitResourceMeta } from './dto/GitResourceMeta';
+
+import { TopicService } from '../topic/topic.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
+import { EnumResourceType } from '../resource/dto/EnumResourceType';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -156,13 +161,20 @@ export class BuildService {
     private readonly userService: UserService,
     private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
+    private readonly topicService: TopicService,
+    private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
+    this.host = this.configService.get(HOST_VAR);
+    if (!this.host) {
+      throw new Error('Missing HOST_VAR in env');
+    }
   }
+  host: string;
 
   /**
    * create function creates a new build for given resource in the DB
@@ -323,46 +335,24 @@ export class BuildService {
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       async step => {
+        const { resourceId, id: buildId, version: buildVersion } = build;
         //#region getting all the resource data
-        const entities = await this.getOrderedEntities(build.id);
-        const roles = await this.getResourceRoles(build);
-        const allPlugins = await this.pluginInstallationService.findMany({
-          where: { resource: { id: build.resourceId } }
-        });
-        const plugins = allPlugins.filter(plugin => plugin.enabled);
-
-        const resource = await this.resourceService.resource({
-          where: { id: build.resourceId }
-        });
-        const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
-          {
-            where: { id: build.resourceId }
-          },
+        const dSGResourceData = await this.getDSGResourceData(
+          resourceId,
+          buildId,
+          buildVersion,
           user
         );
+        const { resourceInfo } = dSGResourceData;
         //#endregion
         const [
           dataServiceGeneratorLogger,
           logPromises
         ] = this.createDataServiceLogger(build, step);
 
-        const host = this.configService.get(HOST_VAR);
-
-        const url = `${host}/${build.resourceId}`;
-
         const modules = await DataServiceGenerator.createDataService(
-          entities,
-          roles,
-          {
-            name: resource.name,
-            description: resource.description,
-            version: build.version,
-            id: build.resourceId,
-            url,
-            settings: serviceSettings
-          },
-          dataServiceGeneratorLogger,
-          plugins
+          dSGResourceData,
+          dataServiceGeneratorLogger
         );
 
         await Promise.all(logPromises);
@@ -375,13 +365,13 @@ export class BuildService {
         const tarballURL = await this.save(build, modules);
 
         await this.buildFilesSaver.saveFiles(
-          join(resource.id, build.id),
+          join(resourceId, build.id),
           modules
         );
 
         await this.saveToGitHub(build, oldBuildId, {
-          adminUIPath: serviceSettings.adminUISettings.adminUIPath,
-          serverPath: serviceSettings.serverSettings.serverPath
+          adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
+          serverPath: resourceInfo.settings.serverSettings.serverPath
         });
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
@@ -391,11 +381,11 @@ export class BuildService {
     );
   }
 
-  private async getResourceRoles(build: Build): Promise<ResourceRole[]> {
+  private async getResourceRoles(resourceId: string): Promise<ResourceRole[]> {
     return this.resourceRoleService.getResourceRoles({
       where: {
         resource: {
-          id: build.resourceId
+          id: resourceId
         }
       }
     });
@@ -430,7 +420,7 @@ export class BuildService {
    */
   private async save(
     build: Build,
-    modules: DataServiceGenerator.Module[]
+    modules: CodeGenTypes.Module[]
   ): Promise<string> {
     const zipFilePath = getBuildZipFilePath(build.id);
     const tarFilePath = getBuildTarGzFilePath(build.id);
@@ -572,7 +562,7 @@ export class BuildService {
    */
   private async getOrderedEntities(
     buildId: string
-  ): Promise<DataServiceGenerator.Entity[]> {
+  ): Promise<CodeGenTypes.Entity[]> {
     const entities = await this.entityService.getEntitiesByVersions({
       where: {
         builds: {
@@ -586,7 +576,7 @@ export class BuildService {
     return (orderBy(
       entities,
       entity => entity.createdAt
-    ) as unknown) as DataServiceGenerator.Entity[];
+    ) as unknown) as CodeGenTypes.Entity[];
   }
   async canUserAccess({
     userId,
@@ -597,5 +587,75 @@ export class BuildService {
       where: { id: buildId, AND: { userId } }
     });
     return Boolean(build);
+  }
+
+  async getDSGResourceData(
+    resourceId: string,
+    buildId: string,
+    buildVersion: string,
+    user: User,
+    rootGeneration = true
+  ): Promise<CodeGenTypes.DSGResourceData> {
+    const resources = await this.resourceService.resources({
+      where: {
+        project: { resources: { some: { id: resourceId } } }
+      }
+    });
+
+    const resource = resources.find(({ id }) => id === resourceId);
+
+    const allPlugins = await this.pluginInstallationService.findMany({
+      where: { resource: { id: resourceId } }
+    });
+    const plugins = allPlugins.filter(plugin => plugin.enabled);
+    const url = `${this.host}/${resourceId}`;
+
+    const serviceSettings =
+      resource.resourceType === EnumResourceType.Service
+        ? await this.serviceSettingsService.getServiceSettingsValues(
+            {
+              where: { id: resourceId }
+            },
+            user
+          )
+        : undefined;
+
+    const otherResources = rootGeneration
+      ? await Promise.all(
+          resources
+            .filter(({ id }) => id !== resourceId)
+            .map(resource =>
+              this.getDSGResourceData(
+                resource.id,
+                buildId,
+                buildVersion,
+                user,
+                false
+              )
+            )
+        )
+      : undefined;
+
+    return {
+      entities: await this.getOrderedEntities(buildId),
+      roles: await this.getResourceRoles(resourceId),
+      plugins,
+      resourceType: resource.resourceType,
+      topics: await this.topicService.findMany({
+        where: { resource: { id: resourceId } }
+      }),
+      serviceTopics: await this.serviceTopicsService.findMany({
+        where: { resource: { id: resourceId } }
+      }),
+      resourceInfo: {
+        name: resource.name,
+        description: resource.description,
+        version: buildVersion,
+        id: resourceId,
+        url,
+        settings: serviceSettings
+      },
+      otherResources
+    };
   }
 }

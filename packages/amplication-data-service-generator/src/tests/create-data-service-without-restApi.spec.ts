@@ -3,6 +3,7 @@ import entities from "./entities";
 import roles from "./roles";
 import { AppInfo } from "@amplication/code-gen-types";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { EnumResourceType } from "../models";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -20,7 +21,13 @@ jest.setTimeout(100000);
 
 describe("createDataService", () => {
   test("creates app as expected", async () => {
-    const modules = await createDataService(entities, roles, newAppInfo);
+    const modules = await createDataService({
+      entities,
+      roles,
+      resourceInfo: newAppInfo,
+      resourceType: EnumResourceType.Service,
+      plugins: [],
+    });
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)

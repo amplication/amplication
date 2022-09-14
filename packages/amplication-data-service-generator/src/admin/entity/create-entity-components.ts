@@ -1,4 +1,4 @@
-import { Entity, DTOs } from "@amplication/code-gen-types";
+import { Entity } from "@amplication/code-gen-types";
 import { EntityComponent, EntityComponents } from "../types";
 import { createEntityCreateComponent } from "./entity-create-component/create-entity-create-component";
 import { createEntityListComponent } from "./entity-list-component/create-entity-list-component";
@@ -7,7 +7,6 @@ import { createEntityShowComponent } from "./entity-show-component/create-entity
 
 export async function createEntityComponents(
   entity: Entity,
-  dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>,
   entityNameToEntity: Record<string, Entity>
@@ -15,25 +14,21 @@ export async function createEntityComponents(
   const [list, newComponent, editComponent, showComponent] = await Promise.all([
     createEntityListComponent(
       entity,
-      dtos,
       entityToDirectory,
       entityToTitleComponent
     ),
     createEntityCreateComponent(
       entity,
-      dtos,
       entityToDirectory,
       entityToTitleComponent
     ),
     createEditEntityComponent(
       entity,
-      dtos,
       entityToDirectory,
       entityToTitleComponent
     ),
     createEntityShowComponent(
       entity,
-      dtos,
       entityToDirectory,
       entityToTitleComponent,
       entityNameToEntity

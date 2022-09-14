@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
+import { ResourceWhereInput } from '../../resource/dto';
+import { WhereUniqueInput, DateTimeFilter, StringFilter } from '../../../dto';
 
 import { EnumBlockTypeFilter } from './EnumBlockTypeFilter';
 @InputType({
@@ -21,10 +22,10 @@ export class BlockWhereInput {
   })
   updatedAt?: DateTimeFilter | null;
 
-  @Field(() => WhereUniqueInput, {
+  @Field(() => ResourceWhereInput, {
     nullable: true
   })
-  resource?: WhereUniqueInput | null;
+  resource?: ResourceWhereInput | null;
 
   @Field(() => WhereUniqueInput, {
     nullable: true

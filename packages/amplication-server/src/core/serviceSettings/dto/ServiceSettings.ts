@@ -1,6 +1,6 @@
 import { Field, ObjectType, Int } from '@nestjs/graphql';
-import { IBlock } from 'src/models';
-import { JsonValue } from 'type-fest/source/basic';
+import { IBlock } from '../../../models';
+import { JsonValue } from 'type-fest';
 import { AdminUISettings } from './AdminUISettings';
 import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
 import { ServerSettings } from './ServerSettings';

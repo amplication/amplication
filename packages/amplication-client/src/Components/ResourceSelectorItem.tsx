@@ -11,12 +11,12 @@ const CLASS_NAME = "commit-selector-item";
 export const ResourceSelectorItem = ({ resource }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      {resource && (
+      {resource ? (
         <>
           <ResourceCircleBadge type={resource.resourceType} size={"xsmall"} />
           <div className={`${CLASS_NAME}__title`}>{resource?.name}</div>
         </>
-      )}
+      ): <div className={`${CLASS_NAME}__title`}>none</div>}
     </div>
   );
 };

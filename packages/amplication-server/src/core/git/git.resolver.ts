@@ -1,12 +1,12 @@
 import { UseFilters, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query } from '@nestjs/graphql';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { InjectContextValue } from 'src/decorators/injectContextValue.decorator';
-import { FindOneArgs } from 'src/dto';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
-import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
-import { Resource } from 'src/models/Resource';
-import { GitOrganization } from 'src/models/GitOrganization';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { InjectContextValue } from '../../decorators/injectContextValue.decorator';
+import { FindOneArgs } from '../../dto';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { InjectableOriginParameter } from '../../enums/InjectableOriginParameter';
+import { Resource } from '../../models/Resource';
+import { GitOrganization } from '../../models/GitOrganization';
 import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { AuthorizeResourceWithGitResult } from '../resource/dto/AuthorizeResourceWithGitResult';
@@ -18,7 +18,7 @@ import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
 import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
 import { RemoteGitRepositoriesFindManyArgs } from './dto/args/RemoteGitRepositoriesFindManyArgs';
 import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
-import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
+import { RemoteGitRepos } from './dto/objects/RemoteGitRepository';
 import { GitProviderService } from './git.provider.service';
 import { DisconnectGitRepositoryArgs } from './dto/args/DisconnectGitRepositoryArgs';
 import { ConnectToProjectGitRepositoryArgs } from './dto/args/ConnectToProjectGitRepositoryArgs';
@@ -112,14 +112,14 @@ export class GitResolver {
     };
   }
 
-  @Query(() => [RemoteGitRepository])
+  @Query(() => RemoteGitRepos)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
     'where.gitOrganizationId'
   )
   async remoteGitRepositories(
     @Args() args: RemoteGitRepositoriesFindManyArgs
-  ): Promise<RemoteGitRepository[]> {
+  ): Promise<RemoteGitRepos> {
     return this.gitService.getReposOfOrganization(args.where);
   }
 

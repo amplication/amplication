@@ -8,7 +8,7 @@ import {
   Project
 } from '@amplication/prisma-db';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from 'src/enums/Role';
+import { Role } from '../../enums/Role';
 import { AccountService } from '../account/account.service';
 import { PasswordService } from '../account/password.service';
 import { UserService } from '../user/user.service';

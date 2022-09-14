@@ -1,6 +1,6 @@
 import { Account, PrismaService } from '@amplication/prisma-db';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SegmentAnalyticsService } from 'src/services/segmentAnalytics/segmentAnalytics.service';
+import { SegmentAnalyticsService } from '../../services/segmentAnalytics/segmentAnalytics.service';
 import { AccountService } from './account.service';
 
 const EXAMPLE_ACCOUNT_ID = 'ExampleAccountId',

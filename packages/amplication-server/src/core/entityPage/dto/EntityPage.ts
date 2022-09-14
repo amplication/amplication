@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IBlock } from 'src/models';
+import { IBlock } from '../../../models';
 import { EnumEntityPageType } from './EnumEntityPageType';
 import { EntityPageSingleRecordSettings, EntityPageListSettings } from '.';
 import { JsonValue } from 'type-fest';

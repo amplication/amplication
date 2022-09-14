@@ -6,6 +6,16 @@ import {
   createRolesEnumDeclaration,
   ENUM_ROLES_ID,
 } from "./create-enum-roles";
+import DsgContext from "../dsg-context";
+
+const context = DsgContext.getInstance;
+context.clientDirectories = {
+  baseDirectory: "baseDirectory",
+  srcDirectory: "admin-ui/src",
+  authDirectory: "authDirectory",
+  publicDirectory: "publicDirectory",
+  apiDirectory: "apiDirectory",
+};
 
 const EXAMPLE_ROLE = {
   name: "exampleRole",
@@ -24,8 +34,8 @@ const EXPECTED_DECLARATION_CODE = `enum ${ENUM_ROLES_ID.name} {
 }`;
 
 describe("createEnumRolesModule", () => {
-  expect(createEnumRolesModule(EXAMPLE_ROLES, "server")).toEqual({
-    path: "server/user/EnumRoles.ts",
+  expect(createEnumRolesModule(EXAMPLE_ROLES)).toEqual({
+    path: "admin-ui/src/user/EnumRoles.ts",
     code: `export ${EXPECTED_DECLARATION_CODE}`,
   });
 });

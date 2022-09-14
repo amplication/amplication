@@ -16,17 +16,17 @@ import {
   RevokeInvitationArgs,
   ResendInvitationArgs
 } from './dto';
-import { FindOneArgs } from 'src/dto';
+import { FindOneArgs } from '../../dto';
 
-import { Workspace, User, Project } from 'src/models';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
+import { Workspace, User, Project } from '../../models';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { UseFilters, UseGuards } from '@nestjs/common';
-import { UserEntity } from 'src/decorators/user.decorator';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { UserEntity } from '../../decorators/user.decorator';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { WorkspaceService } from './workspace.service';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { GitOrganization } from 'src/models/GitOrganization';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { GitOrganization } from '../../models/GitOrganization';
 import { Subscription } from '../subscription/dto/Subscription';
 import { ProjectService } from '../project/project.service';
 

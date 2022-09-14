@@ -45,6 +45,7 @@ import {
 } from "./filters.util";
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
+import DsgContext from "../../../dsg-context";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
@@ -133,8 +134,8 @@ export function getImportableDTOs(
 
 export function createDTOModulePath(
   entityDirectory: string,
-  dtoName: string,
-  srcDirectory: string
+  dtoName: string
 ): string {
-  return `${srcDirectory}/${entityDirectory}/base/${dtoName}.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  return `${serverDirectories.srcDirectory}/${entityDirectory}/base/${dtoName}.ts`;
 }

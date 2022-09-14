@@ -1,41 +1,62 @@
 @import "../style/index.scss";
 
 $logo-size: 44px;
-$logo-background: #dcb21a;
 $order-badge-size: 14px;
+$install-width: 86px;
+$button-padding:  5px 12px;
 
 .plugins-catalog-item {
   margin: 0;
   margin-bottom: var(--default-spacing);
 
   &__row {
-    @include flexFullRowWithSpacing;
+    display: flex;
     margin-bottom: var(--default-spacing);
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 
     &:last-child {
       margin-bottom: 0;
     }
   }
-  &__title {
-    @include body1;
-    color: var(--black100);
-    margin-top: var(--default-spacing-small);
-  }
-  &__description {
-    @include body2;
-    color: var(--black80);
+
+  &__drag {
+    flex: 1;
   }
 
   &__logo {
     width: $logo-size;
     height: $logo-size;
-    background-color: $logo-background;
+    background-color: var(--black40);
     border-radius: var(--default-border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__details {
+    margin-left: var(--large-spacing);
+    flex: 1;
+
+    &__title {
+      @include title-14;
+      color: var(--black100);
+    }
+    &__description {
+      @include regular-12;
+      color: var(--black80);
+    }
+  }
+
+  &__install {
+    padding: $button-padding;
+    min-width: $install-width;
   }
 
   &__order {
     @include flexVerticalCenter;
+    margin-left: var(--large-spacing);
 
     span {
       display: inline-flex;
@@ -47,5 +68,8 @@ $order-badge-size: 14px;
       width: $order-badge-size;
       height: $order-badge-size;
     }
+  }
+  .toggle-field {
+    margin-bottom: 0px;
   }
 }
