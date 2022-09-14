@@ -6,6 +6,7 @@ import {
   EnumEntityAction,
   Module,
 } from "@amplication/code-gen-types";
+import DsgContext from "../dsg-context";
 
 type Action =
   | "create:any"
@@ -46,12 +47,9 @@ export const READ_OWN: Action = "read:own";
  * @param roles all the existing roles
  * @returns grants JSON module
  */
-export function createGrantsModule(
-  entities: Entity[],
-  roles: Role[],
-  srcDirectory: string
-): Module {
-  const MODULE_PATH = `${srcDirectory}/grants.json`;
+export function createGrantsModule(entities: Entity[], roles: Role[]): Module {
+  const { serverDirectories } = DsgContext.getInstance;
+  const MODULE_PATH = `${serverDirectories.srcDirectory}/grants.json`;
   return {
     path: MODULE_PATH,
     code: JSON.stringify(createGrants(entities, roles), null, 2),

@@ -2,7 +2,7 @@ import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { flatten } from "lodash";
 import * as winston from "winston";
-import { Entity, Module, AppInfo, DTOs } from "@amplication/code-gen-types";
+import { Entity, Module } from "@amplication/code-gen-types";
 import { validateEntityName } from "../../util/entity";
 import {
   createServiceBaseId,
@@ -14,29 +14,25 @@ import { createModules } from "./module/create-module";
 import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 import { builders } from "ast-types";
+import DsgContext from "../../dsg-context";
 
 export async function createResourcesModules(
-  appInfo: AppInfo,
   entities: Entity[],
-  dtos: DTOs,
   logger: winston.Logger
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
-    entities.map((entity) =>
-      createResourceModules(appInfo, entity, dtos, logger)
-    )
+    entities.map((entity) => createResourceModules(entity, logger))
   );
   const resourcesModules = flatten(resourceModuleLists);
   return resourcesModules;
 }
 
 async function createResourceModules(
-  appInfo: AppInfo,
   entity: Entity,
-  dtos: DTOs,
   logger: winston.Logger
 ): Promise<Module[]> {
   const entityType = entity.name;
+  const { appInfo } = DsgContext.getInstance;
 
   validateEntityName(entity);
 
@@ -77,8 +73,7 @@ async function createResourceModules(
         entityName,
         entityType,
         serviceModule.path,
-        entity,
-        dtos
+        entity
       ))) ||
     [];
   const [resolverModule] = resolverModules;

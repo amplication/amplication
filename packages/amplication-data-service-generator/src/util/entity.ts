@@ -1,7 +1,8 @@
-import { Entity, EntityField, DTOs } from "@amplication/code-gen-types";
+import { Entity, EntityField } from "@amplication/code-gen-types";
 import { isEnumField, isToManyRelationField } from "./field";
 import { camelCase } from "camel-case";
 import { getNamedProperties } from "./ast";
+import DsgContext from "../dsg-context";
 
 export const ENTITY_NAME_REGEX = /^[A-Z][A-Za-z0-9]+$/;
 
@@ -45,10 +46,11 @@ export function getEnumFields(entity: Entity): EntityField[] {
 }
 
 export function getFieldsFromDTOWithoutToManyRelations(
-  entity: Entity,
-  dtos: DTOs
+  entity: Entity
 ): EntityField[] {
-  const entityDTO = dtos[entity.name].entity;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
+  const entityDTO = DTOs[entity.name].entity;
 
   const entityDTOProperties = getNamedProperties(entityDTO);
 

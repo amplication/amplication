@@ -6,7 +6,6 @@ import {
   EnumDataType,
   Module,
   types,
-  DTOs,
 } from "@amplication/code-gen-types";
 import { readFile } from "../../util/module";
 import {
@@ -27,6 +26,7 @@ import { getDTONameToPath } from "../resource/create-dtos";
 import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
 import { createEnumName } from "../prisma/create-prisma-schema";
+import DsgContext from "../../dsg-context";
 
 const seedTemplatePath = require.resolve("./seed.template.ts");
 
@@ -73,13 +73,10 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
 ];
 
-export async function createSeedModule(
-  userEntity: Entity,
-  dtos: DTOs,
-  scriptsDirectory: string,
-  srcDirectory: string
-): Promise<Module> {
-  const MODULE_PATH = `${scriptsDirectory}/seed.ts`;
+export async function createSeedModule(userEntity: Entity): Promise<Module> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs, serverDirectories } = DsgContext.getInstance;
+  const MODULE_PATH = `${serverDirectories.scriptsDirectory}/seed.ts`;
   const file = await readFile(seedTemplatePath);
   const customProperties = createUserObjectCustomProperties(userEntity);
 
@@ -92,7 +89,7 @@ export async function createSeedModule(
 
   removeTSVariableDeclares(file);
 
-  const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
+  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(MODULE_PATH, dtoNameToPath)

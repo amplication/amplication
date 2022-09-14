@@ -1,10 +1,9 @@
-import { Entity, DTOs } from "@amplication/code-gen-types";
+import { Entity } from "@amplication/code-gen-types";
 import { EntityComponent, EntityComponents } from "../types";
 import { createEntityComponents } from "./create-entity-components";
 
 export async function createEntitiesComponents(
   entities: Entity[],
-  dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>,
   entityNameToEntity: Record<string, Entity>
@@ -15,7 +14,6 @@ export async function createEntitiesComponents(
         async (entity): Promise<[string, EntityComponents]> => {
           const components = await createEntityComponents(
             entity,
-            dtos,
             entityToDirectory,
             entityToTitleComponent,
             entityNameToEntity

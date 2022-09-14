@@ -66,12 +66,6 @@ async function createAdminModulesInternal(): Promise<Module[]> {
    * currently the files were manually copied to /admin/static/src/util
    */
 
-  const entityToPath = Object.fromEntries(
-    entities.map((entity) => [
-      entity.name,
-      `/${paramCase(plural(entity.name))}`,
-    ])
-  );
   const entityToResource = Object.fromEntries(
     entities.map((entity) => [
       entity.name,
@@ -82,28 +76,15 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     entities.map((entity) => [entity.name, entity])
   );
 
-  const publicFilesModules = await createPublicFiles(
-    appInfo,
-    clientDirectories.publicDirectory
-  );
-  const entityToDirectory = createEntityToDirectory(
-    entities,
-    clientDirectories.srcDirectory
-  );
-  const dtoNameToPath = createDTONameToPath(
-    DTOs,
-    clientDirectories.apiDirectory
-  );
+  const publicFilesModules = await createPublicFiles();
+  const entityToDirectory = createEntityToDirectory(entities);
+  const dtoNameToPath = createDTONameToPath(DTOs);
   const dtoModules = createDTOModules(DTOs, dtoNameToPath);
-  const enumRolesModule = createEnumRolesModule(
-    roles,
-    clientDirectories.srcDirectory
-  );
+  const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles, clientDirectories.srcDirectory);
   // Create title components first so they are available when creating entity modules
   const entityToTitleComponent = await createEntityTitleComponents(
     entities,
-    DTOs,
     entityToDirectory,
     entityToResource,
     dtoNameToPath
@@ -115,7 +96,6 @@ async function createAdminModulesInternal(): Promise<Module[]> {
 
   const entitiesComponents = await createEntitiesComponents(
     entities,
-    DTOs,
     entityToDirectory,
     entityToTitleComponent,
     entityNameToEntity
@@ -123,11 +103,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
   );
-  const appModule = await createAppModule(
-    appInfo,
-    entityToPath,
-    entitiesComponents
-  );
+  const appModule = await createAppModule(entitiesComponents);
   const createdModules = [
     appModule,
     enumRolesModule,
