@@ -23,23 +23,27 @@ export class CommitsService {
     context: CommitContext
   ): Promise<{ headCommit: string; defaultBranchName?: string }> {
     this.logger.debug(`Getting branch ${branch}`, context);
-    let headCommit = (await gitClient.getBranch(branch))?.headCommit;
-    if (headCommit) {
+
+    const gitBranch = await gitClient.getBranch(branch)
+    if (gitBranch) {
       this.logger.debug(
-        `Branch ${branch} head commit ${headCommit} was found`,
-        context
+          `Branch ${branch} head commit ${gitBranch.headCommit} was found`,
+          context
       );
       return {
-        headCommit,
+        headCommit: gitBranch.headCommit,
       };
     }
     this.logger.warn(
-      `Branch ${branch} head commit was not found creating new branch`,
-      context
+        `Branch ${branch} head commit was not found creating new branch`,
+        context
     );
+    return this.createBranch(gitClient, branch, context)
+  }
 
+  private async createBranch(gitClient:GitProvider,branch:string,context:CommitContext): Promise<{ defaultBranchName: string; headCommit: string }> {
     const defaultBranchName = await gitClient.getDefaultBranchName();
-    headCommit = (await gitClient.getBranch(defaultBranchName)).headCommit;
+    const headCommit = (await gitClient.getBranch(defaultBranchName)).headCommit;
     await gitClient.createBranch(branch, headCommit);
     this.logger.info(`Branch ${branch} was created`, {
       ...context,

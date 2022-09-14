@@ -7,3 +7,4 @@ export { GitProvider } from './providers/git-provider.interface';
 export { GitServiceFactory } from './utils/GitServiceFactory';
 export { EnumGitOrganizationType } from './Dto/enums/EnumGitOrganizationType';
 export { EnumGitProvider } from './Dto/enums/EnumGitProvider';
+export {GithubConfig} from './utils/github-config.dto';

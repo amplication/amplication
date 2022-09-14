@@ -16,18 +16,17 @@ export class GithubProvider implements GitProvider {
     latestCommitSha: string,
     files: { path: string; content: string }[]
   ): Promise<string> {
-    return (
-      await octokit.rest.git.createTree({
-        owner,
-        repo,
-        tree: files.map(file => ({
-          ...file,
-          type: 'blob',
-          mode: '100644'
-        })),
-        base_tree: latestCommitSha
-      })
-    ).data.sha;
+    const { data } = await octokit.rest.git.createTree({
+      owner,
+      repo,
+      tree: files.map(file => ({
+        ...file,
+        type: 'blob',
+        mode: '100644'
+      })),
+      base_tree: latestCommitSha
+    })
+    return data.sha;
   }
 
   private static async createCommit(
@@ -38,15 +37,14 @@ export class GithubProvider implements GitProvider {
     latestCommitSha: string,
     fileTreeSha: string
   ): Promise<string> {
-    return (
-      await octokit.rest.git.createCommit({
-        owner,
-        repo,
-        message,
-        tree: fileTreeSha,
-        parents: [latestCommitSha]
-      })
-    ).data.sha;
+    const {data} = await octokit.rest.git.createCommit({
+      owner,
+      repo,
+      message,
+      tree: fileTreeSha,
+      parents: [latestCommitSha]
+    })
+    return data.sha;
   }
 
   private static async updateRef(
@@ -56,14 +54,13 @@ export class GithubProvider implements GitProvider {
     branch: string,
     commitSha: string
   ): Promise<string> {
-    return (
-      await octokit.rest.git.updateRef({
+    const { data } = await octokit.rest.git.updateRef({
         owner,
         repo,
         ref: `heads/${branch}`,
         sha: commitSha
       })
-    ).data.url;
+    return data.url;
   }
 
   public async commit(
@@ -73,26 +70,26 @@ export class GithubProvider implements GitProvider {
     headCommit: string
   ): Promise<string> {
     const fileTreeSha = await GithubProvider.createFilesTree(
-      this.octokit,
-      this.owner,
-      this.repo,
-      headCommit,
-      files
+        this.octokit,
+        this.owner,
+        this.repo,
+        headCommit,
+        files
     );
     const commitSha = await GithubProvider.createCommit(
-      this.octokit,
-      this.owner,
-      this.repo,
-      message,
-      headCommit,
-      fileTreeSha
+        this.octokit,
+        this.owner,
+        this.repo,
+        message,
+        headCommit,
+        fileTreeSha
     );
     await GithubProvider.updateRef(
-      this.octokit,
-      this.owner,
-      this.repo,
-      branch,
-      commitSha
+        this.octokit,
+        this.owner,
+        this.repo,
+        branch,
+        commitSha
     );
     return commitSha;
   }
@@ -104,7 +101,7 @@ export class GithubProvider implements GitProvider {
     base: string
   ): Promise<PullRequestMeta> {
     try {
-      const { html_url: url, number } = (
+      const { data } = (
         await this.octokit.rest.pulls.create({
           owner: this.owner,
           repo: this.repo,
@@ -113,19 +110,19 @@ export class GithubProvider implements GitProvider {
           base,
           head: branch
         })
-      ).data;
+      );
       return {
-        url,
-        number
+        url: data.html_url,
+        number: data.number
       };
-    } catch (err) {
-      switch (err?.response?.data?.errors[0]?.message) {
+    } catch (error) {
+      switch (error?.response?.data?.errors[0]?.message) {
         case `No commits between ${base.toLowerCase()} and ${branch.toLowerCase()}`:
           throw new Error(`There is no new commit in branch ${branch}`);
         case `A pull request already exists for ${this.owner}:${branch}.`:
           throw new Error('Branch already has pull request');
         default:
-          throw err;
+          throw error;
       }
     }
   }
@@ -135,37 +132,35 @@ export class GithubProvider implements GitProvider {
     body: string
   ): Promise<string> {
     try {
-      return (
-        await this.octokit.rest.issues.createComment({
+      const { data } = await this.octokit.rest.issues.createComment({
           owner: this.owner,
           repo: this.repo,
           issue_number: pullRequestNumber,
           body
         })
-      ).data.html_url;
-    } catch (err) {
-      switch (err.message) {
+      return data.html_url;
+    } catch (error) {
+      switch (error.message) {
         case 'Not Found':
           throw new Error(
             'Cannot add comment to pull request: pull request not found'
           );
         default:
-          console.log(err);
-          throw err;
+          throw error;
       }
     }
   }
 
   public async getOpenedPullRequest(branch: string): Promise<PullRequestMeta> {
     try {
-      const [pullRequest] = (
-        await this.octokit.rest.pulls.list({
-          owner: this.owner,
-          repo: this.repo,
-          head: `${this.owner}:${branch}`,
-          state: 'open'
-        })
-      ).data;
+      const { data } = await this.octokit.rest.pulls.list({
+        owner: this.owner,
+        repo: this.repo,
+        head: `${this.owner}:${branch}`,
+        state: 'open'
+      })
+
+      const pullRequest = data.shift()
       if (pullRequest) {
         return {
           url: pullRequest.html_url,
@@ -174,10 +169,12 @@ export class GithubProvider implements GitProvider {
       } else {
         return null;
       }
-    } catch (err) {
-      switch (err.message) {
+    } catch (error) {
+      switch (error.status) {
+        case 404:
+          return null;
         default:
-          throw err;
+          throw error;
       }
     }
   }
@@ -199,20 +196,19 @@ export class GithubProvider implements GitProvider {
     headCommit: string
   ): Promise<string> {
     try {
-      return (
-        await this.octokit.rest.git.createRef({
+      const { data } = await this.octokit.rest.git.createRef({
           owner: this.owner,
           repo: this.repo,
           ref: `refs/heads/${branch}`,
           sha: headCommit
         })
-      ).data.ref;
-    } catch (err) {
-      switch (err.message) {
+      return data.ref
+    } catch (error) {
+      switch (error.message) {
         case 'Reference already exists':
           return null;
         default:
-          throw err;
+          throw error;
       }
     }
   }
@@ -225,12 +221,12 @@ export class GithubProvider implements GitProvider {
         ref: `heads/${branch}`
       });
       return status === 204;
-    } catch (exception) {
-      switch (exception.message) {
-        case 'Reference does not exist':
+    } catch (error) {
+      switch (error.status) {
+        case 422:
           return false;
-        default:
-          throw exception;
+        default: //422 - Validation failed
+          throw error;
       }
     }
   }
@@ -245,23 +241,22 @@ export class GithubProvider implements GitProvider {
       return {
         headCommit: data.commit.sha
       };
-    } catch (exception) {
-      switch (exception.message) {
-        case 'Branch not found':
+    } catch (error) {
+      switch (error.status) {
+        case 404:
           return null;
         default:
-          throw exception;
+          throw error;
       }
     }
   }
 
   public async getDefaultBranchName(): Promise<string> {
-    return (
-      await this.octokit.rest.repos.get({
-        owner: this.owner,
-        repo: this.repo
-      })
-    ).data.default_branch;
+    const {data} = await this.octokit.rest.repos.get({
+      owner: this.owner,
+      repo: this.repo
+    })
+    return data.default_branch;
   }
 
   public async createRepository(_private: boolean): Promise<string> {
@@ -274,12 +269,12 @@ export class GithubProvider implements GitProvider {
         private: _private
       });
       return repo.url;
-    } catch (err) {
-      switch (err.status) {
+    } catch (error) {
+      switch (error.status) {
         case 422:
           return null;
         default:
-          throw err;
+          throw error;
       }
     }
   }
@@ -291,12 +286,12 @@ export class GithubProvider implements GitProvider {
         repo: this.repo
       });
       return repo;
-    } catch (err) {
-      switch (err.message) {
+    } catch (error) {
+      switch (error.message) {
         case 'Not Found':
           return null;
         default:
-          throw err;
+          throw error;
       }
     }
   }
