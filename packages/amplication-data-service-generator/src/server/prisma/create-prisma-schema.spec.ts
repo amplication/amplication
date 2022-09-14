@@ -1,6 +1,5 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import {
-  createPrismaSchema,
   createPrismaFields,
   CUID_CALL_EXPRESSION,
   NOW_CALL_EXPRESSION,
@@ -183,11 +182,11 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
   test.each(cases)(
     "%s",
     async (name, entities: Entity[], expected: Module[]) => {
-      const schema = await createPrismaSchema({
-        entities,
-        dataSource: DATA_SOURCE,
-        clientGenerator: CLIENT_GENERATOR,
-      });
+      // const schema = await createPrismaSchema({
+      //   entities,
+      //   dataSource: DATA_SOURCE,
+      //   clientGenerator: CLIENT_GENERATOR,
+      // });
       //expect(schema).toStrictEqual(expected);
     }
   );
