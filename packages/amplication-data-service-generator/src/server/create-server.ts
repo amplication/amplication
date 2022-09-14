@@ -49,7 +49,6 @@ export async function createServerModules(
       name: `@${paramCase(appInfo.name)}/server`,
       version: appInfo.version,
     },
-    baseDirectory: serverDirectories.baseDirectory,
   });
 
   logger.info("Creating resources...");
