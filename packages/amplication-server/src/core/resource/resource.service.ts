@@ -319,6 +319,17 @@ export class ResourceService {
     });
   }
 
+  async resourcesByIds(args: FindManyResourceArgs, ids: string[]): Promise<Resource[]> {
+    return this.prisma.resource.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        id: { in: ids },
+        deletedAt: null
+      }
+    });
+  }
+
   async messageBrokerConnectedServices(args: FindOneArgs): Promise<Resource[]> {
     const resource = await this.resource(args);
     const serviceTopicsCollection = await this.serviceTopicsService.findMany({
@@ -328,13 +339,7 @@ export class ResourceService {
       x => x.messageBrokerId === resource.id && x.enabled
     );
 
-    const promises = brokerServiceTopics.map(x => {
-      return this.resource({
-        where: { id: x.resourceId }
-      }); 
-    }); 
-
-    const resources = await Promise.all(promises);
+    const resources = this.resourcesByIds({}, brokerServiceTopics.map(x => x.resourceId));
 
     return resources;
   }
