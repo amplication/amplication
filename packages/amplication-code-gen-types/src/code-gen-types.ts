@@ -1,7 +1,6 @@
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { namedTypes } from "ast-types";
-import { DSGResourceData } from "./dsg-resource-data";
 
 export {
   EnumEntityPermissionType,
