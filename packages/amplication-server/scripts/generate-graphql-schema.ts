@@ -4,11 +4,11 @@
 
 import { NestFactory } from '@nestjs/core';
 import { PrismaClient } from '@amplication/prisma-db';
-import { AppModule } from 'src/app.module';
+import { AppModule } from '../src/app.module';
 
 export default async function generateGraphQLSchema(): Promise<void> {
   // Override PrismaClient $connect to prevent connections to the database
-  PrismaClient.prototype.$connect = async function() {
+  PrismaClient.prototype.$connect = async function () {
     return;
   };
   // Use the side effect of initializing the nest application for generating
@@ -20,7 +20,7 @@ export default async function generateGraphQLSchema(): Promise<void> {
 if (require.main === module) {
   generateGraphQLSchema()
     .then(() => process.exit(0))
-    .catch(error => {
+    .catch((error) => {
       console.error(error);
       process.exit(1);
     });
