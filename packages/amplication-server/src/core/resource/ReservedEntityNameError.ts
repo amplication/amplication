@@ -1,4 +1,4 @@
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { AmplicationError } from '../../errors/AmplicationError';
 
 export class ReservedEntityNameError extends AmplicationError {
   constructor(entityName: string) {

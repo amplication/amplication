@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService, Prisma, Account } from '@amplication/prisma-db';
-import { Workspace } from 'src/models';
+import { Workspace } from '../../models';
 import {
   SegmentAnalyticsService,
   EnumEventType
-} from 'src/services/segmentAnalytics/segmentAnalytics.service';
+} from '../../services/segmentAnalytics/segmentAnalytics.service';
 @Injectable()
 export class AccountService {
   constructor(

@@ -1,6 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { ResourceCreateInput } from './ResourceCreateInput';
-import { EnumDataType } from 'src/enums/EnumDataType';
+import { EnumDataType } from '../../../enums/EnumDataType';
 import { ResourceGenSettingsCreateInput } from './ResourceGenSettingsCreateInput';
 
 @InputType({

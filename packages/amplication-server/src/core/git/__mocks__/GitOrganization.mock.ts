@@ -1,5 +1,5 @@
-import { EXAMPLE_DATE } from 'src/core/build/build.service.spec';
-import { GitOrganization } from 'src/models/GitOrganization';
+import { EXAMPLE_DATE } from '../../build/build.service.spec';
+import { GitOrganization } from '../../../models/GitOrganization';
 import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
 import { EnumGitProvider } from '../dto/enums/EnumGitProvider';
 

@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IBlock } from 'src/models';
+import { IBlock } from '../../../models';
 
 @ObjectType({
   implements: IBlock,

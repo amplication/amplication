@@ -1,7 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { EnumPendingChangeAction } from './EnumPendingChangeAction';
-import { Entity } from 'src/models/Entity'; // eslint-disable-line import/no-cycle
-import { Block } from 'src/models/Block'; // eslint-disable-line import/no-cycle
+import { Entity } from '../../../models/Entity'; // eslint-disable-line import/no-cycle
+import { Block } from '../../../models/Block'; // eslint-disable-line import/no-cycle
 import { EnumPendingChangeOriginType } from './EnumPendingChangeOriginType';
 import { PendingChangeOrigin } from './PendingChangeOrigin'; // eslint-disable-line import/no-cycle
 import { Resource } from '../../../models';

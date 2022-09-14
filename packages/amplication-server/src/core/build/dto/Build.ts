@@ -1,8 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Commit, Resource } from 'src/models'; // eslint-disable-line import/no-cycle
-import { BlockVersion } from 'src/models/BlockVersion'; // eslint-disable-line import/no-cycle
-import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line import/no-cycle
-import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
+import { Commit, Resource } from '../../../models'; // eslint-disable-line import/no-cycle
+import { BlockVersion } from '../../../models/BlockVersion'; // eslint-disable-line import/no-cycle
+import { EntityVersion } from '../../../models/EntityVersion'; // eslint-disable-line import/no-cycle
+import { User } from '../../../models/User'; // eslint-disable-line import/no-cycle
 import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
 import { EnumBuildStatus } from './EnumBuildStatus';
 

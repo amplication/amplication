@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { EnumEntityAction } from 'src/enums/EnumEntityAction';
-import { EnumEntityPermissionType } from 'src/enums/EnumEntityPermissionType';
+import { EnumEntityAction } from '../../../enums/EnumEntityAction';
+import { EnumEntityPermissionType } from '../../../enums/EnumEntityPermissionType';
 
 @InputType({
   isAbstract: true
