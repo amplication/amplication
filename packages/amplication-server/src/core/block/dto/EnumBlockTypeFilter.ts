@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../../enums/EnumBlockType';
 
 @InputType({
   isAbstract: true

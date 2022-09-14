@@ -6,11 +6,11 @@ import {
   Commit,
   EntityField,
   EntityPermission
-} from 'src/models';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
+} from '../../models';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
 import { EntityService } from './entity.service';
 
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 
 @Resolver(() => EntityVersion)
 @UseFilters(GqlResolverExceptionsFilter)

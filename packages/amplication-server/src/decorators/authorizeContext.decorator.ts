@@ -1,13 +1,12 @@
 /**
  * Decorators for authorizing and injecting resources to a query / mutation
  */
-
 import { CustomDecorator, SetMetadata } from '@nestjs/common';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { AuthorizableOriginParameter } from '../enums/AuthorizableOriginParameter';
 import {
   AUTHORIZE_CONTEXT,
   AuthorizeContextParameters
-} from 'src/guards/gql-auth.guard';
+} from '../guards/gql-auth.guard';
 
 /**
  *

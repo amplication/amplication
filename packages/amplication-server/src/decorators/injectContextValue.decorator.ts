@@ -1,9 +1,9 @@
 import { CustomDecorator, SetMetadata } from '@nestjs/common';
-import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
+import { InjectableOriginParameter } from '../enums/InjectableOriginParameter';>>>>>>> master
 import {
   INJECT_CONTEXT_VALUE,
   InjectContextValueParameters
-} from 'src/interceptors/inject-context.interceptor';
+} from '../interceptors/inject-context.interceptor';
 
 /**
  * Inject given parameter type as given parameter

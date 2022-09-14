@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { GoogleSecretsManagerService } from './googleSecretsManager.service';
 import { ConfigService } from '@nestjs/config';
 import {
   SendGridOptionsFactory,
