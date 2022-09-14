@@ -27,9 +27,9 @@ import { GitHubAuthGuard } from './github.guard';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET')
+        secret: configService.get('JWT_SECRET'),
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     AccountModule,
     PrismaModule,
@@ -38,7 +38,7 @@ import { GitHubAuthGuard } from './github.guard';
     WorkspaceModule,
     UserModule,
     GoogleSecretsManagerModule,
-    ProjectModule
+    ProjectModule,
   ],
   providers: [
     AuthService,
@@ -56,19 +56,20 @@ import { GitHubAuthGuard } from './github.guard';
           googleSecretsManagerService
         );
         const options = await githubConfigService.getOptions();
+
         if (options === null) {
-			// @ts-ignore
-			return;
+          return;
         }
+
         return new GitHubStrategy(authService, options);
       },
-      inject: [AuthService, ConfigService, GoogleSecretsManagerService]
+      inject: [AuthService, ConfigService, GoogleSecretsManagerService],
     },
     GqlAuthGuard,
     AuthResolver,
-    GitHubStrategyConfigService
+    GitHubStrategyConfigService,
   ],
   controllers: [AuthController],
-  exports: [GqlAuthGuard, AuthService, AuthResolver]
+  exports: [GqlAuthGuard, AuthService, AuthResolver],
 })
 export class AuthModule {}
