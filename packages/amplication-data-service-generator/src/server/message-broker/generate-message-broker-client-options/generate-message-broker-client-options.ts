@@ -13,17 +13,17 @@ const templatePath = resolve(
   "generateKafkaClientOptions.template.ts"
 );
 
-export async function createGenerateKafkaClientOptionsFunction(
+export async function createGenerateMessageBrokerClientOptionsFunction(
   eventParams: CreateMessageBrokerClientOptionsFactoryParams["before"]
-) {
+): Promise<Module[]> {
   return pluginWrapper(
-    createGenerateKafkaClientOptionsFunctionInternal,
+    createGenerateMessageBrokerClientOptionsFunctionInternal,
     EventNames.CreateMessageBrokerClientOptionsFactory,
     eventParams
   );
 }
 
-export async function createGenerateKafkaClientOptionsFunctionInternal(
+export async function createGenerateMessageBrokerClientOptionsFunctionInternal(
   eventParams: CreateMessageBrokerClientOptionsFactoryParams["before"]
 ): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;

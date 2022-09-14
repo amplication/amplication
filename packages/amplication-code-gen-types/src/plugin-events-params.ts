@@ -107,3 +107,6 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
   extends EventParams {
   before: {};
 }
+export interface CreateMessageBrokerServicesParams extends EventParams {
+  before: {};
+}

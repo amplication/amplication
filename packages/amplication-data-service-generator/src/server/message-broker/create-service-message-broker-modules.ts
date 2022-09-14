@@ -5,9 +5,9 @@ import {
 } from "@amplication/code-gen-types";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
-import { createGenerateKafkaClientOptionsFunction } from "./generate-kafka-client-options/generate-kafka-client-options";
-import { createKafkaModule } from "./kafka-module/create-kafka-module";
-import { createKafkaServiceModules } from "./kafka-service/create-kafka-service";
+import { createGenerateMessageBrokerClientOptionsFunction } from "./generate-message-broker-client-options/generate-message-broker-client-options";
+import { createMessageBrokerModule } from "./message-broker-module/create-message-broker-module";
+import { createMessageBrokerServiceModules } from "./message-broker-service/create-message-broker-service";
 import { createTopicsEnum } from "./topics-enum/createTopicsEnum";
 
 export async function createMessageBroker(
@@ -26,13 +26,11 @@ export async function createMessageBrokerInternal({
   const { serverDirectories } = DsgContext.getInstance;
   const { messageBrokerDirectory } = serverDirectories;
 
-  const generateKafkaClientOptionsModule = await createGenerateKafkaClientOptionsFunction(
+  const generateKafkaClientOptionsModule = await createGenerateMessageBrokerClientOptionsFunction(
     messageBrokerDirectory
   );
-  const kafkaModule = await createKafkaModule(messageBrokerDirectory);
-  const serviceModules = await createKafkaServiceModules(
-    messageBrokerDirectory
-  );
+  const kafkaModule = await createMessageBrokerModule(messageBrokerDirectory);
+  const serviceModules = await createMessageBrokerServiceModules({});
   const topicsEnum = await createTopicsEnum({ serviceTopicsWithName });
   const modules = [
     ...generateKafkaClientOptionsModule,

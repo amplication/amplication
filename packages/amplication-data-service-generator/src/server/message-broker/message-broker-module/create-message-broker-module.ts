@@ -12,20 +12,21 @@ import { parse, removeTSIgnoreComments } from "../../../util/ast";
 
 const templatePath = resolve(__dirname, "kafka.module.template.ts");
 
-export function createKafkaModule(
+export function createMessageBrokerModule(
   eventParams: CreateMessageBrokerNestJSModuleParams["before"]
-) {
+): Promise<Module[]> {
   return pluginWrapper(
-    createKafkaModuleInternal,
+    createMessageBrokerModuleInternal,
     EventNames.CreateMessageBrokerNestJSModule,
     eventParams
   );
 }
 
-export async function createKafkaModuleInternal(
+export async function createMessageBrokerModuleInternal(
   eventParams: CreateMessageBrokerNestJSModuleParams["before"]
 ): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
+  const { messageBrokerDirectory } = serverDirectories;
   const template = await readFile(templatePath, "utf8");
   const generateFileName = "kafka.module.ts";
   const astFile = parse(template);
@@ -36,7 +37,7 @@ export async function createKafkaModuleInternal(
   return [
     {
       code: code,
-      path: join(serverDirectories.messageBrokerDirectory, generateFileName), //TODO get it from context
+      path: join(messageBrokerDirectory, generateFileName), //TODO get it from context
     },
   ];
 }
