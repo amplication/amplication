@@ -46,6 +46,7 @@ import { ServiceSettingsService } from '../serviceSettings/serviceSettings.servi
 import { DEFAULT_RESOURCE_COLORS } from './constants';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
 import { ProjectService } from '../project/project.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
@@ -410,6 +411,10 @@ describe('ResourceService', () => {
             create: serviceSettingsCreateMock,
             createDefaultServiceSettings: serviceSettingsCreateMock
           }))
+        },
+        {
+          provide: ServiceTopicsService,
+          useClass: jest.fn(() => ({}))
         },
         {
           provide: ProjectConfigurationSettingsService,
