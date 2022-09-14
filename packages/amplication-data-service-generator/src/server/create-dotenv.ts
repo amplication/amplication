@@ -28,11 +28,10 @@ export function createDotEnvModule(
  * @returns grants JSON module
  */
 export async function createDotEnvModuleInternal({
-  baseDirectory,
   envVariables,
 }: CreateServerDotEnvParams["before"]): Promise<Module[]> {
   const context = DsgContext.getInstance;
-  const { appInfo } = context;
+  const { appInfo, serverDirectories } = context;
 
   const code = await readCode(templatePath);
   const formattedAdditionalVariables = convertToKeyValueSting(envVariables);
@@ -50,7 +49,7 @@ export async function createDotEnvModuleInternal({
 
   return [
     {
-      path: `${baseDirectory}/.env`,
+      path: `${serverDirectories.baseDirectory}/.env`,
       code: replacePlaceholdersInCode(
         codeWithAdditionalVariables,
         appInfo.settings

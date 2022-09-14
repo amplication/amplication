@@ -1,11 +1,5 @@
 import { namedTypes } from "ast-types";
-import {
-  DTOs,
-  Entity,
-  EntityField,
-  Module,
-  NamedClassDeclaration,
-} from "./code-gen-types";
+import { Entity, EntityField } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
@@ -70,7 +64,6 @@ export type VariableDictionary = {
 
 export interface CreateServerDotEnvParams extends EventParams {
   before: {
-    baseDirectory: string;
     envVariables: VariableDictionary;
   };
 }
