@@ -319,7 +319,10 @@ export class ResourceService {
     });
   }
 
-  async resourcesByIds(args: FindManyResourceArgs, ids: string[]): Promise<Resource[]> {
+  async resourcesByIds(
+    args: FindManyResourceArgs,
+    ids: string[]
+  ): Promise<Resource[]> {
     return this.prisma.resource.findMany({
       ...args,
       where: {
@@ -339,7 +342,10 @@ export class ResourceService {
       x => x.messageBrokerId === resource.id && x.enabled
     );
 
-    const resources = this.resourcesByIds({}, brokerServiceTopics.map(x => x.resourceId));
+    const resources = this.resourcesByIds(
+      {},
+      brokerServiceTopics.map(x => x.resourceId)
+    );
 
     return resources;
   }
