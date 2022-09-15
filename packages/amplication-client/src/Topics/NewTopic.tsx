@@ -36,7 +36,7 @@ const CLASS_NAME = "new-topic";
 const prepareName = (displayName: string) => {
   return displayName
     .toLowerCase() // Convert to lowercase
-    .replace(/[ ]/, ".") // Replace spaces with dots
+    .replace(/[ ]/g, ".") // Replace spaces with dots
     .replace(/[^a-zA-Z0-9._-]/g, ""); // Remove all non-legit characters
 };
 
