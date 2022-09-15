@@ -890,6 +890,7 @@ export type Mutation = {
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
   updatePluginInstallation: PluginInstallation;
+  updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
   updateResource?: Maybe<Resource>;
   updateResourceRole?: Maybe<ResourceRole>;
@@ -1115,6 +1116,11 @@ export type MutationUpdatePluginInstallationArgs = {
   where: WhereUniqueInput;
 };
 
+export type MutationUpdateProjectArgs = {
+  data: ProjectUpdateInput;
+  where: WhereUniqueInput;
+};
+
 export type MutationUpdateProjectConfigurationSettingsArgs = {
   data: ProjectConfigurationSettingsUpdateInput;
   where: WhereUniqueInput;
@@ -1293,6 +1299,10 @@ export type ProjectOrderByInput = {
   deletedAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
+};
+
+export type ProjectUpdateInput = {
+  name?: InputMaybe<Scalars["String"]>;
 };
 
 export type ProjectWhereInput = {
