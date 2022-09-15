@@ -1,3 +1,4 @@
+import { Promisable } from "type-fest";
 import { Module } from "./code-gen-types";
 import {
   CreateAdminModulesParams,
@@ -11,107 +12,107 @@ import {
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
 } from "./plugin-events-params";
-import { DsgContext, EventNames, PluginEventHookResult } from "./plugins-types";
+import { DsgContext, EventNames } from "./plugins-types";
 
 export type Events = {
   [EventNames.CreateAuthModules]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateAuthModulesParams["before"]
-    ) => PluginEventHookResult<CreateAuthModulesParams["before"]>;
+    ) => Promisable<CreateAuthModulesParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateAuthModulesParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateAdminModules]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateAdminModulesParams["before"]
-    ) => PluginEventHookResult<CreateAdminModulesParams["before"]>;
+    ) => Promisable<CreateAdminModulesParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateAdminModulesParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateServerDotEnv]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateServerDotEnvParams["before"]
-    ) => PluginEventHookResult<CreateServerDotEnvParams["before"]>;
+    ) => Promisable<CreateServerDotEnvParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDotEnvParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateEntityService]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateEntityServiceParams["before"]
-    ) => PluginEventHookResult<CreateEntityServiceParams["before"]>;
+    ) => Promisable<CreateEntityServiceParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityServiceParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateEntityServiceBase]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateEntityServiceBaseParams["before"]
-    ) => PluginEventHookResult<CreateEntityServiceBaseParams["before"]>;
+    ) => Promisable<CreateEntityServiceBaseParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityServiceBaseParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateEntityController]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateEntityControllerParams["before"]
-    ) => PluginEventHookResult<CreateEntityControllerParams["before"]>;
+    ) => Promisable<CreateEntityControllerParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityControllerParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateEntityControllerBase]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateEntityControllerBaseParams["before"]
-    ) => PluginEventHookResult<CreateEntityControllerBaseParams["before"]>;
+    ) => Promisable<CreateEntityControllerBaseParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityControllerBaseParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateServerDockerCompose]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateServerDockerComposeParams["before"]
-    ) => PluginEventHookResult<CreateServerDockerComposeParams["before"]>;
+    ) => Promisable<CreateServerDockerComposeParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDockerComposeParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateServerDockerComposeDB]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateServerDockerComposeDBParams["before"]
-    ) => PluginEventHookResult<CreateServerDockerComposeDBParams["before"]>;
+    ) => Promisable<CreateServerDockerComposeDBParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDockerComposeDBParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreatePrismaSchema]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreatePrismaSchemaParams["before"]
-    ) => PluginEventHookResult<CreatePrismaSchemaParams["before"]>;
+    ) => Promisable<CreatePrismaSchemaParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreatePrismaSchemaParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
 };

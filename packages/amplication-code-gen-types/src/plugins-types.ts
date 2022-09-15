@@ -9,6 +9,7 @@ import {
 } from "./code-gen-types";
 import winston from "winston";
 import { Events } from "./plugin-events";
+import type { Promisable } from "type-fest";
 
 export interface EventParams {
   after: Module[];
@@ -39,18 +40,16 @@ export interface DsgContext {
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
 
-export type PluginEventHookResult<T> = T | Promise<T>;
-
 export type PluginMap = {
   [K in EventNames]?: {
     before?: (<T>(
       context: DsgContext,
       params: Module[] | EventParams
-    ) => PluginEventHookResult<T>)[];
+    ) => Promisable<T>)[];
     after?: (<T>(
       context: DsgContext,
       modules: Module[] | EventParams
-    ) => PluginEventHookResult<T>)[];
+    ) => Promisable<T>)[];
   };
 };
 

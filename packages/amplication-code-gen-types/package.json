@@ -50,6 +50,7 @@
     "json-schema": "0.4.0",
     "lodash": "^4.17.21",
     "prisma-schema-dsl": "^1.1.5",
+    "type-fest": "0.11.0",
     "winston": "3.8.2"
   }
 }
