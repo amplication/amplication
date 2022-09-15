@@ -2867,7 +2867,9 @@ export class StringNullableFilter {
 ",
   "test/.env": "POSTGRESQL_USER=testUsername
 POSTGRESQL_PASSWORD=1234
+POSTGRESQL_DB_NAME=/db-name
 POSTGRESQL_PORT=5433
+POSTGRESQL_HOST=localhost
 POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
 BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}

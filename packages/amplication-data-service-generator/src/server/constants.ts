@@ -8,7 +8,9 @@ export const AUTH_PATH = `${SRC_DIRECTORY}/auth`;
 export const ENV_VARIABLES: VariableDictionary = [
   { POSTGRESQL_USER: "${dbUser}" },
   { POSTGRESQL_PASSWORD: "${dbPassword}" },
+  { POSTGRESQL_DB_NAME: "${dbName}" },
   { POSTGRESQL_PORT: "${dbPort}" },
+  { POSTGRESQL_HOST: "${dbHost}" },
   {
     POSTGRESQL_URL:
       "postgres://${dbUser}:${dbPassword}@${dbHost}:${dbPort}${dbName}",
