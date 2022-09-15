@@ -4,11 +4,11 @@ import { Form } from "../Components/Form";
 import { omit } from "lodash";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
-import NameField from "../Components/NameField";
 import { TextField } from "@amplication/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
+import TopicNameField from "../Components/TopicNameField";
 
 type Props = {
   onSubmit: (values: models.Topic) => void;
@@ -33,11 +33,13 @@ const FORM_SCHEMA = {
   properties: {
     displayName: {
       type: "string",
-      minLength: 2,
+      minLength: 1,
+      maxLength: 249,
     },
     name: {
       type: "string",
-      minLength: 2,
+      minLength: 1,
+      maxLength: 249,
     },
   },
 };
@@ -68,7 +70,7 @@ const TopicForm = ({ onSubmit, defaultValues }: Props) => {
           label="Display Name"
           minLength={1}
         />
-        <NameField name="name" />
+        <TopicNameField name="name" />
         <TextField name="description" label="Description" textarea rows={3} />
       </Form>
     </Formik>

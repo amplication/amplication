@@ -3,8 +3,7 @@ import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
-import { camelCase } from "camel-case";
-import { TextField, Snackbar } from "@amplication/design-system";
+import { Snackbar, TextField } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
@@ -28,7 +27,7 @@ const FORM_SCHEMA = {
   properties: {
     displayName: {
       type: "string",
-      minLength: 2,
+      minLength: 1,
     },
   },
 };
@@ -75,8 +74,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
         variables: {
           data: {
             ...data,
-            name: camelCase(data.displayName),
-
+            name: data.displayName,
             resource: { connect: { id: resourceId } },
           },
         },
