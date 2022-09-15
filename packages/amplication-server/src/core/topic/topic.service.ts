@@ -22,7 +22,10 @@ export class TopicService extends BlockTypeService<
     super(blockService);
   }
 
-  async create(args: CreateTopicArgs, @UserEntity() user: User): Promise<Topic> {
+  async create(
+    args: CreateTopicArgs,
+    @UserEntity() user: User
+  ): Promise<Topic> {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(args.data.name)) {
       throw new Error('Invalid name');
