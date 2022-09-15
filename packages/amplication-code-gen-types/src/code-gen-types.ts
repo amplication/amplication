@@ -1,7 +1,6 @@
 import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
-import { namedTypes } from "ast-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 export {
