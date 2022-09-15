@@ -36,8 +36,16 @@ const Service = () => {
   return (
     <PageContent pageTitle={pageTitle} className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
-        <ResourceCircleBadge type={EnumResourceType.Service} />
-        <h3>Service List</h3>
+        <div className={`${CLASS_NAME}__header__top`}>
+          <ResourceCircleBadge type={EnumResourceType.Service} />
+          <div className={`${CLASS_NAME}__header__top__title`}>Service List</div>
+        </div>
+        <div className={`${CLASS_NAME}__header__description`}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et vehicula risus, vulputate semper turpis.
+          Cras sollicitudin volutpat justo.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et vehicula risus, vulputate semper turpis.
+          Cras sollicitudin volutpat justo.
+        </div>
       </div>
       <HorizontalRule />
       <div className={`${CLASS_NAME}__list`}>

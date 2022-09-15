@@ -3,7 +3,7 @@
 .services-page__list__item {
   display: flex;
   flex-direction: column;
-  gap: var(--default-spacing);
+  gap: var(--default-spacing-small);
   padding: var(--large-spacing);
   background-color: var(--black5);
   border-radius: var(--default-border-radius);
@@ -12,13 +12,11 @@
 
   &__header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--default-spacing);
 
     &__title {
-      @include body1;
       color: var(--black100);
+      font-weight: 600;
+      font-size: 14px;
     }
   }
 
