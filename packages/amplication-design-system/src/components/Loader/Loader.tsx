@@ -36,7 +36,7 @@ export function Loader({
       })}
     >
       <div className={`${CLASS_NAME}__animation`}>
-        <Lottie animationData={animationFull} {...rest} />;
+        <Lottie animationData={animationFull} {...rest} />
       </div>
     </div>
   );

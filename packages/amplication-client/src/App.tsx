@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
@@ -37,6 +37,10 @@ function App() {
     initPaddle();
   }, []);
 
+  const handleTimeout = useCallback(() => {
+    setKeepLoadingAnimation(false);
+  }, []);
+
   //The default behavior across all <HotKeys> components
   reactHotkeys.configure({
     //Disable simulate keypress events for the keys that do not natively emit them
@@ -54,9 +58,7 @@ function App() {
         <Loader
           fullScreen
           minimumLoadTimeMS={MIN_ANIMATION_TIME}
-          onTimeout={() => {
-            setKeepLoadingAnimation(false);
-          }}
+          onTimeout={handleTimeout}
         />
       )}
 
