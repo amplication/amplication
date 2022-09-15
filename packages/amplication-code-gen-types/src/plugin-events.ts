@@ -11,14 +11,14 @@ import {
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
 } from "./plugin-events-params";
-import { DsgContext, EventNames } from "./plugins-types";
+import { DsgContext, EventNames, PluginEventHookResult } from "./plugins-types";
 
 export type Events = {
   [EventNames.CreateAuthModules]?: {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateAuthModulesParams["before"]
-    ) => CreateAuthModulesParams["before"];
+    ) => PluginEventHookResult<CreateAuthModulesParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateAuthModulesParams["after"]
@@ -28,7 +28,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateAdminModulesParams["before"]
-    ) => CreateAdminModulesParams["before"];
+    ) => PluginEventHookResult<CreateAdminModulesParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateAdminModulesParams["after"]
@@ -38,7 +38,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateServerDotEnvParams["before"]
-    ) => CreateServerDotEnvParams["before"];
+    ) => PluginEventHookResult<CreateServerDotEnvParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDotEnvParams["after"]
@@ -48,7 +48,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateEntityServiceParams["before"]
-    ) => CreateEntityServiceParams["before"];
+    ) => PluginEventHookResult<CreateEntityServiceParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityServiceParams["after"]
@@ -58,7 +58,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateEntityServiceBaseParams["before"]
-    ) => CreateEntityServiceBaseParams["before"];
+    ) => PluginEventHookResult<CreateEntityServiceBaseParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityServiceBaseParams["after"]
@@ -68,7 +68,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateEntityControllerParams["before"]
-    ) => CreateEntityControllerParams["before"];
+    ) => PluginEventHookResult<CreateEntityControllerParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityControllerParams["after"]
@@ -78,7 +78,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateEntityControllerBaseParams["before"]
-    ) => CreateEntityControllerBaseParams["before"];
+    ) => PluginEventHookResult<CreateEntityControllerBaseParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateEntityControllerBaseParams["after"]
@@ -88,7 +88,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateServerDockerComposeParams["before"]
-    ) => CreateServerDockerComposeParams["before"];
+    ) => PluginEventHookResult<CreateServerDockerComposeParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDockerComposeParams["after"]
@@ -98,7 +98,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreateServerDockerComposeDBParams["before"]
-    ) => CreateServerDockerComposeDBParams["before"];
+    ) => PluginEventHookResult<CreateServerDockerComposeDBParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDockerComposeDBParams["after"]
@@ -108,7 +108,7 @@ export type Events = {
     before?: (
       dsgContext: DsgContext,
       eventParams: CreatePrismaSchemaParams["before"]
-    ) => CreatePrismaSchemaParams["before"];
+    ) => PluginEventHookResult<CreatePrismaSchemaParams["before"]>;
     after?: (
       dsgContext: DsgContext,
       modules: CreatePrismaSchemaParams["after"]

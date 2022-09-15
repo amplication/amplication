@@ -39,10 +39,18 @@ export interface DsgContext {
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
 
+export type PluginEventHookResult<T> = T | Promise<T>;
+
 export type PluginMap = {
   [K in EventNames]?: {
-    before?: (<T>(context: DsgContext, params: Module[] | EventParams) => T)[];
-    after?: (<T>(context: DsgContext, modules: Module[] | EventParams) => T)[];
+    before?: (<T>(
+      context: DsgContext,
+      params: Module[] | EventParams
+    ) => PluginEventHookResult<T>)[];
+    after?: (<T>(
+      context: DsgContext,
+      modules: Module[] | EventParams
+    ) => PluginEventHookResult<T>)[];
   };
 };
 
