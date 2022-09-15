@@ -6,17 +6,17 @@ import {
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
-  CreatePrismaSchemaParams,
-  CreateServerDockerComposeDBParams,
-  CreateServerDockerComposeParams,
   CreateMessageBrokerClientOptionsFactoryParams,
   CreateMessageBrokerNestJSModuleParams,
   CreateMessageBrokerParams,
-  CreateMessageBrokerTopicsEnumParams,
-  CreateServerDotEnvParams,
-  CreateMessageBrokerServicesParams,
+  CreateMessageBrokerServiceBaseParams,
   CreateMessageBrokerServiceParams,
+  CreateMessageBrokerTopicsEnumParams,
   CreatePackageJsonParams,
+  CreatePrismaSchemaParams,
+  CreateServerDockerComposeDBParams,
+  CreateServerDockerComposeParams,
+  CreateServerDotEnvParams,
 } from "./plugin-events-params";
 import { DsgContext, EventNames } from "./plugins-types";
 
@@ -161,16 +161,6 @@ export type Events = {
       modules: CreateMessageBrokerClientOptionsFactoryParams["after"]
     ) => Module[];
   };
-  [EventNames.CreateMessageBrokerServices]?: {
-    before?: (
-      dsgContext: DsgContext,
-      eventParams: CreateMessageBrokerServicesParams["before"]
-    ) => CreateMessageBrokerServicesParams["before"];
-    after?: (
-      dsgContext: DsgContext,
-      modules: CreateMessageBrokerServicesParams["after"]
-    ) => Module[];
-  };
   [EventNames.CreateMessageBrokerService]?: {
     before?: (
       dsgContext: DsgContext,
@@ -179,6 +169,16 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerServiceParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateMessageBrokerServiceBase]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerServiceBaseParams["before"]
+    ) => CreateMessageBrokerServiceBaseParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerServiceBaseParams["after"]
     ) => Module[];
   };
   [EventNames.CreatePackageJson]?: {

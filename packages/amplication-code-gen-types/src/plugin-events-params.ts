@@ -117,13 +117,12 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
   extends EventParams {
   before: {};
 }
-export interface CreateMessageBrokerServicesParams extends EventParams {
+
+export interface CreateMessageBrokerServiceParams extends EventParams {
   before: {};
 }
-export interface CreateMessageBrokerServiceParams extends EventParams {
-  before: {
-    baseService: boolean;
-  };
+export interface CreateMessageBrokerServiceBaseParams extends EventParams {
+  before: {};
 }
 export interface CreatePackageJsonParams extends EventParams {
   before: {

@@ -32,7 +32,7 @@ export async function createMessageBrokerInternal({
   const messageBrokerModule = await createMessageBrokerModule(
     messageBrokerDirectory
   );
-  const serviceModules = await createMessageBrokerServiceModules({});
+  const serviceModules = await createMessageBrokerServiceModules();
   const topicsEnum = await createTopicsEnum({ serviceTopicsWithName });
   const modules = [
     ...generateMessageBrokerClientOptionsModule,
