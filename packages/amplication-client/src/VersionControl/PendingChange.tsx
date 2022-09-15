@@ -114,6 +114,16 @@ const changeOriginMap = {
         icon: "",
         displayName: change.displayName,
       },
+      [models.EnumBlockType.PluginInstallation]: {
+        relativeUrl: "plugins/installed",
+        icon: "",
+        displayName: change.displayName,
+      },
+      [models.EnumBlockType.PluginOrder]: {
+        relativeUrl: "plugins/installed",
+        icon: "",
+        displayName: change.displayName,
+      },
     };
     return blockTypeMap[(change as models.Block).blockType];
   },
