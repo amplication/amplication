@@ -1,0 +1,29 @@
+@import "../style/index.scss";
+
+.services-page__list__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--default-spacing);
+  padding: var(--large-spacing);
+  background-color: var(--black5);
+  border-radius: var(--default-border-radius);
+  border-color: var(--black10);
+  border-width: 1px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--default-spacing);
+
+    &__title {
+      @include body1;
+      color: var(--black100);
+    }
+  }
+
+  &__description {
+    @include body2;
+    color: var(--black80);
+  }
+}

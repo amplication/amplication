@@ -1,0 +1,14 @@
+.services-page {
+
+  &__header {
+    display: flex;
+    gap: var(--default-spacing);
+    align-items: center;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
+  }
+}
