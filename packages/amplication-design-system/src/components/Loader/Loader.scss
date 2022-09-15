@@ -1,0 +1,33 @@
+@import "../../style/index.scss";
+
+$min-size: 300px;
+$max-size: 400px;
+
+.amp-loader {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+
+  &--fullscreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: $loading-z-index;
+  }
+
+  &__animation {
+    min-width: $min-size;
+    min-height: $min-size;
+    max-width: $max-size;
+    max-height: $max-size;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -11,3 +11,4 @@ lib/
 values-secret*
 dist/
 packages/.server-id
+.amplication/storage/

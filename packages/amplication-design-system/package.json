@@ -24,6 +24,7 @@
     "classnames": "2.3.1",
     "date-fns": "2.25.0",
     "lodash": "4.17.21",
+    "lottie-react": "^2.3.1",
     "react-animate-height": "3.0.4",
     "react-select": "5.4.0",
     "react-transition-group": "4.4.2",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.18.10",
+    "@rollup/plugin-json": "^4.1.0",
     "@storybook/addon-actions": "6.4.22",
     "@storybook/addon-essentials": "6.4.22",
     "@storybook/addon-interactions": "6.4.22",

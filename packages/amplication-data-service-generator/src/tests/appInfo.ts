@@ -7,6 +7,7 @@ export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".prisma",
   ".env",
   ".yml",
+  ".json",
 ];
 
 export const appInfo: AppInfo = {
