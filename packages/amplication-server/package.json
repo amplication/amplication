@@ -89,7 +89,7 @@
     "tar-stream": "2.2.0",
     "ts-morph": "^13.0.2",
     "uuid": "8.3.2",
-    "winston": "3.3.4",
+    "winston": "3.8.2",
     "winston-cloud-logging": "1.0.2",
     "zlib": "1.0.5"
   },

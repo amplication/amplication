@@ -6,6 +6,7 @@ import {
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
+  CreatePrismaSchemaParams,
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
   CreateMessageBrokerClientOptionsFactoryParams,
@@ -106,6 +107,16 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateServerDockerComposeDBParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreatePrismaSchema]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreatePrismaSchemaParams["before"]
+    ) => CreatePrismaSchemaParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreatePrismaSchemaParams["after"]
     ) => Module[];
   };
   [EventNames.CreateMessageBroker]?: {

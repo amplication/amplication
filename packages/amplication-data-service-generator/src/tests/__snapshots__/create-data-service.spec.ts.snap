@@ -4,6 +4,87 @@ exports[`createDataService creates resource as expected 1`] = `
 Object {
   "admin-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL =http://localhost:3000",
+  "admin-ui/package.json": "{
+  \\"name\\": \\"@sample-application/admin\\",
+  \\"version\\": \\"0.1.3\\",
+  \\"private\\": true,
+  \\"dependencies\\": {
+    \\"@apollo/client\\": \\"3.6.9\\",
+    \\"@material-ui/core\\": \\"4.12.4\\",
+    \\"graphql\\": \\"15.6.1\\",
+    \\"lodash\\": \\"4.17.21\\",
+    \\"pluralize\\": \\"8.0.0\\",
+    \\"ra-data-graphql-amplication\\": \\"0.0.13\\",
+    \\"react\\": \\"16.14.0\\",
+    \\"react-admin\\": \\"3.19.11\\",
+    \\"react-dom\\": \\"16.14.0\\",
+    \\"react-scripts\\": \\"5.0.0\\",
+    \\"sass\\": \\"^1.39.0\\",
+    \\"web-vitals\\": \\"1.1.2\\"
+  },
+  \\"scripts\\": {
+    \\"start\\": \\"react-scripts start\\",
+    \\"build\\": \\"react-scripts build\\",
+    \\"test\\": \\"react-scripts test\\",
+    \\"eject\\": \\"react-scripts eject\\",
+    \\"docker:build\\": \\"docker build .\\"
+  },
+  \\"eslintConfig\\": {
+    \\"extends\\": [
+      \\"react-app\\",
+      \\"react-app/jest\\"
+    ]
+  },
+  \\"browserslist\\": {
+    \\"production\\": [
+      \\">0.2%\\",
+      \\"not dead\\",
+      \\"not op_mini all\\"
+    ],
+    \\"development\\": [
+      \\"last 1 chrome version\\",
+      \\"last 1 firefox version\\",
+      \\"last 1 safari version\\"
+    ]
+  },
+  \\"devDependencies\\": {
+    \\"@testing-library/jest-dom\\": \\"5.14.1\\",
+    \\"@testing-library/react\\": \\"11.2.7\\",
+    \\"@testing-library/user-event\\": \\"13.2.0\\",
+    \\"@types/jest\\": \\"26.0.16\\",
+    \\"@types/lodash\\": \\"4.14.178\\",
+    \\"@types/node\\": \\"12.20.16\\",
+    \\"@types/react\\": \\"16.14.11\\",
+    \\"@types/react-dom\\": \\"17.0.0\\",
+    \\"type-fest\\": \\"0.13.1\\",
+    \\"typescript\\": \\"4.2.4\\"
+  }
+}",
+  "admin-ui/public/manifest.json": "{
+  \\"short_name\\": \\"Sample Application\\",
+  \\"name\\": \\"Sample Application\\",
+  \\"icons\\": [
+    {
+      \\"src\\": \\"favicon.ico\\",
+      \\"sizes\\": \\"64x64 32x32 24x24 16x16\\",
+      \\"type\\": \\"image/x-icon\\"
+    },
+    {
+      \\"src\\": \\"logo192.png\\",
+      \\"type\\": \\"image/png\\",
+      \\"sizes\\": \\"192x192\\"
+    },
+    {
+      \\"src\\": \\"logo512.png\\",
+      \\"type\\": \\"image/png\\",
+      \\"sizes\\": \\"512x512\\"
+    }
+  ],
+  \\"start_url\\": \\".\\",
+  \\"display\\": \\"standalone\\",
+  \\"theme_color\\": \\"#000000\\",
+  \\"background_color\\": \\"#ffffff\\"
+}",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
@@ -2762,6 +2843,28 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
+  "admin-ui/tsconfig.json": "{
+  \\"compilerOptions\\": {
+    \\"target\\": \\"es5\\",
+    \\"lib\\": [\\"dom\\", \\"dom.iterable\\", \\"esnext\\"],
+    \\"allowJs\\": true,
+    \\"skipLibCheck\\": true,
+    \\"esModuleInterop\\": true,
+    \\"allowSyntheticDefaultImports\\": true,
+    \\"forceConsistentCasingInFileNames\\": true,
+    \\"noFallthroughCasesInSwitch\\": true,
+    \\"module\\": \\"esnext\\",
+    \\"moduleResolution\\": \\"node\\",
+    \\"resolveJsonModule\\": true,
+    \\"isolatedModules\\": true,
+    \\"noEmit\\": true,
+    \\"jsx\\": \\"react-jsx\\",
+    \\"strict\\": true
+  },
+  \\"include\\": [\\"src\\"],
+  \\"exclude\\": [\\"./node_modules\\"]
+}
+",
   "server/.env": "POSTGRESQL_USER=testUsername
 POSTGRESQL_PASSWORD=1234
 POSTGRESQL_PORT=5433
@@ -2816,10 +2919,11 @@ services:
         condition: service_healthy
   db:
     image: postgres:12
+    ports:
+      - \${POSTGRESQL_PORT}:5432
     environment:
       POSTGRES_USER: \${POSTGRESQL_USER}
       POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
-      ports: \${POSTGRESQL_PORT}:5432
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
@@ -2836,6 +2940,88 @@ services:
       retries: 10
 volumes:
   postgres: ~
+",
+  "server/nest-cli.json": "{
+  \\"sourceRoot\\": \\"src\\",
+  \\"compilerOptions\\": {
+    \\"assets\\": [\\"swagger\\"]
+  }
+}
+",
+  "server/package.json": "{
+  \\"name\\": \\"@sample-application/server\\",
+  \\"version\\": \\"0.1.3\\",
+  \\"private\\": true,
+  \\"scripts\\": {
+    \\"start\\": \\"nest start\\",
+    \\"start:watch\\": \\"nest start --watch\\",
+    \\"start:debug\\": \\"nest start --debug --watch\\",
+    \\"build\\": \\"nest build\\",
+    \\"test\\": \\"jest\\",
+    \\"seed\\": \\"ts-node scripts/seed.ts\\",
+    \\"db:migrate-save\\": \\"prisma migrate dev\\",
+    \\"db:migrate-up\\": \\"prisma migrate deploy\\",
+    \\"db:clean\\": \\"ts-node scripts/clean.ts\\",
+    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
+    \\"prisma:generate\\": \\"prisma generate\\",
+    \\"docker:db\\": \\"docker-compose -f docker-compose.db.yml up -d\\",
+    \\"docker:build\\": \\"docker build .\\",
+    \\"compose:up\\": \\"docker-compose up -d\\",
+    \\"compose:down\\": \\"docker-compose down --volumes\\"
+  },
+  \\"dependencies\\": {
+    \\"@nestjs/common\\": \\"8.2.3\\",
+    \\"@nestjs/config\\": \\"1.1.5\\",
+    \\"@nestjs/core\\": \\"8.2.3\\",
+    \\"@nestjs/graphql\\": \\"9.1.2\\",
+    \\"@nestjs/jwt\\": \\"8.0.0\\",
+    \\"@nestjs/passport\\": \\"8.2.2\\",
+    \\"@nestjs/platform-express\\": \\"8.2.3\\",
+    \\"@nestjs/serve-static\\": \\"2.2.2\\",
+    \\"@nestjs/swagger\\": \\"5.1.5\\",
+    \\"@prisma/client\\": \\"3.15.2\\",
+    \\"apollo-server-express\\": \\"3.6.1\\",
+    \\"bcrypt\\": \\"5.0.1\\",
+    \\"class-transformer\\": \\"0.5.1\\",
+    \\"class-validator\\": \\"0.13.2\\",
+    \\"graphql\\": \\"15.7.2\\",
+    \\"graphql-type-json\\": \\"0.3.2\\",
+    \\"nest-access-control\\": \\"2.0.3\\",
+    \\"nest-morgan\\": \\"1.0.1\\",
+    \\"nestjs-prisma\\": \\"0.16.0\\",
+    \\"npm-run-all\\": \\"4.1.5\\",
+    \\"passport\\": \\"0.6.0\\",
+    \\"passport-http\\": \\"0.3.0\\",
+    \\"passport-jwt\\": \\"4.0.0\\",
+    \\"reflect-metadata\\": \\"0.1.13\\",
+    \\"swagger-ui-express\\": \\"4.3.0\\",
+    \\"ts-node\\": \\"9.1.1\\"
+  },
+  \\"devDependencies\\": {
+    \\"@nestjs/cli\\": \\"8.2.5\\",
+    \\"@nestjs/testing\\": \\"8.2.3\\",
+    \\"@types/bcrypt\\": \\"5.0.0\\",
+    \\"@types/express\\": \\"4.17.9\\",
+    \\"@types/graphql-type-json\\": \\"0.3.2\\",
+    \\"@types/jest\\": \\"26.0.19\\",
+    \\"@types/normalize-path\\": \\"3.0.0\\",
+    \\"@types/passport-http\\": \\"0.3.9\\",
+    \\"@types/passport-jwt\\": \\"3.0.6\\",
+    \\"@types/supertest\\": \\"2.0.11\\",
+    \\"jest\\": \\"27.0.6\\",
+    \\"jest-mock-extended\\": \\"^2.0.4\\",
+    \\"prisma\\": \\"3.15.2\\",
+    \\"supertest\\": \\"4.0.2\\",
+    \\"ts-jest\\": \\"27.0.3\\",
+    \\"type-fest\\": \\"0.11.0\\",
+    \\"typescript\\": \\"4.2.3\\"
+  },
+  \\"jest\\": {
+    \\"preset\\": \\"ts-jest\\",
+    \\"testEnvironment\\": \\"node\\",
+    \\"modulePathIgnorePatterns\\": [\\"<rootDir>/dist/\\"]
+  }
+}
 ",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
@@ -7255,6 +7441,458 @@ export class NotFoundException extends common.NotFoundException {
   message!: string;
 }
 ",
+  "server/src/grants.json": "[
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  }
+]",
   "server/src/health/base/health.controller.base.ts": "import { Get, HttpStatus, Res } from \\"@nestjs/common\\";
 import { Response } from \\"express\\";
 import { HealthService } from \\"../health.service\\";
@@ -15744,6 +16382,32 @@ export class StringNullableFilter {
   })
   @Type(() => String)
   not?: string;
+}
+",
+  "server/tsconfig.build.json": "{
+  \\"extends\\": \\"./tsconfig.json\\",
+  \\"exclude\\": [\\"node_modules\\", \\"prisma\\", \\"test\\", \\"dist\\", \\"**/*spec.ts\\", \\"admin\\"]
+}
+",
+  "server/tsconfig.json": "{
+  \\"compilerOptions\\": {
+    \\"module\\": \\"commonjs\\",
+    \\"declaration\\": false,
+    \\"removeComments\\": true,
+    \\"emitDecoratorMetadata\\": true,
+    \\"experimentalDecorators\\": true,
+    \\"target\\": \\"es2017\\",
+    \\"lib\\": [\\"ES2020\\"],
+    \\"sourceMap\\": true,
+    \\"outDir\\": \\"./dist\\",
+    \\"incremental\\": true,
+    \\"esModuleInterop\\": true,
+    \\"allowSyntheticDefaultImports\\": true,
+    \\"resolveJsonModule\\": true,
+    \\"skipLibCheck\\": true,
+    \\"strict\\": true
+  },
+  \\"include\\": [\\"src\\"]
 }
 ",
 }

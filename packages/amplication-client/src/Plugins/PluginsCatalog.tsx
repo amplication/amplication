@@ -74,16 +74,15 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   return (
     <div>
-      {pluginInstallations &&
-        Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
-          <PluginsCatalogItem
-            key={pluginId}
-            plugin={plugin}
-            pluginInstallation={installedPlugins[plugin.id]}
-            onInstall={handleInstall}
-            onEnableStateChange={onEnableStateChange}
-          />
-        ))}
+      {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
+        <PluginsCatalogItem
+          key={pluginId}
+          plugin={plugin}
+          pluginInstallation={installedPlugins[plugin.id]}
+          onInstall={handleInstall}
+          onEnableStateChange={onEnableStateChange}
+        />
+      ))}
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}

@@ -9,6 +9,7 @@ import {
 import { FindOneArgs } from '../../dto';
 import { Commit, Project, Resource, User } from '../../models';
 import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
+import { UpdateProjectArgs } from './dto/UpdateProjectArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { ProjectService } from './project.service';
 import { InjectContextValue } from '../../decorators/injectContextValue.decorator';
@@ -65,6 +66,12 @@ export class ProjectResolver {
     @UserEntity() user: User
   ): Promise<Project> {
     return this.projectService.createProject(args, user.id);
+  }
+
+  @Mutation(() => Project, { nullable: false })
+  @Roles('ORGANIZATION_ADMIN')
+  async updateProject(@Args() args: UpdateProjectArgs): Promise<Project> {
+    return this.projectService.updateProject(args);
   }
 
   @ResolveField(() => [Resource])

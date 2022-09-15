@@ -1,6 +1,8 @@
 import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
+import { namedTypes } from "ast-types";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 export {
   EnumDataType,
@@ -206,9 +208,16 @@ export type serverDirectories = {
 type BlockOmittedFieldsWithoutId<T> = Omit<BlockOmittedFields<T>, "id">;
 
 export type Topic = BlockOmittedFields<models.Topic>;
+
 export type ServiceTopics = Omit<
   BlockOmittedFields<models.ServiceTopics>,
   "patterns"
 > & {
   patterns: Array<models.MessagePattern & { topicName?: string }>;
+};
+
+export type PrismaDataSource = {
+  name: string;
+  provider: PrismaSchemaDSL.DataSourceProvider;
+  url: PrismaSchemaDSL.DataSourceURLEnv;
 };

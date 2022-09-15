@@ -1,6 +1,6 @@
 import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
 import { UseGuards, UseFilters } from '@nestjs/common';
-import { Auth, User, Account } from 'src/models';
+import { Auth, User, Account } from '../../models';
 import {
   LoginArgs,
   SignupArgs,
@@ -13,12 +13,12 @@ import {
 import { CompleteInvitationArgs } from '../workspace/dto';
 
 import { AuthService } from './auth.service';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { UserEntity } from 'src/decorators/user.decorator';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { FindOneArgs } from 'src/dto';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { UserEntity } from '../../decorators/user.decorator';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { FindOneArgs } from '../../dto';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {

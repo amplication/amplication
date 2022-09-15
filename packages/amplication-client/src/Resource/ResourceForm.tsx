@@ -1,14 +1,14 @@
+import { Snackbar, TextField } from "@amplication/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
 import { match } from "react-router-dom";
-import { validate } from "../util/formikValidateJsonSchema";
-
-import { Snackbar, TextField } from "@amplication/design-system";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
+import { validate } from "../util/formikValidateJsonSchema";
+import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import "./ResourceForm.scss";
 import { GET_RESOURCE } from "./ResourceHome";
@@ -50,7 +50,14 @@ function ResourceForm({ match }: Props) {
   const { trackEvent } = useTracking();
 
   const [updateResource, { error: updateError }] = useMutation<TData>(
-    UPDATE_RESOURCE
+    UPDATE_RESOURCE,
+    {
+      refetchQueries: [
+        {
+          query: GET_PROJECTS,
+        },
+      ],
+    }
   );
 
   const handleSubmit = useCallback(

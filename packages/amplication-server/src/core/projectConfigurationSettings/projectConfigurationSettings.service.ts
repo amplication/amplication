@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
-import { FindOneArgs } from 'src/dto';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { User } from 'src/models';
+import { FindOneArgs } from '../../dto';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { User } from '../../models';
 import { BlockService } from '../block/block.service';
 import { BlockValuesExtended } from '../block/types';
 import { ProjectConfigurationSettings } from './dto/ProjectConfigurationSettings';

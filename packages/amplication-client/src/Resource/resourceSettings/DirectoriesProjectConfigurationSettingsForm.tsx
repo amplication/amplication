@@ -41,7 +41,6 @@ const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
                 <div className={`${CLASS_NAME}__header`}>
                   <h3>Base Directory</h3>
                 </div>
-                <label>some description text</label>
                 <hr />
                 <FormikAutoSave debounceMS={1000} />
                 <Panel panelStyle={EnumPanelStyle.Transparent}>

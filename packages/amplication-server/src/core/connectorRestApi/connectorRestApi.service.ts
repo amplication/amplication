@@ -1,4 +1,4 @@
-import { EnumBlockType } from 'src/enums/EnumBlockType';
+import { EnumBlockType } from '../../enums/EnumBlockType';
 import { BlockTypeService } from '../block/blockType.service';
 import {
   ConnectorRestApi,

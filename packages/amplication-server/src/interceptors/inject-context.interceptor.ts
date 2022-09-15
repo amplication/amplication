@@ -5,8 +5,8 @@ import {
   NestInterceptor
 } from '@nestjs/common';
 import { set } from 'lodash';
-import { InjectableOriginParameter } from 'src/enums/InjectableOriginParameter';
-import { User } from 'src/models';
+import { InjectableOriginParameter } from '../enums/InjectableOriginParameter';
+import { User } from '../models';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 

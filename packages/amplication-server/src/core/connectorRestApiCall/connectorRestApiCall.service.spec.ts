@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BlockService } from 'src/core/block/block.service';
+import { BlockService } from '../block/block.service';
 import { ConnectorRestApiCallService } from './connectorRestApiCall.service';
 import { ConnectorRestApiCall } from './dto';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { User } from 'src/models';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { User } from '../../models';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];

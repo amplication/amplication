@@ -1,4 +1,4 @@
-import { SortOrder } from 'src/enums/SortOrder';
+import { SortOrder } from '../../../enums/SortOrder';
 import { InputType, Field } from '@nestjs/graphql';
 
 @InputType({

@@ -26,7 +26,7 @@ import {
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { AmplicationError } from '../../errors/AmplicationError';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -41,8 +41,8 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
   'The resource of type `ProjectConfiguration` cannot be deleted';
 import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 import { ProjectService } from '../project/project.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
-const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   'This resource is used to store project configuration.';
 
@@ -55,11 +55,13 @@ export class ResourceService {
     private serviceSettingsService: ServiceSettingsService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly serviceTopicsService: ServiceTopicsService
   ) {}
 
   async createProjectConfiguration(
     projectId: string,
+    projectName: string,
     userId: string
   ): Promise<Resource> {
     const existingProjectConfiguration = await this.prisma.resource.findFirst({
@@ -74,7 +76,7 @@ export class ResourceService {
       data: {
         resourceType: EnumResourceType.ProjectConfiguration,
         description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
-        name: DEFAULT_PROJECT_CONFIGURATION_NAME,
+        name: projectName,
         project: { connect: { id: projectId } }
       }
     });
@@ -317,6 +319,37 @@ export class ResourceService {
     });
   }
 
+  async resourcesByIds(
+    args: FindManyResourceArgs,
+    ids: string[]
+  ): Promise<Resource[]> {
+    return this.prisma.resource.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        id: { in: ids },
+        deletedAt: null
+      }
+    });
+  }
+
+  async messageBrokerConnectedServices(args: FindOneArgs): Promise<Resource[]> {
+    const resource = await this.resource(args);
+    const serviceTopicsCollection = await this.serviceTopicsService.findMany({
+      where: { resource: { projectId: resource.projectId } }
+    });
+    const brokerServiceTopics = serviceTopicsCollection.filter(
+      x => x.messageBrokerId === resource.id && x.enabled
+    );
+
+    const resources = this.resourcesByIds(
+      {},
+      brokerServiceTopics.map(x => x.resourceId)
+    );
+
+    return resources;
+  }
+
   async deleteResource(args: FindOneArgs): Promise<Resource | null> {
     const resource = await this.prisma.resource.findUnique({
       where: {
@@ -380,6 +413,13 @@ export class ResourceService {
 
     if (isEmpty(resource)) {
       throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
+      await this.projectService.updateProject({
+        data: { name: args.data.name },
+        where: { id: resource.projectId }
+      });
     }
 
     return this.prisma.resource.update(args);
