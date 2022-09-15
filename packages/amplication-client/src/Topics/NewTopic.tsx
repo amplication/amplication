@@ -33,6 +33,13 @@ const FORM_SCHEMA = {
 };
 const CLASS_NAME = "new-topic";
 
+const prepareName = (displayName: string) => {
+  return displayName
+    .toLowerCase() // Convert to lowercase
+    .replace(/[ ]/, ".") // Replace spaces with dots
+    .replace(/[^a-zA-Z0-9._-]/g, ""); // Remove all non-legit characters
+};
+
 const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
   const { addEntity } = useContext(AppContext);
   const [createTopic, { error, loading }] = useMutation(CREATE_TOPIC, {
@@ -74,7 +81,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
         variables: {
           data: {
             ...data,
-            name: data.displayName,
+            name: prepareName(data.displayName),
             resource: { connect: { id: resourceId } },
           },
         },
