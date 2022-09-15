@@ -4,12 +4,7 @@ import {
   EventNames,
   Module,
 } from "@amplication/code-gen-types";
-import DsgContext from "../../../dsg-context";
-import { readFile } from "fs/promises";
-import { join, resolve } from "path";
 import pluginWrapper from "../../../plugin-wrapper";
-import { print } from "recast";
-import { parse, removeTSIgnoreComments } from "../../../util/ast";
 
 export async function createMessageBrokerServiceModules(
   eventParams: CreateMessageBrokerServicesParams["before"]

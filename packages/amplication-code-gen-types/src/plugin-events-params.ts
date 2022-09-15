@@ -10,6 +10,7 @@ import {
 import { EventParams } from "./plugins-types";
 import { ServiceTopics } from "./code-gen-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import { JsonValue } from "type-fest";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   before: {
@@ -122,5 +123,10 @@ export interface CreateMessageBrokerServicesParams extends EventParams {
 export interface CreateMessageBrokerServiceParams extends EventParams {
   before: {
     baseService: boolean;
+  };
+}
+export interface CreatePackageJsonParams extends EventParams {
+  before: {
+    updateValues: { [key: string]: JsonValue };
   };
 }

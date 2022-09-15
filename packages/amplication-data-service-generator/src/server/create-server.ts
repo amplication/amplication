@@ -48,7 +48,7 @@ export async function createServerModules(
     serverDirectories.baseDirectory
   );
   const packageJsonModule = await createPackageJson({
-    update: {
+    updateValues: {
       name: `@${paramCase(appInfo.name)}/server`,
       version: appInfo.version,
     },

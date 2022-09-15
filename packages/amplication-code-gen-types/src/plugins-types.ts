@@ -62,6 +62,7 @@ export enum EventNames {
   CreateServerDockerCompose = "CreateServerDockerCompose",
   CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
   CreatePrismaSchema = "CreatePrismaSchema",
+  CreatePackageJson = "CreatePackageJson",
 }
 
 export interface AmplicationPlugin {

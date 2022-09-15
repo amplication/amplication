@@ -16,6 +16,7 @@ import {
   CreateServerDotEnvParams,
   CreateMessageBrokerServicesParams,
   CreateMessageBrokerServiceParams,
+  CreatePackageJsonParams,
 } from "./plugin-events-params";
 import { DsgContext, EventNames } from "./plugins-types";
 
@@ -178,6 +179,16 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerServiceParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreatePackageJson]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreatePackageJsonParams["before"]
+    ) => CreatePackageJsonParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreatePackageJsonParams["after"]
     ) => Module[];
   };
 };
