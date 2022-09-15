@@ -15,6 +15,7 @@ import {
   CreateMessageBrokerTopicsEnumParams,
   CreateServerDotEnvParams,
   CreateMessageBrokerServicesParams,
+  CreateMessageBrokerServiceParams,
 } from "./plugin-events-params";
 import { DsgContext, EventNames } from "./plugins-types";
 
@@ -167,6 +168,16 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerServicesParams["after"]
+    ) => Module[];
+  };
+  [EventNames.CreateMessageBrokerService]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerServiceParams["before"]
+    ) => CreateMessageBrokerServiceParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerServiceParams["after"]
     ) => Module[];
   };
 };

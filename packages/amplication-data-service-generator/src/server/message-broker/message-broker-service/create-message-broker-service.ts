@@ -1,4 +1,5 @@
 import {
+  CreateMessageBrokerServiceParams,
   CreateMessageBrokerServicesParams,
   EventNames,
   Module,
@@ -23,32 +24,27 @@ export async function createMessageBrokerServiceModules(
 export async function createMessageBrokerServiceModulesInternal(
   eventParams: CreateMessageBrokerServicesParams["before"]
 ): Promise<Module[]> {
-  const serviceModule = await createMessageBrokerServiceModule(false);
-  const baseServiceModule = await createMessageBrokerServiceModule(true);
+  const serviceModule = await createMessageBrokerServiceModule({
+    baseService: false,
+  });
+  const baseServiceModule = await createMessageBrokerServiceModule({
+    baseService: true,
+  });
   return [...serviceModule, ...baseServiceModule];
 }
 
-async function createMessageBrokerServiceModule(
-  baseService: boolean
+function createMessageBrokerServiceModule(
+  eventParams: CreateMessageBrokerServiceParams["before"]
 ): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
-  const { messageBrokerDirectory } = serverDirectories;
-  const templatePath = resolve(
-    __dirname,
-    `kafka.service${baseService ? ".base" : ""}.template.ts`
+  return pluginWrapper(
+    createMessageBrokerServiceModuleInternal,
+    EventNames.CreateMessageBrokerService,
+    eventParams
   );
+}
 
-  const template = await readFile(templatePath, "utf8");
-  const generateFileName = `kafka.service${baseService ? ".base" : ""}.ts`;
-  const astFile = parse(template);
-
-  removeTSIgnoreComments(astFile);
-
-  const code = print(astFile).code;
-  const path = join(
-    messageBrokerDirectory,
-    baseService ? "base" : "",
-    generateFileName
-  );
-  return [{ code, path }];
+async function createMessageBrokerServiceModuleInternal(
+  eventParams: CreateMessageBrokerServiceParams["before"]
+): Promise<Module[]> {
+  return [];
 }
