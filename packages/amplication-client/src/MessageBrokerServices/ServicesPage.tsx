@@ -46,7 +46,6 @@ const Service = () => {
             key={service.id}
             service={service}
             link={`/${workspaceId}/${projectId}/${service.id}`}
-            onDelete={() => {}}
           />
         ))}
       </div>
