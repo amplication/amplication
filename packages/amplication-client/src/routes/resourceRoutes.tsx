@@ -68,6 +68,13 @@ const resourceRoutes = [
     ],
   },
   {
+    path: "/:workspace/:project/:resource/Services",
+    Component: lazy(() => import("../MessageBrokerServices/ServicesPage")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: false
+  },
+  {
     path: "/:workspace/:project/:resource/service-connections",
     Component: lazy(
       () => import("../ServiceConnections/ServiceConnectionsPage")

@@ -12,7 +12,13 @@ export const resourceMenuLayout: { [key: string]: string[] } = {
     "plugins",
   ],
   [EnumResourceType.ProjectConfiguration]: ["github", "settings", "plugins"],
-  [EnumResourceType.MessageBroker]: ["topics", "github", "settings", "plugins"],
+  [EnumResourceType.MessageBroker]: [
+    "topics",
+    "services",
+    "github",
+    "settings",
+    "plugins",
+  ],
 };
 
 export const linksMap = {
@@ -45,6 +51,11 @@ export const linksMap = {
     title: "Topics",
     icon: "topic",
     to: "/topics",
+  },
+  services: {
+    title: "Services",
+    icon: "services",
+    to: "/services",
   },
   connections: {
     title: "Connections",
