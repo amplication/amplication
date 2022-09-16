@@ -127,7 +127,6 @@ model Resource {
   updatedAt             DateTime         @updatedAt
   name                  String
   description           String
-  color                 String           @default("#20A4F3")
   gitRepositoryOverride Boolean          @default(false)
   githubLastSync        DateTime?
   githubLastMessage     String?

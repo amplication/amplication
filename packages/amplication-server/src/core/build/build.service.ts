@@ -10,7 +10,7 @@ import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
 import path, { join } from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { ResourceRole, User } from 'src/models';
+import { ResourceRole, User } from '../../models';
 import { Build } from './dto/Build';
 import { CreateBuildArgs } from './dto/CreateBuildArgs';
 import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
@@ -465,7 +465,14 @@ export class BuildService {
       `Amplication build ${truncateBuildId}`;
 
     const clientHost = this.configService.get(CLIENT_HOST_VAR);
-    const url = `${clientHost}/${build.resourceId}/builds/${build.id}`;
+
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: build.resource.projectId
+      }
+    });
+
+    const url = `${clientHost}/${project.workspaceId}/${build.resource.projectId}/${build.resourceId}/builds/${build.id}`;
 
     return this.actionService.run(
       build.actionId,

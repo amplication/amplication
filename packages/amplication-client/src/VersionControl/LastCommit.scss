@@ -2,16 +2,19 @@
 
 .last-commit {
   margin-top: auto;
-  margin-bottom: var(--default-spacing);
 
   &__title {
     font-size: 14px;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   &__status {
     display: flex;
     align-items: center;
+    margin: var(--large-spacing) 0;
   }
 
   .build-status-icons__status {
@@ -21,26 +24,26 @@
   }
 
   &__divider {
-    border: $border-black5;
-    margin: var(--form-field-spacing) 0;
+    border: none;
+    background-color: var(--black10);
+    height: 1px;
+    margin: 0;
   }
 
   &__skeleton {
-    margin: var(--form-field-spacing) 0;
-
-    .clickable-id {
-      margin: 0 var(--icon-spacing);
-    }
+    padding: var(--large-spacing) 0;
   }
 
   &__content {
     display: flex;
     flex-direction: column;
-    padding: 0 var(--default-spacing);
+    padding: var(--large-spacing);
   }
 
   .clickable-id {
+    @include regular-12;
     color: var(--black80);
+    margin-right: var(--icon-spacing);
     a {
       color: var(--black100);
     }
@@ -62,6 +65,7 @@
   }
 
   .amp-button.amp-button--secondary {
+    @include regular-14;
     width: 100%;
   }
 }

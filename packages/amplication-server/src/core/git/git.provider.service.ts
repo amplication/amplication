@@ -5,10 +5,10 @@ import {
   Prisma,
   PrismaService
 } from '@amplication/prisma-db';
-import { FindOneArgs } from 'src/dto';
-import { AmplicationError } from 'src/errors/AmplicationError';
-import { Resource } from 'src/models/Resource';
-import { GitOrganization } from 'src/models/GitOrganization';
+import { FindOneArgs } from '../../dto';
+import { AmplicationError } from '../../errors/AmplicationError';
+import { Resource } from '../../models/Resource';
+import { GitOrganization } from '../../models/GitOrganization';
 import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
 import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
 import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';

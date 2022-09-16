@@ -1,9 +1,7 @@
-import * as path from 'path';
 import { Module, OnApplicationShutdown } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { MorganModule } from 'nest-morgan';
 import { Request } from 'express';
 import { CoreModule } from './core/core.module';
@@ -14,8 +12,8 @@ import { SegmentAnalyticsModule } from './services/segmentAnalytics/segmentAnaly
 import { SegmentAnalyticsOptionsService } from './services/segmentAnalytics/segmentAnalyticsOptionsService';
 import { SendGridModule } from '@ntegral/nestjs-sendgrid';
 import { SendgridConfigService } from './services/sendgridConfig.service';
-import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { GoogleSecretsManagerModule } from './services/googleSecretsManager.module';
+import { GoogleSecretsManagerService } from './services/googleSecretsManager.service';
 
 @Module({
   imports: [
@@ -27,17 +25,6 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
       imports: [ConfigModule, GoogleSecretsManagerModule],
       inject: [ConfigService, GoogleSecretsManagerService],
       useClass: SendgridConfigService
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'amplication-client',
-        'build'
-      ),
-      exclude: ['/graphql']
     }),
 
     RootWinstonModule,
@@ -72,7 +59,7 @@ import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.s
   ]
 })
 export class AppModule implements OnApplicationShutdown {
-  onApplicationShutdown(signal: string) {
+  onApplicationShutdown(signal: string): void {
     console.trace(`Application shut down (signal: ${signal})`);
   }
 }

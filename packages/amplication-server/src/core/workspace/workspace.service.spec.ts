@@ -8,7 +8,7 @@ import { AccountService } from '../account/account.service';
 import { ResourceService } from '../resource/resource.service';
 import { MailService } from '../mail/mail.service';
 import { Workspace, Account, User, Project } from '../../models';
-import { Role } from 'src/enums/Role';
+import { Role } from '../../enums/Role';
 import { DeleteUserArgs } from './dto';
 import { SubscriptionService } from '../subscription/subscription.service';
 import { ProjectService } from '../project/project.service';

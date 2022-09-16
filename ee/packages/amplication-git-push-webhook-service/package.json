@@ -1,6 +1,6 @@
 {
   "name": "@amplication/git-push-webhook-service",
-  "version": "0.15.0",
+  "version": "0.16.1",
   "description": "",
   "author": "",
   "private": true,
@@ -18,8 +18,8 @@
     "docker:down": "docker-compose down --volumes"
   },
   "dependencies": {
-    "@amplication/kafka": "^0.15.0",
-    "@amplication/prisma-db": "^0.15.0",
+    "@amplication/kafka": "^0.16.1",
+    "@amplication/prisma-db": "^0.16.1",
     "@nestjs/common": "8.2.3",
     "@nestjs/config": "2.0.0",
     "@nestjs/core": "8.4.4",

@@ -12,7 +12,6 @@ import { FindOneArgs } from '../../dto';
 import { EnumDataType } from '../../enums/EnumDataType';
 import { QueryMode } from '../../enums/QueryMode';
 import { Project, Resource, User, GitOrganization } from '../../models';
-import { validateHTMLColorHex } from 'validate-color';
 import { prepareDeletedItemName } from '../../util/softDelete';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { USER_ENTITY_NAME } from '../entity/constants';
@@ -24,12 +23,10 @@ import {
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs
 } from './dto';
-import { InvalidColorError } from './InvalidColorError';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
 import { ProjectConfigurationExistError } from './errors/ProjectConfigurationExistError';
 import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
-import { DEFAULT_RESOURCE_COLORS } from './constants';
-import { AmplicationError } from 'src/errors/AmplicationError';
+import { AmplicationError } from '../../errors/AmplicationError';
 
 const USER_RESOURCE_ROLE = {
   name: 'user',
@@ -38,10 +35,6 @@ const USER_RESOURCE_ROLE = {
 
 export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
 export const INITIAL_COMMIT_MESSAGE = 'Initial Commit';
-
-export const DEFAULT_SERVICE_DATA = {
-  color: DEFAULT_RESOURCE_COLORS.service
-};
 
 export const INVALID_RESOURCE_ID = 'Invalid resourceId';
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
@@ -79,7 +72,6 @@ export class ResourceService {
 
     const newProjectConfiguration = await this.prisma.resource.create({
       data: {
-        color: DEFAULT_RESOURCE_COLORS.projectConfiguration,
         resourceType: EnumResourceType.ProjectConfiguration,
         description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
         name: DEFAULT_PROJECT_CONFIGURATION_NAME,
@@ -101,11 +93,6 @@ export class ResourceService {
     user: User,
     generationSettings: ResourceGenSettingsCreateInput = null
   ): Promise<Resource> {
-    const { color } = args.data;
-    if (color && !validateHTMLColorHex(color)) {
-      throw new InvalidColorError(color);
-    }
-
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
         'Resource of type Project Configuration cannot be created manually'
@@ -131,7 +118,6 @@ export class ResourceService {
 
     const resource = await this.prisma.resource.create({
       data: {
-        ...DEFAULT_SERVICE_DATA,
         ...args.data,
         gitRepository,
         roles: {
@@ -347,6 +333,9 @@ export class ResourceService {
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: args.where.id
+      },
+      include: {
+        gitRepository: true
       }
     });
 
@@ -358,29 +347,40 @@ export class ResourceService {
       throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
     }
 
-    if (resource.gitRepositoryOverride) {
-      const gitRepo = await this.prisma.gitRepository.findFirst({
-        where: {
-          resources: { every: { id: resource.id } }
-        }
-      });
-
-      if (gitRepo) {
-        await this.prisma.gitRepository.delete({
-          where: {
-            id: gitRepo.id
-          }
-        });
-      }
-    }
-
-    return this.prisma.resource.update({
+    await this.prisma.resource.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(resource.name, resource.id),
-        deletedAt: new Date()
+        deletedAt: new Date(),
+        gitRepository: {
+          disconnect: true
+        }
       }
     });
+
+    if (!resource.gitRepositoryOverride) {
+      return resource;
+    }
+
+    return await this.deleteResourceGitRepository(resource);
+  }
+
+  async deleteResourceGitRepository(resource: Resource): Promise<Resource> {
+    const gitRepo = await this.prisma.gitRepository.findFirst({
+      where: {
+        resources: { every: { id: resource.id } }
+      }
+    });
+
+    if (!gitRepo) {
+      await this.prisma.gitRepository.delete({
+        where: {
+          id: resource.gitRepositoryId
+        }
+      });
+    }
+
+    return resource;
   }
 
   async updateResource(args: UpdateOneResourceArgs): Promise<Resource | null> {

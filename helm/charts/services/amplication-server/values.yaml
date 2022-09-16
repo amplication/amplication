@@ -2,11 +2,11 @@ name: amplication-server
 
 autoscaling:
   enabled: true
-  minReplicas: 2
+  minReplicas: 12
   maxReplicas: 100
   targetCPUUtilizationPercentage: 60
   targetMemoryUtilizationPercentage: 60
-replicaCount: 2
+replicaCount: 12
 image:
   pullPolicy: Always
   repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-prod-server
@@ -33,7 +33,7 @@ secrets:
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: "2Gi"
-minMemory: "2Gi"
-maxCPU: 1
-minCPU: 1
+maxMemory: "1.6Gi"
+minMemory: "1.6Gi"
+maxCPU: "0.9"
+minCPU: "0.9"

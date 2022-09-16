@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { EnumEntityAction } from 'src/enums/EnumEntityAction';
+import { EnumEntityAction } from '../../../enums/EnumEntityAction';
 
 @InputType({
   isAbstract: true

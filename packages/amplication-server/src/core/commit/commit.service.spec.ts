@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@amplication/prisma-db';
-import { Commit } from 'src/models';
+import { Commit } from '../../models';
 import { CommitService } from './commit.service';
 import { EntityService } from '../entity/entity.service';
 import { BlockService } from '../block/block.service';

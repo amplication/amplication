@@ -6,8 +6,8 @@ import {
   Prisma,
   EnumResourceType
 } from '@amplication/prisma-db';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { DiffModule } from 'src/services/diff.module';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { DiffModule } from '../../services/diff.module';
 import {
   Resource,
   Block,
@@ -15,8 +15,8 @@ import {
   IBlock,
   BlockInputOutput,
   User
-} from 'src/models';
-import { DiffService } from 'src/services/diff.service';
+} from '../../models';
+import { DiffService } from '../../services/diff.service';
 
 const INITIAL_VERSION_NUMBER = 0;
 const NOW = new Date();

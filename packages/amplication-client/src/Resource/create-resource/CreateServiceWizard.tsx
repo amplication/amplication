@@ -11,7 +11,7 @@ import React, {
   useContext,
   useRef,
 } from "react";
-import { match } from "react-router-dom";
+import { match, useHistory } from "react-router-dom";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
 import {
@@ -21,7 +21,6 @@ import {
 import * as models from "../../models";
 import { createResource, serviceSettingsFieldsInitValues } from "../constants";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
-import ProgressBar from "../../Components/ProgressBar";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
@@ -37,10 +36,13 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
   const {
     currentProject,
     setNewResource,
+    currentWorkspace,
     errorCreateResource,
     loadingCreateResource,
     addEntity,
   } = useContext(AppContext);
+
+  const history = useHistory();
 
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
@@ -59,7 +61,11 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
     serviceSettingsFields.current = currentServiceSettings;
   };
 
-  const handleClick = () => {
+  const handleBackToProjectClick = () => {
+    history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
+  };
+
+  const handleCreateServiceClick = () => {
     if (!serviceSettingsFields) return;
     const {
       generateAdminUI,
@@ -92,32 +98,45 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
     <Modal open fullScreen css={moduleClass}>
       {loadingCreateResource ? (
         <div className={`${moduleClass}__processing`}>
-          <div className={`${moduleClass}__processing__title`}>
-            All set! We’re currently generating your service.
+          <div
+            className={`${moduleClass}__processing__message_title_container`}
+          >
+            <div className={`${moduleClass}__processing__title`}>
+              All set! We’re currently generating your service.
+            </div>
+            <div className={`${moduleClass}__processing__message`}>
+              It should only take a few seconds to finish. Don't go away!
+            </div>
           </div>
-          <div className={`${moduleClass}__processing__message`}>
-            It should only take a few seconds to finish. Don't go away!
-          </div>
-          <SvgThemeImage image={EnumImages.Generating} />
-          <div className={`${moduleClass}__processing__loader`}>
-            <ProgressBar />
-          </div>
+          <SvgThemeImage image={EnumImages.CreateServiceWizard} />
           <div className={`${moduleClass}__processing__tagline`}>
-            For a full experience, connect with a GitHub repository and get a
-            new Pull Request every time you make changes in your data model.
+            <div>For a full experience, connect with a GitHub repository</div>
+            <div>
+              and get a new Pull Request every time you make changes in your
+              data model.
+            </div>
           </div>
         </div>
       ) : (
         <div className={`${moduleClass}__splitWrapper`}>
           <div className={`${moduleClass}__left`}>
             <div className={`${moduleClass}__description`}>
-              <ResourceCircleBadge type={models.EnumResourceType.Service} />
-              <h3>Amplication Service Creation Wizard</h3>
-              <h2>Let’s start building your service</h2>
-              <h3>
-                Select which components to include in your service and whether
-                to use sample entities
-              </h3>
+              <ResourceCircleBadge
+                type={models.EnumResourceType.Service}
+                size="large"
+              />
+              <div className={`${moduleClass}__description_top`}>
+                <h2>
+                  Amplication Service Creation Wizard Let’s start building your
+                  service
+                </h2>
+              </div>
+              <div className={`${moduleClass}__description_bottom`}>
+                <h3>
+                  Select which components to include in your service and whether
+                  to use sample entities
+                </h3>
+              </div>
             </div>
           </div>
           <div className={`${moduleClass}__right`}>
@@ -128,17 +147,20 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
         </div>
       )}
       <div className={`${moduleClass}__footer`}>
-        <Button
-          buttonStyle={EnumButtonStyle.Clear}
-          disabled
-          icon="arrow_left"
-          iconPosition={EnumIconPosition.Left}
-        >
-          {"Back to project"}
-        </Button>
-        <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleClick}>
-          <label>Create Service</label>
-        </Button>
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            icon="arrow_left"
+            iconPosition={EnumIconPosition.Left}
+            onClick={handleBackToProjectClick}
+          >
+            {"Back to project"}
+          </Button>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleCreateServiceClick}
+          >
+            <label>Create Service</label>
+          </Button>
       </div>
       <Snackbar open={Boolean(errorCreateResource)} message={errorMessage} />
     </Modal>

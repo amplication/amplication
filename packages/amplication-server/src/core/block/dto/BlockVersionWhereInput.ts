@@ -4,7 +4,7 @@ import {
   StringFilter,
   IntFilter,
   WhereUniqueInput
-} from 'src/dto';
+} from '../../../dto';
 
 @InputType({
   isAbstract: true

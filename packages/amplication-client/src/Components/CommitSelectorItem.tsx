@@ -1,7 +1,7 @@
-import { formatTimeToNow } from "@amplication/design-system";
 import React from "react";
 import { Commit } from "../models";
 import "./CommitSelectorItem.scss";
+import UserBadge from "./UserBadge";
 
 type Props = {
   commit: Commit | null;
@@ -9,19 +9,11 @@ type Props = {
 const CLASS_NAME = "commit-selector-item";
 
 export const CommitSelectorItem = ({ commit }: Props) => {
-  const createdAtHour = commit
-    ? formatTimeToNow(new Date(commit?.createdAt))
-    : null;
-
-  const createdHourStyle = () => (
-    <label className={`commit-selector__hour`}>{createdAtHour}</label>
-  );
-
   return (
     <div className={CLASS_NAME}>
+      <UserBadge />
       <div className={`${CLASS_NAME}__title`}>
-        {commit?.message ? commit?.message : commit?.createdAt}
-        <div>{createdHourStyle()}</div>
+        {commit?.message || "No commit message"}
       </div>
     </div>
   );

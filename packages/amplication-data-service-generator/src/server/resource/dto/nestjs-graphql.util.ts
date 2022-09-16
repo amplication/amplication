@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { ClassDeclaration } from "../../../util/ast";
+import { ClassDeclaration } from "@amplication/code-gen-types";
 
 export const NESTJS_GRAPHQL_MODULE = "@nestjs/graphql";
 export const OBJECT_TYPE_ID = builders.identifier("ObjectType");

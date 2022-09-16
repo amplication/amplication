@@ -3,12 +3,10 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -372,11 +370,15 @@ export type ConnectorRestApiCreateInput = {
   authenticationType: EnumConnectorRestApiAuthenticationType;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  httpBasicAuthenticationSettings?: InputMaybe<HttpBasicAuthenticationSettingsInput>;
+  httpBasicAuthenticationSettings?: InputMaybe<
+    HttpBasicAuthenticationSettingsInput
+  >;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
-  privateKeyAuthenticationSettings?: InputMaybe<PrivateKeyAuthenticationSettingsInput>;
+  privateKeyAuthenticationSettings?: InputMaybe<
+    PrivateKeyAuthenticationSettingsInput
+  >;
   resource: WhereParentIdInput;
 };
 
@@ -1637,7 +1639,6 @@ export type RemoteGitRepository = {
 export type Resource = {
   __typename?: 'Resource';
   builds: Array<Build>;
-  color: Scalars['String'];
   createdAt: Scalars['DateTime'];
   description: Scalars['String'];
   entities: Array<Entity>;
@@ -1670,7 +1671,6 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
-  color?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   name: Scalars['String'];
   project: WhereParentIdInput;
@@ -1758,7 +1758,6 @@ export type ResourceRoleWhereInput = {
 };
 
 export type ResourceUpdateInput = {
-  color?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   gitRepositoryOverride?: InputMaybe<Scalars['Boolean']>;
   name?: InputMaybe<Scalars['String']>;

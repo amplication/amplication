@@ -3,13 +3,13 @@ import { Formik, Form } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
-import { GET_LAST_COMMIT } from "./LastCommit";
+
 import { TextField, Snackbar } from "@amplication/design-system";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./Commit.scss";
 import { AppContext } from "../context/appContext";
-import { GET_COMMITS } from "./hooks/commitQueries";
+import { GET_COMMITS, GET_LAST_COMMIT } from "./hooks/commitQueries";
 import { SortOrder } from "../models";
 
 type TCommit = {
