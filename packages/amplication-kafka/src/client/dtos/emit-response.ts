@@ -1,0 +1,1 @@
+export interface EmitResponse  { partition: number, offset?:string}
