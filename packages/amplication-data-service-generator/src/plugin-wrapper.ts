@@ -62,6 +62,7 @@ const pluginWrapper: PluginWrapper = async (
     context.modules.push(finalModules);
     return finalModules;
   } catch (error) {
+    console.log(error, "error from plugin wrapper");
     context.logger.error(`failed to execute plugin event ${event}`, {
       errorMessage: JSON.stringify(error),
     });
