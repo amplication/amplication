@@ -38,8 +38,12 @@ class DsgContext implements types.DsgContext {
   private constructor() {
     //prevent external code from creating instances of the context
   }
+
+  public get resourceInfo(): types.AppInfo {
+    return this.appInfo;
+  }
+
   public resourceType!: EnumResourceType;
-  public readonly resourceInfo = this.appInfo;
   public pluginInstallations: types.PluginInstallation[] = [];
   public otherResources?: types.DSGResourceData[] | undefined;
 }
