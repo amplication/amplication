@@ -257,6 +257,10 @@ $bullet-size: 6px;
     }
   }
 
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
   // For Internet Explorer
   & {
     scrollbar-face-color: $foreground-color;
