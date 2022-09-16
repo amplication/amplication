@@ -19,7 +19,7 @@ import { createServerModules } from "./server/create-server";
 import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
-import registerPlugins from "./register-plugin";
+import registerPlugins, { MYSQL_PLUGIN_ID } from "./register-plugin";
 import { get } from "lodash";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
@@ -137,7 +137,7 @@ function resolveLookupFields(
   installedPlugins: Plugin[]
 ): Entity[] {
   const isMySQLPluginInstalled = installedPlugins.find(
-    (plugin) => plugin.npm === "@amplication/plugin-db-mysql"
+    (plugin) => plugin.pluginId === MYSQL_PLUGIN_ID
   );
   const entityIdToEntity: Record<string, Entity> = {};
   const fieldIdToField: Record<string, EntityField> = {};

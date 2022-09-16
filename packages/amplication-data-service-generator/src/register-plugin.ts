@@ -9,6 +9,8 @@ class EmptyClass {}
 
 export const POSTGRESQL_PLUGIN_ID = "@amplication/plugin-db-postgres";
 export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
+export const MYSQL_PLUGIN_ID = "@amplication/plugin-db-mysql";
+export const MYSQL_NPM = "@amplication/plugin-db-mysql";
 
 const functionsObject = ["[object Function]", "[object AsyncFunction]"];
 const defaultPlugins: Plugin[] = [
