@@ -3,7 +3,7 @@ import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import roles from "./roles";
 import { EnumResourceType } from "../models";
-import { pluginInstallation } from "./pluginInstallation";
+import { installedPlugins } from "./pluginInstallation";
 
 jest.setTimeout(100000);
 
@@ -14,7 +14,7 @@ describe("createDataService", () => {
       roles,
       resourceInfo: appInfo,
       resourceType: EnumResourceType.Service,
-      plugins: pluginInstallation,
+      plugins: installedPlugins,
     });
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
