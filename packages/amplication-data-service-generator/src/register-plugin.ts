@@ -7,11 +7,14 @@ import {
 
 class EmptyClass {}
 
+export const POSTGRESQL_PLUGIN_ID = "@amplication/plugin-db-postgres";
+export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
+
 const functionsObject = ["[object Function]", "[object AsyncFunction]"];
 const defaultPlugins: Plugin[] = [
   {
-    pluginId: "@amplication/plugin-db-postgres",
-    npm: "@amplication/plugin-db-postgres",
+    pluginId: POSTGRESQL_PLUGIN_ID,
+    npm: POSTGRESQL_NPM,
     enabled: true,
   },
 ];
