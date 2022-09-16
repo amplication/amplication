@@ -11,6 +11,7 @@ import {
   serverDirectories,
   clientDirectories,
   DSGResourceData,
+  Plugin,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -47,7 +48,10 @@ export async function createDataServiceImpl(
     entitiesWithUserEntity
   );
 
-  const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
+  const normalizedEntities = resolveLookupFields(
+    entitiesWithPluralName,
+    resourcePlugins
+  );
 
   const context = DsgContext.getInstance;
   context.appInfo = appInfo;
@@ -128,7 +132,13 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
   return currentEntities;
 }
 
-function resolveLookupFields(entities: Entity[]): Entity[] {
+function resolveLookupFields(
+  entities: Entity[],
+  installedPlugins: Plugin[]
+): Entity[] {
+  const isMySQLPluginInstalled = installedPlugins.find(
+    (plugin) => plugin.npm === "@amplication/plugin-db-mysql"
+  );
   const entityIdToEntity: Record<string, Entity> = {};
   const fieldIdToField: Record<string, EntityField> = {};
   for (const entity of entities) {
@@ -141,6 +151,14 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
     return {
       ...entity,
       fields: entity.fields.map((field) => {
+        if (
+          isMySQLPluginInstalled &&
+          field.dataType === EnumDataType.MultiSelectOptionSet
+        ) {
+          throw new Error(
+            `Multi Select Option Set is not supported by MySQL prisma provider. You can select another data type or change your DB to PostgreSQL`
+          );
+        }
         if (field.dataType === EnumDataType.Lookup) {
           const fieldProperties = field.properties as types.Lookup;
 
