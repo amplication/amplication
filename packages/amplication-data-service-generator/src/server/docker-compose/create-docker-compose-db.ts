@@ -17,7 +17,7 @@ export async function createDockerComposeDBFile(): Promise<Module[]> {
   const eventParams: CreateServerDockerComposeDBParams["before"] = {
     fileContent: await fs.readFile(filePath, "utf-8"),
     outputFileName: DOCKER_COMPOSE_DB_FILE_NAME.replace(".template", ""),
-    updateProperties: {},
+    updateProperties: [],
   };
 
   return pluginWrapper(

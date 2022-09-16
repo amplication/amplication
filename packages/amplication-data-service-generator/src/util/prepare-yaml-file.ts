@@ -1,12 +1,16 @@
 import YAML from "yaml";
-import { merge } from "lodash";
+import { set } from "lodash";
 
 export function prepareYamlFile(
   yamlFileContent: string,
-  updateProperties: { [key: string]: any }
+  updateProperties: { path: string; value: any }[]
 ): string {
   const parsed = YAML.parse(yamlFileContent);
-  const updated = merge(updateProperties, parsed);
+  if (!updateProperties.length) return YAML.stringify(parsed, { nullStr: "~" });
 
+  const updated = updateProperties.map((item) =>
+    set(parsed, item.path, item.value)
+  )[0];
+  
   return YAML.stringify(updated, { nullStr: "~" });
 }
