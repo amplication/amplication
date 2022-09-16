@@ -14,14 +14,13 @@ const SHOW_MESSAGE_DURATION = 3000;
 const CLASS_NAME = "amp-name-field";
 
 type Props = Omit<TextInputProps, "helpText" | "hasError"> & {
-  capitalized?: boolean;
+  name: string;
 };
 
-const TopicNameField = ({ capitalized, ...rest }: Props) => {
-  // @ts-ignore
+const TopicNameField = ({ name, ...rest }: Props) => {
   const [field, meta] = useField<string>({
-    ...rest,
-    validate: (value) => (TOPIC_REGEX.test(value) ? undefined : HELP_TEXT),
+    name,
+    validate: (value) => (TOPIC_REGEX.test(value) ? "undefined" : HELP_TEXT),
   });
   const [showMessage, setShowMessage] = useState<boolean>(false);
 
