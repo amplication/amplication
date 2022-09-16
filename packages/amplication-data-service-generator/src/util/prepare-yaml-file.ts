@@ -11,6 +11,6 @@ export function prepareYamlFile(
   const updated = updateProperties.map((item) =>
     set(parsed, item.path, item.value)
   )[0];
-  
+
   return YAML.stringify(updated, { nullStr: "~" });
 }
