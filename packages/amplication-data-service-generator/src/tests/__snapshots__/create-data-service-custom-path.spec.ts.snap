@@ -2865,7 +2865,13 @@ export class StringNullableFilter {
   \\"exclude\\": [\\"./node_modules\\"]
 }
 ",
-  "test/.env": "BCRYPT_SALT=10
+  "test/.env": "POSTGRESQL_USER=testUsername
+POSTGRESQL_PASSWORD=1234
+POSTGRESQL_DB_NAME=/db-name
+POSTGRESQL_PORT=5433
+POSTGRESQL_HOST=localhost
+POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
+BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
@@ -3019,7 +3025,7 @@ volumes:
   }
 }
 ",
-  "test/prisma/schema.prisma": "datasource postgres {
+  "test/prisma/schema.prisma": "datasource postgresql {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
 }
