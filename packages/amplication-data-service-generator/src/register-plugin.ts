@@ -8,6 +8,13 @@ import {
 class EmptyClass {}
 
 const functionsObject = ["[object Function]", "[object AsyncFunction]"];
+const defaultPlugins: Plugin[] = [
+  {
+    pluginId: "@amplication/plugin-db-postgres",
+    npm: "@amplication/plugin-db-postgres",
+    enabled: true,
+  },
+];
 
 /**
  * generator function that import the plugin requested by user
@@ -41,9 +48,10 @@ async function* getPluginFuncGenerator(
  */
 const getAllPlugins = async (pluginList: Plugin[]): Promise<Events[]> => {
   if (!pluginList.length) return [];
+  const allPlugins = [...pluginList, ...defaultPlugins];
   const pluginFuncsArr: Events[] = [];
 
-  for await (const pluginFunc of getPluginFuncGenerator(pluginList)) {
+  for await (const pluginFunc of getPluginFuncGenerator(allPlugins)) {
     const initializeClass = new pluginFunc();
     if (!initializeClass.register) continue;
 
