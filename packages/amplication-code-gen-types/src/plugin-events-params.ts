@@ -91,7 +91,6 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
     outputFileName: string;
   };
 }
-
 export interface CreatePrismaSchemaParams extends EventParams {
   before: {
     entities: Entity[];

@@ -8,6 +8,6 @@ export const CLIENT_GENERATOR: PrismaSchemaDSL.Generator = PrismaSchemaDSL.creat
 
 export const DATA_SOURCE: PrismaDataSource = {
   name: "postgres",
-  provider: PrismaSchemaDSL.DataSourceProvider.PostgreSQL,
-  url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
+  provider: "PostgreSQL",
+  urlEnv: "POSTGRESQL_URL",
 };

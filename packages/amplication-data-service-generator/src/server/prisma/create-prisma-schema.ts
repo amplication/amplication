@@ -55,7 +55,13 @@ export async function createPrismaSchemaInternal({
     return enumFields.map((field) => createPrismaEnum(field, entity));
   });
 
-  const schema = PrismaSchemaDSL.createSchema(models, enums, dataSource, [
+  const prismaDataSource = {
+    name: "postgres",
+    provider: PrismaSchemaDSL.DataSourceProvider[dataSource.provider],
+    url: new PrismaSchemaDSL.DataSourceURLEnv(dataSource.urlEnv),
+  };
+
+  const schema = PrismaSchemaDSL.createSchema(models, enums, prismaDataSource, [
     clientGenerator,
   ]);
 
