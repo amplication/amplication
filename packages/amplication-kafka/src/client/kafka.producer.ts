@@ -5,23 +5,19 @@ import {KeySerializer} from "./types/key-serializer";
 import {ValueSerializer} from "./types/value-serializer";
 import {Logger} from "winston";
 import {EmitResponse} from "./dtos/emit-response";
+import {KafkaClient} from "./kafka-client";
 
 @Injectable()
 export class KafkaProducer<K,V> implements OnApplicationBootstrap, BeforeApplicationShutdown {
 
     private producer: Producer;
 
-    constructor(private config: KafkaConsumerConfigDto,
+    constructor(kafkaClient:KafkaClient,
+                private config: KafkaConsumerConfigDto,
                 private keySerialize: KeySerializer<K>,
                 private valueSerialize: ValueSerializer<V>,
                 private logger: Logger) {
-
-        const kafka = new Kafka({
-            clientId: config.clientId,
-            brokers: config.brokers,
-        })
-
-        this.producer = kafka.producer()
+        this.producer = kafkaClient.kafka.producer()
     }
 
     async beforeApplicationShutdown(signal?: string): Promise<any> {

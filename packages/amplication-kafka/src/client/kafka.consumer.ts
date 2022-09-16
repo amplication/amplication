@@ -6,24 +6,22 @@ import {BeforeApplicationShutdown, Injectable, OnApplicationBootstrap} from "@ne
 import {Logger} from "winston";
 import {KafkaConsumerCallback} from "./types/kafka-consumer-callback.type";
 import {KafkaMessageDto} from "./dtos/kafka-message-dto";
-
+import {KafkaClient} from "./kafka-client";
 
 @Injectable()
 export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplicationShutdown {
     private subscribers: Map<string, KafkaConsumerCallback<K, V>[]>
     private consumer: Consumer;
 
-    constructor(private config: KafkaConsumerConfigDto,
+    constructor(kafkaClient: KafkaClient,
+                private config: KafkaConsumerConfigDto,
                 private keySerialize: KeySerializer<K>,
                 private valueSerialize: ValueSerializer<V>,
                 private logger: Logger) {
 
         this.subscribers = new Map<string, ((kafkaMessage: KafkaMessageDto<K, V>) => Promise<void>)[]>()
-        const kafka = new Kafka({
-            clientId: config.clientId,
-            brokers: config.brokers,
-        })
-        this.consumer = kafka.consumer({
+
+        this.consumer = kafkaClient.kafka.consumer({
             groupId: config.groupId,
         })
     }
