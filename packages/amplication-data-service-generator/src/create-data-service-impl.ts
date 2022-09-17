@@ -11,6 +11,7 @@ import {
   serverDirectories,
   clientDirectories,
   DSGResourceData,
+  Plugin,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -22,6 +23,17 @@ import registerPlugins from "./register-plugin";
 import { get } from "lodash";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
+
+export const POSTGRESQL_PLUGIN_ID = "@amplication/plugin-db-postgres";
+export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
+
+const defaultPlugins: Plugin[] = [
+  {
+    pluginId: POSTGRESQL_PLUGIN_ID,
+    npm: POSTGRESQL_NPM,
+    enabled: true,
+  },
+];
 
 export async function createDataServiceImpl(
   dSGResourceData: DSGResourceData,
@@ -38,6 +50,7 @@ export async function createDataServiceImpl(
   if (!entities || !roles || !appInfo) {
     throw new Error("Missing required data");
   }
+  const pluginsWithDefaultPlugins = prepareDefaultPlugins(resourcePlugins);
   // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
     entities
@@ -53,7 +66,7 @@ export async function createDataServiceImpl(
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
-  const plugins = await registerPlugins(resourcePlugins);
+  const plugins = await registerPlugins(pluginsWithDefaultPlugins);
   context.serverDirectories = dynamicServerPathCreator(
     get(appInfo, "settings.serverSettings.serverPath", "")
   );
@@ -126,6 +139,20 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
     return entity;
   });
   return currentEntities;
+}
+
+function prepareDefaultPlugins(installedPlugins: Plugin[]): Plugin[] {
+  const missingDefaultPlugins = defaultPlugins.flatMap((plugin) => {
+    if (
+      !installedPlugins.find(
+        (installedPlugin) => installedPlugin.pluginId === plugin.pluginId
+      )
+    ) {
+      return [plugin];
+    }
+    return [];
+  });
+  return [...installedPlugins, ...missingDefaultPlugins];
 }
 
 function resolveLookupFields(entities: Entity[]): Entity[] {

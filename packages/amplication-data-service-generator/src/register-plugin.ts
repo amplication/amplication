@@ -41,6 +41,7 @@ async function* getPluginFuncGenerator(
  */
 const getAllPlugins = async (pluginList: Plugin[]): Promise<Events[]> => {
   if (!pluginList.length) return [];
+
   const pluginFuncsArr: Events[] = [];
 
   for await (const pluginFunc of getPluginFuncGenerator(pluginList)) {
