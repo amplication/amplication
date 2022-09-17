@@ -32,9 +32,11 @@ export async function createDotEnvModuleInternal({
 }: CreateServerDotEnvParams["before"]): Promise<Module[]> {
   const context = DsgContext.getInstance;
   const { appInfo, serverDirectories } = context;
-
+  const envVariablesWithoutDuplicateKeys = removeDuplicateKeys(envVariables);
   const code = await readCode(templatePath);
-  const formattedAdditionalVariables = convertToKeyValueSting(envVariables);
+  const formattedAdditionalVariables = convertToKeyValueSting(
+    envVariablesWithoutDuplicateKeys
+  );
   const codeWithAdditionalVariables = appendAdditionalVariables(
     code,
     formattedAdditionalVariables
@@ -71,4 +73,14 @@ function appendAdditionalVariables(file: string, variables: string): string {
   if (!variables.trim()) return file;
   if (!file.trim()) return file.concat(variables);
   return file.concat(`\n${variables}`);
+}
+
+function removeDuplicateKeys(arr: VariableDictionary): VariableDictionary {
+  const variablesMap = new Map();
+  arr.forEach((item) => {
+    const [currentKey] = Object.keys(item);
+    const [currentValue] = Object.values(item);
+    variablesMap.set(currentKey, currentValue);
+  });
+  return Array.from(variablesMap, ([key, value]) => ({ [key]: value }));
 }

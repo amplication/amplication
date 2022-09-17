@@ -55,8 +55,19 @@ export async function createPrismaSchemaInternal({
     return enumFields.map((field) => createPrismaEnum(field, entity));
   });
 
-  const schema = PrismaSchemaDSL.createSchema(models, enums, dataSource, [
-    clientGenerator,
+  const prismaDataSource = {
+    name: dataSource.name,
+    provider: PrismaSchemaDSL.DataSourceProvider[dataSource.provider],
+    url: new PrismaSchemaDSL.DataSourceURLEnv(dataSource.urlEnv),
+  };
+
+  const prismaClientGenerator = PrismaSchemaDSL.createGenerator(
+    clientGenerator.name,
+    clientGenerator.provider
+  );
+
+  const schema = PrismaSchemaDSL.createSchema(models, enums, prismaDataSource, [
+    prismaClientGenerator,
   ]);
 
   return [

@@ -203,8 +203,15 @@ export type serverDirectories = {
 export type Topic = BlockOmittedFields<models.Topic>;
 export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
 
+export declare type PrismaClientGenerator = {
+  name: string;
+  provider: string;
+};
+
+export type DataSourceProvider = keyof typeof PrismaSchemaDSL.DataSourceProvider;
+
 export type PrismaDataSource = {
   name: string;
-  provider: PrismaSchemaDSL.DataSourceProvider;
-  url: PrismaSchemaDSL.DataSourceURLEnv;
+  provider: DataSourceProvider;
+  urlEnv: string;
 };

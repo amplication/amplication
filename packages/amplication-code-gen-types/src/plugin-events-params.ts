@@ -8,7 +8,7 @@ import {
   PrismaDataSource,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import { PrismaClientGenerator } from "./code-gen-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   before: {
@@ -78,7 +78,7 @@ export interface CreateServerDotEnvParams extends EventParams {
 export interface CreateServerDockerComposeParams extends EventParams {
   before: {
     fileContent: string;
-    updateProperties: { [key: string]: any };
+    updateProperties: { path: string; value: any }[];
     outputFileName: string;
   };
 }
@@ -86,15 +86,14 @@ export interface CreateServerDockerComposeParams extends EventParams {
 export interface CreateServerDockerComposeDBParams extends EventParams {
   before: {
     fileContent: string;
-    updateProperties: { [key: string]: any };
+    updateProperties: { path: string; value: any }[];
     outputFileName: string;
   };
 }
-
 export interface CreatePrismaSchemaParams extends EventParams {
   before: {
     entities: Entity[];
     dataSource: PrismaDataSource;
-    clientGenerator: PrismaSchemaDSL.Generator;
+    clientGenerator: PrismaClientGenerator;
   };
 }
