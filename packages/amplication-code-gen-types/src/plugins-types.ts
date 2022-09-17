@@ -9,6 +9,7 @@ import {
 } from "./code-gen-types";
 import winston from "winston";
 import { Events } from "./plugin-events";
+import type { Promisable } from "type-fest";
 import { DSGResourceData } from "./dsg-resource-data";
 
 export interface EventParams {
@@ -39,8 +40,14 @@ export type PluginWrapper = (args: EventParams, func: () => void) => any;
 
 export type PluginMap = {
   [K in EventNames]?: {
-    before?: (<T>(context: DsgContext, params: Module[] | EventParams) => T)[];
-    after?: (<T>(context: DsgContext, modules: Module[] | EventParams) => T)[];
+    before?: (<T>(
+      context: DsgContext,
+      params: Module[] | EventParams
+    ) => Promisable<T>)[];
+    after?: (<T>(
+      context: DsgContext,
+      modules: Module[] | EventParams
+    ) => Promisable<T>)[];
   };
 };
 

@@ -1,6 +1,10 @@
 @import "../style/index.scss";
 
 .topic-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
   .search-field {
     margin-left: 0;
     margin-bottom: var(--default-spacing);
@@ -11,15 +15,14 @@
   }
 
   &__list {
-    &__item {
-      margin-bottom: var(--default-spacing-small);
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
-
-  .new-topic {
-    margin: var(--default-spacing-small) 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 0px;
+    gap: var(--default-spacing-small);
+    margin-bottom: var(--default-spacing);
+    overflow-x: hidden;
+    overflow-y: auto;
+    @include scrollbars(16px, var(--black60), transparent);
   }
 }

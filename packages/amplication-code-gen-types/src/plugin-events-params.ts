@@ -45,7 +45,6 @@ export interface CreateEntityControllerParams extends EventParams {
     serviceId: namedTypes.Identifier;
   };
 }
-
 export interface CreateEntityControllerBaseParams extends EventParams {
   before: {
     baseTemplatePath: string;
