@@ -18,13 +18,15 @@ type Props = {
   plugin: Plugin;
   pluginInstallation: models.PluginInstallation;
   onInstall?: (plugin: Plugin) => void;
-  onOrderChange?: (obj: { id: string; order: number; }) => void;
+  onOrderChange?: (obj: { id: string; order: number }) => void;
   onEnableStateChange?: (pluginInstallation: models.PluginInstallation) => void;
   order?: number;
   isDraggable?: boolean;
 };
 
 const CLASS_NAME = "plugins-catalog-item";
+const PLUGIN_LOGO_BASE_URL =
+  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/";
 
 function PluginsCatalogItem({
   plugin,
@@ -38,11 +40,17 @@ function PluginsCatalogItem({
   const { name, description } = plugin || {};
 
   const handlePromote = useCallback(() => {
-    order && onOrderChange && pluginInstallation && onOrderChange({ id: pluginInstallation?.id, order: order + 1})
+    order &&
+      onOrderChange &&
+      pluginInstallation &&
+      onOrderChange({ id: pluginInstallation?.id, order: order + 1 });
   }, [onOrderChange, order, pluginInstallation]);
 
   const handleDemote = useCallback(() => {
-    order && onOrderChange && pluginInstallation && onOrderChange({ id: pluginInstallation?.id, order: order - 1})
+    order &&
+      onOrderChange &&
+      pluginInstallation &&
+      onOrderChange({ id: pluginInstallation?.id, order: order - 1 });
   }, [onOrderChange, order, pluginInstallation]);
 
   const handleInstall = useCallback(() => {
@@ -59,11 +67,11 @@ function PluginsCatalogItem({
         <>
           <div className={`${CLASS_NAME}__row`}>
             {/* <Icon icon="drag" className={`${CLASS_NAME}__drag`} /> */}
-            <div className={`${CLASS_NAME}__drag`}> </div>
             <Toggle
               title="enabled"
               onValueChange={handleEnableStateChange}
               checked={pluginInstallation.enabled}
+              className={`${CLASS_NAME}__enabled`}
             />
             <div className={`${CLASS_NAME}__order`}>
               <Button
@@ -85,7 +93,10 @@ function PluginsCatalogItem({
       <div className={`${CLASS_NAME}__row `}>
         <span className={`${CLASS_NAME}__logo`}>
           {plugin.icon ? (
-            <img src="" alt="plugin logo" />
+            <img
+              src={`${PLUGIN_LOGO_BASE_URL}${plugin.icon}`}
+              alt="plugin logo"
+            />
           ) : (
             <Icon icon="plugin" />
           )}

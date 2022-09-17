@@ -11,13 +11,12 @@ export const resourceMenuLayout: { [key: string]: string[] } = {
     "settings",
     "plugins",
   ],
-  [EnumResourceType.ProjectConfiguration]: ["github", "settings", "plugins"],
+  [EnumResourceType.ProjectConfiguration]: ["github", "settings"],
   [EnumResourceType.MessageBroker]: [
     "topics",
     "services",
     "github",
     "settings",
-    "plugins",
   ],
 };
 

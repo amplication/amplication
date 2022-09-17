@@ -3,7 +3,7 @@
 $logo-size: 44px;
 $order-badge-size: 14px;
 $install-width: 86px;
-$button-padding:  5px 12px;
+$button-padding: 5px 12px;
 
 .plugins-catalog-item {
   margin: 0;
@@ -21,7 +21,7 @@ $button-padding:  5px 12px;
     }
   }
 
-  &__drag {
+  &__enabled {
     flex: 1;
   }
 
@@ -33,6 +33,11 @@ $button-padding:  5px 12px;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+    img {
+      max-height: 100%;
+      max-width: 100%;
+    }
   }
 
   &__details {
