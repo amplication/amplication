@@ -8,9 +8,7 @@ export function prepareYamlFile(
   const parsed = YAML.parse(yamlFileContent);
   if (!updateProperties.length) return YAML.stringify(parsed, { nullStr: "~" });
 
-  const updated = updateProperties.map((item) =>
-    set(parsed, item.path, item.value)
-  )[0];
+  updateProperties.forEach(({ path, value }) => set(parsed, path, value));
 
-  return YAML.stringify(updated, { nullStr: "~" });
+  return YAML.stringify(parsed, { nullStr: "~" });
 }

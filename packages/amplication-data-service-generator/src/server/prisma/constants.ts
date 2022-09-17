@@ -1,7 +1,7 @@
-import { PrismaDataSource } from "@amplication/code-gen-types";
+import { PrismaDataSource, PrismaClientGenerator } from "@amplication/code-gen-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
-export const CLIENT_GENERATOR: PrismaSchemaDSL.Generator = PrismaSchemaDSL.createGenerator(
+export const CLIENT_GENERATOR: PrismaClientGenerator = PrismaSchemaDSL.createGenerator(
   "client",
   "prisma-client-js"
 );

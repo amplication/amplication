@@ -3025,7 +3025,7 @@ volumes:
   }
 }
 ",
-  "server/prisma/schema.prisma": "datasource postgresql {
+  "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
   url      = env(\\"POSTGRESQL_URL\\")
 }

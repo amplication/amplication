@@ -56,7 +56,7 @@ export async function createPrismaSchemaInternal({
   });
 
   const prismaDataSource = {
-    name: PrismaSchemaDSL.DataSourceProvider[dataSource.provider].toLowerCase(),
+    name: dataSource.name,
     provider: PrismaSchemaDSL.DataSourceProvider[dataSource.provider],
     url: new PrismaSchemaDSL.DataSourceURLEnv(dataSource.urlEnv),
   };
