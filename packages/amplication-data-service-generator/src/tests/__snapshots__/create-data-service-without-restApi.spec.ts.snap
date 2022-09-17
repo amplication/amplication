@@ -2873,7 +2873,11 @@ BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
-SERVER_PORT=3000",
+SERVER_PORT=3000
+DB_USER=testUsername
+DB_PASSWORD=1234
+DB_PORT=5433
+DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
   "server/docker-compose.db.yml": "version: \\"3\\"
 services:
   db:
@@ -2902,6 +2906,7 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5433
     depends_on:
       - migrate
   migrate:
@@ -2914,16 +2919,17 @@ services:
     environment:
       POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432
       BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432
     depends_on:
       db:
         condition: service_healthy
   db:
     image: postgres:12
     ports:
-      - \${POSTGRESQL_PORT}:5432
+      - \${DB_PORT}:5432
     environment:
-      POSTGRES_USER: \${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
@@ -2932,9 +2938,9 @@ services:
         - pg_isready
         - -q
         - -d
-        - \${POSTGRESQL_DB_NAME}
+        - \${DB_DB_NAME}
         - -U
-        - \${POSTGRESQL_USER}
+        - \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
@@ -3025,7 +3031,7 @@ volumes:
 ",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
-  url      = env(\\"POSTGRESQL_URL\\")
+  url      = env(\\"DB_URL\\")
 }
 
 generator client {
