@@ -7,17 +7,7 @@ import {
 
 class EmptyClass {}
 
-export const POSTGRESQL_PLUGIN_ID = "@amplication/plugin-db-postgres";
-export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
-
 const functionsObject = ["[object Function]", "[object AsyncFunction]"];
-const defaultPlugins: Plugin[] = [
-  {
-    pluginId: POSTGRESQL_PLUGIN_ID,
-    npm: POSTGRESQL_NPM,
-    enabled: true,
-  },
-];
 
 /**
  * generator function that import the plugin requested by user
@@ -51,10 +41,10 @@ async function* getPluginFuncGenerator(
  */
 const getAllPlugins = async (pluginList: Plugin[]): Promise<Events[]> => {
   if (!pluginList.length) return [];
-  const allPlugins = [...pluginList, ...defaultPlugins];
+
   const pluginFuncsArr: Events[] = [];
 
-  for await (const pluginFunc of getPluginFuncGenerator(allPlugins)) {
+  for await (const pluginFunc of getPluginFuncGenerator(pluginList)) {
     const initializeClass = new pluginFunc();
     if (!initializeClass.register) continue;
 
