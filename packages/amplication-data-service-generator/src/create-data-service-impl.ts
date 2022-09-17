@@ -23,7 +23,6 @@ import registerPlugins from "./register-plugin";
 import { get } from "lodash";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
-import { installedPlugins } from "./tests/pluginInstallation";
 
 export const POSTGRESQL_PLUGIN_ID = "@amplication/plugin-db-postgres";
 export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
@@ -142,10 +141,10 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
   return currentEntities;
 }
 
-function prepareDefaultPlugins(plugins: Plugin[]): Plugin[] {
+function prepareDefaultPlugins(installedPlugins: Plugin[]): Plugin[] {
   const missingDefaultPlugins = defaultPlugins.flatMap((plugin) => {
     if (
-      !plugins.find(
+      !installedPlugins.find(
         (installedPlugin) => installedPlugin.pluginId === plugin.pluginId
       )
     ) {
