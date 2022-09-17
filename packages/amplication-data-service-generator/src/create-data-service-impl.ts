@@ -24,7 +24,7 @@ import { get } from "lodash";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
 
-export const POSTGRESQL_PLUGIN_ID = "@amplication/plugin-db-postgres";
+export const POSTGRESQL_PLUGIN_ID = "db-postgres";
 export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
 
 const defaultPlugins: Plugin[] = [
