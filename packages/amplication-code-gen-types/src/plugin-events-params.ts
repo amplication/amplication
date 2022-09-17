@@ -8,7 +8,7 @@ import {
   PrismaDataSource,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import { PrismaClientGenerator } from "./code-gen-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   before: {
@@ -95,6 +95,6 @@ export interface CreatePrismaSchemaParams extends EventParams {
   before: {
     entities: Entity[];
     dataSource: PrismaDataSource;
-    clientGenerator: PrismaSchemaDSL.Generator;
+    clientGenerator: PrismaClientGenerator;
   };
 }
