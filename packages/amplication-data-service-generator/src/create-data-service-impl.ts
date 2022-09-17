@@ -70,6 +70,7 @@ export async function createDataServiceImpl(
   const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
 
   const context = DsgContext.getInstance;
+  context.logger = logger;
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
