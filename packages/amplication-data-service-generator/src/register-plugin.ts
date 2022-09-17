@@ -22,7 +22,7 @@ async function* getPluginFuncGenerator(
     let index = 0;
 
     do {
-      const packageName = pluginList[index].pluginId;
+      const packageName = pluginList[index].npm;
       const func = await import(packageName);
 
       ++index;
