@@ -6,8 +6,6 @@ import {
 export const CLIENT_GENERATOR: PrismaClientGenerator = {
   name: "client",
   provider: "prisma-client-js",
-  output: null,
-  binaryTargets: [],
 };
 
 export const DATA_SOURCE: PrismaDataSource = {

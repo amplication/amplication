@@ -206,8 +206,6 @@ export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
 export declare type PrismaClientGenerator = {
   name: string;
   provider: string;
-  output: string | null;
-  binaryTargets: string[];
 };
 
 export type DataSourceProvider = keyof typeof PrismaSchemaDSL.DataSourceProvider;

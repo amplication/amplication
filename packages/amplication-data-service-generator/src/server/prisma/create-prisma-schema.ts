@@ -10,7 +10,6 @@ import {
   CreatePrismaSchemaParams,
   EventNames,
   Module,
-  PrismaClientGenerator,
 } from "@amplication/code-gen-types";
 import { countBy } from "lodash";
 
@@ -62,7 +61,7 @@ export async function createPrismaSchemaInternal({
     url: new PrismaSchemaDSL.DataSourceURLEnv(dataSource.urlEnv),
   };
 
-  const prismaClientGenerator: PrismaClientGenerator = PrismaSchemaDSL.createGenerator(
+  const prismaClientGenerator = PrismaSchemaDSL.createGenerator(
     clientGenerator.name,
     clientGenerator.provider
   );
