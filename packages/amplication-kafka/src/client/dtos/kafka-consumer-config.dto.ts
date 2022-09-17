@@ -1,3 +1,6 @@
+import {Injectable} from "@nestjs/common";
+
+@Injectable()
 export class KafkaConsumerConfigDto {
 
     public static ENV_KAFKA_GROUP_ID:string

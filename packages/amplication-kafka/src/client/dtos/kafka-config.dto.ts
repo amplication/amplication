@@ -1,3 +1,6 @@
+import {Injectable} from "@nestjs/common";
+
+@Injectable()
 export class KafkaConfigDto {
 
     public static ENV_KAFKA_BROKERS = "KAFKA_BROKERS"

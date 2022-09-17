@@ -1,8 +1,6 @@
-import {BeforeApplicationShutdown, Injectable, OnApplicationBootstrap} from "@nestjs/common";
-import {Producer, Kafka} from "kafkajs";
-import {KafkaConsumerConfigDto} from "./dtos/kafka-consumer-config.dto";
-import {KeySerializer} from "./types/key-serializer";
-import {ValueSerializer} from "./types/value-serializer";
+import {BeforeApplicationShutdown, Inject, Injectable, OnApplicationBootstrap} from "@nestjs/common";
+import {Producer} from "kafkajs";
+import {KAFKA_KEY_SERIALIZER, KAFKA_VALUE_SERIALIZER, Serializer} from "./types/serializer";
 import {Logger} from "winston";
 import {EmitResponse} from "./dtos/emit-response";
 import {KafkaClient} from "./kafka-client";
@@ -13,22 +11,19 @@ export class KafkaProducer<K,V> implements OnApplicationBootstrap, BeforeApplica
     private producer: Producer;
 
     constructor(kafkaClient:KafkaClient,
-                private config: KafkaConsumerConfigDto,
-                private keySerialize: KeySerializer<K>,
-                private valueSerialize: ValueSerializer<V>,
+                @Inject(KAFKA_KEY_SERIALIZER) private keySerialize: Serializer<K>,
+                @Inject(KAFKA_VALUE_SERIALIZER) private valueSerialize: Serializer<V>,
                 private logger: Logger) {
         this.producer = kafkaClient.kafka.producer()
     }
 
     async beforeApplicationShutdown(signal?: string): Promise<any> {
-        this.logger.warn(`Kafka client received ${signal} exit. disconnecting client...`,this.config)
+        this.logger.warn(`Kafka client received ${signal} exit. disconnecting client...`)
         await this.producer.disconnect()
     }
 
     async onApplicationBootstrap(): Promise<any> {
-        this.logger.info(`Producer connecting to kafka:`, {
-            ...this.config
-        })
+        this.logger.info(`Producer connecting to kafka:`)
         await this.producer.connect()
     }
 

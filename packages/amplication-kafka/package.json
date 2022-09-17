@@ -11,6 +11,7 @@
   "keywords": [],
   "author": "tupe12334",
   "devDependencies": {
+    "@amplication/nest-logger-module": "^0.16.1",
     "@types/jest": "27.4.1",
     "@types/node": "17.0.26",
     "jest": "27.5.1",
