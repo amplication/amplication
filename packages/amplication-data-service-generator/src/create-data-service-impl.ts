@@ -152,9 +152,11 @@ function prepareDefaultPlugins(installedPlugins: Plugin[]): Plugin[] {
   const missingDefaultPlugins = defaultPlugins.flatMap((pluginCategory) => {
     let pluginFound = false;
     pluginCategory.categoryPluginIds.forEach((pluginId) => {
-      pluginFound = installedPlugins.some(
-        (installedPlugin) => installedPlugin.pluginId === pluginId
-      );
+      if (!pluginFound) {
+        pluginFound = installedPlugins.some(
+          (installedPlugin) => installedPlugin.pluginId === pluginId
+        );
+      }
     });
     if (!pluginFound) return [pluginCategory.defaultCategoryPlugin];
 
