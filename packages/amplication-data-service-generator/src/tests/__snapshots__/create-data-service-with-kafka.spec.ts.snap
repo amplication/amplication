@@ -2873,7 +2873,11 @@ BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
-SERVER_PORT=3000",
+SERVER_PORT=3000
+KAFKA_BROKERS=localhost:9092
+KAFKA_ENABLE_SSL=false
+KAFKA_CLIENT_ID=sample-application
+KAFKA_GROUP_ID=sample-application",
   "server/docker-compose.db.yml": "version: \\"3\\"
 services:
   db:
@@ -2938,8 +2942,39 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.2.4
+    networks:
+      - internal
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+  kafka:
+    image: confluentinc/cp-kafka:5.3.1
+    networks:
+      - internal
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 9997:9997
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 volumes:
   postgres: ~
+networks:
+  internal:
+    name: internal
+    driver: bridge
 ",
   "server/nest-cli.json": "{
   \\"sourceRoot\\": \\"src\\",
@@ -2995,7 +3030,9 @@ volumes:
     \\"passport-jwt\\": \\"4.0.0\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
-    \\"ts-node\\": \\"9.1.1\\"
+    \\"ts-node\\": \\"9.1.1\\",
+    \\"@nestjs/microservices\\": \\"^8.2.3\\",
+    \\"kafkajs\\": \\"^2.2.0\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -8109,6 +8146,89 @@ async function main() {
 }
 
 module.exports = main();
+",
+  "server/src/message-broker/kafka/base/kafka.service.base.ts": "import { Inject } from \\"@nestjs/common\\";
+import { ClientKafka } from \\"@nestjs/microservices\\";
+
+export class KafkaServiceBase {
+  constructor(@Inject(\\"KAFKA_CLIENT\\") private kafkaClient: ClientKafka) {}
+
+  async onModuleInit() {
+    await this.kafkaClient.connect();
+  }
+}
+",
+  "server/src/message-broker/kafka/generateKafkaClientOptions.ts": "import { KafkaOptions, Transport } from \\"@nestjs/microservices\\";
+
+export const generateKafkaClientOptions = (): KafkaOptions => {
+  if (!process.env.KAFKA_BROKERS) {
+    throw new Error(\\"KAFKA_BROKERS environment variable must be defined\\");
+  }
+
+  if (!process.env.KAFKA_ENABLE_SSL) {
+    throw new Error(\\"KAFKA_ENABLE_SSL environment variable must be defined\\");
+  }
+
+  if (!process.env.KAFKA_CLIENT_ID) {
+    throw new Error(\\"KAFKA_CLIENT_ID environment variable must be defined\\");
+  }
+
+  if (!process.env.KAFKA_GROUP_ID) {
+    throw new Error(\\"KAFKA_GROUP_ID environment variable must be defined\\");
+  }
+
+  const kafkaBrokersString = process.env.KAFKA_BROKERS;
+  const kafkaEnableSSL = process.env.KAFKA_ENABLE_SSL === \\"true\\";
+  const kafkaClientId = process.env.KAFKA_CLIENT_ID;
+  const kafkaGroupId = process.env.KAFKA_GROUP_ID;
+
+  return {
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: kafkaClientId,
+        brokers: [...kafkaBrokersString.split(\\",\\")],
+        ssl: kafkaEnableSSL,
+      },
+      producer: {
+        metadataMaxAge: 3000,
+      },
+      consumer: {
+        rebalanceTimeout: 3000,
+        groupId: kafkaGroupId,
+      },
+    },
+  };
+};
+",
+  "server/src/message-broker/kafka/kafka.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { ClientsModule } from \\"@nestjs/microservices\\";
+import { generateKafkaClientOptions } from \\"./generateKafkaClientOptions\\";
+import { KafkaService } from \\"./kafka.service\\";
+
+@Module({
+  imports: [
+    ClientsModule.register([
+      {
+        name: \\"KAFKA_CLIENT\\",
+        ...generateKafkaClientOptions(),
+      },
+    ]),
+  ],
+  providers: [KafkaService],
+  exports: [KafkaService, ClientsModule],
+})
+export class KafkaModule {}
+",
+  "server/src/message-broker/kafka/kafka.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { KafkaServiceBase } from \\"./base/kafka.service.base\\";
+
+@Injectable()
+export class KafkaService extends KafkaServiceBase {}
+",
+  "server/src/message-broker/kafka/topics.ts": "enum KafkaBrokerTopics {
+  GitPull = \\"git.pull\\",
+}
 ",
   "server/src/order/base/CreateOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 

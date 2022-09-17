@@ -36,6 +36,7 @@ export async function createDataServiceImpl(
     entities,
     roles,
     resourceInfo: appInfo,
+    otherResources,
   } = dSGResourceData;
   const timer = logger.startTimer();
   if (!entities || !roles || !appInfo) {
@@ -59,6 +60,7 @@ export async function createDataServiceImpl(
   context.roles = roles;
   context.entities = normalizedEntities;
   context.serviceTopics = serviceTopicsWithName;
+  context.otherResources = otherResources;
   const plugins = await registerPlugins(resourcePlugins);
   context.serverDirectories = dynamicServerPathCreator(
     get(appInfo, "settings.serverSettings.serverPath", "")

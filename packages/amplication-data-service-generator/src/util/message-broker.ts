@@ -6,7 +6,7 @@ export function fromServiceTopicsToTopicsWithName(
   messageBrokers: DSGResourceData[]
 ): ServiceTopics[] {
   messageBrokers.forEach((resource) => {
-    if (resource.resourceType === EnumResourceType.MessageBroker) {
+    if (resource.resourceType !== EnumResourceType.MessageBroker) {
       throw new Error("resourceType is not EnumResourceType.MessageBroker");
     }
   });

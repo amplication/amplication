@@ -3,24 +3,60 @@ import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import roles from "./roles";
 import { EnumResourceType } from "../models";
+import { DSGResourceData, Topic } from "@amplication/code-gen-types";
+import { EnumMessagePatternConnectionOptions } from "@amplication/code-gen-types/dist/models";
 
 jest.setTimeout(100000);
 
 describe("createDataService", () => {
   test("creates resource as expected", async () => {
-    const modules = await createDataService({
+    const gitPullTopic: Topic = { id: "topicId", name: "git.pull" };
+    const messageBroker: DSGResourceData = {
+      resourceType: EnumResourceType.MessageBroker,
+      entities: [],
+      otherResources: [],
+      roles: [],
+      serviceTopics: [],
+      topics: [gitPullTopic],
+      resourceInfo: {
+        id: "messageBrokerId",
+        description: "This is the message broker description",
+        name: "Kafka broker",
+        url: "",
+        //@ts-ignore
+        settings: {},
+        version: "1.0.0",
+      },
+      pluginInstallations: [],
+    };
+    const service: DSGResourceData = {
       entities,
       roles,
       resourceInfo: appInfo,
       resourceType: EnumResourceType.Service,
-      pluginInstallations: [
-        // {
-        //   npm: "@amplication/plugin-kafka",
-        //   enabled: true,
-        //   pluginId: "@amplication/plugin-kafka",
-        // },
+      serviceTopics: [
+        {
+          enabled: true,
+          id: "serviceTopicId",
+          messageBrokerId: messageBroker.resourceInfo!.id,
+          patterns: [
+            {
+              topicId: gitPullTopic.id,
+              type: EnumMessagePatternConnectionOptions.Receive,
+            },
+          ],
+        },
       ],
-    });
+      otherResources: [messageBroker],
+      pluginInstallations: [
+        {
+          npm: "@amplication/plugin-kafka",
+          enabled: true,
+          pluginId: "@amplication/plugin-kafka",
+        },
+      ],
+    };
+    const modules = await createDataService(service);
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)
