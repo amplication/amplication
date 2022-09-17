@@ -30,7 +30,7 @@ services:
   db:
     image: postgres:12
     ports:
-      - "${POSTGRESQL_PORT}:5432"
+      - ${POSTGRESQL_PORT}:5432
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
