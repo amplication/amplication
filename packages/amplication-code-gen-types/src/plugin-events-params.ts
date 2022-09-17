@@ -78,7 +78,7 @@ export interface CreateServerDotEnvParams extends EventParams {
 export interface CreateServerDockerComposeParams extends EventParams {
   before: {
     fileContent: string;
-    updateProperties: { path: string; value: any }[];
+    updateProperties: { [key: string]: any }[];
     outputFileName: string;
   };
 }
@@ -86,7 +86,7 @@ export interface CreateServerDockerComposeParams extends EventParams {
 export interface CreateServerDockerComposeDBParams extends EventParams {
   before: {
     fileContent: string;
-    updateProperties: { path: string; value: any }[];
+    updateProperties: { [key: string]: any }[];
     outputFileName: string;
   };
 }
