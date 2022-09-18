@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { PullRequestModule } from './pull-request';
+import {CommitModule} from "./commit";
 @Module({
-  imports: [PullRequestModule],
-  exports: [PullRequestModule],
+  imports: [CommitModule],
+  exports: [CommitModule],
 })
 export class CoreModule {}
