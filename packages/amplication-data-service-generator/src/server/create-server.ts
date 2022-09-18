@@ -22,6 +22,7 @@ import DsgContext from "../dsg-context";
 import { ENV_VARIABLES } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
 import { createPackageJson } from "./package-json/create-package-json";
+import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
 import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 
@@ -45,7 +46,7 @@ export async function createServerModules(
     serverDirectories.baseDirectory
   );
   const packageJsonModule = await createPackageJson({
-    update: {
+    updateValues: {
       name: `@${paramCase(appInfo.name)}/server`,
       version: appInfo.version,
     },
@@ -67,6 +68,9 @@ export async function createServerModules(
   logger.info("Creating seed script...");
   const seedModule = await createSeedModule(userEntity);
 
+  logger.info("Creating Message broker modules...");
+  const messageBrokerModules = await createMessageBroker({});
+
   const createdModules = [
     ...resourcesModules,
     ...dtoModules,
@@ -74,6 +78,7 @@ export async function createServerModules(
     appModule,
     seedModule,
     ...authModules,
+    ...messageBrokerModules,
   ];
 
   logger.info("Formatting code...");

@@ -7,6 +7,13 @@ import {
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
+  CreateMessageBrokerClientOptionsFactoryParams,
+  CreateMessageBrokerNestJSModuleParams,
+  CreateMessageBrokerParams,
+  CreateMessageBrokerServiceBaseParams,
+  CreateMessageBrokerServiceParams,
+  CreateMessageBrokerTopicsEnumParams,
+  CreateServerPackageJsonParams,
   CreatePrismaSchemaParams,
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
@@ -113,6 +120,76 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreatePrismaSchemaParams["after"]
+    ) => Promisable<Module[]>;
+  };
+  [EventNames.CreateMessageBroker]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerParams["before"]
+    ) => CreateMessageBrokerParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerParams["after"]
+    ) => Promisable<Module[]>;
+  };
+  [EventNames.CreateMessageBrokerTopicsEnum]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerTopicsEnumParams["before"]
+    ) => CreateMessageBrokerTopicsEnumParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerTopicsEnumParams["after"]
+    ) => Promisable<Module[]>;
+  };
+  [EventNames.CreateMessageBrokerNestJSModule]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerNestJSModuleParams["before"]
+    ) => CreateMessageBrokerNestJSModuleParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerNestJSModuleParams["after"]
+    ) => Promisable<Module[]>;
+  };
+  [EventNames.CreateMessageBrokerClientOptionsFactory]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerClientOptionsFactoryParams["before"]
+    ) => CreateMessageBrokerClientOptionsFactoryParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerClientOptionsFactoryParams["after"]
+    ) => Promisable<Module[]>;
+  };
+  [EventNames.CreateMessageBrokerService]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerServiceParams["before"]
+    ) => CreateMessageBrokerServiceParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerServiceParams["after"]
+    ) => Promisable<Module[]>;
+  };
+  [EventNames.CreateMessageBrokerServiceBase]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateMessageBrokerServiceBaseParams["before"]
+    ) => CreateMessageBrokerServiceBaseParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateMessageBrokerServiceBaseParams["after"]
+    ) => Promisable<Module[]>;
+  };
+  [EventNames.CreatePackageJson]?: {
+    before?: (
+      dsgContext: DsgContext,
+      eventParams: CreateServerPackageJsonParams["before"]
+    ) => CreateServerPackageJsonParams["before"];
+    after?: (
+      dsgContext: DsgContext,
+      modules: CreateServerPackageJsonParams["after"]
     ) => Promisable<Module[]>;
   };
 };

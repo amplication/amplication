@@ -1,5 +1,5 @@
-import YAML from "yaml";
 import { merge } from "lodash";
+import YAML from "yaml";
 
 export function prepareYamlFile(
   yamlFileContent: string,

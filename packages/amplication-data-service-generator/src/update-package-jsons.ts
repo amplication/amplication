@@ -1,5 +1,6 @@
 import * as semver from "semver";
 import { Module } from "@amplication/code-gen-types";
+import { merge } from "lodash";
 
 /**
  * Update package.json and package-lock.json modules in given modules with the
@@ -24,9 +25,8 @@ export function updatePackageJSONs(
 }
 
 function updatePackageJSON(module: Module, update: Record<string, any>) {
-  const pkg = JSON.parse(module.code);
-
-  Object.assign(pkg, update);
+  let pkg = JSON.parse(module.code);
+  pkg = merge(pkg, update);
 
   if (!semver.valid(pkg.version)) {
     delete pkg.version;

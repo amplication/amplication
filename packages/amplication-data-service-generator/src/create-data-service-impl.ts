@@ -11,7 +11,7 @@ import {
   serverDirectories,
   clientDirectories,
   DSGResourceData,
-  Plugin,
+  PluginInstallation,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -20,9 +20,12 @@ import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
 import registerPlugins from "./register-plugin";
+import { resolveTopicNames } from "./util/message-broker";
+import { EnumResourceType } from "./models";
 import { get } from "lodash";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
+import { join } from "path";
 
 export const POSTGRESQL_PLUGIN_ID = "db-postgres";
 export const MYSQL_PLUGIN_ID = "db-mysql";
@@ -30,11 +33,12 @@ export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
 
 const defaultPlugins: {
   categoryPluginIds: string[];
-  defaultCategoryPlugin: Plugin;
+  defaultCategoryPlugin: PluginInstallation;
 }[] = [
   {
     categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID],
     defaultCategoryPlugin: {
+      id: "placeholder-id",
       pluginId: POSTGRESQL_PLUGIN_ID,
       npm: POSTGRESQL_NPM,
       enabled: true,
@@ -48,10 +52,11 @@ export async function createDataServiceImpl(
 ): Promise<Module[]> {
   logger.info("Creating application...");
   const {
-    plugins: resourcePlugins,
+    pluginInstallations: resourcePlugins,
     entities,
     roles,
     resourceInfo: appInfo,
+    otherResources,
   } = dSGResourceData;
   const timer = logger.startTimer();
   if (!entities || !roles || !appInfo) {
@@ -69,11 +74,15 @@ export async function createDataServiceImpl(
 
   const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
 
+  const serviceTopicsWithName = prepareServiceTopics(dSGResourceData);
+
   const context = DsgContext.getInstance;
   context.logger = logger;
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
+  context.serviceTopics = serviceTopicsWithName;
+  context.otherResources = otherResources;
   const plugins = await registerPlugins(pluginsWithDefaultPlugins);
   context.serverDirectories = dynamicServerPathCreator(
     get(appInfo, "settings.serverSettings.serverPath", "")
@@ -126,6 +135,7 @@ function dynamicServerPathCreator(serverPath: string): serverDirectories {
     srcDirectory: srcDirectory,
     scriptsDirectory: `${baseDirectory}/scripts`,
     authDirectory: `${baseDirectory}/auth`,
+    messageBrokerDirectory: join(srcDirectory, "message-broker"),
   };
 }
 
@@ -149,7 +159,9 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
   return currentEntities;
 }
 
-function prepareDefaultPlugins(installedPlugins: Plugin[]): Plugin[] {
+function prepareDefaultPlugins(
+  installedPlugins: PluginInstallation[]
+): PluginInstallation[] {
   const missingDefaultPlugins = defaultPlugins.flatMap((pluginCategory) => {
     let pluginFound = false;
     pluginCategory.categoryPluginIds.forEach((pluginId) => {
@@ -164,6 +176,15 @@ function prepareDefaultPlugins(installedPlugins: Plugin[]): Plugin[] {
     return [];
   });
   return [...missingDefaultPlugins, ...installedPlugins];
+}
+
+function prepareServiceTopics(dSGResourceData: DSGResourceData) {
+  return resolveTopicNames(
+    dSGResourceData.serviceTopics || [],
+    dSGResourceData.otherResources?.filter(
+      (resource) => resource.resourceType === EnumResourceType.MessageBroker
+    ) || []
+  );
 }
 
 function resolveLookupFields(entities: Entity[]): Entity[] {

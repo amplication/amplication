@@ -33,6 +33,7 @@ context.serverDirectories = {
   scriptsDirectory: "exampleScriptsDirectory",
   baseDirectory: "exampleBaseDirectory",
   authDirectory: "exampleAuthDirectory",
+  messageBrokerDirectory: "ExampleMessageBrokerDirectory",
 };
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";

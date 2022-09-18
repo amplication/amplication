@@ -30,6 +30,7 @@ const EXAMPLE_SERVER_DIRECTORIES: serverDirectories = {
   srcDirectory: "ExampleSrcDirectory",
   authDirectory: "ExampleAuthDirectory",
   scriptsDirectory: "ExampleScriptsDirectory",
+  messageBrokerDirectory: "ExampleMessageBrokerDirectory",
 };
 
 const context = DsgContext.getInstance;

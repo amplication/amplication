@@ -1,15 +1,13 @@
+import type { Promisable } from "type-fest";
+import winston from "winston";
 import {
-  AppInfo,
   clientDirectories,
   DTOs,
-  Entity,
   Module,
-  Role,
   serverDirectories,
 } from "./code-gen-types";
-import winston from "winston";
+import { DSGResourceData } from "./dsg-resource-data";
 import { Events } from "./plugin-events";
-import type { Promisable } from "type-fest";
 
 export interface EventParams {
   after: Module[];
@@ -25,10 +23,7 @@ export interface ContextUtil {
   skipDefaultBehavior: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
-export interface DsgContext {
-  appInfo: AppInfo;
-  entities: Entity[];
-  roles: Role[];
+export interface DsgContext extends DSGResourceData {
   modules: Module[];
   DTOs: DTOs;
   plugins: PluginMap;
@@ -59,11 +54,18 @@ export enum EventNames {
   CreateAuthModules = "createAuthModules",
   CreateAdminModules = "createAdminModules",
   CreateServerDotEnv = "CreateServerDotEnv",
+  CreateMessageBroker = "CreateMessageBroker",
+  CreateMessageBrokerTopicsEnum = "CreateMessageBrokerTopicsEnum",
+  CreateMessageBrokerNestJSModule = "CreateMessageBrokerNestJSModule",
+  CreateMessageBrokerClientOptionsFactory = "CreateMessageBrokerClientOptionsFactory",
+  CreateMessageBrokerService = "CreateMessageBrokerService",
+  CreateMessageBrokerServiceBase = "CreateMessageBrokerServiceBase",
   CreateEntityService = "CreateEntityService",
   CreateEntityServiceBase = "CreateEntityServiceBase",
   CreateServerDockerCompose = "CreateServerDockerCompose",
   CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
   CreatePrismaSchema = "CreatePrismaSchema",
+  CreatePackageJson = "CreatePackageJson",
 }
 
 export interface AmplicationPlugin {

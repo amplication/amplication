@@ -5,8 +5,9 @@ import { BlockValues, BlockValuesExtended } from '../block/types';
 
 export type ServiceSettingsValues = BlockValues<ServiceSettingsValuesExtended>;
 
-export type ServiceSettingsValuesExtended = BlockValuesExtended<
-  ServiceSettings
+export type ServiceSettingsValuesExtended = Omit<
+  BlockValuesExtended<ServiceSettings>,
+  'id'
 >;
 
 export const DEFAULT_SERVICE_SETTINGS: ServiceSettingsValuesExtended = {
