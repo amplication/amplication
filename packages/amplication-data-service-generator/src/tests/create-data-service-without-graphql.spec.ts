@@ -4,6 +4,7 @@ import roles from "./roles";
 import { AppInfo } from "@amplication/code-gen-types";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { EnumResourceType } from "../models";
+import { installedPlugins } from "./pluginInstallation";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -26,7 +27,7 @@ describe("createDataService", () => {
       roles,
       resourceInfo: newAppInfo,
       resourceType: EnumResourceType.Service,
-      pluginInstallations: [],
+      pluginInstallations: installedPlugins,
     });
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
