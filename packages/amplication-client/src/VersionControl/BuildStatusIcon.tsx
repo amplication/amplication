@@ -16,7 +16,7 @@ export const BuildStatusIcon = ({ buildStatus }: BuildStatusIconsProps) => {
   }, [buildStatus]);
 
   const isBuildInvalid = useMemo(() => {
-    return !buildStatus && models.EnumBuildStatus.Invalid;
+    return !buildStatus || buildStatus === models.EnumBuildStatus.Invalid;
   }, [buildStatus]);
 
   return (
