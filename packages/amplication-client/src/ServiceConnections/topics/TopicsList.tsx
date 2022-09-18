@@ -8,6 +8,7 @@ import {
 } from "../../models";
 import { topicsOfBroker } from "./queries/topicsQueries";
 import ServiceTopicPanel from "./ServiceTopicPanel";
+import "./TopicsList.scss";
 
 type Props = {
   messageBrokerId: string;
@@ -31,24 +32,27 @@ export default function TopicsList({
     <FieldArray
       validateOnChange
       name="patterns"
-      render={({ replace }) => {
-        return data.Topics.map((topic, i) => (
-          <ServiceTopicPanel
-            enabled={enabled}
-            key={i}
-            topic={topic}
-            selectedPatternType={
-              messagePatterns[i] || {
-                type: EnumMessagePatternConnectionOptions.None,
-                topicId: topic.id,
+      render={({ replace }) => (
+        <div className="topics-list">
+          {data.Topics.map((topic, i) => (
+            <ServiceTopicPanel
+              enabled={enabled}
+              key={i}
+              topic={topic}
+              selectedPatternType={
+                messagePatterns[i] || {
+                  type: EnumMessagePatternConnectionOptions.None,
+                  topicId: topic.id,
+                }
               }
-            }
-            onMessagePatternTypeChange={(pattern) => {
-              replace(i, { type: pattern, topicId: topic.id });
-            }}
-          />
-        ));
-      }}
+              onMessagePatternTypeChange={(pattern) => {
+                replace(i, { type: pattern, topicId: topic.id });
+              }}
+            />
+          ))}
+        </div>
+
+  )}
     />
   ) : null;
 }

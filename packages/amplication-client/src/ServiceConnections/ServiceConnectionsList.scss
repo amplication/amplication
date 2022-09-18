@@ -12,10 +12,17 @@
   }
 
   &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--default-spacing-small);
+
     &__item {
-      margin-bottom: var(--default-spacing-small);
-      &:last-child {
-        margin-bottom: 0;
+
+      &__name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
   }

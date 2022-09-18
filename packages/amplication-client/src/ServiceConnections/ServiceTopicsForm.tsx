@@ -4,7 +4,7 @@ import { Formik } from "formik";
 import React, { useMemo } from "react";
 import { Form } from "../Components/Form";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import * as models from "../models";
+import { EnumResourceType, ServiceTopics, Resource } from "../models";
 import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import "./ServiceTopics.scss";
@@ -13,14 +13,14 @@ import TopicsList from "./topics/TopicsList";
 const CLASS_NAME = "service-topics";
 
 type Props = {
-  onSubmit: (values: models.ServiceTopics) => void;
-  defaultValues?: models.ServiceTopics;
-  connectedResource: models.Resource;
+  onSubmit: (values: ServiceTopics) => void;
+  defaultValues?: ServiceTopics;
+  connectedResource: Resource;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = ["id", "__typename"];
 
-export const INITIAL_VALUES: Partial<models.ServiceTopics> = {
+export const INITIAL_VALUES: Partial<ServiceTopics> = {
   displayName: "",
   description: "",
   enabled: false,
@@ -49,13 +49,13 @@ const ServiceTopicsForm = ({
     return {
       ...INITIAL_VALUES,
       ...sanitizedDefaultValues,
-    } as models.ServiceTopics;
+    } as ServiceTopics;
   }, [defaultValues]);
 
   return (
     <Formik
       initialValues={initialValues}
-      validate={(values: models.ServiceTopics) => {
+      validate={(values: ServiceTopics) => {
         return validate(values, FORM_SCHEMA);
       }}
       enableReinitialize
@@ -64,26 +64,19 @@ const ServiceTopicsForm = ({
       {({ values }) => (
         <Form childrenAsBlocks>
           <FormikAutoSave debounceMS={1000} />
-          <div className={`${CLASS_NAME}__row`}>
-            <ResourceCircleBadge
-              type={models.EnumResourceType.MessageBroker}
-              size="medium"
-            />
-            <span className={`${CLASS_NAME}__title`}>
-              {connectedResource?.name}
-            </span>
-            <span className="spacer" />
-
-            <ToggleField name="enabled" label="enabled" />
+          <div className={`${CLASS_NAME}__header`}>
+            <div className={`${CLASS_NAME}__header__top`}>
+              <ResourceCircleBadge type={EnumResourceType.MessageBroker} />
+              <div className={`${CLASS_NAME}__header__top__title`}>
+                {connectedResource?.name}
+              </div>
+              <ToggleField name="enabled" label="" />
+            </div>
+            <div className={`${CLASS_NAME}__header__description`}>
+              All the below settings will appear in clear text in the generated app. <br />
+              It should only be used for the development environment variables and should not include sensitive data.
+            </div>
           </div>
-
-          <div className={`${CLASS_NAME}__row`}>
-            <span className={`${CLASS_NAME}__description`}>
-              description about message broker and topic
-              {/* //TODO change description */}
-            </span>
-          </div>
-
           <HorizontalRule />
 
           <TopicsList

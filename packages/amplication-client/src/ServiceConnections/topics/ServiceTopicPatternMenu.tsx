@@ -22,9 +22,7 @@ export default function ServiceTopicPatternMenu({
 }: Props) {
   return (
     <div>
-      <div>
-        <span className={`${CLASS_NAME}__label`}>Message pattern</span>
-      </div>
+      <div className={`${CLASS_NAME}__label`}>Message pattern</div>
       <SelectMenu
         title={selectedPatternType}
         buttonStyle={EnumButtonStyle.Secondary}
