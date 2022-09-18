@@ -96,3 +96,31 @@ export interface CreatePrismaSchemaParams extends EventParams {
     clientGenerator: PrismaClientGenerator;
   };
 }
+
+export interface CreateMessageBrokerParams extends EventParams {
+  before: {
+    serviceTopicsWithName: ServiceTopics[];
+  };
+}
+export interface CreateMessageBrokerTopicsEnumParams extends EventParams {
+  before: {};
+}
+export interface CreateMessageBrokerNestJSModuleParams extends EventParams {
+  before: {};
+}
+export interface CreateMessageBrokerClientOptionsFactoryParams
+  extends EventParams {
+  before: {};
+}
+
+export interface CreateMessageBrokerServiceParams extends EventParams {
+  before: {};
+}
+export interface CreateMessageBrokerServiceBaseParams extends EventParams {
+  before: {};
+}
+export interface CreatePackageJsonParams extends EventParams {
+  before: {
+    updateValues: { [key: string]: JsonValue };
+  };
+}
