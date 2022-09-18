@@ -98,6 +98,7 @@ amplication-git-pull-service:
       KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
+      KAFKA_CONSUMER_CONCURENCY_FACTOR: 10
 
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 

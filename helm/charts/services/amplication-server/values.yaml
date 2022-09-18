@@ -2,7 +2,7 @@ name: amplication-server
 
 autoscaling:
   enabled: true
-  minReplicas: 12
+  minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 60
   targetMemoryUtilizationPercentage: 60
