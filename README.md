@@ -1,18 +1,11 @@
 <p align="center">
-
-  <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/images/amplication-logo-purple.svg"/>
-  </a>
+<img width="300" src="https://raw.githubusercontent.com/amplication/amplication/logos/light.svg#gh-light-mode-only">
+<img width="300" src="https://raw.githubusercontent.com/amplication/amplication/logos/dark.svg#gh-dark-mode-only">
 </p>
 <p align="center">
-    <a href="https://docs.amplication.com/docs/">Docs</a>
-    <span>&nbsp;|&nbsp;</span>
-    <a href="https://amplication.com/blog">Blog</a>
-     <span>&nbsp;|&nbsp;</span>
-    <a href="https://twitter.com/amplication">Twitter</a>
-     <span>&nbsp;|&nbsp;</span>
-    <a href="https://amplication.com/discord">Discord</a>
-</p>
+  <a href="https://amplication.com">
+      <h1 align="center">Amplication</h1>
+  </a>
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
   <a href="https://discord.gg/Z2CG3rUFnu">
@@ -35,23 +28,33 @@
 
   </div>
   
+  
 Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
 Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React.
 
 # Features
 
-Build database applications with:
+The features you get with amplication:
 
-- Data models managed visually or through CLI
-- Auto-generated human-editable source code
-- Node.js server built with Nest.js and Passport
-- REST API and GraphQL for CRUD with relations, sorting, filtering, pagination
-- Custom code generated app
-- Admin UI built with React-Admin
-- Role-based access control
-- Docker and docker-compose integration
-- Automatic push of the generated code to your GitHub repo
+- Production-ready APIs
+- Data Model
+- Role Based Access Control
+- Microservice Support
+- Continuous Github Sync
+- TypeScript and Node.js source code
+- Plugin System
+- Monorepo or polyrepo
+- Custom Code
+- Ready to deploy app
+- Admin UI
+- Amplication console & CLI
+
+# PRODUCT HUNT LAUNCH :rocket:
+
+We are LIVE with the launch of our **Version 1**. [Upvote NOW](https://producthunt.com/)
+
+![1  Amplication main](https://user-images.githubusercontent.com/53312820/190913686-02c7deb1-da2f-41b8-aa31-065e00f6155c.png)
 
 # Getting Started
 
@@ -75,8 +78,7 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
 :bulb: Before you begin, make sure you have all the below installed:
 
-- [Node.js v14 or above](https://nodejs.org/en/download/)
-- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
+- [Node.js v16 or above](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/desktop/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
@@ -122,11 +124,9 @@ The server exposes a GraphQL API for all actions. The server is built with the f
 Amplication Client is the front end of the platform that provides you with an easy-to-drive UI for building your next low-code application.
 The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
 
-# Beta version
+# Version one
 
-Amplication is currently in Beta version. This means that we are still working on essential features like production-ready hosting, migrations, and stability to our console.
-
-How does it affect you? Well... mostly it doesn't. Every app generated using Amplication platform contains popular, documented, secured, and supported production-ready open-source components & packages. Your app is stable, scalable, and production-ready you can deploy and rely on. You can read more about the generated app and its stack in our [Getting Started documentation](https://docs.amplication.com/docs/getting-started).
+Amplication is currently in its Version 1. This is the first major release of Amplication with enterprise grade production readiness & scale. In this version we have launched many new features and have done enhancement in the current ones. You can checkout features earlier in the readme file.
 
 # Support
 
@@ -152,6 +152,14 @@ If you add some more information such as your thoughts and vision about the feat
 # Contributing
 
 Amplication is an open-source project. We are committed to a fully transparent development process and appreciate highly any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
+
+# Useful Links
+
+- [Docs](https://docs.amplication.com/docs/)
+- [Blog](https://amplication.com/blog)
+- [Twitter](https://twitter.com/amplication)
+- [Discord](https://amplication.com/discord)
+- [Youtube](https://www.youtube.com/c/Amplicationcom)
 
 Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md).
 
