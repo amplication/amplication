@@ -45,6 +45,6 @@ COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-
 
 COPY --from=build /app/packages/amplication-nest-logger-module/package.json /app/packages/amplication-nest-logger-module/package.json
 COPY --from=build /app/packages/amplication-nest-logger-module/node_modules /app/packages/amplication-nest-logger-module/node_modules
-COPY --from=build /app/packages/amplication-nest-logger-module/lib /app/packages/amplication-nest-logger-module/lib
+COPY --from=build /app/packages/amplication-nest-logger-module/dist /app/packages/amplication-nest-logger-module/dist
 
 CMD ["node", "dist/main"]
