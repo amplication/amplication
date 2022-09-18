@@ -11,6 +11,7 @@ import {
   serverDirectories,
   clientDirectories,
   DSGResourceData,
+  Plugin,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -25,6 +26,24 @@ import { get } from "lodash";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
 import { join } from "path";
+
+export const POSTGRESQL_PLUGIN_ID = "db-postgres";
+export const MYSQL_PLUGIN_ID = "db-mysql";
+export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
+
+const defaultPlugins: {
+  categoryPluginIds: string[];
+  defaultCategoryPlugin: Plugin;
+}[] = [
+  {
+    categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID],
+    defaultCategoryPlugin: {
+      pluginId: POSTGRESQL_PLUGIN_ID,
+      npm: POSTGRESQL_NPM,
+      enabled: true,
+    },
+  },
+];
 
 export async function createDataServiceImpl(
   dSGResourceData: DSGResourceData,
@@ -42,6 +61,7 @@ export async function createDataServiceImpl(
   if (!entities || !roles || !appInfo) {
     throw new Error("Missing required data");
   }
+  const pluginsWithDefaultPlugins = prepareDefaultPlugins(resourcePlugins);
   // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
     entities
@@ -56,12 +76,13 @@ export async function createDataServiceImpl(
   const serviceTopicsWithName = prepareServiceTopics(dSGResourceData);
 
   const context = DsgContext.getInstance;
+  context.logger = logger;
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
-  const plugins = await registerPlugins(resourcePlugins);
+  const plugins = await registerPlugins(pluginsWithDefaultPlugins);
   context.serverDirectories = dynamicServerPathCreator(
     get(appInfo, "settings.serverSettings.serverPath", "")
   );
@@ -136,6 +157,23 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
     return entity;
   });
   return currentEntities;
+}
+
+function prepareDefaultPlugins(installedPlugins: Plugin[]): Plugin[] {
+  const missingDefaultPlugins = defaultPlugins.flatMap((pluginCategory) => {
+    let pluginFound = false;
+    pluginCategory.categoryPluginIds.forEach((pluginId) => {
+      if (!pluginFound) {
+        pluginFound = installedPlugins.some(
+          (installedPlugin) => installedPlugin.pluginId === pluginId
+        );
+      }
+    });
+    if (!pluginFound) return [pluginCategory.defaultCategoryPlugin];
+
+    return [];
+  });
+  return [...missingDefaultPlugins, ...installedPlugins];
 }
 
 function prepareServiceTopics(dSGResourceData: DSGResourceData) {

@@ -114,7 +114,7 @@ const EXAMPLE_LOOKUP_ENTITY: Entity = {
 
 const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
   provider = "${DATA_SOURCE.provider}"
-  url      = env("${DATA_SOURCE.url.name}")
+  url      = env("${DATA_SOURCE.urlEnv}")
 }`;
 
 const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE].join("\n\n");

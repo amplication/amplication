@@ -3,10 +3,11 @@ import YAML from "yaml";
 
 export function prepareYamlFile(
   yamlFileContent: string,
-  updateProperties: { [key: string]: any }
+  updateProperties: { [key: string]: any }[]
 ): string {
   const parsed = YAML.parse(yamlFileContent);
-  const updated = merge(parsed, updateProperties);
+  updateProperties &&
+    updateProperties.forEach((updateProperty) => merge(parsed, updateProperty));
 
-  return YAML.stringify(updated, { nullStr: "~" });
+  return YAML.stringify(parsed, { nullStr: "~" });
 }

@@ -215,8 +215,15 @@ export type ServiceTopics = Omit<
   patterns: Array<models.MessagePattern & { topicName?: string }>;
 };
 
+export declare type PrismaClientGenerator = {
+  name: string;
+  provider: string;
+};
+
+export type DataSourceProvider = keyof typeof PrismaSchemaDSL.DataSourceProvider;
+
 export type PrismaDataSource = {
   name: string;
-  provider: PrismaSchemaDSL.DataSourceProvider;
-  url: PrismaSchemaDSL.DataSourceURLEnv;
+  provider: DataSourceProvider;
+  urlEnv: string;
 };

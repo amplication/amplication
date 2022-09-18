@@ -22,7 +22,7 @@ async function* getPluginFuncGenerator(
     let index = 0;
 
     do {
-      const packageName = pluginList[index].pluginId;
+      const packageName = pluginList[index].npm;
       const func = await import(packageName);
 
       ++index;
@@ -43,6 +43,7 @@ const getAllPlugins = async (
   pluginList: PluginInstallation[]
 ): Promise<Events[]> => {
   if (!pluginList.length) return [];
+
   const pluginFuncsArr: Events[] = [];
 
   for await (const pluginFunc of getPluginFuncGenerator(pluginList)) {

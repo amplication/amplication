@@ -6,6 +6,7 @@ import { appInfo } from "../src/tests/appInfo";
 import { AppInfo, Module } from "@amplication/code-gen-types";
 import { createDataService } from "../src/create-data-service";
 import { EnumResourceType } from "../src/models";
+import { installedPlugins } from "../src/tests/pluginInstallation";
 
 if (require.main === module) {
   const [, , output] = process.argv;
@@ -27,7 +28,7 @@ export default async function generateTestDataService(
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    plugins: [],
+    plugins: installedPlugins,
   });
   await writeModules(modules, destination);
 }
