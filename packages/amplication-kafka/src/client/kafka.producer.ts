@@ -1,6 +1,10 @@
 import {BeforeApplicationShutdown, Inject, Injectable, OnApplicationBootstrap} from "@nestjs/common";
 import {Producer} from "kafkajs";
-import {KAFKA_KEY_SERIALIZER, KAFKA_VALUE_SERIALIZER, Serializer} from "./types/serializer";
+import {
+    PRODUCER_KAFKA_KEY_SERIALIZER,
+    PRODUCER_KAFKA_VALUE_SERIALIZER,
+    Serializer
+} from "./types/serializer";
 import {Logger} from "winston";
 import {EmitResponse} from "./dtos/emit-response";
 import {KafkaClient} from "./kafka-client";
@@ -11,8 +15,8 @@ export class KafkaProducer<K,V> implements OnApplicationBootstrap, BeforeApplica
     private producer: Producer;
 
     constructor(kafkaClient:KafkaClient,
-                @Inject(KAFKA_KEY_SERIALIZER) private keySerialize: Serializer<K>,
-                @Inject(KAFKA_VALUE_SERIALIZER) private valueSerialize: Serializer<V>,
+                @Inject(PRODUCER_KAFKA_KEY_SERIALIZER) private keySerialize: Serializer<K>,
+                @Inject(PRODUCER_KAFKA_VALUE_SERIALIZER) private valueSerialize: Serializer<V>,
                 private logger: Logger) {
         this.producer = kafkaClient.kafka.producer()
     }

@@ -1,5 +1,9 @@
 import {Consumer, EachMessagePayload, IHeaders} from "kafkajs";
-import {KAFKA_KEY_SERIALIZER, KAFKA_VALUE_SERIALIZER, Serializer} from "./types/serializer";
+import {
+    CONSUMER_KAFKA_KEY_SERIALIZER,
+    CONSUMER_KAFKA_VALUE_SERIALIZER,
+    Serializer
+} from "./types/serializer";
 import {KafkaConsumerConfigDto} from "./dtos/kafka-consumer-config.dto";
 import {BeforeApplicationShutdown, Inject, Injectable, OnApplicationBootstrap} from "@nestjs/common";
 import {Logger} from "winston";
@@ -14,8 +18,8 @@ export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplica
 
     constructor(kafkaClient: KafkaClient,
                 private config: KafkaConsumerConfigDto,
-                @Inject(KAFKA_KEY_SERIALIZER) private keySerialize: Serializer<K>,
-                @Inject(KAFKA_VALUE_SERIALIZER) private valueSerialize: Serializer<V>,
+                @Inject(CONSUMER_KAFKA_KEY_SERIALIZER) private keySerialize: Serializer<K>,
+                @Inject(CONSUMER_KAFKA_VALUE_SERIALIZER) private valueSerialize: Serializer<V>,
                 private logger: Logger) {
 
         this.subscribers = new Map<string, ((kafkaMessage: KafkaMessageDto<K, V>) => Promise<void>)[]>()
