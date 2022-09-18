@@ -1,12 +1,12 @@
+import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
-import { namedTypes } from "ast-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 export {
-  EnumEntityPermissionType,
-  EnumEntityAction,
   EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType,
 } from "./models";
 
 export type WorkerResult = {
@@ -16,7 +16,10 @@ export type WorkerResult = {
   error?: any;
 };
 
-export type ServiceSettings = BlockOmittedFields<models.ServiceSettings>;
+export type ServiceSettings = Omit<
+  BlockOmittedFields<models.ServiceSettings>,
+  "id"
+>;
 
 export type AppInfo = {
   name: string;
@@ -167,12 +170,11 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
-export type Plugin = BlockOmittedFields<models.PluginInstallation>;
+export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 
 type BlockOmittedFields<T> = Omit<
   T,
   | "__typename"
-  | "id"
   | "createdAt"
   | "updatedAt"
   | "parentBlock"
@@ -199,9 +201,17 @@ export type serverDirectories = {
   srcDirectory: string;
   authDirectory: string;
   scriptsDirectory: string;
+  messageBrokerDirectory: string;
 };
+
 export type Topic = BlockOmittedFields<models.Topic>;
-export type ServiceTopics = BlockOmittedFields<models.ServiceTopics>;
+
+export type ServiceTopics = Omit<
+  BlockOmittedFields<models.ServiceTopics>,
+  "patterns"
+> & {
+  patterns: Array<models.MessagePattern & { topicName?: string }>;
+};
 
 export declare type PrismaClientGenerator = {
   name: string;

@@ -7,6 +7,13 @@ import {
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
+  CreateMessageBrokerClientOptionsFactoryParams,
+  CreateMessageBrokerNestJSModuleParams,
+  CreateMessageBrokerParams,
+  CreateMessageBrokerServiceBaseParams,
+  CreateMessageBrokerServiceParams,
+  CreateMessageBrokerTopicsEnumParams,
+  CreateServerPackageJsonParams,
   CreatePrismaSchemaParams,
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
@@ -35,4 +42,24 @@ export type Events = {
     CreateServerDockerComposeDBParams
   >;
   [EventNames.CreatePrismaSchema]?: PluginEventType<CreatePrismaSchemaParams>;
+
+  [EventNames.CreateMessageBroker]?: PluginEventType<CreateMessageBrokerParams>;
+  [EventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<
+    CreateMessageBrokerTopicsEnumParams
+  >;
+  [EventNames.CreateMessageBrokerNestJSModule]?: PluginEventType<
+    CreateMessageBrokerNestJSModuleParams
+  >;
+  [EventNames.CreateMessageBrokerClientOptionsFactory]?: PluginEventType<
+    CreateMessageBrokerClientOptionsFactoryParams
+  >;
+  [EventNames.CreateMessageBrokerService]?: PluginEventType<
+    CreateMessageBrokerServiceParams
+  >;
+  [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<
+    CreateMessageBrokerServiceBaseParams
+  >;
+  [EventNames.CreatePackageJson]?: PluginEventType<
+    CreateServerPackageJsonParams
+  >;
 };

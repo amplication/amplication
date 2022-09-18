@@ -1,3 +1,3 @@
-import { Plugin } from "@amplication/code-gen-types";
+import { PluginInstallation } from "@amplication/code-gen-types";
 
-export const installedPlugins: Plugin[] = [];
+export const installedPlugins: PluginInstallation[] = [];

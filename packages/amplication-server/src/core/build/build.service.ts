@@ -639,7 +639,7 @@ export class BuildService {
     return {
       entities: await this.getOrderedEntities(buildId),
       roles: await this.getResourceRoles(resourceId),
-      plugins,
+      pluginInstallations: plugins,
       resourceType: resource.resourceType,
       topics: await this.topicService.findMany({
         where: { resource: { id: resourceId } }

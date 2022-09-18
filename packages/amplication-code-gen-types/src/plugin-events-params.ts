@@ -1,14 +1,12 @@
 import { namedTypes } from "ast-types";
+import { JsonValue } from "type-fest";
 import {
-  DTOs,
   Entity,
   EntityField,
-  Module,
-  NamedClassDeclaration,
+  PrismaClientGenerator,
   PrismaDataSource,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import { PrismaClientGenerator } from "./code-gen-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   entityName: string;
@@ -76,4 +74,16 @@ export interface CreatePrismaSchemaParams extends EventParams {
   entities: Entity[];
   dataSource: PrismaDataSource;
   clientGenerator: PrismaClientGenerator;
+}
+
+export interface CreateMessageBrokerParams extends EventParams {}
+export interface CreateMessageBrokerTopicsEnumParams extends EventParams {}
+export interface CreateMessageBrokerNestJSModuleParams extends EventParams {}
+export interface CreateMessageBrokerClientOptionsFactoryParams
+  extends EventParams {}
+
+export interface CreateMessageBrokerServiceParams extends EventParams {}
+export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
+export interface CreateServerPackageJsonParams extends EventParams {
+  updateValues: { [key: string]: JsonValue };
 }

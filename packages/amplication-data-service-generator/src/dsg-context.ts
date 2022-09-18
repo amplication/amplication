@@ -4,6 +4,7 @@ import {
   ContextUtil,
   serverDirectories,
 } from "@amplication/code-gen-types";
+import { EnumResourceType } from "./models";
 import winston from "winston";
 import { readPluginStaticModules } from "./read-static-modules";
 
@@ -22,6 +23,8 @@ class DsgContext implements types.DsgContext {
   public plugins: types.PluginMap = {};
   public logger: winston.Logger = winston.createLogger();
   public utils: ContextUtil = contextUtil;
+  public serviceTopics: types.ServiceTopics[] = [];
+  public topics: types.Topic[] = [];
 
   public clientDirectories!: clientDirectories;
   public serverDirectories!: serverDirectories;
@@ -35,6 +38,14 @@ class DsgContext implements types.DsgContext {
   private constructor() {
     //prevent external code from creating instances of the context
   }
+
+  public get resourceInfo(): types.AppInfo {
+    return this.appInfo;
+  }
+
+  public resourceType!: EnumResourceType;
+  public pluginInstallations: types.PluginInstallation[] = [];
+  public otherResources?: types.DSGResourceData[] | undefined;
 }
 
 export default DsgContext;
