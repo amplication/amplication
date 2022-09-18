@@ -13,7 +13,7 @@ import { replacePlaceholdersInCode } from "../util/text-file-parser";
 const templatePath = require.resolve("./create-dotenv.template.env");
 
 export function createDotEnvModule(
-  eventParams: CreateServerDotEnvParams["before"]
+  eventParams: CreateServerDotEnvParams
 ): Module[] {
   return pluginWrapper(
     createDotEnvModuleInternal,
@@ -29,7 +29,7 @@ export function createDotEnvModule(
  */
 export async function createDotEnvModuleInternal({
   envVariables,
-}: CreateServerDotEnvParams["before"]): Promise<Module[]> {
+}: CreateServerDotEnvParams): Promise<Module[]> {
   const context = DsgContext.getInstance;
   const { appInfo, serverDirectories } = context;
   const envVariablesWithoutDuplicateKeys = removeDuplicateKeys(envVariables);

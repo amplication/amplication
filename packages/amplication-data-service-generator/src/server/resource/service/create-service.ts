@@ -111,7 +111,7 @@ async function createServiceModule({
   serviceId,
   serviceBaseId,
   template,
-}: CreateEntityServiceParams["before"]): Promise<Module[]> {
+}: CreateEntityServiceParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.service.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
@@ -183,7 +183,7 @@ async function createServiceBaseModule({
   serviceBaseId,
   delegateId,
   template,
-}: CreateEntityServiceBaseParams["before"]): Promise<Module[]> {
+}: CreateEntityServiceBaseParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
 
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;

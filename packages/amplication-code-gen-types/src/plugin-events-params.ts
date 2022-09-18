@@ -11,89 +11,69 @@ import { EventParams } from "./plugins-types";
 import { PrismaClientGenerator } from "./code-gen-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
-  before: {
-    entityName: string;
-    entity: Entity;
-    templateMapping: { [key: string]: any };
-    passwordFields: EntityField[];
-    serviceId: namedTypes.Identifier;
-    serviceBaseId: namedTypes.Identifier;
-    delegateId: namedTypes.Identifier;
-    template: namedTypes.File;
-  };
+  entityName: string;
+  entity: Entity;
+  templateMapping: { [key: string]: any };
+  passwordFields: EntityField[];
+  serviceId: namedTypes.Identifier;
+  serviceBaseId: namedTypes.Identifier;
+  delegateId: namedTypes.Identifier;
+  template: namedTypes.File;
 }
 
 export interface CreateEntityServiceParams extends EventParams {
-  before: {
-    entityName: string;
-    templateMapping: { [key: string]: any };
-    passwordFields: EntityField[];
-    serviceId: namedTypes.Identifier;
-    serviceBaseId: namedTypes.Identifier;
-    template: namedTypes.File;
-  };
+  entityName: string;
+  templateMapping: { [key: string]: any };
+  passwordFields: EntityField[];
+  serviceId: namedTypes.Identifier;
+  serviceBaseId: namedTypes.Identifier;
+  template: namedTypes.File;
 }
 export interface CreateEntityControllerParams extends EventParams {
-  before: {
-    templatePath: string;
-    entityName: string;
-    entityServiceModule: string;
-    templateMapping: { [key: string]: any };
-    controllerBaseId: namedTypes.Identifier;
-    serviceId: namedTypes.Identifier;
-  };
+  templatePath: string;
+  entityName: string;
+  entityServiceModule: string;
+  templateMapping: { [key: string]: any };
+  controllerBaseId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
 }
 export interface CreateEntityControllerBaseParams extends EventParams {
-  before: {
-    baseTemplatePath: string;
-    entity: Entity;
-    entityName: string;
-    entityType: string;
-    entityServiceModule: string;
-    templateMapping: { [key: string]: any };
-    controllerBaseId: namedTypes.Identifier;
-    serviceId: namedTypes.Identifier;
-  };
+  baseTemplatePath: string;
+  entity: Entity;
+  entityName: string;
+  entityType: string;
+  entityServiceModule: string;
+  templateMapping: { [key: string]: any };
+  controllerBaseId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
 }
 export interface CreateAuthModulesParams extends EventParams {
-  before: {
-    srcDir: string;
-  };
+  srcDir: string;
 }
 
-export interface CreateAdminModulesParams extends EventParams {
-  before: {};
-}
+export interface CreateAdminModulesParams extends EventParams {}
 
 export type VariableDictionary = {
   [variable: string]: string;
 }[];
 
 export interface CreateServerDotEnvParams extends EventParams {
-  before: {
-    envVariables: VariableDictionary;
-  };
+  envVariables: VariableDictionary;
 }
 
 export interface CreateServerDockerComposeParams extends EventParams {
-  before: {
-    fileContent: string;
-    updateProperties: { [key: string]: any }[];
-    outputFileName: string;
-  };
+  fileContent: string;
+  updateProperties: { [key: string]: any }[];
+  outputFileName: string;
 }
 
 export interface CreateServerDockerComposeDBParams extends EventParams {
-  before: {
-    fileContent: string;
-    updateProperties: { [key: string]: any }[];
-    outputFileName: string;
-  };
+  fileContent: string;
+  updateProperties: { [key: string]: any }[];
+  outputFileName: string;
 }
 export interface CreatePrismaSchemaParams extends EventParams {
-  before: {
-    entities: Entity[];
-    dataSource: PrismaDataSource;
-    clientGenerator: PrismaClientGenerator;
-  };
+  entities: Entity[];
+  dataSource: PrismaDataSource;
+  clientGenerator: PrismaClientGenerator;
 }

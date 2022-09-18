@@ -152,7 +152,7 @@ async function createControllerModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-}: CreateEntityControllerParams["before"]): Promise<Module[]> {
+}: CreateEntityControllerParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.controller.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
@@ -196,7 +196,7 @@ async function createControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-}: CreateEntityControllerBaseParams["before"]): Promise<Module[]> {
+}: CreateEntityControllerBaseParams): Promise<Module[]> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;

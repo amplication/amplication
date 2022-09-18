@@ -11,17 +11,22 @@ import winston from "winston";
 import { Events } from "./plugin-events";
 import type { Promisable } from "type-fest";
 
-export interface EventParams {
-  before: any;
-  after: Module[];
-}
+export interface EventParams {}
+
+export type PluginBeforeEvent<T extends EventParams> = (
+  dsgContext: DsgContext,
+  eventParams: T
+) => Promisable<T>;
+
+export type PluginAfterEvent<T extends EventParams> = (
+  dsgContext: DsgContext,
+  eventParams: T,
+  modules: Module[]
+) => Promisable<Module[]>;
 
 export interface PluginEventType<T extends EventParams> {
-  before?: (
-    dsgContext: DsgContext,
-    eventParams: T["before"]
-  ) => Promisable<T["before"]>;
-  after?: (dsgContext: DsgContext, modules: T["after"]) => Promisable<Module[]>;
+  before?: PluginBeforeEvent<T>;
+  after?: PluginAfterEvent<T>;
 }
 
 export interface PrintResultType {
@@ -51,14 +56,8 @@ export type PluginWrapper = (args: EventParams, func: () => void) => any;
 
 export type PluginMap = {
   [K in EventNames]?: {
-    before?: (<T>(
-      context: DsgContext,
-      params: Module[] | EventParams
-    ) => Promisable<T>)[];
-    after?: (<T>(
-      context: DsgContext,
-      modules: Module[] | EventParams
-    ) => Promisable<T>)[];
+    before?: PluginBeforeEvent<EventParams>[];
+    after?: PluginAfterEvent<EventParams>[];
   };
 };
 
