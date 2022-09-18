@@ -17,6 +17,7 @@ export const appInfo: AppInfo = {
   id: "ckl0ow1xj00763cjnch10k6mc",
   url: "https://app.amplication.com/ckl0ow1xj00763cjnch10k6mc",
   settings: {
+    id: "EXAMPLE_SERVICE_ID",
     dbHost: "localhost",
     dbName: "db-name",
     dbPort: 5433,

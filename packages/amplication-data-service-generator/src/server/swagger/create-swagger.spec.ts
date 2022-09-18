@@ -14,6 +14,7 @@ const EXAMPLE_APP_INFO: AppInfo = {
   id: "EXAMPLE_ID",
   url: "EXAMPLE_URL",
   settings: {
+    id: "EXAMPLE_SERVICE_ID",
     dbHost: "localhost",
     dbName: "",
     dbPort: 5432,
