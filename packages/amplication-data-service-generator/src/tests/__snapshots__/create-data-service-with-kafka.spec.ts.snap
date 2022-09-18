@@ -2939,6 +2939,9 @@ services:
         - \${DB_DB_NAME}
         - -U
         - \${DB_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
   zookeeper:
     image: confluentinc/cp-zookeeper:5.2.4
     networks:
