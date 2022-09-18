@@ -12,7 +12,13 @@ import { Events } from "./plugin-events";
 import type { Promisable } from "type-fest";
 
 export interface EventParams {
+  before: any;
   after: Module[];
+}
+
+export interface PluginEventType<T extends EventParams> {
+  before?: (dsgContext: DsgContext, eventParams: T["before"]) => Promisable<T>;
+  after?: (dsgContext: DsgContext, modules: T["after"]) => Promisable<Module[]>;
 }
 
 export interface PrintResultType {
