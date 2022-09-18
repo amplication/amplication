@@ -41,10 +41,7 @@ const Service = () => {
           <div className={`${CLASS_NAME}__header__top__title`}>Service List</div>
         </div>
         <div className={`${CLASS_NAME}__header__description`}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et vehicula risus, vulputate semper turpis.
-          Cras sollicitudin volutpat justo.
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et vehicula risus, vulputate semper turpis.
-          Cras sollicitudin volutpat justo.
+          Services associated with this message broker.
         </div>
       </div>
       <HorizontalRule />
