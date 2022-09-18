@@ -7,12 +7,19 @@ export type PluginWrapper = (
   ...args: any
 ) => any;
 
-const pipe = (
-  ...fns: ((context: DsgContext, res: EventParams | Module[]) => any)[]
-) => (context: DsgContext, x: any) =>
+const beforeEventsPipe = (
+  ...fns: ((context: DsgContext, eventParams: EventParams) => EventParams)[]
+) => (context: DsgContext, eventParams: EventParams) =>
   fns.reduce((res, fn) => {
     return fn(context, res);
-  }, x);
+  }, eventParams);
+
+const afterEventsPipe = (
+  ...fns: ((dsgContext: DsgContext, modules: Module[]) => Module)[]
+) => (context: DsgContext, modules: Module[]) =>
+  fns.reduce((res, fn) => {
+    return fn(context, res);
+  }, modules);
 
 const defaultBehavior = async (
   context: DsgContext,
@@ -47,7 +54,7 @@ const pluginWrapper: PluginWrapper = async (
     const afterPlugins = context.plugins[event]?.after || [];
 
     const updatedEventParams = beforePlugins
-      ? pipe(...beforePlugins)(context, args)
+      ? beforeEventsPipe(...beforePlugins)(context, args)
       : args;
     const defaultBehaviorModules = await defaultBehavior(
       context,
@@ -56,7 +63,11 @@ const pluginWrapper: PluginWrapper = async (
     );
 
     const finalModules = afterPlugins
-      ? await pipe(...afterPlugins)(context, defaultBehaviorModules)
+      ? await afterEventsPipe(...afterPlugins)(
+          context,
+          args,
+          defaultBehaviorModules
+        )
       : defaultBehaviorModules;
 
     context.modules.push(finalModules);
