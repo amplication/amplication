@@ -232,7 +232,12 @@ const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
   }
 };
 
-const EXAMPLE_MODULES = [];
+const EXAMPLE_MODULES = [
+  {
+    path: 'examplePath',
+    code: 'exampleCode'
+  }
+];
 
 const prismaBuildCreateMock = jest.fn(
   () => EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
