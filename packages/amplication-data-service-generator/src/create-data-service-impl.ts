@@ -11,6 +11,7 @@ import {
   serverDirectories,
   clientDirectories,
   DSGResourceData,
+  PluginInstallation,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -32,7 +33,7 @@ export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
 
 const defaultPlugins: {
   categoryPluginIds: string[];
-  defaultCategoryPlugin: Plugin;
+  defaultCategoryPlugin: PluginInstallation;
 }[] = [
   {
     categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID],
@@ -157,7 +158,9 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
   return currentEntities;
 }
 
-function prepareDefaultPlugins(installedPlugins: Plugin[]): Plugin[] {
+function prepareDefaultPlugins(
+  installedPlugins: PluginInstallation[]
+): PluginInstallation[] {
   const missingDefaultPlugins = defaultPlugins.flatMap((pluginCategory) => {
     let pluginFound = false;
     pluginCategory.categoryPluginIds.forEach((pluginId) => {
