@@ -2865,11 +2865,7 @@ export class StringNullableFilter {
   \\"exclude\\": [\\"./node_modules\\"]
 }
 ",
-  "server/.env": "POSTGRESQL_USER=testUsername
-POSTGRESQL_PASSWORD=1234
-POSTGRESQL_PORT=5433
-POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
-BCRYPT_SALT=10
+  "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
@@ -2902,7 +2898,6 @@ services:
     ports:
       - \${SERVER_PORT}:3000
     environment:
-      POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5433
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
@@ -2917,7 +2912,6 @@ services:
     command: npm run db:init
     working_dir: /app/server
     environment:
-      POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432
       BCRYPT_SALT: \${BCRYPT_SALT}
       DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432
     depends_on:
@@ -2941,9 +2935,6 @@ services:
         - \${DB_DB_NAME}
         - -U
         - \${DB_USER}
-      timeout: 45s
-      interval: 10s
-      retries: 10
 volumes:
   postgres: ~
 ",
