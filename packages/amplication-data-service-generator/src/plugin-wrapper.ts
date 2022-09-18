@@ -4,6 +4,7 @@ import {
   EventParams,
   PluginAfterEvent,
   PluginBeforeEvent,
+  Module2,
 } from "@amplication/code-gen-types";
 import DsgContext from "./dsg-context";
 
@@ -16,21 +17,42 @@ export type PluginWrapper = (
 const beforeEventsPipe = (...fns: PluginBeforeEvent<EventParams>[]) => (
   context: DsgContext,
   eventParams: EventParams
-) =>
-  fns.reduce((res, fn) => {
-    return res.then(async () => await fn(context, res));
-  }, Promise.resolve(eventParams));
+) => {
+  const innerResults = fns.reduce(async (res, fn) => {
+    return await fn(context, res);
+  }, eventParams);
+  return innerResults;
+};
 
-const afterEventsPipe = (...fns: PluginAfterEvent<EventParams>[]) => (
+const afterEventsPipe2 = (...fns: PluginAfterEvent<EventParams>[]) => (
   context: DsgContext,
-  eventParams: EventParams,
-  modules: Module[]
-) =>
-  fns.reduce((res, fn) => {
-    return res.then(
-      async (modulesRes) => await fn(context, eventParams, modulesRes)
-    );
-  }, Promise.resolve(modules));
+  eventParams: Module2
+) => {
+  const innerResults = fns.reduce(async (res, fn) => {
+    return await fn(context, res);
+  }, eventParams);
+  return innerResults;
+};
+
+const afterEventsPipe = (...fns: PluginAfterEvent<EventParams>[]) => {
+  return (context: DsgContext, modules: Module) => {
+    const innerResults = fns.reduce(async (res, fn) => {
+      const result = await fn(context, res);
+      return result;
+    }, modules);
+    return innerResults;
+  };
+};
+
+// const afterEventsPipe = (
+//   ...fns: ((
+//     dsgContext: DsgContext,
+//     modules: Module
+//   ) => Module)[]
+// ) => (context: DsgContext,  modules: Module[]) =>
+//   fns.reduce((res, fn) => {
+//     return Promise.resolve(async () => fn(context, res));
+//   }, modules);
 
 const defaultBehavior = async (
   context: DsgContext,
