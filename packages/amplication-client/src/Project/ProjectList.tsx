@@ -25,8 +25,8 @@ export const ProjectList = ({
             workspaceId={workspaceId}
           />
         ))}
-        <AddNewProject />
       </div>
+      <AddNewProject />
     </div>
   );
 };
