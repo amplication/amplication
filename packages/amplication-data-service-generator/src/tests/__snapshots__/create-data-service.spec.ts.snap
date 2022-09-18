@@ -2865,6 +2865,79 @@ export class StringNullableFilter {
   \\"exclude\\": [\\"./node_modules\\"]
 }
 ",
+  "server/.env": "BCRYPT_SALT=10
+COMPOSE_PROJECT_NAME=amp_\${resourceId}
+JWT_SECRET_KEY=Change_ME!!!
+JWT_EXPIRATION=2d
+SERVER_PORT=3000
+DB_USER=testUsername
+DB_PASSWORD=1234
+DB_PORT=5433
+DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
+  "server/docker-compose.db.yml": "version: \\"3\\"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}shimiwalla
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
+",
+  "server/docker-compose.yml": "version: \\"3\\"
+services:
+  server:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    ports:
+      - \${SERVER_PORT}:3000
+    environment:
+      BCRYPT_SALT: \${BCRYPT_SALT}
+      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
+      JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5433
+    depends_on:
+      - migrate
+  migrate:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    command: npm run db:init
+    working_dir: /app/server
+    environment:
+      BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -q
+        - -d
+        - \${DB_DB_NAME}
+        - -U
+        - \${DB_USER}
+volumes:
+  postgres: ~
+",
   "server/nest-cli.json": "{
   \\"sourceRoot\\": \\"src\\",
   \\"compilerOptions\\": {
@@ -2947,6 +3020,129 @@ export class StringNullableFilter {
   }
 }
 ",
+  "server/prisma/schema.prisma": "datasource postgres {
+  provider = \\"postgresql\\"
+  url      = env(\\"DB_URL\\")
+}
+
+generator client {
+  provider = \\"prisma-client-js\\"
+}
+
+model User {
+  username           String              @unique
+  password           String
+  roles              Json
+  id                 String              @id @default(cuid())
+  name               String
+  bio                String
+  email              String
+  age                Int
+  birthDate          DateTime
+  score              Float
+  manager            User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
+  managerId          String?
+  employees          User[]              @relation(name: \\"employees\\")
+  organizations      Organization[]
+  interests          EnumUserInterests[]
+  priority           EnumUserPriority
+  isCurious          Boolean
+  location           String
+  extendedProperties Json
+  profile            Profile?            @relation(fields: [profileId], references: [id])
+  profileId          String?             @unique
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String
+  user      User?
+}
+
+model Order {
+  id         String          @id @default(cuid())
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  customer   Customer        @relation(fields: [customerId], references: [id])
+  customerId String
+  status     EnumOrderStatus
+  label      EnumOrderLabel?
+}
+
+model Organization {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  name         String
+  users        User[]
+  customers    Customer[] @relation(name: \\"CustomersOnOrganization\\")
+  vipCustomers Customer[] @relation(name: \\"vipCustomers\\")
+}
+
+model Customer {
+  id                String                       @id @default(cuid())
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+  email             String
+  firstName         String?
+  lastName          String?
+  isVip             Boolean?
+  birthData         DateTime?
+  averageSale       Float?
+  favoriteNumber    Int?
+  geoLocation       String?
+  comments          String?
+  favoriteColors    EnumCustomerFavoriteColors[]
+  customerType      EnumCustomerCustomerType?
+  organization      Organization?                @relation(name: \\"CustomersOnOrganization\\", fields: [organizationId], references: [id])
+  organizationId    String?
+  vipOrganization   Organization?                @relation(name: \\"vipCustomers\\", fields: [vipOrganizationId], references: [id])
+  vipOrganizationId String?
+  orders            Order[]
+}
+
+model Empty {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EnumUserInterests {
+  programming
+  design
+}
+
+enum EnumUserPriority {
+  high
+  medium
+  low
+}
+
+enum EnumOrderStatus {
+  pending
+  inProgress
+  done
+}
+
+enum EnumOrderLabel {
+  fragile
+}
+
+enum EnumCustomerFavoriteColors {
+  red
+  green
+  purple
+  yellow
+}
+
+enum EnumCustomerCustomerType {
+  platinum
+  gold
+  bronze
+  regular
+}",
   "server/scripts/clean.ts": "/**
  * Clean all the tables and types created by Prisma in the database
  */

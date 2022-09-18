@@ -17,18 +17,20 @@ const beforeEventsPipe = (...fns: PluginBeforeEvent<EventParams>[]) => (
   context: DsgContext,
   eventParams: EventParams
 ) =>
-  fns.reduce(async (res, fn) => {
-    return fn(context, await res);
-  }, Promise.resolve(eventParams));
+  fns.reduce(
+    async (res, fn) => fn(context, await res),
+    Promise.resolve(eventParams)
+  );
 
 const afterEventsPipe = (...fns: PluginAfterEvent<EventParams>[]) => (
   context: DsgContext,
   eventParams: EventParams,
   modules: Module[]
 ) =>
-  fns.reduce(async (res, fn) => {
-    return fn(context, eventParams, await res);
-  }, Promise.resolve(modules));
+  fns.reduce(
+    async (res, fn) => fn(context, eventParams, await res),
+    Promise.resolve(modules)
+  );
 
 const defaultBehavior = async (
   context: DsgContext,
@@ -63,7 +65,7 @@ const pluginWrapper: PluginWrapper = async (
     const afterPlugins = context.plugins[event]?.after || [];
 
     const updatedEventParams = beforePlugins
-      ? beforeEventsPipe(...beforePlugins)(context, args)
+      ? await beforeEventsPipe(...beforePlugins)(context, args)
       : args;
     const defaultBehaviorModules = await defaultBehavior(
       context,
