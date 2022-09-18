@@ -1,16 +1,13 @@
+import type { Promisable } from "type-fest";
+import winston from "winston";
 import {
-  AppInfo,
   clientDirectories,
   DTOs,
-  Entity,
   Module,
-  Role,
   serverDirectories,
 } from "./code-gen-types";
-import winston from "winston";
-import { Events } from "./plugin-events";
-import type { Promisable } from "type-fest";
 import { DSGResourceData } from "./dsg-resource-data";
+import { Events } from "./plugin-events";
 
 export interface EventParams {
   after: Module[];
