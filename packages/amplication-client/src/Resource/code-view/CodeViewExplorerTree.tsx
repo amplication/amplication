@@ -1,4 +1,4 @@
-import { Icon, TreeView } from "@amplication/design-system";
+import { Icon, Snackbar, TreeView } from "@amplication/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 import { Build } from "../../models";
 import { FileDetails } from "./CodeViewPage";
@@ -10,8 +10,10 @@ import { AxiosError } from "axios";
 import { remove } from "lodash";
 import { FileMeta } from "./CodeViewExplorer";
 import "./CodeViewBar.scss";
+import { formatError } from "../../util/error";
 
 const CLASS_NAME = "code-view-bar";
+const ERROR_MESSAGE_PREFIX = "Can't fetch files data from serer.";
 
 type Props = {
   selectedBuild: Build;
@@ -94,11 +96,12 @@ const CodeViewExplorerTree = ({
     [selectedBuild, onFileSelected, expandedFolders, resourceId]
   );
 
+  const errorMessage = formatError(error);
+
   return (
     <div className={CLASS_NAME}>
       {selectedBuild && (
         <div>
-          {isError && error}
           {rootFile.children?.length ? (
             <TreeView
               expanded={expandedFolders}
@@ -118,6 +121,10 @@ const CodeViewExplorerTree = ({
           )}
         </div>
       )}
+      <Snackbar
+        open={isError}
+        message={`${ERROR_MESSAGE_PREFIX} ${errorMessage}`}
+      />
     </div>
   );
 };
