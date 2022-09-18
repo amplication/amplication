@@ -38,6 +38,7 @@ const defaultPlugins: {
   {
     categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID],
     defaultCategoryPlugin: {
+      id: "placeholder-id",
       pluginId: POSTGRESQL_PLUGIN_ID,
       npm: POSTGRESQL_NPM,
       enabled: true,

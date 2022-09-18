@@ -16,9 +16,7 @@ export type WorkerResult = {
   error?: any;
 };
 
-export type ServiceSettings = BlockOmittedFieldsWithoutId<
-  models.ServiceSettings
->;
+export type ServiceSettings = BlockOmittedFields<models.ServiceSettings>;
 
 export type AppInfo = {
   name: string;
@@ -169,9 +167,7 @@ export type ResourceGenerationConfig = {
   appInfo: AppInfo;
 };
 
-export type PluginInstallation = BlockOmittedFieldsWithoutId<
-  models.PluginInstallation
->;
+export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 
 type BlockOmittedFields<T> = Omit<
   T,
@@ -204,7 +200,6 @@ export type serverDirectories = {
   scriptsDirectory: string;
   messageBrokerDirectory: string;
 };
-type BlockOmittedFieldsWithoutId<T> = Omit<BlockOmittedFields<T>, "id">;
 
 export type Topic = BlockOmittedFields<models.Topic>;
 
