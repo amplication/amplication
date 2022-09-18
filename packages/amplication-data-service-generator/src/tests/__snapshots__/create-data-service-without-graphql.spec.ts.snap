@@ -2882,7 +2882,7 @@ services:
       - \${DB_PORT}:5432
     environment:
       POSTGRES_USER: \${DB_USER}
-      POSTGRES_PASSWORD: \${DB_PASSWORD}shimiwalla
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
 volumes:
