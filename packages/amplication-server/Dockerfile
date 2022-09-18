@@ -19,6 +19,7 @@ COPY packages/amplication-data-service-generator packages/amplication-data-servi
 COPY packages/amplication-git-service packages/amplication-git-service
 COPY packages/amplication-prisma-db packages/amplication-prisma-db
 COPY packages/amplication-kafka packages/amplication-kafka
+COPY packages/amplication-nest-logger-module packages/amplication-nest-logger-module
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/server --include-dependencies
@@ -64,6 +65,10 @@ COPY --from=build /app/packages/amplication-prisma-db/prisma /app/packages/ampli
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
+
+COPY --from=build /app/packages/amplication-nest-logger-module/package.json /app/packages/amplication-nest-logger-module/package.json
+COPY --from=build /app/packages/amplication-nest-logger-module/node_modules /app/packages/amplication-nest-logger-module/node_modules
+COPY --from=build /app/packages/amplication-nest-logger-module/lib /app/packages/amplication-nest-logger-module/lib
 
 EXPOSE 3000
 CMD [ "node", "dist/src/main"]

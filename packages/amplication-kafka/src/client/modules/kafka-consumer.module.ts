@@ -13,7 +13,11 @@ export class KafkaConsumerModule {
                                       valueSerializerClass: Type<V>): DynamicModule {
         return {
             module: KafkaConsumerModule,
-            imports: [ConfigModule, KafkaClientModule, AmplicationLoggerModule],
+            imports: [ConfigModule, KafkaClientModule, AmplicationLoggerModule.register({
+                metadata: {
+                    service: "kafka-consumer-module"
+                }
+            })],
             providers: [{
                 provide: KafkaConsumerConfigDto,
                 useFactory: (configService: ConfigService) => {

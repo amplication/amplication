@@ -587,13 +587,13 @@ export class BuildService {
     }
   }
 
-  private async updateActionStep(actionStepId: string, state: EnumActionStepStatus): Promise<void> {
+  private async updateActionStep(actionStepId: string, state: EnumActionStepStatus.Success | EnumActionStepStatus.Failed): Promise<void> {
     await this.prisma.actionStep.update({
       where: {
         id: actionStepId
       },
       data: {
-        state,
+        status: state,
         completedAt: new Date()
       },
       select: SELECT_ID

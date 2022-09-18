@@ -18,6 +18,7 @@ WORKDIR /app
 # Copy amplication/storage-gateway and the its dependent packages
 COPY packages/amplication-storage-gateway packages/amplication-storage-gateway
 COPY packages/amplication-kafka packages/amplication-kafka
+COPY packages/amplication-nest-logger-module packages/amplication-nest-logger-module
 
 # Installs all copied package node_modules ; Preparation for build
 RUN npm run bootstrap -- --scope @amplication/storage-gateway --include-dependencies
@@ -41,5 +42,9 @@ COPY --from=build /app/packages/amplication-storage-gateway/dist /app/packages/a
 COPY --from=build /app/packages/amplication-kafka/package.json /app/packages/amplication-kafka/package.json
 COPY --from=build /app/packages/amplication-kafka/node_modules /app/packages/amplication-kafka/node_modules
 COPY --from=build /app/packages/amplication-kafka/lib /app/packages/amplication-kafka/lib
+
+COPY --from=build /app/packages/amplication-nest-logger-module/package.json /app/packages/amplication-nest-logger-module/package.json
+COPY --from=build /app/packages/amplication-nest-logger-module/node_modules /app/packages/amplication-nest-logger-module/node_modules
+COPY --from=build /app/packages/amplication-nest-logger-module/lib /app/packages/amplication-nest-logger-module/lib
 
 CMD ["node", "dist/main"]

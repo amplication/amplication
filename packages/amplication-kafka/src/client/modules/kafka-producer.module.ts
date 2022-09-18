@@ -12,7 +12,11 @@ export class KafkaProducerModule {
                                      valueSerializerClass:Type<V>):DynamicModule{
         return {
             module: KafkaProducerModule,
-            imports: [ConfigModule,KafkaClientModule,AmplicationLoggerModule],
+            imports: [ConfigModule,KafkaClientModule,AmplicationLoggerModule.register({
+                metadata: {
+                    service: "kafka-producer-module"
+                }
+            })],
             providers: [{
                 provide: PRODUCER_KAFKA_KEY_SERIALIZER,
                 useClass: keySerializerClass
