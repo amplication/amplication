@@ -5,4 +5,5 @@ export interface CommitContext {
   commitId: string;
   resourceId: string;
   resourceName: string;
+  actionStepId: string;
 }

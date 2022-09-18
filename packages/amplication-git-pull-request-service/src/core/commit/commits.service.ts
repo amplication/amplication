@@ -6,13 +6,18 @@ import {
 } from '@amplication/nest-logger-module';
 import { PullRequestDetails } from './dto/pull-request-details.dto';
 import { CommitContext } from './dto/commit-context.dto';
-import { CommitCreated } from './dto/commit-created.dto';
+import {CommitStateDto, KafkaProducer} from "@amplication/kafka";
 
 const BRANCH_NAME = 'amplication';
 
 export class CommitsService {
+
+  public static readonly CREATED_TOPIC = "git.internal.commit-state.request.0"
+
+
   constructor(
     private githubBranchFactory: GithubFactory,
+    private kafkaProducer: KafkaProducer<string, CommitStateDto>,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {}
@@ -98,48 +103,56 @@ export class CommitsService {
     installationId: string,
     context: CommitContext,
     message: string,
-    files: { path: string; content: string }[]
-  ): Promise<CommitCreated> {
+    files: { path: string; content: string | null }[]
+  ): Promise<string> {
     const gitClient = await this.githubBranchFactory.getClient(
-      installationId,
-      context.owner,
-      context.repo
+        installationId,
+        context.owner,
+        context.repo
     );
 
     const branch = await this.getBranch(gitClient, BRANCH_NAME, context);
+    await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, "got amplication branch", "Running"))
 
     const commit = await this.createCommit(
-      gitClient,
-      BRANCH_NAME,
-      branch.headCommit,
-      message,
-      files,
-      context
+        gitClient,
+        BRANCH_NAME,
+        branch.headCommit,
+        message,
+        files,
+        context
     );
+    await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, `created new commit - commit sha ${commit.sha}`, "Running"))
 
     const pullRequest = await this.getPullRequest(
-      gitClient,
-      BRANCH_NAME,
-      message,
-      branch.defaultBranchName,
-      context
+        gitClient,
+        BRANCH_NAME,
+        message,
+        branch.defaultBranchName,
+        context
     );
+
+    if (pullRequest.created) {
+      await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, `Opened pull request #${pullRequest.number}: ${pullRequest.url}`, "Running", {
+        githubUrl: pullRequest.url
+      }))
+    } else {
+      await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, `Updated pull request #${pullRequest.number}: ${pullRequest.url}`, "Running", {
+        githubUrl: pullRequest.url
+      }))
+    }
 
     const commentUrl = await this.addCommentToPullRequest(
-      gitClient,
-      message,
-      pullRequest,
-      context
+        gitClient,
+        message,
+        pullRequest,
+        context
     );
+    await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, `Add new comment to pull request #${pullRequest.number} ${commentUrl}`, "Running", {
+      commentUrl
+    }))
 
-    return {
-      buildId: context.buildId,
-      commit,
-      pullRequest,
-      pullRequestComment: {
-        url: commentUrl,
-      },
-    };
+    return commit.sha;
   }
 
   public async createCommit(
@@ -147,7 +160,7 @@ export class CommitsService {
     branch: string,
     headCommit: string,
     message: string,
-    files: { path: string; content: string }[],
+    files: { path: string; content: string | null }[],
     context: CommitContext
   ) {
     this.logger.info(
