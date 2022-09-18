@@ -7,7 +7,7 @@ import {
   CreateEnvironmentArgs,
   FindManyEnvironmentArgs
 } from './dto';
-import { FindOneArgs } from 'src/dto';
+import { FindOneArgs } from '../../dto';
 
 export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
 

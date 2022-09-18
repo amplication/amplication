@@ -12,7 +12,7 @@ import {
 import { MorganInterceptor } from 'nest-morgan';
 import { Response } from 'express';
 import { AuthService, AuthUser } from './auth.service';
-import { GithubAuthExceptionFilter } from 'src/filters/github-auth-exception.filter';
+import { GithubAuthExceptionFilter } from '../../filters/github-auth-exception.filter';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { GitHubAuthGuard } from './github.guard';
 import { GitHubRequest } from './types';

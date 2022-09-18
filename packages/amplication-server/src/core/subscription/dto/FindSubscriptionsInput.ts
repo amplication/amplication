@@ -1,5 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { WhereUniqueInput } from 'src/dto/WhereUniqueInput';
+import { WhereUniqueInput } from '../../../dto/WhereUniqueInput';
 import { EnumSubscriptionStatusFilter } from './EnumSubscriptionStatusFilter';
 
 @InputType({

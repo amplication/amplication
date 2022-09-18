@@ -12,8 +12,8 @@ import { SegmentAnalyticsModule } from './services/segmentAnalytics/segmentAnaly
 import { SegmentAnalyticsOptionsService } from './services/segmentAnalytics/segmentAnalyticsOptionsService';
 import { SendGridModule } from '@ntegral/nestjs-sendgrid';
 import { SendgridConfigService } from './services/sendgridConfig.service';
-import { GoogleSecretsManagerModule } from 'src/services/googleSecretsManager.module';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { GoogleSecretsManagerModule } from './services/googleSecretsManager.module';
+import { GoogleSecretsManagerService } from './services/googleSecretsManager.service';
 
 @Module({
   imports: [

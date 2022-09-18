@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
+import { GoogleSecretsManagerService } from '../googleSecretsManager.service';
 import {
   SegmentAnalyticsOptionsFactory,
   SegmentAnalyticsOptions
