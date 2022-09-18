@@ -50,7 +50,7 @@ The features you get with amplication:
 
 # Product Hunt Launch :rocket:
 
-We are **live** with the launch of our **Version 1**. [Upvote now](https://producthunt.com/)
+We are **live** with the launch of our **Version 1**. [Join us](https://producthunt.com/)
 
 ![1  Amplication main](https://user-images.githubusercontent.com/53312820/190913686-02c7deb1-da2f-41b8-aa31-065e00f6155c.png)
 
