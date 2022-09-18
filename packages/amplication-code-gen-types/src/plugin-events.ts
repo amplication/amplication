@@ -130,7 +130,7 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateMessageBrokerTopicsEnum]?: {
     before?: (
@@ -140,7 +140,7 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerTopicsEnumParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateMessageBrokerNestJSModule]?: {
     before?: (
@@ -150,7 +150,7 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerNestJSModuleParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateMessageBrokerClientOptionsFactory]?: {
     before?: (
@@ -160,7 +160,7 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerClientOptionsFactoryParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateMessageBrokerService]?: {
     before?: (
@@ -170,7 +170,7 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerServiceParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreateMessageBrokerServiceBase]?: {
     before?: (
@@ -180,7 +180,7 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreateMessageBrokerServiceBaseParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
   [EventNames.CreatePackageJson]?: {
     before?: (
@@ -190,6 +190,6 @@ export type Events = {
     after?: (
       dsgContext: DsgContext,
       modules: CreatePackageJsonParams["after"]
-    ) => Module[];
+    ) => Promisable<Module[]>;
   };
 };
