@@ -9,7 +9,7 @@ import { createDefaultGuard } from "./guards/createDefaultGuard";
 import { createTokenServiceTests } from "./token/createTokenSerivceTests";
 import { createTokenService } from "./token/createTokenService";
 
-export function createAuthModules(): Promise<Module[]> {
+export function createAuthModules(): Module[] {
   return pluginWrapper(
     createAuthModulesInternal,
     EventNames.CreateAuthModules,

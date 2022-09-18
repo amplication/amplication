@@ -14,7 +14,7 @@ const templatePath = require.resolve("./create-dotenv.template.env");
 
 export function createDotEnvModule(
   eventParams: CreateServerDotEnvParams["before"]
-): Promise<Module[]> {
+): Module[] {
   return pluginWrapper(
     createDotEnvModuleInternal,
     EventNames.CreateServerDotEnv,

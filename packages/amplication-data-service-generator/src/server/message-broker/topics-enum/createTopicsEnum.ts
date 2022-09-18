@@ -3,7 +3,6 @@ import {
   EventNames,
   Module,
 } from "@amplication/code-gen-types";
-import { dotCase } from "dot-case";
 import { pascalCase } from "pascal-case";
 import { join } from "path";
 import { print, types } from "recast";
@@ -47,10 +46,7 @@ export async function createTopicsEnumInternal(
       if (!topic.topicName) {
         throw new Error(`Topic name not found for topic id ${topic.topicId}`);
       }
-      astEnum.createMember(
-        pascalCase(topic.topicName),
-        dotCase(topic.topicName)
-      );
+      astEnum.createMember(pascalCase(topic.topicName), topic.topicName);
     });
     return astEnum.ast;
   });

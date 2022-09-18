@@ -27,7 +27,6 @@
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "camel-case": "4.1.2",
-    "dot-case": "3.0.4",
     "fast-glob": "3.2.10",
     "lodash": "4.17.21",
     "nest-morgan": "1.0.1",
