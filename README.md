@@ -2,10 +2,7 @@
 <img width="300" src="https://raw.githubusercontent.com/amplication/amplication/logos/light.svg#gh-light-mode-only">
 <img width="300" src="https://raw.githubusercontent.com/amplication/amplication/logos/dark.svg#gh-dark-mode-only">
 </p>
-<p align="center">
-  <a href="https://amplication.com">
-      <h1 align="center">Amplication</h1>
-  </a>
+
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
   <a href="https://discord.gg/Z2CG3rUFnu">
@@ -28,7 +25,8 @@
 
   </div>
   
-  
+# Amplication 
+
 Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
 Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React.
