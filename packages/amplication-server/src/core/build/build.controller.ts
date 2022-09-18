@@ -5,7 +5,7 @@ import {
   Controller,
   UseInterceptors,
   NotFoundException,
-  BadRequestException
+  BadRequestException, Inject
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
@@ -21,12 +21,18 @@ import { CHECK_USER_ACCESS_TOPIC } from '../../constants';
 import { KafkaMessage } from 'kafkajs';
 import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';
-import { EnvironmentVariables } from '@amplication/kafka';
+import {CommitStateDto, EnvironmentVariables} from '@amplication/kafka';
+import {Logger} from "winston";
+import {WINSTON_MODULE_PROVIDER} from "nest-winston";
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
-  constructor(private readonly buildService: BuildService) {}
+
+  public static COMMIT_STATE_TOPIC = "git.internal.commit-state.request.0"
+
+  constructor(private readonly buildService: BuildService,
+              @Inject(WINSTON_MODULE_PROVIDER)  private logger: Logger) {}
 
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
@@ -57,15 +63,33 @@ export class BuildController {
   }
 
   @MessagePattern(
-    EnvironmentVariables.instance.get(CHECK_USER_ACCESS_TOPIC, true)
+      EnvironmentVariables.instance.get(CHECK_USER_ACCESS_TOPIC, true)
   )
   async checkUserAccess(
-    @Payload() message: KafkaMessage
+      @Payload() message: KafkaMessage
   ): Promise<{ value: ResultMessage<boolean> }> {
     const validArgs = plainToInstance(CanUserAccessArgs, message.value);
     const isUserCanAccess = await this.buildService.canUserAccess(validArgs);
     return {
       value: { error: null, status: StatusEnum.Success, value: isUserCanAccess }
     };
+  }
+
+  @MessagePattern(
+      EnvironmentVariables.instance.get(BuildController.COMMIT_STATE_TOPIC, true)
+  )
+  async updateCommitState(@Payload() message: KafkaMessage): Promise<void> {
+    try {
+      this.logger.info("BuildController.updateCommitState - received message from kafka", {
+        message
+      })
+      const commitStateDto = plainToInstance(CommitStateDto, message.value);
+      this.buildService.updateCommitState(commitStateDto)
+
+    } catch (error) {
+      this.logger.error("BuildController.updateCommitState - Failed handle message from kafka", {
+        message
+      }, error)
+    }
   }
 }

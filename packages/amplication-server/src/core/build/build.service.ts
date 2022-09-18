@@ -1,69 +1,51 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Storage, MethodNotSupported } from '@slynova/flydrive';
-import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
-import { StorageService } from '@codebrew/nestjs-storage';
-import { Prisma, PrismaService } from '@amplication/prisma-db';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
+import {MethodNotSupported, Storage} from '@slynova/flydrive';
+import {GoogleCloudStorage} from '@slynova/flydrive-gcs';
+import {StorageService} from '@codebrew/nestjs-storage';
+import {Prisma, PrismaService} from '@amplication/prisma-db';
+import {WINSTON_MODULE_PROVIDER} from 'nest-winston';
 import * as winston from 'winston';
-import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
-import { omit, orderBy } from 'lodash';
-import path, { join } from 'path';
+import {LEVEL, MESSAGE, SPLAT} from 'triple-beam';
+import {isEmpty, omit, orderBy} from 'lodash';
+import path, {join} from 'path';
 import * as DataServiceGenerator from '@amplication/data-service-generator';
-import { ResourceRole, User } from '../../models';
-import { Build } from './dto/Build';
-import { CreateBuildArgs } from './dto/CreateBuildArgs';
-import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { getBuildZipFilePath, getBuildTarGzFilePath } from './storage';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { EntityService } from '../entity/entity.service';
-import { StepNotCompleteError } from './errors/StepNotCompleteError';
-import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { ResourceRoleService } from '../resourceRole/resourceRole.service';
-import { ResourceService } from '../resource/resource.service'; // eslint-disable-line import/no-cycle
-import {
-  EnumActionStepStatus,
-  EnumActionLogLevel,
-  ActionStep
-} from '../action/dto';
-import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
-import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service'; // eslint-disable-line import/no-cycle
-import { ActionService } from '../action/action.service';
+import {ResourceRole, User} from '../../models';
+import {Build} from './dto/Build';
+import {CreateBuildArgs} from './dto/CreateBuildArgs';
+import {FindManyBuildArgs} from './dto/FindManyBuildArgs';
+import {getBuildTarGzFilePath, getBuildZipFilePath} from './storage';
+import {EnumBuildStatus} from './dto/EnumBuildStatus';
+import {FindOneBuildArgs} from './dto/FindOneBuildArgs';
+import {BuildNotFoundError} from './errors/BuildNotFoundError';
+import {EntityService} from '../entity/entity.service';
+import {StepNotCompleteError} from './errors/StepNotCompleteError';
+import {BuildResultNotFound} from './errors/BuildResultNotFound';
+import {ResourceRoleService} from '../resourceRole/resourceRole.service';
+import {ResourceService} from '../resource/resource.service'; // eslint-disable-line import/no-cycle
+import {ActionStep, EnumActionLogLevel, EnumActionStepStatus} from '../action/dto';
+import {UserService} from '../user/user.service'; // eslint-disable-line import/no-cycle
+import {ServiceSettingsService} from '../serviceSettings/serviceSettings.service'; // eslint-disable-line import/no-cycle
+import {ActionService, SELECT_ID} from '../action/action.service';
 
-import { createZipFileFromModules } from './zip';
-import { LocalDiskService } from '../storage/local.disk.service';
-import { createTarGzFileFromModules } from './tar';
-import { StepNotFoundError } from './errors/StepNotFoundError';
-import { QueueService } from '../queue/queue.service';
-import { previousBuild, BuildFilesSaver } from './utils';
-import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
-import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
-import { GitResourceMeta } from './dto/GitResourceMeta';
+import {createZipFileFromModules} from './zip';
+import {LocalDiskService} from '../storage/local.disk.service';
+import {createTarGzFileFromModules} from './tar';
+import {StepNotFoundError} from './errors/StepNotFoundError';
+import {QueueService} from '../queue/queue.service';
+import {BuildFilesSaver, previousBuild} from './utils';
+import {CanUserAccessArgs} from './dto/CanUserAccessArgs';
+import {StepNameEmptyError} from "../action/errors/StepNameEmptyError";
+import {CommitStateDto, GitCommitInitiatedDto, KafkaProducer} from "@amplication/kafka";
+import {JsonValue} from "type-fest";
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
 export const GENERATE_STEP_MESSAGE = 'Generating Application';
 export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
-export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
 export const BUILD_DOCKER_IMAGE_STEP_NAME = 'BUILD_DOCKER';
-export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
-  'Built Docker image successfully';
-export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = 'Build Docker failed';
-export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
-  'Waiting for Docker image...';
-export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
-  'Starting to build Docker image. It should take a few minutes.';
-
 export const PUSH_TO_GITHUB_STEP_NAME = 'PUSH_TO_GITHUB';
 export const PUSH_TO_GITHUB_STEP_MESSAGE = 'Push changes to GitHub';
-export const PUSH_TO_GITHUB_STEP_START_LOG =
-  'Starting to push changes to GitHub.';
-export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
-  'Successfully pushed changes to GitHub';
-export const PUSH_TO_GITHUB_STEP_FAILED_LOG = 'Push changes to GitHub failed';
-
 export const ACTION_ZIP_LOG = 'Creating ZIP file';
 export const ACTION_JOB_DONE_LOG = 'Build job done';
 export const JOB_STARTED_LOG = 'Build job started';
@@ -141,7 +123,12 @@ export function createInitialStepData(
 }
 @Injectable()
 export class BuildService {
+
+
+  public static COMMIT_INIT_TOPIC = "git.internal.commit-initiated.request.0"
+
   constructor(
+    private kafkaProducer: KafkaProducer<string, GitCommitInitiatedDto>,
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
@@ -371,10 +358,7 @@ export class BuildService {
           modules
         );
 
-        await this.saveToGitHub(build, oldBuildId, {
-          adminUIPath: serviceSettings.adminUISettings.adminUIPath,
-          serverPath: serviceSettings.serverSettings.serverPath
-        });
+        await this.saveToGitHub(build, oldBuildId);
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
@@ -438,8 +422,7 @@ export class BuildService {
 
   private async saveToGitHub(
     build: Build,
-    oldBuildId: string,
-    gitResourceMeta: GitResourceMeta
+    oldBuildId: string
   ): Promise<void> {
     const resource = build.resource;
     const resourceRepository = await this.resourceService.gitRepository(
@@ -464,73 +447,71 @@ export class BuildService {
         `${commit.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
 
-    const clientHost = this.configService.get(CLIENT_HOST_VAR);
+    const step = await this.createStep(build.actionId, PUSH_TO_GITHUB_STEP_NAME, PUSH_TO_GITHUB_STEP_MESSAGE);
+    await this.createStepLog(step.id,EnumActionLogLevel.Info,"Queued: pull request task")
 
-    const project = await this.prisma.project.findUnique({
-      where: {
-        id: build.resource.projectId
+    await this.kafkaProducer.emit(BuildService.COMMIT_INIT_TOPIC,resourceRepository.id,{
+      build:{
+        id: build.id,
+        actionStepId: step.id,
+        previousBuildId:oldBuildId,
+        resourceId: resource.id,
+      },
+      commit: {
+        id: commit.id,
+        message: `resource(${resource.name}): ${commitMessage}`
+      },
+      repository: {
+        name: resourceRepository.name,
+        owner: gitOrganization.name,
+        installationId: gitOrganization.installationId
       }
-    });
+    })
+  }
 
-    const url = `${clientHost}/${project.workspaceId}/${build.resource.projectId}/${build.resourceId}/builds/${build.id}`;
-
-    return this.actionService.run(
-      build.actionId,
-      PUSH_TO_GITHUB_STEP_NAME,
-      PUSH_TO_GITHUB_STEP_MESSAGE,
-      async step => {
-        await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
-        try {
-          const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
-            {
-              gitOrganizationName: gitOrganization.name,
-              gitRepositoryName: resourceRepository.name,
-              resourceId: resource.id,
-              gitProvider: EnumGitProvider.Github,
-              installationId: gitOrganization.installationId,
-              newBuildId: build.id,
-              oldBuildId,
-              commit: {
-                head: `amplication-build-${build.id}`,
-                title: commitMessage,
-                body: `Amplication build # ${build.id}.
-                Commit message: ${commit.message}
-                
-                ${url}
-                `
-              },
-              gitResourceMeta
-            }
-          );
-
-          await this.resourceService.reportSyncMessage(
-            build.resourceId,
-            'Sync Completed Successfully'
-          );
-          await this.actionService.logInfo(step, pullRequestResponse.url, {
-            githubUrl: pullRequestResponse.url
-          });
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GITHUB_STEP_FINISH_LOG
-          );
-
-          await this.actionService.complete(step, EnumActionStepStatus.Success);
-        } catch (error) {
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GITHUB_STEP_FAILED_LOG
-          );
-          await this.actionService.logInfo(step, error);
-          await this.actionService.complete(step, EnumActionStepStatus.Failed);
-          await this.resourceService.reportSyncMessage(
-            build.resourceId,
-            `Error: ${error}`
-          );
+  async createStepLog(
+      actionStepId: string,
+      level: EnumActionLogLevel,
+      message: { toString(): string },
+      meta: JsonValue = {}
+  ): Promise<void> {
+    await this.prisma.actionLog.create({
+      data: {
+        level,
+        message: message.toString(),
+        meta,
+        step: {
+          connect: { id: actionStepId }
         }
       },
-      true
-    );
+      select: SELECT_ID
+    });
+  }
+  /**
+   * Creates a new step for given action with given message and sets its status
+   * to running
+   * @param actionId the identifier of the action to add step for
+   * @param message the message of the step
+   */
+  async createStep(
+      actionId: string,
+      stepName: string,
+      message: string
+  ): Promise<ActionStep> {
+    if (isEmpty(stepName)) {
+      throw new StepNameEmptyError();
+    }
+
+    return this.prisma.actionStep.create({
+      data: {
+        status: EnumActionStepStatus.Running,
+        message,
+        name: stepName,
+        action: {
+          connect: { id: actionId }
+        }
+      }
+    });
   }
 
   /** @todo move */
@@ -589,5 +570,36 @@ export class BuildService {
       where: { id: buildId, AND: { userId } }
     });
     return Boolean(build);
+  }
+
+
+  async updateCommitState(commitStateDto: CommitStateDto): Promise<void> {
+    switch (commitStateDto.state){
+      case "Failed":
+        await this.createStepLog(commitStateDto.actionStepId,EnumActionLogLevel.Error, commitStateDto.message,commitStateDto.meta)
+        await this.updateActionStep(commitStateDto.actionStepId,commitStateDto.state)
+        return;
+      case "Success":
+        await this.createStepLog(commitStateDto.actionStepId,EnumActionLogLevel.Info, commitStateDto.message,commitStateDto.meta)
+        await this.updateActionStep(commitStateDto.actionStepId,commitStateDto.state)
+        return;
+      default:
+        await this.createStepLog(commitStateDto.actionStepId,EnumActionLogLevel.Info, commitStateDto.message,commitStateDto.meta)
+        return;
+    }
+  }
+
+  private async updateActionStep(actionStepId: string, state: "Success" | "Failed"): Promise<void> {
+    await this.prisma.actionStep.update({
+      where: {
+        id: actionStepId
+      },
+      data: {
+        state,
+        completedAt: new Date()
+      },
+      select: SELECT_ID
+    });
+
   }
 }

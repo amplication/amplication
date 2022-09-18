@@ -14,7 +14,7 @@ import {
 
 @Controller()
 export class CommitController implements OnModuleInit {
-  public static readonly TOPIC = 'git.internal.create-commit.request.0';
+  public static readonly TOPIC = 'git.internal.commit-initiated.request.0';
   public static readonly CREATED_TOPIC = 'git.internal.commit-state.request.0';
 
   constructor(
