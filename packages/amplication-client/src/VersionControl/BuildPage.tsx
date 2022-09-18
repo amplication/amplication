@@ -48,6 +48,7 @@ const BuildPage = ({ match }: Props) => {
     onCompleted: (data) => {
       getCommit({ variables: { commitId: data.build.commitId } });
     },
+    pollInterval: 1000,
   });
 
   const actionLog = useMemo<LogData | null>(() => {
