@@ -6,14 +6,12 @@ import {
 } from '@amplication/nest-logger-module';
 import { PullRequestDetails } from './dto/pull-request-details.dto';
 import { CommitContext } from './dto/commit-context.dto';
-import {CommitStateDto, KafkaProducer} from "@amplication/kafka";
+import { CommitStateDto, KafkaProducer } from '@amplication/kafka';
 
 const BRANCH_NAME = 'amplication';
 
 export class CommitsService {
-
-  public static readonly CREATED_TOPIC = "git.internal.commit-state.request.0"
-
+  public static readonly CREATED_TOPIC = 'git.internal.commit-state.request.0';
 
   constructor(
     private githubBranchFactory: GithubFactory,
@@ -29,26 +27,31 @@ export class CommitsService {
   ): Promise<{ headCommit: string; defaultBranchName?: string }> {
     this.logger.debug(`Getting branch ${branch}`, context);
 
-    const gitBranch = await gitClient.getBranch(branch)
+    const gitBranch = await gitClient.getBranch(branch);
     if (gitBranch) {
       this.logger.debug(
-          `Branch ${branch} head commit ${gitBranch.headCommit} was found`,
-          context
+        `Branch ${branch} head commit ${gitBranch.headCommit} was found`,
+        context
       );
       return {
         headCommit: gitBranch.headCommit,
       };
     }
     this.logger.warn(
-        `Branch ${branch} head commit was not found creating new branch`,
-        context
+      `Branch ${branch} head commit was not found creating new branch`,
+      context
     );
-    return this.createBranch(gitClient, branch, context)
+    return this.createBranch(gitClient, branch, context);
   }
 
-  private async createBranch(gitClient:GitProvider,branch:string,context:CommitContext): Promise<{ defaultBranchName: string; headCommit: string }> {
+  private async createBranch(
+    gitClient: GitProvider,
+    branch: string,
+    context: CommitContext
+  ): Promise<{ defaultBranchName: string; headCommit: string }> {
     const defaultBranchName = await gitClient.getDefaultBranchName();
-    const headCommit = (await gitClient.getBranch(defaultBranchName)).headCommit;
+    const headCommit = (await gitClient.getBranch(defaultBranchName))
+      .headCommit;
     await gitClient.createBranch(branch, headCommit);
     this.logger.info(`Branch ${branch} was created`, {
       ...context,
@@ -106,51 +109,94 @@ export class CommitsService {
     files: { path: string; content: string | null }[]
   ): Promise<string> {
     const gitClient = await this.githubBranchFactory.getClient(
-        installationId,
-        context.owner,
-        context.repo
+      installationId,
+      context.owner,
+      context.repo
     );
 
     const branch = await this.getBranch(gitClient, BRANCH_NAME, context);
-    await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, "got amplication branch", "Running"))
+    await this.kafkaProducer.emit(
+      CommitsService.CREATED_TOPIC,
+      context.buildId,
+      new CommitStateDto(
+        context.actionStepId,
+        'got amplication branch',
+        'Running'
+      )
+    );
 
     const commit = await this.createCommit(
-        gitClient,
-        BRANCH_NAME,
-        branch.headCommit,
-        message,
-        files,
-        context
+      gitClient,
+      BRANCH_NAME,
+      branch.headCommit,
+      message,
+      files,
+      context
     );
-    await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, `created new commit - commit sha ${commit.sha}`, "Running"))
+    await this.kafkaProducer.emit(
+      CommitsService.CREATED_TOPIC,
+      context.buildId,
+      new CommitStateDto(
+        context.actionStepId,
+        `created new commit - commit sha ${commit.sha}`,
+        'Running'
+      )
+    );
 
     const pullRequest = await this.getPullRequest(
-        gitClient,
-        BRANCH_NAME,
-        message,
-        branch.defaultBranchName,
-        context
+      gitClient,
+      BRANCH_NAME,
+      message,
+      branch.defaultBranchName,
+      context
     );
 
     if (pullRequest.created) {
-      await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, `Opened pull request #${pullRequest.number}: ${pullRequest.url}`, "Running", {
-        githubUrl: pullRequest.url
-      }))
+      await this.kafkaProducer.emit(
+        CommitsService.CREATED_TOPIC,
+        context.buildId,
+        new CommitStateDto(
+          context.actionStepId,
+          `Opened pull request #${pullRequest.number}: ${pullRequest.url}`,
+          'Running',
+          {
+            githubUrl: pullRequest.url,
+          }
+        )
+      );
     } else {
-      await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, `Updated pull request #${pullRequest.number}: ${pullRequest.url}`, "Running", {
-        githubUrl: pullRequest.url
-      }))
+      await this.kafkaProducer.emit(
+        CommitsService.CREATED_TOPIC,
+        context.buildId,
+        new CommitStateDto(
+          context.actionStepId,
+          `Updated pull request #${pullRequest.number}: ${pullRequest.url}`,
+          'Running',
+          {
+            githubUrl: pullRequest.url,
+          }
+        )
+      );
     }
 
     const commentUrl = await this.addCommentToPullRequest(
-        gitClient,
-        message,
-        pullRequest,
-        context
+      gitClient,
+      message,
+      pullRequest,
+      context
     );
-    await this.kafkaProducer.emit(CommitsService.CREATED_TOPIC, context.buildId, new CommitStateDto(context.actionStepId, `Add new comment to pull request #${pullRequest.number} ${commentUrl}`, "Running", {
-      commentUrl
-    }))
+    await this.kafkaProducer.emit(
+      CommitsService.CREATED_TOPIC,
+      context.buildId,
+      new CommitStateDto(
+        context.actionStepId,
+        `Add new comment to pull request #${pullRequest.number} ${commentUrl}`,
+        'Running',
+        {
+          commentUrl,
+        }
+      )
+    );
 
     return commit.sha;
   }
