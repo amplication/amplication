@@ -14,7 +14,7 @@ import DsgContext from "../../dsg-context";
 export async function createDockerComposeDBFile(): Promise<Module[]> {
   const filePath = path.resolve(__dirname, DOCKER_COMPOSE_DB_FILE_NAME);
 
-  const eventParams: CreateServerDockerComposeDBParams["before"] = {
+  const eventParams: CreateServerDockerComposeDBParams = {
     fileContent: await fs.readFile(filePath, "utf-8"),
     outputFileName: DOCKER_COMPOSE_DB_FILE_NAME.replace(".template", ""),
     updateProperties: [],
@@ -28,7 +28,7 @@ export async function createDockerComposeDBFile(): Promise<Module[]> {
 }
 
 async function createDockerComposeDBFileInternal(
-  eventParams: CreateServerDockerComposeDBParams["before"]
+  eventParams: CreateServerDockerComposeDBParams
 ): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const preparedFile = prepareYamlFile(

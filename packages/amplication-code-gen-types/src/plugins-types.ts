@@ -9,8 +9,22 @@ import {
 import { DSGResourceData } from "./dsg-resource-data";
 import { Events } from "./plugin-events";
 
-export interface EventParams {
-  after: Module[];
+export interface EventParams {}
+
+export type PluginBeforeEvent<T extends EventParams> = (
+  dsgContext: DsgContext,
+  eventParams: T
+) => Promisable<T>;
+
+export type PluginAfterEvent<T extends EventParams> = (
+  dsgContext: DsgContext,
+  eventParams: T,
+  modules: Module[]
+) => Promisable<Module[]>;
+
+export interface PluginEventType<T extends EventParams> {
+  before?: PluginBeforeEvent<T>;
+  after?: PluginAfterEvent<T>;
 }
 
 export interface PrintResultType {
@@ -37,14 +51,8 @@ export type PluginWrapper = (args: EventParams, func: () => void) => any;
 
 export type PluginMap = {
   [K in EventNames]?: {
-    before?: (<T>(
-      context: DsgContext,
-      params: Module[] | EventParams
-    ) => Promisable<T>)[];
-    after?: (<T>(
-      context: DsgContext,
-      modules: Module[] | EventParams
-    ) => Promisable<T>)[];
+    before?: PluginBeforeEvent<EventParams>[];
+    after?: PluginAfterEvent<EventParams>[];
   };
 };
 

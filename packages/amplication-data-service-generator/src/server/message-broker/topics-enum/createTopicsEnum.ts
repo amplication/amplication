@@ -14,7 +14,7 @@ const { builders } = types;
 const TOPIC_NAME = "topics.ts";
 
 export function createTopicsEnum(
-  eventParams: CreateMessageBrokerParams["before"]
+  eventParams: CreateMessageBrokerParams
 ): Promise<Module[]> {
   return pluginWrapper(
     createTopicsEnumInternal,
@@ -24,7 +24,7 @@ export function createTopicsEnum(
 }
 
 export async function createTopicsEnumInternal(
-  eventParams: CreateMessageBrokerParams["before"]
+  eventParams: CreateMessageBrokerParams
 ): Promise<Module[]> {
   const context = DsgContext.getInstance;
   const { serviceTopics, otherResources, serverDirectories } = context;

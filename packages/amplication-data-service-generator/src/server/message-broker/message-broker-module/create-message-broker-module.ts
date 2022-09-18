@@ -6,7 +6,7 @@ import {
 import pluginWrapper from "../../../plugin-wrapper";
 
 export function createMessageBrokerModule(
-  eventParams: CreateMessageBrokerNestJSModuleParams["before"]
+  eventParams: CreateMessageBrokerNestJSModuleParams
 ): Promise<Module[]> {
   return pluginWrapper(
     () => [],

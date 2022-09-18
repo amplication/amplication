@@ -6,7 +6,7 @@ import {
 import pluginWrapper from "../../../plugin-wrapper";
 
 export async function createMessageBrokerClientOptions(
-  eventParams: CreateMessageBrokerClientOptionsFactoryParams["before"]
+  eventParams: CreateMessageBrokerClientOptionsFactoryParams
 ): Promise<Module[]> {
   return pluginWrapper(
     () => [],

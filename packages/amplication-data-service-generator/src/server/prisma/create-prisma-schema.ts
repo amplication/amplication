@@ -26,7 +26,7 @@ export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
 );
 
 export async function createPrismaSchema(
-  eventParams: CreatePrismaSchemaParams["before"]
+  eventParams: CreatePrismaSchemaParams
 ): Promise<Module[]> {
   return await pluginWrapper(
     createPrismaSchemaInternal,
@@ -39,7 +39,7 @@ export async function createPrismaSchemaInternal({
   entities,
   dataSource,
   clientGenerator,
-}: CreatePrismaSchemaParams["before"]): Promise<Module[]> {
+}: CreatePrismaSchemaParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.baseDirectory}/prisma/schema.prisma`;
   const fieldNamesCount = countBy(

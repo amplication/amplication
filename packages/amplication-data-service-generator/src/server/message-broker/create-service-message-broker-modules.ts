@@ -10,7 +10,7 @@ import { createMessageBrokerServiceModules } from "./message-broker-service/crea
 import { createTopicsEnum } from "./topics-enum/createTopicsEnum";
 
 export async function createMessageBroker(
-  eventParams: CreateMessageBrokerParams["before"]
+  eventParams: CreateMessageBrokerParams
 ): Promise<Module[]> {
   return pluginWrapper(
     createMessageBrokerInternal,
@@ -20,7 +20,7 @@ export async function createMessageBroker(
 }
 
 export async function createMessageBrokerInternal(
-  eventParams: CreateMessageBrokerParams["before"]
+  eventParams: CreateMessageBrokerParams
 ): Promise<Module[]> {
   const generateMessageBrokerClientOptionsModule = await createMessageBrokerClientOptions(
     {}

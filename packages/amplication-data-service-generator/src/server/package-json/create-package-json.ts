@@ -14,7 +14,7 @@ const PACKAGE_JSON_TEMPLATE = "package.template.json";
 const PACKAGE_JSON_FILE_NAME = "package.json";
 
 export function createPackageJson(
-  eventParams: CreateServerPackageJsonParams["before"]
+  eventParams: CreateServerPackageJsonParams
 ): Promise<Module[]> {
   return pluginWrapper(
     createPackageJsonInternal,
@@ -25,7 +25,7 @@ export function createPackageJson(
 
 export async function createPackageJsonInternal({
   updateValues,
-}: CreateServerPackageJsonParams["before"]): Promise<Module[]> {
+}: CreateServerPackageJsonParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const packageJsonModule = await readFile(
     resolve(__dirname, PACKAGE_JSON_TEMPLATE),

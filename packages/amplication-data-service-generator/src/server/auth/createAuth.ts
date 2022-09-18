@@ -18,7 +18,7 @@ export function createAuthModules(): Module[] {
 }
 
 async function createAuthModulesInternal(
-  eventParams: CreateAuthModulesParams["before"]
+  eventParams: CreateAuthModulesParams
 ): Promise<Module[]> {
   const { appInfo, serverDirectories } = DsgContext.getInstance;
   const authDir = `${serverDirectories.srcDirectory}/auth`;
