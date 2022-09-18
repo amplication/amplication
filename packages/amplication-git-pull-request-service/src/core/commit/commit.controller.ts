@@ -4,17 +4,9 @@ import {AmplicationLogger} from "@amplication/nest-logger-module";
 import {CommitContext} from "./dto/commit-context.dto";
 import {DiffService} from "../diff";
 import {PrModule} from "../../constants";
-import {CommitStateDto, KafkaConsumer, KafkaMessageDto, KafkaProducer} from "@amplication/kafka";
+import {CommitStateDto, GitCommitInitiatedDto, KafkaConsumer, KafkaMessageDto, KafkaProducer} from "@amplication/kafka";
 
 
-
-
-
-class GitCommitInitiatedDto {
-  public commit: { id: string, message: string }
-  public build: { id: string, actionStepId:string, resourceId:string, previousBuildId: string }
-  public repository: { owner: string, name: string, installationId: string }
-}
 
 @Controller()
 export class CommitController implements OnModuleInit {
