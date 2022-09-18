@@ -25,7 +25,7 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
       >
         <div className={`${CLASS_NAME}`}>
           <CommitData commit={commit} />
-          <BuildStatusIcon buildStatus={build.status} />
+          {build && <BuildStatusIcon buildStatus={build.status} />}
         </div>
       </InnerTabLink>
     </div>
