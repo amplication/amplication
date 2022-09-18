@@ -14,7 +14,7 @@ describe("createDataService", () => {
       roles,
       resourceInfo: appInfo,
       resourceType: EnumResourceType.Service,
-      plugins: installedPlugins,
+      pluginInstallations: installedPlugins,
     });
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
