@@ -27,7 +27,7 @@
   
 # Amplication 
 
-Amplication is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
+[Amplication](https://amplication.com/) is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
 
 Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React.
 
