@@ -5,7 +5,6 @@ import {
   EntityField,
   PrismaClientGenerator,
   PrismaDataSource,
-  ServiceTopics,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
