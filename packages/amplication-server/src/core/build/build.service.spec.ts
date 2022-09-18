@@ -75,7 +75,7 @@ const JOB_DONE_LOG = 'Build job done';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
-const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
+const EXAMPLE_APP_SETTINGS_VALUES: Omit<ServiceSettingsValues, 'id'> = {
   dbHost: 'localhost',
   dbName: 'myDb',
   dbPassword: '1234',

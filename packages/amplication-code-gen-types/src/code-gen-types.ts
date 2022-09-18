@@ -16,7 +16,10 @@ export type WorkerResult = {
   error?: any;
 };
 
-export type ServiceSettings = BlockOmittedFields<models.ServiceSettings>;
+export type ServiceSettings = Omit<
+  BlockOmittedFields<models.ServiceSettings>,
+  "id"
+>;
 
 export type AppInfo = {
   name: string;
