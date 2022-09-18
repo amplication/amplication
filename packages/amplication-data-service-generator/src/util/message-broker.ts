@@ -1,7 +1,7 @@
 import { DSGResourceData, ServiceTopics } from "@amplication/code-gen-types";
 import { EnumResourceType } from "../models";
 
-export function fromServiceTopicsToTopicsWithName(
+export function resolveTopicNames(
   serviceTopicsList: ServiceTopics[],
   messageBrokers: DSGResourceData[]
 ): ServiceTopics[] {

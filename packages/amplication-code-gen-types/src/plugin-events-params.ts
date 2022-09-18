@@ -98,9 +98,7 @@ export interface CreatePrismaSchemaParams extends EventParams {
 }
 
 export interface CreateMessageBrokerParams extends EventParams {
-  before: {
-    serviceTopicsWithName: ServiceTopics[];
-  };
+  before: {};
 }
 export interface CreateMessageBrokerTopicsEnumParams extends EventParams {
   before: {};
@@ -119,7 +117,7 @@ export interface CreateMessageBrokerServiceParams extends EventParams {
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {
   before: {};
 }
-export interface CreatePackageJsonParams extends EventParams {
+export interface CreateServerPackageJsonParams extends EventParams {
   before: {
     updateValues: { [key: string]: JsonValue };
   };

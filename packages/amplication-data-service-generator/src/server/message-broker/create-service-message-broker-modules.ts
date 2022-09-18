@@ -3,9 +3,8 @@ import {
   EventNames,
   Module,
 } from "@amplication/code-gen-types";
-import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
-import { createGenerateMessageBrokerClientOptionsFunction } from "./generate-message-broker-client-options/generate-message-broker-client-options";
+import { createMessageBrokerClientOptions } from "./generate-message-broker-client-options/generate-message-broker-client-options";
 import { createMessageBrokerModule } from "./message-broker-module/create-message-broker-module";
 import { createMessageBrokerServiceModules } from "./message-broker-service/create-message-broker-service";
 import { createTopicsEnum } from "./topics-enum/createTopicsEnum";
@@ -20,20 +19,15 @@ export async function createMessageBroker(
   );
 }
 
-export async function createMessageBrokerInternal({
-  serviceTopicsWithName,
-}: CreateMessageBrokerParams["before"]): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
-  const { messageBrokerDirectory } = serverDirectories;
-
-  const generateMessageBrokerClientOptionsModule = await createGenerateMessageBrokerClientOptionsFunction(
-    messageBrokerDirectory
+export async function createMessageBrokerInternal(
+  eventParams: CreateMessageBrokerParams["before"]
+): Promise<Module[]> {
+  const generateMessageBrokerClientOptionsModule = await createMessageBrokerClientOptions(
+    {}
   );
-  const messageBrokerModule = await createMessageBrokerModule(
-    messageBrokerDirectory
-  );
+  const messageBrokerModule = await createMessageBrokerModule({});
   const serviceModules = await createMessageBrokerServiceModules();
-  const topicsEnum = await createTopicsEnum({ serviceTopicsWithName });
+  const topicsEnum = await createTopicsEnum({});
   const modules = [
     ...generateMessageBrokerClientOptionsModule,
     ...messageBrokerModule,

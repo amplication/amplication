@@ -13,7 +13,7 @@ import {
   CreateMessageBrokerServiceBaseParams,
   CreateMessageBrokerServiceParams,
   CreateMessageBrokerTopicsEnumParams,
-  CreatePackageJsonParams,
+  CreateServerPackageJsonParams,
   CreatePrismaSchemaParams,
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
@@ -185,11 +185,11 @@ export type Events = {
   [EventNames.CreatePackageJson]?: {
     before?: (
       dsgContext: DsgContext,
-      eventParams: CreatePackageJsonParams["before"]
-    ) => CreatePackageJsonParams["before"];
+      eventParams: CreateServerPackageJsonParams["before"]
+    ) => CreateServerPackageJsonParams["before"];
     after?: (
       dsgContext: DsgContext,
-      modules: CreatePackageJsonParams["after"]
+      modules: CreateServerPackageJsonParams["after"]
     ) => Promisable<Module[]>;
   };
 };

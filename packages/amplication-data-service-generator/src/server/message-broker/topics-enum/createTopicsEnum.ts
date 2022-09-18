@@ -12,6 +12,7 @@ import pluginWrapper from "../../../plugin-wrapper";
 import { EnumBuilder } from "../../../util/enum-builder";
 
 const { builders } = types;
+const TOPIC_NAME = "topics.ts";
 
 export function createTopicsEnum(
   eventParams: CreateMessageBrokerParams["before"]
@@ -54,7 +55,6 @@ export async function createTopicsEnumInternal(
     return astEnum.ast;
   });
   astFile.program.body.push(...topics);
-
-  const path = join(serverDirectories.messageBrokerDirectory, "topics.ts"); //TODO get the folder form context
+  const path = join(serverDirectories.messageBrokerDirectory, TOPIC_NAME);
   return [{ code: print(astFile).code, path }];
 }

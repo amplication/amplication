@@ -7,7 +7,6 @@ import {
   AppInfo,
   Module,
   DTOs,
-  DSGResourceData,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode, formatJson } from "../util/module";
@@ -35,10 +34,9 @@ export async function createServerModules(
   appInfo: AppInfo,
   dtos: DTOs,
   userEntity: Entity,
-  dSGResourceData: DSGResourceData,
   logger: winston.Logger
 ): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
+  const { serverDirectories, serviceTopics } = DsgContext.getInstance;
 
   logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   logger.info("Creating server...");
@@ -71,7 +69,7 @@ export async function createServerModules(
   const seedModule = await createSeedModule(userEntity);
   logger.info("Creating Message broker modules...");
   const messageBrokerModules = await createMessageBroker({
-    serviceTopicsWithName: dSGResourceData.serviceTopics || [],
+    serviceTopicsWithName: serviceTopics,
   });
 
   const createdModules = [

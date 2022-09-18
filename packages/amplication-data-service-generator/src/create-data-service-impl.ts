@@ -11,7 +11,6 @@ import {
   serverDirectories,
   clientDirectories,
   DSGResourceData,
-  Plugin,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -20,7 +19,7 @@ import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
 import registerPlugins from "./register-plugin";
-import { fromServiceTopicsToTopicsWithName } from "./util/message-broker";
+import { resolveTopicNames } from "./util/message-broker";
 import { EnumResourceType } from "./models";
 import { get } from "lodash";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
@@ -106,7 +105,6 @@ export async function createDataServiceImpl(
         appInfo,
         dtos,
         userEntity,
-        dSGResourceData,
         logger
       ),
       (appInfo.settings.adminUISettings.generateAdminUI &&
@@ -177,7 +175,7 @@ function prepareDefaultPlugins(installedPlugins: Plugin[]): Plugin[] {
 }
 
 function prepareServiceTopics(dSGResourceData: DSGResourceData) {
-  return fromServiceTopicsToTopicsWithName(
+  return resolveTopicNames(
     dSGResourceData.serviceTopics || [],
     dSGResourceData.otherResources?.filter(
       (resource) => resource.resourceType === EnumResourceType.MessageBroker
