@@ -2865,20 +2865,6 @@ export class StringNullableFilter {
   \\"exclude\\": [\\"./node_modules\\"]
 }
 ",
-  "server/docker-compose.db.yml": "version: \\"3\\"
-services:
-  db:
-    image: postgres:12
-    ports:
-      - \${DB_PORT}:5432
-    environment:
-      POSTGRES_USER: \${DB_USER}
-      POSTGRES_PASSWORD: \${DB_PASSWORD}shimiwalla
-    volumes:
-      - postgres:/var/lib/postgresql/data
-volumes:
-  postgres: ~
-",
   "server/nest-cli.json": "{
   \\"sourceRoot\\": \\"src\\",
   \\"compilerOptions\\": {
