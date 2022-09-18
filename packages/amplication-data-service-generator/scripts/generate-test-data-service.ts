@@ -28,7 +28,7 @@ export default async function generateTestDataService(
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    plugins: installedPlugins,
+    pluginInstallations: installedPlugins,
   });
   await writeModules(modules, destination);
 }
