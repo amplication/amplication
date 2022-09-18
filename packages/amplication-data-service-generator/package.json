@@ -22,6 +22,7 @@
     "@amplication/code-gen-types": "^0.16.1",
     "@amplication/plugin-auth-basic": "^1.0.0",
     "@amplication/plugin-auth-jwt": "^1.0.0",
+    "@amplication/plugin-broker-kafka": "^0.0.3",
     "@amplication/plugin-db-mysql": "^0.0.1",
     "@amplication/plugin-db-postgres": "^1.0.0",
     "@babel/parser": "7.14.7",

@@ -50,9 +50,10 @@ describe("createDataService", () => {
       otherResources: [messageBroker],
       pluginInstallations: [
         {
-          npm: "@amplication/plugin-kafka",
+          id: "broker-kafka",
+          npm: "@amplication/plugin-broker-kafka",
           enabled: true,
-          pluginId: "@amplication/plugin-kafka",
+          pluginId: "broker-kafka",
         },
       ],
     };
