@@ -4,9 +4,9 @@ import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from '@amplication/nest-logger-module';
-import { PullRequestDetails } from './dto/pull-request-details.dto';
-import { CommitContext } from './dto/commit-context.dto';
-import { CommitCreated } from './dto/commit-created.dto';
+import { PullRequestDetailsDto } from './dto/pull-request-details.dto';
+import { CommitContextDto } from './dto/commit-context.dto';
+import { CommitCreatedDto } from './dto/commit-created.dto';
 
 const BRANCH_NAME = 'amplication';
 
@@ -20,30 +20,35 @@ export class CommitsService {
   public async getBranch(
     gitClient: GitProvider,
     branch: string,
-    context: CommitContext
+    context: CommitContextDto
   ): Promise<{ headCommit: string; defaultBranchName?: string }> {
     this.logger.debug(`Getting branch ${branch}`, context);
 
-    const gitBranch = await gitClient.getBranch(branch)
+    const gitBranch = await gitClient.getBranch(branch);
     if (gitBranch) {
       this.logger.debug(
-          `Branch ${branch} head commit ${gitBranch.headCommit} was found`,
-          context
+        `Branch ${branch} head commit ${gitBranch.headCommit} was found`,
+        context
       );
       return {
         headCommit: gitBranch.headCommit,
       };
     }
     this.logger.warn(
-        `Branch ${branch} head commit was not found creating new branch`,
-        context
+      `Branch ${branch} head commit was not found creating new branch`,
+      context
     );
-    return this.createBranch(gitClient, branch, context)
+    return this.createBranch(gitClient, branch, context);
   }
 
-  private async createBranch(gitClient:GitProvider,branch:string,context:CommitContext): Promise<{ defaultBranchName: string; headCommit: string }> {
+  private async createBranch(
+    gitClient: GitProvider,
+    branch: string,
+    context: CommitContextDto
+  ): Promise<{ defaultBranchName: string; headCommit: string }> {
     const defaultBranchName = await gitClient.getDefaultBranchName();
-    const headCommit = (await gitClient.getBranch(defaultBranchName)).headCommit;
+    const headCommit = (await gitClient.getBranch(defaultBranchName))
+      .headCommit;
     await gitClient.createBranch(branch, headCommit);
     this.logger.info(`Branch ${branch} was created`, {
       ...context,
@@ -61,8 +66,8 @@ export class CommitsService {
     branch: string,
     message: string,
     baseBranchName: string | undefined,
-    context: CommitContext
-  ): Promise<PullRequestDetails> {
+    context: CommitContextDto
+  ): Promise<PullRequestDetailsDto> {
     this.logger.debug(`Getting pull request for branch ${branch}`, {
       ...context,
       branch,
@@ -96,10 +101,10 @@ export class CommitsService {
 
   public async addCommitToRepository(
     installationId: string,
-    context: CommitContext,
+    context: CommitContextDto,
     message: string,
     files: { path: string; content: string }[]
-  ): Promise<CommitCreated> {
+  ): Promise<CommitCreatedDto> {
     const gitClient = await this.githubBranchFactory.getClient(
       installationId,
       context.owner,
@@ -148,7 +153,7 @@ export class CommitsService {
     headCommit: string,
     message: string,
     files: { path: string; content: string }[],
-    context: CommitContext
+    context: CommitContextDto
   ) {
     this.logger.info(
       `Creating commit on branch ${branch} commit parent commit ${headCommit}`,
@@ -175,8 +180,8 @@ export class CommitsService {
   public async addCommentToPullRequest(
     gitClient: GitProvider,
     message: string,
-    pullRequest: PullRequestDetails,
-    context: CommitContext
+    pullRequest: PullRequestDetailsDto,
+    context: CommitContextDto
   ): Promise<string> {
     this.logger.info(
       `Adding comment to pull request ${pullRequest.number}`,
