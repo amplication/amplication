@@ -574,22 +574,20 @@ export class BuildService {
 
 
   async updateCommitState(commitStateDto: CommitStateDto): Promise<void> {
-    switch (commitStateDto.state){
-      case "Failed":
-        await this.createStepLog(commitStateDto.actionStepId,EnumActionLogLevel.Error, commitStateDto.message,commitStateDto.meta)
-        await this.updateActionStep(commitStateDto.actionStepId,commitStateDto.state)
-        return;
-      case "Success":
-        await this.createStepLog(commitStateDto.actionStepId,EnumActionLogLevel.Info, commitStateDto.message,commitStateDto.meta)
-        await this.updateActionStep(commitStateDto.actionStepId,commitStateDto.state)
-        return;
-      default:
-        await this.createStepLog(commitStateDto.actionStepId,EnumActionLogLevel.Info, commitStateDto.message,commitStateDto.meta)
-        return;
+    if (commitStateDto.state === "Running") {
+      await this.createStepLog(commitStateDto.actionStepId, EnumActionLogLevel.Info, commitStateDto.message, commitStateDto.meta)
+    } else if (commitStateDto.state === "Failed") {
+      await this.createStepLog(commitStateDto.actionStepId, EnumActionLogLevel.Error, commitStateDto.message, commitStateDto.meta)
+      await this.updateActionStep(commitStateDto.actionStepId, EnumActionStepStatus.Failed)
+      await this.resourceService.reportSyncMessage(commitStateDto.resourceId, `ERROR: ${commitStateDto.meta.message}`)
+    } else if (commitStateDto.state === "Success") {
+      await this.createStepLog(commitStateDto.actionStepId, EnumActionLogLevel.Info, commitStateDto.message, commitStateDto.meta)
+      await this.updateActionStep(commitStateDto.actionStepId, EnumActionStepStatus.Success)
+      await this.resourceService.reportSyncMessage(commitStateDto.resourceId, commitStateDto.meta.message)
     }
   }
 
-  private async updateActionStep(actionStepId: string, state: "Success" | "Failed"): Promise<void> {
+  private async updateActionStep(actionStepId: string, state: EnumActionStepStatus): Promise<void> {
     await this.prisma.actionStep.update({
       where: {
         id: actionStepId
