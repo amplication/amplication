@@ -36,7 +36,7 @@ export async function createServerModules(
   userEntity: Entity,
   logger: winston.Logger
 ): Promise<Module[]> {
-  const { serverDirectories, serviceTopics } = DsgContext.getInstance;
+  const { serverDirectories } = DsgContext.getInstance;
 
   logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   logger.info("Creating server...");
@@ -67,10 +67,9 @@ export async function createServerModules(
 
   logger.info("Creating seed script...");
   const seedModule = await createSeedModule(userEntity);
+
   logger.info("Creating Message broker modules...");
-  const messageBrokerModules = await createMessageBroker({
-    serviceTopicsWithName: serviceTopics,
-  });
+  const messageBrokerModules = await createMessageBroker({});
 
   const createdModules = [
     ...resourcesModules,
