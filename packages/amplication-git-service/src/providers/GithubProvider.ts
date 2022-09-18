@@ -14,7 +14,7 @@ export class GithubProvider implements GitProvider {
     owner: string,
     repo: string,
     latestCommitSha: string,
-    files: { path: string; content: string }[]
+    files: { path: string; content: string | null }[]
   ): Promise<string> {
     const { data } = await octokit.rest.git.createTree({
       owner,
@@ -66,7 +66,7 @@ export class GithubProvider implements GitProvider {
   public async commit(
     branch: string,
     message: string,
-    files: { path: string; content: string }[],
+    files: { path: string; content: string | null }[],
     headCommit: string
   ): Promise<string> {
     const fileTreeSha = await GithubProvider.createFilesTree(

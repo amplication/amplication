@@ -11,7 +11,7 @@ export interface GitProvider {
   commit(
     branch: string,
     message: string,
-    files: { path: string; content: string }[],
+    files: { path: string; content: string | null }[],
     headCommit: string
   ): Promise<string>;
 
