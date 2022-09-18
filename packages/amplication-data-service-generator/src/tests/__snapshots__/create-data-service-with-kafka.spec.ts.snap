@@ -2865,15 +2865,15 @@ export class StringNullableFilter {
   \\"exclude\\": [\\"./node_modules\\"]
 }
 ",
-  "server/.env": "POSTGRESQL_USER=testUsername
-POSTGRESQL_PASSWORD=1234
-POSTGRESQL_PORT=5433
-POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
-BCRYPT_SALT=10
+  "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
 SERVER_PORT=3000
+DB_USER=testUsername
+DB_PASSWORD=1234
+DB_PORT=5433
+DB_URL=postgres://testUsername:1234@localhost:5433/db-name
 KAFKA_BROKERS=localhost:9092
 KAFKA_ENABLE_SSL=false
 KAFKA_CLIENT_ID=sample-application
@@ -2883,10 +2883,10 @@ services:
   db:
     image: postgres:12
     ports:
-      - \${POSTGRESQL_PORT}:5432
+      - \${DB_PORT}:5432
     environment:
-      POSTGRES_USER: \${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
 volumes:
@@ -2902,10 +2902,10 @@ services:
     ports:
       - \${SERVER_PORT}:3000
     environment:
-      POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5433
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5433
     depends_on:
       - migrate
   migrate:
@@ -2916,18 +2916,18 @@ services:
     command: npm run db:init
     working_dir: /app/server
     environment:
-      POSTGRESQL_URL: postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432
       BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432
     depends_on:
       db:
         condition: service_healthy
   db:
     image: postgres:12
     ports:
-      - \${POSTGRESQL_PORT}:5432
+      - \${DB_PORT}:5432
     environment:
-      POSTGRES_USER: \${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
@@ -2936,12 +2936,9 @@ services:
         - pg_isready
         - -q
         - -d
-        - \${POSTGRESQL_DB_NAME}
+        - \${DB_DB_NAME}
         - -U
-        - \${POSTGRESQL_USER}
-      timeout: 45s
-      interval: 10s
-      retries: 10
+        - \${DB_USER}
   zookeeper:
     image: confluentinc/cp-zookeeper:5.2.4
     networks:
@@ -3062,7 +3059,7 @@ networks:
 ",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
-  url      = env(\\"POSTGRESQL_URL\\")
+  url      = env(\\"DB_URL\\")
 }
 
 generator client {
