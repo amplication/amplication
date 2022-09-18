@@ -15,15 +15,10 @@ export const BuildStatusIcon = ({ buildStatus }: BuildStatusIconsProps) => {
     return buildStatus === models.EnumBuildStatus.Running;
   }, [buildStatus]);
 
-  const isBuildInvalid = useMemo(() => {
-    return !buildStatus || buildStatus === models.EnumBuildStatus.Invalid;
-  }, [buildStatus]);
-
   return (
     <span
       className={`${CLASS_NAME} ${CLASS_NAME}--${buildStatus?.toLowerCase()}`}
     >
-      {isBuildInvalid && <Icon icon={BUILD_STATUS_TO_ICON.Invalid} />}
       {isBuildRunning && <CircularProgress size={16} />}
       {!isBuildRunning && buildStatus && (
         <Icon icon={BUILD_STATUS_TO_ICON[buildStatus]} />
