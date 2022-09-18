@@ -358,6 +358,10 @@ export class BuildService {
         await Promise.all(logPromises);
 
         dataServiceGeneratorLogger.destroy();
+        if (modules.length === 0) {
+          await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
+          return null;
+        }
 
         await this.actionService.logInfo(step, ACTION_ZIP_LOG);
 
