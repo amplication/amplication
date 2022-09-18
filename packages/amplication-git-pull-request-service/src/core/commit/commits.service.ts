@@ -4,8 +4,8 @@ import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from '@amplication/nest-logger-module';
-import { PullRequestDetails } from './dto/pull-request-details.dto';
-import { CommitContext } from './dto/commit-context.dto';
+import { PullRequestDetailsDto } from './dto/pull-request-details.dto';
+import { CommitContextDto } from './dto/commit-context.dto';
 import { CommitStateDto, KafkaProducer } from '@amplication/kafka';
 
 const BRANCH_NAME = 'amplication';
@@ -23,7 +23,7 @@ export class CommitsService {
   public async getBranch(
     gitClient: GitProvider,
     branch: string,
-    context: CommitContext
+    context: CommitContextDto
   ): Promise<{ headCommit: string; defaultBranchName?: string }> {
     this.logger.debug(`Getting branch ${branch}`, context);
 
@@ -47,7 +47,7 @@ export class CommitsService {
   private async createBranch(
     gitClient: GitProvider,
     branch: string,
-    context: CommitContext
+    context: CommitContextDto
   ): Promise<{ defaultBranchName: string; headCommit: string }> {
     const defaultBranchName = await gitClient.getDefaultBranchName();
     const headCommit = (await gitClient.getBranch(defaultBranchName))
@@ -69,8 +69,8 @@ export class CommitsService {
     branch: string,
     message: string,
     baseBranchName: string | undefined,
-    context: CommitContext
-  ): Promise<PullRequestDetails> {
+    context: CommitContextDto
+  ): Promise<PullRequestDetailsDto> {
     this.logger.debug(`Getting pull request for branch ${branch}`, {
       ...context,
       branch,
@@ -104,7 +104,7 @@ export class CommitsService {
 
   public async addCommitToRepository(
     installationId: string,
-    context: CommitContext,
+    context: CommitContextDto,
     message: string,
     files: { path: string; content: string | null }[]
   ): Promise<string> {
@@ -207,7 +207,7 @@ export class CommitsService {
     headCommit: string,
     message: string,
     files: { path: string; content: string | null }[],
-    context: CommitContext
+    context: CommitContextDto
   ) {
     this.logger.info(
       `Creating commit on branch ${branch} commit parent commit ${headCommit}`,
@@ -234,8 +234,8 @@ export class CommitsService {
   public async addCommentToPullRequest(
     gitClient: GitProvider,
     message: string,
-    pullRequest: PullRequestDetails,
-    context: CommitContext
+    pullRequest: PullRequestDetailsDto,
+    context: CommitContextDto
   ): Promise<string> {
     this.logger.info(
       `Adding comment to pull request ${pullRequest.number}`,

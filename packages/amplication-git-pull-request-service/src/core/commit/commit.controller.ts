@@ -1,7 +1,7 @@
 import { Controller, OnModuleInit } from '@nestjs/common';
 import { CommitsService } from './commits.service';
 import { AmplicationLogger } from '@amplication/nest-logger-module';
-import { CommitContext } from './dto/commit-context.dto';
+import { CommitContextDto } from './dto/commit-context.dto';
 import { DiffService } from '../diff';
 import { PrModule } from '../../constants';
 import {
@@ -61,7 +61,7 @@ export class CommitController implements OnModuleInit {
         }
       );
 
-      const commitContext: CommitContext =
+      const commitContext: CommitContextDto =
         CommitController.createCommitContext(eventData);
 
       const commitSha: string = await this.commitService.addCommitToRepository(
@@ -101,7 +101,7 @@ export class CommitController implements OnModuleInit {
 
   private static createCommitContext(
     value: GitCommitInitiatedDto
-  ): CommitContext {
+  ): CommitContextDto {
     return {
       owner: value.repository.owner,
       commitId: value.commit.id,
