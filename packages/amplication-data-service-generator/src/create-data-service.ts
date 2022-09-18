@@ -9,12 +9,17 @@ import {
 import { createDataServiceImpl } from "./create-data-service-impl";
 import { Worker } from "worker_threads";
 import path from "path";
+import { EnumResourceType } from "./models";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
   logger: winston.Logger = defaultLogger,
   useWorker = true
 ): Promise<Module[]> {
+  if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
+    logger.info("No code to generate for a message broker");
+    return [];
+  }
   if (useWorker) {
     return new Promise((resolve, reject) => {
       const worker = new Worker(
