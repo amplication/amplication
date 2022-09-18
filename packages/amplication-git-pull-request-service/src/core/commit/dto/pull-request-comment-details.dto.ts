@@ -1,3 +1,3 @@
-export interface PullRequestCommentDetails {
+export class PullRequestCommentDetailsDto {
   url: string;
 }

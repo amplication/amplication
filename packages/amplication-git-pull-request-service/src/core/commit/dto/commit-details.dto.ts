@@ -1,4 +1,4 @@
-export interface CommitDetails {
+export class CommitDetailsDto {
   sha: string;
   timestamp: string;
 }
