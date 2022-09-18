@@ -49,6 +49,15 @@ export const BUILD_STATUS_TO_STYLE: {
   },
 };
 
+export const BUILD_STATUS_TO_ICON: {
+  [key in models.EnumBuildStatus]: string;
+} = {
+  [models.EnumBuildStatus.Completed]: "check",
+  [models.EnumBuildStatus.Failed]: "close",
+  [models.EnumBuildStatus.Invalid]: "circle_loader",
+  [models.EnumBuildStatus.Running]: "",
+};
+
 export const STEP_STATUS_TO_ICON: {
   [key in models.EnumActionStepStatus]: string;
 } = {
