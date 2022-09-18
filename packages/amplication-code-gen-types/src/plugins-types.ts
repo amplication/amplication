@@ -17,7 +17,10 @@ export interface EventParams {
 }
 
 export interface PluginEventType<T extends EventParams> {
-  before?: (dsgContext: DsgContext, eventParams: T["before"]) => Promisable<T>;
+  before?: (
+    dsgContext: DsgContext,
+    eventParams: T["before"]
+  ) => Promisable<T["before"]>;
   after?: (dsgContext: DsgContext, modules: T["after"]) => Promisable<Module[]>;
 }
 
