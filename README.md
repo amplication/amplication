@@ -27,30 +27,32 @@
   
 # Amplication 
 
-[Amplication](https://amplication.com/) is an open‑source development tool. It helps professional Node.js developers develop quality Node.js applications without spending time on repetitive coding tasks.
+[Amplication](https://amplication.com/) is an open‑source development platform. It helps professional Node.js developers build quality Node.js applications without spending time on repetitive coding tasks.
 
 Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React.
 
 # Features
 
-The features you get with amplication:
+Amplication provides the following features:
 
 - Production-ready APIs
 - Data Model
 - Role Based Access Control
 - Microservice Support
 - Continuous Github Sync
-- TypeScript and Node.js source code
+- TypeScript and Node.js Source Code
 - Plugin System
-- Monorepo or polyrepo
+- Monorepo or Polyrepo
 - Custom Code
-- Ready to deploy app
+- Ready-to-deploy-app
 - Admin UI
 - Amplication console & CLI
 
 # Product Hunt Launch :rocket:
 
-We are **live** with the launch of our **Version 1**. [Join us](https://producthunt.com/)
+The **official version 1.0** of Amplication is NOW LIVE on Product Hunt. 
+
+[Tell us what you think](https://producthunt.com/)
 
 ![1  Amplication main](https://user-images.githubusercontent.com/53312820/190913686-02c7deb1-da2f-41b8-aa31-065e00f6155c.png)
 
@@ -83,7 +85,7 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
 ### Initializing all the packages
 
-Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, including running a docker image for the DB and seeding the DB.
+Amplication is using a monorepo with multiple packages. To initialize all the packages on a local development environment, including running a docker image for the DB and seeding the DB.
 
 1. Execute the following commands in the project root folder:
 
@@ -122,15 +124,13 @@ The server exposes a GraphQL API for all actions. The server is built with the f
 Amplication Client is the front end of the platform that provides you with an easy-to-drive UI for building your next low-code application.
 The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
 
-# Version one
+# Version 1.0.0
 
-Amplication is currently in its Version 1. This is the first major release of Amplication with enterprise grade production readiness & scale. In this version we have launched many new features and have done enhancement in the current ones. You can checkout features earlier in the readme file.
+Amplication is currently in its version 1.0.  This is the first major release of Amplication with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the README file. 
 
-# Support
+## Support
 
-## Ask a question about Amplication
-
-You can ask questions, and participate in discussions about Amplication-related topics in the Amplication Discord channel.
+Ask your questions and participate in discussions on Amplication-related and web-dev topics at Amplication Discord channel. 
 
 <a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
