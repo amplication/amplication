@@ -8,27 +8,27 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: default
-#      initContainers:
-#        - name: "{{ .Values.name }}-migrate"
-#          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-#          {{- if .Values.autoscaling.enabled }}
-#          resources:
-#            limits:
-#              cpu: {{ .Values.maxCPU }}
-#              memory: {{ .Values.minMemory }}
-#            requests:
-#              cpu: {{ .Values.minCPU }}
-#              memory: {{ .Values.maxMemory }}
-#          {{- end }}
-#          command: ["/bin/sh"]
-#          args: ["-c", "npm run migrate:up", ";", "exit"]
-#          env:
-#          - name: POSTGRESQL_URL
-#            valueFrom:
-#              secretKeyRef:
-#                name: {{ .Values.name }}
-#                key: POSTGRESQL_URL
-#                optional: false
+      initContainers:
+        - name: "{{ .Values.name }}-migrate"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.autoscaling.enabled }}
+          resources:
+            limits:
+              cpu: {{ .Values.maxCPU }}
+              memory: {{ .Values.minMemory }}
+            requests:
+              cpu: {{ .Values.minCPU }}
+              memory: {{ .Values.maxMemory }}
+          {{- end }}
+          command: ["/bin/sh"]
+          args: ["-c", "npm run migrate:up", ";", "exit"]
+          env:
+          - name: POSTGRESQL_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.name }}
+                key: POSTGRESQL_URL
+                optional: false
       containers:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
