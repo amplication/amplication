@@ -4,11 +4,11 @@ import {
   KafkaConsumerModule,
   KafkaProducerModule,
   JsonClassSerializer,
-  StringSerializerService
-} from "@amplication/kafka";
-import {DiffModule} from "../diff";
-import {CommitsService} from "./commits.service";
-import {GitClientFactoryModule} from "@amplication/git-service";
+  StringSerializerService,
+} from '@amplication/kafka';
+import { DiffModule } from '../diff';
+import { CommitsService } from './commits.service';
+import { GitClientFactoryModule } from '@amplication/git-service';
 
 @Module({
   controllers: [CommitController],
@@ -16,7 +16,8 @@ import {GitClientFactoryModule} from "@amplication/git-service";
     KafkaProducerModule.register(StringSerializerService, JsonClassSerializer),
     KafkaConsumerModule.register(StringSerializerService, JsonClassSerializer),
     DiffModule,
-    GitClientFactoryModule],
-  providers: [CommitsService]
+    GitClientFactoryModule,
+  ],
+  providers: [CommitsService],
 })
 export class CommitModule {}

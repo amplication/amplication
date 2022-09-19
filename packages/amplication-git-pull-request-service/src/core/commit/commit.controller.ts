@@ -1,7 +1,10 @@
-import {Controller, Inject, OnModuleInit} from '@nestjs/common';
+import { Controller, Inject, OnModuleInit } from '@nestjs/common';
 import { CommitsService } from './commits.service';
-import {AMPLICATION_LOGGER_PROVIDER, AmplicationLogger} from '@amplication/nest-logger-module';
-import {CommitContextDto} from "./dto/commit-context.dto";
+import {
+  AMPLICATION_LOGGER_PROVIDER,
+  AmplicationLogger,
+} from '@amplication/nest-logger-module';
+import { CommitContextDto } from './dto/commit-context.dto';
 import { DiffService } from '../diff';
 import { PrModule } from '../../constants';
 import {
@@ -78,8 +81,8 @@ export class CommitController implements OnModuleInit {
         CommitController.CREATED_TOPIC,
         commitContext.buildId,
         new CommitStateDto(
-            eventData.build.resourceId,
-            eventData.build.actionStepId,
+          eventData.build.resourceId,
+          eventData.build.actionStepId,
           `Commit ${commitSha} pushed successfully to ${eventData.repository.owner}/${eventData.repository.name}`,
           'Success',
           {
