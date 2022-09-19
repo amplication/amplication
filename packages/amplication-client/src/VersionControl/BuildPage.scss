@@ -24,9 +24,10 @@ $icon-size: 20px;
   }
   &__build-details {
     display: flex;
-    direction: row;
+    flex-direction: row;
 
     .log-container {
+      height: 500px;
       margin-left: var(--double-spacing);
     }
   }

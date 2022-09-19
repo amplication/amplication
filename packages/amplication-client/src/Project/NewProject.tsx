@@ -104,7 +104,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
                 buttonStyle={EnumButtonStyle.Primary}
                 disabled={!formik.isValid || loading}
               >
-                Create Project
+                Create new project
               </Button>
             </Form>
           );
