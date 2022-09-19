@@ -28,6 +28,9 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
 
 amplication-server:
+  autoscaling:
+    minReplicas: 12
+  replicaCount: 12
   resources:
     limits:
       cpu: 3
