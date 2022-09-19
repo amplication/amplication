@@ -38,9 +38,9 @@ export class CommitController implements OnModuleInit {
     );
   }
 
-  async handleCommit(
+  handleCommit = async (
     kafkaMessage: KafkaMessageDto<string, GitCommitInitiatedDto>
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       this.logger.info('CommitController - received message from topic', {
         ...kafkaMessage,

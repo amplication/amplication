@@ -84,7 +84,7 @@ export class BuildController {
         message
       })
       const commitStateDto = plainToInstance(CommitStateDto, message.value);
-      this.buildService.updateCommitState(commitStateDto)
+      await this.buildService.updateCommitState(commitStateDto)
 
     } catch (error) {
       this.logger.error("BuildController.updateCommitState - Failed handle message from kafka", {
