@@ -98,7 +98,6 @@ amplication-git-pull-service:
       KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
-      KAFKA_CONSUMER_CONCURENCY_FACTOR: 10
 
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
@@ -111,6 +110,8 @@ amplication-git-pull-request-service:
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "215215"
+
+      KAFKA_CONSUMER_CONCURENCY_FACTOR: "10"
 
 amplication-storage-gateway:
   ingress:
