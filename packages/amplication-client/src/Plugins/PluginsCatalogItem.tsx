@@ -11,8 +11,8 @@ import {
   Panel,
   Toggle,
 } from "@amplication/design-system";
-import "./PluginsCatalogItem.scss";
 import { Plugin } from "./hooks/usePlugins";
+import "./PluginsCatalogItem.scss";
 
 type Props = {
   plugin: Plugin;
@@ -92,7 +92,7 @@ function PluginsCatalogItem({
       )}
       <div className={`${CLASS_NAME}__row `}>
         <span className={`${CLASS_NAME}__logo`}>
-          {plugin.icon ? (
+          {plugin?.icon ? (
             <img
               src={`${PLUGIN_LOGO_BASE_URL}${plugin.icon}`}
               alt="plugin logo"
@@ -107,7 +107,7 @@ function PluginsCatalogItem({
             {description}
           </span>
         </div>
-        {!pluginInstallation && (
+        {!pluginInstallation ? (
           <Button
             className={`${CLASS_NAME}__install`}
             buttonStyle={EnumButtonStyle.Primary}
@@ -115,7 +115,25 @@ function PluginsCatalogItem({
           >
             Install
           </Button>
-        )}{" "}
+        ) : (
+          !isDraggable && (
+            <Button
+              className={`${CLASS_NAME}__install`}
+              buttonStyle={EnumButtonStyle.Primary}
+              disabled
+            >
+              Installed
+            </Button>
+          )
+        )}
+      </div>
+      <div className={`${CLASS_NAME}__row `}>
+        <span className="spacer" />
+        <span className={`${CLASS_NAME}__repo`}>
+          <a href={plugin?.repo} target="github_plugin">
+            View on GitHub
+          </a>
+        </span>
       </div>
     </Panel>
   );

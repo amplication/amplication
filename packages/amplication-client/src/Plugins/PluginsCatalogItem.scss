@@ -39,6 +39,10 @@ $button-padding: 5px 12px;
       max-width: 100%;
     }
   }
+  &__main {
+    padding-top: var(--default-spacing-small);
+    padding-bottom: var(--default-spacing-small);
+  }
 
   &__details {
     margin-left: var(--large-spacing);
@@ -57,6 +61,26 @@ $button-padding: 5px 12px;
   &__install {
     padding: $button-padding;
     min-width: $install-width;
+  }
+
+  &__repo a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--icon-spacing);
+
+    color: var(--black100);
+
+    &:hover,
+    &:active,
+    &:visited {
+      color: var(--black100);
+    }
+
+    &:hover,
+    &:active {
+      text-decoration: underline;
+    }
   }
 
   &__order {
