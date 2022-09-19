@@ -10,7 +10,7 @@ const WorkspaceSettingsNavigation = () => {
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__links`}>
         <InnerTabLink to={`/${currentWorkspace?.id}/settings`} icon="settings">
-          Workspace Settings
+          Workspace Settings (ariel test)
         </InnerTabLink>
         <InnerTabLink to={`/${currentWorkspace?.id}/members`} icon="users">
           Workspace Members
