@@ -2,7 +2,7 @@ name: Deploy to Next (Automatic)
 on:
   push:
     branches:
-      - release/1.0.0
+      - "release/1.0.0"
 jobs:
   validate-image:
     runs-on: ubuntu-20.04
@@ -59,6 +59,9 @@ jobs:
         with:
           python-version: 3.8 #install the python needed
       - uses: actions/checkout@v2
+        with:
+          ref: "release/1.0.0"
+
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
