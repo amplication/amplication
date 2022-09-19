@@ -66,7 +66,10 @@ Alternatively you can set up a local development environment.
 
 See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
 
-[Watch this video](https://youtu.be/tKGeLXoPr94) for a quick recap of everything you get with Amplication.
+## Tutorials 
+
+- Todo Application using Amplication and Angular. [Click here to access](https://docs.amplication.com/docs/tutorials/angular-todos/)
+- Todo Application using Amplication and React. [Click here to access](https://docs.amplication.com/docs/tutorials/react-todos/)
 
 ## Amplication Cloud (SaaS)
 
