@@ -14,7 +14,7 @@ export function createNestjsKafkaConfig(envSuffix: string = ""): KafkaOptions {
     options: {
       client: {
         brokers: kafkaEnv.getBrokers(),
-        clientId: kafkaEnv.getClientId(),
+        clientId: kafkaEnv.getClientId() + envSuffix,
       },
       consumer,
     },

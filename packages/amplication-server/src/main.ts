@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { sendServerLoadEvent } from './util/sendServerLoadEvent';
 import { createNestjsKafkaConfig } from '@amplication/kafka';
 import { MicroserviceOptions } from '@nestjs/microservices';
+import { randomUUID } from 'crypto';
 
 async function bootstrap() {
   /**
@@ -31,7 +32,9 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule, {});
-  app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
+  app.connectMicroservice<MicroserviceOptions>(
+    createNestjsKafkaConfig(`_${randomUUID()}`)
+  );
 
   await app.startAllMicroservices();
 
