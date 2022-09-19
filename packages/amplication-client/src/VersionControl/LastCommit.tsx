@@ -1,5 +1,5 @@
 import React, { useMemo, useContext, useEffect } from "react";
-import { useQuery } from "@apollo/client";
+import { NetworkStatus, useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
 import * as models from "../models";
@@ -30,12 +30,31 @@ const LastCommit = ({ projectId }: Props) => {
     pendingChangesIsError,
   } = useContext(AppContext);
 
-  const { data, loading, refetch } = useQuery<TData>(GET_LAST_COMMIT, {
+  const {
+    data,
+    loading,
+    refetch,
+    startPolling,
+    stopPolling,
+    networkStatus,
+  } = useQuery<TData>(GET_LAST_COMMIT, {
     variables: {
       projectId,
     },
     skip: !projectId,
   });
+
+  useEffect(() => {
+    if (networkStatus === NetworkStatus.refetch) {
+      startPolling(1000);
+    }
+    if (
+      data?.commits?.[0]?.builds?.[0]?.status ===
+      models.EnumBuildStatus.Completed
+    ) {
+      stopPolling();
+    }
+  }, [networkStatus, data]);
 
   useEffect(() => {
     refetch();
