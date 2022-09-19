@@ -32,9 +32,7 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule, {});
-  app.connectMicroservice<MicroserviceOptions>(
-    createNestjsKafkaConfig(`_${randomUUID()}`)
-  );
+  app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
 
   await app.startAllMicroservices();
 

@@ -10,12 +10,13 @@ export function createNestjsKafkaConfig(envSuffix: string = ""): KafkaOptions {
   if (groupId) {
     consumer = { groupId };
   }
+
   return {
     transport: Transport.KAFKA,
     options: {
       client: {
         brokers: kafkaEnv.getBrokers(),
-        clientId: kafkaEnv.getClientId() + `_${randomUUID()}`,
+        clientId: kafkaEnv.getClientId() + `-${randomUUID()}`,
       },
       consumer,
     },
