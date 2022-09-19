@@ -33,7 +33,7 @@ jobs:
 
   prepare:
     runs-on: ubuntu-20.04
-    needs: [variables, validate-image]
+    needs: [validate-image]
     if: ${{ needs.validate-image.outputs.valid_image == 'true' }}
     env:
       TARGET_ENV: ${{ needs.variables.outputs.TARGET_ENV }}
