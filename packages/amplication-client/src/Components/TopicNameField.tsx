@@ -20,7 +20,7 @@ type Props = Omit<TextInputProps, "helpText" | "hasError"> & {
 const TopicNameField = ({ name, ...rest }: Props) => {
   const [field, meta] = useField<string>({
     name,
-    validate: (value) => (TOPIC_REGEX.test(value) ? "undefined" : HELP_TEXT),
+    validate: (value) => (TOPIC_REGEX.test(value) ? undefined : HELP_TEXT),
   });
   const [showMessage, setShowMessage] = useState<boolean>(false);
 
