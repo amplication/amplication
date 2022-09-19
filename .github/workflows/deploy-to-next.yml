@@ -7,11 +7,7 @@ jobs:
   variables:
     runs-on: ubuntu-20.04
     outputs:
-      BRANCH_NAME: ${{ steps.set-branch-name.outputs.BRANCH_NAME }}
       TARGET_ENV: next
-    steps:
-      - id: set-branch-name
-        run: "::set-output name=BRANCH_NAME::${GITHUB_REF##*/}"
 
   validate-image:
     runs-on: ubuntu-20.04
