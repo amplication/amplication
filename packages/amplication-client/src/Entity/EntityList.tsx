@@ -94,7 +94,10 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           onDismiss={handleNewEntityClick}
           title="New Entity"
         >
-          <NewEntity resourceId={resource} />
+          <NewEntity 
+            resourceId={resource} 
+            onSuccess={handleNewEntityClick} 
+          />
         </Dialog>
         <div className={`${CLASS_NAME}__header`}>
           <SearchField
