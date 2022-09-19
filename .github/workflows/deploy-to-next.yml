@@ -1,5 +1,6 @@
 name: Deploy to Next (Automatic)
 on:
+  workflow_dispatch:
   push:
     branches:
       - "release/1.0.0"
