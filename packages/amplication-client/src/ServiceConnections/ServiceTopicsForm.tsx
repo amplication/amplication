@@ -73,8 +73,8 @@ const ServiceTopicsForm = ({
               <ToggleField name="enabled" label="" />
             </div>
             <div className={`${CLASS_NAME}__header__description`}>
-              All the below settings will appear in clear text in the generated app. <br />
-              It should only be used for the development environment variables and should not include sensitive data.
+              Select the topics to handle in this service, and the message
+              pattern for each topic.
             </div>
           </div>
           <HorizontalRule />
