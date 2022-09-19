@@ -27,7 +27,7 @@ export default function ServiceTopicPanel({
   onMessagePatternTypeChange,
 }: Props) {
   return (
-    <Panel>
+    <Panel className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
         <span
           className={classNames([

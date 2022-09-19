@@ -1,6 +1,8 @@
 import { useQuery } from "@apollo/client";
 import { FieldArray } from "formik";
 import React from "react";
+import { EmptyState } from "../../Components/EmptyState";
+import { EnumImages } from "../../Components/SvgThemeImage";
 import {
   EnumMessagePatternConnectionOptions,
   MessagePattern,
@@ -8,6 +10,7 @@ import {
 } from "../../models";
 import { topicsOfBroker } from "./queries/topicsQueries";
 import ServiceTopicPanel from "./ServiceTopicPanel";
+import "./TopicsList.scss";
 
 type Props = {
   messageBrokerId: string;
@@ -28,27 +31,36 @@ export default function TopicsList({
   });
 
   return data ? (
-    <FieldArray
-      validateOnChange
-      name="patterns"
-      render={({ replace }) => {
-        return data.Topics.map((topic, i) => (
-          <ServiceTopicPanel
-            enabled={enabled}
-            key={i}
-            topic={topic}
-            selectedPatternType={
-              messagePatterns[i] || {
-                type: EnumMessagePatternConnectionOptions.None,
-                topicId: topic.id,
-              }
-            }
-            onMessagePatternTypeChange={(pattern) => {
-              replace(i, { type: pattern, topicId: topic.id });
-            }}
-          />
-        ));
-      }}
-    />
+    data.Topics.length ? (
+      <FieldArray
+        validateOnChange
+        name="patterns"
+        render={({ replace }) => (
+          <div className="topics-list">
+            {data.Topics.map((topic, i) => (
+              <ServiceTopicPanel
+                enabled={enabled}
+                key={i}
+                topic={topic}
+                selectedPatternType={
+                  messagePatterns[i] || {
+                    type: EnumMessagePatternConnectionOptions.None,
+                    topicId: topic.id,
+                  }
+                }
+                onMessagePatternTypeChange={(pattern) => {
+                  replace(i, { type: pattern, topicId: topic.id });
+                }}
+              />
+            ))}
+          </div>
+        )}
+      />
+    ) : (
+      <EmptyState
+        message="This message broker has no topics"
+        image={EnumImages.CommitEmptyState}
+      />
+    )
   ) : null;
 }

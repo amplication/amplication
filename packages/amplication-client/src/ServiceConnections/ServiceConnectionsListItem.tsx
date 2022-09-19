@@ -24,7 +24,7 @@ export default function ServiceConnectionsListItem({
       <InnerTabLink
         to={`/${currentWorkspaceId}/${currentProjectId}/${resourceId}/service-connections/${connectionResource.id}`}
       >
-        <span>{connectionResource.name}</span>
+        <span className={`${CLASS_NAME}__name`}>{connectionResource.name}</span>
         <svg height="8" width="8">
           <circle
             cx="4"

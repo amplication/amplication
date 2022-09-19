@@ -1,21 +1,39 @@
 @import "../style/index.scss";
 
 .service-topics {
-  &__row {
-    @include flexFullRowWithSpacing;
-    margin-bottom: var(--default-spacing);
 
-    &:last-child {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
+    
+    &__top {  
+      display: flex;
+      align-items: center;
+      gap: var(--default-spacing-small);
+
+      &__title {
+        font-size: 18px;
+        font-weight: 600;  
+      }
+    }
+
+    &__description {
+      font-weight: 400;
+      font-size: 14px;
+      color: white;
+    } 
+
+    .toggle-field {
+      margin-left: auto;
       margin-bottom: 0;
     }
+
   }
 
-  &__title {
-    @include body1;
-    color: var(--black100);
-  }
-  &__description {
-    @include regular-14;
-    color: var(--black100);
+  .amp-form {
+    > .amp-horizontal-rule {
+      margin: 24px 0;
+    }
   }
 }
