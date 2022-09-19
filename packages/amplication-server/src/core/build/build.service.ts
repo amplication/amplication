@@ -92,8 +92,8 @@ const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
 const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
 
 export function createInitialStepData(
-  version: string,
-  message: string
+    version: string,
+    message: string
 ): Prisma.ActionStepCreateWithoutActionInput {
   return {
     message: 'Adding task to queue',
@@ -128,22 +128,22 @@ export class BuildService {
   public static COMMIT_INIT_TOPIC = "git.internal.commit-initiated.request.0"
 
   constructor(
-    private kafkaProducer: KafkaProducer<string, GitCommitInitiatedDto>,
-    private readonly configService: ConfigService,
-    private readonly prisma: PrismaService,
-    private readonly storageService: StorageService,
-    private readonly entityService: EntityService,
-    private readonly resourceRoleService: ResourceRoleService,
-    private readonly actionService: ActionService,
-    private readonly localDiskService: LocalDiskService,
-    @Inject(forwardRef(() => ResourceService))
-    private readonly resourceService: ResourceService,
-    private readonly serviceSettingsService: ServiceSettingsService,
-    private readonly userService: UserService,
-    private readonly buildFilesSaver: BuildFilesSaver,
-    private readonly queueService: QueueService,
+      private kafkaProducer: KafkaProducer<string, GitCommitInitiatedDto>,
+      private readonly configService: ConfigService,
+      private readonly prisma: PrismaService,
+      private readonly storageService: StorageService,
+      private readonly entityService: EntityService,
+      private readonly resourceRoleService: ResourceRoleService,
+      private readonly actionService: ActionService,
+      private readonly localDiskService: LocalDiskService,
+      @Inject(forwardRef(() => ResourceService))
+      private readonly resourceService: ResourceService,
+      private readonly serviceSettingsService: ServiceSettingsService,
+      private readonly userService: UserService,
+      private readonly buildFilesSaver: BuildFilesSaver,
+      private readonly queueService: QueueService,
 
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
+      @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver('gcs', GoogleCloudStorage);
@@ -197,10 +197,10 @@ export class BuildService {
     });
 
     const oldBuild = await previousBuild(
-      this.prisma,
-      resourceId,
-      build.id,
-      build.createdAt
+        this.prisma,
+        resourceId,
+        build.id,
+        build.createdAt
     );
 
     const logger = this.logger.child({
@@ -223,20 +223,20 @@ export class BuildService {
   }
 
   private async getGenerateCodeStepStatus(
-    buildId: string
+      buildId: string
   ): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
-      .findUnique({
-        where: {
-          id: buildId
-        }
-      })
-      .action()
-      .steps({
-        where: {
-          name: GENERATE_STEP_NAME
-        }
-      });
+        .findUnique({
+          where: {
+            id: buildId
+          }
+        })
+        .action()
+        .steps({
+          where: {
+            name: GENERATE_STEP_NAME
+          }
+        });
 
     return generateStep;
   }
@@ -278,8 +278,8 @@ export class BuildService {
     }
     if (generatedCodeStep.status !== EnumActionStepStatus.Success) {
       throw new StepNotCompleteError(
-        GENERATE_STEP_NAME,
-        EnumActionStepStatus[generatedCodeStep.status]
+          GENERATE_STEP_NAME,
+          EnumActionStepStatus[generatedCodeStep.status]
       );
     }
     const filePath = getBuildZipFilePath(id);
@@ -299,71 +299,71 @@ export class BuildService {
    * @param oldBuildId
    */
   private async generate(
-    build: Build,
-    user: User,
-    oldBuildId: string | undefined
+      build: Build,
+      user: User,
+      oldBuildId: string | undefined
   ): Promise<string> {
     return this.actionService.run(
-      build.actionId,
-      GENERATE_STEP_NAME,
-      GENERATE_STEP_MESSAGE,
-      async step => {
-        //#region getting all the resource data
-        const entities = await this.getOrderedEntities(build.id);
-        const roles = await this.getResourceRoles(build);
-        const resource = await this.resourceService.resource({
-          where: { id: build.resourceId }
-        });
-        const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
-          {
+        build.actionId,
+        GENERATE_STEP_NAME,
+        GENERATE_STEP_MESSAGE,
+        async step => {
+          //#region getting all the resource data
+          const entities = await this.getOrderedEntities(build.id);
+          const roles = await this.getResourceRoles(build);
+          const resource = await this.resourceService.resource({
             where: { id: build.resourceId }
-          },
-          user
-        );
-        //#endregion
-        const [
-          dataServiceGeneratorLogger,
-          logPromises
-        ] = this.createDataServiceLogger(build, step);
+          });
+          const serviceSettings = await this.serviceSettingsService.getServiceSettingsValues(
+              {
+                where: { id: build.resourceId }
+              },
+              user
+          );
+          //#endregion
+          const [
+            dataServiceGeneratorLogger,
+            logPromises
+          ] = this.createDataServiceLogger(build, step);
 
-        const host = this.configService.get(HOST_VAR);
+          const host = this.configService.get(HOST_VAR);
 
-        const url = `${host}/${build.resourceId}`;
+          const url = `${host}/${build.resourceId}`;
 
-        const modules = await DataServiceGenerator.createDataService(
-          entities,
-          roles,
-          {
-            name: resource.name,
-            description: resource.description,
-            version: build.version,
-            id: build.resourceId,
-            url,
-            settings: serviceSettings
-          },
-          dataServiceGeneratorLogger
-        );
+          const modules = await DataServiceGenerator.createDataService(
+              entities,
+              roles,
+              {
+                name: resource.name,
+                description: resource.description,
+                version: build.version,
+                id: build.resourceId,
+                url,
+                settings: serviceSettings
+              },
+              dataServiceGeneratorLogger
+          );
 
-        await Promise.all(logPromises);
+          await Promise.all(logPromises);
 
-        dataServiceGeneratorLogger.destroy();
+          dataServiceGeneratorLogger.destroy();
 
-        await this.actionService.logInfo(step, ACTION_ZIP_LOG);
+          await this.actionService.logInfo(step, ACTION_ZIP_LOG);
 
-        // the path to the tar.gz artifact
-        const tarballURL = await this.save(build, modules);
+          // the path to the tar.gz artifact
+          const tarballURL = await this.save(build, modules);
 
-        await this.buildFilesSaver.saveFiles(
-          join(resource.id, build.id),
-          modules
-        );
+          await this.buildFilesSaver.saveFiles(
+              join(resource.id, build.id),
+              modules
+          );
 
-        await this.saveToGitHub(build, oldBuildId);
+          await this.saveToGitHub(build, oldBuildId);
 
-        await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
+          await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
 
-        return tarballURL;
-      }
+          return tarballURL;
+        }
     );
   }
 
@@ -378,8 +378,8 @@ export class BuildService {
   }
 
   private createDataServiceLogger(
-    build: Build,
-    step: ActionStep
+      build: Build,
+      step: ActionStep
   ): [winston.Logger, Array<Promise<void>>] {
     const transport = new winston.transports.Console();
     const logPromises: Array<Promise<void>> = [];
@@ -405,8 +405,8 @@ export class BuildService {
    * @returns created tarball URL
    */
   private async save(
-    build: Build,
-    modules: DataServiceGenerator.Module[]
+      build: Build,
+      modules: DataServiceGenerator.Module[]
   ): Promise<string> {
     const zipFilePath = getBuildZipFilePath(build.id);
     const tarFilePath = getBuildTarGzFilePath(build.id);
@@ -414,19 +414,19 @@ export class BuildService {
     await Promise.all([
       createZipFileFromModules(modules).then(zip => disk.put(zipFilePath, zip)),
       createTarGzFileFromModules(modules).then(tar =>
-        disk.put(tarFilePath, tar)
+          disk.put(tarFilePath, tar)
       )
     ]);
     return this.getFileURL(disk, tarFilePath);
   }
 
   private async saveToGitHub(
-    build: Build,
-    oldBuildId: string
+      build: Build,
+      oldBuildId: string
   ): Promise<void> {
     const resource = build.resource;
     const resourceRepository = await this.resourceService.gitRepository(
-      resource.id
+        resource.id
     );
 
     if (!resourceRepository) {
@@ -434,18 +434,18 @@ export class BuildService {
     }
 
     const gitOrganization = await this.resourceService.gitOrganizationByResource(
-      {
-        where: { id: resource.id }
-      }
+        {
+          where: { id: resource.id }
+        }
     );
 
     const commit = build.commit;
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
     const commitMessage =
-      (commit.message &&
-        `${commit.message} (Amplication build ${truncateBuildId})`) ||
-      `Amplication build ${truncateBuildId}`;
+        (commit.message &&
+            `${commit.message} (Amplication build ${truncateBuildId})`) ||
+        `Amplication build ${truncateBuildId}`;
 
     const step = await this.createStep(build.actionId, PUSH_TO_GITHUB_STEP_NAME, PUSH_TO_GITHUB_STEP_MESSAGE);
     await this.createStepLog(step.id,EnumActionLogLevel.Info,"Queued: pull request task")
@@ -528,8 +528,8 @@ export class BuildService {
   }
 
   private async createLog(
-    step: ActionStep,
-    info: { message: string }
+      step: ActionStep,
+      info: { message: string }
   ): Promise<void> {
     const { message, ...winstonMeta } = info;
     const level = WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[info[LEVEL]];
@@ -544,7 +544,7 @@ export class BuildService {
    * @returns all the entities for build order by date of creation
    */
   private async getOrderedEntities(
-    buildId: string
+      buildId: string
   ): Promise<DataServiceGenerator.Entity[]> {
     const entities = await this.entityService.getEntitiesByVersions({
       where: {
@@ -557,14 +557,14 @@ export class BuildService {
       include: ENTITIES_INCLUDE
     });
     return (orderBy(
-      entities,
-      entity => entity.createdAt
+        entities,
+        entity => entity.createdAt
     ) as unknown) as DataServiceGenerator.Entity[];
   }
   async canUserAccess({
-    userId,
-    buildId
-  }: CanUserAccessArgs): Promise<boolean> {
+                        userId,
+                        buildId
+                      }: CanUserAccessArgs): Promise<boolean> {
     const build = this.prisma.build.findFirst({
       // eslint-disable-next-line @typescript-eslint/naming-convention
       where: { id: buildId, AND: { userId } }

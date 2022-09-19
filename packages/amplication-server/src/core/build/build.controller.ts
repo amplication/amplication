@@ -76,7 +76,7 @@ export class BuildController {
   }
 
   @MessagePattern(
-      EnvironmentVariables.instance.get(BuildController.COMMIT_STATE_TOPIC, true)
+      BuildController.COMMIT_STATE_TOPIC
   )
   async updateCommitState(@Payload() message: KafkaMessage): Promise<void> {
     try {

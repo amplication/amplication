@@ -17,7 +17,12 @@ export class EnvironmentVariables {
   get(key: string, strict: boolean): string | undefined {
     const envValue: string | undefined = process.env[key];
     if (strict) {
-      assert(envValue, `Missing ${key} in the env`);
+      try{
+        assert(envValue, `Missing ${key} in the env`);
+      } catch (_){
+        console.error( `Missing ${key} in the env, exit service`)
+        process.exit(1)
+      }
     }
     return envValue;
   }
