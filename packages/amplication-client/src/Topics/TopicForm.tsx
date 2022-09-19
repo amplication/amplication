@@ -3,7 +3,6 @@ import { Formik } from "formik";
 import { Form } from "../Components/Form";
 import { omit } from "lodash";
 import * as models from "../models";
-import { DisplayNameField } from "../Components/DisplayNameField";
 import { TextField } from "@amplication/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 
@@ -65,7 +64,7 @@ const TopicForm = ({ onSubmit, defaultValues }: Props) => {
     >
       <Form childrenAsBlocks>
         <FormikAutoSave debounceMS={1000} />
-        <DisplayNameField
+        <TopicNameField
           name="displayName"
           label="Display Name"
           minLength={1}
