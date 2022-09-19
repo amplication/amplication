@@ -27,6 +27,7 @@ type DType = {
 
 type Props = {
   resourceId: string;
+  onSuccess: () => void;
 };
 
 const INITIAL_VALUES: CreateEntityType = {
@@ -51,7 +52,7 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewEntity = ({ resourceId }: Props) => {
+const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const { trackEvent } = useTracking();
   const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
 
@@ -64,6 +65,7 @@ const NewEntity = ({ resourceId }: Props) => {
           eventName: "createEntity",
           entityName: data.createOneEntity.displayName,
         });
+        onSuccess();
       },
       update(cache, { data }) {
         if (!data) return;
@@ -114,6 +116,8 @@ const NewEntity = ({ resourceId }: Props) => {
           },
         },
       }).catch(console.error);
+      
+
     },
     [createEntity, resourceId]
   );
