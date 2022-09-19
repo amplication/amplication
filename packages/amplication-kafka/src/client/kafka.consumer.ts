@@ -31,6 +31,8 @@ export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplica
 
     private async eachMessage(payload: EachMessagePayload): Promise<void> {
         console.log(payload)
+        console.log(this.keySerialize)
+        console.log(this.valueSerialize)
 
         const key: K = this.keySerialize.deserialize(payload.message.key)
         const value: V = this.valueSerialize.deserialize(payload.message.value)
