@@ -1,9 +1,8 @@
-name: Deploy (Automatic)
+name: Deploy to Next (Automatic)
 on:
-  workflow_dispatch:
-    push:
-      branches:
-        - next
+  push:
+    branches:
+      - release/1.0.0
 jobs:
   validate-image:
     runs-on: ubuntu-20.04
@@ -26,11 +25,6 @@ jobs:
         id: check-image
         run: |
           bash ./.github/workflows/scripts/deploy-image.sh
-  test:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: test
-        run: echo "${{ github }}"
   # prepare:
   #   runs-on: ubuntu-20.04
   #   needs: [validate-image]
