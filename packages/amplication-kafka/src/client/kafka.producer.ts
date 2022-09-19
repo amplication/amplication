@@ -4,10 +4,10 @@ import {
     PRODUCER_KAFKA_KEY_SERIALIZER,
     PRODUCER_KAFKA_VALUE_SERIALIZER,
     Serializer
-} from "./types/serializer";
-import {Logger} from "winston";
-import {EmitResponse} from "./dtos/emit-response";
-import {KafkaClient} from "./kafka-client";
+} from './types';
+import {EmitResponse} from './dtos';
+import {KafkaClient} from './kafka-client';
+import {AMPLICATION_LOGGER_PROVIDER, AmplicationLogger} from "@amplication/nest-logger-module";
 
 @Injectable()
 export class KafkaProducer<K,V> implements OnApplicationBootstrap, BeforeApplicationShutdown {
@@ -17,7 +17,7 @@ export class KafkaProducer<K,V> implements OnApplicationBootstrap, BeforeApplica
     constructor(kafkaClient:KafkaClient,
                 @Inject(PRODUCER_KAFKA_KEY_SERIALIZER) private keySerialize: Serializer<K>,
                 @Inject(PRODUCER_KAFKA_VALUE_SERIALIZER) private valueSerialize: Serializer<V>,
-                private logger: Logger) {
+                @Inject(AMPLICATION_LOGGER_PROVIDER) private logger: AmplicationLogger) {
         this.producer = kafkaClient.kafka.producer()
     }
 

@@ -1,6 +1,6 @@
-import { Controller, OnModuleInit } from '@nestjs/common';
+import {Controller, Inject, OnModuleInit} from '@nestjs/common';
 import { CommitsService } from './commits.service';
-import { AmplicationLogger } from '@amplication/nest-logger-module';
+import {AMPLICATION_LOGGER_PROVIDER, AmplicationLogger} from '@amplication/nest-logger-module';
 import {CommitContextDto} from "./dto/commit-context.dto";
 import { DiffService } from '../diff';
 import { PrModule } from '../../constants';
@@ -22,7 +22,7 @@ export class CommitController implements OnModuleInit {
     private kafkaProducer: KafkaProducer<string, CommitStateDto>,
     private commitService: CommitsService,
     private diffService: DiffService,
-    private logger: AmplicationLogger
+    @Inject(AMPLICATION_LOGGER_PROVIDER) private logger: AmplicationLogger
   ) {}
 
   async onModuleInit(): Promise<any> {

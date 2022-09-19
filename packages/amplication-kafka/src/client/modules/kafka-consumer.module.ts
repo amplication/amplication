@@ -5,21 +5,18 @@ import {KafkaClientModule} from "./kafka-client.module";
 import {KafkaConsumerConfigDto} from "../dtos";
 import {KafkaConsumer} from "../kafka.consumer";
 import {CONSUMER_KAFKA_KEY_SERIALIZER, CONSUMER_KAFKA_VALUE_SERIALIZER} from "../types";
-import {AmplicationLoggerModule} from "@amplication/nest-logger-module";
+import {KafkaClient} from "../kafka-client";
 
 @Module({})
 export class KafkaConsumerModule {
-    public static registerAsync<K, V>(keySerializerClass: Type<K>,
+    public static register<K, V>(keySerializerClass: Type<K>,
                                       valueSerializerClass: Type<V>): DynamicModule {
         return {
             module: KafkaConsumerModule,
-            imports: [ConfigModule, KafkaClientModule, AmplicationLoggerModule.register({
-                metadata: {
-                    service: "kafka-consumer-module"
-                }
-            })],
+            imports: [KafkaClientModule,ConfigModule],
             providers: [{
                 provide: KafkaConsumerConfigDto,
+                inject: [ConfigService],
                 useFactory: (configService: ConfigService) => {
                     const groupId = configService.get(KafkaConsumerConfigDto.ENV_KAFKA_GROUP_ID);
                     const concurencyFactor = configService.get(KafkaConsumerConfigDto.ENV_KAFKA_CONSUMER_CONCURENCY_FACTOR);
@@ -31,8 +28,8 @@ export class KafkaConsumerModule {
             }, {
                 provide: CONSUMER_KAFKA_VALUE_SERIALIZER,
                 useClass: valueSerializerClass
-            }],
-            exports: [KafkaConsumer]
+            },KafkaClient,KafkaConsumer],
+            exports: [KafkaConsumerConfigDto,KafkaConsumer]
         }
     }
 

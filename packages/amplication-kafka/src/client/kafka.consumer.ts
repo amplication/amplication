@@ -1,15 +1,15 @@
-import {Consumer, EachMessagePayload, IHeaders} from "kafkajs";
+import {Consumer, EachMessagePayload, IHeaders} from 'kafkajs';
 import {
     CONSUMER_KAFKA_KEY_SERIALIZER,
     CONSUMER_KAFKA_VALUE_SERIALIZER,
     Serializer
-} from "./types/serializer";
-import {KafkaConsumerConfigDto} from "./dtos/kafka-consumer-config.dto";
-import {BeforeApplicationShutdown, Inject, Injectable, OnApplicationBootstrap} from "@nestjs/common";
-import {Logger} from "winston";
-import {KafkaConsumerCallback} from "./types/kafka-consumer-callback.type";
-import {KafkaMessageDto} from "./dtos/kafka-message-dto";
-import {KafkaClient} from "./kafka-client";
+} from './types';
+import {KafkaConsumerConfigDto} from './dtos';
+import {BeforeApplicationShutdown, Inject, Injectable, OnApplicationBootstrap} from '@nestjs/common';
+import {KafkaConsumerCallback} from './types';
+import {KafkaMessageDto} from './dtos';
+import {KafkaClient} from './kafka-client';
+import {AMPLICATION_LOGGER_PROVIDER, AmplicationLogger} from "@amplication/nest-logger-module";
 
 @Injectable()
 export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplicationShutdown {
@@ -20,7 +20,7 @@ export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplica
                 private config: KafkaConsumerConfigDto,
                 @Inject(CONSUMER_KAFKA_KEY_SERIALIZER) private keySerialize: Serializer<K>,
                 @Inject(CONSUMER_KAFKA_VALUE_SERIALIZER) private valueSerialize: Serializer<V>,
-                private logger: Logger) {
+                @Inject(AMPLICATION_LOGGER_PROVIDER) private logger: AmplicationLogger) {
 
         this.subscribers = new Map<string, ((kafkaMessage: KafkaMessageDto<K, V>) => Promise<void>)[]>()
 

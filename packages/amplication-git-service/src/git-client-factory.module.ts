@@ -19,6 +19,7 @@ import {
   providers: [
     {
       provide: GithubConfig,
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const appId = configService.get(GITHUB_APP_APP_ID_VAR);
         const privateKey = configService

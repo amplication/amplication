@@ -1,6 +1,8 @@
-import {Kafka} from "kafkajs";
-import {KafkaConfigDto} from "./dtos/kafka-config.dto";
+import {Kafka} from 'kafkajs';
+import {KafkaConfigDto} from './dtos';
+import {Injectable} from '@nestjs/common';
 
+@Injectable()
 export class KafkaClient {
 
     private readonly _kafka: Kafka

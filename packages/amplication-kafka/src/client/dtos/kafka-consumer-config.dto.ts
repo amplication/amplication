@@ -3,8 +3,8 @@ import {Injectable} from "@nestjs/common";
 @Injectable()
 export class KafkaConsumerConfigDto {
 
-    public static ENV_KAFKA_GROUP_ID:string
-    public static ENV_KAFKA_CONSUMER_CONCURENCY_FACTOR:string
+    public static ENV_KAFKA_GROUP_ID:string = "KAFKA_GROUP_ID"
+    public static ENV_KAFKA_CONSUMER_CONCURENCY_FACTOR:string = "KAFKA_CONSUMER_CONCURENCY_FACTOR"
     private readonly _groupId: string;
     private readonly _concurencyFactor?: number;
 
