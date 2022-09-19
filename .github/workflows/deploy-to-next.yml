@@ -4,11 +4,6 @@ on:
     branches:
       - release/1.0.0
 jobs:
-  variables:
-    runs-on: ubuntu-20.04
-    outputs:
-      TARGET_ENV: next
-
   validate-image:
     runs-on: ubuntu-20.04
     outputs:
@@ -36,7 +31,7 @@ jobs:
     needs: [validate-image]
     if: ${{ needs.validate-image.outputs.valid_image == 'true' }}
     env:
-      TARGET_ENV: ${{ needs.variables.outputs.TARGET_ENV }}
+      TARGET_ENV: next
     outputs:
       ARGOCD: ${{ steps.create-secret-names.outputs.ARGOCD }}
     steps:
@@ -50,7 +45,7 @@ jobs:
             echo "::set-output name=ARGOCD::AWS_STAGING_ARGOCD"
           fi
         env:
-          TARGET_ENV: ${{ needs.variables.outputs.TARGET_ENV }}
+          TARGET_ENV: next
 
   deploy:
     runs-on: ubuntu-20.04
@@ -80,7 +75,7 @@ jobs:
         run: |
           bash ./.github/workflows/scripts/build-values-command.sh
         env:
-          TARGET_ENV: ${{ needs.variables.outputs.TARGET_ENV }}
+          TARGET_ENV: next
       - name: set namespace
         id: set-namespace
         run: |
@@ -88,7 +83,7 @@ jobs:
           echo "Will deploy to $NAMESPACE"
           echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
         env:
-          TARGET_ENV: ${{ needs.variables.outputs.TARGET_ENV }}
+          TARGET_ENV: next
       - name: set cluster name
         id: set-cluster-name
         run: |
@@ -137,7 +132,7 @@ jobs:
           ls
           kubectl apply -f . -n $TARGET_ENV
         env:
-          TARGET_ENV: ${{ needs.variables.outputs.TARGET_ENV }}
+          TARGET_ENV: next
           SECRETS_FILE_PATH: helm/charts/amplication/values-secrets-raw.json
           SECRETS_TEMPLATE_FILE_PATH: .github/workflows/scripts/secret_template.yaml
       - name: delete unused job
@@ -172,4 +167,4 @@ jobs:
           $COMMAND
         env:
           ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
-          TARGET_ENV: ${{ needs.variables.outputs.TARGET_ENV }}
+          TARGET_ENV: next
