@@ -7,7 +7,6 @@ export type BlockValuesExtended<T> = Omit<
   T,
   | 'createdAt'
   | 'updatedAt'
-  | 'id'
   | 'parentBlock'
   | 'versionNumber'
   | 'inputParameters'

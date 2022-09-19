@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "0.16.1",
+  "version": "1.0.0",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -19,7 +19,12 @@
     "update-test-data-service-snapshot": "jest -u src/tests/*.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
-    "@amplication/code-gen-types": "^0.16.1",
+    "@amplication/code-gen-types": "^1.0.0",
+    "@amplication/plugin-auth-basic": "^1.0.2",
+    "@amplication/plugin-auth-jwt": "^1.0.2",
+    "@amplication/plugin-broker-kafka": "^0.0.4",
+    "@amplication/plugin-db-mysql": "^0.0.4",
+    "@amplication/plugin-db-postgres": "^1.0.2",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "camel-case": "4.1.2",
@@ -34,7 +39,8 @@
     "recast": "0.20.5",
     "replace-ext": "2.0.0",
     "semver": "7.3.5",
-    "winston": "3.3.4"
+    "winston": "3.8.2",
+    "yaml": "2.1.1"
   },
   "devDependencies": {
     "@apollo/client": "3.6.9",
@@ -106,6 +112,7 @@
     "ra-data-graphql-amplication": "0.0.13",
     "react-admin": "3.19.11",
     "reflect-metadata": "0.1.13",
+    "rxjs": "7.5.6",
     "sleep-promise": "9.1.0",
     "ts-jest": "27.0.3",
     "ts-node": "9.1.1",

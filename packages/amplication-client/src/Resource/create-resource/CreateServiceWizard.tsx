@@ -4,6 +4,7 @@ import {
   EnumIconPosition,
   Modal,
   Snackbar,
+  Loader,
 } from "@amplication/design-system";
 import React, {
   MutableRefObject,
@@ -19,8 +20,11 @@ import {
   serviceSettings,
 } from "./CreateServiceWizardForm";
 import * as models from "../../models";
-import { createResource, serviceSettingsFieldsInitValues } from "../constants";
-import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
+import {
+  prepareServiceObject,
+  serviceSettingsFieldsInitValues,
+} from "../constants";
+
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
@@ -35,10 +39,10 @@ type Props = AppRouteProps & {
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
   const {
     currentProject,
-    setNewResource,
+    setNewService,
     currentWorkspace,
-    errorCreateResource,
-    loadingCreateResource,
+    errorCreateService,
+    loadingCreateService,
     addEntity,
   } = useContext(AppContext);
 
@@ -48,13 +52,13 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
     serviceSettingsFieldsInitValues
   );
 
-  const errorMessage = formatError(errorCreateResource);
+  const errorMessage = formatError(errorCreateService);
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
-      setNewResource(data, eventName, addEntity);
+      setNewService(data, eventName, addEntity);
     },
-    [setNewResource, addEntity]
+    [setNewService, addEntity]
   );
 
   const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
@@ -77,7 +81,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
       serviceSettingsFields.current.resourceType === "sample";
 
     if (currentProject) {
-      const resource = createResource(
+      const resource = prepareServiceObject(
         currentProject?.id,
         isResourceWithEntities,
         generateAdminUI,
@@ -96,7 +100,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
 
   return (
     <Modal open fullScreen css={moduleClass}>
-      {loadingCreateResource ? (
+      {loadingCreateService ? (
         <div className={`${moduleClass}__processing`}>
           <div
             className={`${moduleClass}__processing__message_title_container`}
@@ -108,7 +112,10 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
               It should only take a few seconds to finish. Don't go away!
             </div>
           </div>
-          <SvgThemeImage image={EnumImages.CreateServiceWizard} />
+          <div className={`${moduleClass}__processing__loader`}>
+            <Loader fullScreen={false} />
+          </div>
+
           <div className={`${moduleClass}__processing__tagline`}>
             <div>For a full experience, connect with a GitHub repository</div>
             <div>
@@ -147,22 +154,22 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
         </div>
       )}
       <div className={`${moduleClass}__footer`}>
-          <Button
-            buttonStyle={EnumButtonStyle.Secondary}
-            icon="arrow_left"
-            iconPosition={EnumIconPosition.Left}
-            onClick={handleBackToProjectClick}
-          >
-            {"Back to project"}
-          </Button>
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleCreateServiceClick}
-          >
-            <label>Create Service</label>
-          </Button>
+        <Button
+          buttonStyle={EnumButtonStyle.Secondary}
+          icon="arrow_left"
+          iconPosition={EnumIconPosition.Left}
+          onClick={handleBackToProjectClick}
+        >
+          {"Back to project"}
+        </Button>
+        <Button
+          buttonStyle={EnumButtonStyle.Primary}
+          onClick={handleCreateServiceClick}
+        >
+          <label>Create Service</label>
+        </Button>
       </div>
-      <Snackbar open={Boolean(errorCreateResource)} message={errorMessage} />
+      <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>
   );
 };

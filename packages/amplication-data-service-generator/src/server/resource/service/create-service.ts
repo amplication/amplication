@@ -1,4 +1,4 @@
-import { ASTNode, builders, namedTypes } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
 import { print } from "recast";
 import {
@@ -6,8 +6,9 @@ import {
   EntityField,
   EntityLookupField,
   Module,
-  NamedClassDeclaration,
-  DTOs,
+  EventNames,
+  CreateEntityServiceParams,
+  CreateEntityServiceBaseParams,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -28,12 +29,14 @@ import {
   removeTSVariableDeclares,
 } from "../../../util/ast";
 import {
-  isPasswordField,
   isOneToOneRelationField,
+  isPasswordField,
   isToManyRelationField,
 } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
+import pluginWrapper from "../../../plugin-wrapper";
+import DsgContext from "../../../dsg-context";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -54,90 +57,70 @@ export async function createServiceModules(
   entityName: string,
   entityType: string,
   entity: Entity,
-  dtos: DTOs,
-  srcDirectory: string
+  serviceId: namedTypes.Identifier,
+  serviceBaseId: namedTypes.Identifier,
+  delegateId: namedTypes.Identifier
 ): Promise<Module[]> {
-  const serviceId = createServiceId(entityType);
-  const serviceBaseId = createServiceBaseId(entityType);
-  const delegateId = builders.identifier(entityName);
   const passwordFields = entity.fields.filter(isPasswordField);
-  const entityDTOs = dtos[entity.name];
-  const { entity: entityDTO } = entityDTOs;
+  const template = await readFile(serviceTemplatePath);
+  const templateBase = await readFile(serviceBaseTemplatePath);
 
-  const mapping = {
-    SERVICE: serviceId,
-    SERVICE_BASE: serviceBaseId,
-    ENTITY: builders.identifier(entityType),
-    FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
-    FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),
-    CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),
-    UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
-    DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
-    DELEGATE: delegateId,
-    CREATE_ARGS_MAPPING: createMutationDataMapping(
-      passwordFields.map((field) => {
-        const fieldId = builders.identifier(field.name);
-        return builders.objectProperty(
-          fieldId,
-          awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
-        );
-      })
-    ),
-    UPDATE_ARGS_MAPPING: createMutationDataMapping(
-      passwordFields.map((field) => {
-        const fieldId = builders.identifier(field.name);
-        const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
-        return builders.objectProperty(
-          fieldId,
-          logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
-            ${ARGS_ID}.${DATA_ID}.${fieldId},
-            (password) => ${HASH_MEMBER_EXPRESSION}(password)
-          )`
-        );
-      })
-    ),
-  };
+  const templateMapping = createTemplateMapping(
+    entityType,
+    serviceId,
+    serviceBaseId,
+    delegateId,
+    passwordFields
+  );
+
   return [
-    await createServiceModule(
-      entityName,
-      mapping,
-      passwordFields,
-      serviceId,
-      serviceBaseId,
-      srcDirectory
-    ),
-    await createServiceBaseModule(
-      entityName,
-      entity,
-      entityDTO,
-      mapping,
-      passwordFields,
-      serviceId,
-      serviceBaseId,
-      dtos,
-      delegateId,
-      srcDirectory
-    ),
+    ...(await pluginWrapper(
+      createServiceModule,
+      EventNames.CreateEntityService,
+      {
+        entityName,
+        templateMapping,
+        passwordFields,
+        serviceId,
+        serviceBaseId,
+        template,
+      }
+    )),
+
+    ...(await pluginWrapper(
+      createServiceBaseModule,
+      EventNames.CreateEntityServiceBase,
+      {
+        entityName,
+        entity,
+        templateMapping,
+        passwordFields,
+        serviceId,
+        serviceBaseId,
+        delegateId,
+        template: templateBase,
+      }
+    )),
   ];
 }
 
-async function createServiceModule(
-  entityName: string,
-  mapping: { [key: string]: ASTNode | undefined },
-  passwordFields: EntityField[],
-  serviceId: namedTypes.Identifier,
-  serviceBaseId: namedTypes.Identifier,
-  srcDirectory: string
-): Promise<Module> {
-  const modulePath = `${srcDirectory}/${entityName}/${entityName}.service.ts`;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
-  const file = await readFile(serviceTemplatePath);
+async function createServiceModule({
+  entityName,
+  templateMapping,
+  passwordFields,
+  serviceId,
+  serviceBaseId,
+  template,
+}: CreateEntityServiceParams): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.service.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
-  interpolate(file, mapping);
-  removeTSClassDeclares(file);
+  interpolate(template, templateMapping);
+  removeTSClassDeclares(template);
 
   //add import to base class
-  addImports(file, [
+  addImports(template, [
     importNames(
       [serviceBaseId],
       relativeImportPath(modulePath, moduleBasePath)
@@ -146,7 +129,7 @@ async function createServiceModule(
 
   //if there are any password fields, add imports, injection, and pass service to super
   if (passwordFields.length) {
-    const classDeclaration = getClassDeclarationById(file, serviceId);
+    const classDeclaration = getClassDeclarationById(template, serviceId);
 
     addInjectableDependency(
       classDeclaration,
@@ -155,7 +138,7 @@ async function createServiceModule(
       "protected"
     );
 
-    addIdentifierToConstructorSuperCall(file, PASSWORD_SERVICE_MEMBER_ID);
+    addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
 
     for (const member of classDeclaration.body.body) {
       if (
@@ -167,56 +150,52 @@ async function createServiceModule(
       }
     }
     //add the password service
-    addImports(file, [
+    addImports(template, [
       importNames(
         [PASSWORD_SERVICE_ID],
         relativeImportPath(
           modulePath,
-          `${srcDirectory}/auth/password.service.ts`
+          `${serverDirectories.srcDirectory}/auth/password.service.ts`
         )
       ),
     ]);
   }
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
 
-  return {
-    path: modulePath,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: modulePath,
+      code: print(template).code,
+    },
+  ];
 }
 
-async function createServiceBaseModule(
-  entityName: string,
-  entity: Entity,
-  entityDTO: NamedClassDeclaration,
-  mapping: { [key: string]: ASTNode | undefined },
-  passwordFields: EntityField[],
-  serviceId: namedTypes.Identifier,
-  serviceBaseId: namedTypes.Identifier,
-  dtos: DTOs,
-  delegateId: namedTypes.Identifier,
-  srcDirectory: string
-): Promise<Module> {
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
-  const file = await readFile(serviceBaseTemplatePath);
+async function createServiceBaseModule({
+  entityName,
+  entity,
+  templateMapping,
+  passwordFields,
+  serviceId,
+  serviceBaseId,
+  delegateId,
+  template,
+}: CreateEntityServiceBaseParams): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
 
-  interpolate(file, mapping);
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
 
-  const classDeclaration = getClassDeclarationById(file, serviceBaseId);
+  interpolate(template, templateMapping);
+
+  const classDeclaration = getClassDeclarationById(template, serviceBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelations = (
     await Promise.all(
       toManyRelationFields.map(async (field) => {
-        const toManyFile = await createToManyRelationFile(
-          field,
-          entityDTO,
-          dtos,
-          delegateId
-        );
+        const toManyFile = await createToManyRelationFile(field, delegateId);
 
         const imports = extractImportDeclarations(toManyFile);
         const methods = getMethods(
@@ -255,18 +234,18 @@ async function createServiceBaseModule(
   );
 
   addImports(
-    file,
+    template,
     toManyRelations.flatMap((relation) => relation.imports)
   );
   addImports(
-    file,
+    template,
     toOneRelations.flatMap((relation) => relation.imports)
   );
 
-  removeTSClassDeclares(file);
+  removeTSClassDeclares(template);
 
   if (passwordFields.length) {
-    const classDeclaration = getClassDeclarationById(file, serviceBaseId);
+    const classDeclaration = getClassDeclarationById(template, serviceBaseId);
 
     addInjectableDependency(
       classDeclaration,
@@ -285,34 +264,39 @@ async function createServiceBaseModule(
       }
     }
     //add the password service
-    addImports(file, [
+    addImports(template, [
       importNames(
         [PASSWORD_SERVICE_ID],
         relativeImportPath(
           moduleBasePath,
-          `${srcDirectory}/auth/password.service.ts`
+          `${serverDirectories.srcDirectory}/auth/password.service.ts`
         )
       ),
     ]);
 
-    addImports(file, [
+    addImports(template, [
       importNames(
         [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
-        relativeImportPath(moduleBasePath, `${srcDirectory}/prisma.util.ts`)
+        relativeImportPath(
+          moduleBasePath,
+          `${serverDirectories.srcDirectory}/prisma.util.ts`
+        )
       ),
     ]);
   }
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
-  addAutoGenerationComment(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  addAutoGenerationComment(template);
 
-  return {
-    path: moduleBasePath,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: moduleBasePath,
+      code: print(template).code,
+    },
+  ];
 }
 
 function createMutationDataMapping(
@@ -372,13 +356,13 @@ async function createToOneRelationFile(
 
 async function createToManyRelationFile(
   field: EntityLookupField,
-  entityDTO: NamedClassDeclaration,
-  dtos: DTOs,
   delegateId: namedTypes.Identifier
 ) {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
-  const relatedEntityDTOs = dtos[relatedEntity.name];
+  const relatedEntityDTOs = DTOs[relatedEntity.name];
 
   interpolate(toManyFile, {
     DELEGATE: delegateId,
@@ -389,4 +373,46 @@ async function createToManyRelationFile(
   });
 
   return toManyFile;
+}
+
+function createTemplateMapping(
+  entityType: string,
+  serviceId: namedTypes.Identifier,
+  serviceBaseId: namedTypes.Identifier,
+  delegateId: namedTypes.Identifier,
+  passwordFields: EntityField[]
+): { [key: string]: any } {
+  return {
+    SERVICE: serviceId,
+    SERVICE_BASE: serviceBaseId,
+    ENTITY: builders.identifier(entityType),
+    FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
+    FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),
+    CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),
+    UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
+    DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
+    DELEGATE: delegateId,
+    CREATE_ARGS_MAPPING: createMutationDataMapping(
+      passwordFields.map((field) => {
+        const fieldId = builders.identifier(field.name);
+        return builders.objectProperty(
+          fieldId,
+          awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
+        );
+      })
+    ),
+    UPDATE_ARGS_MAPPING: createMutationDataMapping(
+      passwordFields.map((field) => {
+        const fieldId = builders.identifier(field.name);
+        const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
+        return builders.objectProperty(
+          fieldId,
+          logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
+            ${ARGS_ID}.${DATA_ID}.${fieldId},
+            (password) => ${HASH_MEMBER_EXPRESSION}(password)
+          )`
+        );
+      })
+    ),
+  };
 }

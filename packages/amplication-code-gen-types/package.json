@@ -1,6 +1,6 @@
 {
   "name": "@amplication/code-gen-types",
-  "version": "0.16.1",
+  "version": "1.0.0",
   "description": "This library supplies all the contracts for Amplication Code Generation. The purpose is to make the contracts available for inclusion in plugins.",
   "main": "dist/index.js",
   "author": {
@@ -30,6 +30,7 @@
     "rimraf": "3.0.2",
     "ts-jest": "27.0.3",
     "ts-node": "9.1.1",
+    "type-fest": "0.15.1",
     "typescript": "4.0.2"
   },
   "jest": {
@@ -47,6 +48,10 @@
   "dependencies": {
     "@nestjs/core": "^9.0.9",
     "ast-types": "^0.14.2",
-    "lodash": "^4.17.21"
+    "json-schema": "0.4.0",
+    "lodash": "^4.17.21",
+    "prisma-schema-dsl": "^1.1.5",
+    "type-fest": "0.11.0",
+    "winston": "3.8.2"
   }
 }

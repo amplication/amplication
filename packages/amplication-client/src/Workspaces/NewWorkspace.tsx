@@ -1,21 +1,21 @@
-import { TextField, Snackbar } from "@amplication/design-system";
-import { Form, Formik } from "formik";
-import React, { useContext } from "react";
-import { GlobalHotKeys } from "react-hotkeys";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
-import { AppContext } from "../context/appContext";
-import { formatError } from "../util/error";
-import { validate } from "../util/formikValidateJsonSchema";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { TextField, Snackbar } from '@amplication/design-system';
+import { Form, Formik } from 'formik';
+import React, { useContext } from 'react';
+import { GlobalHotKeys } from 'react-hotkeys';
+import { Button, EnumButtonStyle } from '../Components/Button';
+import { EnumImages, SvgThemeImage } from '../Components/SvgThemeImage';
+import { AppContext } from '../context/appContext';
+import { formatError } from '../util/error';
+import { validate } from '../util/formikValidateJsonSchema';
+import { CROSS_OS_CTRL_ENTER } from '../util/hotkeys';
 import {
   CreateWorkspaceType,
   WORKSPACE_INITIAL_VALUES,
   WORKSPACE_FORM_SCHEMA,
-} from "./hooks/workspace";
-import "./NewWorkspace.scss";
+} from './hooks/workspace';
+import './NewWorkspace.scss';
 
-const CLASS_NAME = "new-workspace";
+const CLASS_NAME = 'new-workspace';
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
@@ -41,7 +41,7 @@ const NewWorkspace = () => {
           validate(values, WORKSPACE_FORM_SCHEMA)
         }
         onSubmit={createWorkspace}
-        validateOnMount
+        validateOnChange
         validateOnBlur={false}
       >
         {(formik) => {
@@ -63,7 +63,9 @@ const NewWorkspace = () => {
               <Button
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loadingCreateNewWorkspace}
+                disabled={
+                  !formik.isValid || !formik.dirty || loadingCreateNewWorkspace
+                }
               >
                 Create Workspace
               </Button>

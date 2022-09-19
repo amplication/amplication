@@ -29,4 +29,9 @@ export class ResourceOrderByInput {
     nullable: true
   })
   description?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true
+  })
+  resourceType?: SortOrder | null;
 }

@@ -4,13 +4,14 @@ import { createDTOs } from "./server/resource/create-dtos";
 import {
   Entity,
   EntityField,
-  Role,
-  AppInfo,
   Module,
   EnumDataType,
   LookupResolvedProperties,
   types,
-  DsgPlugin,
+  serverDirectories,
+  clientDirectories,
+  DSGResourceData,
+  PluginInstallation,
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
@@ -19,17 +20,49 @@ import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
 import registerPlugins from "./register-plugin";
+import { resolveTopicNames } from "./util/message-broker";
+import { EnumResourceType } from "./models";
+import { get } from "lodash";
+import { SERVER_BASE_DIRECTORY } from "./server/constants";
+import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
+import { join } from "path";
+
+export const POSTGRESQL_PLUGIN_ID = "db-postgres";
+export const MYSQL_PLUGIN_ID = "db-mysql";
+export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
+
+const defaultPlugins: {
+  categoryPluginIds: string[];
+  defaultCategoryPlugin: PluginInstallation;
+}[] = [
+  {
+    categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID],
+    defaultCategoryPlugin: {
+      id: "placeholder-id",
+      pluginId: POSTGRESQL_PLUGIN_ID,
+      npm: POSTGRESQL_NPM,
+      enabled: true,
+    },
+  },
+];
 
 export async function createDataServiceImpl(
-  entities: Entity[],
-  roles: Role[],
-  appInfo: AppInfo,
-  logger: winston.Logger,
-  resourcePlugins: DsgPlugin[] = []
+  dSGResourceData: DSGResourceData,
+  logger: winston.Logger
 ): Promise<Module[]> {
   logger.info("Creating application...");
+  const {
+    pluginInstallations: resourcePlugins,
+    entities,
+    roles,
+    resourceInfo: appInfo,
+    otherResources,
+  } = dSGResourceData;
   const timer = logger.startTimer();
-
+  if (!entities || !roles || !appInfo) {
+    throw new Error("Missing required data");
+  }
+  const pluginsWithDefaultPlugins = prepareDefaultPlugins(resourcePlugins);
   // make sure that the user table is existed if not it will crate one
   const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
     entities
@@ -41,11 +74,22 @@ export async function createDataServiceImpl(
 
   const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
 
+  const serviceTopicsWithName = prepareServiceTopics(dSGResourceData);
+
   const context = DsgContext.getInstance;
+  context.logger = logger;
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
-  const plugins = await registerPlugins(resourcePlugins);
+  context.serviceTopics = serviceTopicsWithName;
+  context.otherResources = otherResources;
+  const plugins = await registerPlugins(pluginsWithDefaultPlugins);
+  context.serverDirectories = dynamicServerPathCreator(
+    get(appInfo, "settings.serverSettings.serverPath", "")
+  );
+  context.clientDirectories = dynamicClientPathCreator(
+    get(appInfo, "settings.adminUISettings.adminUIPath", "")
+  );
 
   context.plugins = plugins;
 
@@ -79,6 +123,33 @@ export async function createDataServiceImpl(
     path: normalize(module.path),
   }));
 }
+function validatePath(path: string): string | null {
+  return path.trim() || null;
+}
+
+function dynamicServerPathCreator(serverPath: string): serverDirectories {
+  const baseDirectory = validatePath(serverPath) || SERVER_BASE_DIRECTORY;
+  const srcDirectory = `${baseDirectory}/src`;
+  return {
+    baseDirectory: baseDirectory,
+    srcDirectory: srcDirectory,
+    scriptsDirectory: `${baseDirectory}/scripts`,
+    authDirectory: `${baseDirectory}/auth`,
+    messageBrokerDirectory: join(srcDirectory, "message-broker"),
+  };
+}
+
+function dynamicClientPathCreator(clientPath: string): clientDirectories {
+  const baseDirectory = validatePath(clientPath) || CLIENT_BASE_DIRECTORY;
+  const srcDirectory = `${baseDirectory}/src`;
+  return {
+    baseDirectory: baseDirectory,
+    srcDirectory: srcDirectory,
+    publicDirectory: `${baseDirectory}/public`,
+    apiDirectory: `${srcDirectory}/api`,
+    authDirectory: `${srcDirectory}/auth-provider`,
+  };
+}
 
 function prepareEntityPluralName(entities: Entity[]): Entity[] {
   const currentEntities = entities.map((entity) => {
@@ -86,6 +157,34 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
     return entity;
   });
   return currentEntities;
+}
+
+function prepareDefaultPlugins(
+  installedPlugins: PluginInstallation[]
+): PluginInstallation[] {
+  const missingDefaultPlugins = defaultPlugins.flatMap((pluginCategory) => {
+    let pluginFound = false;
+    pluginCategory.categoryPluginIds.forEach((pluginId) => {
+      if (!pluginFound) {
+        pluginFound = installedPlugins.some(
+          (installedPlugin) => installedPlugin.pluginId === pluginId
+        );
+      }
+    });
+    if (!pluginFound) return [pluginCategory.defaultCategoryPlugin];
+
+    return [];
+  });
+  return [...missingDefaultPlugins, ...installedPlugins];
+}
+
+function prepareServiceTopics(dSGResourceData: DSGResourceData) {
+  return resolveTopicNames(
+    dSGResourceData.serviceTopics || [],
+    dSGResourceData.otherResources?.filter(
+      (resource) => resource.resourceType === EnumResourceType.MessageBroker
+    ) || []
+  );
 }
 
 function resolveLookupFields(entities: Entity[]): Entity[] {
