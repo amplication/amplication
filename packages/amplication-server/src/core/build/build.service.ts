@@ -47,6 +47,7 @@ import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
+import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -438,6 +439,38 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
+  public async onPullRequestCreated(response: SendPullRequestResponse) {
+    const build = await this.findOne({ where: { id: response.buildId } });
+    const steps = await this.actionService.getSteps(build.actionId);
+    const step = steps.find(step => step.name === PUSH_TO_GITHUB_STEP_NAME);
+
+    try {
+      if (response.errorMessage) {
+        throw Error(response.errorMessage);
+      }
+
+      await this.resourceService.reportSyncMessage(
+        build.resourceId,
+        'Sync Completed Successfully'
+      );
+
+      await this.actionService.logInfo(step, response.url, {
+        githubUrl: response.url
+      });
+      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
+      await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+    } catch (error) {
+      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+      await this.actionService.logInfo(step, error);
+      await this.actionService.complete(step, EnumActionStepStatus.Failed);
+      await this.resourceService.reportSyncMessage(
+        build.resourceId,
+        `Error: ${error}`
+      );
+    }
+  }
+
   private async saveToGitHub(
     build: Build,
     oldBuildId: string,
@@ -481,53 +514,35 @@ export class BuildService {
       PUSH_TO_GITHUB_STEP_NAME,
       PUSH_TO_GITHUB_STEP_MESSAGE,
       async step => {
-        await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
         try {
-          const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
-            {
-              gitOrganizationName: gitOrganization.name,
-              gitRepositoryName: resourceRepository.name,
-              resourceId: resource.id,
-              gitProvider: EnumGitProvider.Github,
-              installationId: gitOrganization.installationId,
-              newBuildId: build.id,
-              oldBuildId,
-              commit: {
-                head: `amplication-build-${build.id}`,
-                title: commitMessage,
-                body: `Amplication build # ${build.id}.
-                Commit message: ${commit.message}
-                
-                ${url}
-                `
-              },
-              gitResourceMeta
-            }
-          );
+          await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          await this.resourceService.reportSyncMessage(
-            build.resourceId,
-            'Sync Completed Successfully'
-          );
-          await this.actionService.logInfo(step, pullRequestResponse.url, {
-            githubUrl: pullRequestResponse.url
-          });
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GITHUB_STEP_FINISH_LOG
-          );
+          const createPullRequestArgs = {
+            gitOrganizationName: gitOrganization.name,
+            gitRepositoryName: resourceRepository.name,
+            resourceId: resource.id,
+            gitProvider: EnumGitProvider.Github,
+            installationId: gitOrganization.installationId,
+            newBuildId: build.id,
+            oldBuildId,
+            commit: {
+              head: `amplication-build-${build.id}`,
+              title: commitMessage,
+              body: `Amplication build # ${build.id}.
+              Commit message: ${commit.message}
+              
+              ${url}
+              `
+            },
+            gitResourceMeta
+          };
 
-          await this.actionService.complete(step, EnumActionStepStatus.Success);
+          await this.queueService.emitCreatePullRequestMessage(
+            JSON.stringify(createPullRequestArgs)
+          );
         } catch (error) {
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GITHUB_STEP_FAILED_LOG
-          );
-          await this.actionService.logInfo(step, error);
-          await this.actionService.complete(step, EnumActionStepStatus.Failed);
-          await this.resourceService.reportSyncMessage(
-            build.resourceId,
-            `Error: ${error}`
+          this.logger.error(
+            `Failed to emit Create Pull Request Message. Error: ${error}`
           );
         }
       },
