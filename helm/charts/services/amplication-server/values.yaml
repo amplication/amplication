@@ -2,7 +2,7 @@ name: amplication-server
 
 autoscaling:
   enabled: true
-  minReplicas: 2
+  minReplicas: 20
   maxReplicas: 100
   targetCPUUtilizationPercentage: 60
   targetMemoryUtilizationPercentage: 60
@@ -33,7 +33,7 @@ secrets:
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: "3.0Gi"
-minMemory: "3.0Gi"
-maxCPU: "1.8"
-minCPU: "1.8"
+maxMemory: "1.6Gi"
+minMemory: "1.6Gi"
+maxCPU: "0.9"
+minCPU: "0.9"
