@@ -7,13 +7,14 @@ import {
 import { PullRequestDetailsDto } from './dto/pull-request-details.dto';
 import { CommitContextDto } from './dto/commit-context.dto';
 import { CommitStateDto, KafkaProducer } from '@amplication/kafka';
+import {CommitTopicsConfigDto} from "./dto/commit-topics-config-dto.service";
 
 const BRANCH_NAME = 'amplication';
 
 export class CommitsService {
-  public static readonly CREATED_TOPIC = 'git.internal.commit-state.request.0';
 
   constructor(
+    private config: CommitTopicsConfigDto,
     private githubBranchFactory: GithubFactory,
     private kafkaProducer: KafkaProducer<string, CommitStateDto>,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
@@ -116,7 +117,7 @@ export class CommitsService {
 
     const branch = await this.getBranch(gitClient, BRANCH_NAME, context);
     await this.kafkaProducer.emit(
-      CommitsService.CREATED_TOPIC,
+      this.config.commitCommitState,
       context.buildId,
       new CommitStateDto(
         context.resourceId,
@@ -135,7 +136,7 @@ export class CommitsService {
       context
     );
     await this.kafkaProducer.emit(
-      CommitsService.CREATED_TOPIC,
+      this.config.commitCommitState,
       context.buildId,
       new CommitStateDto(
         context.resourceId,
@@ -155,7 +156,7 @@ export class CommitsService {
 
     if (pullRequest.created) {
       await this.kafkaProducer.emit(
-        CommitsService.CREATED_TOPIC,
+        this.config.commitCommitState,
         context.buildId,
         new CommitStateDto(
           context.resourceId,
@@ -169,7 +170,7 @@ export class CommitsService {
       );
     } else {
       await this.kafkaProducer.emit(
-        CommitsService.CREATED_TOPIC,
+        this.config.commitCommitState,
         context.buildId,
         new CommitStateDto(
           context.resourceId,
@@ -190,7 +191,7 @@ export class CommitsService {
       context
     );
     await this.kafkaProducer.emit(
-      CommitsService.CREATED_TOPIC,
+      this.config.commitCommitState,
       context.buildId,
       new CommitStateDto(
         context.resourceId,
