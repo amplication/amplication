@@ -126,7 +126,7 @@ amplication-git-pull-request-service:
   autoscaling:
     minReplicas: 2
     maxReplicas: 10
-    replicaCount: 3
+  replicaCount: 3
   pvc:
     name: prod-efs-claim
   config:
