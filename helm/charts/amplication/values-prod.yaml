@@ -30,6 +30,7 @@ amplication-client:
 amplication-server:
   autoscaling:
     minReplicas: 20
+    maxReplicas: 30
   replicaCount: 20
   resources:
     limits:
