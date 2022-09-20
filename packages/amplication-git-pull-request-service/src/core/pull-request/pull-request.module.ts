@@ -9,7 +9,7 @@ import { KAFKA_CLIENT, QueueService } from './queue.service';
 
 @Module({
   imports: [
-    DiffModule, 
+    DiffModule,
     GitModule,
     ClientsModule.registerAsync([
       {
@@ -18,10 +18,7 @@ import { KAFKA_CLIENT, QueueService } from './queue.service';
       },
     ]),
   ],
-  providers: [
-    QueueService,
-    PullRequestService
-  ],
+  providers: [QueueService, PullRequestService],
   controllers: [PullRequestController],
 })
 export class PullRequestModule {}

@@ -1,6 +1,6 @@
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
-import { Inject, Injectable, LoggerService } from "@nestjs/common";
-import { ClientKafka } from "@nestjs/microservices";
+import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { ClientKafka } from '@nestjs/microservices';
 
 export const KAFKA_CLIENT = 'KAFKA_CLIENT';
 
@@ -12,7 +12,7 @@ export class QueueService {
     @Inject(KAFKA_CLIENT)
     private readonly kafkaClient: ClientKafka,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
-    private readonly logger: LoggerService,
+    private readonly logger: LoggerService
   ) {}
 
   emitMessage(topic: string, message: string): void {
@@ -21,7 +21,7 @@ export class QueueService {
       error(error: Error): void {
         logger.error(
           `Failed to push message to kafka: method: emitMessage topic: ${topic}, message: ${message} error: ${error}`,
-          { error, class: QueueService.name, topic, message },
+          { error, class: QueueService.name, topic, message }
         );
       },
     };

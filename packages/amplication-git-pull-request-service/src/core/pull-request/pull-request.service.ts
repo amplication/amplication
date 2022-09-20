@@ -16,7 +16,7 @@ export class PullRequestService {
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {}
-  
+
   async createPullRequest({
     resourceId,
     oldBuildId,

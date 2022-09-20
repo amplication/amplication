@@ -459,7 +459,6 @@ export class BuildService {
       });
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
       await this.actionService.complete(step, EnumActionStepStatus.Success);
-
     } catch (error) {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
       await this.actionService.logInfo(step, error);

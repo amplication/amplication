@@ -21,7 +21,6 @@ import { QueueService } from './queue.service';
 
 @Controller()
 export class PullRequestController {
-
   private readonly createPullRequestCompleted: string;
 
   constructor(
@@ -31,9 +30,10 @@ export class PullRequestController {
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {
-    this.createPullRequestCompleted = this.configService.get<string>("CREATE_PULL_REQUEST_COMPLETED_TOPIC") ?? "";
+    this.createPullRequestCompleted =
+      this.configService.get<string>('CREATE_PULL_REQUEST_COMPLETED_TOPIC') ??
+      '';
   }
-
 
   @EventPattern(EnvironmentVariables.get(GENERATE_PULL_REQUEST_TOPIC, true))
   async generatePullRequest(
@@ -67,9 +67,8 @@ export class PullRequestController {
 
       this.queueService.emitMessage(
         this.createPullRequestCompleted,
-        JSON.stringify(response),
+        JSON.stringify(response)
       );
-
     } catch (error) {
       this.logger.error(error, {
         class: this.constructor.name,
@@ -77,14 +76,14 @@ export class PullRequestController {
         buildId: validArgs.newBuildId,
       });
 
-      const response = { 
+      const response = {
         buildId: validArgs.newBuildId,
-        errorMessage: error.message
+        errorMessage: error.message,
       };
 
       this.queueService.emitMessage(
         this.createPullRequestCompleted,
-        JSON.stringify(response),
+        JSON.stringify(response)
       );
     }
   }
