@@ -31,6 +31,8 @@
 
 Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React.
 
+**HN Users - If you like Amplication don't forget to upvote** :rocket:
+
 # Features
 
 Amplication provides the following features:
@@ -47,12 +49,6 @@ Amplication provides the following features:
 - Ready-to-deploy-app
 - Admin UI
 - Amplication console & CLI
-
-# Product Hunt Launch :rocket:
-
-The **official version 1.0** of Amplication is NOW LIVE on Product Hunt. 
-
-[Tell us what you think](https://www.producthunt.com/posts/amplication-1-0)
 
 ![1  Amplication main](https://user-images.githubusercontent.com/53312820/190913686-02c7deb1-da2f-41b8-aa31-065e00f6155c.png)
 
