@@ -29,9 +29,9 @@ amplication-client:
 
 amplication-server:
   autoscaling:
-    minReplicas: 5
-    maxReplicas: 5
-  replicaCount: 5
+    minReplicas: 30
+    maxReplicas: 30
+  replicaCount: 30
   resources:
     limits:
       cpu: 3
