@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "release/1.0.0"
+      - "next"
 jobs:
   validate-image:
     runs-on: ubuntu-20.04
@@ -61,7 +61,7 @@ jobs:
           python-version: 3.8 #install the python needed
       - uses: actions/checkout@v2
         with:
-          ref: "release/1.0.0"
+          ref: "next"
 
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
