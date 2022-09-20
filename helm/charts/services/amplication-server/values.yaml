@@ -33,7 +33,7 @@ secrets:
 podAnnotations:
   cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 
-maxMemory: "1.6i"
-minMemory: "1.0Gi"
+maxMemory: "1Gi"
+minMemory: "1.6Gi"
 maxCPU: "0.9"
 minCPU: "0.6"
