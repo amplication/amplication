@@ -190,6 +190,9 @@ amplication-git-pull-request-service:
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "195638"
 
+      TOPIC_COMMIT_INITIATED: 'git.internal.commit-initiated.request.0'
+      TOPIC_COMMIT_STATE: 'git.internal.commit-state.request.0'
+
 amplication-storage-gateway:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-storage-gateway

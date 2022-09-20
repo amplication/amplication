@@ -1,4 +1,4 @@
-import { Controller, Inject, OnModuleInit } from '@nestjs/common';
+import {Controller, Inject, OnModuleInit} from '@nestjs/common';
 import { CommitsService } from './commits.service';
 import {
   AMPLICATION_LOGGER_PROVIDER,
@@ -14,13 +14,14 @@ import {
   KafkaMessageDto,
   KafkaProducer,
 } from '@amplication/kafka';
+import {CommitTopicsConfigDto} from "./dto/commit-topics-config-dto.service";
+
 
 @Controller()
 export class CommitController implements OnModuleInit {
-  public static readonly TOPIC = 'git.internal.commit-initiated.request.0';
-  public static readonly CREATED_TOPIC = 'git.internal.commit-state.request.0';
 
   constructor(
+    private config: CommitTopicsConfigDto,
     private kafkaConsumer: KafkaConsumer<string, GitCommitInitiatedDto>,
     private kafkaProducer: KafkaProducer<string, CommitStateDto>,
     private commitService: CommitsService,
@@ -30,12 +31,9 @@ export class CommitController implements OnModuleInit {
 
   async onModuleInit(): Promise<any> {
     this.logger.info(
-      `CommitController - subscribing to topic: ${CommitController.TOPIC}`
+        `CommitController - subscribing to topic: ${this.config.commitInitiatedTopic}`
     );
-    await this.kafkaConsumer.subscribe(
-      CommitController.TOPIC,
-      this.handleCommit
-    );
+    await this.kafkaConsumer.subscribe(this.config.commitInitiatedTopic, this.handleCommit);
   }
 
   handleCommit = async (
@@ -78,7 +76,7 @@ export class CommitController implements OnModuleInit {
       );
 
       await this.kafkaProducer.emit(
-        CommitController.CREATED_TOPIC,
+        this.config.commitCommitState,
         commitContext.buildId,
         new CommitStateDto(
           eventData.build.resourceId,
@@ -92,7 +90,7 @@ export class CommitController implements OnModuleInit {
       );
     } catch (error) {
       await this.kafkaProducer.emit(
-        CommitController.CREATED_TOPIC,
+        this.config.commitCommitState,
         kafkaMessage.value.build.id,
         new CommitStateDto(
           kafkaMessage.value.build.resourceId,

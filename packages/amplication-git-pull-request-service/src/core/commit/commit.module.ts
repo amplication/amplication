@@ -9,6 +9,7 @@ import {
 import { DiffModule } from '../diff';
 import { CommitsService } from './commits.service';
 import { GitClientFactoryModule } from '@amplication/git-service';
+import {CommitTopicsConfigDto} from "./dto/commit-topics-config-dto.service";
 
 @Module({
   controllers: [CommitController],
@@ -18,6 +19,6 @@ import { GitClientFactoryModule } from '@amplication/git-service';
     DiffModule,
     GitClientFactoryModule,
   ],
-  providers: [CommitsService],
+  providers: [CommitsService,CommitTopicsConfigDto],
 })
 export class CommitModule {}
