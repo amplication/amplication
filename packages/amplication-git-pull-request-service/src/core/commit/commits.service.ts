@@ -226,7 +226,7 @@ export class CommitsService {
     const commitSha = await gitClient.commit(
       branch,
       message,
-      files,
+      files.map(file=>({path:file.path.startsWith("/") ? file.path.substring(1) : file.path,content:file.content})),
       headCommit
     );
 
