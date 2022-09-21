@@ -25,19 +25,9 @@
     }
   }
   &__hr {
-    background-color: var(--black2);
-    border-bottom: none;
-    width: 100%;
-    display: flex;
-
-    hr {
-      border: none;
-      border-top: $border-black5;
-      margin-left: var(--default-spacing-small);
-      margin-right: var(--default-spacing-small);
-      background-color: var(--black2);
-      display: flex;
-      width: 100%;
-    }
+    border: none;
+    border-top: $border-black5;
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
   }
 }
