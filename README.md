@@ -5,7 +5,7 @@
 
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
-  <a href="https://discord.gg/Z2CG3rUFnu">
+  <a href="https://amplication.com/discord">
     <img src="https://img.shields.io/discord/757179260417867879?label=discord" alt="Discord">
   </a>
   <a href="CODE_OF_CONDUCT.md">
@@ -14,7 +14,7 @@
   <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License">
   </a>
-  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
+  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple"/>
 </p>
 
 <div align="center">
@@ -24,8 +24,9 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
-  
-# Amplication 
+ 
+
+![1  Amplication main](https://user-images.githubusercontent.com/53312820/190913686-02c7deb1-da2f-41b8-aa31-065e00f6155c.png)
 
 [Amplication](https://amplication.com/) is an open‑source development platform. It helps professional Node.js developers build quality Node.js applications without spending time on repetitive coding tasks.
 
@@ -47,8 +48,6 @@ Amplication provides the following features:
 - Ready-to-deploy-app
 - Admin UI
 - Amplication console & CLI
-
-![1  Amplication main](https://user-images.githubusercontent.com/53312820/190913686-02c7deb1-da2f-41b8-aa31-065e00f6155c.png)
 
 # Getting Started
 
