@@ -87,7 +87,7 @@ export class CommitsService {
         }
       );
       pullRequest = await gitClient.createPullRequest(
-        'Amplication Resent Changes',
+        'Amplication Recent Changes',
         message,
         branch,
         baseBranchName || (await gitClient.getDefaultBranchName())
