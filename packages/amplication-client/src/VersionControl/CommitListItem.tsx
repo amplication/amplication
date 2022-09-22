@@ -4,7 +4,8 @@ import "./CommitListItem.scss";
 import { AppContext } from "../context/appContext";
 import InnerTabLink from "../Layout/InnerTabLink";
 import CommitData from "./CommitData";
-import CommitBuildsStatus from "./CommitBuildsStatus";
+import { useCommitStatus } from "./hooks/useCommitStatus";
+import { BuildStatusIcon } from "./BuildStatusIcon";
 
 type Props = {
   projectId: string;
@@ -14,9 +15,8 @@ type Props = {
 export const CLASS_NAME = "commit-list-item";
 
 export const CommitListItem = ({ commit, projectId }: Props) => {
-  const builds = commit.builds;
   const { currentWorkspace } = useContext(AppContext);
-
+  const { buildStatus } = useCommitStatus(commit);
   return (
     <div className={CLASS_NAME}>
       <InnerTabLink
@@ -25,7 +25,7 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
       >
         <div className={`${CLASS_NAME}`}>
           <CommitData commit={commit} />
-          <CommitBuildsStatus builds={builds} />
+          <BuildStatusIcon buildStatus={buildStatus} />
         </div>
       </InnerTabLink>
     </div>
