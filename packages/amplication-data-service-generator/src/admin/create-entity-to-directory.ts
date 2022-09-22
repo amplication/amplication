@@ -1,14 +1,15 @@
 import { camelCase } from "camel-case";
 import { Entity } from "@amplication/code-gen-types";
+import DsgContext from "../dsg-context";
 
 export function createEntityToDirectory(
-  entities: Entity[],
-  srcDirectory: string
+  entities: Entity[]
 ): Record<string, string> {
+  const { clientDirectories } = DsgContext.getInstance;
   return Object.fromEntries(
     entities.map((entity) => [
       entity.name,
-      `${srcDirectory}/${camelCase(entity.name)}`,
+      `${clientDirectories.srcDirectory}/${camelCase(entity.name)}`,
     ])
   );
 }

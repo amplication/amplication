@@ -38,7 +38,8 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApiCall = {
   displayName: EXAMPLE_NAME,
   parentBlock: null,
   url: EXAMPLE_URL,
-  versionNumber: 0
+  versionNumber: 0,
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];

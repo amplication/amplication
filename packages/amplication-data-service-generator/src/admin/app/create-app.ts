@@ -1,7 +1,7 @@
 import * as path from "path";
 import { print } from "recast";
 import { builders } from "ast-types";
-import { Module, AppInfo } from "@amplication/code-gen-types";
+import { Module } from "@amplication/code-gen-types";
 import {
   addImports,
   importNames,
@@ -13,16 +13,15 @@ import { readFile, relativeImportPath } from "../../util/module";
 
 import { jsxElement, jsxFragment } from "../util";
 import { EntityComponents } from "../types";
+import DsgContext from "../../dsg-context";
 
 const navigationTemplatePath = path.resolve(__dirname, "App.template.tsx");
 
 export async function createAppModule(
-  appInfo: AppInfo,
-  entityToPath: Record<string, string>,
-  entitiesComponents: Record<string, EntityComponents>,
-  directoryManager: { [key: string]: string }
+  entitiesComponents: Record<string, EntityComponents>
 ): Promise<Module> {
-  const PATH = `${directoryManager.SRC}/App.tsx`;
+  const { clientDirectories, appInfo } = DsgContext.getInstance;
+  const PATH = `${clientDirectories.srcDirectory}/App.tsx`;
   const { settings } = appInfo;
   const { authProvider } = settings;
   const file = await readFile(navigationTemplatePath);
@@ -62,7 +61,7 @@ export async function createAppModule(
     [authProviderIdentifier],
     relativeImportPath(
       PATH,
-      `${directoryManager.AUTH}/ra-auth-${authProviderName}.ts`
+      `${clientDirectories.authDirectory}/ra-auth-${authProviderName}.ts`
     )
   );
   addImports(file, [...entityImports, authProviderImport]);

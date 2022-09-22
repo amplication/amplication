@@ -216,9 +216,6 @@ const usePlugins = (resourceId: string) => {
     onCompleted: (data) => {
       addBlock(data.createPluginInstallation.id);
     },
-    // onError: (error) => {
-    //   console.error(error);
-    // },
     refetchQueries: [
       {
         query: GET_PLUGIN_INSTALLATIONS,

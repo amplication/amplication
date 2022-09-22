@@ -7,6 +7,7 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
+
 image:
   pullPolicy: Always
   repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service-dev

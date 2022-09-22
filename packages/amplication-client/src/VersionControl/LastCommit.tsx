@@ -9,7 +9,7 @@ import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
-import { BuildStatusIcons } from "./BuildStatusIcons";
+import { BuildStatusIcon } from "./BuildStatusIcon";
 import { GET_LAST_COMMIT } from "./hooks/commitQueries";
 
 type TData = {
@@ -81,7 +81,7 @@ const LastCommit = ({ projectId }: Props) => {
       <div className={`${CLASS_NAME}__content`}>
         <p className={`${CLASS_NAME}__title`}>
           Last Commit
-          {build && <BuildStatusIcons build={build} showIcon={false} />}
+          {build && <BuildStatusIcon buildStatus={build.status} />}
         </p>
 
         <div className={`${CLASS_NAME}__status`}>

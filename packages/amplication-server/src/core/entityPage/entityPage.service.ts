@@ -8,6 +8,7 @@ import { EnumEntityPageType } from './dto/EnumEntityPageType';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
 import { User } from '../../models';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
@@ -18,8 +19,11 @@ export class EntityPageService extends BlockTypeService<
 > {
   blockType = EnumBlockType.EntityPage;
 
-  constructor(private readonly entityService: EntityService) {
-    super();
+  constructor(
+    private readonly entityService: EntityService,
+    protected readonly blockService: BlockService
+  ) {
+    super(blockService);
   }
 
   private async validateEntityInResource(

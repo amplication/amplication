@@ -4,6 +4,7 @@ import typescript from "rollup-plugin-typescript2";
 import postcss from "rollup-plugin-postcss";
 import copy from "rollup-plugin-copy";
 import pkg from "./package.json";
+import json from "@rollup/plugin-json";
 
 export default {
   input: "src/index.ts",
@@ -23,6 +24,7 @@ export default {
     copy({
       targets: [{ src: "src/assets/**", dest: "dist/assets", flatten: false }],
     }),
+    json(),
   ],
   external: Object.keys(pkg.dependencies).concat(
     Object.keys(pkg.peerDependencies)

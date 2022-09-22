@@ -18,6 +18,25 @@ export async function readStaticModules(
   const staticModules = await fg(`${directory}**/*`, {
     absolute: false,
     dot: true,
+    ignore: ["**.js", "**.js.map", "**.d.ts", "**/node_modules/**"],
+  });
+
+  return Promise.all(
+    staticModules.sort().map(async (module) => ({
+      path: module.replace(directory, basePath ? basePath + "/" : ""),
+      code: await fs.promises.readFile(module, "utf-8"),
+    }))
+  );
+}
+
+export async function readPluginStaticModules(
+  source: string,
+  basePath: string
+): Promise<Module[]> {
+  const directory = `${normalize(source)}/`;
+  const staticModules = await fg(`${directory}**/*`, {
+    absolute: false,
+    dot: true,
     ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
 

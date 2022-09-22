@@ -1,7 +1,7 @@
 import { CircleBadge, Icon } from "@amplication/design-system";
 import React from "react";
 import * as models from "../models";
-import { resourceThemeMap } from "../util/resourceThemeMap";
+import { resourceThemeMap } from "../Resource/constants";
 
 interface Props {
   type: models.EnumResourceType;

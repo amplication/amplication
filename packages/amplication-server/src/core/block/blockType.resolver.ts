@@ -10,6 +10,9 @@ import {
   UpdateBlockArgs
 } from '../block/dto';
 import { UserEntity } from '../../decorators/user.decorator';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { UseFilters, UseGuards } from '@nestjs/common';
 
 type Constructor<T> = {
   new (...args: any): T;
@@ -31,6 +34,8 @@ export function BlockTypeResolver<
   updateArgsRef: Constructor<UpdateArgs>
 ): any {
   @Resolver({ isAbstract: true })
+  @UseFilters(GqlResolverExceptionsFilter)
+  @UseGuards(GqlAuthGuard)
   abstract class BaseResolverHost {
     abstract service: BlockTypeService<T, FindManyArgs, CreateArgs, UpdateArgs>;
 

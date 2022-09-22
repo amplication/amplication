@@ -1,6 +1,7 @@
 import { KafkaOptions, Transport } from "@nestjs/microservices";
 import { ConsumerConfig } from "@nestjs/microservices/external/kafka.interface";
 import { KafkaEnvironmentVariables } from "./";
+import { randomUUID } from "crypto";
 
 export function createNestjsKafkaConfig(envSuffix: string = ""): KafkaOptions {
   const kafkaEnv = new KafkaEnvironmentVariables(envSuffix);
@@ -9,12 +10,13 @@ export function createNestjsKafkaConfig(envSuffix: string = ""): KafkaOptions {
   if (groupId) {
     consumer = { groupId };
   }
+
   return {
     transport: Transport.KAFKA,
     options: {
       client: {
         brokers: kafkaEnv.getBrokers(),
-        clientId: kafkaEnv.getClientId(),
+        clientId: kafkaEnv.getClientId() + `-${randomUUID()}`,
       },
       consumer,
     },

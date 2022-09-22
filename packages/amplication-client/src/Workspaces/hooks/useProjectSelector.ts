@@ -118,6 +118,7 @@ const useProjectSelector = (
     createProject,
     onNewProjectCompleted,
     currentProjectConfiguration,
+    refetchProjects: refetch,
   };
 };
 
