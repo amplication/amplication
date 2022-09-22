@@ -1,33 +1,23 @@
-FROM node:16-alpine AS base
+FROM node:16.16 AS base
 
-# Hide Open Collective message from install logs
-ENV OPENCOLLECTIVE_HIDE=1
-# Hiden NPM security message from install logs
-ENV NPM_CONFIG_AUDIT=false
-# Hide NPM funding message from install logs
-ENV NPM_CONFIG_FUND=false
+ARG REACT_APP_SERVER_URL
 
-# Update npm to version 7
-RUN npm i -g npm@8.1.2
+ENV REACT_APP_SERVER_URL=$REACT_APP_SERVER_URL
 
-# Set the working directory
-WORKDIR /app/admin-ui
+WORKDIR /app
 
-# Copy files specifying dependencies
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci --loglevel=$NPM_LOG_LEVEL;
+RUN npm ci
 
-# Copy all the files
 COPY . .
 
-# Build code
 RUN npm run build
 
-# Expose the port the client listens to
-EXPOSE 3001
+FROM nginx:stable-alpine AS prod
 
-# Run admin-ui
+COPY --from=base /app/build /usr/share/nginx/html
 
-CMD [ "npm", "start"]
+EXPOSE 80
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

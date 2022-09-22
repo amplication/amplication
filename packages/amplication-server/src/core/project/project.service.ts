@@ -15,6 +15,8 @@ import { ProjectCreateArgs } from './dto/ProjectCreateArgs';
 import { ProjectFindFirstArgs } from './dto/ProjectFindFirstArgs';
 import { ProjectFindManyArgs } from './dto/ProjectFindManyArgs';
 import { isEmpty } from 'lodash';
+import { UpdateProjectArgs } from './dto/UpdateProjectArgs';
+
 @Injectable()
 export class ProjectService {
   constructor(
@@ -57,9 +59,22 @@ export class ProjectService {
         }
       }
     });
-    await this.resourceService.createProjectConfiguration(project.id, userId);
+    await this.resourceService.createProjectConfiguration(
+      project.id,
+      project?.name,
+      userId
+    );
 
     return project;
+  }
+
+  async updateProject(args: UpdateProjectArgs): Promise<Project> {
+    return this.prisma.project.update({
+      where: { ...args.where },
+      data: {
+        ...args.data
+      }
+    });
   }
 
   /**

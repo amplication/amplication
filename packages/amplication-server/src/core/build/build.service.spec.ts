@@ -5,7 +5,6 @@ import * as winston from 'winston';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { orderBy } from 'lodash';
 import {
   ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
@@ -40,6 +39,11 @@ import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationP
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { EXAMPLE_GIT_ORGANIZATION } from '../git/__mocks__/GitOrganization.mock';
+import { PluginInstallation } from '../pluginInstallation/dto/PluginInstallation';
+import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { TopicService } from '../topic/topic.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
 jest.mock('winston');
 jest.mock('@amplication/data-service-generator');
@@ -71,7 +75,7 @@ const JOB_DONE_LOG = 'Build job done';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
-const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
+const EXAMPLE_APP_SETTINGS_VALUES: Omit<ServiceSettingsValues, 'id'> = {
   dbHost: 'localhost',
   dbName: 'myDb',
   dbPassword: '1234',
@@ -88,6 +92,22 @@ const EXAMPLE_APP_SETTINGS_VALUES: ServiceSettingsValues = {
     generateAdminUI: true,
     adminUIPath: ''
   }
+};
+
+const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
+  id: 'ExamplePluginInstallation',
+  updatedAt: new Date(),
+  createdAt: new Date(),
+  description: null,
+  inputParameters: [],
+  outputParameters: [],
+  displayName: 'example Plugin installation',
+  parentBlock: null,
+  versionNumber: 0,
+  enabled: true,
+  npm: '@amplication/example-plugin',
+  pluginId: '@amplication/example-plugin',
+  blockType: EnumBlockType.PluginInstallation
 };
 
 const EXAMPLE_COMMIT: Commit = {
@@ -212,7 +232,12 @@ const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
   }
 };
 
-const EXAMPLE_MODULES = [];
+const EXAMPLE_MODULES = [
+  {
+    path: 'examplePath',
+    code: 'exampleCode'
+  }
+];
 
 const prismaBuildCreateMock = jest.fn(
   () => EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
@@ -222,6 +247,10 @@ const prismaBuildFindOneMock = jest.fn();
 
 const prismaBuildFindManyMock = jest.fn(() => {
   return [EXAMPLE_BUILD];
+});
+
+const prismaPluginFindManyMock = jest.fn(() => {
+  return [EXAMPLE_PLUGIN_INSTALLATION];
 });
 
 const entityServiceGetLatestVersionsMock = jest.fn(() => {
@@ -391,6 +420,7 @@ describe('BuildService', () => {
           provide: ResourceService,
           useValue: {
             resource: resourceServiceGetResourceMock,
+            resources: jest.fn(() => [EXAMPLE_SERVICE_RESOURCE]),
             gitRepository: getGitRepository,
             gitOrganizationByResource: getGitOrganization
           }
@@ -442,6 +472,24 @@ describe('BuildService', () => {
           provide: QueueService,
           useValue: {
             emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
+          }
+        },
+        {
+          provide: TopicService,
+          useValue: {
+            findMany: jest.fn(() => [])
+          }
+        },
+        {
+          provide: ServiceTopicsService,
+          useValue: {
+            findMany: jest.fn(() => [])
+          }
+        },
+        {
+          provide: PluginInstallationService,
+          useValue: {
+            findMany: prismaPluginFindManyMock
           }
         }
       ]
@@ -538,11 +586,6 @@ describe('BuildService', () => {
     ]);
     expect(loggerChildErrorMock).toBeCalledTimes(0);
 
-    expect(resourceServiceGetResourceMock).toBeCalledTimes(1);
-    expect(resourceServiceGetResourceMock).toBeCalledWith({
-      where: { id: EXAMPLE_RESOURCE_ID }
-    });
-
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
     expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
       where: {
@@ -563,19 +606,6 @@ describe('BuildService', () => {
       }
     });
     expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
-    expect(DataServiceGenerator.createDataService).toBeCalledWith(
-      orderBy(EXAMPLE_ENTITIES, entity => entity.createdAt),
-      EXAMPLE_APP_ROLES,
-      {
-        name: EXAMPLE_SERVICE_RESOURCE.name,
-        description: EXAMPLE_SERVICE_RESOURCE.description,
-        version: EXAMPLE_BUILD.version,
-        id: EXAMPLE_SERVICE_RESOURCE.id,
-        url: `${EXAMPLED_HOST}/${EXAMPLE_SERVICE_RESOURCE.id}`,
-        settings: EXAMPLE_APP_SETTINGS_VALUES
-      },
-      MOCK_LOGGER
-    );
     expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
     expect(winstonLoggerDestroyMock).toBeCalledWith();
     expect(actionServiceRunMock).toBeCalledTimes(1);

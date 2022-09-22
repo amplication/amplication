@@ -37,7 +37,7 @@ const AddNewProject = () => {
         buttonStyle={EnumButtonStyle.Text}
         icon="plus"
         iconPosition={EnumIconPosition.Left}
-        iconSize="xsmall"
+        iconSize="small"
       >
         <span className={`${CLASS_NAME}__label`}>Add New Project</span>
       </Button>

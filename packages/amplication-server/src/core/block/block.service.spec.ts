@@ -99,6 +99,7 @@ const EXAMPLE_IBLOCK: BlockType = {
   outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
   parentBlock: EXAMPLE_BLOCK.parentBlock,
   versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
+  resourceId: EXAMPLE_RESOURCE.id,
   ...EXAMPLE_BLOCK_SETTINGS
 };
 

@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
 import { gql, Reference, useMutation } from "@apollo/client";
-import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { useTracking } from "../util/analytics";
@@ -10,13 +9,14 @@ import {
   Snackbar,
   CircularProgress,
 } from "@amplication/design-system";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
+import { EnumImages } from "../Components/SvgThemeImage";
 
 import * as models from "../models";
 import ResourceListItem from "./ResourceListItem";
 import "./ResourceList.scss";
 import { AppContext } from "../context/appContext";
+import CreateResourceButton from "../Components/CreateResourceButton";
+import { EmptyState } from "../Components/EmptyState";
 
 type TDeleteData = {
   deleteResource: models.Resource;
@@ -33,11 +33,7 @@ function ResourceList() {
     handleSearchChange,
     loadingResources,
     errorResources,
-    currentWorkspace,
-    currentProject,
   } = useContext(AppContext);
-
-  const linkToCreateResource = `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`;
 
   const clearError = useCallback(() => {
     setError(null);
@@ -78,12 +74,6 @@ function ResourceList() {
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
-  const handleNewResourceClick = useCallback(() => {
-    trackEvent({
-      eventName: "createNewResourceCardClick",
-    });
-  }, [trackEvent]);
-
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__header`}>
@@ -92,15 +82,8 @@ function ResourceList() {
           placeholder="search"
           onChange={handleSearchChange}
         />
-        <Link onClick={handleNewResourceClick} to={linkToCreateResource}>
-          <Button
-            className={`${CLASS_NAME}__add-button`}
-            buttonStyle={EnumButtonStyle.Primary}
-            icon="plus"
-          >
-            New service
-          </Button>
-        </Link>
+
+        <CreateResourceButton />
       </div>
       <hr className={`${CLASS_NAME}__separator`} />
       <div className={`${CLASS_NAME}__title`}>Project Settings</div>
@@ -114,24 +97,24 @@ function ResourceList() {
       <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
       {loadingResources && <CircularProgress centerToParent />}
 
-      {isEmpty(resources) && !loadingResources ? (
-        <div className={`${CLASS_NAME}__empty-state`}>
-          <SvgThemeImage image={EnumImages.AddResource} />
-          <div className={`${CLASS_NAME}__empty-state__title`}>
-            There are no resources to show
-          </div>
-        </div>
-      ) : (
-        <div className={`${CLASS_NAME}__content`}>
-          {resources.map((resource) => (
-            <ResourceListItem
-              key={resource.id}
-              resource={resource}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      )}
+      <div className={`${CLASS_NAME}__content`}>
+        {isEmpty(resources) && !loadingResources ? (
+          <EmptyState
+            message="There are no resources to show"
+            image={EnumImages.AddResource}
+          />
+        ) : (
+          <>
+            {resources.map((resource) => (
+              <ResourceListItem
+                key={resource.id}
+                resource={resource}
+                onDelete={handleDelete}
+              />
+            ))}
+          </>
+        )}
+      </div>
 
       <Snackbar
         open={Boolean(error || errorResources)}

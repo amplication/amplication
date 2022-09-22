@@ -2,7 +2,7 @@ name: amplication-git-pull-service
 
 replicaCount: 1
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 60

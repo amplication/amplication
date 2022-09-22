@@ -1,5 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { DateTimeFilter, StringFilter, WhereUniqueInput } from '../../../dto';
+import { DateTimeFilter, StringFilter } from '../../../dto';
+import { ProjectWhereInput } from '../../project/dto/ProjectWhereInput';
+import { EnumResourceTypeFilter } from './EnumResourceTypeFilter';
 
 @InputType({
   isAbstract: true
@@ -30,12 +32,14 @@ export class ResourceWhereInput {
   })
   description?: StringFilter | null;
 
-  @Field(() => WhereUniqueInput, {
-    nullable: true,
-    description: undefined
-  })
-  project?: WhereUniqueInput | null;
+  @Field(() => ProjectWhereInput, { nullable: true })
+  project?: ProjectWhereInput | null;
 
   @Field(() => String, { nullable: true })
   projectId?: string | null;
+
+  @Field(() => EnumResourceTypeFilter, {
+    nullable: true
+  })
+  resourceType?: EnumResourceTypeFilter | null;
 }

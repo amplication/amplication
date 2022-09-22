@@ -24,7 +24,7 @@ import { FindManyEntityArgs } from '../entity/dto';
 import { Environment } from '../environment/dto/Environment';
 import { EnvironmentService } from '../environment/environment.service';
 import {
-  CreateResourceWithEntitiesArgs,
+  CreateServiceWithEntitiesArgs,
   CreateOneResourceArgs,
   FindManyResourceArgs,
   UpdateOneResourceArgs
@@ -55,6 +55,17 @@ export class ResourceResolver {
   @AuthorizeContext(AuthorizableOriginParameter.ProjectId, 'where.project.id')
   async resources(@Args() args: FindManyResourceArgs): Promise<Resource[]> {
     return this.resourceService.resources(args);
+  }
+
+  @Query(() => [Resource], {
+    nullable: false
+  })
+  @Roles('ORGANIZATION_ADMIN')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
+  async messageBrokerConnectedServices(
+    @Args() args: FindOneArgs
+  ): Promise<Resource[]> {
+    return this.resourceService.messageBrokerConnectedServices(args);
   }
 
   @ResolveField(() => [Entity])
@@ -92,11 +103,24 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ProjectId,
     'data.project.connect.id'
   )
-  async createResource(
+  async createMessageBroker(
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
-    return this.resourceService.createResource(args, user);
+    return this.resourceService.createMessageBroker(args);
+  }
+
+  @Mutation(() => Resource, { nullable: false })
+  @Roles('ORGANIZATION_ADMIN')
+  @AuthorizeContext(
+    AuthorizableOriginParameter.ProjectId,
+    'data.project.connect.id'
+  )
+  async createService(
+    @Args() args: CreateOneResourceArgs,
+    @UserEntity() user: User
+  ): Promise<Resource> {
+    return this.resourceService.createService(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })
@@ -105,11 +129,11 @@ export class ResourceResolver {
     AuthorizableOriginParameter.ProjectId,
     'data.resource.project.connect.id'
   )
-  async createResourceWithEntities(
-    @Args() args: CreateResourceWithEntitiesArgs,
+  async createServiceWithEntities(
+    @Args() args: CreateServiceWithEntitiesArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
-    return this.resourceService.createResourceWithEntities(args.data, user);
+    return this.resourceService.createServiceWithEntities(args.data, user);
   }
 
   @Mutation(() => Resource, {

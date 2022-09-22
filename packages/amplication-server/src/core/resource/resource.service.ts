@@ -41,8 +41,8 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
   'The resource of type `ProjectConfiguration` cannot be deleted';
 import { ResourceGenSettingsCreateInput } from './dto/ResourceGenSettingsCreateInput';
 import { ProjectService } from '../project/project.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
-const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   'This resource is used to store project configuration.';
 
@@ -55,11 +55,13 @@ export class ResourceService {
     private serviceSettingsService: ServiceSettingsService,
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly serviceTopicsService: ServiceTopicsService
   ) {}
 
   async createProjectConfiguration(
     projectId: string,
+    projectName: string,
     userId: string
   ): Promise<Resource> {
     const existingProjectConfiguration = await this.prisma.resource.findFirst({
@@ -74,7 +76,7 @@ export class ResourceService {
       data: {
         resourceType: EnumResourceType.ProjectConfiguration,
         description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
-        name: DEFAULT_PROJECT_CONFIGURATION_NAME,
+        name: projectName,
         project: { connect: { id: projectId } }
       }
     });
@@ -86,13 +88,10 @@ export class ResourceService {
   }
 
   /**
-   * Create resource in the user's workspace, with the built-in "user" role
+   * Create a resource
+   * This function should be called from one of the other "Create[ResourceType] functions like CreateService, CreateMessageBroker etc."
    */
-  async createResource(
-    args: CreateOneResourceArgs,
-    user: User,
-    generationSettings: ResourceGenSettingsCreateInput = null
-  ): Promise<Resource> {
+  private async createResource(args: CreateOneResourceArgs): Promise<Resource> {
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
         'Resource of type Project Configuration cannot be created manually'
@@ -107,6 +106,32 @@ export class ResourceService {
       throw new AmplicationError('Project configuration missing from project');
     }
 
+    const originalName = args.data.name;
+    const existingResources = await this.prisma.resource.findMany({
+      where: {
+        name: {
+          mode: QueryMode.Insensitive,
+          startsWith: args.data.name.toLowerCase()
+        },
+        projectId: projectId,
+        deletedAt: null
+      },
+      select: {
+        name: true
+      }
+    });
+
+    let index = 1;
+    while (
+      index < 10 &&
+      existingResources.find(resource => {
+        return resource.name.toLowerCase() === args.data.name.toLowerCase();
+      })
+    ) {
+      args.data.name = `${originalName}-${index}`;
+      index += 1;
+    }
+
     let gitRepository:
       | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
       | undefined = undefined;
@@ -116,14 +141,45 @@ export class ResourceService {
       };
     }
 
-    const resource = await this.prisma.resource.create({
+    return this.prisma.resource.create({
       data: {
         ...args.data,
-        gitRepository,
-        roles: {
-          create: USER_RESOURCE_ROLE
-        }
+        gitRepository
       }
+    });
+  }
+
+  /**
+   * Create a resource of type "Service", with the built-in "user" role
+   */
+  async createMessageBroker(args: CreateOneResourceArgs): Promise<Resource> {
+    const resource = await this.createResource({
+      data: {
+        ...args.data,
+        resourceType: EnumResourceType.MessageBroker
+      }
+    });
+
+    return resource;
+  }
+
+  /**
+   * Create a resource of type "Service", with the built-in "user" role
+   */
+  async createService(
+    args: CreateOneResourceArgs,
+    user: User,
+    generationSettings: ResourceGenSettingsCreateInput = null
+  ): Promise<Resource> {
+    const resource = await this.createResource({
+      data: {
+        ...args.data,
+        resourceType: EnumResourceType.Service
+      }
+    });
+
+    await this.prisma.resourceRole.create({
+      data: { ...USER_RESOURCE_ROLE, resourceId: resource.id }
     });
 
     await this.entityService.createDefaultEntities(resource.id, user);
@@ -136,35 +192,14 @@ export class ResourceService {
       generationSettings
     );
 
-    // try {
-    //   await this.commit(
-    //     {
-    //       data: {
-    //         project: {
-    //           connect: {
-    //             id: resource.projectId
-    //           }
-    //         },
-    //         message: INITIAL_COMMIT_MESSAGE,
-    //         user: {
-    //           connect: {
-    //             id: user.id
-    //           }
-    //         }
-    //       }
-    //     },
-    //     true
-    //   );
-    // } catch {} //ignore - return the new resource and the message will be available on the build log
-
     return resource;
   }
 
   /**
-   * Create an resource with entities and field in one transaction, based only on entities and fields names
+   * Create a resource of type "Service" with entities and fields in one transaction, based only on entities and fields names
    * @param user the user to associate the created resource with
    */
-  async createResourceWithEntities(
+  async createServiceWithEntities(
     data: ResourceCreateWithEntitiesInput,
     user: User
   ): Promise<Resource> {
@@ -176,32 +211,7 @@ export class ResourceService {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
 
-    const existingResources = await this.prisma.resource.findMany({
-      where: {
-        name: {
-          mode: QueryMode.Insensitive,
-          startsWith: data.resource.name
-        },
-        projectId: data.resource.project.connect.id,
-        deletedAt: null
-      },
-      select: {
-        name: true
-      }
-    });
-
-    const resourceName = data.resource.name;
-    let index = 1;
-    while (
-      existingResources.find(resource => {
-        return resource.name.toLowerCase() === data.resource.name.toLowerCase();
-      })
-    ) {
-      data.resource.name = `${resourceName}-${index}`;
-      index += 1;
-    }
-
-    const resource = await this.createResource(
+    const resource = await this.createService(
       {
         data: data.resource
       },
@@ -286,26 +296,6 @@ export class ResourceService {
         }
       }
     }
-    // do not commit if there are no entities
-    // if (!isEmpty(data.entities)) {
-    //   try {
-    //     await this.commit({
-    //       data: {
-    //         project: {
-    //           connect: {
-    //             id: resource.projectId
-    //           }
-    //         },
-    //         message: data.commitMessage,
-    //         user: {
-    //           connect: {
-    //             id: user.id
-    //           }
-    //         }
-    //       }
-    //     });
-    //   } catch {} //ignore - return the new resource and the message will be available on the build log
-    // }
 
     return resource;
   }
@@ -327,6 +317,37 @@ export class ResourceService {
         deletedAt: null
       }
     });
+  }
+
+  async resourcesByIds(
+    args: FindManyResourceArgs,
+    ids: string[]
+  ): Promise<Resource[]> {
+    return this.prisma.resource.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        id: { in: ids },
+        deletedAt: null
+      }
+    });
+  }
+
+  async messageBrokerConnectedServices(args: FindOneArgs): Promise<Resource[]> {
+    const resource = await this.resource(args);
+    const serviceTopicsCollection = await this.serviceTopicsService.findMany({
+      where: { resource: { projectId: resource.projectId } }
+    });
+    const brokerServiceTopics = serviceTopicsCollection.filter(
+      x => x.messageBrokerId === resource.id && x.enabled
+    );
+
+    const resources = this.resourcesByIds(
+      {},
+      brokerServiceTopics.map(x => x.resourceId)
+    );
+
+    return resources;
   }
 
   async deleteResource(args: FindOneArgs): Promise<Resource | null> {
@@ -392,6 +413,13 @@ export class ResourceService {
 
     if (isEmpty(resource)) {
       throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
+      await this.projectService.updateProject({
+        data: { name: args.data.name },
+        where: { id: resource.projectId }
+      });
     }
 
     return this.prisma.resource.update(args);

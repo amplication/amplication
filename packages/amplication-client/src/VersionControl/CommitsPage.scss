@@ -1,6 +1,8 @@
 @import "../style/index.scss";
+$svg-img-width: 200px;
+$svg-img-height: 200px;
 
-.commit-page {
+.commits-page {
   &__header {
     @include flexFullRowWithSpacing;
     color: var(--black80);

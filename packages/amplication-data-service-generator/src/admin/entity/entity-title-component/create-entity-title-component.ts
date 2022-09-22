@@ -1,23 +1,25 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity, EnumDataType, DTOs } from "@amplication/code-gen-types";
+import { Entity, EnumDataType } from "@amplication/code-gen-types";
 import { addImports, interpolate } from "../../../util/ast";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { EntityComponent } from "../../types";
+import DsgContext from "../../../dsg-context";
 
 const template = path.resolve(__dirname, "entity-title-component.template.tsx");
 
 export async function createEntityTitleComponent(
   entity: Entity,
-  dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToResource: Record<string, string>,
   dtoNameToPath: Record<string, string>
 ): Promise<EntityComponent> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
   const file = await readFile(template);
   const name = `${entity.name}Title`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.ts`;
-  const entityDTO = dtos[entity.name].entity;
+  const entityDTO = DTOs[entity.name].entity;
   const resource = entityToResource[entity.name];
   const localEntityDTOId = builders.identifier(`T${entityDTO.id.name}`);
 

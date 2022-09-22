@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useContext } from "react";
-// @ts-ignore
 import ReactCommandPalette from "react-command-palette";
 import { useQuery, gql } from "@apollo/client";
 import { History } from "history";
@@ -10,7 +9,7 @@ import { CircleBadge, Icon } from "@amplication/design-system";
 import * as models from "../models";
 import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
-import { resourceThemeMap } from "../util/resourceThemeMap";
+import { resourceThemeMap } from "../Resource/constants";
 
 export type ResourceDescriptor = Pick<
   models.Resource,

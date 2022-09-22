@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { AppContext } from "../context/appContext";
 import MenuItem from "../Layout/MenuItem";
 import { EnumResourceType } from "../models";
-import { resourceThemeMap } from "../util/resourceThemeMap";
+import { resourceThemeMap } from "./constants";
 import "./ResourceMenu.scss";
 import {
   linksMap,

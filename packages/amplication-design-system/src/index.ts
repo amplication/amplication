@@ -72,6 +72,8 @@ export {
   Props as PanelCollapsibleProps,
 } from "./components/PanelCollapsible/PanelCollapsible";
 
+export { Pagination } from "./components/Pagination/Pagination";
+
 export {
   ToggleButton,
   Props as ToggleButtonProps,
@@ -162,3 +164,5 @@ export {
   HorizontalRule,
   EnumHorizontalRuleStyle,
 } from "./components/HorizontalRule/HorizontalRule";
+
+export { Loader, Props as LoaderProps } from "./components/Loader/Loader";

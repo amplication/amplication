@@ -29,8 +29,9 @@ amplication-client:
 
 amplication-server:
   autoscaling:
-    minReplicas: 12
-  replicaCount: 12
+    minReplicas: 20
+    maxReplicas: 30
+  replicaCount: 20
   resources:
     limits:
       cpu: 3
@@ -50,7 +51,7 @@ amplication-server:
       DISABLE_EVENT_TRACKING: "1"
 
       #KAFKA
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
       KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
@@ -122,6 +123,10 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  autoscaling:
+    minReplicas: 2
+    maxReplicas: 10
+  replicaCount: 3
   pvc:
     name: prod-efs-claim
   config:
@@ -130,7 +135,8 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
+      
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data

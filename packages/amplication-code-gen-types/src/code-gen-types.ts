@@ -1,11 +1,12 @@
+import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
-import { namedTypes } from "ast-types";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
 
 export {
-  EnumEntityPermissionType,
-  EnumEntityAction,
   EnumDataType,
+  EnumEntityAction,
+  EnumEntityPermissionType,
 } from "./models";
 
 export type WorkerResult = {
@@ -15,27 +16,9 @@ export type WorkerResult = {
   error?: any;
 };
 
-export type WorkerParam = {
-  entities: Entity[];
-  roles: Role[];
-  appInfo: AppInfo;
-};
-
 export type ServiceSettings = Omit<
-  models.ServiceSettings,
-  | "__typename"
-  | "id"
-  | "createdAt"
-  | "updatedAt"
-  | "parentBlock"
-  | "displayName"
-  | "description"
-  | "blockType"
-  | "versionNumber"
-  | "inputParameters"
-  | "outputParameters"
-  | "lockedByUserId"
-  | "lockedAt"
+  BlockOmittedFields<models.ServiceSettings>,
+  "id"
 >;
 
 export type AppInfo = {
@@ -185,4 +168,60 @@ export type DTOs = {
 export type ResourceGenerationConfig = {
   dataServiceGeneratorVersion: string;
   appInfo: AppInfo;
+};
+
+export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
+
+type BlockOmittedFields<T> = Omit<
+  T,
+  | "__typename"
+  | "createdAt"
+  | "updatedAt"
+  | "parentBlock"
+  | "displayName"
+  | "description"
+  | "blockType"
+  | "versionNumber"
+  | "inputParameters"
+  | "outputParameters"
+  | "lockedByUserId"
+  | "lockedAt"
+>;
+
+export type clientDirectories = {
+  baseDirectory: string;
+  srcDirectory: string;
+  authDirectory: string;
+  publicDirectory: string;
+  apiDirectory: string;
+};
+
+export type serverDirectories = {
+  baseDirectory: string;
+  srcDirectory: string;
+  authDirectory: string;
+  scriptsDirectory: string;
+  messageBrokerDirectory: string;
+};
+
+export type Topic = BlockOmittedFields<models.Topic>;
+
+export type ServiceTopics = Omit<
+  BlockOmittedFields<models.ServiceTopics>,
+  "patterns"
+> & {
+  patterns: Array<models.MessagePattern & { topicName?: string }>;
+};
+
+export declare type PrismaClientGenerator = {
+  name: string;
+  provider: string;
+};
+
+export type DataSourceProvider = keyof typeof PrismaSchemaDSL.DataSourceProvider;
+
+export type PrismaDataSource = {
+  name: string;
+  provider: DataSourceProvider;
+  urlEnv: string;
 };

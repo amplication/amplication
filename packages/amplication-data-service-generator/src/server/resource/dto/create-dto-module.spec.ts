@@ -19,12 +19,22 @@ import {
 import { CLASS_VALIDATOR_MODULE, IS_STRING_ID } from "./class-validator.util";
 import { createCreateInput, createCreateInputID } from "./create-create-input";
 import { API_PROPERTY_ID, NESTJS_SWAGGER_MODULE } from "./nestjs-swagger.util";
-import { SRC_DIRECTORY } from "../../constants";
+import { SERVER_BASE_DIRECTORY, SRC_DIRECTORY } from "../../constants";
 import {
   FIELD_ID,
   INPUT_TYPE_ID,
   NESTJS_GRAPHQL_MODULE,
 } from "./nestjs-graphql.util";
+import DsgContext from "../../../dsg-context";
+
+const context = DsgContext.getInstance;
+context.serverDirectories = {
+  srcDirectory: `${SERVER_BASE_DIRECTORY}/src`,
+  scriptsDirectory: "exampleScriptsDirectory",
+  baseDirectory: "exampleBaseDirectory",
+  authDirectory: "exampleAuthDirectory",
+  messageBrokerDirectory: "ExampleMessageBrokerDirectory",
+};
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -45,13 +55,11 @@ const EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME = createCreateInputID(
 const EXAMPLE_DTO_NAME_TO_PATH = {
   [EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME]: createDTOModulePath(
     EXAMPLE_ENTITY_NAME_DIRECTORY,
-    EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME,
-    SRC_DIRECTORY
+    EXAMPLE_ENTITY_CREATE_INPUT_DTO_NAME
   ),
   [EXAMPLE_OTHER_ENTITY.name]: createDTOModulePath(
     EXAMPLE_OTHER_ENTITY_NAME_DIRECTORY,
-    EXAMPLE_OTHER_ENTITY.name,
-    SRC_DIRECTORY
+    EXAMPLE_OTHER_ENTITY.name
   ),
 };
 
@@ -60,8 +68,7 @@ describe("createDTOModule", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY);
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
-      dto.id.name,
-      SRC_DIRECTORY
+      dto.id.name
     );
     const file = createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH);
     addAutoGenerationComment(file);
@@ -77,8 +84,7 @@ describe("createDTOFile", () => {
     const dto = createCreateInput(EXAMPLE_ENTITY);
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
-      dto.id.name,
-      SRC_DIRECTORY
+      dto.id.name
     );
     expect(
       print(createDTOFile(dto, modulePath, EXAMPLE_DTO_NAME_TO_PATH)).code
@@ -101,9 +107,7 @@ describe("createDTOFile", () => {
 describe("createDTOModulePath", () => {
   test("creates path", () => {
     const dtoName = createCreateInputID(EXAMPLE_ENTITY_NAME).name;
-    expect(
-      createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dtoName, SRC_DIRECTORY)
-    ).toEqual(
+    expect(createDTOModulePath(EXAMPLE_ENTITY_NAME_DIRECTORY, dtoName)).toEqual(
       `${SRC_DIRECTORY}/${EXAMPLE_ENTITY_NAME_DIRECTORY}/base/${dtoName}.ts`
     );
   });
