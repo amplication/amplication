@@ -31,8 +31,6 @@
 
 Amplication auto-generates backend apps built with TypeScript and Node.js, and a client built with React.
 
-**HN Users - If you like Amplication don't forget to upvote** :rocket:
-
 # Features
 
 Amplication provides the following features:
