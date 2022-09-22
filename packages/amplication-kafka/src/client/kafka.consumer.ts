@@ -22,17 +22,6 @@ export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplica
                 @Inject(CONSUMER_KAFKA_VALUE_SERIALIZER) private valueSerialize: Serializer<V>,
                 @Inject(AMPLICATION_LOGGER_PROVIDER) private logger: AmplicationLogger) {
 
-        console.log("KafkaConsumer")
-        console.log("KafkaConsumer")
-        console.log(kafkaClient)
-        console.log(config)
-        console.log(keySerialize)
-        console.log(keySerialize.deserialize)
-        console.log(valueSerialize)
-        console.log(valueSerialize.deserialize)
-        console.log("KafkaConsumer")
-        console.log("KafkaConsumer")
-
         this.subscribers = new Map<string, ((kafkaMessage: KafkaMessageDto<K, V>) => Promise<void>)[]>()
 
         this.consumer = kafkaClient.kafka.consumer({
@@ -41,10 +30,6 @@ export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplica
     }
 
     eachMessage = async (payload: EachMessagePayload): Promise<void> => {
-        console.log(payload)
-        console.log(this.keySerialize)
-        console.log(this.valueSerialize)
-
         const key: K = this.keySerialize.deserialize(payload.message.key)
         const value: V = this.valueSerialize.deserialize(payload.message.value)
         const topicConsumers = this.subscribers.get(payload.topic)
@@ -60,6 +45,9 @@ export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplica
                 headers
             }
             await Promise.all(topicConsumers.map(async (callback) => await callback(message)))
+            if (this.config.autoCommit === false) {
+                await this.commit(message)
+            }
         }
     }
 
@@ -90,6 +78,7 @@ export class KafkaConsumer<K,V> implements OnApplicationBootstrap, BeforeApplica
         })
         await this.consumer.run({
             partitionsConsumedConcurrently: this.config.concurencyFactor,
+            autoCommit: this.config.autoCommit,
             eachMessage: this.eachMessage
         })
     }

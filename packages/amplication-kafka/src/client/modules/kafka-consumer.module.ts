@@ -20,7 +20,8 @@ export class KafkaConsumerModule {
                 useFactory: (configService: ConfigService) => {
                     const groupId = configService.get(KafkaConsumerConfigDto.ENV_KAFKA_GROUP_ID);
                     const concurencyFactor = configService.get(KafkaConsumerConfigDto.ENV_KAFKA_CONSUMER_CONCURENCY_FACTOR);
-                    return new KafkaConsumerConfigDto(groupId, concurencyFactor)
+                    const autoCommit = configService.get(KafkaConsumerConfigDto.ENV_KAFKA_AUTO_COMMIT);
+                    return new KafkaConsumerConfigDto(groupId, concurencyFactor,autoCommit)
                 }
             }, {
                 provide: CONSUMER_KAFKA_KEY_SERIALIZER,
@@ -34,4 +35,3 @@ export class KafkaConsumerModule {
     }
 
 }
-
