@@ -4,6 +4,7 @@ import { IsString } from "class-validator";
 
 @InputType()
 export class Credentials {
+  id!: string;
   @ApiProperty({
     required: true,
     type: String,

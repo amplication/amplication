@@ -22,18 +22,20 @@ describe("Testing the TokenServiceBase", () => {
     it("should create valid token for valid username and password", async () => {
       jwtService.signAsync.mockReturnValue(Promise.resolve(SIGN_TOKEN));
       expect(
-        await tokenServiceBase.createToken(
-          VALID_CREDENTIALS.username,
-          VALID_CREDENTIALS.password
-        )
+        await tokenServiceBase.createToken({
+          id: VALID_CREDENTIALS.id,
+          username: VALID_CREDENTIALS.username,
+          password: VALID_CREDENTIALS.password,
+        })
       ).toBe(SIGN_TOKEN);
     });
     it("should reject when username missing", () => {
-      const result = tokenServiceBase.createToken(
+      const result = tokenServiceBase.createToken({
+        id: VALID_CREDENTIALS.id,
         //@ts-ignore
-        null,
-        VALID_CREDENTIALS.password
-      );
+        username: null,
+        password: VALID_CREDENTIALS.password,
+      });
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
     });
     it("should reject when password missing", () => {
