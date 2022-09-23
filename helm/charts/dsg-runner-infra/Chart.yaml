@@ -1,0 +1,12 @@
+apiVersion: v2
+name: dsg-runner-infra
+description: A Helm chart for the infrastructure driving DSG Jobs on our Kubernetes clusters.
+
+dependencies:
+  - name: base
+    version: "0.1.0"
+    repository: "file://../../base"
+
+type: application
+version: 0.1.0
+appVersion: 0.0.0
