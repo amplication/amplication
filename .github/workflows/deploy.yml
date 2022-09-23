@@ -157,6 +157,13 @@ jobs:
         run: |
           kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
           kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
+      - name: Deploy DSG runner infrastructure
+        id: deploy-app-dsg
+        working-directory: ./helm/charts/dsg-runner-infra
+        run: |
+          helm upgrade -i dsg-runner-infra . --namespace $TARGET_ENV-dsg --create-namespace -f values/$TARGET_ENV.yaml
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
       - name: deploy app
         id: deploy-app
         run: |
