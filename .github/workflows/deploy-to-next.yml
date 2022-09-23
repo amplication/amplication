@@ -172,3 +172,10 @@ jobs:
         env:
           ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
           TARGET_ENV: next
+      - name: Deploy DSG runner infrastructure
+        id: deploy-app-dsg
+        working-directory: ./helm/charts/dsg-runner-infra
+        run: |
+          helm upgrade -i dsg-runner-infra . --namespace $TARGET_ENV-dsg --create-namespace
+        env:
+          TARGET_ENV: next
