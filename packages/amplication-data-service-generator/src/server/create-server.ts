@@ -1,13 +1,6 @@
 import * as path from "path";
-import winston from "winston";
 import { paramCase } from "param-case";
-import {
-  Entity,
-  Role,
-  AppInfo,
-  Module,
-  DTOs,
-} from "@amplication/code-gen-types";
+import { Module, EventNames, Entity } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode, formatJson } from "../util/module";
 import { createDTOModules } from "./resource/create-dtos";
@@ -25,22 +18,31 @@ import { createPackageJson } from "./package-json/create-package-json";
 import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
 import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
+import pluginWrapper from "../plugin-wrapper";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
-export async function createServerModules(
-  entities: Entity[],
-  roles: Role[],
-  appInfo: AppInfo,
-  dtos: DTOs,
-  userEntity: Entity,
-  logger: winston.Logger
-): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
+export function createServer(): Promise<Module[]> {
+  return pluginWrapper(
+    createServerInternal,
+    EventNames.CreateServer,
+    {}
+  );
+}
 
+async function createServerInternal(): Promise<Module[]> {
+  const {
+    serverDirectories,
+    appInfo,
+    roles,
+    entities,
+    DTOs: dtos,
+    logger,
+  } = DsgContext.getInstance;
   logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   logger.info("Creating server...");
   logger.info("Copying static modules...");
+
   const staticModules = await readStaticModules(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
@@ -65,8 +67,9 @@ export async function createServerModules(
   logger.info("Creating swagger...");
   const swaggerModule = await createSwagger();
 
+  const userEntity = entities.find((entity) => entity.name === "User");
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(userEntity);
+  const seedModule = await createSeedModule(userEntity as Entity);
 
   logger.info("Creating Message broker modules...");
   const messageBrokerModules = await createMessageBroker({});
