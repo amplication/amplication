@@ -10,6 +10,7 @@ import "./WorkspaceFooter.scss";
 import * as models from "../models";
 import { useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
+import { PUSH_TO_GITHUB_STEP_NAME } from "../VersionControl/BuildSteps";
 
 type TDataCommit = {
   commits: models.Commit[];
@@ -75,6 +76,21 @@ const WorkspaceFooter: React.FC<{}> = () => {
     />
   );
 
+  const githubUrl = useMemo(() => {
+    if (!lastResourceBuild?.action?.steps?.length) {
+      return null;
+    }
+    const stepGithub = lastResourceBuild?.action.steps.find(
+      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+    );
+
+    const log = stepGithub?.logs?.find(
+      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+    );
+
+    return log?.meta?.githubUrl || null;
+  }, [lastResourceBuild?.action]);
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
@@ -86,13 +102,23 @@ const WorkspaceFooter: React.FC<{}> = () => {
               className={`${CLASS_NAME}__github-icon`}
             />
             <GitRepoDetails />
-            <a
-              className={`${CLASS_NAME}__gh-link`}
-              href={gitRepositoryUrl}
-              target="github"
-            >
-              Open With GitHub
-            </a>
+            {lastResourceBuild && githubUrl ? (
+              <a
+                className={`${CLASS_NAME}__gh-link`}
+                href={githubUrl}
+                target="github"
+              >
+                Open With GitHub
+              </a>
+            ) : (
+              <a
+                className={`${CLASS_NAME}__gh-link`}
+                href={gitRepositoryUrl}
+                target="github"
+              >
+                Open With GitHub
+              </a>
+            )}
           </div>
         ) : (
           <div className={`${CLASS_NAME}__gh-disconnected`}>
