@@ -23,11 +23,7 @@ import pluginWrapper from "../plugin-wrapper";
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
 export function createServer(): Promise<Module[]> {
-  return pluginWrapper(
-    createServerInternal,
-    EventNames.CreateServer,
-    {}
-  );
+  return pluginWrapper(createServerInternal, EventNames.CreateServer, {});
 }
 
 async function createServerInternal(): Promise<Module[]> {
