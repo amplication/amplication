@@ -28,17 +28,13 @@ import { USER_ENTITY_NAME } from "./user-entity";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
-export function createServer(
-  eventParams: CreateServerParams
-): Promise<Module[]> {
-  return pluginWrapper(
-    createServerInternal,
-    EventNames.CreateServer,
-    eventParams
-  );
+export function createServer(): Promise<Module[]> {
+  return pluginWrapper(createServerInternal, EventNames.CreateServer, {});
 }
 
-async function createServerInternal(): Promise<Module[]> {
+async function createServerInternal(
+  eventParams: CreateServerParams
+): Promise<Module[]> {
   const {
     serverDirectories,
     appInfo,
