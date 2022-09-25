@@ -78,7 +78,7 @@ const WorkspaceFooter: React.FC<{}> = () => {
 
   const githubUrl = useMemo(() => {
     if (!lastResourceBuild?.action?.steps?.length) {
-      return null;
+      return gitRepositoryUrl;
     }
     const stepGithub = lastResourceBuild?.action.steps.find(
       (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
@@ -87,9 +87,9 @@ const WorkspaceFooter: React.FC<{}> = () => {
     const log = stepGithub?.logs?.find(
       (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
     );
-
-    return log?.meta?.githubUrl || null;
-  }, [lastResourceBuild?.action]);
+    // if there is "lastResourceBuild" link to the last PR
+    return lastResourceBuild ? log?.meta?.githubUrl : gitRepositoryUrl;
+  }, [gitRepositoryUrl, lastResourceBuild]);
 
   return (
     <div className={CLASS_NAME}>
@@ -102,23 +102,13 @@ const WorkspaceFooter: React.FC<{}> = () => {
               className={`${CLASS_NAME}__github-icon`}
             />
             <GitRepoDetails />
-            {lastResourceBuild && githubUrl ? (
-              <a
-                className={`${CLASS_NAME}__gh-link`}
-                href={githubUrl}
-                target="github"
-              >
-                Open With GitHub
-              </a>
-            ) : (
-              <a
-                className={`${CLASS_NAME}__gh-link`}
-                href={gitRepositoryUrl}
-                target="github"
-              >
-                Open With GitHub
-              </a>
-            )}
+            <a
+              className={`${CLASS_NAME}__gh-link`}
+              href={githubUrl}
+              target="github"
+            >
+              Open With GitHub
+            </a>
           </div>
         ) : (
           <div className={`${CLASS_NAME}__gh-disconnected`}>
