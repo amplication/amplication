@@ -5,9 +5,10 @@ import { ClickableId } from "../Components/ClickableId";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import { Build } from "../models";
-import { BuildStatusIcon } from "./BuildStatusIcon";
+import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import "./CommitResourceListItem.scss";
 import useCommits from "./hooks/useCommits";
+import useBuildWatchStatus from "./useBuildWatchStatus";
 
 const CLASS_NAME = "commit-resource-list-item";
 
@@ -18,7 +19,7 @@ type Props = {
 const CommitResourceListItem = ({ build }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const { commitChangesByResource } = useCommits();
-
+  const { data } = useBuildWatchStatus(build);
   const handleBuildLinkClick = useCallback((event) => {
     event.stopPropagation();
   }, []);
@@ -65,7 +66,7 @@ const CommitResourceListItem = ({ build }: Props) => {
           </div>
           <hr className={`${CLASS_NAME}__divider`} />
           <div className={`${CLASS_NAME}__row`}>
-            <BuildStatusIcon buildStatus={build.status} />
+            <CommitBuildsStatusIcon commitBuildStatus={data.build.status} />
             <ClickableId
               label="Build ID"
               to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}

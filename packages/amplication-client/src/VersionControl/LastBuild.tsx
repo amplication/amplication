@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { CircularProgress } from "@amplication/design-system";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import Build from "./Build";
+import { GET_LAST_BUILD } from "./hooks/buildQueries";
 
 type TData = {
   builds: models.Build[];
@@ -53,43 +54,3 @@ const LastBuild = ({ resourceId }: Props) => {
 };
 
 export default LastBuild;
-
-export const GET_LAST_BUILD = gql`
-  query lastBuild($resourceId: String!) {
-    builds(
-      where: { resource: { id: $resourceId } }
-      orderBy: { createdAt: Desc }
-      take: 1
-    ) {
-      id
-      createdAt
-      resourceId
-      version
-      message
-      createdAt
-      commitId
-      actionId
-      action {
-        id
-        createdAt
-        steps {
-          id
-          name
-          createdAt
-          message
-          status
-          completedAt
-        }
-      }
-      createdBy {
-        id
-        account {
-          firstName
-          lastName
-        }
-      }
-      status
-      archiveURI
-    }
-  }
-`;
