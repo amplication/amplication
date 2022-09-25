@@ -1,6 +1,11 @@
 import * as path from "path";
 import { paramCase } from "param-case";
-import { Module, EventNames, Entity } from "@amplication/code-gen-types";
+import {
+  Module,
+  EventNames,
+  Entity,
+  CreateServerParams,
+} from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
 import { formatCode, formatJson } from "../util/module";
 import { createDTOModules } from "./resource/create-dtos";
@@ -19,11 +24,18 @@ import { createMessageBroker } from "./message-broker/create-service-message-bro
 import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
+import { USER_ENTITY_NAME } from "./user-entity";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
-export function createServer(): Promise<Module[]> {
-  return pluginWrapper(createServerInternal, EventNames.CreateServer, {});
+export function createServer(
+  eventParams: CreateServerParams
+): Promise<Module[]> {
+  return pluginWrapper(
+    createServerInternal,
+    EventNames.CreateServer,
+    eventParams
+  );
 }
 
 async function createServerInternal(): Promise<Module[]> {
@@ -63,7 +75,9 @@ async function createServerInternal(): Promise<Module[]> {
   logger.info("Creating swagger...");
   const swaggerModule = await createSwagger();
 
-  const userEntity = entities.find((entity) => entity.name === "User");
+  const userEntity = entities.find(
+    (entity) => entity.name === USER_ENTITY_NAME
+  );
   logger.info("Creating seed script...");
   const seedModule = await createSeedModule(userEntity as Entity);
 

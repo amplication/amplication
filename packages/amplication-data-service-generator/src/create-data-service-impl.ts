@@ -99,7 +99,7 @@ export async function createDataServiceImpl(
 
   const modules = (
     await Promise.all([
-      createServer(),
+      createServer({}),
       (appInfo.settings.adminUISettings.generateAdminUI &&
         createAdminModules()) ||
         [],
