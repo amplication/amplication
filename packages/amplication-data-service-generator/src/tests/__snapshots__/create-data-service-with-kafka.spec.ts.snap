@@ -2443,7 +2443,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <TextInput label=\\"Username\\" source=\\"username\\" />
         <PasswordInput label=\\"Password\\" source=\\"password\\" />
         <SelectArrayInput
-          source=\\"roles.roles\\"
+          source=\\"roles\\"
           choices={ROLES_OPTIONS}
           optionText=\\"label\\"
           optionValue=\\"value\\"
@@ -2534,7 +2534,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <TextInput label=\\"Username\\" source=\\"username\\" />
         <PasswordInput label=\\"Password\\" source=\\"password\\" />
         <SelectArrayInput
-          source=\\"roles.roles\\"
+          source=\\"roles\\"
           choices={ROLES_OPTIONS}
           optionText=\\"label\\"
           optionValue=\\"value\\"
@@ -3290,11 +3290,7 @@ async function seed(bcryptSalt: Salt) {
   const data = {
     username: \\"admin\\",
     password: await hash(\\"admin\\", bcryptSalt),
-
-    roles: {
-      roles: [\\"user\\"],
-    },
-
+    roles: [\\"user\\"],
     name: \\"\\",
     bio: \\"\\",
     email: \\"example@example.com\\",
@@ -3447,10 +3443,6 @@ export class UserInfo implements Partial<User> {
   @Field(() => String, { nullable: true })
   accessToken?: string;
 }
-",
-  "server/src/auth/UserRoles.ts": "export type UserRoles = {
-  roles: string[];
-};
 ",
   "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
 
@@ -3699,7 +3691,6 @@ import { UserService } from \\"../user/user.service\\";
 import { Credentials } from \\"./Credentials\\";
 import { PasswordService } from \\"./password.service\\";
 import { TokenService } from \\"./token.service\\";
-import { UserRoles } from \\"./UserRoles\\";
 import { UserInfo } from \\"./UserInfo\\";
 
 @Injectable()
@@ -3719,7 +3710,7 @@ export class AuthService {
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
       const { id, roles } = user;
-      const roleList = (roles as UserRoles).roles;
+      const roleList = (roles as string[]);
       return { id, username, roles: roleList };
     }
     return null;
