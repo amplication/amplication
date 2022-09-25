@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { GET_LAST_COMMIT_BUILDS } from "./hooks/commitQueries";
 import { useCommitStatus } from "./hooks/useCommitStatus";
-import { BuildStatusIcon } from "./BuildStatusIcon";
+import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 
 type TData = {
   commits: models.Commit[];
@@ -51,7 +51,7 @@ const LastCommit = ({ projectId }: Props) => {
     return last;
   }, [loading, data]);
 
-  const { buildStatus } = useCommitStatus(lastCommit);
+  const { commitStatus } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
 
   const ClickableCommitId = (
@@ -77,7 +77,7 @@ const LastCommit = ({ projectId }: Props) => {
       <div className={`${CLASS_NAME}__content`}>
         <p className={`${CLASS_NAME}__title`}>
           Last Commit
-          <BuildStatusIcon buildStatus={buildStatus} />
+          <CommitBuildsStatusIcon commitBuildStatus={commitStatus} />
         </p>
 
         <div className={`${CLASS_NAME}__status`}>

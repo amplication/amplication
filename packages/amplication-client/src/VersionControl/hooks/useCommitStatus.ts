@@ -3,7 +3,7 @@ import * as models from "../../models";
 
 export const useCommitStatus = (commit: models.Commit | null) => {
   const commitBuilds = commit?.builds;
-  const buildStatus = useMemo(() => {
+  const commitStatus = useMemo(() => {
     if (!commitBuilds?.length) return;
     const buildsInProgress = commitBuilds.some(
       (build) => build.status === models.EnumBuildStatus.Running
@@ -19,5 +19,5 @@ export const useCommitStatus = (commit: models.Commit | null) => {
     if (buildsCompleted) return models.EnumBuildStatus.Completed;
   }, [commitBuilds]);
 
-  return { buildStatus };
+  return { commitStatus };
 };
