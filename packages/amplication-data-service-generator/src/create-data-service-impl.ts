@@ -15,7 +15,7 @@ import {
 } from "@amplication/code-gen-types";
 import { createUserEntityIfNotExist } from "./server/user-entity";
 import { createAdminModules } from "./admin/create-admin";
-import { createServerModules } from "./server/create-server";
+import { createServer } from "./server/create-server";
 import DsgContext from "./dsg-context";
 import pluralize from "pluralize";
 import { camelCase } from "camel-case";
@@ -64,9 +64,7 @@ export async function createDataServiceImpl(
   }
   const pluginsWithDefaultPlugins = prepareDefaultPlugins(resourcePlugins);
   // make sure that the user table is existed if not it will crate one
-  const [entitiesWithUserEntity, userEntity] = createUserEntityIfNotExist(
-    entities
-  );
+  const [entitiesWithUserEntity] = createUserEntityIfNotExist(entities);
 
   const entitiesWithPluralName = prepareEntityPluralName(
     entitiesWithUserEntity
@@ -101,14 +99,7 @@ export async function createDataServiceImpl(
 
   const modules = (
     await Promise.all([
-      createServerModules(
-        normalizedEntities,
-        roles,
-        appInfo,
-        dtos,
-        userEntity,
-        logger
-      ),
+      createServer(),
       (appInfo.settings.adminUISettings.generateAdminUI &&
         createAdminModules()) ||
         [],

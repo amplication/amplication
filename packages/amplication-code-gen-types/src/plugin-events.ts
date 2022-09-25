@@ -18,12 +18,14 @@ import {
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
+  CreateServerParams,
 } from "./plugin-events-params";
 import { DsgContext, EventNames, PluginEventType } from "./plugins-types";
 
 export type Events = {
   [EventNames.CreateAuthModules]?: PluginEventType<CreateAuthModulesParams>;
   [EventNames.CreateAdminModules]?: PluginEventType<CreateAdminModulesParams>;
+  [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
   [EventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;
   [EventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
   [EventNames.CreateEntityServiceBase]?: PluginEventType<
