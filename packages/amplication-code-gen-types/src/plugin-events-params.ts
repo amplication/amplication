@@ -10,10 +10,6 @@ import {
 import { EventParams } from "./plugins-types";
 import { DSGResourceData } from "./dsg-resource-data";
 
-export interface PrepareContextParams extends EventParams {
-  dSGResourceData: DSGResourceData;
-  logger: winston.Logger;
-}
 export interface CreateEntityServiceBaseParams extends EventParams {
   entityName: string;
   entity: Entity;

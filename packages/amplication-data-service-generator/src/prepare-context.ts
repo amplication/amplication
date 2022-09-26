@@ -4,11 +4,9 @@ import {
   Entity,
   EntityField,
   EnumDataType,
-  EventNames,
   LookupResolvedProperties,
   Module,
   PluginInstallation,
-  PrepareContextParams,
   serverDirectories,
   types,
 } from "@amplication/code-gen-types";
@@ -16,10 +14,10 @@ import { camelCase } from "camel-case";
 import { get } from "lodash";
 import { join } from "path";
 import pluralize from "pluralize";
+import winston from "winston";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
-import pluginWrapper from "./plugin-wrapper";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { createUserEntityIfNotExist } from "./server/user-entity";
@@ -44,21 +42,11 @@ const defaultPlugins: {
   },
 ];
 
-export async function prepareContext(
-  eventParams: PrepareContextParams
-): Promise<void> {
-  return pluginWrapper(
-    prepareContextInternal,
-    EventNames.PrepareContext,
-    eventParams
-  );
-}
-
 //This function runs at the start of the process, to prepare the input data, and populate the context object
-async function prepareContextInternal(
-  eventParams: PrepareContextParams
+export async function prepareContext(
+  dSGResourceData: DSGResourceData,
+  logger: winston.Logger
 ): Promise<Module[]> {
-  const { logger, dSGResourceData } = eventParams;
   logger.info("Preparing context...");
 
   const {

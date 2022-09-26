@@ -13,7 +13,7 @@ export async function createDataServiceImpl(
 ): Promise<Module[]> {
   const timer = logger.startTimer();
 
-  await prepareContext({ dSGResourceData, logger });
+  await prepareContext(dSGResourceData, logger);
   logger.info("Creating application...");
 
   const context = DsgContext.getInstance;
