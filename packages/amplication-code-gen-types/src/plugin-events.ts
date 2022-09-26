@@ -23,6 +23,7 @@ import {
 import { DsgContext, EventNames, PluginEventType } from "./plugins-types";
 
 export type Events = {
+  [EventNames.PrepareContext]?: PluginEventType<CreateAuthModulesParams>;
   [EventNames.CreateAuthModules]?: PluginEventType<CreateAuthModulesParams>;
   [EventNames.CreateAdminModules]?: PluginEventType<CreateAdminModulesParams>;
   [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
