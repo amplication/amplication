@@ -1,6 +1,5 @@
 import { namedTypes } from "ast-types";
 import { JsonValue } from "type-fest";
-import winston from "winston";
 import {
   Entity,
   EntityField,
@@ -8,7 +7,6 @@ import {
   PrismaDataSource,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import { DSGResourceData } from "./dsg-resource-data";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   entityName: string;
