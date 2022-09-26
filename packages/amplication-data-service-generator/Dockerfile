@@ -1,24 +1,26 @@
-ARG NODE_VERSION=16.16-alpine
+ARG ALPINE_VERSION=alpine3.14
+ARG NODE_VERSION=16.13.1
 
-FROM node:$NODE_VERSION
+FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
+COPY ./ /app
 
-# Hide Open Collective message from install logs
-ENV OPENCOLLECTIVE_HIDE=1
-# Hiden NPM security message from install logs
-ENV NPM_CONFIG_AUDIT=false
-# Hide NPM funding message from install logs
-ENV NPM_CONFIG_FUND=false
-
-# Update npm to version 7
-RUN npm i -g npm@7.3.0
-
-# Set the working directory
 WORKDIR /app
 
-# Copy files specifying dependencies
-COPY src/server/static/package.json src/server/static/package-lock.json ./server/
-COPY src/admin/static/package.json src/admin/static/package-lock.json ./admin/
+RUN npm ci
 
-# Install dependencies
-RUN cd server; npm ci;
-RUN cd admin; npm ci;
+RUN npm run bootstrap -- --scope @amplication/data-service-generator --include-dependencies
+
+RUN npm run build -- --scope @amplication/data-service-generator --include-dependencies
+
+
+FROM node:$NODE_VERSION-$ALPINE_VERSION as final
+WORKDIR /app
+
+COPY --from=base /app/packages/amplication-data-service-generator/package.json /app/packages/amplication-data-service-generator/package.json
+COPY --from=base /app/packages/amplication-data-service-generator/node_modules /app/packages/amplication-data-service-generator/node_modules
+COPY --from=base /app/packages/amplication-data-service-generator/dist /app/packages/amplication-data-service-generator/dist
+
+
+COPY --from=base /app/packages/amplication-code-gen-types/package.json /app/packages/amplication-code-gen-types/package.json
+COPY --from=base /app/packages/amplication-code-gen-types/node_modules /app/packages/amplication-code-gen-types/node_modules
+COPY --from=base /app/packages/amplication-code-gen-types/dist /app/packages/amplication-code-gen-types/dist
