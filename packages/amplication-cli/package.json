@@ -48,7 +48,7 @@
   },
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@apollo/client": "3.3.8",
+    "@apollo/client": "3.6.9",
     "@oclif/command": "1.8.16",
     "@oclif/config": "1.17.0",
     "@oclif/plugin-help": "3.2.2",
