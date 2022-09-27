@@ -5,13 +5,13 @@
     "esbenp.prettier-vscode",
     "mikestead.dotenv",
     "ms-azuretools.vscode-docker",
-    "ms-vscode.vscode-typescript-tslint-plugin",
-    "msjsdiag.debugger-for-chrome",
     "prisma.prisma",
     "graphql.vscode-graphql",
     "redhat.vscode-yaml",
     "streetsidesoftware.code-spell-checker",
     "hashicorp.terraform",
-    "sleistner.vscode-fileutils"
+    "sleistner.vscode-fileutils",
+    "eamodio.gitlens",
+    "nrwl.angular-console"
   ]
 }
