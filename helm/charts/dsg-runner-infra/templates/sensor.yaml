@@ -30,15 +30,14 @@ spec:
                         value: dsg
                     restartPolicy: Never
                     containers:
-                      - name: hello-container
-                        args:
-                          - "hello-world"
-                        command:
-                          - cowsay
-                        image: "docker/whalesay:latest"
+                      - name: dsg-container
+                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:0.0.7"
+                        command: ["npm", "run", "generate-code", "--", "/efs/dsg-jobs/${BUILD_ID}/spec.json", "/efs/dsg-jobs/${BUILD_ID}/output"]
                         env:
                           - name: BUILD_ID
                             value: null # provided in parameters
+                          - name: STATUS_UPDATE_URL
+                            value: https://2a08-77-252-192-146.eu.ngrok.io/generated-apps/update-action-step-status
                     volumes:
                       - name: persistent-storage
                         persistentVolumeClaim:
