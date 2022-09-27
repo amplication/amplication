@@ -23,11 +23,14 @@ dependencies:
 - name: infra
   repository: file://../infra
   version: 0.1.0
+- name: dsg-runner-infra
+  repository: file://../dsg-runner-infra
+  version: 0.1.0
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 10.16.2
 - name: cp-helm-charts
   repository: https://confluentinc.github.io/cp-helm-charts/
   version: 0.6.1
-digest: sha256:015b5ac36c36a25d1d40b78e952745b22de4293489bcad9d084f640fbffba48b
-generated: "2022-07-07T17:38:59.527319+03:00"
+digest: sha256:d3e92096ae5e13f46eff4d7cb4cb06f8359fb095e81da12743a08ee2c67d0922
+generated: "2022-09-27T12:05:12.035075+02:00"
