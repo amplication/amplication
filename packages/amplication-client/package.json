@@ -47,7 +47,7 @@
     "semver": "7.3.5",
     "styled-components": "5.1.1",
     "use-debounce": "3.4.3",
-    "xlsx": "0.16.9",
+    "xlsx": "0.18.5",
     "yaml": "1.10.2",
     "yup": "0.32.11"
   },
