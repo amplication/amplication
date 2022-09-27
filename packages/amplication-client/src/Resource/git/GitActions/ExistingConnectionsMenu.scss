@@ -19,26 +19,15 @@
       height: 28px;
     }
 
-    &__hr {
-      background-color: var(--black2);
-      border-bottom: none;
-      width: 100%;
-      display: flex;
-      border-top: $border-black10;
-
-      hr {
-        border: none;
-        border-top: $border-black10;
-        margin-left: var(--default-spacing-small);
-        margin-right: var(--default-spacing-small);
-        background-color: var(--black2);
-        display: flex;
-        width: 100%;
-      }
-    }
     &__add-icon {
       position: absolute;
       margin-right: var(--double-spacing);
     }
+  }
+  &__hr {
+    border: none;
+    border-top: $border-black5;
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
   }
 }
