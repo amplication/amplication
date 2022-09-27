@@ -50,7 +50,7 @@
   "dependencies": {
     "@apollo/client": "3.6.9",
     "@oclif/command": "1.8.16",
-    "@oclif/config": "1.17.0",
+    "@oclif/config": "1.18.3",
     "@oclif/plugin-help": "3.2.2",
     "cli-ux": "5.5.1",
     "cross-fetch": "3.1.5",
