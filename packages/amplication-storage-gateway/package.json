@@ -16,7 +16,7 @@
     "docker:build": "docker build ."
   },
   "dependencies": {
-    "@amplication/kafka": "^1.0.0",
+    "@amplication/kafka": "^1.0.1",
     "@nestjs/common": "8.4.4",
     "@nestjs/config": "1.1.5",
     "@nestjs/core": "8.2.3",
@@ -74,5 +74,5 @@
       "<rootDir>/dist/"
     ]
   },
-  "version": "1.0.0"
+  "version": "1.0.1"
 }
