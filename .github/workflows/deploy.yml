@@ -131,6 +131,7 @@ jobs:
           sed -i "s|NAMESPACE_PLACEHOLDER|$NAMESPACE|g" namespace.yaml
           cat namespace.yaml
           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
+          kubectl get ns
           kubectl config get-contexts
           kubectl config use-context $CLUSTER_NAME
           kubectl apply -f namespace.yaml
