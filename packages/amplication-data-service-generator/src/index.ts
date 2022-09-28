@@ -29,14 +29,14 @@ export default async function generateCode(
     const buildContext: BuildContext = JSON.parse(file);
     const modules = await createDataServiceImpl(buildContext.data, defaultLogger);
     await writeModules(modules, destination);
-    await axios.post(process.env.STATUS_UPDATE_URL || "", {
-      actionStepId: process.env.ACTION_STEP_ID,
+    await axios.put(process.env.STATUS_UPDATE_URL || "", {
+      buildId: process.env.BUILD_ID,
       status: "Success",
     });
   } catch (err) {
     console.error(err);
-    await axios.post(process.env.STATUS_UPDATE_URL || "", {
-      actionStepId: process.env.ACTION_STEP_ID,
+    await axios.put(process.env.STATUS_UPDATE_URL || "", {
+      buildId: process.env.BUILD_ID,
       status: "Failed",
     });
   }
