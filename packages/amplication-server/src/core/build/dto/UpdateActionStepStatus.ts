@@ -1,4 +1,4 @@
-import { EnumActionStepStatus } from "../../action/dto";
+import { EnumActionStepStatus } from '../../action/dto';
 
 export class UpdateActionStepStatus {
   id!: string;

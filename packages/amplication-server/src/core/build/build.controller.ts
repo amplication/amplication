@@ -33,7 +33,7 @@ const ZIP_MIME = 'application/zip';
 export class BuildController {
   constructor(
     private readonly buildService: BuildService,
-    private readonly actionService: ActionService,  
+    private readonly actionService: ActionService
   ) {}
 
   @Get(`/:id.zip`)
