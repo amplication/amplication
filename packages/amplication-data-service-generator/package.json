@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "update-test-data-service-snapshot": "jest -u src/tests/*.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
-    "@amplication/code-gen-types": "^1.0.0",
+    "@amplication/code-gen-types": "^1.0.1",
     "@amplication/plugin-auth-basic": "^1.0.2",
     "@amplication/plugin-auth-jwt": "^1.0.2",
     "@amplication/plugin-broker-kafka": "^0.0.4",
