@@ -3549,6 +3549,7 @@ import { PasswordService } from \\"./password.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { TokenService } from \\"./token.service\\";
+import { VALID_ID } from \\"../tests/auth/constants\\";
 
 const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
@@ -3562,7 +3563,7 @@ const USER: any = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   firstName: \\"ofek\\",
-  id: \\"1\\",
+  id: VALID_ID,
   lastName: \\"gabay\\",
   roles: [\\"admin\\"],
   updatedAt: new Date(),
@@ -3630,6 +3631,7 @@ describe(\\"AuthService\\", () => {
       ).resolves.toEqual({
         username: USER.username,
         roles: USER.roles,
+        id: USER.id,
       });
     });
 
@@ -3650,6 +3652,7 @@ describe(\\"AuthService\\", () => {
         username: USER.username,
         roles: USER.roles,
         accessToken: SIGN_TOKEN,
+        id: USER.id,
       });
     });
   });
@@ -12803,6 +12806,8 @@ describe(\\"Testing the basicStrategyBase.validate()\\", () => {
   "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
 import { UserInfo } from \\"../../auth/UserInfo\\";
 
+export const VALID_ID = \\"1\\";
+
 export const TEST_USER: UserInfo = {
   id: \\"cl7qmjh4h0000tothyjqapgj5\\",
   roles: [\\"User\\"],
@@ -12856,6 +12861,8 @@ import {
   INVALID_PASSWORD_ERROR,
   //@ts-ignore
 } from \\"../../auth/constants\\";
+//@ts-ignore
+import { SIGN_TOKEN, VALID_CREDENTIALS, VALID_ID } from \\"./constants\\";
 
 describe(\\"Testing the TokenServiceBase\\", () => {
   let tokenServiceBase: TokenServiceBase;
@@ -12864,18 +12871,32 @@ describe(\\"Testing the TokenServiceBase\\", () => {
   });
   describe(\\"Testing the BasicTokenService.createToken()\\", () => {
     it(\\"should create valid token for given username and password\\", async () => {
-      expect(await tokenServiceBase.createToken(\\"admin\\", \\"admin\\")).toBe(
-        \\"YWRtaW46YWRtaW4=\\"
-      );
+      expect(
+        await tokenServiceBase.createToken({
+          id: VALID_ID,
+          username: \\"admin\\",
+          password: \\"admin\\",
+        })
+      ).toBe(\\"YWRtaW46YWRtaW4=\\");
     });
     it(\\"should reject when username missing\\", () => {
       //@ts-ignore
-      const result = tokenServiceBase.createToken(null, \\"admin\\");
+      const result = tokenServiceBase.createToken({
+        id: VALID_ID,
+        //@ts-ignore
+        username: null,
+        password: VALID_CREDENTIALS.password,
+      });
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
     });
     it(\\"should reject when password missing\\", () => {
       //@ts-ignore
-      const result = tokenServiceBase.createToken(\\"admin\\", null);
+      const result = tokenServiceBase.createToken({
+        id: VALID_ID,
+        username: VALID_CREDENTIALS.username,
+        //@ts-ignore
+        password: null,
+      });
       return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
     });
   });
