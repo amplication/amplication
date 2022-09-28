@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { readFileSync } from "fs";
+import { utimes,open } from "fs/promises";
 import { sync } from "glob";
 import { join } from "path";
 import { BASE_BUILDS_FOLDER, DEFAULT_BUILDS_FOLDER } from "../constants";
@@ -84,5 +85,18 @@ export class StorageService {
       path
     );
     return readFileSync(filePath).toString();
+  }
+
+  async touch() {
+    const filename = 'file.txt';
+    const time = new Date();
+
+    await utimes(`${this.buildsFolder}/${filename}`, time, time).catch(async function (err) {
+      if ('ENOENT' !== err.code) {
+        throw err;
+      }
+      let fh = await open(filename, 'a');
+      await fh.close();
+    });
   }
 }
