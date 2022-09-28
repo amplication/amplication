@@ -5448,12 +5448,20 @@ class UpdateCustomerArgs {
 export { UpdateCustomerArgs };
 ",
   "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { CustomerController } from \\"../customer.controller\\";
 import { CustomerService } from \\"../customer.service\\";
 
@@ -5550,6 +5558,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Customer\\", () => {
   let app: INestApplication;
 
@@ -5568,6 +5591,10 @@ describe(\\"Customer\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -6900,12 +6927,20 @@ class EmptyWhereUniqueInput {
 export { EmptyWhereUniqueInput };
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { EmptyController } from \\"../empty.controller\\";
 import { EmptyService } from \\"../empty.service\\";
 
@@ -6966,6 +7001,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Empty\\", () => {
   let app: INestApplication;
 
@@ -6984,6 +7034,10 @@ describe(\\"Empty\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -8859,12 +8913,20 @@ class UpdateOrderArgs {
 export { UpdateOrderArgs };
 ",
   "server/src/order/base/order.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { OrderController } from \\"../order.controller\\";
 import { OrderService } from \\"../order.service\\";
 
@@ -8925,6 +8987,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Order\\", () => {
   let app: INestApplication;
 
@@ -8943,6 +9020,10 @@ describe(\\"Order\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -10252,12 +10333,20 @@ class UserUpdateManyWithoutOrganizationsInput {
 export { UserUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { OrganizationController } from \\"../organization.controller\\";
 import { OrganizationService } from \\"../organization.service\\";
 
@@ -10322,6 +10411,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Organization\\", () => {
   let app: INestApplication;
 
@@ -10340,6 +10444,10 @@ describe(\\"Organization\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -11903,12 +12011,20 @@ class UpdateProfileArgs {
 export { UpdateProfileArgs };
 ",
   "server/src/profile/base/profile.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { ProfileController } from \\"../profile.controller\\";
 import { ProfileService } from \\"../profile.service\\";
 
@@ -11973,6 +12089,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Profile\\", () => {
   let app: INestApplication;
 
@@ -11991,6 +12122,10 @@ describe(\\"Profile\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -14303,12 +14438,20 @@ class UserWhereUniqueInput {
 export { UserWhereUniqueInput };
 ",
   "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { UserController } from \\"../user.controller\\";
 import { UserService } from \\"../user.service\\";
 
@@ -14401,6 +14544,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"User\\", () => {
   let app: INestApplication;
 
@@ -14419,6 +14577,10 @@ describe(\\"User\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();

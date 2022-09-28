@@ -10,7 +10,6 @@ global:
       operator: "Equal"
       value: "true"
 
-
 postgres:
   primary:
     service:
@@ -28,11 +27,14 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-next.amplication-dev.com
 
 amplication-server:
+  autoscaling:
+    minReplicas: 4
+    maxReplicas: 99
+  replicaCount: 4
   ingress:
     hostname: server-next.amplication-dev.com
   config:
     env:
-
       HOST: "https://server-next.amplication-dev.com"
       CLIENT_HOST: "https://app-next.amplication-dev.com"
 

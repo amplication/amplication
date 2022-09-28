@@ -61,6 +61,7 @@ export enum EventNames {
   CreateEntityControllerBase = "CreateEntityControllerBase",
   CreateAuthModules = "createAuthModules",
   CreateAdminModules = "createAdminModules",
+  CreateServer = "CreateServer",
   CreateServerDotEnv = "CreateServerDotEnv",
   CreateMessageBroker = "CreateMessageBroker",
   CreateMessageBrokerTopicsEnum = "CreateMessageBrokerTopicsEnum",
