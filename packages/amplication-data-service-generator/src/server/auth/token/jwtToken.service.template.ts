@@ -14,7 +14,7 @@ export class TokenServiceBase implements ITokenService {
   /**
    *
    * @object { id: String, username: String, password: String}
-   * @returns a jwt token sign with the username
+   * @returns a jwt token sign with the username and user id
    */
   createToken({ id, username, password }: ITokenPayload): Promise<string> {
     if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
