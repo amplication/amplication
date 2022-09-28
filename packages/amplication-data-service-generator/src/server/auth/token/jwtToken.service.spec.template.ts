@@ -39,11 +39,12 @@ describe("Testing the TokenServiceBase", () => {
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
     });
     it("should reject when password missing", () => {
-      const result = tokenServiceBase.createToken(
-        VALID_CREDENTIALS.username,
+      const result = tokenServiceBase.createToken({
+        id: VALID_CREDENTIALS.id,
+        username: VALID_CREDENTIALS.username,
         //@ts-ignore
-        null
-      );
+        password: null,
+      });
       return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
     });
   });
