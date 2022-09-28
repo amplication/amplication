@@ -3390,7 +3390,6 @@ import { IsString } from \\"class-validator\\";
 
 @InputType()
 export class Credentials {
-  id!: string;
   @ApiProperty({
     required: true,
     type: String,
@@ -3587,6 +3586,7 @@ import { PasswordService } from \\"./password.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { TokenService } from \\"./token.service\\";
+import { VALID_ID } from \\"../tests/auth/constants\\";
 
 const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
@@ -3600,7 +3600,7 @@ const USER: any = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   firstName: \\"ofek\\",
-  id: \\"1\\",
+  id: VALID_ID,
   lastName: \\"gabay\\",
   roles: [\\"admin\\"],
   updatedAt: new Date(),
@@ -12924,6 +12924,8 @@ describe(\\"Testing the basicStrategyBase.validate()\\", () => {
   "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
 import { UserInfo } from \\"../../auth/UserInfo\\";
 
+export const VALID_ID = \\"1\\";
+
 export const TEST_USER: UserInfo = {
   id: \\"cl7qmjh4h0000tothyjqapgj5\\",
   roles: [\\"User\\"],
@@ -12931,12 +12933,10 @@ export const TEST_USER: UserInfo = {
 };
 export const SIGN_TOKEN = \\"SIGN_TOKEN\\";
 export const VALID_CREDENTIALS: Credentials = {
-  id: \\"cl7qmjh4h0000tothyjqapgj5\\",
   username: \\"Valid User\\",
   password: \\"Valid User Password\\",
 };
 export const INVALID_CREDENTIALS: Credentials = {
-  id: \\"cl7qmjh4h0000tothyjqapgj5\\",
   username: \\"Invalid User\\",
   password: \\"Invalid User Password\\",
 };

@@ -8,6 +8,7 @@ import { PasswordService } from "./password.service";
 // @ts-ignore
 // eslint-disable-next-line
 import { TokenService } from "./token.service";
+import { VALID_ID } from "../tests/auth/constants";
 
 const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",
@@ -21,7 +22,7 @@ const USER: any = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   firstName: "ofek",
-  id: "1",
+  id: VALID_ID,
   lastName: "gabay",
   roles: ["admin"],
   updatedAt: new Date(),
