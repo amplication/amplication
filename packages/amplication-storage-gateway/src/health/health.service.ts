@@ -1,8 +1,11 @@
-import { Injectable,Inject } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import { HealthServiceBase } from "./base/health.service.base";
 import { QueueService } from "../queue/queue.service";
 import { StorageService } from "../storage/storage.service";
-import {AMPLICATION_LOGGER_PROVIDER, AmplicationLogger} from "@amplication/nest-logger-module";
+import {
+  AMPLICATION_LOGGER_PROVIDER,
+  AmplicationLogger,
+} from "@amplication/nest-logger-module";
 import os from "os";
 
 @Injectable()
