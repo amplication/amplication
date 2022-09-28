@@ -22,7 +22,6 @@ export class HealthControllerBase {
   }
   @Get("ready")
   async healthReady(@Res() response: Response): Promise<Response<void>> {
-    this.logger.info("Service is ready");
     return response.status(HttpStatus.NO_CONTENT).send();
   }
 }

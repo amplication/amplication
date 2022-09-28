@@ -57,8 +57,8 @@ spec:
             httpGet:
                 path: {{ .Values.healthCheck.readiness.path }}
                 port: {{ .Values.healthCheck.readiness.port }}
-            initialDelaySeconds: {{ .Values.healthCheck.readiness.initialDelaySeconds | default 1 }}
-            periodSeconds:  {{ .Values.healthCheck.readiness.periodSeconds | default 1 }}
+            initialDelaySeconds: {{ .Values.healthCheck.readiness.initialDelaySeconds | default 5 }}
+            periodSeconds:  {{ .Values.healthCheck.readiness.periodSeconds | default 5 }}
           livenessProbe:
             httpGet:
                 path: {{ .Values.healthCheck.liveness.path }}
