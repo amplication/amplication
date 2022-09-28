@@ -90,6 +90,7 @@ describe("AuthService", () => {
       ).resolves.toEqual({
         username: USER.username,
         roles: USER.roles,
+        id: USER.id,
       });
     });
 
@@ -110,6 +111,7 @@ describe("AuthService", () => {
         username: USER.username,
         roles: USER.roles,
         accessToken: SIGN_TOKEN,
+        id: USER.id,
       });
     });
   });
