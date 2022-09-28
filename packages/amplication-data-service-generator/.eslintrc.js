@@ -34,7 +34,7 @@ module.exports = {
   },
   overrides: [
     require("./lint/eslintrc.template.js"),
-    require("./lint/eslintrc.static.js")
+    require("./lint/eslintrc.static.js"),
   ],
-  rules: require("./lint/common-rules")
+  rules: require("./lint/common-rules"),
 };
