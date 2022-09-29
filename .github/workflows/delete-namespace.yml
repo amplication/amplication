@@ -44,3 +44,11 @@ jobs:
           APPNAME="amplication-$NAMESPACE"
           set +e
           argocd app delete $APPNAME
+      - name: Delete DSG runner infrastructure
+        id: delete-app-dsg
+        working-directory: ./helm/charts/dsg-runner-infra
+        run: |
+          helm uninstall dsg-runner-infra --namespace $NAMESPACE-dsg
+          kubectl delete namespace $NAMESPACE-dsg
+        env:
+          NAMESPACE: ${{ github.event.inputs.namespace }}
