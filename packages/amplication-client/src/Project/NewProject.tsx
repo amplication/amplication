@@ -110,7 +110,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
           );
         }}
       </Formik>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(error)} message={errorMessage} transitionDuration={{ enter: 1000, exit: 2000 }}/>
     </div>
   );
 };
