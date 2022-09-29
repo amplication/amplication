@@ -3854,8 +3854,6 @@ export const UserRoles = createParamDecorator(
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { ExtractJwt, Strategy } from \\"passport-jwt\\";
 import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
 import { UserInfo } from \\"../../UserInfo\\";
 
@@ -3887,8 +3885,6 @@ export class JwtStrategyBase
 ",
   "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
 import { JWT_SECRET_KEY } from \\"../../constants\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
 import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
 @Injectable()
