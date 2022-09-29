@@ -3703,8 +3703,7 @@ export class AuthService {
   }
 }
 ",
-  "server/src/auth/base/token.service.base.ts": "/* eslint-disable import/no-unresolved */
-import { Injectable } from \\"@nestjs/common\\";
+  "server/src/auth/base/token.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from \\"../constants\\";
 import { ITokenService, ITokenPayload } from \\"../ITokenService\\";
 /**
@@ -3846,8 +3845,6 @@ export const UserRoles = createParamDecorator(
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { ExtractJwt, Strategy } from \\"passport-jwt\\";
 import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
 import { UserInfo } from \\"../../UserInfo\\";
 
@@ -3879,8 +3876,6 @@ export class JwtStrategyBase
 ",
   "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
 import { JWT_SECRET_KEY } from \\"../../constants\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
 import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
 @Injectable()
@@ -10280,15 +10275,11 @@ describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
   });
 });
 ",
-  "server/src/tests/auth/token.service.spec.ts": "/* eslint-disable import/no-unresolved */
-//@ts-ignore
-import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
+  "server/src/tests/auth/token.service.spec.ts": "import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
 import {
   INVALID_USERNAME_ERROR,
   INVALID_PASSWORD_ERROR,
-  //@ts-ignore
 } from \\"../../auth/constants\\";
-//@ts-ignore
 import { SIGN_TOKEN, VALID_CREDENTIALS, VALID_ID } from \\"./constants\\";
 
 describe(\\"Testing the TokenServiceBase\\", () => {
@@ -10582,7 +10573,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { JsonValue } from \\"type-fest\\";
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
@@ -10603,7 +10594,7 @@ class User {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   roles!: JsonValue;
 
   @ApiProperty({
@@ -10733,7 +10724,7 @@ class User {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   extendedProperties!: JsonValue;
 
   @ApiProperty({
@@ -10773,7 +10764,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -10804,7 +10795,7 @@ class UserCreateInput {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   roles!: InputJsonValue;
 
   @ApiProperty({
@@ -10933,7 +10924,7 @@ class UserCreateInput {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   extendedProperties!: InputJsonValue;
 
   @ApiProperty({
@@ -11312,7 +11303,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -11350,7 +11341,7 @@ class UserUpdateInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => GraphQLJSON, {
     nullable: true,
   })
   roles?: InputJsonValue;
@@ -11509,7 +11500,7 @@ class UserUpdateInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => GraphQLJSON, {
     nullable: true,
   })
   extendedProperties?: InputJsonValue;
