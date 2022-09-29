@@ -13146,7 +13146,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { JsonValue } from \\"type-fest\\";
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
@@ -13167,7 +13167,7 @@ class User {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   roles!: JsonValue;
 
   @ApiProperty({
@@ -13297,7 +13297,7 @@ class User {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   extendedProperties!: JsonValue;
 
   @ApiProperty({
@@ -13337,7 +13337,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -13368,7 +13368,7 @@ class UserCreateInput {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   roles!: InputJsonValue;
 
   @ApiProperty({
@@ -13497,7 +13497,7 @@ class UserCreateInput {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   extendedProperties!: InputJsonValue;
 
   @ApiProperty({
@@ -13876,7 +13876,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -13914,7 +13914,7 @@ class UserUpdateInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => GraphQLJSON, {
     nullable: true,
   })
   roles?: InputJsonValue;
@@ -14073,7 +14073,7 @@ class UserUpdateInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => GraphQLJSON, {
     nullable: true,
   })
   extendedProperties?: InputJsonValue;
