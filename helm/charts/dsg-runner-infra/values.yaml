@@ -4,4 +4,4 @@ persistentVolume:
   volumeHandle:
 
 job:
-  ttlSecondsAfterFinished: 15
+  ttlSecondsAfterFinished: 25200
