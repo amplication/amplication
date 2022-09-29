@@ -33,7 +33,7 @@
   "devDependencies": {
     "@babel/core": "7.18.10",
     "@rollup/plugin-json": "^4.1.0",
-    "@storybook/addon-actions": "6.4.22",
+    "@storybook/addon-actions": "6.5.12",
     "@storybook/addon-essentials": "6.4.22",
     "@storybook/addon-interactions": "6.4.22",
     "@storybook/addon-links": "6.5.10",
