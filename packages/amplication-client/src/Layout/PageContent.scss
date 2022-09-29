@@ -21,7 +21,9 @@ $tabs-width: 300px;
     border: $border-black10;
     padding: var(--large-spacing);
     box-sizing: border-box;
-    
+    overflow-y: auto;
+    @include scrollbars(16px, var(--black60), transparent);
+
     .sub-list {
       margin-left: var(--triple-spacing);
     }
