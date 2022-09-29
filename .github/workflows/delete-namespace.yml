@@ -37,13 +37,6 @@ jobs:
         run: |
           ARGO_CD_URL="argocd.staging.amplication-dev.com"
           argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web
-      - name: delete namespace
-        env:
-          NAMESPACE: ${{ github.event.inputs.namespace }}
-        run: |
-          APPNAME="amplication-$NAMESPACE"
-          set +e
-          argocd app delete $APPNAME
       - name: Delete DSG runner infrastructure
         id: delete-app-dsg
         working-directory: ./helm/charts/dsg-runner-infra
@@ -52,3 +45,10 @@ jobs:
           kubectl delete namespace $NAMESPACE-dsg
         env:
           NAMESPACE: ${{ github.event.inputs.namespace }}
+      - name: delete namespace
+        env:
+          NAMESPACE: ${{ github.event.inputs.namespace }}
+        run: |
+          APPNAME="amplication-$NAMESPACE"
+          set +e
+          argocd app delete $APPNAME
