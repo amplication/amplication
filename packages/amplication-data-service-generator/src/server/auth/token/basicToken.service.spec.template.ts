@@ -1,12 +1,8 @@
-/* eslint-disable import/no-unresolved */
-//@ts-ignore
 import { TokenServiceBase } from "../../auth/base/token.service.base";
 import {
   INVALID_USERNAME_ERROR,
   INVALID_PASSWORD_ERROR,
-  //@ts-ignore
 } from "../../auth/constants";
-//@ts-ignore
 import { SIGN_TOKEN, VALID_CREDENTIALS, VALID_ID } from "./constants";
 
 describe("Testing the TokenServiceBase", () => {

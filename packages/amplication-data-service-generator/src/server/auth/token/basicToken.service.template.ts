@@ -1,8 +1,5 @@
-/* eslint-disable import/no-unresolved */
 import { Injectable } from "@nestjs/common";
-//@ts-ignore
 import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from "../constants";
-//@ts-ignore
 import { ITokenService, ITokenPayload } from "../ITokenService";
 /**
  * TokenServiceBase is a basic http implementation of ITokenService
