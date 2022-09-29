@@ -35,3 +35,12 @@ ingress:
   enabled: true
   hostname: server.amplication.com
   path: /storage
+
+
+healthCheck:
+  readiness:
+    path: /_health/ready
+    port: 3002
+  liveness:
+    path: /_health/live
+    port: 3002
