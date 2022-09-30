@@ -7,3 +7,4 @@ generated/
 *.map
 # ESLint
 .eslintcache
+temp

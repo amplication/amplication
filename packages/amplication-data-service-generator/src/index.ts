@@ -7,31 +7,33 @@ import { createDataServiceImpl } from "./create-data-service-impl";
 import { defaultLogger } from "./server/logging";
 import axios from "axios";
 
-const [, , source, destination] = process.argv;
-if (!source) {
-  throw new Error("SOURCE is not defined");
+const buildSpecPath = process.env.BUILD_SPEC_PATH;
+const buildOutputPath = process.env.BUILD_OUTPUT_PATH;
+
+if (!buildSpecPath) {
+  throw new Error("BUILD_SPEC_PATH is not defined");
 }
-if (!destination) {
-  throw new Error("DESTINATION is not defined");
+if (!buildOutputPath) {
+  throw new Error("BUILD_OUTPUT_PATH is not defined");
 }
 
-generateCode(source, destination).catch((err) => {
+generateCode(buildSpecPath, buildOutputPath).catch((err) => {
   console.error(err);
   process.exit(1);
 });
 
 export default async function generateCode(
-  source: string,
-  destination: string
+  buildSpecPath: string,
+  buildOutputPath: string
 ): Promise<void> {
   try {
-    const file = await readFile(source, "utf8");
+    const file = await readFile(buildSpecPath, "utf8");
     const buildContext: BuildContext = JSON.parse(file);
     const modules = await createDataServiceImpl(
       buildContext.data,
       defaultLogger
     );
-    await writeModules(modules, destination);
+    await writeModules(modules, buildOutputPath);
     await axios.put(process.env.STATUS_UPDATE_URL || "", {
       buildId: process.env.BUILD_ID,
       status: "Success",

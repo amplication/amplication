@@ -15,17 +15,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
-    "generate-code": "node ./dist/index.js",
+    "generate-code": "node ./dist/install-plugins.js && node ./dist/index.js",
     "generate-test-data-service": "ts-node scripts/generate-test-data-service.ts generated",
     "update-test-data-service-snapshot": "jest -u src/tests/*.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
     "@amplication/code-gen-types": "^1.0.1",
-    "@amplication/plugin-auth-basic": "^1.0.2",
-    "@amplication/plugin-auth-jwt": "^1.0.2",
-    "@amplication/plugin-broker-kafka": "^0.0.4",
-    "@amplication/plugin-db-mysql": "^0.0.5",
-    "@amplication/plugin-db-postgres": "^1.0.2",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "camel-case": "4.1.2",
