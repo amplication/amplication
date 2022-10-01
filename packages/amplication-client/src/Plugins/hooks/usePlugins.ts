@@ -5,11 +5,17 @@ import {
   UPDATE_PLUGIN_INSTALLATION,
   GET_PLUGIN_ORDER,
   UPDATE_PLUGIN_ORDER,
+  GET_PLUGIN_INSTALLATION,
 } from "../queries/pluginsQueries";
 import * as models from "../../models";
 import { keyBy } from "lodash";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../context/appContext";
+
+export type PluginVersion = {
+  version: string;
+  settings: { [key: string]: any };
+};
 
 export type Plugin = {
   id: string;
@@ -22,6 +28,7 @@ export type Plugin = {
   website: string;
   category: string;
   type: string;
+  versions: PluginVersion[];
 };
 
 export type OnPluginDropped = (
@@ -43,6 +50,22 @@ const PLUGINS: Plugin[] = [
     website: "test",
     category: "test",
     type: "test",
+    versions: [
+      {
+        version: "0.0.1",
+        settings: {
+          enableLogging: true,
+          defaultPort: "5432",
+        },
+      },
+      {
+        version: "0.0.2",
+        settings: {
+          enableLogging: true,
+          defaultPort: "5432",
+        },
+      },
+    ],
   },
   {
     id: "db-mysql",
@@ -55,6 +78,20 @@ const PLUGINS: Plugin[] = [
     website: "test",
     category: "test",
     type: "test",
+    versions: [
+      {
+        version: "0.0.1",
+        settings: {
+          defaultPort: "3306",
+        },
+      },
+      {
+        version: "0.0.2",
+        settings: {
+          defaultPort: "3306",
+        },
+      },
+    ],
   },
   {
     id: "broker-kafka",
@@ -69,6 +106,21 @@ const PLUGINS: Plugin[] = [
     website: "test",
     category: "test",
     type: "test",
+    versions: [
+      {
+        version: "0.0.1",
+        settings: {
+          generateTypes: true,
+        },
+      },
+      {
+        version: "0.0.2",
+        settings: {
+          generateTypes: true,
+          enableLogging: true,
+        },
+      },
+    ],
   },
 
   {
@@ -83,6 +135,21 @@ const PLUGINS: Plugin[] = [
     website: "test",
     category: "test",
     type: "test",
+    versions: [
+      {
+        version: "0.0.1",
+        settings: {
+          DefaultSalt: "REPLACE_ME",
+          includeUserIdInToken: true,
+        },
+      },
+      {
+        version: "0.0.2",
+        settings: {
+          includeUserIdInToken: true,
+        },
+      },
+    ],
   },
   {
     id: "auth-basic",
@@ -97,6 +164,18 @@ const PLUGINS: Plugin[] = [
     website: "test",
     category: "test",
     type: "test",
+    versions: [
+      {
+        version: "0.0.1",
+        settings: {},
+      },
+      {
+        version: "0.0.2",
+        settings: {
+          demo: false,
+        },
+      },
+    ],
   },
 ];
 
@@ -114,7 +193,7 @@ const setPluginOrderMap = (pluginOrder: models.PluginOrderItem[]) => {
   );
 };
 
-const usePlugins = (resourceId: string) => {
+const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   const [pluginOrderObj, setPluginOrderObj] = useState<{
     [key: string]: number;
   }>();
@@ -129,6 +208,19 @@ const usePlugins = (resourceId: string) => {
   }>(GET_PLUGIN_INSTALLATIONS, {
     variables: {
       resourceId: resourceId,
+    },
+  });
+
+  const {
+    data: pluginInstallation,
+    loading: loadingPluginInstallation,
+    error: errorPluginInstallation,
+  } = useQuery<{
+    PluginInstallation: models.PluginInstallation;
+  }>(GET_PLUGIN_INSTALLATION, {
+    skip: !pluginInstallationId,
+    variables: {
+      pluginId: pluginInstallationId,
     },
   });
 
@@ -246,6 +338,9 @@ const usePlugins = (resourceId: string) => {
     pluginInstallations: sortedPluginInstallation,
     loadingPluginInstallations,
     errorPluginInstallations,
+    pluginInstallation,
+    loadingPluginInstallation,
+    errorPluginInstallation,
     updatePluginInstallation,
     updateError,
     createPluginInstallation,
