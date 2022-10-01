@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver
+} from '@nestjs/graphql';
 import { PluginInstallationService } from './pluginInstallation.service';
 import { FindManyPluginInstallationArgs } from './dto/FindManyPluginInstallationArgs';
 import { BlockTypeResolver } from '../block/blockType.resolver';
@@ -14,7 +21,7 @@ import { User } from '../../models';
 import { FindOneArgs } from '../../dto';
 import { PluginOrderService } from './pluginOrder.service';
 
-@Resolver(() => PluginInstallation && PluginOrder)
+@Resolver(() => PluginInstallation)
 export class PluginInstallationResolver extends BlockTypeResolver(
   PluginInstallation,
   'PluginInstallations',
@@ -48,5 +55,14 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async pluginOrder(@Args() args: FindOneArgs): Promise<PluginOrder> {
     return this.pluginOrderService.findByResourceId(args);
+  }
+
+  @ResolveField(() => String)
+  async version(
+    @Parent() pluginInstallation: PluginInstallation
+  ): Promise<string> {
+    console.log('resolve field');
+    console.log({ pluginInstallation });
+    return pluginInstallation.version || 'latest';
   }
 }
