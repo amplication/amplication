@@ -107,7 +107,9 @@ const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
   enabled: true,
   npm: '@amplication/example-plugin',
   pluginId: '@amplication/example-plugin',
-  blockType: EnumBlockType.PluginInstallation
+  blockType: EnumBlockType.PluginInstallation,
+  version: '0.0.1',
+  settings: {}
 };
 
 const EXAMPLE_COMMIT: Commit = {

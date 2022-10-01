@@ -1,4 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
+import { JsonValue } from 'type-fest';
 import { IBlock } from '../../../models';
 
 @ObjectType({
@@ -20,4 +22,14 @@ export class PluginInstallation extends IBlock {
     nullable: false
   })
   npm!: string;
+
+  @Field(() => GraphQLJSONObject, {
+    nullable: true
+  })
+  settings?: JsonValue;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  version!: string;
 }

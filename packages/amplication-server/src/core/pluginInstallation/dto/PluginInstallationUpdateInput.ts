@@ -1,4 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
+import { JsonValue } from 'type-fest';
 import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
 
 @InputType({
@@ -9,6 +11,16 @@ export class PluginInstallationUpdateInput extends BlockUpdateInput {
     nullable: false
   })
   enabled!: boolean;
+
+  @Field(() => GraphQLJSONObject, {
+    nullable: true
+  })
+  settings?: JsonValue;
+
+  @Field(() => String, {
+    nullable: false
+  })
+  version!: string;
 
   pluginId!: string; //This field is set by the service, do not expose to the API
 
