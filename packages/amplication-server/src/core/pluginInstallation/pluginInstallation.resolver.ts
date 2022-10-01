@@ -61,8 +61,6 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   async version(
     @Parent() pluginInstallation: PluginInstallation
   ): Promise<string> {
-    console.log('resolve field');
-    console.log({ pluginInstallation });
     return pluginInstallation.version || 'latest';
   }
 }
