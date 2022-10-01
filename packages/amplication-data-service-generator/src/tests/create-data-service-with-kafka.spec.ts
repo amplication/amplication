@@ -54,6 +54,7 @@ describe("createDataService", () => {
           npm: "@amplication/plugin-broker-kafka",
           enabled: true,
           pluginId: "broker-kafka",
+          version: "latest",
         },
       ],
     };
