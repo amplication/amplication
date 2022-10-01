@@ -51,12 +51,14 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   const onEnableStateChange = useCallback(
     (pluginInstallation: models.PluginInstallation) => {
-      const { enabled, id } = pluginInstallation;
+      const { enabled, version, settings, id } = pluginInstallation;
 
       updatePluginInstallation({
         variables: {
           data: {
             enabled: !enabled,
+            version,
+            settings,
           },
           where: {
             id: id,

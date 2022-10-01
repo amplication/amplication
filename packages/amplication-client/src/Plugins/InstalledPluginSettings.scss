@@ -1,6 +1,10 @@
 @import "../style/index.scss";
 
 .installed-plugin-settings {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   &__row {
     display: flex;
     margin-bottom: var(--default-spacing);
@@ -18,6 +22,22 @@
   }
 
   &__description {
-    @include title-14;
+    @include regular-14;
+  }
+
+  &__editor {
+    margin-bottom: var(--default-spacing);
+    flex: 1;
+    border: $border-black10;
+    border-radius: var(--default-border-radius);
+    overflow: hidden;
+
+    &--invalid {
+      border-color: var(--negative);
+    }
+  }
+
+  &__save {
+    margin-left: auto;
   }
 }
