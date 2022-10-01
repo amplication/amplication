@@ -38,6 +38,7 @@ const defaultPlugins: {
       pluginId: POSTGRESQL_PLUGIN_ID,
       npm: POSTGRESQL_NPM,
       enabled: true,
+      version: "latest",
     },
   },
 ];
