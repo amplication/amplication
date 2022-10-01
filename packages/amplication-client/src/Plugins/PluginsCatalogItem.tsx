@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import * as models from "../models";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -7,17 +7,19 @@ import {
   EnumHorizontalRuleStyle,
   EnumPanelStyle,
   HorizontalRule,
-  Icon,
   Panel,
   Toggle,
 } from "@amplication/design-system";
-import { Plugin } from "./hooks/usePlugins";
+import { Link } from "react-router-dom";
+import { AppContext } from "../context/appContext";
+import { Plugin, PluginVersion } from "./hooks/usePlugins";
+import { PluginLogo } from "./PluginLogo";
 import "./PluginsCatalogItem.scss";
 
 type Props = {
   plugin: Plugin;
   pluginInstallation: models.PluginInstallation;
-  onInstall?: (plugin: Plugin) => void;
+  onInstall?: (plugin: Plugin, pluginVersion: PluginVersion) => void;
   onOrderChange?: (obj: { id: string; order: number }) => void;
   onEnableStateChange?: (pluginInstallation: models.PluginInstallation) => void;
   order?: number;
@@ -25,8 +27,6 @@ type Props = {
 };
 
 const CLASS_NAME = "plugins-catalog-item";
-const PLUGIN_LOGO_BASE_URL =
-  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/";
 
 function PluginsCatalogItem({
   plugin,
@@ -38,6 +38,9 @@ function PluginsCatalogItem({
   isDraggable,
 }: Props) {
   const { name, description } = plugin || {};
+  const { currentWorkspace, currentProject, currentResource } = useContext(
+    AppContext
+  );
 
   const handlePromote = useCallback(() => {
     order &&
@@ -54,7 +57,7 @@ function PluginsCatalogItem({
   }, [onOrderChange, order, pluginInstallation]);
 
   const handleInstall = useCallback(() => {
-    onInstall && onInstall(plugin);
+    onInstall && onInstall(plugin, plugin.versions[0]);
   }, [onInstall, plugin]);
 
   const handleEnableStateChange = useCallback(() => {
@@ -63,7 +66,7 @@ function PluginsCatalogItem({
 
   return (
     <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
-      {pluginInstallation && isDraggable && (
+      {pluginInstallation && (
         <>
           <div className={`${CLASS_NAME}__row`}>
             {/* <Icon icon="drag" className={`${CLASS_NAME}__drag`} /> */}
@@ -73,41 +76,44 @@ function PluginsCatalogItem({
               checked={pluginInstallation.enabled}
               className={`${CLASS_NAME}__enabled`}
             />
-            <div className={`${CLASS_NAME}__order`}>
+            {isDraggable && (
+              <div className={`${CLASS_NAME}__order`}>
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  onClick={handleDemote}
+                  icon="arrow_up"
+                />
+                <span>{order}</span>
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  onClick={handlePromote}
+                  icon="arrow_down"
+                />
+              </div>
+            )}
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/plugins/installed/${pluginInstallation.id}`}
+            >
               <Button
-                buttonStyle={EnumButtonStyle.Text}
-                onClick={handleDemote}
-                icon="arrow_up"
-              />
-              <span>{order}</span>
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                onClick={handlePromote}
-                icon="arrow_down"
-              />
-            </div>
+                className={`${CLASS_NAME}__install`}
+                buttonStyle={EnumButtonStyle.Secondary}
+              >
+                Settings
+              </Button>
+            </Link>
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
         </>
       )}
       <div className={`${CLASS_NAME}__row `}>
-        <span className={`${CLASS_NAME}__logo`}>
-          {plugin?.icon ? (
-            <img
-              src={`${PLUGIN_LOGO_BASE_URL}${plugin.icon}`}
-              alt="plugin logo"
-            />
-          ) : (
-            <Icon icon="plugin" />
-          )}
-        </span>
+        <PluginLogo plugin={plugin} />
         <div className={`${CLASS_NAME}__details`}>
           <div className={`${CLASS_NAME}__details__title`}>{name}</div>
           <span className={`${CLASS_NAME}__details__description`}>
             {description}
           </span>
         </div>
-        {!pluginInstallation ? (
+        {!pluginInstallation && (
           <Button
             className={`${CLASS_NAME}__install`}
             buttonStyle={EnumButtonStyle.Primary}
@@ -115,16 +121,6 @@ function PluginsCatalogItem({
           >
             Install
           </Button>
-        ) : (
-          !isDraggable && (
-            <Button
-              className={`${CLASS_NAME}__install`}
-              buttonStyle={EnumButtonStyle.Primary}
-              disabled
-            >
-              Installed
-            </Button>
-          )
         )}
       </div>
       <div className={`${CLASS_NAME}__row `}>

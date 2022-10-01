@@ -5,7 +5,7 @@ import { match } from "react-router-dom";
 import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
-import usePlugins, { Plugin } from "./hooks/usePlugins";
+import usePlugins, { Plugin, PluginVersion } from "./hooks/usePlugins";
 import PluginsCatalogItem from "./PluginsCatalogItem";
 
 type Props = AppRouteProps & {
@@ -28,8 +28,9 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   } = usePlugins(resource);
 
   const handleInstall = useCallback(
-    (plugin: Plugin) => {
+    (plugin: Plugin, pluginVersion: PluginVersion) => {
       const { name, id, npm } = plugin;
+      const { version, settings } = pluginVersion;
 
       createPluginInstallation({
         variables: {
@@ -38,6 +39,8 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
             pluginId: id,
             enabled: true,
             npm,
+            version,
+            settings,
             resource: { connect: { id: resource } },
           },
         },

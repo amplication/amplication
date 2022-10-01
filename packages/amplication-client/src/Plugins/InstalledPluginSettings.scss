@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+.installed-plugin-settings {
+  &__row {
+    display: flex;
+    margin-bottom: var(--default-spacing);
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: var(--default-spacing);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__name {
+    @include title-18;
+  }
+
+  &__description {
+    @include title-14;
+  }
+}
