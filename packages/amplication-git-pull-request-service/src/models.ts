@@ -1191,7 +1191,9 @@ export type PluginInstallation = IBlock & {
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   pluginId: Scalars['String'];
+  settings?: Maybe<Scalars['JSONObject']>;
   updatedAt: Scalars['DateTime'];
+  version: Scalars['String'];
   versionNumber: Scalars['Float'];
 };
 
@@ -1205,6 +1207,8 @@ export type PluginInstallationCreateInput = {
   parentBlock?: InputMaybe<WhereParentIdInput>;
   pluginId: Scalars['String'];
   resource: WhereParentIdInput;
+  settings?: InputMaybe<Scalars['JSONObject']>;
+  version: Scalars['String'];
 };
 
 export type PluginInstallationOrderByInput = {
@@ -1220,6 +1224,8 @@ export type PluginInstallationUpdateInput = {
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
+  settings?: InputMaybe<Scalars['JSONObject']>;
+  version: Scalars['String'];
 };
 
 export type PluginInstallationWhereInput = {
