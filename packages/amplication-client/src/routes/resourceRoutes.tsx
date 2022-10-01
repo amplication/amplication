@@ -160,6 +160,16 @@ const resourceRoutes = [
         routes: [],
         isAnalytics: true,
       },
+      {
+        path: "/:workspace/:project/:resource/plugins/installed/:plugin",
+        Component: lazy(() => import("../Plugins/InstalledPluginSettings")),
+        moduleName: "",
+        moduleClass: "installed-plugin-settings",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
     ],
   },
 ];

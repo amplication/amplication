@@ -1,0 +1,43 @@
+@import "../style/index.scss";
+
+.installed-plugin-settings {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__row {
+    display: flex;
+    margin-bottom: var(--default-spacing);
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: var(--default-spacing);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__name {
+    @include title-18;
+  }
+
+  &__description {
+    @include regular-14;
+  }
+
+  &__editor {
+    margin-bottom: var(--default-spacing);
+    flex: 1;
+    border: $border-black10;
+    border-radius: var(--default-border-radius);
+    overflow: hidden;
+
+    &--invalid {
+      border-color: var(--negative);
+    }
+  }
+
+  &__save {
+    margin-left: auto;
+  }
+}

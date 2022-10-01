@@ -10,6 +10,21 @@ export const GET_PLUGIN_INSTALLATIONS = gql`
       displayName
       pluginId
       enabled
+      version
+      settings
+    }
+  }
+`;
+
+export const GET_PLUGIN_INSTALLATION = gql`
+  query PluginInstallation($pluginId: String!) {
+    PluginInstallation(where: { id: $pluginId }) {
+      id
+      displayName
+      pluginId
+      enabled
+      version
+      settings
     }
   }
 `;
@@ -24,6 +39,8 @@ export const UPDATE_PLUGIN_INSTALLATION = gql`
       displayName
       pluginId
       enabled
+      version
+      settings
     }
   }
 `;
@@ -35,6 +52,8 @@ export const CREATE_PLUGIN_INSTALLATION = gql`
       displayName
       pluginId
       enabled
+      version
+      settings
     }
   }
 `;

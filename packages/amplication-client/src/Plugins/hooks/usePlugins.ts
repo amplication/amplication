@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { QueryOptions, useMutation, useQuery } from "@apollo/client";
 import {
   GET_PLUGIN_INSTALLATIONS,
   CREATE_PLUGIN_INSTALLATION,
@@ -80,16 +80,8 @@ const PLUGINS: Plugin[] = [
     type: "test",
     versions: [
       {
-        version: "0.0.1",
-        settings: {
-          defaultPort: "3306",
-        },
-      },
-      {
-        version: "0.0.2",
-        settings: {
-          defaultPort: "3306",
-        },
+        version: "latest",
+        settings: {},
       },
     ],
   },
@@ -108,17 +100,8 @@ const PLUGINS: Plugin[] = [
     type: "test",
     versions: [
       {
-        version: "0.0.1",
-        settings: {
-          generateTypes: true,
-        },
-      },
-      {
-        version: "0.0.2",
-        settings: {
-          generateTypes: true,
-          enableLogging: true,
-        },
+        version: "latest",
+        settings: {},
       },
     ],
   },
@@ -137,17 +120,8 @@ const PLUGINS: Plugin[] = [
     type: "test",
     versions: [
       {
-        version: "0.0.1",
-        settings: {
-          DefaultSalt: "REPLACE_ME",
-          includeUserIdInToken: true,
-        },
-      },
-      {
-        version: "0.0.2",
-        settings: {
-          includeUserIdInToken: true,
-        },
+        version: "latest",
+        settings: {},
       },
     ],
   },
@@ -166,14 +140,8 @@ const PLUGINS: Plugin[] = [
     type: "test",
     versions: [
       {
-        version: "0.0.1",
+        version: "latest",
         settings: {},
-      },
-      {
-        version: "0.0.2",
-        settings: {
-          demo: false,
-        },
       },
     ],
   },
@@ -286,20 +254,32 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     onCompleted: (data) => {
       addBlock(data.updatePluginInstallation.id);
     },
-    refetchQueries: [
-      {
-        query: GET_PLUGIN_INSTALLATIONS,
-        variables: {
-          resourceId: resourceId,
+    refetchQueries: () => {
+      const queries: QueryOptions[] = [
+        {
+          query: GET_PLUGIN_INSTALLATIONS,
+          variables: {
+            resourceId: resourceId,
+          },
         },
-      },
-      {
-        query: GET_PLUGIN_ORDER,
-        variables: {
-          resourceId: resourceId,
+        {
+          query: GET_PLUGIN_ORDER,
+          variables: {
+            resourceId: resourceId,
+          },
         },
-      },
-    ],
+      ];
+
+      if (pluginInstallationId) {
+        queries.push({
+          query: GET_PLUGIN_INSTALLATION,
+          variables: {
+            pluginId: pluginInstallationId,
+          },
+        });
+      }
+      return queries;
+    },
   });
 
   const [createPluginInstallation, { error: createError }] = useMutation<{
