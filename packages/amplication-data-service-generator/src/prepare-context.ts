@@ -27,6 +27,10 @@ export const POSTGRESQL_PLUGIN_ID = "db-postgres";
 export const MYSQL_PLUGIN_ID = "db-mysql";
 export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
 
+export const BASIC_AUTH_PLUGIN_ID = "auth-basic";
+export const JWT_AUTH_PLUGIN_ID = "auth-jwt";
+export const JWT_AUTH_NPM = "@amplication/plugin-auth-jwt";
+
 const defaultPlugins: {
   categoryPluginIds: string[];
   defaultCategoryPlugin: PluginInstallation;
@@ -37,6 +41,15 @@ const defaultPlugins: {
       id: "placeholder-id",
       pluginId: POSTGRESQL_PLUGIN_ID,
       npm: POSTGRESQL_NPM,
+      enabled: true,
+    },
+  },
+  {
+    categoryPluginIds: [JWT_AUTH_PLUGIN_ID, BASIC_AUTH_PLUGIN_ID],
+    defaultCategoryPlugin: {
+      id: "auth-id",
+      pluginId: JWT_AUTH_PLUGIN_ID,
+      npm: JWT_AUTH_NPM,
       enabled: true,
     },
   },
