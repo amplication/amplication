@@ -8220,7 +8220,7 @@ import { KafkaServiceBase } from \\"./base/kafka.service.base\\";
 @Injectable()
 export class KafkaService extends KafkaServiceBase {}
 ",
-  "server/src/kafka/topics.ts": "enum KafkaBrokerTopics {
+  "server/src/kafka/topics.ts": "export enum KafkaBrokerTopics {
   GitPull = \\"git.pull\\",
 }
 ",
