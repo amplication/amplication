@@ -13,12 +13,6 @@ const useBuildWatchStatus = (
   const { data, startPolling, stopPolling } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
-    onCompleted: () => {
-      //Start polling if build process is still running
-      if (shouldReload(build)) {
-        startPolling(POLL_INTERVAL);
-      }
-    },
     variables: {
       buildId: build.id,
     },
