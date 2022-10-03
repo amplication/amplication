@@ -27,9 +27,6 @@ dependencies:
   - name: infra
     version: "0.1.0"
     repository: "file://../infra"
-  - name: dsg-runner-infra
-    version: "0.1.0"
-    repository: "file://../dsg-runner-infra"
 
   - name: postgresql
     alias: postgres

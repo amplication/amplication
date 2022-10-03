@@ -50,6 +50,7 @@ export interface CreateAuthModulesParams extends EventParams {
 }
 
 export interface CreateAdminModulesParams extends EventParams {}
+export interface CreateServerParams extends EventParams {}
 
 export type VariableDictionary = {
   [variable: string]: string;

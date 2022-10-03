@@ -26,6 +26,28 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.event.inputs.namespace == github.event.inputs.confirm-namespace
     steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Set cluster name
+        id: set-cluster-name
+        run: |
+          CLUSTER_NAME="useast1-staging"
+          if [ "$TARGET_ENV" = "prod" ]; then
+            CLUSTER_NAME="useast1-$TARGET_ENV"
+          fi
+          echo "Will deploy to $CLUSTER_NAME eks cluster"
+          echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
+        env:
+          TARGET_ENV: ${{ github.event.inputs.namespace }}
+
+      - name: Export AWS EKS kubeconfig
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
       - name: install argocd
         id: install-argocd
         run: |
@@ -37,6 +59,13 @@ jobs:
         run: |
           ARGO_CD_URL="argocd.staging.amplication-dev.com"
           argocd login $ARGO_CD_URL --username admin --password $ARGO_CD_PASSWORD --grpc-web
+      - name: Delete DSG runner infrastructure
+        id: delete-app-dsg
+        run: |
+          helm uninstall dsg-runner-infra --namespace $NAMESPACE-dsg
+          kubectl delete namespace $NAMESPACE-dsg
+        env:
+          NAMESPACE: ${{ github.event.inputs.namespace }}
       - name: delete namespace
         env:
           NAMESPACE: ${{ github.event.inputs.namespace }}

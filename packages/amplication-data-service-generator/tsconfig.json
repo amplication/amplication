@@ -18,5 +18,5 @@
     "jsx": "react"
   },
   "include": ["src"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/**.template.ts", "**/static/**/**"]
 }
