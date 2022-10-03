@@ -65,11 +65,6 @@ async function createServerInternal(
   logger.info("Creating Auth module...");
   const authModules = await createAuthModules();
 
-  logger.info("Creating application module...");
-  const appModule = await createAppModule({
-    modulesFiles: [...resourcesModules, ...staticModules],
-  });
-
   logger.info("Creating swagger...");
   const swaggerModule = await createSwagger();
 
@@ -81,6 +76,11 @@ async function createServerInternal(
 
   logger.info("Creating Message broker modules...");
   const messageBrokerModules = await createMessageBroker({});
+
+  logger.info("Creating application module...");
+  const appModule = await createAppModule({
+    modulesFiles: [...resourcesModules, ...staticModules],
+  });
 
   const createdModules = [
     ...resourcesModules,
