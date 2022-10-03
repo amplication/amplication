@@ -3,6 +3,7 @@ import { JsonValue } from "type-fest";
 import {
   Entity,
   EntityField,
+  Module,
   PrismaClientGenerator,
   PrismaDataSource,
 } from "./code-gen-types";
@@ -87,4 +88,8 @@ export interface CreateMessageBrokerServiceParams extends EventParams {}
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
 export interface CreateServerPackageJsonParams extends EventParams {
   updateValues: { [key: string]: JsonValue };
+}
+
+export interface CreateServerAppModuleParams extends EventParams {
+  modulesFiles: Module[];
 }
