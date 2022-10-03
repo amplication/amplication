@@ -95,7 +95,7 @@ const DATA_TYPE_TO_FIELD_INPUT: {
   [EnumDataType.Json]: null,
   [EnumDataType.Roles]: (field) =>
     jsxElement`<SelectArrayInput
-      source="${field.name}.roles"
+      source="${field.name}"
       choices={ROLES_OPTIONS}
       optionText="label"
       optionValue="value"

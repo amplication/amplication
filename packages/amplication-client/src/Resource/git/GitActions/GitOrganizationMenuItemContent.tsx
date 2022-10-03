@@ -15,7 +15,9 @@ export const GitOrganizationMenuItemContent = ({
   return (
     <span className={`${CLASS_NAME}`}>
       <img src={githubOrganizationImageUrl(name)} alt="Git organization" />
-      {isMenuTitle ? `${name} connected` : name}
+      <span className={`${CLASS_NAME}__text`}>
+        {isMenuTitle ? `${name} connected` : name}
+      </span>
     </span>
   );
 };

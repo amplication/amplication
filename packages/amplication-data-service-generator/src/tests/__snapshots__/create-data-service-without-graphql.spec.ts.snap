@@ -2443,7 +2443,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <TextInput label=\\"Username\\" source=\\"username\\" />
         <PasswordInput label=\\"Password\\" source=\\"password\\" />
         <SelectArrayInput
-          source=\\"roles.roles\\"
+          source=\\"roles\\"
           choices={ROLES_OPTIONS}
           optionText=\\"label\\"
           optionValue=\\"value\\"
@@ -2534,7 +2534,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <TextInput label=\\"Username\\" source=\\"username\\" />
         <PasswordInput label=\\"Password\\" source=\\"password\\" />
         <SelectArrayInput
-          source=\\"roles.roles\\"
+          source=\\"roles\\"
           choices={ROLES_OPTIONS}
           optionText=\\"label\\"
           optionValue=\\"value\\"
@@ -3253,11 +3253,7 @@ async function seed(bcryptSalt: Salt) {
   const data = {
     username: \\"admin\\",
     password: await hash(\\"admin\\", bcryptSalt),
-
-    roles: {
-      roles: [\\"user\\"],
-    },
-
+    roles: [\\"user\\"],
     name: \\"\\",
     bio: \\"\\",
     email: \\"example@example.com\\",
@@ -3411,10 +3407,6 @@ export class UserInfo implements Partial<User> {
   accessToken?: string;
 }
 ",
-  "server/src/auth/UserRoles.ts": "export type UserRoles = {
-  roles: string[];
-};
-",
   "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
 
 /**
@@ -3549,6 +3541,7 @@ import { PasswordService } from \\"./password.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { TokenService } from \\"./token.service\\";
+import { VALID_ID } from \\"../tests/auth/constants\\";
 
 const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
@@ -3562,7 +3555,7 @@ const USER: any = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   firstName: \\"ofek\\",
-  id: \\"1\\",
+  id: VALID_ID,
   lastName: \\"gabay\\",
   roles: [\\"admin\\"],
   updatedAt: new Date(),
@@ -3630,6 +3623,7 @@ describe(\\"AuthService\\", () => {
       ).resolves.toEqual({
         username: USER.username,
         roles: USER.roles,
+        id: USER.id,
       });
     });
 
@@ -3650,6 +3644,7 @@ describe(\\"AuthService\\", () => {
         username: USER.username,
         roles: USER.roles,
         accessToken: SIGN_TOKEN,
+        id: USER.id,
       });
     });
   });
@@ -3662,7 +3657,6 @@ import { UserService } from \\"../user/user.service\\";
 import { Credentials } from \\"./Credentials\\";
 import { PasswordService } from \\"./password.service\\";
 import { TokenService } from \\"./token.service\\";
-import { UserRoles } from \\"./UserRoles\\";
 import { UserInfo } from \\"./UserInfo\\";
 
 @Injectable()
@@ -3682,7 +3676,7 @@ export class AuthService {
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
       const { id, roles } = user;
-      const roleList = (roles as UserRoles).roles;
+      const roleList = roles as string[];
       return { id, username, roles: roleList };
     }
     return null;
@@ -3709,8 +3703,7 @@ export class AuthService {
   }
 }
 ",
-  "server/src/auth/base/token.service.base.ts": "/* eslint-disable import/no-unresolved */
-import { Injectable } from \\"@nestjs/common\\";
+  "server/src/auth/base/token.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from \\"../constants\\";
 import { ITokenService, ITokenPayload } from \\"../ITokenService\\";
 /**
@@ -3852,9 +3845,7 @@ export const UserRoles = createParamDecorator(
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { ExtractJwt, Strategy } from \\"passport-jwt\\";
 import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../../user/user.service\\";
+import { UserService } from \\"../../../user/user.service\\";
 import { UserInfo } from \\"../../UserInfo\\";
 
 export class JwtStrategyBase
@@ -3879,14 +3870,19 @@ export class JwtStrategyBase
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    if (
+      !Array.isArray(user.roles) ||
+      typeof user.roles !== \\"object\\" ||
+      user.roles === null
+    ) {
+      throw new Error(\\"User roles is not a valid value\\");
+    }
+    return { ...user, roles: user.roles as string[] };
   }
 }
 ",
   "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
 import { JWT_SECRET_KEY } from \\"../../constants\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
 import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
 @Injectable()
@@ -5410,12 +5406,20 @@ class UpdateCustomerArgs {
 export { UpdateCustomerArgs };
 ",
   "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { CustomerController } from \\"../customer.controller\\";
 import { CustomerService } from \\"../customer.service\\";
 
@@ -5512,6 +5516,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Customer\\", () => {
   let app: INestApplication;
 
@@ -5530,6 +5549,10 @@ describe(\\"Customer\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -6631,12 +6654,20 @@ class EmptyWhereUniqueInput {
 export { EmptyWhereUniqueInput };
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { EmptyController } from \\"../empty.controller\\";
 import { EmptyService } from \\"../empty.service\\";
 
@@ -6697,6 +6728,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Empty\\", () => {
   let app: INestApplication;
 
@@ -6715,6 +6761,10 @@ describe(\\"Empty\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -8501,12 +8551,20 @@ class UpdateOrderArgs {
 export { UpdateOrderArgs };
 ",
   "server/src/order/base/order.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { OrderController } from \\"../order.controller\\";
 import { OrderService } from \\"../order.service\\";
 
@@ -8567,6 +8625,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Order\\", () => {
   let app: INestApplication;
 
@@ -8585,6 +8658,10 @@ describe(\\"Order\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -9748,12 +9825,20 @@ class UserUpdateManyWithoutOrganizationsInput {
 export { UserUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { OrganizationController } from \\"../organization.controller\\";
 import { OrganizationService } from \\"../organization.service\\";
 
@@ -9818,6 +9903,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Organization\\", () => {
   let app: INestApplication;
 
@@ -9836,6 +9936,10 @@ describe(\\"Organization\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -11186,12 +11290,20 @@ class UpdateProfileArgs {
 export { UpdateProfileArgs };
 ",
   "server/src/profile/base/profile.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { ProfileController } from \\"../profile.controller\\";
 import { ProfileService } from \\"../profile.service\\";
 
@@ -11256,6 +11368,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Profile\\", () => {
   let app: INestApplication;
 
@@ -11274,6 +11401,10 @@ describe(\\"Profile\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -11890,6 +12021,8 @@ describe(\\"Testing the basicStrategyBase.validate()\\", () => {
   "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
 import { UserInfo } from \\"../../auth/UserInfo\\";
 
+export const VALID_ID = \\"1\\";
+
 export const TEST_USER: UserInfo = {
   id: \\"cl7qmjh4h0000tothyjqapgj5\\",
   roles: [\\"User\\"],
@@ -11935,14 +12068,12 @@ describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
   });
 });
 ",
-  "server/src/tests/auth/token.service.spec.ts": "/* eslint-disable import/no-unresolved */
-//@ts-ignore
-import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
+  "server/src/tests/auth/token.service.spec.ts": "import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
 import {
   INVALID_USERNAME_ERROR,
   INVALID_PASSWORD_ERROR,
-  //@ts-ignore
 } from \\"../../auth/constants\\";
+import { SIGN_TOKEN, VALID_CREDENTIALS, VALID_ID } from \\"./constants\\";
 
 describe(\\"Testing the TokenServiceBase\\", () => {
   let tokenServiceBase: TokenServiceBase;
@@ -11951,18 +12082,32 @@ describe(\\"Testing the TokenServiceBase\\", () => {
   });
   describe(\\"Testing the BasicTokenService.createToken()\\", () => {
     it(\\"should create valid token for given username and password\\", async () => {
-      expect(await tokenServiceBase.createToken(\\"admin\\", \\"admin\\")).toBe(
-        \\"YWRtaW46YWRtaW4=\\"
-      );
+      expect(
+        await tokenServiceBase.createToken({
+          id: VALID_ID,
+          username: \\"admin\\",
+          password: \\"admin\\",
+        })
+      ).toBe(\\"YWRtaW46YWRtaW4=\\");
     });
     it(\\"should reject when username missing\\", () => {
       //@ts-ignore
-      const result = tokenServiceBase.createToken(null, \\"admin\\");
+      const result = tokenServiceBase.createToken({
+        id: VALID_ID,
+        //@ts-ignore
+        username: null,
+        password: VALID_CREDENTIALS.password,
+      });
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
     });
     it(\\"should reject when password missing\\", () => {
       //@ts-ignore
-      const result = tokenServiceBase.createToken(\\"admin\\", null);
+      const result = tokenServiceBase.createToken({
+        id: VALID_ID,
+        username: VALID_CREDENTIALS.username,
+        //@ts-ignore
+        password: null,
+      });
       return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
     });
   });
@@ -12221,7 +12366,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { JsonValue } from \\"type-fest\\";
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
@@ -12242,7 +12387,7 @@ class User {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   roles!: JsonValue;
 
   @ApiProperty({
@@ -12372,7 +12517,7 @@ class User {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   extendedProperties!: JsonValue;
 
   @ApiProperty({
@@ -12412,7 +12557,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -12443,7 +12588,7 @@ class UserCreateInput {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   roles!: InputJsonValue;
 
   @ApiProperty({
@@ -12572,7 +12717,7 @@ class UserCreateInput {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   extendedProperties!: InputJsonValue;
 
   @ApiProperty({
@@ -12951,7 +13096,7 @@ import {
   IsBoolean,
 } from \\"class-validator\\";
 
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -12989,7 +13134,7 @@ class UserUpdateInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => GraphQLJSON, {
     nullable: true,
   })
   roles?: InputJsonValue;
@@ -13148,7 +13293,7 @@ class UserUpdateInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => GraphQLJSON, {
     nullable: true,
   })
   extendedProperties?: InputJsonValue;
@@ -13402,12 +13547,20 @@ class UserWhereUniqueInput {
 export { UserWhereUniqueInput };
 ",
   "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { UserController } from \\"../user.controller\\";
 import { UserService } from \\"../user.service\\";
 
@@ -13500,6 +13653,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"User\\", () => {
   let app: INestApplication;
 
@@ -13518,6 +13686,10 @@ describe(\\"User\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();

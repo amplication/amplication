@@ -24,17 +24,17 @@ describe("Test that the entity dto is creating properly", () => {
       entity.fields = [trueJsonFiled];
       const code = printTypescript(createEntityDTO(entity));
       expect(code).toMatchInlineSnapshot(`
-"@ObjectType()
-class ClassName {
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSON()
-  @Field(() => GraphQLJSONObject)
-  JsonFieldName!: JsonValue;
-}
-"
-`);
+        "@ObjectType()
+        class ClassName {
+          @ApiProperty({
+            required: true,
+          })
+          @IsJSON()
+          @Field(() => GraphQLJSON)
+          JsonFieldName!: JsonValue;
+        }
+        "
+      `);
     });
     it("should return the same class as if all properties was true", () => {
       const falseJsonFiled: EntityField = {
@@ -46,20 +46,20 @@ class ClassName {
       entity.fields = [falseJsonFiled];
       const code = printTypescript(createEntityDTO(entity));
       expect(code).toMatchInlineSnapshot(`
-"@ObjectType()
-class ClassName {
-  @ApiProperty({
-    required: false,
-  })
-  @IsJSON()
-  @IsOptional()
-  @Field(() => GraphQLJSONObject, {
-    nullable: true,
-  })
-  JsonFieldName!: JsonValue;
-}
-"
-`);
+        "@ObjectType()
+        class ClassName {
+          @ApiProperty({
+            required: false,
+          })
+          @IsJSON()
+          @IsOptional()
+          @Field(() => GraphQLJSON, {
+            nullable: true,
+          })
+          JsonFieldName!: JsonValue;
+        }
+        "
+      `);
     });
   });
 });

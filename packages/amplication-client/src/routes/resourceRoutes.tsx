@@ -72,7 +72,7 @@ const resourceRoutes = [
     Component: lazy(() => import("../MessageBrokerServices/ServicesPage")),
     moduleName: "",
     routeTrackType: "",
-    exactPath: false
+    exactPath: false,
   },
   {
     path: "/:workspace/:project/:resource/service-connections",

@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: webhook
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  dependencies:
+    - name: test-dep
+      eventSourceName: webhook
+      eventName: example
+  triggers:
+    - template:
+        name: webhook-pod-trigger
+        k8s:
+          operation: create
+          source:
+            resource:
+              apiVersion: batch/v1
+              kind: Job
+              metadata:
+                generateName: dsg-job-
+              spec:
+                template:
+                  spec:
+                    nodeSelector:
+                      role: dsg
+                    tolerations:
+                      - key: dedicated
+                        value: dsg
+                    restartPolicy: Never
+                    containers:
+                      - name: hello-container
+                        args:
+                          - "hello-world"
+                        command:
+                          - cowsay
+                        image: "docker/whalesay:latest"
+                        env:
+                          - name: BUILD_ID
+                            value: null # provided in parameters
+                    volumes:
+                      - name: persistent-storage
+                        persistentVolumeClaim:
+                          claimName: efs-claim-{{ .Values.envName}}-dsg
+                ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+                backoffLimit: 0
+          parameters:
+            - src:
+                dependencyName: test-dep
+                dataKey: body.buildId
+              dest: spec.template.spec.containers.0.env.0.value
+            - src:
+                dependencyName: webhook
+                dataTemplate: "/efs/dsg-jobs/{{`{{ .Input.body.buildId }}`}}" # need to escape this due to helm chart
+              dest: spec.template.spec.containers.0.volumeMounts.0.mountPath
+            - src:
+                dependencyName: webhook
+                dataTemplate: "dsg-jobs/{{`{{ .Input.body.buildId }}`}}" # need to esacpe this due to helm chart
+              dest: spec.template.spec.containers.0.volumeMounts.0.subPath
