@@ -18,6 +18,15 @@
         "passWithNoTests": true
       }
     },
+    "test:e2e": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/amplication-server"],
+      "options": {
+        "jestConfig": "packages/amplication-server/jest.config.e2e.ts",
+        "passWithNoTests": true,
+        "runInBand": true
+      }
+    },
     "build": {
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
@@ -45,6 +54,14 @@
         "production": {
           "buildTarget": "amplication-git-pull-service:build:production"
         }
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "packages/amplication-prisma-db",
+        "envFile": "packages/amplication-server/.env"
       }
     }
   },
