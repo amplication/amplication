@@ -1,6 +1,6 @@
 ## LinkedIn:
 
-https://www.linkedin.com/feed/update/urn:li:activity:6983013326859456512/
+https://www.linkedin.com/posts/activity-6983013326859456512-xmIP?utm_source=share&utm_medium=member_desktop
 
 ## Twitter:
 
