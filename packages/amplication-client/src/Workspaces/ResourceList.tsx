@@ -17,6 +17,7 @@ import "./ResourceList.scss";
 import { AppContext } from "../context/appContext";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
+import { pluralize } from "../util/pluralize";
 
 type TDeleteData = {
   deleteResource: models.Resource;
@@ -94,7 +95,7 @@ function ResourceList() {
         )}
       </div>
       <hr className={`${CLASS_NAME}__separator`} />
-      <div className={`${CLASS_NAME}__title`}>{resources.length} Resources</div>
+      <div className={`${CLASS_NAME}__title`}>{resources.length} {pluralize(resources.length, 'Resource', 'Resources')}</div>
       {loadingResources && <CircularProgress centerToParent />}
 
       <div className={`${CLASS_NAME}__content`}>

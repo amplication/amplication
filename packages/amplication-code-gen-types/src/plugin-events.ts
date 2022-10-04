@@ -1,5 +1,3 @@
-import { Promisable } from "type-fest";
-import { Module } from "./code-gen-types";
 import {
   CreateAdminModulesParams,
   CreateAuthModulesParams,
@@ -13,14 +11,15 @@ import {
   CreateMessageBrokerServiceBaseParams,
   CreateMessageBrokerServiceParams,
   CreateMessageBrokerTopicsEnumParams,
-  CreateServerPackageJsonParams,
   CreatePrismaSchemaParams,
+  CreateServerAppModuleParams,
   CreateServerDockerComposeDBParams,
   CreateServerDockerComposeParams,
   CreateServerDotEnvParams,
+  CreateServerPackageJsonParams,
   CreateServerParams,
 } from "./plugin-events-params";
-import { DsgContext, EventNames, PluginEventType } from "./plugins-types";
+import { EventNames, PluginEventType } from "./plugins-types";
 
 export type Events = {
   [EventNames.CreateAuthModules]?: PluginEventType<CreateAuthModulesParams>;
@@ -63,5 +62,8 @@ export type Events = {
   >;
   [EventNames.CreatePackageJson]?: PluginEventType<
     CreateServerPackageJsonParams
+  >;
+  [EventNames.CreateServerAppModule]?: PluginEventType<
+    CreateServerAppModuleParams
   >;
 };

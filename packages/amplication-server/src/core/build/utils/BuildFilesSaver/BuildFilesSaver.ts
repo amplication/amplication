@@ -1,4 +1,4 @@
-import { Module } from '@amplication/data-service-generator';
+import { Module } from '@amplication/code-gen-types';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { outputFile, remove } from 'fs-extra';
