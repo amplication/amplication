@@ -1,22 +1,22 @@
-import * as os from 'os';
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import { IGitPullEvent } from '../../contracts/interfaces/gitPullEvent.interface';
-import { EnumGitPullEventStatus } from '../../contracts/enums/gitPullEventStatus.enum';
-import { EventData } from '../../contracts/interfaces/eventData';
-import { GitProviderEnum } from '../../contracts/enums/gitProvider.enum';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { LoggerMessages } from '../../constants/loggerMessages';
-import { ConfigService } from '@nestjs/config';
-import { PushEventMessage } from '../../contracts/interfaces/pushEventMessage';
-import { convertToNumber } from '../../utils/convertToNumber';
-import { IGitPullEventRepository } from '../../contracts/interfaces/gitPullEventRepository.interface';
-import { IStorage } from '../../contracts/interfaces/storage.interface';
-import { IGitClient } from '../../contracts/interfaces/gitClient.interface';
-import { IGitHostProviderFactory } from '../../contracts/interfaces/gitHostProviderFactory.interface';
-import { DEFAULT_GITHUB_PULL_FOLDER } from '../../constants';
+import * as os from "os";
+import { Inject, Injectable, LoggerService } from "@nestjs/common";
+import { IGitPullEvent } from "../../contracts/interfaces/gitPullEvent.interface";
+import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
+import { EventData } from "../../contracts/interfaces/eventData";
+import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
+import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
+import { LoggerMessages } from "../../constants/loggerMessages";
+import { ConfigService } from "@nestjs/config";
+import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
+import { convertToNumber } from "../../utils/convertToNumber";
+import { IGitPullEventRepository } from "../../contracts/interfaces/gitPullEventRepository.interface";
+import { IStorage } from "../../contracts/interfaces/storage.interface";
+import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
+import { IGitHostProviderFactory } from "../../contracts/interfaces/gitHostProviderFactory.interface";
+import { DEFAULT_GITHUB_PULL_FOLDER } from "../../constants";
 
-const ROOT_STORAGE_DIR = 'STORAGE_PATH';
-const PRISMA_SKIP_VALUE = 'MAX_SNAPSHOTS';
+const ROOT_STORAGE_DIR = "STORAGE_PATH";
+const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
 
 @Injectable()
 export class GitPullEventService implements IGitPullEvent {
@@ -24,19 +24,19 @@ export class GitPullEventService implements IGitPullEvent {
   skipPrismaValue: number;
   constructor(
     private configService: ConfigService,
-    @Inject('IGitHostProviderFactory')
+    @Inject("IGitHostProviderFactory")
     private gitHostProviderFactory: IGitHostProviderFactory,
-    @Inject('IGitPullEventRepository')
+    @Inject("IGitPullEventRepository")
     private gitPullEventRepository: IGitPullEventRepository,
-    @Inject('IGitClient') private gitClientService: IGitClient,
-    @Inject('IStorage') private storageService: IStorage,
+    @Inject("IGitClient") private gitClientService: IGitClient,
+    @Inject("IStorage") private storageService: IStorage,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
   ) {
     this.rootStorageDir =
       this.configService.get<string>(ROOT_STORAGE_DIR) ||
       DEFAULT_GITHUB_PULL_FOLDER;
     this.skipPrismaValue = convertToNumber(
-      this.configService.get<string>(PRISMA_SKIP_VALUE) || '0'
+      this.configService.get<string>(PRISMA_SKIP_VALUE) || "0"
     );
   }
 
@@ -89,10 +89,10 @@ export class GitPullEventService implements IGitPullEvent {
           GitPullEventService.name,
           { err: err.message },
           LoggerMessages.error.CATCH_ERROR_MESSAGE,
-          'pushEventHandler method'
+          "pushEventHandler method"
         );
       } else {
-        console.log('Unexpected error', err);
+        console.log("Unexpected error", err);
       }
     }
   }

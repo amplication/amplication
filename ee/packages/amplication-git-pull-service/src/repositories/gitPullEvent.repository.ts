@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
-import { IGitPullEventRepository } from '../contracts/interfaces/gitPullEventRepository.interface';
-import { EventData } from '../contracts/interfaces/eventData';
-import { CustomError } from '../errors/CustomError';
-import { EnumGitPullEventStatus } from '../contracts/enums/gitPullEventStatus.enum';
-import { GitProviderEnum } from '../contracts/enums/gitProvider.enum';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "nestjs-prisma";
+import { IGitPullEventRepository } from "../contracts/interfaces/gitPullEventRepository.interface";
+import { EventData } from "../contracts/interfaces/eventData";
+import { CustomError } from "../errors/CustomError";
+import { EnumGitPullEventStatus } from "../contracts/enums/gitPullEventStatus.enum";
+import { GitProviderEnum } from "../contracts/enums/gitProvider.enum";
 
 @Injectable()
 export class GitPullEventRepository implements IGitPullEventRepository {
@@ -19,7 +19,7 @@ export class GitPullEventRepository implements IGitPullEventRepository {
         },
       });
     } catch (err) {
-      throw new CustomError('failed to create a new record in DB', err);
+      throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
@@ -32,7 +32,7 @@ export class GitPullEventRepository implements IGitPullEventRepository {
 
       return updatedEvent.status === EnumGitPullEventStatus.Ready;
     } catch (err) {
-      throw new CustomError('failed to create a new record in DB', err);
+      throw new CustomError("failed to create a new record in DB", err);
     }
   }
 
@@ -57,7 +57,7 @@ export class GitPullEventRepository implements IGitPullEventRepository {
           },
         },
         orderBy: {
-          pushedAt: 'desc',
+          pushedAt: "desc",
         },
         skip: skip,
         take: 1,
@@ -75,7 +75,7 @@ export class GitPullEventRepository implements IGitPullEventRepository {
 
       return previousReadyCommit.shift();
     } catch (err) {
-      throw new CustomError('failed to find previous ready commit in DB', err);
+      throw new CustomError("failed to find previous ready commit in DB", err);
     }
   }
 }

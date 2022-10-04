@@ -1,4 +1,4 @@
-import { PushEventMessage } from './pushEventMessage';
+import { PushEventMessage } from "./pushEventMessage";
 
 export interface IGitClient {
   clone: (

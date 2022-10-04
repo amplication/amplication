@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as winston from 'winston';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import * as winston from "winston";
 import {
   WinstonModuleOptionsFactory,
   WinstonModuleOptions,
-} from 'nest-winston';
-import * as winstonCloudLogging from 'winston-cloud-logging';
+} from "nest-winston";
+import * as winstonCloudLogging from "winston-cloud-logging";
 
-export const LEVEL = 'info';
+export const LEVEL = "info";
 
 /**
  * Defines configuration for logging
@@ -31,7 +31,7 @@ export class WinstonConfigService implements WinstonModuleOptionsFactory {
     return {
       level: LEVEL,
       format:
-        this.configService.get('NODE_ENV') === 'production'
+        this.configService.get("NODE_ENV") === "production"
           ? this.productionFormat
           : this.developmentFormat,
       transports: [new winston.transports.Console()],

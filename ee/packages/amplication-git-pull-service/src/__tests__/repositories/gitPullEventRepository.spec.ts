@@ -1,12 +1,12 @@
-import { PrismaService } from 'nestjs-prisma';
-import { GitPullEventRepository } from '../../repositories/gitPullEvent.repository';
-import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaService } from "nestjs-prisma";
+import { GitPullEventRepository } from "../../repositories/gitPullEvent.repository";
+import { Test, TestingModule } from "@nestjs/testing";
 import {
   MOCK_EVENT_DATA,
   MOCK_UPDATED_EVENT_DATA,
-} from '../../__mocks__/stubs/gitClient.stub';
-import { eventRepositoryStub } from '../../__mocks__/stubs/eventRepository.stub';
-import { EnumGitPullEventStatus } from '../../contracts/enums/gitPullEventStatus.enum';
+} from "../../__mocks__/stubs/gitClient.stub";
+import { eventRepositoryStub } from "../../__mocks__/stubs/eventRepository.stub";
+import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
 
 const prismaGitPullEventCreateMock = jest.fn(() =>
   Promise.resolve({ id: BigInt(123) })
@@ -18,7 +18,7 @@ const prismaGitPullEventManyMock = jest.fn(async () =>
   Promise.resolve([MOCK_EVENT_DATA])
 );
 
-describe('Testing GitPullEventRepository', () => {
+describe("Testing GitPullEventRepository", () => {
   let gitPullEventRepository: GitPullEventRepository;
 
   beforeEach(async () => {
@@ -44,11 +44,11 @@ describe('Testing GitPullEventRepository', () => {
     );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(gitPullEventRepository).toBeDefined();
   });
 
-  it('should create a new record on database', async () => {
+  it("should create a new record on database", async () => {
     const newRecord = await gitPullEventRepository.create(
       eventRepositoryStub.create
     );
@@ -71,7 +71,7 @@ describe('Testing GitPullEventRepository', () => {
     );
   });
 
-  it('should return a single gitPullEvent record with status ready', async () => {
+  it("should return a single gitPullEvent record with status ready", async () => {
     const { eventData, skip } = eventRepositoryStub.findByPreviousReadyCommit;
     expect(
       await gitPullEventRepository.findByPreviousReadyCommit(

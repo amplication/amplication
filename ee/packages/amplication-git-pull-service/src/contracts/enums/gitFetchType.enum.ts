@@ -1,4 +1,4 @@
 export enum GitFetchTypeEnum {
-  Clone = 'clone',
-  Pull = 'pull',
+  Clone = "clone",
+  Pull = "pull",
 }

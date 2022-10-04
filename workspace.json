@@ -2,7 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "amplication-kafka": "packages/amplication-kafka",
-    "amplication-git-pull-service": "ee/packages/amplication-git-pull-service"
+    "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
+    "amplication-kafka": "packages/amplication-kafka"
   }
 }
