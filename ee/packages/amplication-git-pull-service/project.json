@@ -75,6 +75,13 @@
         "cwd": "ee/packages/amplication-git-pull-service"
       }
     },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
     "db:init": {
       "executor": "nx:run-commands",
       "options": {
