@@ -1,0 +1,113 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-server/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/amplication-server/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/amplication-server"],
+      "options": {
+        "jestConfig": "packages/amplication-server/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/amplication-server",
+        "main": "packages/amplication-server/src/main.ts",
+        "tsConfig": "packages/amplication-server/tsconfig.app.json"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "amplication-git-pull-service:build",
+        "inspect": true,
+        "port": 9229
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-git-pull-service:build:production"
+        }
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "db:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx db:migrate:dev amplication-git-pull-service",
+          "nx db:migrate:deploy amplication-git-pull-service",
+          "nx db:seed amplication-git-pull-service"
+        ],
+        "parallel": false,
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/seed.ts",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/clean.ts",
+        "cwd": "packages/amplication-server"
+      }
+    }
+  },
+  "tags": []
+}
