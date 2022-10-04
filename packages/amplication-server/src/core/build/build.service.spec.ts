@@ -14,7 +14,6 @@ import {
   ENTITIES_INCLUDE,
   ACTION_INCLUDE
 } from './build.service';
-import * as DataServiceGenerator from '@amplication/data-service-generator';
 import { EntityService } from '..';
 import { ResourceRoleService } from '../resourceRole/resourceRole.service';
 import { ResourceService } from '../resource/resource.service';
@@ -46,7 +45,6 @@ import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 
 jest.mock('winston');
-jest.mock('@amplication/data-service-generator');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
@@ -500,142 +498,6 @@ describe('BuildService', () => {
 
   test('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  test('creates build', async () => {
-    // eslint-disable-next-line
-    // @ts-ignore
-    DataServiceGenerator.createDataService.mockImplementation(
-      () => EXAMPLE_MODULES
-    );
-
-    const args = {
-      data: {
-        createdBy: {
-          connect: {
-            id: EXAMPLE_USER_ID
-          }
-        },
-        resource: {
-          connect: {
-            id: EXAMPLE_RESOURCE_ID
-          }
-        },
-        message: EXAMPLE_BUILD.message,
-        commit: {
-          connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
-        }
-      }
-    };
-    const commitId = EXAMPLE_COMMIT_ID;
-    const version = commitId.slice(commitId.length - 8);
-    const latestEntityVersions = [{ id: EXAMPLE_ENTITY_VERSION_ID }];
-    expect(await service.create(args)).toEqual(
-      EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
-    );
-    expect(entityServiceGetLatestVersionsMock).toBeCalledTimes(1);
-    expect(entityServiceGetLatestVersionsMock).toBeCalledWith({
-      where: { resource: { id: EXAMPLE_RESOURCE_ID } }
-    });
-    expect(prismaBuildCreateMock).toBeCalledTimes(1);
-    expect(prismaBuildCreateMock).toBeCalledWith({
-      ...args,
-      data: {
-        ...args.data,
-        version,
-        createdAt: expect.any(Date),
-        blockVersions: {
-          connect: []
-        },
-        entityVersions: {
-          connect: latestEntityVersions.map(version => ({ id: version.id }))
-        },
-        action: {
-          create: {
-            steps: {
-              create: {
-                ...EXAMPLE_CREATE_INITIAL_STEP_DATA,
-                completedAt: expect.any(Date)
-              }
-            }
-          }
-        }
-      },
-      include: {
-        commit: true,
-        resource: true
-      }
-    });
-    expect(loggerChildMock).toBeCalledTimes(1);
-    expect(loggerChildMock).toBeCalledWith({
-      buildId: EXAMPLE_BUILD_ID
-    });
-    expect(loggerChildInfoMock).toBeCalledTimes(2);
-    expect(loggerChildInfoMock).toBeCalledWith(JOB_STARTED_LOG);
-    expect(loggerChildInfoMock).toBeCalledWith(JOB_DONE_LOG);
-    expect(loggerChildMock).toBeCalledTimes(1);
-    expect(loggerChildMock).toBeCalledWith({
-      buildId: EXAMPLE_BUILD_ID
-    });
-    expect(loggerChildInfoMock).toBeCalledTimes(2);
-    expect(loggerChildInfoMock.mock.calls).toEqual([
-      [JOB_STARTED_LOG],
-      [JOB_DONE_LOG]
-    ]);
-    expect(loggerChildErrorMock).toBeCalledTimes(0);
-
-    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledTimes(1);
-    expect(entityServiceGetEntitiesByVersionsMock).toBeCalledWith({
-      where: {
-        builds: {
-          some: {
-            id: EXAMPLE_BUILD_ID
-          }
-        }
-      },
-      include: ENTITIES_INCLUDE
-    });
-    expect(resourceRoleServiceGetResourceRolesMock).toBeCalledTimes(1);
-    expect(resourceRoleServiceGetResourceRolesMock).toBeCalledWith({
-      where: {
-        resource: {
-          id: EXAMPLE_RESOURCE_ID
-        }
-      }
-    });
-    expect(DataServiceGenerator.createDataService).toBeCalledTimes(1);
-    expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
-    expect(winstonLoggerDestroyMock).toBeCalledWith();
-    expect(actionServiceRunMock).toBeCalledTimes(1);
-    expect(actionServiceRunMock.mock.calls).toEqual([
-      [
-        EXAMPLE_BUILD.actionId,
-        GENERATE_STEP_NAME,
-        GENERATE_STEP_MESSAGE,
-        expect.any(Function)
-      ]
-    ]);
-    expect(actionServiceLogInfoMock).toBeCalledTimes(2);
-    expect(actionServiceLogInfoMock.mock.calls).toEqual([
-      [EXAMPLE_ACTION_STEP, ACTION_ZIP_LOG],
-      [EXAMPLE_ACTION_STEP, ACTION_JOB_DONE_LOG]
-    ]);
-    expect(actionServiceLogMock).toBeCalledTimes(0);
-    expect(storageServiceDiskGetUrlMock).toBeCalledTimes(1);
-    expect(storageServiceDiskGetUrlMock).toBeCalledWith(
-      getBuildTarGzFilePath(EXAMPLE_BUILD.id)
-    );
-    expect(localDiskServiceGetDiskMock).toBeCalledTimes(0);
-    expect(winstonConsoleTransportOnMock).toBeCalledTimes(1);
-    /** @todo add expect(winstonConsoleTransportOnMock).toBeCalledWith() */
-    expect(winstonLoggerDestroyMock).toBeCalledTimes(1);
-    expect(winstonLoggerDestroyMock).toBeCalledWith();
-    expect(winston.createLogger).toBeCalledTimes(1);
-    /** @todo add expect(winston.createLogger).toBeCalledWith() */
-    expect(winston.transports.Console).toBeCalledTimes(1);
-    expect(winston.transports.Console).toBeCalledWith();
   });
 
   test('find many builds', async () => {

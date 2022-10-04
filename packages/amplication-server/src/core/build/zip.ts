@@ -1,8 +1,8 @@
 import AdmZip from 'adm-zip';
-import * as DataServiceGenerator from '@amplication/data-service-generator';
+import { Module } from '@amplication/code-gen-types';
 
 export async function createZipFileFromModules(
-  modules: DataServiceGenerator.Module[]
+  modules: Module[]
 ): Promise<Buffer> {
   const zip = new AdmZip();
   await Promise.all(

@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@amplication/code-gen-types": "^1.0.2",
-    "@amplication/data-service-generator": "^1.0.2",
     "@amplication/git-service": "^1.0.2",
     "@amplication/kafka": "^1.0.2",
     "@amplication/prisma-db": "^1.0.2",

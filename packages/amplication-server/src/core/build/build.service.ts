@@ -9,7 +9,6 @@ import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
 import path, { join } from 'path';
-import * as DataServiceGenerator from '@amplication/data-service-generator';
 import * as CodeGenTypes from '@amplication/code-gen-types';
 import { ResourceRole, User } from '../../models';
 import { Build } from './dto/Build';
@@ -361,10 +360,11 @@ export class BuildService {
           logPromises
         ] = this.createDataServiceLogger(build, step);
 
-        const modules = await DataServiceGenerator.createDataService(
-          dSGResourceData,
-          dataServiceGeneratorLogger
-        );
+        const modules = [];
+        // await DataServiceGenerator.createDataService(
+        //   dSGResourceData,
+        //   dataServiceGeneratorLogger
+        // );
 
         await Promise.all(logPromises);
 
