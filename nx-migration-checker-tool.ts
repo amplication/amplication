@@ -63,20 +63,20 @@ async function main() {
 
   let installCmdDependencies = `npm install`;
   let installCmdDevDependencies = `npm install -D`;
+  const tempStore: any = [];
 
   Object.values(report.dependencies)
     .filter((d: any) => d.status === DependencyStatus.OK && !d.rootValue)
     .filter((d: any) => !d.name.includes("@amplication/"))
-    .forEach(
-      (d: any) =>
-        (installCmdDependencies += ` ${d.name}@^${d.targetValue.replace(
-          "^",
-          ""
-        )}`)
-    );
+    .forEach((d: any) => {
+      installCmdDependencies += ` ${d.name}@^${d.targetValue.replace("^", "")}`;
+      tempStore.push(d.name);
+    });
+
   Object.values(report.devDependencies)
     .filter((d: any) => d.status === DependencyStatus.OK && !d.rootValue)
     .filter((d: any) => !d.name.includes("@amplication/"))
+    .filter((d: any) => !rootDependencies.hasOwnProperty(d.name))
     .forEach(
       (d: any) =>
         (installCmdDevDependencies += ` ${d.name}@^${d.targetValue.replace(

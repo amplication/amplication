@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@amplication/code-gen-types": "^1.0.2",
-    "@amplication/git-service": "^1.0.2",
+    "@amplication/git-utils": "^1.0.2",
     "@amplication/kafka": "^1.0.2",
     "@amplication/prisma-db": "^1.0.2",
     "@apollo/gateway": "0.42.3",
