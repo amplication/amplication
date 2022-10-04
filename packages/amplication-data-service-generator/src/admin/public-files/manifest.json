@@ -16,6 +16,21 @@
       "src": "logo512.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "graphql.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "react-admin.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "restapi.png",
+      "type": "image/png",
+      "sizes": "48x48"
     }
   ],
   "start_url": ".",

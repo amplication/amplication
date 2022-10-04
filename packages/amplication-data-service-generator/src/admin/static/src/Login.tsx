@@ -26,10 +26,7 @@ const Login = ({ theme }: { theme?: object }) => {
       <div className={`${CLASS_NAME}`}>
         <div className={`${CLASS_NAME}__wrapper`}>
           <div className={`${CLASS_NAME}__box`}>
-            <img
-              src="https://amplication.com/assets/graphql.png"
-              alt="GraphQL API"
-            />
+            <img src="/graphql.png" alt="GraphQL API" />
             <h2>Connect via GraphQL</h2>
             <div className={`${CLASS_NAME}__box__message`}>
               Connect to the server using GraphQL API with a complete and
@@ -45,10 +42,7 @@ const Login = ({ theme }: { theme?: object }) => {
             </Button>
           </div>
           <div className={`${CLASS_NAME}__box`}>
-            <img
-              src="https://amplication.com/assets/react-admin.png"
-              alt="React-Admin"
-            />
+            <img src="/react-admin.png" alt="React-Admin" />
             <h2>Admin UI</h2>
             <div className={`${CLASS_NAME}__box__message`}>
               Sign in to a React-Admin client with ready-made forms for creating
@@ -81,10 +75,7 @@ const Login = ({ theme }: { theme?: object }) => {
             </form>
           </div>
           <div className={`${CLASS_NAME}__box`}>
-            <img
-              src="https://amplication.com/assets/restapi.png"
-              alt="REST API"
-            />
+            <img src="/restapi.png" alt="REST API" />
             <h2>Connect via REST API</h2>
             <div className={`${CLASS_NAME}__box__message`}>
               Connect to the server using REST API with a built-in Swagger
