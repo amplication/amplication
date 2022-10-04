@@ -34,7 +34,7 @@
   },
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@actions/core": "1.9.0"
+    "@actions/core": "1.9.1"
   },
   "devDependencies": {
     "eslint": "8.17.0",
