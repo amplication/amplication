@@ -7,15 +7,15 @@ import {
   GitModule,
   GitService,
   GithubService,
-  GitServiceFactory
-} from '@amplication/git-service';
+  GitServiceFactory,
+} from '@amplication/git-utils';
 import { GitProviderService } from './git.provider.service';
 @Module({
   imports: [
     PermissionsModule,
     forwardRef(() => ResourceModule),
     PrismaModule,
-    GitModule
+    GitModule,
   ],
   providers: [
     GitProviderService,
@@ -23,7 +23,7 @@ import { GitProviderService } from './git.provider.service';
     GitService,
     GithubService,
     PrismaService,
-    GitServiceFactory
-  ]
+    GitServiceFactory,
+  ],
 })
 export class GitProviderModule {}

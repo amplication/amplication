@@ -1,5 +1,6 @@
-import { GithubService } from '@amplication/git-service/src/providers/github.service';
-import { GitServiceFactory } from '@amplication/git-service/src/utils/GitServiceFactory';
+import { GithubService } from '@amplication/git-utils/providers/github.service';
+import { GitServiceFactory } from '@amplication/git-utils/utils/GitServiceFactory';
+
 import { mock } from 'jest-mock-extended';
 import { EnumGitProvider } from '../../dto/enums/EnumGitProvider';
 

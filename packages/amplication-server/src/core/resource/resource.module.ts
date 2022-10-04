@@ -9,7 +9,7 @@ import { EnvironmentModule } from '../environment/environment.module';
 import { ResourceService } from './resource.service';
 import { ResourceResolver } from './resource.resolver';
 import { CommitModule } from '../commit/commit.module'; // eslint-disable-line import/no-cycle
-import { GitModule } from '@amplication/git-service';
+import { GitModule } from '@amplication/git-utils';
 import { ServiceSettingsModule } from '../serviceSettings/serviceSettings.module';
 import { ProjectConfigurationSettingsModule } from '../projectConfigurationSettings/projectConfigurationSettings.module';
 import { ProjectModule } from '../project/project.module';
@@ -29,9 +29,9 @@ import { ServiceTopicsModule } from '../serviceTopics/serviceTopics.module';
     BlockModule,
     GitModule,
     ProjectConfigurationSettingsModule,
-    forwardRef(() => ProjectModule)
+    forwardRef(() => ProjectModule),
   ],
   providers: [ResourceService, ResourceResolver],
-  exports: [ResourceService, ResourceResolver]
+  exports: [ResourceService, ResourceResolver],
 })
 export class ResourceModule {}

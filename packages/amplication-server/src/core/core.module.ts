@@ -15,7 +15,7 @@ import { CommitModule } from './commit/commit.module';
 import { MailModule } from './mail/mail.module';
 import { ServiceSettingsModule } from './serviceSettings/serviceSettings.module';
 import { SubscriptionModule } from './subscription/subscription.module';
-import { GitModule } from '@amplication/git-service';
+import { GitModule } from '@amplication/git-utils';
 import { GitProviderModule } from './git/git.provider.module';
 import { ProjectModule } from './project/project.module';
 import { HealthModule } from './health/health.module';
@@ -48,7 +48,7 @@ import { ServiceTopicsModule } from './serviceTopics/serviceTopics.module';
     HealthModule,
     PluginInstallationModule,
     TopicModule,
-    ServiceTopicsModule
+    ServiceTopicsModule,
   ],
   exports: [
     AccountModule,
@@ -73,7 +73,7 @@ import { ServiceTopicsModule } from './serviceTopics/serviceTopics.module';
     ProjectModule,
     PluginInstallationModule,
     TopicModule,
-    ServiceTopicsModule
-  ]
+    ServiceTopicsModule,
+  ],
 })
 export class CoreModule {}

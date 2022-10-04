@@ -1,7 +1,7 @@
 {
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ee/packages/amplication-git-pull-service/src",
-  "projectType": "library",
+  "projectType": "application",
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",

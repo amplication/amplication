@@ -12,7 +12,7 @@ import {
   ACTION_ZIP_LOG,
   BuildService,
   ENTITIES_INCLUDE,
-  ACTION_INCLUDE
+  ACTION_INCLUDE,
 } from './build.service';
 import { EntityService } from '..';
 import { ResourceRoleService } from '../resourceRole/resourceRole.service';
@@ -30,10 +30,10 @@ import { Resource, Commit, Entity } from '../../models';
 import {
   ActionStep,
   EnumActionLogLevel,
-  EnumActionStepStatus
+  EnumActionStepStatus,
 } from '../action/dto';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
-import { GitService } from '@amplication/git-service';
+import { GitService } from '@amplication/git-utils';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
 import { ServiceSettingsValues } from '../serviceSettings/constants';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
@@ -48,11 +48,11 @@ jest.mock('winston');
 
 const winstonConsoleTransportOnMock = jest.fn();
 const MOCK_CONSOLE_TRANSPORT = {
-  on: winstonConsoleTransportOnMock
+  on: winstonConsoleTransportOnMock,
 };
 const winstonLoggerDestroyMock = jest.fn();
 const MOCK_LOGGER = {
-  destroy: winstonLoggerDestroyMock
+  destroy: winstonLoggerDestroyMock,
 };
 // eslint-disable-next-line
 // @ts-ignore
@@ -84,12 +84,12 @@ const EXAMPLE_APP_SETTINGS_VALUES: Omit<ServiceSettingsValues, 'id'> = {
   serverSettings: {
     generateGraphQL: true,
     generateRestApi: true,
-    serverPath: ''
+    serverPath: '',
   },
   adminUISettings: {
     generateAdminUI: true,
-    adminUIPath: ''
-  }
+    adminUIPath: '',
+  },
 };
 
 const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
@@ -105,14 +105,14 @@ const EXAMPLE_PLUGIN_INSTALLATION: PluginInstallation = {
   enabled: true,
   npm: '@amplication/example-plugin',
   pluginId: '@amplication/example-plugin',
-  blockType: EnumBlockType.PluginInstallation
+  blockType: EnumBlockType.PluginInstallation,
 };
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  message: EXAMPLE_MESSAGE
+  message: EXAMPLE_MESSAGE,
 };
 
 const EXAMPLE_GENERATE_STEP = {
@@ -120,23 +120,23 @@ const EXAMPLE_GENERATE_STEP = {
   createdAt: new Date(),
   message: GENERATE_STEP_MESSAGE,
   name: GENERATE_STEP_NAME,
-  status: EnumActionStepStatus.Running
+  status: EnumActionStepStatus.Running,
 };
 const EXAMPLE_COMPLETED_GENERATE_STEP = {
   ...EXAMPLE_GENERATE_STEP,
   status: EnumActionStepStatus.Success,
-  completedAt: new Date()
+  completedAt: new Date(),
 };
 const EXAMPLE_FAILED_GENERATE_STEP = {
   ...EXAMPLE_GENERATE_STEP,
   status: EnumActionStepStatus.Failed,
-  completedAt: new Date()
+  completedAt: new Date(),
 };
 
 const EXAMPLE_ACTION = {
   id: 'ExampleActionId',
   createdAt: new Date(),
-  steps: [EXAMPLE_GENERATE_STEP]
+  steps: [EXAMPLE_GENERATE_STEP],
 };
 const EXAMPLE_BUILD: Build = {
   id: EXAMPLE_BUILD_ID,
@@ -147,7 +147,7 @@ const EXAMPLE_BUILD: Build = {
   message: 'new build',
   actionId: EXAMPLE_ACTION.id,
   commitId: EXAMPLE_COMMIT_ID,
-  action: EXAMPLE_ACTION
+  action: EXAMPLE_ACTION,
 };
 
 const EXAMPLE_COMPLETED_BUILD: Build = {
@@ -156,12 +156,12 @@ const EXAMPLE_COMPLETED_BUILD: Build = {
   action: {
     id: 'ExampleSuccessfulBuildAction',
     createdAt: new Date(),
-    steps: [EXAMPLE_COMPLETED_GENERATE_STEP]
-  }
+    steps: [EXAMPLE_COMPLETED_GENERATE_STEP],
+  },
 };
 const EXAMPLE_RUNNING_BUILD: Build = {
   ...EXAMPLE_BUILD,
-  id: 'ExampleRunningBuild'
+  id: 'ExampleRunningBuild',
 };
 
 const EXAMPLE_FAILED_BUILD: Build = {
@@ -170,18 +170,18 @@ const EXAMPLE_FAILED_BUILD: Build = {
   action: {
     id: 'ExampleFailedBuildAction',
     createdAt: new Date(),
-    steps: [EXAMPLE_FAILED_GENERATE_STEP]
-  }
+    steps: [EXAMPLE_FAILED_GENERATE_STEP],
+  },
 };
 
 const EXAMPLE_INVALID_BUILD: Build = {
   ...EXAMPLE_BUILD,
   id: 'ExampleInvalidBuild',
-  action: undefined
+  action: undefined,
 };
 
 const EXAMPLE_USER = {
-  id: EXAMPLE_USER_ID
+  id: EXAMPLE_USER_ID,
 };
 
 const EXAMPLE_APP_ROLES = [];
@@ -193,13 +193,13 @@ const EXAMPLE_SERVICE_RESOURCE: Resource = {
   updatedAt: new Date(),
   name: 'exampleResourceName',
   description: 'example Resources Description',
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
 };
 
 const EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT: Build = {
   ...EXAMPLE_BUILD,
   commit: EXAMPLE_COMMIT,
-  resource: EXAMPLE_SERVICE_RESOURCE
+  resource: EXAMPLE_SERVICE_RESOURCE,
 };
 
 const commitId = EXAMPLE_COMMIT_ID;
@@ -214,27 +214,27 @@ const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
       {
         level: EnumActionLogLevel.Info,
         message: 'create build generation task',
-        meta: {}
+        meta: {},
       },
       {
         level: EnumActionLogLevel.Info,
         message: `Build Version: ${version}`,
-        meta: {}
+        meta: {},
       },
       {
         level: EnumActionLogLevel.Info,
         message: `Build message: ${EXAMPLE_BUILD.message}`,
-        meta: {}
-      }
-    ]
-  }
+        meta: {},
+      },
+    ],
+  },
 };
 
 const EXAMPLE_MODULES = [
   {
     path: 'examplePath',
-    code: 'exampleCode'
-  }
+    code: 'exampleCode',
+  },
 ];
 
 const prismaBuildCreateMock = jest.fn(
@@ -268,7 +268,7 @@ const EXAMPLE_ENTITIES: Entity[] = [
     resourceId: 'exampleResourceId',
     name: EXAMPLE_SECOND_ENTITY_NAME,
     displayName: 'Second entity',
-    pluralDisplayName: 'Second entity plural display name'
+    pluralDisplayName: 'Second entity plural display name',
   },
   {
     id: 'EXAMPLE_FIRST_ID',
@@ -277,8 +277,8 @@ const EXAMPLE_ENTITIES: Entity[] = [
     resourceId: 'exampleResourceId',
     name: EXAMPLE_FIRST_ENTITY_NAME,
     displayName: 'First entity',
-    pluralDisplayName: 'First entity plural display name'
-  }
+    pluralDisplayName: 'First entity plural display name',
+  },
 ];
 
 const entityServiceGetEntitiesByVersionsMock = jest.fn(() => EXAMPLE_ENTITIES);
@@ -294,7 +294,7 @@ const EXAMPLE_ACTION_STEP: ActionStep = {
   name: 'EXAMPLE_ACTION_STEP_NAME',
   createdAt: new Date(),
   message: 'EXAMPLE_ACTION_STEP_MESSAGE',
-  status: EnumActionStepStatus.Running
+  status: EnumActionStepStatus.Running,
 };
 
 const actionServiceRunMock = jest.fn(
@@ -320,8 +320,8 @@ const storageServiceDiskGetUrlMock = jest.fn(() => EXAMPLE_URL);
 
 const EXAMPLE_LOCAL_DISK = {
   config: {
-    root: 'EXAMPLE_ROOT'
-  }
+    root: 'EXAMPLE_ROOT',
+  },
 };
 
 const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
@@ -329,22 +329,22 @@ const localDiskServiceGetDiskMock = jest.fn(() => EXAMPLE_LOCAL_DISK);
 const EXAMPLED_HOST = 'http://localhost';
 const configServiceGetMock = jest.fn(() => EXAMPLED_HOST);
 
-const loggerErrorMock = jest.fn(error => {
+const loggerErrorMock = jest.fn((error) => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
 });
-const loggerInfoMock = jest.fn(error => {
+const loggerInfoMock = jest.fn((error) => {
   // Write the error to console so it will be visible for who runs the test
   console.log(error);
 });
 const loggerChildInfoMock = jest.fn();
-const loggerChildErrorMock = jest.fn(error => {
+const loggerChildErrorMock = jest.fn((error) => {
   // Write the error to console so it will be visible for who runs the test
   console.error(error);
 });
 const loggerChildMock = jest.fn(() => ({
   info: loggerChildInfoMock,
-  error: loggerChildErrorMock
+  error: loggerChildErrorMock,
 }));
 const EXAMPLE_LOGGER_FORMAT = Symbol('EXAMPLE_LOGGER_FORMAT');
 
@@ -369,8 +369,8 @@ describe('BuildService', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: configServiceGetMock
-          }
+            get: configServiceGetMock,
+          },
         },
         {
           provide: PrismaService,
@@ -378,12 +378,12 @@ describe('BuildService', () => {
             build: {
               create: prismaBuildCreateMock,
               findMany: prismaBuildFindManyMock,
-              findUnique: prismaBuildFindOneMock
+              findUnique: prismaBuildFindOneMock,
             },
             gitRepository: {
-              findUnique: prismaGitRepositoryReturnNull
-            }
-          }
+              findUnique: prismaGitRepositoryReturnNull,
+            },
+          },
         },
         {
           provide: StorageService,
@@ -396,23 +396,23 @@ describe('BuildService', () => {
                 exists: storageServiceDiskExistsMock,
                 getStream: storageServiceDiskStreamMock,
                 put: storageServiceDiskPutMock,
-                getUrl: storageServiceDiskGetUrlMock
+                getUrl: storageServiceDiskGetUrlMock,
               };
-            }
-          }
+            },
+          },
         },
         {
           provide: EntityService,
           useValue: {
             getLatestVersions: entityServiceGetLatestVersionsMock,
-            getEntitiesByVersions: entityServiceGetEntitiesByVersionsMock
-          }
+            getEntitiesByVersions: entityServiceGetEntitiesByVersionsMock,
+          },
         },
         {
           provide: ResourceRoleService,
           useValue: {
-            getResourceRoles: resourceRoleServiceGetResourceRolesMock
-          }
+            getResourceRoles: resourceRoleServiceGetResourceRolesMock,
+          },
         },
         {
           provide: ResourceService,
@@ -420,38 +420,38 @@ describe('BuildService', () => {
             resource: resourceServiceGetResourceMock,
             resources: jest.fn(() => [EXAMPLE_SERVICE_RESOURCE]),
             gitRepository: getGitRepository,
-            gitOrganizationByResource: getGitOrganization
-          }
+            gitOrganizationByResource: getGitOrganization,
+          },
         },
         {
           provide: ActionService,
           useValue: {
             run: actionServiceRunMock,
             logInfo: actionServiceLogInfoMock,
-            complete: actionServiceCompleteMock
-          }
+            complete: actionServiceCompleteMock,
+          },
         },
         {
           provide: LocalDiskService,
           useValue: {
-            getDisk: localDiskServiceGetDiskMock
-          }
+            getDisk: localDiskServiceGetDiskMock,
+          },
         },
         {
           provide: UserService,
           useValue: {
-            findUser: userServiceFindUserMock
-          }
+            findUser: userServiceFindUserMock,
+          },
         },
         {
           provide: ServiceSettingsService,
           useValue: {
-            getServiceSettingsValues: getServiceSettingsValuesMock
-          }
+            getServiceSettingsValues: getServiceSettingsValuesMock,
+          },
         },
         {
           provide: GitService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
@@ -459,38 +459,38 @@ describe('BuildService', () => {
             error: loggerErrorMock,
             child: loggerChildMock,
             info: loggerInfoMock,
-            format: EXAMPLE_LOGGER_FORMAT
-          }
+            format: EXAMPLE_LOGGER_FORMAT,
+          },
         },
         {
           provide: BuildFilesSaver,
-          useClass: BuildFilesSaver
+          useClass: BuildFilesSaver,
         },
         {
           provide: QueueService,
           useValue: {
-            emitCreateGitPullRequest: () => ({ url: 'http://url.com' })
-          }
+            emitCreateGitPullRequest: () => ({ url: 'http://url.com' }),
+          },
         },
         {
           provide: TopicService,
           useValue: {
-            findMany: jest.fn(() => [])
-          }
+            findMany: jest.fn(() => []),
+          },
         },
         {
           provide: ServiceTopicsService,
           useValue: {
-            findMany: jest.fn(() => [])
-          }
+            findMany: jest.fn(() => []),
+          },
         },
         {
           provide: PluginInstallationService,
           useValue: {
-            findMany: prismaPluginFindManyMock
-          }
-        }
-      ]
+            findMany: prismaPluginFindManyMock,
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<BuildService>(BuildService);
@@ -511,8 +511,8 @@ describe('BuildService', () => {
     prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_BUILD);
     const args: FindOneBuildArgs = {
       where: {
-        id: EXAMPLE_BUILD_ID
-      }
+        id: EXAMPLE_BUILD_ID,
+      },
     };
     expect(await service.findOne(args)).toEqual(EXAMPLE_BUILD);
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
@@ -523,8 +523,8 @@ describe('BuildService', () => {
     prismaBuildFindOneMock.mockImplementation(() => null);
     const args: FindOneBuildArgs = {
       where: {
-        id: 'nonExistingId'
-      }
+        id: 'nonExistingId',
+      },
     };
     expect(await service.findOne(args)).toEqual(null);
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
@@ -538,16 +538,16 @@ describe('BuildService', () => {
           steps: () => [
             {
               name: GENERATE_STEP_NAME,
-              status: EnumActionStepStatus.Success
-            }
-          ]
-        })
+              status: EnumActionStepStatus.Success,
+            },
+          ],
+        }),
       })
     );
     const args: FindOneBuildArgs = {
       where: {
-        id: EXAMPLE_COMPLETED_BUILD.id
-      }
+        id: EXAMPLE_COMPLETED_BUILD.id,
+      },
     };
     expect(await service.download(args)).toEqual(EXAMPLE_STREAM);
     expect(prismaBuildFindOneMock).toBeCalledTimes(2);
@@ -563,8 +563,8 @@ describe('BuildService', () => {
     prismaBuildFindOneMock.mockImplementation(() => null);
     const args: FindOneBuildArgs = {
       where: {
-        id: 'nonExistingId'
-      }
+        id: 'nonExistingId',
+      },
     };
     await expect(service.download(args)).rejects.toThrow(BuildNotFoundError);
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
@@ -579,7 +579,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_INVALID_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: ACTION_INCLUDE
+      include: ACTION_INCLUDE,
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(invalid);
     expect(prismaBuildFindOneMock).toBeCalledTimes(1);
@@ -591,7 +591,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_RUNNING_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: ACTION_INCLUDE
+      include: ACTION_INCLUDE,
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Running
@@ -605,7 +605,7 @@ describe('BuildService', () => {
     const buildId = EXAMPLE_FAILED_BUILD.id;
     const findOneArgs = {
       where: { id: buildId },
-      include: ACTION_INCLUDE
+      include: ACTION_INCLUDE,
     };
     expect(await service.calcBuildStatus(buildId)).toEqual(
       EnumBuildStatus.Failed
@@ -618,7 +618,7 @@ describe('BuildService', () => {
     prismaBuildFindOneMock.mockImplementation(() => EXAMPLE_COMPLETED_BUILD);
     const findOneArgs = {
       where: { id: EXAMPLE_BUILD_ID },
-      include: ACTION_INCLUDE
+      include: ACTION_INCLUDE,
     };
     expect(await service.calcBuildStatus(EXAMPLE_BUILD_ID)).toEqual(
       EnumBuildStatus.Completed

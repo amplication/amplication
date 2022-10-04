@@ -38,7 +38,7 @@ import {
 import { DiffService } from '../../services/diff.service';
 import { isReservedName } from './reservedNames';
 import { ReservedNameError } from '../resource/ReservedNameError';
-import { EnumResourceType } from '@amplication/code-gen-types/dist/models';
+import { EnumResourceType } from '@amplication/code-gen-types/models';
 import { Build } from '../build/dto/Build';
 import { Environment } from '../environment/dto';
 

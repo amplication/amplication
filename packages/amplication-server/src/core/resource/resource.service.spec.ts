@@ -3,15 +3,15 @@ import cuid from 'cuid';
 import {
   INVALID_RESOURCE_ID,
   INVALID_DELETE_PROJECT_CONFIGURATION,
-  ResourceService
+  ResourceService,
 } from './resource.service';
 
-import { GitService } from '@amplication/git-service';
+import { GitService } from '@amplication/git-utils';
 import {
   EnumResourceType,
   GitRepository,
   PrismaService,
-  Prisma
+  Prisma,
 } from '@amplication/prisma-db';
 import { EnumBlockType } from '../../enums/EnumBlockType';
 import { EnumDataType } from '../../enums/EnumDataType';
@@ -31,12 +31,12 @@ import { EntityService } from '../entity/entity.service';
 import { Environment } from '../environment/dto/Environment';
 import {
   DEFAULT_ENVIRONMENT_NAME,
-  EnvironmentService
+  EnvironmentService,
 } from '../environment/environment.service';
 import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-  ResourceCreateInput
+  ResourceCreateInput,
 } from './dto';
 import { PendingChange } from './dto/PendingChange';
 import { ReservedEntityNameError } from './ReservedEntityNameError';
@@ -66,14 +66,14 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   name: 'repositoryTest',
   gitOrganizationId: 'exampleGitOrganizationId',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   description: 'Sample Service for task management',
   name: 'My sample service',
   resourceType: EnumResourceType.Service,
-  project: { connect: { id: 'exampleProjectId' } }
+  project: { connect: { id: 'exampleProjectId' } },
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -84,7 +84,7 @@ const EXAMPLE_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
@@ -95,7 +95,7 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
   name: EXAMPLE_RESOURCE_NAME,
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
 };
 
 const EXAMPLE_USER_ID = 'exampleUserId';
@@ -108,9 +108,9 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name'
+    name: 'example_workspace_name',
   },
-  isOwner: true
+  isOwner: true,
 };
 
 const EXAMPLE_ENTITY_ID = 'exampleEntityId';
@@ -129,7 +129,7 @@ const EXAMPLE_ENTITY: Entity = {
   resourceId: EXAMPLE_RESOURCE_ID,
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
 };
 
 const EXAMPLE_BLOCK: Block = {
@@ -141,7 +141,7 @@ const EXAMPLE_BLOCK: Block = {
   blockType: EnumBlockType.ServiceSettings,
   parentBlock: null,
   versionNumber: CURRENT_VERSION_NUMBER,
-  description: 'example block description'
+  description: 'example block description',
 };
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
@@ -156,7 +156,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   properties: {},
   required: false,
   unique: false,
-  searchable: false
+  searchable: false,
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {
@@ -165,7 +165,7 @@ const EXAMPLE_CHANGED_ENTITY: PendingChange = {
   originType: EnumPendingChangeOriginType.Entity,
   versionNumber: 1,
   origin: EXAMPLE_ENTITY,
-  resource: EXAMPLE_RESOURCE
+  resource: EXAMPLE_RESOURCE,
 };
 
 const EXAMPLE_CHANGED_BLOCK: PendingChange = {
@@ -174,7 +174,7 @@ const EXAMPLE_CHANGED_BLOCK: PendingChange = {
   originType: EnumPendingChangeOriginType.Block,
   versionNumber: 1,
   origin: EXAMPLE_BLOCK,
-  resource: EXAMPLE_RESOURCE
+  resource: EXAMPLE_RESOURCE,
 };
 
 const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
@@ -189,7 +189,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   versionNumber: EXAMPLE_VERSION_NUMBER,
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
 };
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
@@ -197,7 +197,7 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   createdAt: new Date(),
   updatedAt: new Date(),
   versionNumber: EXAMPLE_VERSION_NUMBER,
-  displayName: EXAMPLE_BLOCK_DISPLAY_NAME
+  displayName: EXAMPLE_BLOCK_DISPLAY_NAME,
 };
 
 const EXAMPLE_COMMIT_ID = 'exampleCommitId';
@@ -206,7 +206,7 @@ const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  message: EXAMPLE_MESSAGE
+  message: EXAMPLE_MESSAGE,
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
@@ -216,7 +216,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   address: 'ExampleEnvironmentAddress',
   name: DEFAULT_ENVIRONMENT_NAME,
   resourceId: EXAMPLE_RESOURCE_ID,
-  description: 'ExampleEnvironmentDescription'
+  description: 'ExampleEnvironmentDescription',
 };
 
 const EXAMPLE_BUILD: Build = {
@@ -227,7 +227,7 @@ const EXAMPLE_BUILD: Build = {
   version: '1.0.0',
   message: 'new build',
   actionId: 'ExampleActionId',
-  commitId: EXAMPLE_COMMIT_ID
+  commitId: EXAMPLE_COMMIT_ID,
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
@@ -249,7 +249,7 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   blockType: EnumBlockType.ServiceSettings,
   versionNumber: 0,
   inputParameters: [],
-  outputParameters: []
+  outputParameters: [],
 };
 
 const serviceSettingsCreateMock = jest.fn(() => {
@@ -314,7 +314,7 @@ const blockServiceCreateVersionMock = jest.fn(
 const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 
 const USER_ENTITY_MOCK = {
-  id: 'USER_ENTITY_MOCK_ID'
+  id: 'USER_ENTITY_MOCK_ID',
 };
 
 const entityServiceCreateDefaultEntitiesMock = jest.fn();
@@ -344,8 +344,8 @@ describe('ResourceService', () => {
         {
           provide: BuildService,
           useClass: jest.fn(() => ({
-            create: buildServiceCreateMock
-          }))
+            create: buildServiceCreateMock,
+          })),
         },
         {
           provide: PrismaService,
@@ -356,22 +356,22 @@ describe('ResourceService', () => {
               findUnique: prismaResourceFindOneMock,
               findMany: prismaResourceFindManyMock,
               delete: prismaResourceDeleteMock,
-              update: prismaResourceUpdateMock
+              update: prismaResourceUpdateMock,
             },
             entity: {
-              findMany: prismaEntityFindManyMock
+              findMany: prismaEntityFindManyMock,
             },
             commit: {
-              create: prismaCommitCreateMock
+              create: prismaCommitCreateMock,
             },
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
-              delete: prismaGitRepositoryCreateMock
+              delete: prismaGitRepositoryCreateMock,
             },
             resourceRole: {
-              create: prismaResourceRoleCreateMock
-            }
-          }))
+              create: prismaResourceRoleCreateMock,
+            },
+          })),
         },
         {
           provide: EntityService,
@@ -384,47 +384,48 @@ describe('ResourceService', () => {
             getChangedEntities: entityServiceGetChangedEntitiesMock,
             findFirst: entityServiceFindFirstMock,
             bulkCreateEntities: entityServiceBulkCreateEntities,
-            bulkCreateFields: entityServiceBulkCreateFields
-          }))
+            bulkCreateFields: entityServiceBulkCreateFields,
+          })),
         },
         {
           provide: GitService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: BlockService,
           useValue: {
             getChangedBlocks: blockServiceGetChangedBlocksMock,
             createVersion: blockServiceCreateVersionMock,
-            releaseLock: blockServiceReleaseLockMock
-          }
+            releaseLock: blockServiceReleaseLockMock,
+          },
         },
         {
           provide: EnvironmentService,
           useClass: jest.fn().mockImplementation(() => ({
-            createDefaultEnvironment: environmentServiceCreateDefaultEnvironmentMock
-          }))
+            createDefaultEnvironment:
+              environmentServiceCreateDefaultEnvironmentMock,
+          })),
         },
         {
           provide: ServiceSettingsService,
           useClass: jest.fn(() => ({
             create: serviceSettingsCreateMock,
-            createDefaultServiceSettings: serviceSettingsCreateMock
-          }))
+            createDefaultServiceSettings: serviceSettingsCreateMock,
+          })),
         },
         {
           provide: ServiceTopicsService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({})),
         },
         {
           provide: ProjectConfigurationSettingsService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({})),
         },
         {
           provide: ProjectService,
-          useClass: jest.fn(() => ({}))
-        }
-      ]
+          useClass: jest.fn(() => ({})),
+        },
+      ],
     }).compile();
 
     service = module.get<ResourceService>(ResourceService);
@@ -444,12 +445,12 @@ describe('ResourceService', () => {
           resourceType: EnumResourceType.Service,
           project: {
             connect: {
-              id: EXAMPLE_PROJECT_ID
-            }
-          }
-        }
+              id: EXAMPLE_PROJECT_ID,
+            },
+          },
+        },
       },
-      user: EXAMPLE_USER
+      user: EXAMPLE_USER,
     };
     expect(
       await service.createService(
@@ -481,16 +482,16 @@ describe('ResourceService', () => {
               name: USER_ENTITY_NAME,
               fields: [
                 {
-                  name: EXAMPLE_ENTITY_FIELD_NAME
-                }
-              ]
-            }
+                  name: EXAMPLE_ENTITY_FIELD_NAME,
+                },
+              ],
+            },
           ],
           generationSettings: {
             generateAdminUI: true,
             generateGraphQL: true,
-            generateRestApi: true
-          }
+            generateRestApi: true,
+          },
         },
 
         EXAMPLE_USER
@@ -504,23 +505,23 @@ describe('ResourceService', () => {
       data: {
         resource: {
           connect: {
-            id: EXAMPLE_RESOURCE_ID
-          }
+            id: EXAMPLE_RESOURCE_ID,
+          },
         },
         displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
         name: EXAMPLE_ENTITY_NAME,
-        pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
-      }
+        pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+      },
     };
     const createFieldByDisplayNameArgs = {
       data: {
         entity: {
           connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
+            id: EXAMPLE_ENTITY_ID,
+          },
         },
-        displayName: EXAMPLE_ENTITY_FIELD_NAME
-      }
+        displayName: EXAMPLE_ENTITY_FIELD_NAME,
+      },
     };
     await expect(
       service.createServiceWithEntities(
@@ -532,16 +533,16 @@ describe('ResourceService', () => {
               name: EXAMPLE_ENTITY_DISPLAY_NAME,
               fields: [
                 {
-                  name: EXAMPLE_ENTITY_FIELD_NAME
-                }
-              ]
-            }
+                  name: EXAMPLE_ENTITY_FIELD_NAME,
+                },
+              ],
+            },
           ],
           generationSettings: {
             generateAdminUI: true,
             generateGraphQL: true,
-            generateRestApi: true
-          }
+            generateRestApi: true,
+          },
         },
 
         EXAMPLE_USER
@@ -557,15 +558,15 @@ describe('ResourceService', () => {
             deletedAt: null,
             name: {
               mode: QueryMode.Insensitive,
-              startsWith: SAMPLE_SERVICE_DATA.name.toLowerCase()
+              startsWith: SAMPLE_SERVICE_DATA.name.toLowerCase(),
             },
-            projectId: EXAMPLE_PROJECT_ID
+            projectId: EXAMPLE_PROJECT_ID,
           },
           select: {
-            name: true
-          }
-        }
-      ]
+            name: true,
+          },
+        },
+      ],
     ]);
 
     expect(entityServiceCreateOneEntityMock).toBeCalledTimes(1);
@@ -585,8 +586,8 @@ describe('ResourceService', () => {
     const args = {
       where: {
         deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID
-      }
+        id: EXAMPLE_RESOURCE_ID,
+      },
     };
     expect(await service.resource(args)).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceFindOneMock).toBeCalledTimes(1);
@@ -597,8 +598,8 @@ describe('ResourceService', () => {
     const args = {
       where: {
         deletedAt: null,
-        id: EXAMPLE_RESOURCE_ID
-      }
+        id: EXAMPLE_RESOURCE_ID,
+      },
     };
     expect(await service.resources(args)).toEqual([EXAMPLE_RESOURCE]);
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);
@@ -619,9 +620,9 @@ describe('ResourceService', () => {
           EXAMPLE_RESOURCE.id
         ),
         gitRepository: {
-          disconnect: true
-        }
-      }
+          disconnect: true,
+        },
+      },
     });
   });
 
@@ -635,7 +636,7 @@ describe('ResourceService', () => {
   it('should update an resource', async () => {
     const args = {
       data: { name: EXAMPLE_RESOURCE_NAME },
-      where: { id: EXAMPLE_RESOURCE_ID }
+      where: { id: EXAMPLE_RESOURCE_ID },
     };
     expect(await service.updateResource(args)).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
@@ -663,7 +664,7 @@ describe('ResourceService', () => {
     it('should fail to update a deleted resource', async () => {
       const args = {
         data: { name: EXAMPLE_RESOURCE_NAME },
-        where: { id: EXAMPLE_RESOURCE_ID }
+        where: { id: EXAMPLE_RESOURCE_ID },
       };
       await expect(service.updateResource(args)).rejects.toThrow(
         new Error(INVALID_RESOURCE_ID)
