@@ -97,6 +97,20 @@ export class ActionService {
     });
   }
 
+  async updateActionStepStatus(
+    actionStepId: string,
+    status: EnumActionStepStatus
+  ): Promise<void> {
+    const step = await this.prisma.actionStep.findUnique({
+      where: { id: actionStepId }
+    });
+    switch (status) {
+      case EnumActionStepStatus.Success:
+      case EnumActionStepStatus.Failed:
+        await this.complete(step, status);
+    }
+  }
+
   /**
    * Logs given message with given level and given meta for given step
    * @param step the step to add log for

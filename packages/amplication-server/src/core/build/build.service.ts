@@ -249,7 +249,7 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
-  private async getGenerateCodeStepStatus(
+  private async getGenerateCodeStep(
     buildId: string
   ): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
@@ -287,6 +287,17 @@ export class BuildService {
 
     return EnumBuildStatus.Running;
   }
+
+  async completeCodeGenerationStep(
+    buildId: string,
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+  ): Promise<void> {
+    const step = await this.getGenerateCodeStep(buildId);
+    if (!step) {
+      throw new Error('Could not find generate code step');
+    }
+    await this.actionService.complete(step, status);
+  }
   /**
    *
    * Give the ReadableStream of the build zip file
@@ -299,7 +310,7 @@ export class BuildService {
       throw new BuildNotFoundError(id);
     }
 
-    const generatedCodeStep = await this.getGenerateCodeStepStatus(id);
+    const generatedCodeStep = await this.getGenerateCodeStep(id);
     if (!generatedCodeStep) {
       throw new StepNotFoundError(GENERATE_STEP_NAME);
     }

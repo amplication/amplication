@@ -5,7 +5,9 @@ import {
   Controller,
   UseInterceptors,
   NotFoundException,
-  BadRequestException
+  BadRequestException,
+  Body,
+  Put
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
@@ -22,11 +24,17 @@ import { KafkaMessage } from 'kafkajs';
 import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';
 import { EnvironmentVariables } from '@amplication/kafka';
+import { ActionService } from '../action/action.service';
+import { UpdateActionStepStatus } from './dto/UpdateActionStepStatus';
+import { CompleteCodeGenerationStep } from './dto/CompleteCodeGenerationStep';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
-  constructor(private readonly buildService: BuildService) {}
+  constructor(
+    private readonly buildService: BuildService,
+    private readonly actionService: ActionService
+  ) {}
 
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
@@ -67,5 +75,19 @@ export class BuildController {
     return {
       value: { error: null, status: StatusEnum.Success, value: isUserCanAccess }
     };
+  }
+
+  //Authorization
+  @Put('update-action-step-status')
+  async updateStatus(@Body() dto: UpdateActionStepStatus): Promise<void> {
+    await this.actionService.updateActionStepStatus(dto.id, dto.status);
+  }
+
+  //Authorization
+  @Put('complete-code-generation-step')
+  async completeCodeGenerationStep(
+    @Body() dto: CompleteCodeGenerationStep
+  ): Promise<void> {
+    await this.buildService.completeCodeGenerationStep(dto.buildId, dto.status);
   }
 }
