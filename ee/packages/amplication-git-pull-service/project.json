@@ -33,6 +33,73 @@
           "inspect": false
         }
       }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "amplication-git-pull-service:build",
+        "inspect": true,
+        "port": 9229
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-git-pull-service:build:production"
+        }
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:migrate:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run amplication-git-pull-service:db:migrate:save",
+          "nx run amplication-git-pull-service:db:migrate:up",
+          "nx run amplication-git-pull-service:db:seed"
+        ],
+        "parallel": false,
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/seed.ts",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/clean.ts",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
     }
   },
   "tags": []

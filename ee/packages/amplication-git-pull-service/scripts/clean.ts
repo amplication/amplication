@@ -2,7 +2,7 @@
  * Clean all the tables and types created by Prisma in the databases
  */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/clients/amplication-git-pull-service";
 
 if (require.main === module) {
   clean().catch((error) => {
