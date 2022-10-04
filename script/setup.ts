@@ -1,9 +1,11 @@
 import { exec } from "child_process";
 import { satisfies } from "semver";
-import { createLogger, format, Logger, transports } from "winston";
+import { createLogger, format, transports } from "winston";
 import ora from "ora";
 
 const { combine, colorize, simple } = format;
+
+const isDebugMode = process.env.DEBUG === "true";
 
 const spinner = ora();
 spinner.color = "green";
@@ -25,8 +27,9 @@ const logo = `
          .^!?Y~  .YYYYYYYYYYY5:    
  `;
 
-class Task {
-  constructor(public command: string, public label: string) {}
+interface Task {
+  command: string;
+  label: string;
 }
 
 const logger = createLogger({
@@ -66,13 +69,22 @@ function preValidate() {
 async function runFunction(task: Task): Promise<string> {
   spinner.start(`${task.label}` + "\n");
   return new Promise((resolve, reject) => {
-    exec(task.command, (error, stdout, stderr) => {
-      error && reject(error);
+    const proc = exec(task.command, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      }
+
       if (stdout) {
         spinner.succeed(`Finished ${task.label}`);
         stdout && resolve(task.label);
       }
     });
+
+    if (isDebugMode) {
+      proc.stdout?.on("data", (data) => {
+        logger.info(data);
+      });
+    }
   });
 }
 
@@ -88,9 +100,27 @@ const install: Task[] = [
     label: "installing dependencies 🚀",
   },
 ];
-const buildStep: Task[] = [
+const preparePrisma: Task[] = [
   {
-    command: "npx nx run-many --target build --all",
+    command:
+      "npx nx run-many --target db:prisma:generate --output-style stream",
+    label: "generating Prisma client 🧬",
+  },
+];
+const prepareGraphQL: Task[] = [
+  {
+    command:
+      "npx nx run-many --target graphql:schema:generate --output-style stream",
+    label: "generating graphql schema 🧬",
+  },
+  {
+    command: "npm run graphql-codegen",
+    label: "running graphql codegen 🧬",
+  },
+];
+const build: Task[] = [
+  {
+    command: "npx nx run-many --target build --output-style stream",
     label: "building packages 📦",
   },
 ];
@@ -98,18 +128,6 @@ const dockerCompose: Task[] = [
   {
     command: "npm run docker:dev",
     label: "docker compose 🐳",
-  },
-];
-const prismaGeneration: Task[] = [
-  {
-    command: "npm run prisma:generate",
-    label: "generate prisma 🧬",
-  },
-];
-const graphqlGeneration: Task[] = [
-  {
-    command: "npm run generate",
-    label: "generate graphql schema 🧬",
   },
 ];
 const prismaMigration: Task[] = [
@@ -122,11 +140,10 @@ const prismaMigration: Task[] = [
 const tasks: Task[][] = [
   clean,
   install,
-  buildStep,
+  preparePrisma,
+  prepareGraphQL,
+  build,
   // dockerCompose,
-  // prismaGeneration,
-  // graphqlGeneration,
-  // prismaMigration,
 ];
 
 if (require.main === module) {
@@ -147,18 +164,14 @@ if (require.main === module) {
         await Promise.all(tasksPromises);
         console.log("");
       }
-      logger.info("Finish all the process for the setup, have fun hacking 👾");
+      logger.info("Setup complete. Have fun! 👾");
       logger.info(
-        "✋ To run a specific service, go to its README file and make sure you set all necessary environment variables❗️"
+        "✋ To run a specific service, go to its README file and follow the instructions❗️"
       );
       logger.info("Link to our docs: 'https://docs.amplication.com/docs/' 📜");
     } catch (error) {
-      if (error instanceof Error) {
-        spinner.fail(error.message);
-      } else {
-        spinner.fail();
-        console.error(error);
-      }
+      spinner.fail();
+      console.error((error as Error).message);
     }
   })();
 }
