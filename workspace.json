@@ -2,9 +2,10 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "amplication-code-gen-types": "packages/amplication-code-gen-types",
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
-    "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-kafka": "packages/amplication-kafka",
-    "amplication-nest-logger-module": "packages/amplication-nest-logger-module"
+    "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
+    "amplication-prisma-db": "packages/amplication-prisma-db"
   }
 }

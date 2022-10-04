@@ -1,0 +1,16 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/singleLineText.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "singleLineText",
+  "type": "object",
+  "required": ["maxLength"],
+  "additionalProperties": false,
+  "properties": {
+    "maxLength": {
+      "type": "integer",
+      "description": "The maximum length of the field",
+      "minimum": 1,
+      "default": 256
+    }
+  }
+}

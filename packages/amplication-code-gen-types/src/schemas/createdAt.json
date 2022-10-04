@@ -1,0 +1,8 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/createdAt.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "createdAt",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {}
+}

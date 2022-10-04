@@ -1,0 +1,8 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/roles.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "roles",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {}
+}
