@@ -4,6 +4,7 @@
   "projects": {
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
     "amplication-prisma-db": "packages/amplication-prisma-db",
-    "amplication-kafka": "packages/amplication-kafka"
+    "amplication-kafka": "packages/amplication-kafka",
+    "amplication-nest-logger-module": "packages/amplication-nest-logger-module"
   }
 }
