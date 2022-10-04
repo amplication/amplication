@@ -46,67 +46,6 @@
           "buildTarget": "amplication-git-pull-service:build:production"
         }
       }
-    },
-    "db:prisma:generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma generate --schema ./prisma/schema.prisma",
-        "cwd": "packages/amplication-server"
-      }
-    },
-    "db:prisma:studio": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma studio",
-        "cwd": "packages/amplication-server"
-      }
-    },
-    "db:migrate:dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma migrate dev",
-        "cwd": "packages/amplication-server"
-      }
-    },
-    "db:migrate:deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma migrate deploy",
-        "cwd": "packages/amplication-server"
-      }
-    },
-    "db:migrate:rollback": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma migrate resolve --rolled-back",
-        "cwd": "packages/amplication-server"
-      }
-    },
-    "db:init": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "nx db:migrate:dev amplication-git-pull-service",
-          "nx db:migrate:deploy amplication-git-pull-service",
-          "nx db:seed amplication-git-pull-service"
-        ],
-        "parallel": false,
-        "cwd": "packages/amplication-server"
-      }
-    },
-    "db:seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "ts-node scripts/seed.ts",
-        "cwd": "packages/amplication-server"
-      }
-    },
-    "db:clean": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "ts-node scripts/clean.ts",
-        "cwd": "packages/amplication-server"
-      }
     }
   },
   "tags": []
