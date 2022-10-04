@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import { satisfies } from "semver";
 import { createLogger, format, Logger, transports } from "winston";
-import ora from "ora";
+import * as ora from "ora";
 
 const { combine, colorize, simple } = format;
 
@@ -38,7 +38,7 @@ function preValidate() {
   const { engines } = require("../package.json");
   const { node: nodeRange, npm } = engines;
   const npm_config_user_agent = process.env.npm_config_user_agent;
-  const currentNpmVersionArray: any = npm_config_user_agent?.match(
+  const currentNpmVersionArray = npm_config_user_agent?.match(
     /npm\/[\^*\~*]*[\d\.]+/
   );
   const currentNpmVersion = currentNpmVersionArray[0]?.slice(4);
@@ -78,20 +78,20 @@ async function runFunction(task: Task): Promise<string> {
 
 const clean: Task[] = [
   {
-    command: "npx nx clear-cache",
-    label: "clearing Nx cache 🧼",
+    command: "npm run clean",
+    label: "clean up 🧼",
   },
 ];
-const install: Task[] = [
+const bootstrap: Task[] = [
   {
-    command: "npm install",
-    label: "installing dependencies 🚀",
+    command: "npm run bootstrap",
+    label: "bootstrapping 🚀",
   },
 ];
 const buildStep: Task[] = [
   {
-    command: "npx nx run-many --target build --all",
-    label: "building packages 📦",
+    command: "npm run build",
+    label: "build packages 📦",
   },
 ];
 const dockerCompose: Task[] = [
@@ -121,12 +121,12 @@ const prismaMigration: Task[] = [
 
 const tasks: Task[][] = [
   clean,
-  install,
+  bootstrap,
   buildStep,
-  // dockerCompose,
-  // prismaGeneration,
-  // graphqlGeneration,
-  // prismaMigration,
+  dockerCompose,
+  prismaGeneration,
+  graphqlGeneration,
+  prismaMigration,
 ];
 
 if (require.main === module) {
@@ -153,12 +153,7 @@ if (require.main === module) {
       );
       logger.info("Link to our docs: 'https://docs.amplication.com/docs/' 📜");
     } catch (error) {
-      if (error instanceof Error) {
-        spinner.fail(error.message);
-      } else {
-        spinner.fail();
-        console.error(error);
-      }
+      spinner.fail(error.message);
     }
   })();
 }

@@ -7,6 +7,11 @@
     "emitDecoratorMetadata": true,
     "target": "es2015"
   },
-  "exclude": ["jest.config.e2e.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "exclude": [
+    "jest.config.e2e.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "migration-scripts/**/*"
+  ],
   "include": ["**/*.ts"]
 }
