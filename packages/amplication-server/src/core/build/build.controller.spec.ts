@@ -9,6 +9,7 @@ import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
+import { ActionModule } from '../action/action.module';
 
 const EXAMPLE_BUILD_ID = 'EXAMPLE_BUILD_ID';
 const EXAMPLE_BUILD_CONTENT_CHUNK = 'ExampleBuildContentChunk';
@@ -23,7 +24,10 @@ describe('BuildController', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const moduleRef = await Test.createTestingModule({
-      imports: [MorganModule.forRoot()],
+      imports: [
+        MorganModule.forRoot(),
+        ActionModule
+      ],
       providers: [
         {
           provide: BuildService,
