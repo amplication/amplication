@@ -6,6 +6,7 @@
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
     "amplication-kafka": "packages/amplication-kafka",
     "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
-    "amplication-prisma-db": "packages/amplication-prisma-db"
+    "amplication-prisma-db": "packages/amplication-prisma-db",
+    "amplication-git-service": "packages/amplication-git-service"
   }
 }
