@@ -1,5 +1,5 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ee/packages/amplication-git-pull-service/src",
   "projectType": "library",
   "targets": {
@@ -75,13 +75,13 @@
         "cwd": "ee/packages/amplication-git-pull-service"
       }
     },
-    "db:migrate:init": {
+    "db:init": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "nx run amplication-git-pull-service:db:migrate:save",
-          "nx run amplication-git-pull-service:db:migrate:up",
-          "nx run amplication-git-pull-service:db:seed"
+          "nx db:migrate:dev amplication-git-pull-service",
+          "nx db:migrate:deploy amplication-git-pull-service",
+          "nx db:seed amplication-git-pull-service"
         ],
         "parallel": false,
         "cwd": "ee/packages/amplication-git-pull-service"
