@@ -19,5 +19,10 @@
       "@amplication/kafka": ["packages/amplication-kafka/src/index.ts"]
     }
   },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "exclude": ["node_modules", "tmp"]
 }
