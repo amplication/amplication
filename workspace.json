@@ -3,6 +3,7 @@
   "version": 2,
   "projects": {
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
+    "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-kafka": "packages/amplication-kafka"
   }
 }
