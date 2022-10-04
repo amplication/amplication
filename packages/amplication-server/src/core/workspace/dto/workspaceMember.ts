@@ -1,20 +1,20 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from '../../../models'; // eslint-disable-line import/no-cycle
-import { Invitation } from './Invitation'; // eslint-disable-line import/no-cycle
+import { User } from '../../../models';
+import { Invitation } from './Invitation';
 import { EnumWorkspaceMemberType } from './EnumWorkspaceMemberType';
-import { WorkspaceMemberType } from './WorkspaceMemberType'; // eslint-disable-line import/no-cycle
+import { WorkspaceMemberType } from './WorkspaceMemberType';
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class WorkspaceMember {
   @Field(() => EnumWorkspaceMemberType, {
-    nullable: false
+    nullable: false,
   })
   type!: EnumWorkspaceMemberType;
 
   @Field(() => WorkspaceMemberType, {
-    nullable: false
+    nullable: false,
   })
   member!: User | Invitation;
 }
