@@ -46,9 +46,7 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-service:build",
-        "inspect": true,
-        "port": 9229
+        "buildTarget": "amplication-git-pull-service:build"
       },
       "configurations": {
         "production": {
@@ -62,6 +60,20 @@
         "command": "prisma migrate deploy",
         "cwd": "packages/amplication-prisma-db",
         "envFile": "packages/amplication-server/.env"
+      }
+    },
+    "graphql:schema:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "graphql:schema:check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema",
+        "cwd": "packages/amplication-server"
       }
     }
   },
