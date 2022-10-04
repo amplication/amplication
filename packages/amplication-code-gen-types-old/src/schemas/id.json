@@ -1,8 +1,0 @@
-{
-  "$id": "https://amplication.com/schema/entityfield/properties/id.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "id",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {}
-}

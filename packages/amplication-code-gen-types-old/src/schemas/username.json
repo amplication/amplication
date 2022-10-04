@@ -1,8 +1,0 @@
-{
-  "$id": "https://amplication.com/schema/entityfield/properties/username.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "username",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {}
-}
