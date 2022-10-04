@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "nestjs-prisma";
+import { PrismaService } from "../prisma.service";
 import { IGitPullEventRepository } from "../contracts/interfaces/gitPullEventRepository.interface";
 import { EventData } from "../contracts/interfaces/eventData";
 import { CustomError } from "../errors/CustomError";

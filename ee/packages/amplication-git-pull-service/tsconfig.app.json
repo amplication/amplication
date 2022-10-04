@@ -8,5 +8,5 @@
     "target": "es2015"
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["src/main.ts"]
+  "include": ["src/**/*.ts"]
 }

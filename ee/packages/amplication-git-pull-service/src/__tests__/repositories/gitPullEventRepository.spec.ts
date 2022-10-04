@@ -1,4 +1,4 @@
-import { PrismaService } from "nestjs-prisma";
+import { PrismaService } from "../../prisma.service";
 import { GitPullEventRepository } from "../../repositories/gitPullEvent.repository";
 import { Test, TestingModule } from "@nestjs/testing";
 import {
