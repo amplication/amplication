@@ -84,12 +84,16 @@ export class GitPullEventService implements IGitPullEvent {
         EnumGitPullEventStatus.Ready
       );
     } catch (err) {
-      this.logger.error(
-        GitPullEventService.name,
-        { err: err.message },
-        LoggerMessages.error.CATCH_ERROR_MESSAGE,
-        'pushEventHandler method'
-      );
+      if (err instanceof Error) {
+        this.logger.error(
+          GitPullEventService.name,
+          { err: err.message },
+          LoggerMessages.error.CATCH_ERROR_MESSAGE,
+          'pushEventHandler method'
+        );
+      } else {
+        console.log('Unexpected error', err);
+      }
     }
   }
 

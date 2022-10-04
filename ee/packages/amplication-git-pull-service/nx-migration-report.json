@@ -1,0 +1,42 @@
+{
+  "dependencies": {
+    "@nestjs/common": {
+      "status": "CONFLICT",
+      "rootValue": "^8.4.7",
+      "targetValue": "8.4.3",
+      "reason": "Dependency is present in root package.json, but version is not satisfied"
+    },
+    "@nestjs/core": {
+      "status": "CONFLICT",
+      "rootValue": "^8.4.7",
+      "targetValue": "8.2.3",
+      "reason": "Dependency is present in root package.json, but version is not satisfied"
+    },
+    "@nestjs/microservices": {
+      "status": "CONFLICT",
+      "rootValue": "^8.4.7",
+      "targetValue": "8.4.3",
+      "reason": "Dependency is present in root package.json, but version is not satisfied"
+    },
+    "winston": {
+      "status": "CONFLICT",
+      "rootValue": "3.3.4",
+      "targetValue": "3.7.2",
+      "reason": "Dependency is present in root package.json, but version is not satisfied"
+    }
+  },
+  "devDependencies": {
+    "@types/jest": {
+      "status": "CONFLICT",
+      "rootValue": "^27.0.2",
+      "targetValue": "26.0.19",
+      "reason": "Dependency is present in root package.json, but version is not satisfied"
+    },
+    "ts-jest": {
+      "status": "CONFLICT",
+      "rootValue": "^27.0.5",
+      "targetValue": "27.0.3",
+      "reason": "Dependency is present in root package.json, but version is not satisfied"
+    }
+  }
+}
