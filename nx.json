@@ -27,8 +27,7 @@
           "db:prisma:generate",
           "graphql:schema:generate",
           "graphql:schema:check"
-        ],
-        "accessToken": "NmMwMDk2YzEtNmRlYi00OGNmLTkzY2QtOGU5NTFlMDQ3MzNhfHJlYWQ="
+        ]
       }
     }
   },
