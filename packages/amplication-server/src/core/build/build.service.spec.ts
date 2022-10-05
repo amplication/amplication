@@ -6,12 +6,9 @@ import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { StorageService } from '@codebrew/nestjs-storage';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import {
-  ACTION_JOB_DONE_LOG,
   GENERATE_STEP_MESSAGE,
   GENERATE_STEP_NAME,
-  ACTION_ZIP_LOG,
   BuildService,
-  ENTITIES_INCLUDE,
   ACTION_INCLUDE
 } from './build.service';
 import { EntityService } from '..';
@@ -20,7 +17,7 @@ import { ResourceService } from '../resource/resource.service';
 import { ActionService } from '../action/action.service';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { Build } from './dto/Build';
-import { getBuildTarGzFilePath, getBuildZipFilePath } from './storage';
+import { getBuildZipFilePath } from './storage';
 import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { UserService } from '../user/user.service';
@@ -67,9 +64,6 @@ const EXAMPLE_USER_ID = 'ExampleUserId';
 const EXAMPLE_ENTITY_VERSION_ID = 'ExampleEntityVersionId';
 const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
 export const EXAMPLE_DATE = new Date('2020-01-01');
-
-const JOB_STARTED_LOG = 'Build job started';
-const JOB_DONE_LOG = 'Build job done';
 
 const EXAMPLE_MESSAGE = 'exampleMessage';
 
@@ -204,38 +198,7 @@ const EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT: Build = {
 
 const commitId = EXAMPLE_COMMIT_ID;
 const version = commitId.slice(commitId.length - 8);
-const EXAMPLE_CREATE_INITIAL_STEP_DATA = {
-  message: 'Adding task to queue',
-  name: 'ADD_TO_QUEUE',
-  status: EnumActionStepStatus.Success,
-  completedAt: EXAMPLE_DATE,
-  logs: {
-    create: [
-      {
-        level: EnumActionLogLevel.Info,
-        message: 'create build generation task',
-        meta: {}
-      },
-      {
-        level: EnumActionLogLevel.Info,
-        message: `Build Version: ${version}`,
-        meta: {}
-      },
-      {
-        level: EnumActionLogLevel.Info,
-        message: `Build message: ${EXAMPLE_BUILD.message}`,
-        meta: {}
-      }
-    ]
-  }
-};
 
-const EXAMPLE_MODULES = [
-  {
-    path: 'examplePath',
-    code: 'exampleCode'
-  }
-];
 
 const prismaBuildCreateMock = jest.fn(
   () => EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
@@ -308,7 +271,6 @@ const actionServiceRunMock = jest.fn(
   }
 );
 const actionServiceLogInfoMock = jest.fn();
-const actionServiceLogMock = jest.fn();
 
 const EXAMPLE_STREAM = new Readable();
 const EXAMPLE_URL = 'EXAMPLE_URL';
