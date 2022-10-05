@@ -1,36 +1,35 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { App, Octokit } from 'octokit';
-import { IGitClient } from '../contracts/IGitClient';
-import { GithubFile } from '../Dto/entities/GithubFile';
-import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { App, Octokit } from "octokit";
+import { IGitClient } from "../contracts/IGitClient";
+import { GithubFile } from "../Dto/entities/GithubFile";
+import { RemoteGitOrganization } from "../Dto/entities/RemoteGitOrganization";
 import {
   RemoteGitRepository,
-  RemoteGitRepos
-} from '../Dto/entities/RemoteGitRepository';
-import { EnumGitOrganizationType } from '../Dto/enums/EnumGitOrganizationType';
-import { ConverterUtil } from '../utils/ConverterUtil';
-import { createAppAuth } from '@octokit/auth-app';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
+  RemoteGitRepos,
+} from "../Dto/entities/RemoteGitRepository";
+import { EnumGitOrganizationType } from "../Dto/enums/EnumGitOrganizationType";
+import { ConverterUtil } from "../utils/ConverterUtil";
+import { createAppAuth } from "@octokit/auth-app";
+import { createPullRequest } from "octokit-plugin-create-pull-request";
 import {
   AMPLICATION_IGNORED_FOLDER,
-  REPO_NAME_TAKEN_ERROR_MESSAGE,
-  UNSUPPORTED_GIT_ORGANIZATION_TYPE
-} from '../utils/constants';
-import { components } from '@octokit/openapi-types';
-import { join } from 'path';
-import { AmplicationIgnoreManger } from '../utils/AmplicationIgnoreManger';
-import { GitResourceMeta } from '../contracts/GitResourceMeta';
-import { PrModule } from '../types';
+  UNSUPPORTED_GIT_ORGANIZATION_TYPE,
+} from "../utils/constants";
+import { components } from "@octokit/openapi-types";
+import { join } from "path";
+import { AmplicationIgnoreManger } from "../utils/AmplicationIgnoreManger";
+import { GitResourceMeta } from "../contracts/GitResourceMeta";
+import { PrModule } from "../types";
 
-const GITHUB_FILE_TYPE = 'file';
-export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
-export const GITHUB_APP_APP_ID_VAR = 'GITHUB_APP_APP_ID';
-export const GITHUB_APP_PRIVATE_KEY_VAR = 'GITHUB_APP_PRIVATE_KEY';
-export const GITHUB_APP_INSTALLATION_URL_VAR = 'GITHUB_APP_INSTALLATION_URL';
+const GITHUB_FILE_TYPE = "file";
+export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
+export const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
+export const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
+export const GITHUB_APP_INSTALLATION_URL_VAR = "GITHUB_APP_INSTALLATION_URL";
 export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encoding received`;
 
-type DirectoryItem = components['schemas']['content-directory'][number];
+type DirectoryItem = components["schemas"]["content-directory"][number];
 @Injectable()
 export class GithubService implements IGitClient {
   private app: App;
@@ -44,11 +43,11 @@ export class GithubService implements IGitClient {
     const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
     const privateKey = this.configService
       .get(GITHUB_APP_PRIVATE_KEY_VAR)
-      .replace(/\\n/g, '\n');
+      .replace(/\\n/g, "\n");
 
     this.app = new App({
       appId: appId,
-      privateKey: privateKey
+      privateKey: privateKey,
     });
   }
   createUserRepository(
@@ -57,6 +56,7 @@ export class GithubService implements IGitClient {
     name: string,
     isPublic: boolean
   ): Promise<RemoteGitRepository> {
+    console.log({ installationId, owner, name, isPublic });
     throw new Error(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
   }
   async createOrganizationRepository(
@@ -80,7 +80,7 @@ export class GithubService implements IGitClient {
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       auto_init: true,
-      private: !isPublic
+      private: !isPublic,
     });
 
     return {
@@ -88,7 +88,7 @@ export class GithubService implements IGitClient {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin
+      admin: repo.permissions.admin,
     };
   }
   async getOrganizationRepos(
@@ -109,13 +109,13 @@ export class GithubService implements IGitClient {
     return await GithubService.isRepoExistWithOctokit(octokit, name);
   }
   async getGitInstallationUrl(workspaceId: string): Promise<string> {
-    return this.gitInstallationUrl.replace('{state}', workspaceId);
+    return this.gitInstallationUrl.replace("{state}", workspaceId);
   }
   async deleteGitOrganization(installationId: string): Promise<boolean> {
     const octokit = await this.getInstallationOctokit(installationId);
     const deleteInstallationRes = await octokit.rest.apps.deleteInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: ConverterUtil.convertToNumber(installationId)
+      installation_id: ConverterUtil.convertToNumber(installationId),
     });
 
     if (deleteInstallationRes.status != 204) {
@@ -130,13 +130,13 @@ export class GithubService implements IGitClient {
     const octokit = await this.getInstallationOctokit(installationId);
     const gitRemoteOrganization = await octokit.rest.apps.getInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: ConverterUtil.convertToNumber(installationId)
+      installation_id: ConverterUtil.convertToNumber(installationId),
     });
     const { data: gitRemoteOrgs } = gitRemoteOrganization;
 
     return {
       name: gitRemoteOrgs.account.login,
-      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type]
+      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type],
     };
   }
   async getFile(
@@ -151,7 +151,7 @@ export class GithubService implements IGitClient {
       owner: userName,
       repo: repoName,
       path,
-      ref: baseBranchName ? baseBranchName : undefined
+      ref: baseBranchName ? baseBranchName : undefined,
     });
 
     if (!Array.isArray(content)) {
@@ -159,13 +159,13 @@ export class GithubService implements IGitClient {
 
       if (item.type === GITHUB_FILE_TYPE) {
         // Convert base64 results to UTF-8 string
-        const buff = Buffer.from(item.content, 'base64');
+        const buff = Buffer.from(item.content, "base64");
 
         const file: GithubFile = {
-          content: buff.toString('utf-8'),
+          content: buff.toString("utf-8"),
           htmlUrl: item.html_url,
           name: item.name,
-          path: item.path
+          path: item.path,
         };
         return file;
       }
@@ -188,11 +188,11 @@ export class GithubService implements IGitClient {
 
     const token = await this.getInstallationAuthToken(installationId);
     const octokit = new myOctokit({
-      auth: token
+      auth: token,
     });
 
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
-    await amplicationIgnoreManger.init(async fileName => {
+    await amplicationIgnoreManger.init(async (fileName) => {
       try {
         return (
           await this.getFile(
@@ -204,8 +204,8 @@ export class GithubService implements IGitClient {
           )
         ).content;
       } catch (error) {
-        console.log('Repository does not have a .amplicationignore file');
-        return '';
+        console.log("Repository does not have a .amplicationignore file");
+        return "";
       }
     });
 
@@ -213,30 +213,26 @@ export class GithubService implements IGitClient {
     //do not override server/scripts/customSeed.ts
     const doNotOverride = [
       new RegExp(
-        `^${gitResourceMeta.serverPath ||
-          'server'}\/src\/[^\/]+\/.+\.controller.ts$`
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.controller.ts$`
       ),
       new RegExp(
-        `^${gitResourceMeta.serverPath ||
-          'server'}\/src\/[^\/]+\/.+\.resolver.ts$`
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.resolver.ts$`
       ),
       new RegExp(
-        `^${gitResourceMeta.serverPath ||
-          'server'}\/src\/[^\/]+\/.+\.service.ts$`
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.service.ts$`
       ),
       new RegExp(
-        `^${gitResourceMeta.serverPath ||
-          'server'}\/src\/[^\/]+\/.+\.module.ts$`
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.module.ts$`
       ),
       new RegExp(
-        `^${gitResourceMeta.serverPath || 'server'}\/scripts\/customSeed.ts$`
-      )
+        `^${gitResourceMeta.serverPath || "server"}/scripts/customSeed.ts$`
+      ),
     ];
 
-    const authFolder = 'server/src/auth';
+    const authFolder = "server/src/auth";
 
     const files = Object.fromEntries(
-      modules.map(module => {
+      modules.map((module) => {
         // ignored file
         if (amplicationIgnoreManger.isIgnored(module.path)) {
           return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
@@ -248,7 +244,7 @@ export class GithubService implements IGitClient {
         // Regex ignored file
         if (
           !module.path.startsWith(authFolder) &&
-          doNotOverride.some(rx => rx.test(module.path))
+          doNotOverride.some((rx) => rx.test(module.path))
         ) {
           return [
             module.path,
@@ -257,7 +253,7 @@ export class GithubService implements IGitClient {
               if (exists) return null;
 
               return module.code;
-            }
+            },
           ];
         }
         // Regular file
@@ -279,9 +275,9 @@ export class GithubService implements IGitClient {
         {
           /* optional: if `files` is not passed, an empty commit is created instead */
           files: files,
-          commit: commitName
-        }
-      ]
+          commit: commitName,
+        },
+      ],
     });
     return pr.data.html_url;
   }
@@ -296,13 +292,13 @@ export class GithubService implements IGitClient {
   private static async getOrganizationReposWithOctokit(
     octokit: Octokit
   ): Promise<RemoteGitRepository[]> {
-    const results = await octokit.request('GET /installation/repositories');
-    return results.data.repositories.map(repo => ({
+    const results = await octokit.request("GET /installation/repositories");
+    return results.data.repositories.map((repo) => ({
       name: repo.name,
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin
+      admin: repo.permissions.admin,
     }));
   }
 
@@ -314,19 +310,19 @@ export class GithubService implements IGitClient {
     const results = await octokit.request(
       `GET /installation/repositories?per_page=${limit}&page=${page}`
     );
-    const repos = results.data.repositories.map(repo => ({
+    const repos = results.data.repositories.map((repo) => ({
       name: repo.name,
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin
+      admin: repo.permissions.admin,
     }));
 
     return {
       totalRepos: results.data.total_count,
       repos: repos,
       pageSize: limit,
-      currentPage: page
+      currentPage: page,
     };
   }
 
@@ -335,7 +331,7 @@ export class GithubService implements IGitClient {
     name: string
   ): Promise<boolean> {
     const repos = await GithubService.getOrganizationReposWithOctokit(octokit);
-    return repos.map(repo => repo.name).includes(name);
+    return repos.map((repo) => repo.name).includes(name);
   }
   private async getInstallationAuthToken(
     installationId: string
@@ -343,13 +339,13 @@ export class GithubService implements IGitClient {
     const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
     const privateKey = this.configService
       .get(GITHUB_APP_PRIVATE_KEY_VAR)
-      .replace(/\\n/g, '\n');
+      .replace(/\\n/g, "\n");
     const auth = createAppAuth({ appId, privateKey });
     // Retrieve installation access token
     return (
       await auth({
-        type: 'installation',
-        installationId: installationId
+        type: "installation",
+        installationId: installationId,
       })
     ).token;
   }
