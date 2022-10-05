@@ -46,6 +46,7 @@ amplication-server:
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
+      BUILD_INPUT_FILE_NAME: input.json
 
       #GCP - APPS Builder
 
