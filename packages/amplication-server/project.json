@@ -71,15 +71,17 @@
     },
     "graphql:schema:generate": {
       "executor": "nx:run-commands",
+      "outputs": ["packages/amplication-server/src/schema.graphql"],
       "options": {
-        "command": "ts-node -r tsconfig-paths/register scripts/generate-graphql-schema",
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/generate-graphql-schema.ts",
         "cwd": "packages/amplication-server"
       }
     },
     "graphql:schema:check": {
       "executor": "nx:run-commands",
+      "dependsOn": ["graphql:schema:generate"],
       "options": {
-        "command": "ts-node -r tsconfig-paths/register scripts/check-graphql-schema",
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/check-graphql-schema",
         "cwd": "packages/amplication-server"
       }
     }
