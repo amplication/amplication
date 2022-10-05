@@ -3,12 +3,13 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": ["packages/amplication-code-gen-types/src"],
   "projectType": "library",
+
   "targets": {
     "prepare": {
       "executor": "nx:run-commands",
-      "outputs": ["packages/amplication-code-gen-types/src/types"],
+      "outputs": ["{projectRoot}/src/types"],
       "options": {
-        "command": "ts-node ./scripts/generate-types",
+        "command": "ts-node -P tsconfig.lib.json ./scripts/generate-types",
         "cwd": "packages/amplication-code-gen-types"
       }
     },

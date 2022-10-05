@@ -17,7 +17,7 @@
       "options": {
         "cacheableOperations": [
           "build",
-          "preapre",
+          "prepare",
           "check-format",
           "test",
           "db:init",
