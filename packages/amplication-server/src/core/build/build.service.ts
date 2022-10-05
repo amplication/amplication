@@ -378,7 +378,9 @@ export class BuildService {
 
         await fs.writeFile(savePath, JSON.stringify(dsgResourceData));
 
-        await axios.post(DSG_RUNNER_URL, { buildId: buildId });
+        await axios.post(this.configService.get(DSG_RUNNER_URL), {
+          buildId: buildId
+        });
 
         await Promise.all(logPromises);
 
