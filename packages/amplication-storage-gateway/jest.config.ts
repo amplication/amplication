@@ -12,5 +12,5 @@ export default {
     "^.+\\.[tj]s$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "html"],
-  coverageDirectory: "../../coverage/apps/amplication-storage-gateway",
+  coverageDirectory: "../../coverage/packages/amplication-storage-gateway",
 };

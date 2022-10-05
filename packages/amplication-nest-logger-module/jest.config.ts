@@ -12,5 +12,5 @@ export default {
     "^.+\\.[tj]sx?$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
-  coverageDirectory: "../../coverage/libs/amplication-nest-logger-module",
+  coverageDirectory: "../../coverage/packages/amplication-nest-logger-module",
 };

@@ -12,6 +12,6 @@ export default {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/amplication-server',
+  coverageDirectory: '../../coverage/packages/amplication-server',
   testMatch: ['**/e2e/**/*.spec.ts'],
 };
