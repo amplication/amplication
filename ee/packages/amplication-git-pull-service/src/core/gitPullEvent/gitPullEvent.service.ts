@@ -35,7 +35,6 @@ export class GitPullEventService implements IGitPullEvent {
     this.rootStorageDir =
       this.configService.get<string>(ROOT_STORAGE_DIR) ||
       DEFAULT_GITHUB_PULL_FOLDER;
-    console.log("test1", this.configService.get<string>(PRISMA_SKIP_VALUE));
     this.skipPrismaValue = convertToNumber(
       this.configService.get<string>(PRISMA_SKIP_VALUE) || "0"
     );

@@ -1,13 +1,17 @@
 {
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "include": [],
   "compilerOptions": {
-    "module": "commonjs",
-    "outDir": "./dist",
-    "lib": ["ES2020"],
-    "incremental": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "strict": true
+    "lib": ["es2019"],
+    "resolveJsonModule": true
   },
-  "include": ["src"]
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
 }
