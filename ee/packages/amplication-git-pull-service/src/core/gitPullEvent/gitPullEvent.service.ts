@@ -1,4 +1,3 @@
-import * as os from "os";
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import { IGitPullEvent } from "../../contracts/interfaces/gitPullEvent.interface";
 import { EnumGitPullEventStatus } from "../../contracts/enums/gitPullEventStatus.enum";
@@ -100,7 +99,7 @@ export class GitPullEventService implements IGitPullEvent {
   private async createPullEventRecordOnDB(
     pushEventMessage: PushEventMessage
   ): Promise<{ id: bigint }> {
-    const { installationId, ...gitPullEventParams } = pushEventMessage;
+    const { ...gitPullEventParams } = pushEventMessage;
     const newPullEventRecord = await this.gitPullEventRepository.create({
       ...gitPullEventParams,
       status: EnumGitPullEventStatus.Created,

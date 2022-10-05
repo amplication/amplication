@@ -6,7 +6,6 @@ import { IGitClient } from "../../contracts/interfaces/gitClient.interface";
 import { CustomError } from "../../errors/CustomError";
 import { ErrorMessages } from "../../constants/errorMessages";
 import { PushEventMessage } from "../../contracts/interfaces/pushEventMessage";
-import { CONFIG_SCOPE_GLOBAL } from "../../constants/variables";
 import { GitProviderEnum } from "../../contracts/enums/gitProvider.enum";
 
 const REMOTE_ORIGIN = "ENV_REMOTE_ORIGIN";

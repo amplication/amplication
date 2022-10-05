@@ -1,3 +1,5 @@
+// TODO: should be an enum
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ErrorMessages = {
   ACCESS_TOKEN_ERROR: "failed to create new access token",
   CREATE_NEW_RECORD_ERROR: "failed to create a new record in DB",

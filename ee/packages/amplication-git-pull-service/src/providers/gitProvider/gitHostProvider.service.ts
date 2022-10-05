@@ -36,6 +36,7 @@ export class GitHostProviderService implements IGitProvider {
       const { data } = await octokit.request(
         `POST /app/installations/${installationId}/access_tokens`,
         {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           installation_id: installationIdNumber,
         }
       );

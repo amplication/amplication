@@ -1,3 +1,5 @@
+// TODO: should be an enum
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const LoggerMessages = {
   log: {
     GENERATE_OCTOKIT_ACCESS_TOKEN: "generate access token with octokit",
