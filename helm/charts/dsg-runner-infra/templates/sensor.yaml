@@ -38,7 +38,7 @@ spec:
                           - name: BUILD_ID
                             value: null # provided in parameters
                           - name: STATUS_UPDATE_URL
-                            value: amplication-server.next.svc.cluster.local/generated-apps/complete-code-generation-step
+                            value: http://amplication-server.next.svc.cluster.local/generated-apps/complete-code-generation-step
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs
