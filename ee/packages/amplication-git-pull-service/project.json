@@ -50,6 +50,9 @@
     },
     "db:prisma:generate": {
       "executor": "nx:run-commands",
+      "outputs": [
+        "node_modules/@amplication/prisma-clients/amplication-git-pull-service"
+      ],
       "options": {
         "command": "prisma generate --schema ./prisma/schema.prisma",
         "cwd": "ee/packages/amplication-git-pull-service"

@@ -23,12 +23,13 @@ jobs:
   #       npx nx affected --target=test --parallel=3 --ci --code-coverage
   #       npx nx affected --target=build --parallel=3
 
-  docker-build:
+  test:
     name: Build
     runs-on: ubuntu-latest
     env:
       NX_BRANCH: ${{ github.head_ref }}
       NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
+      NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -37,7 +38,17 @@ jobs:
         with:
           main-branch-name: next
 
-      - run: npm ci
-      - run: npx nx workspace-lint
-      - run: npx nx format:check
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Nx Workspace Lint
+        run: npx nx workspace-lint
+
+      - name: Nx Format Check
+        run: npx nx format:check
+
+      - name: Lint
       - run: npx nx affected --target=lint --parallel=3
+
+      - name: Test
+      - run: npx affected --target=test --parallel=3

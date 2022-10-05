@@ -23,15 +23,19 @@
           "db:init",
           "lint",
           "test:e2e",
-          "test:cov"
+          "test:cov",
+          "db:prisma:generate"
         ],
         "accessToken": "NmMwMDk2YzEtNmRlYi00OGNmLTkzY2QtOGU5NTFlMDQ3MzNhfHJlYWQ="
       }
     }
   },
   "targetDefaults": {
+    "test": {
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate"]
+    },
     "build": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "db:prisma:generate", "^db:prisma:generate"]
     },
     "prepare": {
       "dependsOn": ["^prepare"]

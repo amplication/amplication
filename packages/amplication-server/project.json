@@ -4,8 +4,8 @@
   "sourceRoot": "packages/amplication-server/src",
   "projectType": "application",
   "implicitDependencies": [
-    "amplication-code-gen-types",
     "amplication-prisma-db",
+    "amplication-code-gen-types",
     "amplication-git-utils",
     "amplication-kafka"
   ],
