@@ -70,4 +70,5 @@ jobs:
         run: npx nx affected --target=docker:build --parallel=3
         env:
           INPUT_PUSH: true
-          INPUT_TAGS: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service:nx-test,407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service:${{ github.run_id }}"
+          INPUT_METADATA_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service"
+          INPUT_METADATA_TAGS: "nx-test,nx-test-2,${{ github.run_id }}"

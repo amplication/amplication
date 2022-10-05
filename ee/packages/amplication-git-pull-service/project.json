@@ -117,7 +117,9 @@
       "executor": "@nx-tools/nx-docker:build",
       "options": {
         "push": false,
-        "tags": ["amplication-git-pull-service"]
+        "metadata": {
+          "images": ["amplication-git-pull-service"]
+        }
       }
     }
   },
