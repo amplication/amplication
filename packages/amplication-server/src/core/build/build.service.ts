@@ -48,7 +48,11 @@ import { PluginInstallationService } from '../pluginInstallation/pluginInstallat
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
 import { promises as fs } from 'fs';
 import axios from 'axios';
-import { BASE_BUILDS_FOLDER, BUILD_INPUT_FILE_NAME, DSG_RUNNER_URL } from '../../constants';
+import {
+  BASE_BUILDS_FOLDER,
+  BUILD_INPUT_FILE_NAME,
+  DSG_RUNNER_URL
+} from '../../constants';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -364,7 +368,11 @@ export class BuildService {
         ] = this.createDataServiceLogger(build, step);
 
         await fs.writeFile(
-          path.join(this.configService.get(BASE_BUILDS_FOLDER), buildId, BUILD_INPUT_FILE_NAME), 
+          path.join(
+            this.configService.get(BASE_BUILDS_FOLDER),
+            buildId,
+            BUILD_INPUT_FILE_NAME
+          ),
           JSON.stringify(dsgResourceData)
         );
 

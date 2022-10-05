@@ -24,10 +24,7 @@ describe('BuildController', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const moduleRef = await Test.createTestingModule({
-      imports: [
-        MorganModule.forRoot(),
-        ActionModule
-      ],
+      imports: [MorganModule.forRoot(), ActionModule],
       providers: [
         {
           provide: BuildService,
