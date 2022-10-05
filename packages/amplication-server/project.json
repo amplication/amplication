@@ -3,6 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-server/src",
   "projectType": "application",
+  "implicitDependencies": [
+    "amplication-code-gen-types",
+    "amplication-prisma-db",
+    "amplication-git-utils",
+    "amplication-kafka"
+  ],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",

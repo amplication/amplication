@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-storage-gateway/src",
   "projectType": "application",
+  "implicitDependencies": ["amplication-nest-logger-module"],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
