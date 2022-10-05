@@ -43,7 +43,7 @@
     "react-tracking": "8.0.0",
     "react-use-localstorage": "3.5.3",
     "react-xarrows": "1.7.1",
-    "sass": "1.35.2",
+    "sass": "1.55.0",
     "semver": "7.3.5",
     "styled-components": "5.1.1",
     "use-debounce": "3.4.3",
