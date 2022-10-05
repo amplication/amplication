@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: 'amplication-server',
+  displayName: 'amplication-git-pull-request-service',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -12,5 +12,5 @@ export default {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/amplication-server',
+  coverageDirectory: '../../coverage/apps/amplication-git-pull-request-service',
 };

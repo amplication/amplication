@@ -9,6 +9,7 @@
     "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
     "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-server": "packages/amplication-server",
-    "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service"
+    "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
+    "amplication-storage-gateway": "packages/amplication-storage-gateway"
   }
 }
