@@ -26,11 +26,7 @@ export class StorageService {
     return join(buildsFolder, resourceId, buildId);
   }
 
-  getBuildFilesList(
-    resourceId: string,
-    buildId: string,
-    relativePath: string = ""
-  ) {
+  getBuildFilesList(resourceId: string, buildId: string, relativePath = "") {
     const results: FilesDictionary = {};
 
     const cwd = `${StorageService.buildFolder(
@@ -79,7 +75,7 @@ export class StorageService {
     });
   }
 
-  fileContent(resourceId: string, buildId: string, path: string = ""): string {
+  fileContent(resourceId: string, buildId: string, path = ""): string {
     const filePath = join(
       StorageService.buildFolder(this.buildsFolder, resourceId, buildId),
       path
@@ -96,7 +92,7 @@ export class StorageService {
         if ("ENOENT" !== err.code) {
           throw err;
         }
-        let fh = await open(filename, "a");
+        const fh = await open(filename, "a");
         await fh.close();
       }
     );
