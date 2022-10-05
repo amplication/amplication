@@ -6,6 +6,7 @@
   "targets": {
     "prepare": {
       "executor": "nx:run-commands",
+      "outputs": ["packages/amplication-code-gen-types/src/types"],
       "options": {
         "command": "ts-node ./scripts/generate-types",
         "cwd": "packages/amplication-code-gen-types"

@@ -27,7 +27,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     env:
-      NX_BRANCH: ${{ github.head_ref }}
+      NX_BRANCH: ${{ github.ref_name }}
       NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
       NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
