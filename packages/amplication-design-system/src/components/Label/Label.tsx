@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React from "react";
 import "./Label.scss";
 export type LabelTypes = "normal" | "error";

@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+.pending-changes-page {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+
+    .multi-state-toggle {
+      margin-bottom: 0;
+      width: var(--form-field-normal);
+    }
+  }
+
+  &__title {
+    @include body3;
+    margin-bottom: var(--large-spacing);
+  }
+
+  .pending-change-with-compare {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}

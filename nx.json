@@ -38,5 +38,12 @@
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
     }
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "babel": true
+      }
+    }
   }
 }

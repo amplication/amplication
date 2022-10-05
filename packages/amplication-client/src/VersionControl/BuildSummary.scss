@@ -1,0 +1,50 @@
+@import "../style/index.scss";
+$step-status-width: 25px;
+$step-min-height: 32px;
+.build-summary {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+
+  .amp-button {
+    width: 100%;
+  }
+
+  &__download {
+    display: flex;
+    flex-direction: row-reverse;
+    > * {
+      margin-left: var(--default-spacing);
+    }
+  }
+
+  &__generating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--double-spacing);
+
+    .amp-circular-progress {
+      margin-right: var(--default-spacing-small);
+    }
+  }
+
+  &__view-code {
+    display: block;
+
+    .amp-button {
+      border-color: var(--black100);
+    }
+  }
+  &__sandbox {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-start;
+    align-items: center;
+    color: var(--black60);
+  }
+
+  &__message {
+    @include flexFullRowWithSpacing;
+    color: var(--black60);
+  }
+}

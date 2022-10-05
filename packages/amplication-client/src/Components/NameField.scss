@@ -1,0 +1,51 @@
+@import "../style/index.scss";
+
+$tooltip-size-gap: 10px;
+$tooltip-top: 52px;
+$tooltip-animation-duration: 0.2s;
+
+.amp-name-field {
+  position: relative;
+  input,
+  input:active,
+  input:hover,
+  input:focus {
+    color: var(--theme-turquoise);
+    font-style: italic;
+  }
+
+  &__tooltip {
+    position: absolute;
+    background: var(--black80);
+    color: var(--white);
+    width: calc(100% - 40px);
+    left: $tooltip-size-gap;
+    top: $tooltip-top;
+    border: $border-black10;
+    padding: var(--default-spacing);
+    border-radius: var(--default-border-radius);
+    z-index: 99;
+    margin: 0;
+    box-shadow: var(--default-box-shadow);
+    animation-name: fade;
+    animation-duration: $tooltip-animation-duration;
+  }
+
+  @keyframes fade {
+    0% {
+      opacity: 0;
+    }
+    25% {
+      opacity: 0.25;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    75% {
+      opacity: 0.75;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}

@@ -1,0 +1,51 @@
+@import "../style/index.scss";
+
+.build {
+  margin-left: 0;
+  h3 {
+    span {
+      @include bold;
+      color: var(--black80);
+      margin-left: var(--default-spacing-small);
+    }
+  }
+  &__header {
+    margin-top: var(--default-spacing);
+    margin-bottom: var(--default-spacing);
+    padding-top: var(--default-spacing);
+    @include flexFullRowWithSpacing;
+    @include body2;
+    @include semiBold;
+    a {
+      color: var(--black100);
+    }
+
+    border-top: $border-black10;
+    width: 100%;
+
+    &--deployed {
+      h3,
+      h3 span {
+        @include semiBold;
+        color: var(--positive-default);
+      }
+      i {
+        font-size: 24px;
+        color: var(--positive-default);
+      }
+      a i {
+        color: var(--black40);
+      }
+    }
+  }
+
+  &__message {
+    color: var(--black80);
+    margin-bottom: var(--default-spacing-small);
+  }
+
+  &__actions {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-end;
+  }
+}

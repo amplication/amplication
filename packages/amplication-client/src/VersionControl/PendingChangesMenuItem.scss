@@ -1,0 +1,20 @@
+@import "../style/index.scss";
+
+.pending-changes-menu-item {
+  border-radius: 0 0 var(--default-border-radius) var(--default-border-radius);
+  margin-top: -5px;
+  padding: var(--default-spacing-small);
+
+  &--open {
+    background: var(--white);
+  }
+
+  &__badge {
+    @include counterBadge;
+    background-color: var(--warning-default);
+    color: var(--static-bl);
+    top: auto;
+    bottom: -12px;
+    color: var(--static-black);
+  }
+}

@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+.commit-validation {
+  margin-bottom: var(--default-spacing);
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    .amp-icon {
+      color: var(--negative-light);
+      margin-right: var(--default-spacing);
+    }
+
+    a {
+      display: block;
+      color: var(--black100);
+    }
+    color: var(--black90);
+  }
+}

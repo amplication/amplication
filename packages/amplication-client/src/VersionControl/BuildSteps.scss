@@ -1,0 +1,26 @@
+@import "../style/index.scss";
+$step-status-width: 25px;
+$step-min-height: 32px;
+.build-steps {
+  &__download {
+    padding-bottom: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+    border-bottom: $border-black10;
+
+    .amp-button {
+      width: 100%;
+      border-radius: var(--default-border-radius) !important;
+    }
+  }
+  &__step {
+    @include flexFullRowWithSpacing;
+    justify-content: flex-start;
+    color: var(--black100);
+    min-height: $step-min-height;
+
+    /**@todo: remove after adding endpoint to download container   */
+    .hidden {
+      visibility: hidden;
+    }
+  }
+}

@@ -7,6 +7,7 @@ import { Panel, Props as PanelProps } from "../Panel/Panel";
 import "./PanelCollapsible.scss";
 
 export type Props = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   onCollapseChange?: (open: boolean) => {};
   /**Whether the panel is initially open or not */
   initiallyOpen?: boolean;

@@ -1,0 +1,29 @@
+@import "../style/index.scss";
+
+.text-input.editable-title-field {
+  margin-bottom: 0;
+  label {
+    display: inline;
+
+    > span {
+      display: none;
+    }
+  }
+  input {
+    display: inline;
+    width: auto;
+    border-color: transparent;
+    background: none;
+    @include pageTitle;
+    margin-left: calc(var(--default-spacing) * -1);
+    padding-top: 0;
+    padding-bottom: 0;
+    height: auto;
+  }
+
+  &--secondary {
+    input {
+      @include body1;
+    }
+  }
+}

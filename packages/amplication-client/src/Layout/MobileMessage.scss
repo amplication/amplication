@@ -1,0 +1,48 @@
+@import "../style/index.scss";
+$title-margin-top: 40px;
+$content-padding: 24px;
+$button-width: 90vw;
+$button-height: 40px;
+
+.mobile-message {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  flex-direction: column;
+
+  &__title {
+    @include pageTitle;
+    @include semiBold;
+
+    padding-right: $content-padding;
+    padding-left: $content-padding;
+    text-align: center;
+    margin-top: $title-margin-top;
+    color: var(--black100);
+    line-height: 1.2;
+  }
+
+  &__message {
+    @include body1;
+    padding-right: $content-padding;
+    padding-left: $content-padding;
+    text-align: center;
+    color: var(--black90);
+    margin-bottom: var(--large-spacing);
+    margin-top: var(--large-spacing);
+  }
+  &__action {
+    padding-top: $content-padding;
+    color: var(--black60);
+    .amp-button {
+      width: $button-width;
+      height: $button-height;
+      // border-radius: $button-height * 0.5 !important;
+    }
+  }
+}

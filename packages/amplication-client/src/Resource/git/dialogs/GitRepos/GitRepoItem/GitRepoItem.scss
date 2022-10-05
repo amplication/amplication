@@ -1,0 +1,24 @@
+@import "../../../../../style/index.scss";
+
+.git-repo-item {
+  @include flexFullRowWithSpacing;
+  background-color: var(--black5);
+  border-radius: var(--default-border-radius);
+  margin-bottom: var(--default-spacing);
+  padding: var(--default-spacing);
+
+  &__name {
+    @include title1;
+    display: inline-block;
+    padding-bottom: var(--default-spacing-small);
+    margin-right: var(--default-spacing);
+  }
+
+  &__privacy {
+    color: var(--primary);
+    .amp-icon {
+      color: var(--primary);
+      margin-right: var(--default-spacing-small);
+    }
+  }
+}
