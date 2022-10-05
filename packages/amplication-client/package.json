@@ -32,7 +32,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "16.14.0",
     "react-draggable": "4.4.3",
-    "react-dropzone": "11.3.4",
+    "react-dropzone": "11.7.1",
     "react-helmet": "6.1.0",
     "react-hotkeys": "2.0.0",
     "react-lazylog": "4.5.3",
