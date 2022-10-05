@@ -9,61 +9,66 @@ on:
 
 env:
   NX_BRANCH: ${{ github.ref_name }}
-  NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
   NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
-  # main:
-  #   name: Nx Cloud - Main Job
-  #   uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.7
-  #   with:
-  #     number-of-agents: 3
-  #     init-commands: |
-  #       npx nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
-  #     parallel-commands: |
-  #       npx nx-cloud record -- npx nx workspace-lint
-  #       npx nx-cloud record -- npx nx format:check
-  #     parallel-commands-on-agents: |
-  #       npx nx affected --target=lint --parallel=3
-  #       npx nx affected --target=test --parallel=3 --ci --code-coverage
-  #       npx nx affected --target=build --parallel=3
+  main:
+    name: Nx Cloud - Main Job
+    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.7
+    with:
+      number-of-agents: 3
+      init-commands: |
+        npx nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
+      parallel-commands: |
+        npx nx-cloud record -- npx nx workspace-lint
+        npx nx-cloud record -- npx nx format:check
+      parallel-commands-on-agents: |
+        npx nx affected --target=lint --parallel=3
+        npx nx affected --target=test --parallel=3 --ci --code-coverage
+        npx nx affected --target=build --parallel=3
 
-  test:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+  agents:
+    name: Nx Cloud - Agents
+    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.7
+    with:
+      number-of-agents: 3
 
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+  # test:
+  #   name: Build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
 
-      - uses: nrwl/nx-set-shas@v3
-        with:
-          main-branch-name: next
+  #     - name: Cache node modules
+  #       id: cache-npm
+  #       uses: actions/cache@v3
+  #       env:
+  #         cache-name: cache-node-modules
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-build-${{ env.cache-name }}-
+  #           ${{ runner.os }}-build-
+  #           ${{ runner.os }}-
 
-      - name: Install Dependencies
-        run: npm ci
+  #     - uses: nrwl/nx-set-shas@v3
+  #       with:
+  #         main-branch-name: next
 
-      - name: Nx Workspace Lint
-        run: npx nx workspace-lint
+  #     - name: Install Dependencies
+  #       run: npm ci
 
-      - name: Nx Format Check
-        run: npx nx format:check
+  #     - name: Nx Workspace Lint
+  #       run: npx nx workspace-lint
 
-      - name: Lint
-        run: npx nx affected --target=lint --parallel=3
+  #     - name: Nx Format Check
+  #       run: npx nx format:check
 
-      - name: Test
-        run: npx nx affected --target=test --parallel=3
+  #     - name: Lint
+  #       run: npx nx affected --target=lint --parallel=3
+
+  #     - name: Test
+  #       run: npx nx affected --target=test --parallel=3
