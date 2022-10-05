@@ -1,4 +1,4 @@
-import { GitModule } from '@amplication/git-service';
+import { GitModule } from '@amplication/git-utils';
 import { Module } from '@nestjs/common';
 import { DiffModule } from '../diff/diff.module';
 import { PullRequestController } from './pull-request.controller';

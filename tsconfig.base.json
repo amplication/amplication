@@ -24,6 +24,12 @@
       "@amplication/code-gen-types/*": [
         "packages/amplication-code-gen-types/src/*"
       ],
+      "@amplication/nest-logger-module": [
+        "packages/amplication-nest-logger-module/src/index.ts"
+      ],
+      "@amplication/nest-logger-module/*": [
+        "packages/amplication-nest-logger-module/src/*"
+      ],
       "@amplication/kafka": ["packages/amplication-kafka/src/index.ts"],
       "@amplication/kafka/*": ["packages/amplication-kafka/src/*"],
       "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],

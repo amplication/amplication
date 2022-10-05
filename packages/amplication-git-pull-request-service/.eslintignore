@@ -1,6 +1,3 @@
 node_modules/
 dist/
 coverage/
-*.js
-builds/
-src/models.ts

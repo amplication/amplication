@@ -50,14 +50,8 @@
     "typescript": "4.6.2"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "roots": [
-      "<rootDir>/src"
-    ],
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "roots": ["<rootDir>/src"],
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },

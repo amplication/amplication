@@ -49,6 +49,7 @@
     "class-validator": "^0.13.2",
     "cuid": "^2.1.8",
     "date-fns": "^2.29.3",
+    "dir-compare": "^4.0.0",
     "dockerode": "^3.3.4",
     "dotenv": "^16.0.0",
     "fs-extra": "^9.1.0",
