@@ -34,6 +34,9 @@ jobs:
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: next
+
       - run: npm ci
       - run: npx nx workspace-lint
       - run: npx nx format:check
