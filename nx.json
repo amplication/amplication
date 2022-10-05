@@ -24,7 +24,9 @@
           "lint",
           "test:e2e",
           "test:cov",
-          "db:prisma:generate"
+          "db:prisma:generate",
+          "graphql:schema:generate",
+          "graphql:schema:check"
         ],
         "accessToken": "NmMwMDk2YzEtNmRlYi00OGNmLTkzY2QtOGU5NTFlMDQ3MzNhfHJlYWQ="
       }

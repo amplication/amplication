@@ -37,6 +37,7 @@
     "build": {
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": ["graphql:schema:generate", "graphql:schema:check"],
       "options": {
         "outputPath": "dist/packages/amplication-server",
         "main": "packages/amplication-server/src/main.ts",
@@ -71,6 +72,7 @@
     },
     "graphql:schema:generate": {
       "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/**/*.ts"],
       "outputs": ["packages/amplication-server/src/schema.graphql"],
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/generate-graphql-schema.ts",
@@ -79,6 +81,7 @@
     },
     "graphql:schema:check": {
       "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/schema.graphql"],
       "dependsOn": ["graphql:schema:generate"],
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/check-graphql-schema",
