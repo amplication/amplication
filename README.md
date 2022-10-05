@@ -40,7 +40,7 @@ Amplication provides the following features:
 - Data Model
 - Role Based Access Control
 - Microservice Support
-- Continuous Github Sync
+- Continuous GitHub Sync
 - TypeScript and Node.js Source Code
 - Plugin System
 - Monorepo or Polyrepo
