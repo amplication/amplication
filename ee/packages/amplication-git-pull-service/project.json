@@ -1,4 +1,5 @@
 {
+  "name": "amplication-server",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ee/packages/amplication-git-pull-service/src",
   "projectType": "application",
@@ -110,6 +111,13 @@
       "options": {
         "command": "ts-node scripts/clean.ts",
         "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication-git-pull-service:nx-test"]
       }
     }
   },
