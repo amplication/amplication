@@ -8,7 +8,8 @@ export type Props = Omit<TextInputProps, "hasError"> & {
 };
 
 export const TextField = (props: Props) => {
-  const [field, meta] = useField(props as any);
+  // @ts-ignore
+  const [field, meta] = useField(props);
   const { onChange, ...rest } = props;
 
   const handleChange = useCallback(

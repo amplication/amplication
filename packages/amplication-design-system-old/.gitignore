@@ -1,6 +1,0 @@
-dist/
-node_modules/
-# Storybook
-storybook-static/
-# ESLint
-.eslintcache

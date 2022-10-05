@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Meta } from "@storybook/react/types-6-0";
 import { TextInput } from "./TextInput";
 
@@ -20,7 +20,8 @@ export const Controlled = () => {
       <p>This input only allows alphabet characters</p>
       <TextInput
         value={value}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        onChange={(e) => {
+          // @ts-ignore
           const { value } = e.target;
           if (value.match(ALPHABET_ONLY)) {
             setValue(value);

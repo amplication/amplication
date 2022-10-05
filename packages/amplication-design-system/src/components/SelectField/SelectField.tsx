@@ -66,6 +66,7 @@ export const SelectField = ({
           {...field}
           isMulti={isMulti}
           isClearable={isClearable}
+          // @ts-ignore
           value={value}
           onChange={handleChange}
           options={options}
@@ -96,7 +97,7 @@ const CustomOption = <
     data,
   } = props;
 
-  const icon = (data as unknown as OptionItem).icon;
+  const icon = ((data as unknown) as OptionItem).icon;
 
   return (
     <div
