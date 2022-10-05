@@ -1,3 +1,4 @@
 node_modules
 **/node_modules
 dist
+**/src/models.ts

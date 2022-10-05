@@ -57,6 +57,7 @@ async function main() {
       // Find fields with the desired related field name
       const existingFieldWithName = await client.entityField.findFirst({
         where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           OR: [
             { name: relatedFieldName },
             {

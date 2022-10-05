@@ -1,7 +1,7 @@
 {
   "plugins": ["@typescript-eslint/eslint-plugin", "import"],
   "extends": [
-    "../../.eslintrc.json",
+    "../../../.eslintrc.json",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
     // "plugin:import/errors",
@@ -10,9 +10,12 @@
   ],
   "ignorePatterns": ["!**/*"],
   "parserOptions": {
-    "project": ["packages/amplication-storage-gateway/tsconfig.*?.json"]
+    "project": [
+      "ee/packages/amplication-git-push-webhook-service/tsconfig.*?.json"
+    ]
   },
   "rules": {
+    "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",

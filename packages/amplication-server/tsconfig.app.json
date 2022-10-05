@@ -11,7 +11,7 @@
     "jest.config.e2e.ts",
     "**/*.spec.ts",
     "**/*.test.ts",
-    "migration-scripts/**/*"
+    "migration-scripts"
   ],
   "include": ["**/*.ts"]
 }
