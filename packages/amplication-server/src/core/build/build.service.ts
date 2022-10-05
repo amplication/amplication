@@ -371,7 +371,7 @@ export class BuildService {
           path.join(
             this.configService.get(BASE_BUILDS_FOLDER),
             buildId,
-            BUILD_INPUT_FILE_NAME
+            this.configService.get(BUILD_INPUT_FILE_NAME)
           ),
           JSON.stringify(dsgResourceData)
         );
