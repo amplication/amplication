@@ -7,14 +7,13 @@ on:
       - feature/nx
   pull_request:
 
-env:
-  NX_BRANCH: "origin/feature/nx"
-  NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
-
 jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-latest
+    env:
+      NX_BRANCH: "origin/feature/nx"
+      NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
