@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
 import { utimes, open } from "fs/promises";
 import { sync } from "glob";
 import { join } from "path";
-import { BASE_BUILDS_FOLDER, DEFAULT_BUILDS_FOLDER } from "../constants";
+import { BASE_BUILDS_FOLDER, BUILD_OUTPUT_FOLDER, DEFAULT_BUILDS_FOLDER } from "../constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 
@@ -13,17 +13,11 @@ type FilesDictionary = { [name: string]: FileMeta };
 @Injectable()
 export class StorageService {
   private buildsFolder: string;
-  constructor(configService: ConfigService) {
+  private buildOutputFolder: string;
+  constructor(configService: ConfigService<{ BASE_BUILDS_FOLDER: string, BUILD_OUTPUT_FOLDER: string }, true>) {
     const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
     this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
-  }
-
-  private static buildFolder(
-    buildsFolder: string,
-    resourceId: string,
-    buildId: string
-  ) {
-    return join(buildsFolder, resourceId, buildId);
+    this.buildOutputFolder = configService.get(BUILD_OUTPUT_FOLDER);
   }
 
   getBuildFilesList(
@@ -33,11 +27,7 @@ export class StorageService {
   ) {
     const results: FilesDictionary = {};
 
-    const cwd = `${StorageService.buildFolder(
-      this.buildsFolder,
-      resourceId,
-      buildId
-    )}/${relativePath || ""}`;
+    const cwd = join(this.buildsFolder, buildId, this.buildOutputFolder, relativePath);
 
     console.log(`Current working directory is ${cwd}`);
 
@@ -81,7 +71,7 @@ export class StorageService {
 
   fileContent(resourceId: string, buildId: string, path: string = ""): string {
     const filePath = join(
-      StorageService.buildFolder(this.buildsFolder, resourceId, buildId),
+      join(this.buildsFolder, buildId, this.buildOutputFolder),
       path
     );
     return readFileSync(filePath).toString();
