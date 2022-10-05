@@ -10,7 +10,6 @@
     "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-server": "packages/amplication-server",
     "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
-    "amplication-storage-gateway": "packages/amplication-storage-gateway",
-    "amplication-scheduler": "packages/amplication-scheduler"
+    "amplication-storage-gateway": "packages/amplication-storage-gateway"
   }
 }
