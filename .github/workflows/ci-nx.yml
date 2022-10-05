@@ -36,8 +36,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - run: 'echo "NX Branch: ${NX_BRANCH}"'
-
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v3

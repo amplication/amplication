@@ -34,6 +34,7 @@
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/amplication-code-gen-types"],
+      "dependsOn": ["prepare"],
       "options": {
         "jestConfig": "packages/amplication-code-gen-types/jest.config.ts",
         "passWithNoTests": true
