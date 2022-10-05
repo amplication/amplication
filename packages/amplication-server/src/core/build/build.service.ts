@@ -367,14 +367,16 @@ export class BuildService {
           logPromises
         ] = this.createDataServiceLogger(build, step);
 
-        await fs.writeFile(
-          path.join(
-            this.configService.get(BASE_BUILDS_FOLDER),
-            buildId,
-            this.configService.get(BUILD_INPUT_FILE_NAME)
-          ),
-          JSON.stringify(dsgResourceData)
+        const savePath = path.join(
+          this.configService.get(BASE_BUILDS_FOLDER),
+          buildId,
+          this.configService.get(BUILD_INPUT_FILE_NAME)
         );
+
+        const saveDir = path.dirname(savePath);
+        await fs.mkdir(saveDir, { recursive: true });
+
+        await fs.writeFile(savePath, JSON.stringify(dsgResourceData));
 
         await axios.post(DSG_RUNNER_URL, { buildId: buildId });
 
