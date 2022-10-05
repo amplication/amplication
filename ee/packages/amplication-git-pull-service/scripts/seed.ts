@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { PrismaClient } from "@prisma/clients/amplication-git-pull-service";
+import { PrismaClient } from "@amplication/prisma-clients/amplication-git-pull-service";
 import { customSeed } from "./customSeed";
 import { EnumGitPullEventStatus } from "../src/contracts/enums/gitPullEventStatus.enum";
 import { GitProviderEnum } from "../src/contracts/enums/gitProvider.enum";

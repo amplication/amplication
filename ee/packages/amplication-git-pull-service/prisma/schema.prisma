@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../../../../node_modules/@prisma/clients/amplication-git-pull-service"
+  output   = "../../../../node_modules/@amplication/prisma-clients/amplication-git-pull-service"
 }
 
 datasource db {

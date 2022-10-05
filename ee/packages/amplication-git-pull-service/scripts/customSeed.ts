@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/clients/amplication-git-pull-service";
+import { PrismaClient } from "@amplication/prisma-clients/amplication-git-pull-service";
 
 export async function customSeed() {
   const client = new PrismaClient();
