@@ -8,8 +8,8 @@ on:
   pull_request:
 
 env:
-  NX_BRANCH: "feature/nx"
-  NX_CLOUD_ACCESS_TOKEN: "${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}"
+  NX_BRANCH: "origin/feature/nx"
+  NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
   ci:
@@ -48,9 +48,6 @@ jobs:
 
       - name: Lint
         run: npx nx test amplication-git-pull-service
-        env:
-          NX_BRANCH: "origin/feature/nx"
-          NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
 
       # - name: Test
       #   run: npx nx affected --target=test --parallel=3
