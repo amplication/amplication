@@ -46,6 +46,9 @@ import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
+import { promises as fs } from 'fs';
+import axios from 'axios';
+import { BASE_BUILDS_FOLDER, BUILD_INPUT_FILE_NAME, DSG_RUNNER_URL } from '../../constants';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -347,51 +350,32 @@ export class BuildService {
       async step => {
         const { resourceId, id: buildId, version: buildVersion } = build;
         //#region getting all the resource data
-        const dSGResourceData = await this.getDSGResourceData(
+        const dsgResourceData = await this.getDSGResourceData(
           resourceId,
           buildId,
           buildVersion,
           user
         );
-        const { resourceInfo } = dSGResourceData;
+
         //#endregion
         const [
           dataServiceGeneratorLogger,
           logPromises
         ] = this.createDataServiceLogger(build, step);
 
-        const modules = [];
-        // await DataServiceGenerator.createDataService(
-        //   dSGResourceData,
-        //   dataServiceGeneratorLogger
-        // );
+        await fs.writeFile(
+          path.join(this.configService.get(BASE_BUILDS_FOLDER), buildId, BUILD_INPUT_FILE_NAME), 
+          JSON.stringify(dsgResourceData)
+        );
+
+        await axios.post(DSG_RUNNER_URL, { buildId: buildId });
 
         await Promise.all(logPromises);
 
         dataServiceGeneratorLogger.destroy();
-        if (modules.length === 0) {
-          await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-          return null;
-        }
-
-        await this.actionService.logInfo(step, ACTION_ZIP_LOG);
-
-        // the path to the tar.gz artifact
-        const tarballURL = await this.save(build, modules);
-
-        await this.buildFilesSaver.saveFiles(
-          join(resourceId, build.id),
-          modules
-        );
-
-        await this.saveToGitHub(build, oldBuildId, {
-          adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
-          serverPath: resourceInfo.settings.serverSettings.serverPath
-        });
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-
-        return tarballURL;
+        return null;
       }
     );
   }

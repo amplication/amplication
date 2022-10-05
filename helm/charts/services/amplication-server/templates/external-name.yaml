@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: amplication-server-ext
+  namespace: next
+spec:
+  type: ExternalName
+  externalName: amplication-server-ext.next.svc.cluster.local
+  ports:
+  - port: 80
+    targetPort: 3000
