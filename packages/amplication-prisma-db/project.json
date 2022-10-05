@@ -1,4 +1,5 @@
 {
+  "name": "amplication-prisma-db",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-prisma-db/src",
   "projectType": "library",

@@ -1,4 +1,5 @@
 {
+  "name": "amplication-storage-gateway",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-storage-gateway/src",
   "projectType": "application",

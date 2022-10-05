@@ -1,10 +1,10 @@
 {
   "name": "amplication-code-gen-types",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/amplication-code-gen-types/src",
+  "sourceRoot": ["packages/amplication-code-gen-types/src"],
   "projectType": "library",
   "targets": {
-    "generate-types": {
+    "prepare": {
       "executor": "nx:run-commands",
       "options": {
         "command": "ts-node ./scripts/generate-types",
@@ -14,7 +14,7 @@
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": ["generate-types"],
+      "dependsOn": ["prepare"],
       "options": {
         "outputPath": "dist/packages/amplication-code-gen-types",
         "tsConfig": "packages/amplication-code-gen-types/tsconfig.lib.json",

@@ -1,4 +1,5 @@
 {
+  "name": "amplication-git-pull-request-service",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-git-pull-request-service/src",
   "projectType": "application",

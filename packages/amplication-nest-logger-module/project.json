@@ -1,4 +1,5 @@
 {
+  "name": "amplication-nest-logger-module",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-nest-logger-module/src",
   "projectType": "library",

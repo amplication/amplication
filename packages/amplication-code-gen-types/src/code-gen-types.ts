@@ -219,7 +219,8 @@ export declare type PrismaClientGenerator = {
   provider: string;
 };
 
-export type DataSourceProvider = keyof typeof PrismaSchemaDSL.DataSourceProvider;
+export type DataSourceProvider =
+  keyof typeof PrismaSchemaDSL.DataSourceProvider;
 
 export type PrismaDataSource = {
   name: string;

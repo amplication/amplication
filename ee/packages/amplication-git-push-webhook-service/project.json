@@ -1,4 +1,5 @@
 {
+  "name": "amplication-git-push-webhook-service",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ee/packages/amplication-git-push-webhook-service/src",
   "projectType": "application",
