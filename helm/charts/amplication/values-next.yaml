@@ -65,7 +65,7 @@ amplication-server:
 
       DOCKER_HOST: tcp://docker:2375
 
-      DSG_RUNNER_URL: webhook-eventsource.next-dsg.svc.cluster.local
+      DSG_RUNNER_URL: webhook-eventsource-svc.next-dsg.svc.cluster.local:12000/example
 
       #GitHub App
       GITHUB_APP_APP_ID: "225471"
