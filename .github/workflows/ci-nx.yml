@@ -9,7 +9,7 @@ on:
 
 env:
   NX_BRANCH: "feature/nx"
-  NX_CLOUD_ACCESS_TOKEN: "${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}"
+  NX_CLOUD_ACCESS_TOKEN: "OTVhMmUyMDAtMTFjYi00M2I5LWE2YTgtZGFiNWI0MjRjZGJjfHJlYWQtd3JpdGU="
 
 jobs:
   ci:
@@ -24,9 +24,8 @@ jobs:
         with:
           main-branch-name: next
 
-      - name: Cache node modules
+      - uses: actions/cache@v3
         id: cache-npm
-        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
