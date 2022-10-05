@@ -388,7 +388,8 @@ export class BuildService {
 
         await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
         return null;
-      }
+      },
+      true
     );
   }
 
