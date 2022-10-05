@@ -49,25 +49,25 @@ jobs:
       - name: Lint
         run: npx nx affected --target=lint --parallel=3
 
-      # - name: Test
-      #   run: npx nx affected --target=test --parallel=3
+      - name: Test
+        run: npx nx affected --target=test --parallel=3
 
-      # - name: Build
-      #   run: npx nx affected --target=build --parallel=3
+      - name: Build
+        run: npx nx affected --target=build --parallel=3
 
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Dockerize
-      #   run: npx nx affected --target=docker:build --parallel=3
-      #   env:
-      #     INPUT_PUSH: true
-      #     INPUT_TAGS: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service:nx-test"
+      - name: Dockerize
+        run: npx nx affected --target=docker:build --parallel=3
+        env:
+          INPUT_PUSH: true
+          INPUT_TAGS: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service:nx-test"
