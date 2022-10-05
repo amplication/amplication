@@ -26,10 +26,7 @@ export default async function generateCode(
   try {
     const file = await readFile(source, "utf8");
     const resourceData: DSGResourceData = JSON.parse(file);
-    const modules = await createDataServiceImpl(
-      resourceData,
-      defaultLogger
-    );
+    const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
     await axios.put(process.env.STATUS_UPDATE_URL || "", {
       buildId: process.env.BUILD_ID,
