@@ -24,19 +24,20 @@ jobs:
         with:
           main-branch-name: next
 
-      - uses: actions/cache@v3
-        id: cache-npm
-        env:
-          cache-name: cache-node-modules
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          path: node_modules
+          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - uses: actions/setup-node@v1
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          node-version: 12.x
 
       - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
       # - name: Nx Workspace Lint
