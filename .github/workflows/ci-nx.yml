@@ -7,6 +7,11 @@ on:
       - feature/nx
   pull_request:
 
+env:
+  NX_BRANCH: ${{ github.ref_name }}
+  NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
+  NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
+
 jobs:
   # main:
   #   name: Nx Cloud - Main Job
@@ -26,14 +31,12 @@ jobs:
   test:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      NX_BRANCH: ${{ github.ref_name }}
-      NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
-      NX_CLOUD_ACCESS_TOKEN: ${{ github.secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - run: 'echo "NX Branch: ${NX_BRANCH}"'
 
       - name: Cache node modules
         id: cache-npm
