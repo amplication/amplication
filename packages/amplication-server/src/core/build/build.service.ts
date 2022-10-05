@@ -8,7 +8,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
-import path, { join } from 'path';
+import path from 'path';
 import * as CodeGenTypes from '@amplication/code-gen-types';
 import { ResourceRole, User } from '../../models';
 import { Build } from './dto/Build';

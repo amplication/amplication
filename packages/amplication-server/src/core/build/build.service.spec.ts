@@ -24,11 +24,7 @@ import { UserService } from '../user/user.service';
 import { QueueService } from '../queue/queue.service';
 import { EnumBuildStatus } from './dto/EnumBuildStatus';
 import { Resource, Commit, Entity } from '../../models';
-import {
-  ActionStep,
-  EnumActionLogLevel,
-  EnumActionStepStatus
-} from '../action/dto';
+import { ActionStep, EnumActionStepStatus } from '../action/dto';
 import { BuildFilesSaver } from './utils/BuildFilesSaver';
 import { GitService } from '@amplication/git-service';
 import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
@@ -195,10 +191,6 @@ const EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT: Build = {
   commit: EXAMPLE_COMMIT,
   resource: EXAMPLE_SERVICE_RESOURCE
 };
-
-const commitId = EXAMPLE_COMMIT_ID;
-const version = commitId.slice(commitId.length - 8);
-
 
 const prismaBuildCreateMock = jest.fn(
   () => EXAMPLE_BUILD_INCLUDE_RESOURCE_AND_COMMIT
