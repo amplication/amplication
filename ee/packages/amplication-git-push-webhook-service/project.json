@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "ee/packages/amplication-git-push-webhook-service/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "ee/packages/amplication-git-push-webhook-service/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/ee/packages/amplication-git-push-webhook-service"],
+      "options": {
+        "jestConfig": "ee/packages/amplication-git-push-webhook-service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/ee/packages/amplication-git-push-webhook-service",
+        "main": "ee/packages/amplication-git-push-webhook-service/src/main.ts",
+        "tsConfig": "ee/packages/amplication-git-push-webhook-service/tsconfig.app.json"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "amplication-git-push-webhook-service:build",
+        "inspect": true,
+        "port": 9229
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-git-push-webhook-service:build:production"
+        }
+      }
+    }
+  },
+  "tags": []
+}
