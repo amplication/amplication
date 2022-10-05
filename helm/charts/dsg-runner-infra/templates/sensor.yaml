@@ -33,7 +33,7 @@ spec:
                       - name: dsg-container
                         image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:0.0.11"
                         command: ["sh", "-c"]
-                        args: [ "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/build-data/$(BUILD_ID)/input.json /efs/build-data/$(BUILD_ID)/output"]
+                        args: [ "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/input.json /efs/output" ]
                         env:
                           - name: BUILD_ID
                             value: null # provided in parameters
@@ -42,7 +42,7 @@ spec:
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs
-                            # subPath: null
+                            subPathExpr: build-data/$(BUILD_ID)
                     volumes:
                       - name: persistent-storage
                         persistentVolumeClaim:
@@ -54,11 +54,3 @@ spec:
                 dependencyName: test-dep
                 dataKey: body.buildId
               dest: spec.template.spec.containers.0.env.0.value
-            # - src:
-            #     dependencyName: webhook
-            #     dataTemplate: "/efs/dsg-jobs/{{`{{ .Input.body.buildId }}`}}" # need to escape this due to helm chart
-            #   dest: spec.template.spec.containers.0.volumeMounts.0.mountPath
-            # - src:
-            #     dependencyName: webhook
-            #     dataTemplate: "dsg-jobs/{{`{{ .Input.body.buildId }}`}}" # need to esacpe this due to helm chart
-            #   dest: spec.template.spec.containers.0.volumeMounts.0.subPath
