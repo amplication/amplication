@@ -10,9 +10,13 @@ import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
 import { ActionModule } from '../action/action.module';
+import { ConfigService } from '@nestjs/config';
 
 const EXAMPLE_BUILD_ID = 'EXAMPLE_BUILD_ID';
 const EXAMPLE_BUILD_CONTENT_CHUNK = 'ExampleBuildContentChunk';
+
+const EXAMPLED_HOST = 'http://localhost';
+const configServiceGetMock = jest.fn(() => EXAMPLED_HOST);
 
 const downloadMock = jest.fn(() => {
   return Readable.from([EXAMPLE_BUILD_CONTENT_CHUNK]);
@@ -26,6 +30,12 @@ describe('BuildController', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [MorganModule.forRoot(), ActionModule],
       providers: [
+        {
+          provide: ConfigService,
+          useValue: {
+            get: configServiceGetMock
+          }
+        },
         {
           provide: BuildService,
           useClass: jest.fn(() => ({
