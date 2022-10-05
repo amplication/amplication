@@ -18,14 +18,15 @@ type Props = {
 const LastBuild = ({ resourceId }: Props) => {
   const [error, setError] = useState<Error>();
 
-  const { data, loading, error: errorLoading } = useQuery<TData>(
-    GET_LAST_BUILD,
-    {
-      variables: {
-        resourceId: resourceId,
-      },
-    }
-  );
+  const {
+    data,
+    loading,
+    error: errorLoading,
+  } = useQuery<TData>(GET_LAST_BUILD, {
+    variables: {
+      resourceId: resourceId,
+    },
+  });
 
   const lastBuild = useMemo(() => {
     if (loading || isEmpty(data?.builds)) return null;

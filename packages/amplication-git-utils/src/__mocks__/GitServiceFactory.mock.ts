@@ -1,7 +1,7 @@
-import { GitServiceFactory } from '../utils/GitServiceFactory';
-import { mock } from 'jest-mock-extended';
-import { EnumGitProvider } from '../Dto/enums/EnumGitProvider';
-import { MOCK_GITHUB_SERVICE } from './Github';
+import { GitServiceFactory } from "../utils/GitServiceFactory";
+import { mock } from "jest-mock-extended";
+import { EnumGitProvider } from "../Dto/enums/EnumGitProvider";
+import { MOCK_GITHUB_SERVICE } from "./Github";
 
 export const MOCK_GIT_SERVICE_FACTORY = mock<GitServiceFactory>();
 

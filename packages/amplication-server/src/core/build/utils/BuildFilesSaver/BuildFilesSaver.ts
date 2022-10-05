@@ -6,7 +6,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { join, normalize } from 'path';
 import {
   BASE_BUILDS_FOLDER,
-  DEFAULT_BUILDS_FOLDER
+  DEFAULT_BUILDS_FOLDER,
 } from '../../../../constants';
 import { AmplicationError } from '../../../../errors/AmplicationError';
 import { Logger } from 'winston';

@@ -1,8 +1,8 @@
-import minimatch from 'minimatch';
-import { ok } from 'assert';
+import minimatch from "minimatch";
+import { ok } from "assert";
 
 export class AmplicationIgnoreManger {
-  static AmplicationIgnoreFileName = '.amplicationignore';
+  static AmplicationIgnoreFileName = ".amplicationignore";
   amplicationIgnoreExpressions: string[] = [];
   hasBeenInitialized = false;
 
@@ -11,7 +11,7 @@ export class AmplicationIgnoreManger {
       AmplicationIgnoreManger.AmplicationIgnoreFileName
     );
 
-    ok(typeof amplicationIgnoreFile === 'string');
+    ok(typeof amplicationIgnoreFile === "string");
 
     this.amplicationIgnoreExpressions = this.parseAmplicationIgnoreFile(
       amplicationIgnoreFile
@@ -20,19 +20,21 @@ export class AmplicationIgnoreManger {
   }
 
   private parseAmplicationIgnoreFile(amplicationIgnoreFile: string): string[] {
-    return amplicationIgnoreFile.split('\n');
+    return amplicationIgnoreFile.split("\n");
   }
 
   isIgnored(filePath: string): boolean {
     if (!this.hasBeenInitialized) {
-      throw new Error('AmplicationIgnoreManger has not been initialized');
+      throw new Error("AmplicationIgnoreManger has not been initialized");
     }
-    const isIgnored = this.amplicationIgnoreExpressions.some(globExpression => {
-      const isGlobExpressionMatch = minimatch(filePath, globExpression, {
-        dot: true
-      });
-      return isGlobExpressionMatch;
-    });
+    const isIgnored = this.amplicationIgnoreExpressions.some(
+      (globExpression) => {
+        const isGlobExpressionMatch = minimatch(filePath, globExpression, {
+          dot: true,
+        });
+        return isGlobExpressionMatch;
+      }
+    );
     return isIgnored;
   }
 }

@@ -1,10 +1,10 @@
-import { GithubService } from '../providers/github.service';
-import { mock } from 'jest-mock-extended';
-import { TEST_GIT_REPOS } from './RemoteGitRepositories';
-import { TEST_GIT_REPO } from './RemoteGitRepository';
-import { TEST_GIT_REMOTE_ORGANIZATION } from './RemoteGitOrganization';
-import { INSTALLATION_URL, PR_HTML_URL } from './Constants';
-import { GIT_HUB_FILE } from './GithubFile';
+import { GithubService } from "../providers/github.service";
+import { mock } from "jest-mock-extended";
+import { TEST_GIT_REPOS } from "./RemoteGitRepositories";
+import { TEST_GIT_REPO } from "./RemoteGitRepository";
+import { TEST_GIT_REMOTE_ORGANIZATION } from "./RemoteGitOrganization";
+import { INSTALLATION_URL, PR_HTML_URL } from "./Constants";
+import { GIT_HUB_FILE } from "./GithubFile";
 
 export const MOCK_GITHUB_SERVICE = mock<GithubService>({});
 MOCK_GITHUB_SERVICE.getOrganizationRepos.mockReturnValue(

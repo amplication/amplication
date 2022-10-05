@@ -22,9 +22,8 @@ export async function createMessageBroker(
 export async function createMessageBrokerInternal(
   eventParams: CreateMessageBrokerParams
 ): Promise<Module[]> {
-  const generateMessageBrokerClientOptionsModule = await createMessageBrokerClientOptions(
-    {}
-  );
+  const generateMessageBrokerClientOptionsModule =
+    await createMessageBrokerClientOptions({});
   const messageBrokerModule = await createMessageBrokerModule({});
   const serviceModules = await createMessageBrokerServiceModules();
   const topicsEnum = await createTopicsEnum({});

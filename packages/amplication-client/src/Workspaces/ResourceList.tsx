@@ -95,7 +95,10 @@ function ResourceList() {
         )}
       </div>
       <hr className={`${CLASS_NAME}__separator`} />
-      <div className={`${CLASS_NAME}__title`}>{resources.length} {pluralize(resources.length, 'Resource', 'Resources')}</div>
+      <div className={`${CLASS_NAME}__title`}>
+        {resources.length}{" "}
+        {pluralize(resources.length, "Resource", "Resources")}
+      </div>
       {loadingResources && <CircularProgress centerToParent />}
 
       <div className={`${CLASS_NAME}__content`}>

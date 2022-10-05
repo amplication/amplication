@@ -7,7 +7,7 @@ import {
   NotFoundException,
   BadRequestException,
   Body,
-  Put
+  Put,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
@@ -59,7 +59,7 @@ export class BuildController {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       'Content-Type': ZIP_MIME,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Disposition': `attachment; filename="${id}.zip"`
+      'Content-Disposition': `attachment; filename="${id}.zip"`,
     });
     stream.pipe(res);
   }
@@ -73,7 +73,11 @@ export class BuildController {
     const validArgs = plainToInstance(CanUserAccessArgs, message.value);
     const isUserCanAccess = await this.buildService.canUserAccess(validArgs);
     return {
-      value: { error: null, status: StatusEnum.Success, value: isUserCanAccess }
+      value: {
+        error: null,
+        status: StatusEnum.Success,
+        value: isUserCanAccess,
+      },
     };
   }
 

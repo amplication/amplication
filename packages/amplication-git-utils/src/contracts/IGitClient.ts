@@ -1,11 +1,11 @@
-import { PrModule } from '../types';
-import { GithubFile } from '../Dto/entities/GithubFile';
-import { RemoteGitOrganization } from '../Dto/entities/RemoteGitOrganization';
+import { PrModule } from "../types";
+import { GithubFile } from "../Dto/entities/GithubFile";
+import { RemoteGitOrganization } from "../Dto/entities/RemoteGitOrganization";
 import {
   RemoteGitRepository,
-  RemoteGitRepos
-} from '../Dto/entities/RemoteGitRepository';
-import { GitResourceMeta } from './GitResourceMeta';
+  RemoteGitRepos,
+} from "../Dto/entities/RemoteGitRepository";
+import { GitResourceMeta } from "./GitResourceMeta";
 
 export interface IGitClient {
   createUserRepository(
