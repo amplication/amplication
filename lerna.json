@@ -9,10 +9,7 @@
   "version": "1.0.2",
   "command": {
     "bootstrap": {
-      "ignore": [
-        "admin-template",
-        "server-template"
-      ]
+      "ignore": ["admin-template", "server-template"]
     }
   }
 }

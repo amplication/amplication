@@ -5,5 +5,4 @@ package-lock.json
 
 /dist
 /coverage
-
 /**/models.ts
