@@ -8,7 +8,6 @@ import { ActionResolver } from './action.resolver';
 
 @Module({
   imports: [
-    ConfigService,
     ExceptionFiltersModule,
     GqlAuthModule,
     PrismaModule,
