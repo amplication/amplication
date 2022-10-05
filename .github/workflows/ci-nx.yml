@@ -7,6 +7,10 @@ on:
       - feature/nx
   pull_request:
 
+env:
+  NX_BRANCH: ${{ github.ref_name }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
 jobs:
   ci:
     name: Continuous Integration
@@ -44,9 +48,6 @@ jobs:
 
       - name: Lint
         run: npx nx test amplication-git-pull-service
-        env:
-          NX_BRANCH: "feature/nx"
-          NX_CLOUD_ACCESS_TOKEN: "${{ secrets.NX_CLOUD_ACCESS_TOKEN }}"
 
       # - name: Test
       #   run: npx nx affected --target=test --parallel=3
