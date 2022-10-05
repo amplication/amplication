@@ -48,7 +48,7 @@ jobs:
         run: npx nx format:check
 
       - name: Lint
-      - run: npx nx affected --target=lint --parallel=3
+        run: npx nx affected --target=lint --parallel=3
 
       - name: Test
-      - run: npx affected --target=test --parallel=3
+        run: npx affected --target=test --parallel=3
