@@ -60,7 +60,11 @@ jobs:
       hasChanges: ${{ steps.affected.outputs.hasChanges }}
       matrix: ${{ steps.affected.outputs.matrix }}
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Install Dependencies
+
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
