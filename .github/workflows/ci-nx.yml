@@ -67,7 +67,9 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: GitHub Auth Login
-        run: gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
+        run: gh auth login
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Dockerize
         run: npx nx affected --target=docker:build --configuration=ci --parallel=3
