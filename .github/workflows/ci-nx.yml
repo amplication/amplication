@@ -71,9 +71,7 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          MATRIX_ARRAY="$(npx nx print-affected | jq -c .projects)"
-          echo $MATRIX_ARRAY
-          echo ::set-output name=affected::[$MATRIX_PARAMS]
+          echo ::set-output name=affected::"echo $(nx print-affected | jq -c .projects)"
 
   dockerize:
     name: Dockerize
@@ -81,19 +79,7 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project:
-          [
-            "amplication-git-pull-service",
-            "amplication-git-push-webhook-service",
-            "amplication-code-gen-types",
-            "amplication-server",
-            "amplication-git-pull-request-service",
-            "amplication-git-utils",
-            "amplication-kafka",
-            "amplication-nest-logger-module",
-            "amplication-storage-gateway",
-            "amplication-prisma-db",
-          ]
+        project: ${{ fromJson(needs.ci.outputs.affected) }}
     steps:
       - run: echo "hello from ${{ matrix.project }}"
       # - uses: actions/checkout@v2
