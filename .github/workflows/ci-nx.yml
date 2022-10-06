@@ -79,7 +79,7 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project: ${{ fromJson(needs.ci.outputs.affected) }}
+        project: ${{ needs.ci.outputs.affected }}
     steps:
       - run: echo "hello from ${{ matrix.project }}"
       # - uses: actions/checkout@v2
