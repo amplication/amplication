@@ -12,19 +12,77 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
-  ci:
-    name: Continuous Integration
+  # ci:
+  #   name: Continuous Integration
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     affected: ${{ steps.set-affected.outputs.affected}}
+  #   steps:
+  # - uses: nrwl/nx-set-shas@v3
+  #   with:
+  #     main-branch-name: next
+
+  # - name: Nx Workspace Lint
+  #   run: npx nx workspace-lint
+
+  # - name: Nx Format Check
+  #   run: npx nx format:check
+
+  # - name: Lint
+  #   run: npx nx affected --target=lint --parallel=3
+
+  # - name: Test
+  #   run: npx nx affected --target=test --parallel=3
+
+  # - name: Build
+  #   run: npx nx affected --target=build --parallel=3
+
+  # - name: Configure AWS credentials
+  #   uses: aws-actions/configure-aws-credentials@v1
+  #   with:
+  #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #     aws-region: us-east-1
+
+  # - name: Login to Amazon ECR
+  #   id: login-ecr
+  #   uses: aws-actions/amazon-ecr-login@v1
+
+  # - name: Set Affected
+  #   id: set-affected
+  #   run: |
+  #     echo "::set-output name=affected::[amplication-git-pull-service,amplication-git-push-webhook-service]"
+
+  setup:
     runs-on: ubuntu-latest
+    name: Affected Matrix
     outputs:
-      affected: ${{ steps.set-affected.outputs.affected}}
+      hasChanges: ${{ steps.affected.outputs.hasChanges }}
+      matrix: ${{ steps.affected.outputs.matrix }}
     steps:
+      - name: Calculate affected projects
+        uses: e-square-io/nx-affected-matrix@v2
+        id: affected
+        with:
+          targets: "lint"
+          maxDistribution: 3
+          workingDirectory: ""
+          args: ""
+
+  execute:
+    name: ${{ matrix.target }}
+    if: ${{ fromJSON(needs.setup.outputs.hasChanges) }}
+    needs: [setup]
+    runs-on: ubuntu-latest
+    # continue-on-error: ${{ matrix.target == 'test' }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.setup.outputs.matrix) }}
+    steps:
+      # Checkout, cache, install node modules
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
-      - uses: nrwl/nx-set-shas@v3
-        with:
-          main-branch-name: next
 
       - name: Cache node modules
         id: cache
@@ -42,67 +100,46 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      # - name: Nx Workspace Lint
-      #   run: npx nx workspace-lint
+      - name: Execute
+        uses: e-square-io/nx-distributed-task@v2
+        id: execute
+        with:
+          target: ${{ matrix.target }}
+          projects: ${{ matrix.projects }}
+          uploadOutputs: true
+          nxCloud: false
+          args: ""
 
-      # - name: Nx Format Check
-      #   run: npx nx format:check
+  # dockerize:
+  #   name: Dockerize
+  #   runs-on: ubuntu-latest
+  #   needs: ci
+  #   strategy:
+  #     matrix:
+  #       project: ${{ fromJSON(needs.ci.outputs.affected) }}
+  #   steps:
+  #     - run: echo "hello from ${{ matrix.project }}"
+  # - uses: actions/checkout@v2
+  # with:
+  # fetch-depth: 0
 
-      # - name: Lint
-      #   run: npx nx affected --target=lint --parallel=3
+  # https://github.com/docker/metadata-action
+  # - name: Docker Metadata
+  #   uses: docker/metadata-action@v4
+  #   id: meta
+  #   with:
+  #     images: |
+  #       enable=false
+  #     tags: |
+  #       type=ref,event=branch
+  #       type=ref,event=pr
+  #       type=ref,event=tag
+  #       type=sha
+  #       randomval4455
 
-      # - name: Test
-      #   run: npx nx affected --target=test --parallel=3
-
-      # - name: Build
-      #   run: npx nx affected --target=build --parallel=3
-
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-1
-
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Set Affected
-        id: set-affected
-        run: |
-          echo "::set-output name=affected::[amplication-git-pull-service,amplication-git-push-webhook-service]"
-
-  dockerize:
-    name: Dockerize
-    runs-on: ubuntu-latest
-    needs: ci
-    strategy:
-      matrix:
-        project: ${{ fromJSON(needs.ci.outputs.affected) }}
-    steps:
-      - run: echo "hello from ${{ matrix.project }}"
-      # - uses: actions/checkout@v2
-      # with:
-      # fetch-depth: 0
-
-      # https://github.com/docker/metadata-action
-      # - name: Docker Metadata
-      #   uses: docker/metadata-action@v4
-      #   id: meta
-      #   with:
-      #     images: |
-      #       enable=false
-      #     tags: |
-      #       type=ref,event=branch
-      #       type=ref,event=pr
-      #       type=ref,event=tag
-      #       type=sha
-      #       randomval4455
-
-      # - name: Dockerize
-      #   run: npx nx affected --target=docker:build --configuration=ci --parallel=3
-      #   env:
-      #     # https://www.npmjs.com/package/@nx-tools/nx-docker
-      #     INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-      #     INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # - name: Dockerize
+  #   run: npx nx affected --target=docker:build --configuration=ci --parallel=3
+  #   env:
+  #     # https://www.npmjs.com/package/@nx-tools/nx-docker
+  #     INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+  #     INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
