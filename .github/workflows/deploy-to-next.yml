@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - "release/1.0.0"
+      - "next"
 jobs:
   validate-image:
     runs-on: ubuntu-20.04
@@ -61,7 +61,7 @@ jobs:
           python-version: 3.8 #install the python needed
       - uses: actions/checkout@v2
         with:
-          ref: "release/1.0.0"
+          ref: "next"
 
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -144,6 +144,13 @@ jobs:
         run: |
           kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
           kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
+      - name: Deploy DSG runner infrastructure
+        id: deploy-app-dsg
+        working-directory: ./helm/charts/dsg-runner-infra
+        run: |
+          helm upgrade -i dsg-runner-infra . --namespace $TARGET_ENV-dsg --create-namespace -f values/$TARGET_ENV.yaml
+        env:
+          TARGET_ENV: next
       - name: deploy app
         id: deploy-app
         run: |

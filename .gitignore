@@ -12,3 +12,4 @@ values-secret*
 dist/
 packages/.server-id
 .amplication/storage/
+.env.local

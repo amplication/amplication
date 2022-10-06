@@ -5,7 +5,7 @@
 
 <p align="center">
   <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
-  <a href="https://discord.gg/Z2CG3rUFnu">
+  <a href="https://amplication.com/discord">
     <img src="https://img.shields.io/discord/757179260417867879?label=discord" alt="Discord">
   </a>
   <a href="CODE_OF_CONDUCT.md">
@@ -14,7 +14,7 @@
   <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License">
   </a>
-  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple">
+  <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/amplication/amplication?color=purple"/>
 </p>
 
 <div align="center">
@@ -24,8 +24,9 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
-  
-# Amplication 
+ 
+
+![1  Amplication main](https://user-images.githubusercontent.com/53312820/190913686-02c7deb1-da2f-41b8-aa31-065e00f6155c.png)
 
 [Amplication](https://amplication.com/) is an open‑source development platform. It helps professional Node.js developers build quality Node.js applications without spending time on repetitive coding tasks.
 
@@ -39,7 +40,7 @@ Amplication provides the following features:
 - Data Model
 - Role Based Access Control
 - Microservice Support
-- Continuous Github Sync
+- Continuous GitHub Sync
 - TypeScript and Node.js Source Code
 - Plugin System
 - Monorepo or Polyrepo
@@ -47,14 +48,6 @@ Amplication provides the following features:
 - Ready-to-deploy-app
 - Admin UI
 - Amplication console & CLI
-
-# Product Hunt Launch :rocket:
-
-The **official version 1.0** of Amplication is NOW LIVE on Product Hunt. 
-
-[Tell us what you think](https://www.producthunt.com/posts/amplication-1-0)
-
-![1  Amplication main](https://user-images.githubusercontent.com/53312820/190913686-02c7deb1-da2f-41b8-aa31-065e00f6155c.png)
 
 # Getting Started
 
@@ -127,9 +120,9 @@ The server exposes a GraphQL API for all actions. The server is built with the f
 Amplication Client is the front end of the platform that provides you with an easy-to-drive UI for building your next low-code application.
 The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
 
-# Version 1.0.0
+# Version 1
 
-Amplication is currently in its version 1.0.  This is the first major release of Amplication with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the README file. 
+Amplication is currently in its version 1.  This is the first major release of Amplication with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the [Features](#features) section.
 
 ## Support
 
@@ -139,12 +132,12 @@ Ask your questions and participate in discussions on Amplication-related and web
 
 ## Create a bug report
 
-If you see an error message or run into an issue, please [create bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=). This effort is valued and it will help all Amplication users.
+If you see an error message or run into an issue, please [create bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+). This effort is valued and it will help all Amplication users.
 
 
 ## Submit a feature request
 
-If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=).
+If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
 
 If a similar feature request already exists, don't forget to leave a "+1".
 If you add some more information such as your thoughts and vision about the feature, your comments will be embraced warmly :)
@@ -166,7 +159,7 @@ Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Co
 
 # Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to these wonderful people ([:hugs:](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
