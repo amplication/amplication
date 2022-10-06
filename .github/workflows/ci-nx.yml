@@ -71,7 +71,7 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo "::set-output name=affected::$(npx nx print-affected | jq .projects | jq tojson)"
+          echo "::set-output name=affected::$(npx nx print-affected | jq .projects)"
 
   dockerize:
     name: Dockerize
