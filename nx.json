@@ -43,6 +43,9 @@
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+    },
+    "docker:build": {
+      "dependsOn": ["build"]
     }
   }
 }

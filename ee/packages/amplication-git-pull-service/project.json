@@ -115,12 +115,12 @@
     },
     "docker:build": {
       "executor": "@nx-tools/nx-docker:build",
-      "dependsOn": ["build"],
       "options": {
         "push": false,
         "metadata": {
           "images": ["amplication-git-pull-service"],
-          "labels": []
+          "labels": [],
+          "tags": ["enabled=false"]
         }
       }
     }
