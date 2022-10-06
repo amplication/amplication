@@ -129,6 +129,7 @@ jobs:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           # INPUT_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
           # INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+          INPUT_PUSH: true
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # - name: Build
       #   run: npx nx run-many --target build --projects=${{ matrix.project }}
