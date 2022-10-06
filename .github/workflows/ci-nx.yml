@@ -72,7 +72,7 @@ jobs:
         id: meta
         with:
           images: |
-            name=,enable=true
+            enable=false
           tags: |
             type=ref,event=branch
             type=ref,event=pr
