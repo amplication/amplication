@@ -94,7 +94,7 @@ export class BuildController {
   ): Promise<void> {
     await this.buildService.completeCodeGenerationStep(dto.buildId, dto.status);
   }
-  
+
   @EventPattern(
     EnvironmentVariables.instance.get(CREATE_PULL_REQUEST_COMPLETED_TOPIC, true)
   )
