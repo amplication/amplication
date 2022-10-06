@@ -46,7 +46,6 @@ const actionServiceLogInfoMock = jest.fn();
 
 const actionServiceCompleteMock = jest.fn(() => ({}));
 
-
 describe('BuildController', () => {
   let app: INestApplication;
 
