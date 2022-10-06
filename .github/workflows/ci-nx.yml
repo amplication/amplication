@@ -66,8 +66,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      -
-
       - name: Dockerize
         run: npx nx affected --target=docker:build --configuration=ci --parallel=3
         env:
