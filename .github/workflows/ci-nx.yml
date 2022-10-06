@@ -66,10 +66,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      # https://github.com/docker/metadata-action
       - name: Docker Metadata
         uses: docker/metadata-action@v4
         id: meta
         with:
+          images: "*"
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -80,5 +82,6 @@ jobs:
       - name: Dockerize
         run: npx nx affected --target=docker:build --configuration=ci --parallel=3
         env:
+          # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
