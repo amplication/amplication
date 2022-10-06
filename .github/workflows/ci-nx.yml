@@ -93,9 +93,22 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      # - name: Dockerize
-      #   run: npx nx affected --target=docker:build --configuration=ci --parallel=3
-      #   env:
-      #     # https://www.npmjs.com/package/@nx-tools/nx-docker
-      #     INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-      #     INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # https://github.com/docker/metadata-action
+      - name: Docker Metadata
+        uses: docker/metadata-action@v4
+        id: meta
+        with:
+          images: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=ref,event=tag
+            type=sha
+            randomval4455
+
+      - name: Dockerize
+        run: npx nx affected --target=docker:build --configuration=ci --parallel=3
+        env:
+          # https://www.npmjs.com/package/@nx-tools/nx-docker
+          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
