@@ -67,7 +67,12 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Dockerize
-        run: npx nx affected --target=docker:build --parallel=3
+        run: npx nx affected --target=docker:build --configuration=ci --parallel=3
+        with:
+          push: true
+          matadata.tags: |
+            type=ref,event=branch
+            type=sha,format=short
         env:
           INPUT_PUSH: true
           INPUT_METADATA_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service"

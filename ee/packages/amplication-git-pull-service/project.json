@@ -120,6 +120,15 @@
         "metadata": {
           "images": ["amplication-git-pull-service"]
         }
+      },
+      "configurations": {
+        "ci": {
+          "metadata": {
+            "images": [
+              "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service"
+            ]
+          }
+        }
       }
     }
   },
