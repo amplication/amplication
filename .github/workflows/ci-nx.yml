@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-node@v1
         if: steps.cache.outputs.cache-hit != 'true'
         with:
-          node-version: 12.x
+          node-version: 16.x
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
