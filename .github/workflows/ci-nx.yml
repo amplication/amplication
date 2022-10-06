@@ -71,7 +71,7 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo '::set-output name=affected::[amplication-git-pull-service, amplication-git-push-webhook-service, amplication-code-gen-types, amplication-server, amplication-git-pull-request-service, amplication-git-utils, amplication-kafka, amplication-nest-logger-module, amplication-storage-gateway, amplication-prisma-db]'
+          echo '::set-output name=affected::[$(echo hi)]'
 
   dockerize:
     name: Dockerize
