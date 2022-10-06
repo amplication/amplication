@@ -81,7 +81,19 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project: ${{ fromJson(needs.ci.outputs.affected) }}
+        project:
+          [
+            "amplication-git-pull-service",
+            "amplication-git-push-webhook-service",
+            "amplication-code-gen-types",
+            "amplication-server",
+            "amplication-git-pull-request-service",
+            "amplication-git-utils",
+            "amplication-kafka",
+            "amplication-nest-logger-module",
+            "amplication-storage-gateway",
+            "amplication-prisma-db",
+          ]
     steps:
       - run: echo "hello from ${{ matrix.project }}"
       # - uses: actions/checkout@v2
