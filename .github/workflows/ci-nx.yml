@@ -69,5 +69,4 @@ jobs:
       - name: Dockerize
         run: npx nx affected --target=docker:build --configuration=ci --parallel=3
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
