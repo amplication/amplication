@@ -43,4 +43,27 @@
       color: var(--black80);
     }
   }
+
+  &__github-repo {
+    font-weight: 400;
+    color: #A3A8B8;
+    font-size: 12px;
+    line-height: 18px;
+    &__icon {
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    &__link {
+      margin-left: 5px;
+    }
+    &__icon-not-connected {
+      color: #686F8C;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    &__not-connected {
+      color: #686F8C;
+      margin-left: 5px;
+    }
+  }
 }
