@@ -69,7 +69,8 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project: ${{ fromJson(needs.ci.outputs.affected) }}
+        # project: ${{ fromJson(needs.ci.outputs.affected) }}
+        project: ["amplication-git-pull-service"]
     steps:
       - uses: actions/checkout@v2
         with:
