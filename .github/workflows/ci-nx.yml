@@ -9,6 +9,7 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.ref_name }}
 
 jobs:
   ci:
@@ -16,8 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       affected: ${{ steps.set-affected.outputs.affected }}
-    env:
-      NX_BRANCH: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -110,6 +109,8 @@ jobs:
             # type=ref,event=tag
             # type=sha
             # randomval4455
+          labels: |
+            org.opencontainers.image.source=
 
       - name: Build and Push
         uses: docker/build-push-action@v3
