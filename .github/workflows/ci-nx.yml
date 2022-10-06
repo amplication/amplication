@@ -67,7 +67,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: GitHub Auth Login
-        run: gh auth login
+        run: gh auth login --with-token
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
