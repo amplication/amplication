@@ -1,7 +1,10 @@
 import { createNestjsKafkaConfig } from "@amplication/kafka";
+import { Module } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { MicroserviceOptions } from "@nestjs/microservices";
-import { AppModule } from "./app.module";
+
+@Module({})
+class AppModule {}
 
 async function main() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
