@@ -106,9 +106,9 @@ jobs:
             type=sha
             randomval4455
 
-      - name: Dockerize
-        run: npx nx affected --target=docker:build --configuration=ci --parallel=3
-        env:
-          # https://www.npmjs.com/package/@nx-tools/nx-docker
-          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Dockerize
+      #   run: npx nx affected --target=docker:build --configuration=ci --parallel=3
+      #   env:
+      #     # https://www.npmjs.com/package/@nx-tools/nx-docker
+      #     INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+      #     INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
