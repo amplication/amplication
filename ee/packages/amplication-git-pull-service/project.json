@@ -26,7 +26,8 @@
       "options": {
         "outputPath": "dist/ee/packages/amplication-git-pull-service",
         "main": "ee/packages/amplication-git-pull-service/src/main.ts",
-        "tsConfig": "ee/packages/amplication-git-pull-service/tsconfig.app.json"
+        "tsConfig": "ee/packages/amplication-git-pull-service/tsconfig.app.json",
+        "webpackConfig": "ee/packages/amplication-git-pull-service/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -52,7 +53,7 @@
     "db:prisma:generate": {
       "executor": "nx:run-commands",
       "outputs": [
-        "node_modules/@amplication/prisma-clients/amplication-git-pull-service"
+        "node_modules/@amplication/prisma-client-amplication-git-pull-service"
       ],
       "options": {
         "command": "prisma generate --schema ./prisma/schema.prisma",
@@ -116,7 +117,8 @@
     "docker:build": {
       "executor": "@nx-tools/nx-docker:build",
       "options": {
-        "push": false
+        "push": false,
+        "tags": ["amplication/git-pull-service:latest"]
       }
     }
   },
