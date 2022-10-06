@@ -9,8 +9,9 @@ import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { EnumActionStepStatus } from '../action/dto/EnumActionStepStatus';
-import { ActionModule } from '../action/action.module';
 import { ConfigService } from '@nestjs/config';
+import { ActionService } from '../action/action.service';
+import { ActionStep } from '../action/dto';
 
 const EXAMPLE_BUILD_ID = 'EXAMPLE_BUILD_ID';
 const EXAMPLE_BUILD_CONTENT_CHUNK = 'ExampleBuildContentChunk';
@@ -22,18 +23,50 @@ const downloadMock = jest.fn(() => {
   return Readable.from([EXAMPLE_BUILD_CONTENT_CHUNK]);
 });
 
+const EXAMPLE_ACTION_STEP: ActionStep = {
+  id: 'EXAMPLE_ACTION_STEP_ID',
+  name: 'EXAMPLE_ACTION_STEP_NAME',
+  createdAt: new Date(),
+  message: 'EXAMPLE_ACTION_STEP_MESSAGE',
+  status: EnumActionStepStatus.Running
+};
+
+const actionServiceRunMock = jest.fn(
+  async (
+    actionId: string,
+    stepName: string,
+    message: string,
+    stepFunction: (step: { id: string }) => Promise<any>
+  ) => {
+    return stepFunction(EXAMPLE_ACTION_STEP);
+  }
+);
+
+const actionServiceLogInfoMock = jest.fn();
+
+const actionServiceCompleteMock = jest.fn(() => ({}));
+
+
 describe('BuildController', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
     jest.clearAllMocks();
     const moduleRef = await Test.createTestingModule({
-      imports: [MorganModule.forRoot(), ActionModule],
+      imports: [MorganModule.forRoot()],
       providers: [
         {
           provide: ConfigService,
           useValue: {
             get: configServiceGetMock
+          }
+        },
+        {
+          provide: ActionService,
+          useValue: {
+            run: actionServiceRunMock,
+            logInfo: actionServiceLogInfoMock,
+            complete: actionServiceCompleteMock
           }
         },
         {
