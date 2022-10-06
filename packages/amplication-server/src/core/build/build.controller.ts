@@ -85,6 +85,8 @@ export class BuildController {
   @Put('update-action-step-status')
   async updateStatus(@Body() dto: UpdateActionStepStatus): Promise<void> {
     await this.actionService.updateActionStepStatus(dto.id, dto.status);
+
+    await this.buildService.saveToGitHub(dto.id);
   }
 
   //Authorization

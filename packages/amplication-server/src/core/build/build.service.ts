@@ -478,11 +478,32 @@ export class BuildService {
     }
   }
 
-  private async saveToGitHub(
-    build: Build,
-    oldBuildId: string,
-    gitResourceMeta: GitResourceMeta
-  ): Promise<void> {
+  async saveToGitHub(buildId: string): Promise<void> {
+    const build = await this.findOne({ where: { id: buildId } });
+
+    const oldBuild = await previousBuild(
+      this.prisma,
+      build.resourceId,
+      build.id,
+      build.createdAt
+    );
+
+    build.createdBy
+
+    const user = await this.userService.findUser({
+      where: {
+        id: build.createdBy.id
+      }
+    });
+
+    const dSGResourceData = await this.getDSGResourceData(
+      build.resourceId,
+      build.id,
+      build.version,
+      user
+    );
+    const { resourceInfo } = dSGResourceData;
+
     const resource = build.resource;
     const resourceRepository = await this.resourceService.gitRepository(
       resource.id
@@ -531,7 +552,7 @@ export class BuildService {
             gitProvider: EnumGitProvider.Github,
             installationId: gitOrganization.installationId,
             newBuildId: build.id,
-            oldBuildId,
+            oldBuildId: oldBuild?.id,
             commit: {
               head: `amplication-build-${build.id}`,
               title: commitMessage,
@@ -541,7 +562,10 @@ export class BuildService {
               ${url}
               `
             },
-            gitResourceMeta
+            gitResourceMetadata: {
+              adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
+              serverPath: resourceInfo.settings.serverSettings.serverPath
+            }
           };
 
           await this.queueService.emitCreatePullRequestMessage(
