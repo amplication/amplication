@@ -120,7 +120,7 @@
         "metadata": {
           "images": ["amplication-git-pull-service"],
           "labels": [],
-          "tags": ["enabled=false"]
+          "tags": ["type=raw,enable=false"]
         }
       }
     }

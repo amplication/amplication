@@ -94,8 +94,16 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
       # https://github.com/docker/metadata-action
       - name: Docker Metadata
@@ -112,32 +120,21 @@ jobs:
           labels: |
             org.opencontainers.image.source=
 
-      - name: Build
-        run: npx nx run-many --target build --projects=${{ matrix.project }}
+      - name: Dockerize
+        run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
+        env:
+          # https://www.npmjs.com/package/@nx-tools/nx-docker
+          INPUT_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Build
+      #   run: npx nx run-many --target build --projects=${{ matrix.project }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and Push
-        uses: docker/build-push-action@v3
-        with:
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          push: true
-          context: .
-          file: ./ee/packages/${{ matrix.project }}/Dockerfile
-      # - name: Dockerize
-      #   run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
-      #   env:
-      #     # https://www.npmjs.com/package/@nx-tools/nx-docker
-      #     INPUT_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
-      #     INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-      #     INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Build and Push
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     push: true
+      #     context: .
+      #     file: ./ee/packages/${{ matrix.project }}/Dockerfile
