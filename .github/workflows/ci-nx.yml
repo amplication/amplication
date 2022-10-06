@@ -68,8 +68,7 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        # project: ${{ fromJson(needs.ci.outputs.affected) }}
-        project: ["amplication-git-pull-service"]
+        project: ${{ fromJson(needs.ci.outputs.affected) }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -119,9 +118,6 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=ref,event=tag
-            # type=sha
-          labels: |
-            org.opencontainers.image.source=
 
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
@@ -129,14 +125,3 @@ jobs:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
-      # - name: Build
-      #   run: npx nx run-many --target build --projects=${{ matrix.project }}
-
-      # - name: Build and Push
-      #   uses: docker/build-push-action@v3
-      #   with:
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
-      #     push: true
-      #     context: .
-      #     file: ./ee/packages/${{ matrix.project }}/Dockerfile
