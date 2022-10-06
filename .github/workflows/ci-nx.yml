@@ -118,7 +118,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           push: true
           context: .
-          file: ./packages/${{ matrix.project }}/Dockerfile
+          file: ./ee/packages/${{ matrix.project }}/Dockerfile
       # - name: Dockerize
       #   run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
       #   env:
