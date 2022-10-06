@@ -15,6 +15,8 @@ jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-latest
+    outputs:
+      affected: ${{ steps.set-affected.outputs.affected}}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -40,49 +42,64 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Nx Workspace Lint
-        run: npx nx workspace-lint
+      # - name: Nx Workspace Lint
+      #   run: npx nx workspace-lint
 
-      - name: Nx Format Check
-        run: npx nx format:check
+      # - name: Nx Format Check
+      #   run: npx nx format:check
 
-      - name: Lint
-        run: npx nx affected --target=lint --parallel=3
+      # - name: Lint
+      #   run: npx nx affected --target=lint --parallel=3
 
-      - name: Test
-        run: npx nx affected --target=test --parallel=3
+      # - name: Test
+      #   run: npx nx affected --target=test --parallel=3
 
-      - name: Build
-        run: npx nx affected --target=build --parallel=3
+      # - name: Build
+      #   run: npx nx affected --target=build --parallel=3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set Affected
+        id: set-affected
+        run: |
+          echo "::set-output name=affected::$(npx nx print-affected --select=projects)"
+
+  dockerize:
+    name: Dockerize
+    runs-on: ubuntu-latest
+    needs: ci
+    steps:
+      - run: echo ${{ needs.ci.outputs.affected }}
+      # - uses: actions/checkout@v2
+      # with:
+      # fetch-depth: 0
 
       # https://github.com/docker/metadata-action
-      - name: Docker Metadata
-        uses: docker/metadata-action@v4
-        id: meta
-        with:
-          images: |
-            enable=false
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=ref,event=tag
-            type=sha
-            randomval4455
+      # - name: Docker Metadata
+      #   uses: docker/metadata-action@v4
+      #   id: meta
+      #   with:
+      #     images: |
+      #       enable=false
+      #     tags: |
+      #       type=ref,event=branch
+      #       type=ref,event=pr
+      #       type=ref,event=tag
+      #       type=sha
+      #       randomval4455
 
-      - name: Dockerize
-        run: npx nx affected --target=docker:build --configuration=ci --parallel=3
-        env:
-          # https://www.npmjs.com/package/@nx-tools/nx-docker
-          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Dockerize
+      #   run: npx nx affected --target=docker:build --configuration=ci --parallel=3
+      #   env:
+      #     # https://www.npmjs.com/package/@nx-tools/nx-docker
+      #     INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+      #     INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
