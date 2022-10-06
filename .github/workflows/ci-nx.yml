@@ -71,7 +71,9 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo '::set-output name=affected::$(npx nx print-affected | jq tojson)'
+          MATRIX_ARRAY="$(nx print-affected | jq -c .projects)"
+          echo $MATRIX_ARRAY
+          echo ::set-output name=affected::{\"include\":[$MATRIX_PARAMS]}
 
   dockerize:
     name: Dockerize
@@ -79,7 +81,7 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project: ${{ fromJSON(needs.ci.outputs.affected).projects }}
+        project: ${{ fromJson(needs.ci.outputs.affected).projects }}
     steps:
       - run: echo "hello from ${{ matrix.project }}"
       # - uses: actions/checkout@v2
