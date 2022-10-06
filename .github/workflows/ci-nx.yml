@@ -112,6 +112,9 @@ jobs:
           labels: |
             org.opencontainers.image.source=
 
+      - name: Build
+        run: npx nx run-many --target build --projects=${{ matrix.project }}
+
       - name: Build and Push
         uses: docker/build-push-action@v3
         with:
