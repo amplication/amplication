@@ -4,7 +4,11 @@ import { readFileSync } from "fs";
 import { utimes, open } from "fs/promises";
 import { sync } from "glob";
 import { join } from "path";
-import { BASE_BUILDS_FOLDER, BUILD_OUTPUT_FOLDER, DEFAULT_BUILDS_FOLDER } from "../constants";
+import {
+  BASE_BUILDS_FOLDER,
+  BUILD_OUTPUT_FOLDER,
+  DEFAULT_BUILDS_FOLDER,
+} from "../constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 
@@ -14,7 +18,12 @@ type FilesDictionary = { [name: string]: FileMeta };
 export class StorageService {
   private buildsFolder: string;
   private buildOutputFolder: string;
-  constructor(configService: ConfigService<{ BASE_BUILDS_FOLDER: string, BUILD_OUTPUT_FOLDER: string }, true>) {
+  constructor(
+    configService: ConfigService<
+      { BASE_BUILDS_FOLDER: string; BUILD_OUTPUT_FOLDER: string },
+      true
+    >
+  ) {
     const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
     this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
     this.buildOutputFolder = configService.get(BUILD_OUTPUT_FOLDER);
@@ -27,7 +36,12 @@ export class StorageService {
   ) {
     const results: FilesDictionary = {};
 
-    const cwd = join(this.buildsFolder, buildId, this.buildOutputFolder, relativePath);
+    const cwd = join(
+      this.buildsFolder,
+      buildId,
+      this.buildOutputFolder,
+      relativePath
+    );
 
     console.log(`Current working directory is ${cwd}`);
 
