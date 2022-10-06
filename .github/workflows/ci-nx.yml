@@ -8,7 +8,6 @@ on:
   pull_request:
 
 env:
-  NX_BRANCH: ${{ github.ref_name }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
 jobs:
@@ -17,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       affected: ${{ steps.set-affected.outputs.affected }}
+    env:
+      NX_BRANCH: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -107,9 +108,11 @@ jobs:
             # randomval4455
 
       - name: Dockerize
-        run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
-        env:
-          # https://www.npmjs.com/package/@nx-tools/nx-docker
-          INPUT_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
-          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Dockerize
+      #   run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
+      #   env:
+      #     # https://www.npmjs.com/package/@nx-tools/nx-docker
+      #     INPUT_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+      #     INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+      #     INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
