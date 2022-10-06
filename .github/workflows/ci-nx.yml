@@ -71,7 +71,7 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo '::set-output name=affected::["a", "b", "c"]'
+          echo '::set-output name=affected::[$(npx nx print-affected --select projects)]'
 
   dockerize:
     name: Dockerize
