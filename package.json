@@ -115,6 +115,7 @@
     "@nrwl/nx-cloud": "^14.7.0",
     "@nrwl/web": "14.8.2",
     "@nrwl/workspace": "^14.8.2",
+    "@nx-tools/docker-metadata": "^3.0.1",
     "@nx-tools/nx-docker": "^3.0.4",
     "@types/adm-zip": "^0.4.34",
     "@types/bcrypt": "^5.0.0",

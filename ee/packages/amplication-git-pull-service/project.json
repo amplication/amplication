@@ -123,10 +123,12 @@
       },
       "configurations": {
         "ci": {
+          "push": true,
           "metadata": {
             "images": [
               "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-service"
-            ]
+            ],
+            "tags": ["type=ref,event=branch", "type=sha,format=short"]
           }
         }
       }

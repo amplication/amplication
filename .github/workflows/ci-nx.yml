@@ -67,11 +67,4 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Dockerize
-        uses: docker/setup-buildx-action@v1
-        run: |
-          npx nx affected --target=docker:build --configuration=ci --parallel=3
-        with:
-          push: true
-          matadata.tags: |
-            type=ref,event=branch
-            type=sha,format=short
+        run: npx nx affected --target=docker:build --configuration=ci --parallel=3
