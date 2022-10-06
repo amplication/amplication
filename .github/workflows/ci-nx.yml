@@ -94,6 +94,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       # https://github.com/docker/metadata-action
       - name: Docker Metadata
         uses: docker/metadata-action@v4
@@ -107,10 +110,18 @@ jobs:
             # type=sha
             # randomval4455
 
-      - name: Dockerize
-        run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
-        env:
-          # https://www.npmjs.com/package/@nx-tools/nx-docker
-          INPUT_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
-          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and Push
+        uses: docker/build-push-action@v3
+        with:
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          context: .
+          file: ./packages/${{ matrix.project }}/Dockerfile
+      # - name: Dockerize
+      #   run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
+      #   env:
+      #     # https://www.npmjs.com/package/@nx-tools/nx-docker
+      #     INPUT_IMAGES: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+      #     INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+      #     INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
