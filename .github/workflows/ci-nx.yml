@@ -24,7 +24,7 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: next
+          main-branch-name: feature/nx
 
       - name: Cache node modules
         id: cache
