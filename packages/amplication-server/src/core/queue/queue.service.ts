@@ -1,21 +1,17 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientKafka } from '@nestjs/microservices';
 import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
 import assert from 'assert';
-import { SendPullRequestResponse } from '../build/dto/sendPullRequestResponse';
-import { SendPullRequestArgs } from '../build/dto/sendPullRequest';
-import { ResultMessage } from './dto/ResultMessage';
-import { StatusEnum } from './dto/StatusEnum';
 
 export const QUEUE_SERVICE_NAME = 'QUEUE_SERVICE';
 
 @Injectable()
-export class QueueService implements OnModuleInit {
+export class QueueService {
   generatePullRequestTopic: string;
   constructor(
     @Inject(QUEUE_SERVICE_NAME)
-    private readonly kafkaService: ClientKafka,
+    private readonly kafkaClient: ClientKafka,
     configService: ConfigService
   ) {
     const envGeneratePullRequestTopic = configService.get<string>(
@@ -27,31 +23,12 @@ export class QueueService implements OnModuleInit {
     );
     this.generatePullRequestTopic = envGeneratePullRequestTopic;
   }
-  onModuleInit(): void {
-    this.kafkaService.subscribeToResponseOf(this.generatePullRequestTopic);
+
+  emitMessage(topic: string, message: string): void {
+    this.kafkaClient.emit(topic, message);
   }
 
-  sendCreateGitPullRequest(
-    data: SendPullRequestArgs
-  ): Promise<SendPullRequestResponse> {
-    return new Promise((resolve, reject) => {
-      this.kafkaService
-        .send(this.generatePullRequestTopic, data)
-        .subscribe((response: ResultMessage<SendPullRequestResponse>) => {
-          if (response.status === StatusEnum.GeneralFail) {
-            reject(
-              new Error(
-                `Failed creating pull request, reason: ${response.error}. To fix this, commit a README.md file and re-build.`
-              )
-            );
-          } else if (response.value) {
-            resolve(response.value);
-          } else {
-            reject(
-              new Error(`Failed creating pull request from unknown reason`)
-            );
-          }
-        });
-    });
+  emitCreatePullRequestMessage(message: string): void {
+    this.emitMessage(this.generatePullRequestTopic, message);
   }
 }

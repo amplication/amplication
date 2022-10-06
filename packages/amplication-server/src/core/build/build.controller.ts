@@ -18,8 +18,11 @@ import { StepNotCompleteError } from './errors/StepNotCompleteError';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { plainToInstance } from 'class-transformer';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { CHECK_USER_ACCESS_TOPIC } from '../../constants';
+import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  CHECK_USER_ACCESS_TOPIC,
+  CREATE_PULL_REQUEST_COMPLETED_TOPIC
+} from '../../constants';
 import { KafkaMessage } from 'kafkajs';
 import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';
@@ -27,6 +30,7 @@ import { EnvironmentVariables } from '@amplication/kafka';
 import { ActionService } from '../action/action.service';
 import { UpdateActionStepStatus } from './dto/UpdateActionStepStatus';
 import { CompleteCodeGenerationStep } from './dto/CompleteCodeGenerationStep';
+import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
@@ -89,5 +93,13 @@ export class BuildController {
     @Body() dto: CompleteCodeGenerationStep
   ): Promise<void> {
     await this.buildService.completeCodeGenerationStep(dto.buildId, dto.status);
+  }
+  
+  @EventPattern(
+    EnvironmentVariables.instance.get(CREATE_PULL_REQUEST_COMPLETED_TOPIC, true)
+  )
+  async onPullRequestCreated(@Payload() message: KafkaMessage) {
+    const args = plainToInstance(SendPullRequestResponse, message.value);
+    await this.buildService.onPullRequestCreated(args);
   }
 }
