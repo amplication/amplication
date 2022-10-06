@@ -71,7 +71,8 @@ jobs:
         uses: docker/metadata-action@v4
         id: meta
         with:
-          images: ""
+          images: |
+            name=,enable=true
           tags: |
             type=ref,event=branch
             type=ref,event=pr
