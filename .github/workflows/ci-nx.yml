@@ -71,7 +71,7 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo "::set-output name=affected::$(npx nx print-affected | jq .projects)"
+          echo "::set-output name=affected::$(npx nx print-affected | jq -c .projects | jq tojson)"
 
   dockerize:
     name: Dockerize
@@ -79,7 +79,7 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project: ${{ needs.ci.outputs.affected }}
+        project: ${{ fromJson(needs.ci.outputs.affected) }}
     steps:
       - run: echo "hello from ${{ matrix.project }}"
       # - uses: actions/checkout@v2
