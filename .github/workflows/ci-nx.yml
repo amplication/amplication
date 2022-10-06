@@ -73,7 +73,7 @@ jobs:
         run: |
           MATRIX_ARRAY="$(npx nx print-affected | jq -c .projects)"
           echo $MATRIX_ARRAY
-          echo ::set-output name=affected::{\"include\":[$MATRIX_PARAMS]}
+          echo ::set-output name=affected::[$MATRIX_PARAMS]
 
   dockerize:
     name: Dockerize
