@@ -16,7 +16,7 @@ jobs:
     name: Continuous Integration
     runs-on: ubuntu-latest
     outputs:
-      affected: ${{ steps.set-affected.outputs.affected}}
+      affected: ${{ steps.set-affected.outputs.affected }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -71,7 +71,7 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          MATRIX_ARRAY="$(nx print-affected | jq -c .projects)"
+          MATRIX_ARRAY="$(npx nx print-affected | jq -c .projects)"
           echo $MATRIX_ARRAY
           echo ::set-output name=affected::{\"include\":[$MATRIX_PARAMS]}
 
