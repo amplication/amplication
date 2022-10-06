@@ -79,7 +79,7 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project: ${{ fromJSON(needs.ci.outputs.affected) }}
+        project: [amplication-git-pull-service, amplication-server]
     steps:
       - run: echo "hello from ${{ matrix.project }}"
       # - uses: actions/checkout@v2
