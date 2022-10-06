@@ -71,7 +71,7 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo "::set-output name=affected::$(echo '[api,test]')"
+          echo "::set-output name=affected::[$(echo 'api,test')]"
 
   dockerize:
     name: Dockerize
