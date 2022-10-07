@@ -16,7 +16,7 @@
     @include body1;
     color: var(--black100);
   }
-  
+
   &__description {
     @include body2;
     color: var(--black80);
@@ -45,25 +45,16 @@
   }
 
   &__github-repo {
-    font-weight: 400;
-    color: #A3A8B8;
-    font-size: 12px;
-    line-height: 18px;
-    &__icon {
-      font-size: 13px;
-      vertical-align: middle;
-    }
-    &__link {
-      margin-left: 5px;
-    }
-    &__icon-not-connected {
-      color: #686F8C;
-      font-size: 13px;
-      vertical-align: middle;
-    }
-    &__not-connected {
-      color: #686F8C;
-      margin-left: 5px;
+    color: var(--black20);
+    @include regular-12;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--icon-spacing);
+
+    &--not-connected {
+      color: var(--black40);
     }
   }
 }

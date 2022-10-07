@@ -16,6 +16,7 @@ import {
 } from "@amplication/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
+import classNames from "classnames";
 
 type Props = {
   resource: models.Resource;
@@ -30,7 +31,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
   const { currentWorkspace, currentProject, setResource } = useContext(
     AppContext
   );
-  const { id, name, description } = resource;
+  const { id, name, description, gitRepository } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const handleDelete = useCallback(
@@ -57,8 +58,8 @@ function ResourceListItem({ resource, onDelete }: Props) {
   }, [resource, setResource]);
 
   const lastBuild = resource.builds[0];
-  // TODO: fetch real data
-  const GitHubRepo = 'temp/temp';
+
+  const gitHubRepo = gitRepository?.name;
 
   return (
     <>
@@ -97,26 +98,20 @@ function ResourceListItem({ resource, onDelete }: Props) {
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <div className={`${CLASS_NAME}__row`}>
-            <div className={`${CLASS_NAME}__recently-used`}>
-              <span className={`${CLASS_NAME}__github-repo`}>
+            <div className={`${CLASS_NAME}__github`}>
+              <span
+                className={classNames(`${CLASS_NAME}__github-repo`, {
+                  [`${CLASS_NAME}__github-repo--not-connected`]: !gitHubRepo,
+                })}
+              >
                 <Icon
                   icon="github"
                   size="small"
-                  className={`${CLASS_NAME}__github-repo__icon${!GitHubRepo ? '-not-connected' : ''}`}
+                  className={`${CLASS_NAME}__github-repo__icon${
+                    !gitHubRepo ? "-not-connected" : ""
+                  }`}
                 />
-                {GitHubRepo ? (
-                  <a
-                    className={`${CLASS_NAME}__github-repo__link`}
-                    href={GitHubRepo}
-                    target="github"
-                  >
-                    {GitHubRepo}
-                  </a>
-                ) : (
-                  <span className={`${CLASS_NAME}__github-repo__not-connected`}>
-                    Not connected
-                  </span>
-                )}
+                <span>{gitHubRepo ? gitHubRepo : "Not connected"}</span>
               </span>
             </div>
             <span className="spacer" />
