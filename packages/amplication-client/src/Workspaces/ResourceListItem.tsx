@@ -12,6 +12,7 @@ import {
   Panel,
   HorizontalRule,
   EnumHorizontalRuleStyle,
+  Icon,
 } from "@amplication/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
@@ -56,6 +57,8 @@ function ResourceListItem({ resource, onDelete }: Props) {
   }, [resource, setResource]);
 
   const lastBuild = resource.builds[0];
+  // TODO: fetch real data
+  const GitHubRepo = 'temp/temp';
 
   return (
     <>
@@ -92,33 +95,49 @@ function ResourceListItem({ resource, onDelete }: Props) {
           <div className={`${CLASS_NAME}__row`}>
             <span className={`${CLASS_NAME}__description`}>{description}</span>
           </div>
-          {resource.resourceType !==
-            models.EnumResourceType.ProjectConfiguration && (
-            <>
-              <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-              <div className={`${CLASS_NAME}__row`}>
-                <div className={`${CLASS_NAME}__recently-used`}>
-                  <span className={`${CLASS_NAME}__last-build`}>
-                    <span className={`${CLASS_NAME}__last-build__title`}>
-                      Last commit:{" "}
-                    </span>
-                    {lastBuild ? (
-                      <UserAndTime
-                        account={lastBuild.commit.user?.account || {}}
-                        time={lastBuild.createdAt}
-                      />
-                    ) : (
-                      <span className={`${CLASS_NAME}__last-build__not-yet`}>
-                        No commit yet
-                      </span>
-                    )}
+          <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
+          <div className={`${CLASS_NAME}__row`}>
+            <div className={`${CLASS_NAME}__recently-used`}>
+              <span className={`${CLASS_NAME}__github-repo`}>
+                <Icon
+                  icon="github"
+                  size="small"
+                  className={`${CLASS_NAME}__github-repo__icon${!GitHubRepo ? '-not-connected' : ''}`}
+                />
+                {GitHubRepo ? (
+                  <a
+                    className={`${CLASS_NAME}__github-repo__link`}
+                    href={GitHubRepo}
+                    target="github"
+                  >
+                    {GitHubRepo}
+                  </a>
+                ) : (
+                  <span className={`${CLASS_NAME}__github-repo__not-connected`}>
+                    Not connected
                   </span>
-                </div>
-
-                <span className="spacer" />
-              </div>
-            </>
-          )}
+                )}
+              </span>
+            </div>
+            <span className="spacer" />
+            <div className={`${CLASS_NAME}__recently-used`}>
+              <span className={`${CLASS_NAME}__last-build`}>
+                <span className={`${CLASS_NAME}__last-build__title`}>
+                  Last commit:{" "}
+                </span>
+                {lastBuild ? (
+                  <UserAndTime
+                    account={lastBuild.commit.user?.account || {}}
+                    time={lastBuild.createdAt}
+                  />
+                ) : (
+                  <span className={`${CLASS_NAME}__last-build__not-yet`}>
+                    No commit yet
+                  </span>
+                )}
+              </span>
+            </div>
+          </div>
         </Panel>
       </NavLink>
     </>
