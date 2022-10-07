@@ -69,7 +69,7 @@ const TopicForm = ({ onSubmit, defaultValues }: Props) => {
           label="Display Name"
           minLength={1}
         />
-        <TopicNameField name="name" />
+        <TopicNameField name="name" label="Name" />
         <TextField name="description" label="Description" textarea rows={3} />
       </Form>
     </Formik>
