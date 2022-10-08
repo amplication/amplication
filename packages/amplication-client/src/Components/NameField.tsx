@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useField } from "formik";
+import { useField, ErrorMessage } from "formik";
 import { useDebouncedCallback } from "use-debounce";
 import { TextInput, TextInputProps } from "@amplication/design-system";
 import "./NameField.scss";
@@ -57,7 +57,7 @@ const NameField = ({ capitalized, ...rest }: Props) => {
         pattern={pattern}
       />
       {showMessage && (
-        <div className={`${CLASS_NAME}__tooltip`}>{helpText}</div>
+        <ErrorMessage name="name" component="div" className="amplication-label__error" />
       )}
     </div>
   );
