@@ -59,7 +59,9 @@ function ResourceListItem({ resource, onDelete }: Props) {
 
   const lastBuild = resource.builds[0];
 
-  const gitHubRepo = gitRepository?.name;
+  const gitHubRepo = gitRepository
+    ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
+    : undefined;
 
   return (
     <>
