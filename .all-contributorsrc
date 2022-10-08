@@ -534,6 +534,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "wiseaidev",
+      "name": "Mahmoud Harmouch",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62179149?v=4",
+      "profile": "http://wiseai.dev",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -541,5 +550,6 @@
   "projectOwner": "amplication",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }
