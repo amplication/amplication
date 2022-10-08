@@ -62,7 +62,7 @@ describe('AppRoleService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create an resource role', async () => {
+  it('should create a resource role', async () => {
     const args = {
       data: {
         name: EXAMPLE_APP_ROLE_NAME,
@@ -83,21 +83,21 @@ describe('AppRoleService', () => {
     expect(prismaAppRoleFindOneMock).toBeCalledWith(args);
   });
 
-  it('should find many resource roles', async () => {
+  it('should find many resources roles', async () => {
     const args = {};
     expect(await service.getResourceRoles(args)).toEqual([EXAMPLE_APP_ROLE]);
     expect(prismaAppRoleFindManyMock).toBeCalledTimes(1);
     expect(prismaAppRoleFindManyMock).toBeCalledWith(args);
   });
 
-  it('should delete an resource role', async () => {
+  it('should delete a resource role', async () => {
     const args = { where: { id: EXAMPLE_APP_ROLE_ID } };
     expect(await service.deleteResourceRole(args)).toEqual(EXAMPLE_APP_ROLE);
     expect(prismaAppRoleDeleteMock).toBeCalledTimes(1);
     expect(prismaAppRoleDeleteMock).toBeCalledWith(args);
   });
 
-  it('should update an resource role', async () => {
+  it('should update a resource role', async () => {
     const args = {
       data: { displayName: EXAMPLE_APP_ROLE_DISPLAY_NAME },
       where: { id: EXAMPLE_APP_ROLE_ID }
