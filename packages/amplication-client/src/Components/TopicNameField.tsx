@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useField, ErrorMessage } from "formik";
-import { useDebouncedCallback } from "use-debounce";
 import { TextInput, TextInputProps } from "@amplication/design-system";
 import "./NameField.scss";
 
@@ -9,8 +8,6 @@ const TOPIC_PATTERN = TOPIC_REGEX.toString().slice(1, -1);
 const HELP_TEXT =
   "Name must only contain letters, numbers, dash, underscore or dot.";
 
-const SHOW_MESSAGE_DURATION = 3000;
-
 const CLASS_NAME = "amp-name-field";
 
 type Props = Omit<TextInputProps, "helpText" | "hasError"> & {
@@ -18,37 +15,25 @@ type Props = Omit<TextInputProps, "helpText" | "hasError"> & {
 };
 
 const TopicNameField = ({ name, ...rest }: Props) => {
-  const [field, meta] = useField<string>({
+  const [field] = useField<string>({
     name,
     validate: (value) => (TOPIC_REGEX.test(value) ? undefined : HELP_TEXT),
   });
-  const [showMessage, setShowMessage] = useState<boolean>(false);
-
-  const [debouncedHideMessage] = useDebouncedCallback(() => {
-    setShowMessage(false);
-  }, SHOW_MESSAGE_DURATION);
-
-  useEffect(() => {
-    if (meta.error) {
-      setShowMessage(true);
-    } else {
-      debouncedHideMessage();
-    }
-  }, [meta.error, setShowMessage, debouncedHideMessage]);
 
   return (
     <div className={CLASS_NAME}>
       <TextInput
         {...field}
         {...rest}
-        label="Name"
         autoComplete="off"
         minLength={1}
         pattern={TOPIC_PATTERN}
       />
-      {showMessage && (
-        <ErrorMessage name="name" component="div" className="amplication-label__error" />
-      )}
+      <ErrorMessage
+        name="name"
+        component="div"
+        className="amplication-label__error"
+      />
     </div>
   );
 };
