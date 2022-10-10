@@ -18,7 +18,7 @@ type Values = {
 };
 
 type TData = {
-  inviteUser: models.Invitation;
+  inviteUser: models.InviteUserInput;
 };
 
 const INITIAL_VALUES = {
@@ -69,7 +69,7 @@ const InviteMember = () => {
     <div className={CLASS_NAME}>
       <Formik 
         initialValues={INITIAL_VALUES}
-        validate={(values: {email:string}) => validate(values, FORM_SCHEMA)}
+        validate={(values: models.InviteUserInput) => validate(values, FORM_SCHEMA)}
         enableReinitialize
         onSubmit={handleSubmit}>
         {(formik) => {
