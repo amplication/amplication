@@ -34,6 +34,7 @@ import { CompleteCodeGenerationStep } from './dto/CompleteCodeGenerationStep';
 import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
 import { CodeGenerationSuccessArgs } from './dto/CodeGenerationSuccess';
 import { QueueService } from '../queue/queue.service';
+import { ConfigService } from '@nestjs/config';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
@@ -41,7 +42,8 @@ export class BuildController {
   constructor(
     private readonly buildService: BuildService,
     private readonly actionService: ActionService,
-    private readonly queueService: QueueService
+    private readonly queueService: QueueService,
+    private readonly configService: ConfigService
   ) {}
 
   @Get(`/:id.zip`)
@@ -98,7 +100,7 @@ export class BuildController {
   ): Promise<void> {
     await this.buildService.completeCodeGenerationStep(dto.buildId, dto.status);
     this.queueService.emitMessage(
-      CODE_GENERATION_SUCCESS_TOPIC,
+      this.configService.get(CODE_GENERATION_SUCCESS_TOPIC),
       JSON.stringify({ buildId: dto.buildId })
     );
   }

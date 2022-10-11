@@ -533,11 +533,11 @@ export class BuildService {
 
     const project = await this.prisma.project.findUnique({
       where: {
-        id: build.resource.projectId
+        id: resource.projectId
       }
     });
 
-    const url = `${clientHost}/${project.workspaceId}/${build.resource.projectId}/${build.resourceId}/builds/${build.id}`;
+    const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/builds/${build.id}`;
 
     return this.actionService.run(
       build.actionId,
