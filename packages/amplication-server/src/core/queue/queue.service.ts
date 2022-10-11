@@ -41,7 +41,7 @@ export class QueueService implements OnModuleInit {
           if (response.status === StatusEnum.GeneralFail) {
             reject(
               new Error(
-                `Failed creating pull request, reason: ${response.error}`
+                `Failed creating pull request, reason: ${response.error}. To fix this, commit a README.md file and re-build.`
               )
             );
           } else if (response.value) {

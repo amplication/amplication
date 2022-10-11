@@ -14,6 +14,7 @@ import { SendGridModule } from '@ntegral/nestjs-sendgrid';
 import { SendgridConfigService } from './services/sendgridConfig.service';
 import { GoogleSecretsManagerModule } from './services/googleSecretsManager.module';
 import { GoogleSecretsManagerService } from './services/googleSecretsManager.service';
+import { HealthModule } from './core/health/health.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { GoogleSecretsManagerService } from './services/googleSecretsManager.ser
     SegmentAnalyticsModule.registerAsync({
       useClass: SegmentAnalyticsOptionsService
     }),
+    HealthModule,
     CoreModule
   ],
   controllers: [],

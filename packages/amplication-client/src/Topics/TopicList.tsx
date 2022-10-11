@@ -13,6 +13,7 @@ import NewTopic from "./NewTopic";
 import InnerTabLink from "../Layout/InnerTabLink";
 import "./TopicList.scss";
 import { AppContext } from "../context/appContext";
+import { pluralize } from "../util/pluralize";
 
 type TData = {
   Topics: models.Topic[];
@@ -87,7 +88,7 @@ export const TopicList = React.memo(
           onChange={handleSearchChange}
         />
         <div className={`${CLASS_NAME}__header`}>
-          {data?.Topics.length} Topics
+          {data?.Topics.length} {pluralize(data?.Topics.length, 'Topic', 'Topics')}
         </div>
         {loading && <CircularProgress />}
         <div className={`${CLASS_NAME}__list`}>

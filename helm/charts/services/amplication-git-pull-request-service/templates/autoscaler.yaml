@@ -1,0 +1,5 @@
+{{- define "amplication-pull-request-service.autoscaling" -}}
+{{- end }}
+{{- if .Values.autoscaling.enabled }}
+{{ include "base.autoscaling" (list . "amplication-pull-request-service.autoscaling") -}}
+{{- end }}

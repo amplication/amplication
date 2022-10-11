@@ -8,7 +8,7 @@ on:
       - "**.md"
       - "renovate.json"
       - ".all-contributorsrc"
-  pull_request:
+  pull_request_target:
     branches: ["master", "release/*"]
     types: [opened, reopened]
     paths-ignore:

@@ -9,6 +9,7 @@ import "./MemberList.scss";
 import MemberListItem from "./MemberListItem";
 import PageContent from "../Layout/PageContent";
 import ProjectSideBar from "../Project/ProjectSideBar";
+import { pluralize } from "../util/pluralize";
 
 type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
@@ -37,7 +38,7 @@ function MemberList() {
           <InviteMember />
         </div>
         <div className={`${CLASS_NAME}__title`}>
-          {data?.workspaceMembers.length} Members
+          {data?.workspaceMembers.length} {pluralize(data?.workspaceMembers.length, 'Member', 'Members')}
         </div>
         {loading && <CircularProgress centerToParent />}
 
