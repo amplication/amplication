@@ -45,6 +45,7 @@ amplication-server:
 
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       CREATE_PULL_REQUEST_COMPLETED_TOPIC: git.internal.pull-request.completed.0
+      CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.0
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
