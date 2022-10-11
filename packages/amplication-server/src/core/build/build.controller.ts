@@ -21,7 +21,8 @@ import { plainToInstance } from 'class-transformer';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import {
   CHECK_USER_ACCESS_TOPIC,
-  CREATE_PULL_REQUEST_COMPLETED_TOPIC
+  CREATE_PULL_REQUEST_COMPLETED_TOPIC,
+  CODE_GENERATION_SUCCESS_TOPIC
 } from '../../constants';
 import { KafkaMessage } from 'kafkajs';
 import { ResultMessage } from '../queue/dto/ResultMessage';
@@ -31,13 +32,16 @@ import { ActionService } from '../action/action.service';
 import { UpdateActionStepStatus } from './dto/UpdateActionStepStatus';
 import { CompleteCodeGenerationStep } from './dto/CompleteCodeGenerationStep';
 import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
+import { CodeGenerationSuccessArgs } from './dto/CodeGenerationSuccess';
+import { QueueService } from '../queue/queue.service';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
   constructor(
     private readonly buildService: BuildService,
-    private readonly actionService: ActionService
+    private readonly actionService: ActionService,
+    private readonly queueService: QueueService
   ) {}
 
   @Get(`/:id.zip`)
@@ -93,7 +97,18 @@ export class BuildController {
     @Body() dto: CompleteCodeGenerationStep
   ): Promise<void> {
     await this.buildService.completeCodeGenerationStep(dto.buildId, dto.status);
-    await this.buildService.saveToGitHub(dto.buildId);
+    this.queueService.emitMessage(
+      CODE_GENERATION_SUCCESS_TOPIC,
+      JSON.stringify({ buildId: dto.buildId })
+    );
+  }
+
+  @EventPattern(
+    EnvironmentVariables.instance.get(CODE_GENERATION_SUCCESS_TOPIC, true)
+  )
+  async onCodeGenerationSuccess(@Payload() message: KafkaMessage) {
+    const args = plainToInstance(CodeGenerationSuccessArgs, message.value);
+    await this.buildService.saveToGitHub(args.buildId);
   }
 
   @EventPattern(

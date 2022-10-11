@@ -59,6 +59,10 @@ export class ResourceService {
     private readonly serviceTopicsService: ServiceTopicsService
   ) {}
 
+  async findOne(args: FindOneArgs): Promise<Resource | null> {
+    return this.prisma.resource.findUnique(args);
+  } 
+
   async createProjectConfiguration(
     projectId: string,
     projectName: string,

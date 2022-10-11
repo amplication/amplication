@@ -31,16 +31,16 @@ import {
 import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service'; // eslint-disable-line import/no-cycle
 import { ActionService } from '../action/action.service';
+import { CommitService } from '../commit/commit.service';
 
 import { createZipFileFromModules } from './zip';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
-import { previousBuild, BuildFilesSaver } from './utils';
+import { previousBuild } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
-import { GitResourceMeta } from './dto/GitResourceMeta';
 
 import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
@@ -164,9 +164,9 @@ export class BuildService {
     private readonly localDiskService: LocalDiskService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
+    private readonly commitService: CommitService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
-    private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
@@ -488,11 +488,13 @@ export class BuildService {
       build.createdAt
     );
 
-    build.createdBy
+    const createdBy = await this.userService.findUser({
+      where: { id: build.userId }
+    });
 
     const user = await this.userService.findUser({
       where: {
-        id: build.createdBy.id
+        id: createdBy.id
       }
     });
 
@@ -504,9 +506,9 @@ export class BuildService {
     );
     const { resourceInfo } = dSGResourceData;
 
-    const resource = build.resource;
+    const resource = await this.resourceService.findOne({ where: { id: build.resourceId } });
     const resourceRepository = await this.resourceService.gitRepository(
-      resource.id
+      build.resourceId
     );
 
     if (!resourceRepository) {
@@ -519,7 +521,7 @@ export class BuildService {
       }
     );
 
-    const commit = build.commit;
+    const commit = await this.commitService.findOne({ where: { id: build.commitId } });
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
     const commitMessage =
