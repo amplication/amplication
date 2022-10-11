@@ -1,6 +1,10 @@
 import { print } from "recast";
 import { builders } from "ast-types";
-import { Module } from "@amplication/code-gen-types";
+import {
+  EventNames,
+  Module,
+  CreateServerAppModuleParams,
+} from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../util/module";
 import {
   getExportedNames,
@@ -14,6 +18,7 @@ import {
   callExpression,
 } from "../../util/ast";
 import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const MODULE_PATTERN = /\.module\.ts$/;
@@ -27,15 +32,23 @@ const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
 const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
 export async function createAppModule(
-  resourceModules: Module[],
-  staticModules: Module[]
-): Promise<Module> {
+  eventParams: CreateServerAppModuleParams
+): Promise<Module[]> {
+  return pluginWrapper(
+    createAppModuleInternal,
+    EventNames.CreateServerAppModule,
+    eventParams
+  );
+}
+
+export async function createAppModuleInternal({
+  modulesFiles,
+}: CreateServerAppModuleParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
-  const nestModules = [
-    ...resourceModules.filter((module) => module.path.match(MODULE_PATTERN)),
-    ...staticModules.filter((module) => module.path.match(MODULE_PATTERN)),
-  ];
+  const nestModules = modulesFiles.filter((module) =>
+    module.path.match(MODULE_PATTERN)
+  );
 
   const nestModulesWithExports = nestModules.map((module) => ({
     module,
@@ -97,8 +110,10 @@ export async function createAppModule(
   removeESLintComments(file);
   removeTSVariableDeclares(file);
 
-  return {
-    path: MODULE_PATH,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: MODULE_PATH,
+      code: print(file).code,
+    },
+  ];
 }
