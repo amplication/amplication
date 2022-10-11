@@ -72,7 +72,7 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
 ### System Requirements
 
-:bulb: Before you begin, make sure you have all the below installed:
+:bulb: Before you begin, make sure you have the following installed:
 
 - [Node.js v16 or above](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/desktop/)
@@ -108,7 +108,7 @@ npm run start
 
 ### Setting Up Amplication Manually
 
-You can use a manual step-by-step approach to set up Amplication in a local development environment. To do that, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
+You can use a manual step-by-step approach to set up Amplication in a local development environment. To do so, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
 
 #### Setting up [Amplication Server](https://github.com/amplication/amplication/blob/master/packages/amplication-server/README.md)
 
@@ -126,13 +126,13 @@ Amplication is currently in its version 1.  This is the first major release of A
 
 ## Support
 
-Ask your questions and participate in discussions on Amplication-related and web-dev topics at Amplication Discord channel. 
+Ask your questions and participate in discussions on Amplication-related and web-dev topics at the Amplication Discord channel. 
 
 <a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
 ## Create a bug report
 
-If you see an error message or run into an issue, please [create bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+). This effort is valued and it will help all Amplication users.
+If you see an error message or run into an issue, please [create bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+). This effort is valued and helps all Amplication users.
 
 
 ## Submit a feature request
