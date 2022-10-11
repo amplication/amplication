@@ -632,7 +632,7 @@ describe('ResourceService', () => {
     );
   });
 
-  it('should update an resource', async () => {
+  it('should update a resource', async () => {
     const args = {
       data: { name: EXAMPLE_RESOURCE_NAME },
       where: { id: EXAMPLE_RESOURCE_ID }
