@@ -9,6 +9,7 @@ import { ResultMessage } from './dto/ResultMessage';
 import { StatusEnum } from './dto/StatusEnum';
 
 export const QUEUE_SERVICE_NAME = 'QUEUE_SERVICE';
+const EMPTY_REPOSITORY_ERROR = 'Git repository is empty';
 
 @Injectable()
 export class QueueService implements OnModuleInit {
@@ -39,9 +40,10 @@ export class QueueService implements OnModuleInit {
         .send(this.generatePullRequestTopic, data)
         .subscribe((response: ResultMessage<SendPullRequestResponse>) => {
           if (response.status === StatusEnum.GeneralFail) {
+            const resolveMessage = response.error === EMPTY_REPOSITORY_ERROR ? " To fix this, commit a README.md file and re-build." : "";
             reject(
               new Error(
-                `Failed creating pull request, reason: ${response.error}. To fix this, commit a README.md file and re-build.`
+                `Failed creating pull request, reason: ${response.error}.${resolveMessage}`
               )
             );
           } else if (response.value) {
