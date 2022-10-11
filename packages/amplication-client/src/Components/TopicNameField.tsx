@@ -41,7 +41,6 @@ const TopicNameField = ({ name, ...rest }: Props) => {
       <TextInput
         {...field}
         {...rest}
-        label="Name"
         autoComplete="off"
         minLength={1}
         pattern={TOPIC_PATTERN}
