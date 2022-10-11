@@ -40,7 +40,10 @@ export class QueueService implements OnModuleInit {
         .send(this.generatePullRequestTopic, data)
         .subscribe((response: ResultMessage<SendPullRequestResponse>) => {
           if (response.status === StatusEnum.GeneralFail) {
-            const resolveMessage = response.error === EMPTY_REPOSITORY_ERROR ? " To fix this, commit a README.md file and re-build." : "";
+            const resolveMessage =
+              response.error === EMPTY_REPOSITORY_ERROR
+                ? ' To fix this, commit a README.md file and re-build.'
+                : '';
             reject(
               new Error(
                 `Failed creating pull request, reason: ${response.error}.${resolveMessage}`
