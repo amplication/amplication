@@ -3030,9 +3030,7 @@ networks:
     \\"passport-jwt\\": \\"4.0.0\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
-    \\"ts-node\\": \\"9.1.1\\",
-    \\"@nestjs/microservices\\": \\"^8.2.3\\",
-    \\"kafkajs\\": \\"^2.2.0\\"
+    \\"ts-node\\": \\"9.1.1\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
