@@ -56,10 +56,12 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   const staticModules = updatePackageJSONs(
     rawStaticModules,
     clientDirectories.baseDirectory,
-    {
-      name: `@${paramCase(appInfo.name)}/admin`,
-      version: appInfo.version,
-    }
+    [
+      {
+        name: `@${paramCase(appInfo.name)}/admin`,
+        version: appInfo.version,
+      },
+    ]
   );
 
   /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators

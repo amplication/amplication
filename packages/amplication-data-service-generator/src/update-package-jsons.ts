@@ -12,7 +12,7 @@ import { merge } from "lodash";
 export function updatePackageJSONs(
   modules: Module[],
   baseDirectory: string,
-  update: Record<string, any>
+  update: { [key: string]: any }[]
 ): Module[] {
   return modules.map((module) => {
     if (module.path === `${baseDirectory}/package.json`) {
@@ -24,9 +24,9 @@ export function updatePackageJSONs(
   });
 }
 
-function updatePackageJSON(module: Module, update: Record<string, any>) {
+function updatePackageJSON(module: Module, update: { [key: string]: any }[]) {
   let pkg = JSON.parse(module.code);
-  pkg = merge(pkg, update);
+  pkg = merge(pkg, ...update);
 
   if (!semver.valid(pkg.version)) {
     delete pkg.version;
@@ -49,7 +49,7 @@ function updatePackageJSON(module: Module, update: Record<string, any>) {
  */
 function updatePackageLockJSON(
   module: Module,
-  update: Record<string, any>
+  update: { [key: string]: any }[]
 ): Module {
   const lockfile = JSON.parse(module.code);
   /**
@@ -57,8 +57,8 @@ function updatePackageLockJSON(
    */
   const pkg = lockfile.packages[""];
 
-  Object.assign(lockfile, update);
-  Object.assign(pkg, update);
+  Object.assign(lockfile, ...update);
+  Object.assign(pkg, ...update);
 
   if (!semver.valid(lockfile.version)) {
     delete lockfile.version;

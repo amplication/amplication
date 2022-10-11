@@ -24,7 +24,7 @@ export function createPackageJson(
 }
 
 export async function createPackageJsonInternal({
-  updateValues,
+  updateProperties,
 }: CreateServerPackageJsonParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const packageJsonModule = await readFile(
@@ -39,7 +39,7 @@ export async function createPackageJsonInternal({
       },
     ],
     serverDirectories.baseDirectory,
-    updateValues
+    updateProperties
   );
   return mutatedPackageJson;
 }
