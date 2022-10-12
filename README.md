@@ -106,6 +106,7 @@ npm run start
 
 
 
+
 ### Setting Up Amplication Manually
 
 You can use a manual step-by-step approach to set up Amplication in a local development environment. To do so, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
