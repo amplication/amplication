@@ -15,12 +15,12 @@ export function updatePackageJSONs(
   update: { [key: string]: any }[]
 ): Module[] {
   return modules.map((module) => {
-    if (module.path === `${baseDirectory}/package.json`) {
-      return updatePackageJSON(module, update);
-    } else if (module.path === `${baseDirectory}/package-lock.json`) {
-      return updatePackageLockJSON(module, update);
-    }
-    return module;
+    const updateModule =
+      module.path === `${baseDirectory}/package.json`
+        ? updatePackageJSON(module, update)
+        : module;
+
+    return updateModule;
   });
 }
 
@@ -34,40 +34,5 @@ function updatePackageJSON(module: Module, update: { [key: string]: any }[]) {
   return {
     ...module,
     code: pkg,
-  };
-}
-
-/**
- *
- *
- * @param update object that contain the update data to enter instead of the default data as name and version
- * @returns the updated module
- *
- * In npm 7 and higher the package lock contains a packages section (lockfile v2)
- * to see the npm docs of this update https://github.blog/2021-02-02-npm-7-is-now-generally-available/#changes-to-the-lockfile
- */
-function updatePackageLockJSON(
-  module: Module,
-  update: { [key: string]: any }[]
-): Module {
-  const lockfile = preparePackageJsonFile(module, update);
-  /**
-   * The v2 lockfile contains a package in the packages section that is a mirror of the project so we need to update the static data there also
-   */
-  const pkg = lockfile.packages[""];
-
-  Object.assign(pkg, ...update);
-
-  if (!semver.valid(lockfile.version)) {
-    delete lockfile.version;
-  }
-
-  if (!semver.valid(pkg.version)) {
-    delete pkg.version;
-  }
-
-  return {
-    ...module,
-    code: lockfile,
   };
 }
