@@ -228,23 +228,23 @@ export type PrismaDataSource = {
 };
 
 export interface ResolverMapping {
-    RESOLVER: string;
-    RESOLVER_BASE: string;
-    SERVICE: string;
-    ENTITY: string;
-    ENTITY_NAME: string;
-    ENTITY_QUERY: string;
-    ENTITIES_QUERY: string;
-    META_QUERY: string;
-    CREATE_MUTATION: string;
-    UPDATE_MUTATION: string;
-    DELETE_MUTATION: string;
-    CREATE_ARGS: string;
-    UPDATE_ARGS: string;
-    DELETE_ARGS: string;
-    FIND_MANY_ARGS: string;
-    FIND_ONE_ARGS: string;
-    CREATE_DATA_MAPPING: ExpressionKind;
-    UPDATE_DATA_MAPPING: ExpressionKind;
-    [key: string]: string | ExpressionKind;
+  RESOLVER: string;
+  RESOLVER_BASE: string;
+  SERVICE: string;
+  ENTITY: string;
+  ENTITY_NAME: string;
+  ENTITY_QUERY: string;
+  ENTITIES_QUERY: string;
+  META_QUERY: string;
+  CREATE_MUTATION: string;
+  UPDATE_MUTATION: string;
+  DELETE_MUTATION: string;
+  CREATE_ARGS: string;
+  UPDATE_ARGS: string;
+  DELETE_ARGS: string;
+  FIND_MANY_ARGS: string;
+  FIND_ONE_ARGS: string;
+  CREATE_DATA_MAPPING: ExpressionKind;
+  UPDATE_DATA_MAPPING: ExpressionKind;
+  [key: string]: string | ExpressionKind;
 }
