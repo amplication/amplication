@@ -5,6 +5,8 @@ import {
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
   CreateEntityServiceParams,
+  CreateEntityResolverBaseParams,
+  CreateEntityResolverParams,
   CreateMessageBrokerClientOptionsFactoryParams,
   CreateMessageBrokerNestJSModuleParams,
   CreateMessageBrokerParams,
@@ -65,5 +67,11 @@ export type Events = {
   >;
   [EventNames.CreateServerAppModule]?: PluginEventType<
     CreateServerAppModuleParams
+  >;
+  [EventNames.CreateEntityResolver]?: PluginEventType<
+    CreateEntityResolverParams
+  >;
+  [EventNames.CreateEntityResolverBase]?: PluginEventType<
+    CreateEntityResolverBaseParams
   >;
 };

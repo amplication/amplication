@@ -1,11 +1,14 @@
 import { namedTypes } from "ast-types";
 import { JsonValue } from "type-fest";
 import {
+  DTOs,
   Entity,
   EntityField,
   Module,
+  NamedClassDeclaration,
   PrismaClientGenerator,
   PrismaDataSource,
+  ResolverMapping,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
@@ -92,4 +95,30 @@ export interface CreateServerPackageJsonParams extends EventParams {
 
 export interface CreateServerAppModuleParams extends EventParams {
   modulesFiles: Module[];
+}
+
+export interface CreateEntityResolverParams extends EventParams {
+  templatePath: string;
+  entityName: string;
+  entityServiceModule: string;
+  DTOs: DTOs;
+  serviceId: namedTypes.Identifier;
+  mapping: ResolverMapping;
+}
+
+export interface CreateEntityResolverBaseParams extends EventParams {
+  templateBasePath: string;
+  entityName: string;
+  entityType: string;
+  entityServiceModule: string;
+  entity: string;
+  DTOs: DTOs;
+  entityDTO: NamedClassDeclaration;
+  serviceId: namedTypes.Identifier;
+  resolverBaseId: namedTypes.Identifier;
+  createArgs: NamedClassDeclaration | undefined;
+  updateArgs: NamedClassDeclaration | undefined;
+  createMutationId: namedTypes.Identifier;
+  updateMutationId: namedTypes.Identifier;
+  mapping: ResolverMapping;
 }
