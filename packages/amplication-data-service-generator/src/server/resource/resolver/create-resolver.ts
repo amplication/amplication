@@ -147,7 +147,7 @@ export async function createResolverModules(
   ];
 }
 
-async function createResolverModule ({
+async function createResolverModule({
   templatePath,
   entityName,
   entityServiceModule,
