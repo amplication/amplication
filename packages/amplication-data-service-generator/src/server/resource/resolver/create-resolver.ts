@@ -8,6 +8,8 @@ import {
   EntityLookupField,
   Module,
   NamedClassDeclaration,
+  CreateEntityResolverParams,
+  CreateEntityResolverBaseParams,
   DTOs,
   EventNames,
 } from "@amplication/code-gen-types";
@@ -145,21 +147,20 @@ export async function createResolverModules(
   ];
 }
 
-async function createResolverModule(
-  templateFilePath: string,
-  entityName: string,
-  entityServiceModule: string,
-  dtos: DTOs,
-  serviceId: namedTypes.Identifier,
-  mapping: { [key: string]: ASTNode | undefined }
-): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
+async function createResolverModule ({
+  templatePath,
+  entityName,
+  entityServiceModule,
+  serviceId,
+  mapping,
+}: CreateEntityResolverParams): Promise<Module[]> {
+  const { serverDirectories, DTOs } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
-  const file = await readFile(templateFilePath);
+  const file = await readFile(templatePath);
 
   interpolate(file, mapping);
 
-  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(modulePath, dtoNameToPath)
@@ -191,26 +192,25 @@ async function createResolverModule(
   ];
 }
 
-async function createResolverBaseModule(
-  templateFilePath: string,
-  entityName: string,
-  entityType: string,
-  entityServiceModule: string,
-  entity: Entity,
-  dtos: DTOs,
-  entityDTO: NamedClassDeclaration,
-  serviceId: namedTypes.Identifier,
-  resolverBaseId: namedTypes.Identifier,
-  createArgs: NamedClassDeclaration | undefined,
-  updateArgs: NamedClassDeclaration | undefined,
-  createMutationId: namedTypes.Identifier,
-  updateMutationId: namedTypes.Identifier,
-  mapping: { [key: string]: ASTNode | undefined }
-): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
+async function createResolverBaseModule({
+  templateBasePath,
+  entityName,
+  entityType,
+  entityServiceModule,
+  entity,
+  entityDTO,
+  serviceId,
+  resolverBaseId,
+  createArgs,
+  updateArgs,
+  createMutationId,
+  updateMutationId,
+  mapping,
+}: CreateEntityResolverBaseParams): Promise<Module[]> {
+  const { serverDirectories, DTOs } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
-  const file = await readFile(templateFilePath);
+  const file = await readFile(templateBasePath);
 
   interpolate(file, mapping);
 
@@ -223,7 +223,7 @@ async function createResolverBaseModule(
           field,
           entityDTO,
           entityType,
-          dtos,
+          DTOs,
           serviceId
         )
       )
@@ -237,7 +237,7 @@ async function createResolverBaseModule(
           field,
           entityDTO,
           entityType,
-          dtos,
+          DTOs,
           serviceId
         )
       )
@@ -300,7 +300,7 @@ async function createResolverBaseModule(
     ),
   ]);
 
-  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     file,
     getImportableDTOs(moduleBasePath, dtoNameToPath)

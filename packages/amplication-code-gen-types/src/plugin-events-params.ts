@@ -101,7 +101,6 @@ export interface CreateEntityResolverParams extends EventParams {
   templatePath: string;
   entityName: string;
   entityServiceModule: string;
-  DTOs: DTOs;
   serviceId: namedTypes.Identifier;
   mapping: ResolverMapping;
 }
@@ -111,7 +110,7 @@ export interface CreateEntityResolverBaseParams extends EventParams {
   entityName: string;
   entityType: string;
   entityServiceModule: string;
-  entity: string;
+  entity: Entity;
   DTOs: DTOs;
   entityDTO: NamedClassDeclaration;
   serviceId: namedTypes.Identifier;
