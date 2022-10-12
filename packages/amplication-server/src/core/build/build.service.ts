@@ -564,7 +564,7 @@ export class BuildService {
               ${url}
               `
             },
-            gitResourceMetadata: {
+            gitResourceMeta: {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath
             }
