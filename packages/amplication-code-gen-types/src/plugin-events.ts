@@ -60,7 +60,7 @@ export type Events = {
   [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<
     CreateMessageBrokerServiceBaseParams
   >;
-  [EventNames.CreatePackageJson]?: PluginEventType<
+  [EventNames.CreateServerPackageJson]?: PluginEventType<
     CreateServerPackageJsonParams
   >;
   [EventNames.CreateServerAppModule]?: PluginEventType<
