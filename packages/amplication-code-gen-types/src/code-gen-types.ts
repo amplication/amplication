@@ -1,4 +1,4 @@
-import { namedTypes } from "ast-types";
+import { ASTNode, namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
@@ -228,23 +228,22 @@ export type PrismaDataSource = {
 };
 
 export interface ResolverMapping {
-  RESOLVER: string;
-  RESOLVER_BASE: string;
-  SERVICE: string;
-  ENTITY: string;
-  ENTITY_NAME: string;
-  ENTITY_QUERY: string;
-  ENTITIES_QUERY: string;
-  META_QUERY: string;
-  CREATE_MUTATION: string;
-  UPDATE_MUTATION: string;
-  DELETE_MUTATION: string;
-  CREATE_ARGS: string;
-  UPDATE_ARGS: string;
-  DELETE_ARGS: string;
-  FIND_MANY_ARGS: string;
-  FIND_ONE_ARGS: string;
-  CREATE_DATA_MAPPING: ExpressionKind;
-  UPDATE_DATA_MAPPING: ExpressionKind;
-  [key: string]: string | ExpressionKind;
+  RESOLVER: ASTNode | undefined;
+  RESOLVER_BASE: ASTNode | undefined;
+  SERVICE: ASTNode | undefined;
+  ENTITY: ASTNode | undefined;
+  ENTITY_NAME: ASTNode | undefined;
+  ENTITY_QUERY: ASTNode | undefined;
+  ENTITIES_QUERY: ASTNode | undefined;
+  META_QUERY: ASTNode | undefined;
+  CREATE_MUTATION: ASTNode | undefined;
+  UPDATE_MUTATION: ASTNode | undefined;
+  DELETE_MUTATION: ASTNode | undefined;
+  CREATE_ARGS: ASTNode | undefined;
+  UPDATE_ARGS: ASTNode | undefined;
+  DELETE_ARGS: ASTNode | undefined;
+  FIND_MANY_ARGS: ASTNode | undefined;
+  FIND_ONE_ARGS: ASTNode | undefined;
+  CREATE_DATA_MAPPING: ASTNode | undefined;
+  UPDATE_DATA_MAPPING: ASTNode | undefined;
 }

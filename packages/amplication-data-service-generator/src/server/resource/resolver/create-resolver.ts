@@ -121,6 +121,7 @@ export async function createResolverModules(
         entityServiceModule,
         DTOs,
         serviceId,
+        resolverBaseId,
         mapping,
       }
     )),
@@ -152,13 +153,22 @@ async function createResolverModule({
   entityName,
   entityServiceModule,
   serviceId,
+  resolverBaseId,
   mapping,
 }: CreateEntityResolverParams): Promise<Module[]> {
   const { serverDirectories, DTOs } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
   const file = await readFile(templatePath);
-
+  // @ts-ignore
   interpolate(file, mapping);
+
+  addImports(file, [
+    importNames(
+      [resolverBaseId],
+      relativeImportPath(modulePath, moduleBasePath)
+    ),
+  ]);
 
   const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
@@ -208,10 +218,9 @@ async function createResolverBaseModule({
   mapping,
 }: CreateEntityResolverBaseParams): Promise<Module[]> {
   const { serverDirectories, DTOs } = DsgContext.getInstance;
-  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
   const file = await readFile(templateBasePath);
-
+  // @ts-ignore
   interpolate(file, mapping);
 
   const classDeclaration = getClassDeclarationById(file, resolverBaseId);
@@ -292,13 +301,6 @@ async function createResolverBaseModule({
   if (!updateArgs) {
     deleteClassMemberByKey(classDeclaration, updateMutationId);
   }
-
-  addImports(file, [
-    importNames(
-      [resolverBaseId],
-      relativeImportPath(modulePath, moduleBasePath)
-    ),
-  ]);
 
   const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
