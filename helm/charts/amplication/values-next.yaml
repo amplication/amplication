@@ -118,8 +118,9 @@ amplication-git-pull-request-service:
 
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       CREATE_PULL_REQUEST_COMPLETED_TOPIC: git.internal.pull-request.completed.0
-
+      
       BASE_BUILDS_FOLDER: /amplication-data/build-data
+      BUILD_OUTPUT_FOLDER: output
       GITHUB_APP_APP_ID: "225471"
 
 amplication-storage-gateway:

@@ -3,12 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { join, normalize } from 'path';
 import {
   BUILDS_FOLDER_PATH_ENV_KEY,
+  BUILD_OUTPUT_FOLDER,
   DEFAULT_BUILDS_FOLDER,
 } from '../../../constants';
 
 @Injectable()
 export class BuildPathFactory {
   private readonly buildsFolder: string;
+  private readonly outputFolder: string;
   constructor(private readonly configService: ConfigService) {
     // absolute path to the builds folder
     const envFilePath = this.configService.get<string>(
@@ -17,11 +19,11 @@ export class BuildPathFactory {
     this.buildsFolder = envFilePath
       ? normalize(envFilePath)
       : DEFAULT_BUILDS_FOLDER;
+  
+    this.outputFolder = this.configService.get<string>(BUILD_OUTPUT_FOLDER)!;
   }
-  private resourcePath(resourceId: string) {
-    return join(this.buildsFolder, resourceId);
-  }
-  public get(resourceId: string, buildId: string) {
-    return join(this.resourcePath(resourceId), buildId);
+  
+  public get(buildId: string) {
+    return join(this.buildsFolder, buildId, this.outputFolder);
   }
 }

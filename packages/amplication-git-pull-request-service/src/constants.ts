@@ -19,3 +19,5 @@ export type PrModule = {
   path: string;
   code: string | null;
 };
+
+export const BUILD_OUTPUT_FOLDER = 'BUILD_OUTPUT_FOLDER';
