@@ -112,7 +112,6 @@ export interface CreateEntityResolverBaseParams extends EventParams {
   entityType: string;
   entityServiceModule: string;
   entity: Entity;
-  DTOs: DTOs;
   entityDTO: NamedClassDeclaration;
   serviceId: namedTypes.Identifier;
   resolverBaseId: namedTypes.Identifier;

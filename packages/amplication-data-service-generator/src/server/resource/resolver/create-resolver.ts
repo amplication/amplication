@@ -119,7 +119,6 @@ export async function createResolverModules(
         templatePath,
         entityName,
         entityServiceModule,
-        DTOs,
         serviceId,
         resolverBaseId,
         mapping,
@@ -134,7 +133,6 @@ export async function createResolverModules(
         entityType,
         entityServiceModule,
         entity,
-        DTOs,
         entityDTO,
         serviceId,
         resolverBaseId,
@@ -156,6 +154,7 @@ async function createResolverModule({
   resolverBaseId,
   mapping,
 }: CreateEntityResolverParams): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { serverDirectories, DTOs } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
@@ -217,6 +216,7 @@ async function createResolverBaseModule({
   updateMutationId,
   mapping,
 }: CreateEntityResolverBaseParams): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { serverDirectories, DTOs } = DsgContext.getInstance;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
   const file = await readFile(templateBasePath);
