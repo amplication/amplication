@@ -62,7 +62,7 @@
     "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
     "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\""
   },
-  "proxy": "https://3000-azanul-amplication-uvajcw4iqv9.ws-us71.gitpod.io",
+  "proxy": "http://localhost:3000",
   "eslintConfig": {
     "extends": "react-app",
     "rules": {
