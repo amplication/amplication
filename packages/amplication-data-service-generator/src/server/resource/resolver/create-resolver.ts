@@ -1,6 +1,6 @@
 import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
-import { ASTNode, builders, namedTypes } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import pluginWrapper from "../../../plugin-wrapper";
 import {
