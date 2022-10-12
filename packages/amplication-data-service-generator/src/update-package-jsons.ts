@@ -1,6 +1,6 @@
 import * as semver from "semver";
 import { Module } from "@amplication/code-gen-types";
-import { merge } from "lodash";
+import { preparePackageJsonFile } from "./util/preparePackageJsonFile";
 
 /**
  * Update package.json and package-lock.json modules in given modules with the
@@ -25,8 +25,7 @@ export function updatePackageJSONs(
 }
 
 function updatePackageJSON(module: Module, update: { [key: string]: any }[]) {
-  let pkg = JSON.parse(module.code);
-  pkg = merge(pkg, ...update);
+  const pkg = preparePackageJsonFile(module, update);
 
   if (!semver.valid(pkg.version)) {
     delete pkg.version;
@@ -34,7 +33,7 @@ function updatePackageJSON(module: Module, update: { [key: string]: any }[]) {
 
   return {
     ...module,
-    code: JSON.stringify(pkg, null, 2),
+    code: pkg,
   };
 }
 
@@ -51,13 +50,12 @@ function updatePackageLockJSON(
   module: Module,
   update: { [key: string]: any }[]
 ): Module {
-  const lockfile = JSON.parse(module.code);
+  const lockfile = preparePackageJsonFile(module, update);
   /**
    * The v2 lockfile contains a package in the packages section that is a mirror of the project so we need to update the static data there also
    */
   const pkg = lockfile.packages[""];
 
-  Object.assign(lockfile, ...update);
   Object.assign(pkg, ...update);
 
   if (!semver.valid(lockfile.version)) {
@@ -70,6 +68,6 @@ function updatePackageLockJSON(
 
   return {
     ...module,
-    code: JSON.stringify(lockfile, null, 4),
+    code: lockfile,
   };
 }

@@ -6,8 +6,7 @@ export function prepareYamlFile(
   updateProperties: { [key: string]: any }[]
 ): string {
   const parsed = YAML.parse(yamlFileContent);
-  updateProperties &&
-    updateProperties.forEach((updateProperty) => merge(parsed, updateProperty));
+  updateProperties && merge(parsed, ...updateProperties);
 
   return YAML.stringify(parsed, { nullStr: "~" });
 }
