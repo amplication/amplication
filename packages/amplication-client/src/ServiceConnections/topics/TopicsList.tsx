@@ -57,7 +57,7 @@ export default function TopicsList({
         )}
       />
     ) : (
-      <div style={{ display:'flex', flexGrow:1, flexDirection:'column', alignItems:'center', height:'100%' }}>
+      <div style={{ padding: '15.25%' }}>
         <EmptyState
           message="This message broker has no topics"
           image={EnumImages.CommitEmptyState}
