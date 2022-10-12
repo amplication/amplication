@@ -94,7 +94,7 @@ export interface CreateServerAppModuleParams extends EventParams {
   modulesFiles: Module[];
 }
 
-export interface CreateEntityModule extends EventParams {
+export interface CreateEntityModuleParams extends EventParams {
   entityName: string;
   entityType: string;
   entityServiceModule: string;
@@ -103,7 +103,7 @@ export interface CreateEntityModule extends EventParams {
   moduleBaseId: namedTypes.Identifier;
 }
 
-export interface CreateEntityModuleBase extends EventParams {
+export interface CreateEntityModuleBaseParams extends EventParams {
   entityName: string;
   moduleBaseId: namedTypes.Identifier;
 }

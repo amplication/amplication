@@ -1,6 +1,11 @@
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { EventNames, Module } from "@amplication/code-gen-types";
+import {
+  EventNames,
+  Module,
+  CreateEntityModuleParams,
+  CreateEntityModuleBaseParams,
+} from "@amplication/code-gen-types";
 import { relativeImportPath, readFile } from "../../../util/module";
 import {
   interpolate,
@@ -50,14 +55,14 @@ export async function createModules(
   ];
 }
 
-async function createModule(
-  entityName: string,
-  entityType: string,
-  entityServiceModule: string,
-  entityControllerModule: string | undefined,
-  entityResolverModule: string | undefined,
-  moduleBaseId: namedTypes.Identifier
-): Promise<Module[]> {
+async function createModule({
+  entityName,
+  entityType,
+  entityServiceModule,
+  entityControllerModule,
+  entityResolverModule,
+  moduleBaseId,
+}: CreateEntityModuleParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.module.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
@@ -129,10 +134,10 @@ async function createModule(
   ];
 }
 
-async function createBaseModule(
-  entityName: string,
-  moduleBaseId: namedTypes.Identifier
-): Promise<Module[]> {
+async function createBaseModule({
+  entityName,
+  moduleBaseId,
+}: CreateEntityModuleBaseParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleBaseTemplatePath);
