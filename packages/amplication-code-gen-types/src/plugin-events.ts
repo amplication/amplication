@@ -18,6 +18,8 @@ import {
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   CreateServerParams,
+  CreateEntityModuleParams,
+  CreateEntityModuleBaseParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -60,10 +62,14 @@ export type Events = {
   [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<
     CreateMessageBrokerServiceBaseParams
   >;
-  [EventNames.CreatePackageJson]?: PluginEventType<
+  [EventNames.CreateServerPackageJson]?: PluginEventType<
     CreateServerPackageJsonParams
   >;
   [EventNames.CreateServerAppModule]?: PluginEventType<
     CreateServerAppModuleParams
+  >;
+  [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;
+  [EventNames.CreateEntityModuleBase]?: PluginEventType<
+    CreateEntityModuleBaseParams
   >;
 };
