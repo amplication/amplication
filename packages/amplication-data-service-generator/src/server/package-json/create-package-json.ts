@@ -18,7 +18,7 @@ export function createPackageJson(
 ): Promise<Module[]> {
   return pluginWrapper(
     createPackageJsonInternal,
-    EventNames.CreatePackageJson,
+    EventNames.CreateServerPackageJson,
     eventParams
   );
 }
