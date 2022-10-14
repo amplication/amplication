@@ -2869,7 +2869,7 @@ export class StringNullableFilter {
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
-SERVER_PORT=3000
+PORT=3000
 DB_USER=testUsername
 DB_PASSWORD=1234
 DB_PORT=5433
@@ -2900,7 +2900,7 @@ services:
       args:
         NPM_LOG_LEVEL: notice
     ports:
-      - \${SERVER_PORT}:3000
+      - \${PORT}:3000
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
