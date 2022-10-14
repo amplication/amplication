@@ -117,7 +117,7 @@ export function extractImportDeclarations(
 ): namedTypes.ImportDeclaration[] {
   const newBody = [];
   const imports = [];
-  for (const statement of file?.program.body) {
+  for (const statement of file.program.body) {
     if (namedTypes.ImportDeclaration.check(statement)) {
       imports.push(statement);
     } else {
