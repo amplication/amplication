@@ -29,7 +29,7 @@ export interface CreateEntityServiceParams extends EventParams {
   template: namedTypes.File;
 }
 export interface CreateEntityControllerParams extends EventParams {
-  templatePath: string;
+  template: namedTypes.File;
   entityName: string;
   entityServiceModule: string;
   templateMapping: { [key: string]: any };
@@ -37,7 +37,7 @@ export interface CreateEntityControllerParams extends EventParams {
   serviceId: namedTypes.Identifier;
 }
 export interface CreateEntityControllerBaseParams extends EventParams {
-  baseTemplatePath: string;
+  template: namedTypes.File;
   entity: Entity;
   entityName: string;
   entityType: string;
