@@ -90,6 +90,10 @@ export interface CreateServerPackageJsonParams extends EventParams {
   updateProperties: { [key: string]: any }[];
 }
 
+export interface CreateAdminUIPackageJsonParams extends EventParams {
+  updateProperties: { [key: string]: any }[];
+}
+
 export interface CreateServerAppModuleParams extends EventParams {
   modulesFiles: Module[];
 }

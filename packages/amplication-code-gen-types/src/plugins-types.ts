@@ -76,6 +76,7 @@ export enum EventNames {
   CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
   CreatePrismaSchema = "CreatePrismaSchema",
   CreateServerPackageJson = "CreateServerPackageJson",
+  CreateAdminUIPackageJson = "CreateAdminUIPackageJson",
   CreateEntityModule = "CreateEntityModule",
   CreateEntityModuleBase = "CreateEntityModuleBase",
 }
