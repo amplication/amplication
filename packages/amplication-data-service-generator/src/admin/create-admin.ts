@@ -4,7 +4,6 @@ import { plural } from "pluralize";
 import { Module, EventNames } from "@amplication/code-gen-types";
 import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
-import { updatePackageJSONs } from "../update-package-jsons";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
@@ -21,6 +20,7 @@ import { createRolesModule } from "./create-roles-module";
 import { createDotEnvModule } from "./create-dotenv";
 import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
+import { createPackageJson } from "./package-json/create-package-json";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -49,28 +49,19 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
   logger.info("Creating admin...");
   logger.info("Copying static modules...");
-  const rawStaticModules = await readStaticModules(
+  const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     clientDirectories.baseDirectory
   );
-  const rawStaticModulesWithoutPackageJson = rawStaticModules.filter(
-    (module) =>
-      module.path !== `${clientDirectories.baseDirectory}/package.json`
-  );
-  const rawStaticPackageJsonFile = rawStaticModules.filter(
-    (module) =>
-      module.path === `${clientDirectories.baseDirectory}/package.json`
-  );
-  const updatedPackageJson = updatePackageJSONs(
-    rawStaticPackageJsonFile,
-    clientDirectories.baseDirectory,
-    [
+
+  const packageJson = await createPackageJson({
+    updateProperties: [
       {
         name: `@${paramCase(appInfo.name)}/admin`,
         version: appInfo.version,
       },
-    ]
-  );
+    ],
+  });
 
   /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
    * currently the files were manually copied to /admin/static/src/util
@@ -133,8 +124,8 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     code: formatCode(module.code),
   }));
   return [
-    ...rawStaticModulesWithoutPackageJson,
-    ...updatedPackageJson,
+    ...staticModules,
+    ...packageJson,
     ...publicFilesModules,
     ...formattedModules,
     dotEnvModule,
