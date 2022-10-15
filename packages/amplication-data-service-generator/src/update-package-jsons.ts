@@ -14,14 +14,7 @@ export function updatePackageJSONs(
   baseDirectory: string,
   update: { [key: string]: any }[]
 ): Module[] {
-  return modules.map((module) => {
-    const updateModule =
-      module.path === `${baseDirectory}/package.json`
-        ? updatePackageJSON(module, update)
-        : module;
-
-    return updateModule;
-  });
+  return modules.map((module) => updatePackageJSON(module, update));
 }
 
 function updatePackageJSON(module: Module, update: { [key: string]: any }[]) {

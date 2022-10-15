@@ -53,8 +53,16 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     STATIC_MODULES_PATH,
     clientDirectories.baseDirectory
   );
-  const staticModules = updatePackageJSONs(
-    rawStaticModules,
+  const rawStaticModulesWithoutPackageJson = rawStaticModules.filter(
+    (module) =>
+      module.path !== `${clientDirectories.baseDirectory}/package.json`
+  );
+  const rawStaticPackageJsonFile = rawStaticModules.filter(
+    (module) =>
+      module.path === `${clientDirectories.baseDirectory}/package.json`
+  );
+  const updatedPackageJson = updatePackageJSONs(
+    rawStaticPackageJsonFile,
     clientDirectories.baseDirectory,
     [
       {
@@ -125,7 +133,8 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     code: formatCode(module.code),
   }));
   return [
-    ...staticModules,
+    ...rawStaticModulesWithoutPackageJson,
+    ...updatedPackageJson,
     ...publicFilesModules,
     ...formattedModules,
     dotEnvModule,
