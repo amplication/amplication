@@ -57,12 +57,10 @@ export default function TopicsList({
         )}
       />
     ) : (
-      <div style={{ padding: '15.25%' }}>
-        <EmptyState
-          message="This message broker has no topics"
-          image={EnumImages.CommitEmptyState}
-        />
-      </div>
+      <EmptyState
+        message="This message broker has no topics"
+        image={EnumImages.CommitEmptyState}
+      />
     )
   ) : null;
 }
