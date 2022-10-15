@@ -65,6 +65,7 @@ export type Events = {
   [EventNames.CreateServerPackageJson]?: PluginEventType<
     CreateServerPackageJsonParams
   >;
+  [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServerAppModule]?: PluginEventType<
     CreateServerAppModuleParams
   >;

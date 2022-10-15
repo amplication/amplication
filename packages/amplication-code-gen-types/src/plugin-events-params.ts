@@ -87,7 +87,11 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
 export interface CreateMessageBrokerServiceParams extends EventParams {}
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
 export interface CreateServerPackageJsonParams extends EventParams {
-  updateValues: { [key: string]: JsonValue };
+  updateProperties: { [key: string]: any }[];
+}
+
+export interface CreateAdminUIPackageJsonParams extends EventParams {
+  updateProperties: { [key: string]: any }[];
 }
 
 export interface CreateServerAppModuleParams extends EventParams {

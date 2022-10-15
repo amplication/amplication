@@ -212,7 +212,11 @@ import \\"./login.scss\\";
 
 const CLASS_NAME = \\"login-page\\";
 
-const Login = ({ theme }: { theme?: object }) => {
+type Props = {
+  theme?: Record<string, unknown>;
+};
+
+const Login: React.FC<Props> = ({ theme }) => {
   const [username, setUsername] = useState(\\"\\");
   const [password, setPassword] = useState(\\"\\");
   const login = useLogin();
@@ -1659,6 +1663,7 @@ const httpLink = createHttpLink({
   uri: \`\${process.env.REACT_APP_SERVER_URL}/graphql\`,
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
   return {
@@ -1759,6 +1764,7 @@ export const EmptyTitle = (record: TEmpty): string => {
 import ReactDOM from \\"react-dom\\";
 import \\"./index.css\\";
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
 
@@ -2327,15 +2333,17 @@ export const ProfileTitle = (record: TProfile): string => {
 ",
   "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
-const reportWebVitals = (onPerfEntry?: ReportHandler) => {
+const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
   if (onPerfEntry && onPerfEntry instanceof Function) {
-    import(\\"web-vitals\\").then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(onPerfEntry);
-      getFID(onPerfEntry);
-      getFCP(onPerfEntry);
-      getLCP(onPerfEntry);
-      getTTFB(onPerfEntry);
-    });
+    void import(\\"web-vitals\\").then(
+      ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+        getCLS(onPerfEntry);
+        getFID(onPerfEntry);
+        getFCP(onPerfEntry);
+        getLCP(onPerfEntry);
+        getTTFB(onPerfEntry);
+      }
+    );
   }
 };
 
