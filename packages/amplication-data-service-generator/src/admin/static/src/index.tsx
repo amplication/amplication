@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
