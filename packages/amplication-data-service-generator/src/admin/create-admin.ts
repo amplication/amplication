@@ -30,7 +30,7 @@ const API_PATHNAME = "/api";
 export function createAdminModules(): Promise<Module[]> {
   return pluginWrapper(
     createAdminModulesInternal,
-    EventNames.CreateAdminModules,
+    EventNames.CreateAdminUI,
     {}
   );
 }

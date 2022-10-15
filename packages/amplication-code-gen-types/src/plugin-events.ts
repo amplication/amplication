@@ -1,6 +1,6 @@
 import {
-  CreateAdminModulesParams,
-  CreateAuthModulesParams,
+  CreateAdminUIParams,
+  CreateServerAuthParams,
   CreateEntityControllerBaseParams,
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
@@ -24,8 +24,8 @@ import {
 import { EventNames, PluginEventType } from "./plugins-types";
 
 export type Events = {
-  [EventNames.CreateAuthModules]?: PluginEventType<CreateAuthModulesParams>;
-  [EventNames.CreateAdminModules]?: PluginEventType<CreateAdminModulesParams>;
+  [EventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
+  [EventNames.CreateAdminUI]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
   [EventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;
   [EventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;

@@ -46,11 +46,11 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
-export interface CreateAuthModulesParams extends EventParams {
+export interface CreateServerAuthParams extends EventParams {
   srcDir: string;
 }
 
-export interface CreateAdminModulesParams extends EventParams {}
+export interface CreateAdminUIParams extends EventParams {}
 export interface CreateServerParams extends EventParams {}
 
 export type VariableDictionary = {
