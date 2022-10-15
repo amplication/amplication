@@ -1,7 +1,7 @@
 import {
   CreateAdminUIPackageJsonParams,
   Module,
-  EventNames
+  EventNames,
 } from "@amplication/code-gen-types";
 import { readFile } from "fs/promises";
 import { join, resolve } from "path";
