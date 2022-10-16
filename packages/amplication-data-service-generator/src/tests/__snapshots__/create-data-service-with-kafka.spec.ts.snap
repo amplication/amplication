@@ -2941,12 +2941,9 @@ services:
     healthcheck:
       test:
         - CMD
-        - pg_isready
-        - -q
-        - -d
-        - \${DB_DB_NAME}
-        - -U
-        - \${DB_USER}
+        - sh
+        - -c
+        - pg_isready -q -d \${DB_DB_NAME} -U \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
@@ -3038,7 +3035,9 @@ networks:
     \\"passport-jwt\\": \\"4.0.0\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
-    \\"ts-node\\": \\"9.1.1\\"
+    \\"ts-node\\": \\"9.1.1\\",
+    \\"@nestjs/microservices\\": \\"8.2.3\\",
+    \\"kafkajs\\": \\"2.2.0\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -3324,67 +3323,6 @@ async function seed(bcryptSalt: Salt) {
 
   console.info(\\"Seeded database successfully\\");
 }
-",
-  "server/src/app.module.ts": "import { Module, Scope } from \\"@nestjs/common\\";
-import { APP_INTERCEPTOR } from \\"@nestjs/core\\";
-import { MorganInterceptor, MorganModule } from \\"nest-morgan\\";
-import { UserModule } from \\"./user/user.module\\";
-import { ProfileModule } from \\"./profile/profile.module\\";
-import { OrderModule } from \\"./order/order.module\\";
-import { OrganizationModule } from \\"./organization/organization.module\\";
-import { CustomerModule } from \\"./customer/customer.module\\";
-import { EmptyModule } from \\"./empty/empty.module\\";
-import { ACLModule } from \\"./auth/acl.module\\";
-import { AuthModule } from \\"./auth/auth.module\\";
-import { HealthModule } from \\"./health/health.module\\";
-import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
-import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
-import { ServeStaticModule } from \\"@nestjs/serve-static\\";
-import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
-import { GraphQLModule } from \\"@nestjs/graphql\\";
-
-@Module({
-  controllers: [],
-  imports: [
-    UserModule,
-    ProfileModule,
-    OrderModule,
-    OrganizationModule,
-    CustomerModule,
-    EmptyModule,
-    ACLModule,
-    AuthModule,
-    HealthModule,
-    SecretsManagerModule,
-    MorganModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    ServeStaticModule.forRootAsync({
-      useClass: ServeStaticOptionsService,
-    }),
-    GraphQLModule.forRootAsync({
-      useFactory: (configService) => {
-        const playground = configService.get(\\"GRAPHQL_PLAYGROUND\\");
-        const introspection = configService.get(\\"GRAPHQL_INTROSPECTION\\");
-        return {
-          autoSchemaFile: \\"schema.graphql\\",
-          sortSchema: true,
-          playground,
-          introspection: playground || introspection,
-        };
-      },
-      inject: [ConfigService],
-      imports: [ConfigModule],
-    }),
-  ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      scope: Scope.REQUEST,
-      useClass: MorganInterceptor(\\"combined\\"),
-    },
-  ],
-})
-export class AppModule {}
 ",
   "server/src/auth/Credentials.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
 import { InputType, Field } from \\"@nestjs/graphql\\";
@@ -8207,25 +8145,6 @@ export const generateKafkaClientOptions = (): KafkaOptions => {
     },
   };
 };
-",
-  "server/src/kafka/kafka.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { ClientsModule } from \\"@nestjs/microservices\\";
-import { generateKafkaClientOptions } from \\"./generateKafkaClientOptions\\";
-import { KafkaService } from \\"./kafka.service\\";
-
-@Module({
-  imports: [
-    ClientsModule.register([
-      {
-        name: \\"KAFKA_CLIENT\\",
-        ...generateKafkaClientOptions(),
-      },
-    ]),
-  ],
-  providers: [KafkaService],
-  exports: [KafkaService, ClientsModule],
-})
-export class KafkaModule {}
 ",
   "server/src/kafka/kafka.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { KafkaServiceBase } from \\"./base/kafka.service.base\\";
