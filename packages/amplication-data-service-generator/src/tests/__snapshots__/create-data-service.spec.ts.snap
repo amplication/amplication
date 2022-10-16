@@ -2937,12 +2937,9 @@ services:
     healthcheck:
       test:
         - CMD
-        - pg_isready
-        - -q
-        - -d
-        - \${DB_DB_NAME}
-        - -U
-        - \${DB_USER}
+        - sh
+        - -c
+        - pg_isready -q -d \${DB_DB_NAME} -U \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10

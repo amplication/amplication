@@ -2941,12 +2941,9 @@ services:
     healthcheck:
       test:
         - CMD
-        - pg_isready
-        - -q
-        - -d
-        - \${DB_DB_NAME}
-        - -U
-        - \${DB_USER}
+        - sh
+        - -c
+        - pg_isready -q -d \${DB_DB_NAME} -U \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
@@ -3038,7 +3035,9 @@ networks:
     \\"passport-jwt\\": \\"4.0.0\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
-    \\"ts-node\\": \\"9.1.1\\"
+    \\"ts-node\\": \\"9.1.1\\",
+    \\"@nestjs/microservices\\": \\"8.2.3\\",
+    \\"kafkajs\\": \\"2.2.0\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -3338,6 +3337,7 @@ import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
+import { KafkaModule } from \\"./kafka/kafka.module\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
@@ -3356,6 +3356,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     AuthModule,
     HealthModule,
     SecretsManagerModule,
+    KafkaModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
