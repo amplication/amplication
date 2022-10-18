@@ -8,7 +8,6 @@ import {
   NamedClassDeclaration,
   PrismaClientGenerator,
   PrismaDataSource,
-  ResolverMapping,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 
@@ -98,16 +97,16 @@ export interface CreateServerAppModuleParams extends EventParams {
 }
 
 export interface CreateEntityResolverParams extends EventParams {
-  templatePath: string;
+  template: namedTypes.File;
   entityName: string;
   entityServiceModule: string;
   serviceId: namedTypes.Identifier;
   resolverBaseId: namedTypes.Identifier;
-  mapping: ResolverMapping;
+  templateMapping: { [key: string]: any };
 }
 
 export interface CreateEntityResolverBaseParams extends EventParams {
-  templateBasePath: string;
+  templateBase: namedTypes.File;
   entityName: string;
   entityType: string;
   entityServiceModule: string;
@@ -119,5 +118,5 @@ export interface CreateEntityResolverBaseParams extends EventParams {
   updateArgs: NamedClassDeclaration | undefined;
   createMutationId: namedTypes.Identifier;
   updateMutationId: namedTypes.Identifier;
-  mapping: ResolverMapping;
+  templateMapping: { [key: string]: any };
 }

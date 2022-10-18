@@ -226,24 +226,3 @@ export type PrismaDataSource = {
   provider: DataSourceProvider;
   urlEnv: string;
 };
-
-export interface ResolverMapping {
-  RESOLVER: ASTNode | undefined;
-  RESOLVER_BASE: ASTNode | undefined;
-  SERVICE: ASTNode | undefined;
-  ENTITY: ASTNode | undefined;
-  ENTITY_NAME: ASTNode | undefined;
-  ENTITY_QUERY: ASTNode | undefined;
-  ENTITIES_QUERY: ASTNode | undefined;
-  META_QUERY: ASTNode | undefined;
-  CREATE_MUTATION: ASTNode | undefined;
-  UPDATE_MUTATION: ASTNode | undefined;
-  DELETE_MUTATION: ASTNode | undefined;
-  CREATE_ARGS: ASTNode | undefined;
-  UPDATE_ARGS: ASTNode | undefined;
-  DELETE_ARGS: ASTNode | undefined;
-  FIND_MANY_ARGS: ASTNode | undefined;
-  FIND_ONE_ARGS: ASTNode | undefined;
-  CREATE_DATA_MAPPING: ASTNode | undefined;
-  UPDATE_DATA_MAPPING: ASTNode | undefined;
-}
