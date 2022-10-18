@@ -22,7 +22,7 @@
     "setup:dev": "ts-node ./script/setup.ts",
     "docker:dev": "docker-compose -f docker-compose.dev.yml up -d"
   },
-   "dependencies": {
+  "dependencies": {
     "lerna": "5.5.2",
     "ora": "5.4.0",
     "semver": "7.3.5",
