@@ -78,8 +78,8 @@ $resource-name-max-width: 180px;
     align-items: center;
 
     .svg-theme-image {
-      width: 120px;
-      height: 120px;
+      width: $empty-state-image-size;
+      height: $empty-state-image-size;
     }
 
     &__title {
