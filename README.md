@@ -236,6 +236,7 @@ Thanks goes to these wonderful people ([:hugs:](https://allcontributors.org/docs
     <td align="center"><a href="https://github.com/muhsinkamil"><img src="https://avatars.githubusercontent.com/u/62111075?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Mohamed Muhsin</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=muhsinkamil" title="Code">💻</a></td>
     <td align="center"><a href="https://asiancat54.ml"><img src="https://avatars.githubusercontent.com/u/82395440?v=4?s=100" width="100px;" alt=""/><br /><sub><b>0xsapphir3</b></sub></a><br /><a href="https://github.com/amplication/amplication/issues?q=author%3A0xsapphir3" title="Bug reports">🐛</a></td>
     <td align="center"><a href="http://jnfrati.github.io"><img src="https://avatars.githubusercontent.com/u/23369263?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Nicolas Frati</b></sub></a><br /><a href="#ideas-jnfrati" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/biswabaibhab007"><img src="[https://avatars.githubusercontent.com/u/82395440?v=4?s=100](https://avatars.githubusercontent.com/u/94667039?s=400&u=f476524b70533c078e71992f142d3a07838be974&v=4)" width="100px;" alt=""/><br /><sub><b>Biswa S</b></sub></a><br /><a href="https://github.com/biswabaibhab007" title="Code">💻</a></td>
   </tr>
 </table>
 
