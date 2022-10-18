@@ -77,8 +77,9 @@ $resource-name-max-width: 180px;
     justify-content: flex-start;
     align-items: center;
 
-    img {
-      height: $empty-state-image-size;
+    .svg-theme-image {
+      width: 120px;
+      height: 120px;
     }
 
     &__title {
