@@ -78,12 +78,13 @@ const ServiceTopicsForm = ({
             </div>
           </div>
           <HorizontalRule />
-
-          <TopicsList
-            messageBrokerId={connectedResource.id}
-            enabled={Boolean(defaultValues?.enabled || false)}
-            messagePatterns={values.patterns}
-          />
+          <div className={`${CLASS_NAME}__list`}>
+            <TopicsList
+              messageBrokerId={connectedResource.id}
+              enabled={Boolean(defaultValues?.enabled || false)}
+              messagePatterns={values.patterns}
+            />
+          </div>
         </Form>
       )}
     </Formik>

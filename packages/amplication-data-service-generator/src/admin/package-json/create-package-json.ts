@@ -1,7 +1,7 @@
 import {
-  CreateServerPackageJsonParams,
-  EventNames,
+  CreateAdminUIPackageJsonParams,
   Module,
+  EventNames,
 } from "@amplication/code-gen-types";
 import { readFile } from "fs/promises";
 import { join, resolve } from "path";
@@ -14,19 +14,19 @@ const PACKAGE_JSON_TEMPLATE = "package.template.json";
 const PACKAGE_JSON_FILE_NAME = "package.json";
 
 export function createPackageJson(
-  eventParams: CreateServerPackageJsonParams
+  eventParams: CreateAdminUIPackageJsonParams
 ): Promise<Module[]> {
   return pluginWrapper(
     createPackageJsonInternal,
-    EventNames.CreateServerPackageJson,
+    EventNames.CreateAdminUIPackageJson,
     eventParams
   );
 }
 
-export async function createPackageJsonInternal({
+async function createPackageJsonInternal({
   updateProperties,
-}: CreateServerPackageJsonParams): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
+}: CreateAdminUIPackageJsonParams): Promise<Module[]> {
+  const { clientDirectories } = DsgContext.getInstance;
   const packageJsonModule = await readFile(
     resolve(__dirname, PACKAGE_JSON_TEMPLATE),
     PACKAGE_JSON_ENCODING
@@ -34,11 +34,11 @@ export async function createPackageJsonInternal({
   const mutatedPackageJson = updatePackageJSONs(
     [
       {
-        path: join(serverDirectories.baseDirectory, PACKAGE_JSON_FILE_NAME),
+        path: join(clientDirectories.baseDirectory, PACKAGE_JSON_FILE_NAME),
         code: packageJsonModule,
       },
     ],
-    serverDirectories.baseDirectory,
+    clientDirectories.baseDirectory,
     updateProperties
   );
   return mutatedPackageJson;
