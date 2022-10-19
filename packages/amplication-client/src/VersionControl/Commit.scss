@@ -15,8 +15,12 @@
     }
 
     textarea {
-      height: var(--textarea-height-small);
+      height: var(--textarea-height);
       background-color: var(--black5);
+
+      @media only screen and (max-width: $breakpoint-desktop) {
+        height: var(--textare-height-small);
+      }
     }
   }
 }
