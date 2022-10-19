@@ -1,4 +1,4 @@
-name: amplication-git-pull-request-service
+name: amplication-build-manager
 
 replicaCount: 1
 autoscaling:
@@ -10,7 +10,7 @@ autoscaling:
 
 image:
   pullPolicy: Always
-  repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service-dev
+  repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-build-manager
   tag: 0.0.1
   imagePullSecrets: []
 
