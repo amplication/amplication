@@ -1,6 +1,6 @@
 import {
-  CreateAdminModulesParams,
-  CreateAuthModulesParams,
+  CreateAdminUIParams,
+  CreateServerAuthParams,
   CreateEntityControllerBaseParams,
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
@@ -20,12 +20,14 @@ import {
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   CreateServerParams,
+  CreateEntityModuleParams,
+  CreateEntityModuleBaseParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
 export type Events = {
-  [EventNames.CreateAuthModules]?: PluginEventType<CreateAuthModulesParams>;
-  [EventNames.CreateAdminModules]?: PluginEventType<CreateAdminModulesParams>;
+  [EventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
+  [EventNames.CreateAdminUI]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
   [EventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;
   [EventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
@@ -62,11 +64,16 @@ export type Events = {
   [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<
     CreateMessageBrokerServiceBaseParams
   >;
-  [EventNames.CreatePackageJson]?: PluginEventType<
+  [EventNames.CreateServerPackageJson]?: PluginEventType<
     CreateServerPackageJsonParams
   >;
+  [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServerAppModule]?: PluginEventType<
     CreateServerAppModuleParams
+  >;
+  [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;
+  [EventNames.CreateEntityModuleBase]?: PluginEventType<
+    CreateEntityModuleBaseParams
   >;
   [EventNames.CreateEntityResolver]?: PluginEventType<
     CreateEntityResolverParams

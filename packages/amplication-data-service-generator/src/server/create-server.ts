@@ -52,10 +52,12 @@ async function createServerInternal(
     serverDirectories.baseDirectory
   );
   const packageJsonModule = await createPackageJson({
-    updateValues: {
-      name: `@${paramCase(appInfo.name)}/server`,
-      version: appInfo.version,
-    },
+    updateProperties: [
+      {
+        name: `@${paramCase(appInfo.name)}/server`,
+        version: appInfo.version,
+      },
+    ],
   });
 
   logger.info("Creating resources...");
