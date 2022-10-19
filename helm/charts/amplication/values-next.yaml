@@ -27,7 +27,10 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-next.amplication-dev.com
 
 amplication-server:
-  replicaCount: 1
+  autoscaling:
+    minReplicas: 4
+    maxReplicas: 99
+  replicaCount: 4
   ingress:
     hostname: server-next.amplication-dev.com
   config:
