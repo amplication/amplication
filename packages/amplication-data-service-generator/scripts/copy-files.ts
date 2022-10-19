@@ -24,7 +24,7 @@ const GLOB_SOURCES: string[] = [
   `${SERVER_SRC_DIRECTORY_GLOB}/**/*.template.(ts|env|json|yml)`,
   `${SERVER_SRC_DIRECTORY_GLOB}/**/*.db.template.(yml)`,
   `${SERVER_SRC_DIRECTORY_GLOB}/static/**`,
-  `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html|env)`,
+  `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html|env|json)`,
   `${ADMIN_SRC_DIRECTORY_GLOB}/static/**`,
 ];
 
