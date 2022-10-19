@@ -1,4 +1,3 @@
-import * as semver from "semver";
 import { Module } from "@amplication/code-gen-types";
 import { preparePackageJsonFile } from "./util/preparePackageJsonFile";
 
@@ -19,10 +18,6 @@ export function updatePackageJSONs(
 
 function updatePackageJSON(module: Module, update: { [key: string]: any }[]) {
   const pkg = preparePackageJsonFile(module, update);
-
-  if (!semver.valid(pkg.version)) {
-    delete pkg.version;
-  }
 
   return {
     ...module,
