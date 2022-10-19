@@ -1,14 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 
-export const QUEUE_SERVICE_NAME = 'QUEUE_SERVICE';
+export const KAFKA_CLIENT = 'KAFKA_CLIENT';
 
 @Injectable()
 export class QueueService {
-  generatePullRequestTopic: string;
   constructor(
-    @Inject(QUEUE_SERVICE_NAME)
-    private readonly kafkaClient: ClientKafka
+    @Inject(KAFKA_CLIENT)
+    private readonly kafkaClient: ClientKafka,
   ) {}
 
   emitMessage(topic: string, message: string): void {

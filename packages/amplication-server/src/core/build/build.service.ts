@@ -46,14 +46,8 @@ import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
-import { promises as fs } from 'fs';
-import axios from 'axios';
-import {
-  BASE_BUILDS_FOLDER,
-  BUILD_INPUT_FILE_NAME,
-  DSG_RUNNER_URL
-} from '../../constants';
 import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
+import { Env } from '../../env';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -230,20 +224,12 @@ export class BuildService {
       }
     });
 
-    const oldBuild = await previousBuild(
-      this.prisma,
-      resourceId,
-      build.id,
-      build.createdAt
-    );
-
     const logger = this.logger.child({
       buildId: build.id
     });
 
     logger.info(JOB_STARTED_LOG);
-    await this.generate(build, user, oldBuild?.id);
-    logger.info(JOB_DONE_LOG);
+    await this.generate(build, user);
 
     return build;
   }
@@ -340,21 +326,21 @@ export class BuildService {
    * Generates code for given build and saves it to storage
    * @DSG The connection between the server and the DSG (Data Service Generator)
    * @param build the build object to generate code for
-   * @param user
-   * @param oldBuildId
+   * @param user the user that triggered the build
    */
-  private async generate(
-    build: Build,
-    user: User,
-    oldBuildId: string | undefined
-  ): Promise<string> {
+  private async generate(build: Build, user: User): Promise<string> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       async step => {
         const { resourceId, id: buildId, version: buildVersion } = build;
-        //#region getting all the resource data
+        
+        const [
+          dataServiceGeneratorLogger,
+          logPromises
+        ] = this.createDataServiceLogger(build, step);
+        
         const dsgResourceData = await this.getDSGResourceData(
           resourceId,
           buildId,
@@ -362,32 +348,15 @@ export class BuildService {
           user
         );
 
-        //#endregion
-        const [
-          dataServiceGeneratorLogger,
-          logPromises
-        ] = this.createDataServiceLogger(build, step);
-
-        const savePath = path.join(
-          this.configService.get(BASE_BUILDS_FOLDER),
-          buildId,
-          this.configService.get(BUILD_INPUT_FILE_NAME)
-        );
-
-        const saveDir = path.dirname(savePath);
-        await fs.mkdir(saveDir, { recursive: true });
-
-        await fs.writeFile(savePath, JSON.stringify(dsgResourceData));
-
-        await axios.post(this.configService.get(DSG_RUNNER_URL), {
-          buildId: buildId
-        });
-
         await Promise.all(logPromises);
 
         dataServiceGeneratorLogger.destroy();
 
-        await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
+        this.queueService.emitMessage(
+          this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
+          JSON.stringify({ buildId, dsgResourceData })
+        );
+
         return null;
       },
       true
@@ -447,7 +416,7 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  public async onPullRequestCreated(response: SendPullRequestResponse) {
+  public async onCreatePRSuccess({ response }: { response: SendPullRequestResponse; }): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find(step => step.name === PUSH_TO_GITHUB_STEP_NAME);
@@ -488,14 +457,8 @@ export class BuildService {
       build.createdAt
     );
 
-    const createdBy = await this.userService.findUser({
-      where: { id: build.userId }
-    });
-
     const user = await this.userService.findUser({
-      where: {
-        id: createdBy.id
-      }
+      where: { id: build.userId }
     });
 
     const dSGResourceData = await this.getDSGResourceData(
@@ -506,7 +469,10 @@ export class BuildService {
     );
     const { resourceInfo } = dSGResourceData;
 
-    const resource = await this.resourceService.findOne({ where: { id: build.resourceId } });
+    const resource = await this.resourceService.findOne({
+      where: { id: build.resourceId }
+    });
+
     const resourceRepository = await this.resourceService.gitRepository(
       build.resourceId
     );
@@ -521,7 +487,10 @@ export class BuildService {
       }
     );
 
-    const commit = await this.commitService.findOne({ where: { id: build.commitId } });
+    const commit = await this.commitService.findOne({
+      where: { id: build.commitId }
+    });
+    
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
     const commitMessage =
@@ -570,7 +539,8 @@ export class BuildService {
             }
           };
 
-          await this.queueService.emitCreatePullRequestMessage(
+          await this.queueService.emitMessage(
+            this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
             JSON.stringify(createPullRequestArgs)
           );
         } catch (error) {

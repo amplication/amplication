@@ -5,9 +5,7 @@ import {
   Controller,
   UseInterceptors,
   NotFoundException,
-  BadRequestException,
-  Body,
-  Put
+  BadRequestException
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
@@ -19,32 +17,20 @@ import { StepNotFoundError } from './errors/StepNotFoundError';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
 import { plainToInstance } from 'class-transformer';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
-import {
-  CHECK_USER_ACCESS_TOPIC,
-  CREATE_PULL_REQUEST_COMPLETED_TOPIC,
-  CODE_GENERATION_SUCCESS_TOPIC
-} from '../../constants';
 import { KafkaMessage } from 'kafkajs';
 import { ResultMessage } from '../queue/dto/ResultMessage';
 import { StatusEnum } from '../queue/dto/StatusEnum';
 import { EnvironmentVariables } from '@amplication/kafka';
-import { ActionService } from '../action/action.service';
-import { UpdateActionStepStatus } from './dto/UpdateActionStepStatus';
-import { CompleteCodeGenerationStep } from './dto/CompleteCodeGenerationStep';
 import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
-import { CodeGenerationSuccessArgs } from './dto/CodeGenerationSuccess';
-import { QueueService } from '../queue/queue.service';
-import { ConfigService } from '@nestjs/config';
+import { CodeGenerationSuccess } from './dto/CodeGenerationSuccess';
+import { Env } from '../../env';
+import { EnumActionStepStatus } from '../action/dto';
+import { CHECK_USER_ACCESS_TOPIC } from '../../constants';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
-  constructor(
-    private readonly buildService: BuildService,
-    private readonly actionService: ActionService,
-    private readonly queueService: QueueService,
-    private readonly configService: ConfigService
-  ) {}
+  constructor(private readonly buildService: BuildService) {}
 
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
@@ -87,37 +73,46 @@ export class BuildController {
     };
   }
 
-  //Authorization
-  @Put('update-action-step-status')
-  async updateStatus(@Body() dto: UpdateActionStepStatus): Promise<void> {
-    await this.actionService.updateActionStepStatus(dto.id, dto.status);
-  }
-
-  //Authorization
-  @Put('complete-code-generation-step')
-  async completeCodeGenerationStep(
-    @Body() dto: CompleteCodeGenerationStep
-  ): Promise<void> {
-    await this.buildService.completeCodeGenerationStep(dto.buildId, dto.status);
-    this.queueService.emitMessage(
-      this.configService.get(CODE_GENERATION_SUCCESS_TOPIC),
-      JSON.stringify({ buildId: dto.buildId })
-    );
-  }
-
   @EventPattern(
-    EnvironmentVariables.instance.get(CODE_GENERATION_SUCCESS_TOPIC, true)
+    EnvironmentVariables.instance.get(Env.CODE_GENERATION_SUCCESS_TOPIC, true)
   )
-  async onCodeGenerationSuccess(@Payload() message: KafkaMessage) {
-    const args = plainToInstance(CodeGenerationSuccessArgs, message.value);
+  async onCodeGenerationSuccess(
+    @Payload() message: KafkaMessage
+  ): Promise<void> {
+    const args = plainToInstance(CodeGenerationSuccess, message.value);
+    await this.buildService.completeCodeGenerationStep(
+      args.buildId,
+      EnumActionStepStatus.Success
+    );
     await this.buildService.saveToGitHub(args.buildId);
   }
 
   @EventPattern(
-    EnvironmentVariables.instance.get(CREATE_PULL_REQUEST_COMPLETED_TOPIC, true)
+    EnvironmentVariables.instance.get(Env.CODE_GENERATION_FAILURE_TOPIC, true)
   )
-  async onPullRequestCreated(@Payload() message: KafkaMessage) {
+  async onCodeGenerationFailure(
+    @Payload() message: KafkaMessage
+  ): Promise<void> {
+    const args = plainToInstance(CodeGenerationSuccess, message.value);
+    await this.buildService.completeCodeGenerationStep(
+      args.buildId,
+      EnumActionStepStatus.Failed
+    );
+  }
+
+  @EventPattern(
+    EnvironmentVariables.instance.get(Env.CREATE_PR_SUCCESS_TOPIC, true)
+  )
+  async onPullRequestCreated(@Payload() message: KafkaMessage): Promise<void> {
     const args = plainToInstance(SendPullRequestResponse, message.value);
-    await this.buildService.onPullRequestCreated(args);
+    await this.buildService.onCreatePRSuccess({ response: args });
+  }
+
+  @EventPattern(
+    EnvironmentVariables.instance.get(Env.CREATE_PR_FAILURE_TOPIC, true)
+  )
+  async onCreatePRFailure(@Payload() message: KafkaMessage): Promise<void> {
+    // const args = plainToInstance(SendPullRequestResponse, message.value);
+    // await this.buildService.onCreatePRFailure(args);
   }
 }

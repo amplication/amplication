@@ -19,10 +19,10 @@ export class BuildPathFactory {
     this.buildsFolder = envFilePath
       ? normalize(envFilePath)
       : DEFAULT_BUILDS_FOLDER;
-  
+
     this.outputFolder = this.configService.get<string>(BUILD_OUTPUT_FOLDER)!;
   }
-  
+
   public get(buildId: string) {
     return join(this.buildsFolder, buildId, this.outputFolder);
   }

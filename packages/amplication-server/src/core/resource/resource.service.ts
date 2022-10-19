@@ -61,7 +61,7 @@ export class ResourceService {
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
     return this.prisma.resource.findUnique(args);
-  } 
+  }
 
   async createProjectConfiguration(
     projectId: string,

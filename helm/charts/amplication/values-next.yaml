@@ -27,10 +27,7 @@ amplication-client:
       REACT_APP_STORAGE_GATEWAY_URL: https://server-next.amplication-dev.com
 
 amplication-server:
-  autoscaling:
-    minReplicas: 4
-    maxReplicas: 99
-  replicaCount: 4
+  replicaCount: 1
   ingress:
     hostname: server-next.amplication-dev.com
   config:
@@ -43,9 +40,12 @@ amplication-server:
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      CREATE_PULL_REQUEST_COMPLETED_TOPIC: git.internal.pull-request.completed.0
-      CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.0
+      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
+      CREATE_PR_SUCCESS_TOPIC: internal.create-pr.success.0
+      CREATE_PR_FAILURE_TOPIC: internal.create-pr.failure.0
+      CODE_GENERATION_REQUEST_TOPIC: internal.code-generation.request.0
+      CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
+      CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
@@ -132,3 +132,23 @@ amplication-storage-gateway:
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       BUILD_OUTPUT_FOLDER: output
       GITHUB_APP_APP_ID: "225471"
+
+amplication-build-manager:
+  config:
+    env:
+      PORT: 80
+
+      KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: build-manager
+      KAFKA_GROUP_ID: build-manager
+
+      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
+      CODE_GENERATION_REQUEST_TOPIC: internal.code-generation.request.0
+      CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
+      CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
+
+      DSG_RUNNER_URL: http://localhost:12000/example
+
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      RESOURCE_DATA_FILE_NAME: input.json
+

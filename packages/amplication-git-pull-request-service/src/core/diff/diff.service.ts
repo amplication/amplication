@@ -25,16 +25,12 @@ export class DiffService {
     previousAmplicationBuildId: string | undefined,
     newAmplicationBuildId: string
   ): Promise<PrModule[]> {
-    const newBuildPath = this.buildsPathFactory.get(
-      newAmplicationBuildId
-    );
+    const newBuildPath = this.buildsPathFactory.get(newAmplicationBuildId);
     // If an old build folder does not exist, we return all new files
     if (!previousAmplicationBuildId) {
       return this.getAllModulesForPath(newBuildPath);
     }
-    const oldBuildPath = this.buildsPathFactory.get(
-      previousAmplicationBuildId
-    );
+    const oldBuildPath = this.buildsPathFactory.get(previousAmplicationBuildId);
     this.logger.info('List of the paths', {
       resourceId,
       previousAmplicationBuildId,
