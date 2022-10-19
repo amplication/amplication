@@ -13,17 +13,17 @@ const PACKAGE_JSON_ENCODING = "utf-8";
 const PACKAGE_JSON_TEMPLATE = "package.template.json";
 const PACKAGE_JSON_FILE_NAME = "package.json";
 
-export function createPackageJson(
+export function createAdminUIPackageJson(
   eventParams: CreateAdminUIPackageJsonParams
 ): Promise<Module[]> {
   return pluginWrapper(
-    createPackageJsonInternal,
+    createAdminUIPackageJsonInternal,
     EventNames.CreateAdminUIPackageJson,
     eventParams
   );
 }
 
-async function createPackageJsonInternal({
+async function createAdminUIPackageJsonInternal({
   updateProperties,
 }: CreateAdminUIPackageJsonParams): Promise<Module[]> {
   const { clientDirectories } = DsgContext.getInstance;

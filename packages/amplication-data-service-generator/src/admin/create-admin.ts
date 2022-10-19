@@ -20,7 +20,7 @@ import { createRolesModule } from "./create-roles-module";
 import { createDotEnvModule } from "./create-dotenv";
 import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
-import { createPackageJson } from "./package-json/create-package-json";
+import { createAdminUIPackageJson } from "./package-json/create-package-json";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -54,7 +54,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     clientDirectories.baseDirectory
   );
 
-  const packageJson = await createPackageJson({
+  const packageJson = await createAdminUIPackageJson({
     updateProperties: [
       {
         name: `@${paramCase(appInfo.name)}/admin`,
