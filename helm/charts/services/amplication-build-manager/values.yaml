@@ -22,6 +22,12 @@ minMemory: "1.6Gi"
 maxCPU: "0.9"
 minCPU: "0.9"
 
+service:
+  type: ClusterIP
+  port:
+    target: 80
+  protocol: TCP
+
 volume:
   name: amplication-data
   path: /amplication-data
