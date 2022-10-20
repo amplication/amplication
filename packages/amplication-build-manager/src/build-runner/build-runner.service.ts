@@ -15,6 +15,16 @@ export class BuildRunnerService {
   }
 
   async saveDsgResourceData(buildId: string, dsgResourceData: DSGResourceData) {
+    console.log(
+      'saveDsgResourceData',
+      '\nbuildId: ',
+      buildId,
+      '\nbaseBuildFolder: ',
+      this.configService.get(Env.BASE_BUILDS_FOLDER),
+      '\nresourceDataFileName: ',
+      this.configService.get(Env.RESOURCE_DATA_FILE_NAME),
+    );
+
     const savePath = path.join(
       this.configService.get(Env.BASE_BUILDS_FOLDER),
       buildId,
