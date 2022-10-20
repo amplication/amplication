@@ -6,7 +6,7 @@ import { format } from '../../flags/format-flag';
 import { RESOURCE_COLUMNS } from './index';
 
 export default class ResourceInfo extends ConfiguredCommand {
-  static description = 'show detailed information for an resource';
+  static description = 'show detailed information for a resource';
 
   static examples = [
     'amp resources:info',

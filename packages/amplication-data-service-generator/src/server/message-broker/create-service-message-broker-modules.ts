@@ -34,5 +34,5 @@ export async function createMessageBrokerInternal(
     ...serviceModules,
   ];
   topicsEnum && modules.push(...topicsEnum);
-  return [...modules];
+  return modules;
 }
