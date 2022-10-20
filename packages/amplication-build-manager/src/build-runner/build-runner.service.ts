@@ -28,7 +28,7 @@ export class BuildRunnerService {
     const savePath = join(
       this.configService.get(Env.BASE_BUILDS_FOLDER),
       buildId,
-      this.configService.get(Env.RESOURCE_DATA_FILE_NAME)
+      this.configService.get(Env.RESOURCE_DATA_FILE_NAME),
     );
 
     const saveDir = dirname(savePath);

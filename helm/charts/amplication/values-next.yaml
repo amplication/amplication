@@ -150,7 +150,7 @@ amplication-build-manager:
       CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
       CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
 
-      DSG_RUNNER_URL: http://localhost:12000/example
+      DSG_RUNNER_URL: http://webhook-eventsource-svc.next-dsg.svc.cluster.local:12000/example
 
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       RESOURCE_DATA_FILE_NAME: input.json
