@@ -28,6 +28,7 @@ export function validate<T>(
   const errors: FormikErrors<T> = {};
 
   const ajv = new Ajv({ allErrors: true });
+  require("ajv-errors")(ajv);
 
   let isValid = ajv.validate(validationSchema, values);
 

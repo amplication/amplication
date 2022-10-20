@@ -28,4 +28,9 @@ export const WORKSPACE_FORM_SCHEMA = {
       minLength: 2,
     },
   },
+  errorMessage: {
+    properties: {
+      name: "Must be at least 2 characters long",
+    },
+  },
 };

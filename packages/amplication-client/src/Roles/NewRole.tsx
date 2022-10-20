@@ -31,6 +31,11 @@ const FORM_SCHEMA = {
       minLength: 2,
     },
   },
+  errorMessage: {
+    properties: {
+      displayName: "Must be at least 2 characters long",
+    },
+  },
 };
 const CLASS_NAME = "new-role";
 

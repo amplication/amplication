@@ -27,7 +27,13 @@ const FORM_SCHEMA = {
       type: "string",
       minLength: 2
     }
-  }
+  },
+  errorMessage: {
+    properties: {
+      firstName: "Must be at least 2 characters long",
+      lastName: "Must be at least 2 characters long",
+    },
+  },
 };
 
 const ProfileForm = () => {

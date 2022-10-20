@@ -32,6 +32,11 @@ const FORM_SCHEMA = {
       type: "string",
     },
   },
+  errorMessage: {
+    properties: {
+      name: "Must be at least 2 characters long",
+    },
+  },
 };
 
 const CLASS_NAME = "resource-form";

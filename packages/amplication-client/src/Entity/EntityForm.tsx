@@ -49,6 +49,13 @@ const FORM_SCHEMA = {
       minLength: 2,
     },
   },
+  errorMessage: {
+    properties: {
+      displayName: "Must be at least 2 characters long",
+      name: "Must be at least 2 characters long",
+      pluralDisplayName: "Must be at least 2 characters long",
+    },
+  },
 };
 
 const EQUAL_PLURAL_DISPLAY_NAME_AND_NAME_TEXT =
