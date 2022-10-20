@@ -139,7 +139,7 @@ amplication-storage-gateway:
 amplication-build-manager:
   config:
     env:
-      PORT: 80
+      PORT: "80"
 
       KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
       KAFKA_CLIENT_ID: build-manager
