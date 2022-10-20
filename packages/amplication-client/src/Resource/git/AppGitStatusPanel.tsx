@@ -75,10 +75,9 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
             <div className={`${CLASS_NAME}__last-sync`}>
               <Icon icon="clock" />
               <Tooltip
-                aria-label={`Last sync: ${format(lastSync, DATE_FORMAT)}`}
+                aria-label={`Last sync: never`}
               >
-                <span>Last sync </span>
-                {format(lastSync, DATE_FORMAT)}
+                <span>Last sync : never</span>
               </Tooltip>
             </div>
           )}
