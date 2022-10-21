@@ -21,7 +21,8 @@ const CommitList = ({ commits, error, loading }: Props) => {
   return (
     <>
       {loading && <CircularProgress centerToParent />}
-      {currentProject &&
+      {!loading &&
+        currentProject &&
         commits.map((commit) => (
           <CommitListItem
             key={commit.id}
