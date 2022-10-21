@@ -8,7 +8,7 @@ import "./login.scss";
 
 const CLASS_NAME = "login-page";
 
-const Login = ({ theme }: { theme?: object }) => {
+const Login = ({ theme }: any) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const login = useLogin();

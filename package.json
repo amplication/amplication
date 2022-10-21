@@ -25,7 +25,6 @@
   "dependencies": {
     "lerna": "5.5.2",
     "ora": "5.4.0",
-    "react-query": "^3.39.1",
     "semver": "7.3.5",
     "winston": "3.3.4"
   },
