@@ -1,4 +1,5 @@
 import * as models from "../../models";
+import { validationErrorMessages } from "../../util/formikValidateJsonSchema";
 
 export type TData = {
   currentWorkspace: models.Workspace;
@@ -20,6 +21,8 @@ export const WORKSPACE_INITIAL_VALUES: CreateWorkspaceType = {
   name: "",
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 export const WORKSPACE_FORM_SCHEMA = {
   required: ["name"],
   properties: {
@@ -30,7 +33,7 @@ export const WORKSPACE_FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      name: "Must be at least 2 characters long",
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };

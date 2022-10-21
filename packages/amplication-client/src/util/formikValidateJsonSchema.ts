@@ -1,5 +1,5 @@
-import { FormikErrors } from "formik";
 import Ajv from "ajv";
+import { FormikErrors } from "formik";
 import { set } from "lodash";
 
 /**
@@ -21,6 +21,11 @@ import { set } from "lodash";
  *      onSubmit={handleSubmit}
  *    >
  *  */
+
+export const validationErrorMessages = {
+  AT_LEAST_TWO_CHARARCTERS: "Must be at least 2 characters long",
+};
+
 export function validate<T>(
   values: T,
   validationSchema: object

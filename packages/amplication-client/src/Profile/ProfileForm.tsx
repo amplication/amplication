@@ -4,7 +4,10 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import * as models from "../models";
 import { GET_USER } from "../Components/UserBadge";
 import { Form, Formik } from "formik";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import FormikAutoSave from "../util/formikAutoSave";
 import { Snackbar, TextField } from "@amplication/design-system";
 import { useTracking } from "../util/analytics";
@@ -15,6 +18,8 @@ type TData = {
     account: models.Account;
   };
 };
+
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["firstName", "lastName"],
@@ -30,8 +35,8 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      firstName: "Must be at least 2 characters long",
-      lastName: "Must be at least 2 characters long",
+      firstName: AT_LEAST_TWO_CHARARCTERS,
+      lastName: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };

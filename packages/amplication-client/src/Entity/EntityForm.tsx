@@ -9,8 +9,11 @@ import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import { Form } from "../Components/Form";
 import FormikAutoSave from "../util/formikAutoSave";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import { USER_ENTITY } from "./constants";
-import { validate } from "../util/formikValidateJsonSchema";
 import { isEqual } from "../util/customValidations";
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
@@ -33,6 +36,8 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["name", "displayName", "pluralDisplayName"],
   properties: {
@@ -51,9 +56,9 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      displayName: "Must be at least 2 characters long",
-      name: "Must be at least 2 characters long",
-      pluralDisplayName: "Must be at least 2 characters long",
+      displayName: AT_LEAST_TWO_CHARARCTERS,
+      name: AT_LEAST_TWO_CHARARCTERS,
+      pluralDisplayName: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };

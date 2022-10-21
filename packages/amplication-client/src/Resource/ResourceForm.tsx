@@ -7,7 +7,10 @@ import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import "./ResourceForm.scss";
@@ -20,6 +23,8 @@ type Props = {
 type TData = {
   updateResource: models.Resource;
 };
+
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name"],
@@ -34,7 +39,7 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      name: "Must be at least 2 characters long",
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };

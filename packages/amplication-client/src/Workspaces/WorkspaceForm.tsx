@@ -1,7 +1,10 @@
 import React, { useCallback, useContext } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 
 import * as models from "../models";
 import { formatError } from "../util/error";
@@ -17,6 +20,8 @@ type TData = {
   updateWorkspace: models.Workspace;
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["name"],
   properties: {
@@ -27,7 +32,7 @@ const FORM_SCHEMA = {
   },
   errorMessage: {
     properties: {
-      name: "Must be at least 2 characters long",
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };
