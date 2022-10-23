@@ -105,7 +105,7 @@ export const ACTION_INCLUDE = {
   }
 };
 
-const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+export const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
 } = {
   error: EnumActionLogLevel.Error,
@@ -242,9 +242,7 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
-  private async getGenerateCodeStep(
-    buildId: string
-  ): Promise<ActionStep | undefined> {
+  async getGenerateCodeStep(buildId: string): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
       .findUnique({
         where: {

@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
-import { BuildService } from './build.service';
+import {
+  BuildService,
+  WINSTON_LEVEL_TO_ACTION_LOG_LEVEL
+} from './build.service';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
 import { StepNotCompleteError } from './errors/StepNotCompleteError';
@@ -26,11 +29,16 @@ import { CodeGenerationSuccess } from './dto/CodeGenerationSuccess';
 import { Env } from '../../env';
 import { EnumActionStepStatus } from '../action/dto';
 import { CHECK_USER_ACCESS_TOPIC } from '../../constants';
+import { ActionService } from '../action/action.service';
+import { LogEntryDto } from './dto/LogEntryDto';
 
 const ZIP_MIME = 'application/zip';
 @Controller('generated-apps')
 export class BuildController {
-  constructor(private readonly buildService: BuildService) {}
+  constructor(
+    private readonly buildService: BuildService,
+    private readonly actionService: ActionService
+  ) {}
 
   @Get(`/:id.zip`)
   @UseInterceptors(MorganInterceptor('combined'))
@@ -114,5 +122,16 @@ export class BuildController {
   async onCreatePRFailure(@Payload() message: KafkaMessage): Promise<void> {
     // const args = plainToInstance(SendPullRequestResponse, message.value);
     // await this.buildService.onCreatePRFailure(args);
+  }
+
+  @EventPattern(EnvironmentVariables.instance.get(Env.DSG_LOG_TOPIC, true))
+  async onDsgLog(@Payload() message: KafkaMessage): Promise<void> {
+    const logEntry = plainToInstance(LogEntryDto, message.value);
+    const step = await this.buildService.getGenerateCodeStep(logEntry.buildId);
+    await this.actionService.logByStepId(
+      step.id,
+      WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[logEntry.level],
+      logEntry.message
+    );
   }
 }

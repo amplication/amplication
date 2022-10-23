@@ -136,6 +136,25 @@ export class ActionService {
     });
   }
 
+  async logByStepId(
+    stepId: string,
+    level: EnumActionLogLevel,
+    message: string,
+    meta: JsonValue = {}
+  ): Promise<void> {
+    await this.prisma.actionLog.create({
+      data: {
+        level,
+        message,
+        step: {
+          connect: { id: stepId }
+        },
+        meta
+      },
+      select: SELECT_ID
+    });
+  }
+
   /**
    * Creates a new step for given action with given message and sets its status
    * to running, runs given step function and updates the status of the step

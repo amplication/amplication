@@ -25,6 +25,7 @@ import { createDockerComposeDBFile } from "./docker-compose/create-docker-compos
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
 import { USER_ENTITY_NAME } from "./user-entity";
+import { createLog } from "../create-log";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -43,8 +44,15 @@ async function createServerInternal(
     DTOs: dtos,
     logger,
   } = DsgContext.getInstance;
+
+  await createLog({
+    level: "info",
+    message: `Server path: ${serverDirectories.baseDirectory}`,
+  });
   logger.info(`Server path: ${serverDirectories.baseDirectory}`);
+  await createLog({ level: "info", message: "Creating server..." });
   logger.info("Creating server...");
+  await createLog({ level: "info", message: "Copying static modules..." });
   logger.info("Copying static modules...");
 
   const staticModules = await readStaticModules(
@@ -58,25 +66,34 @@ async function createServerInternal(
     },
   });
 
+  await createLog({ level: "info", message: "Creating resources..." });
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
 
+  await createLog({ level: "info", message: "Creating Auth module..." });
   logger.info("Creating Auth module...");
   const authModules = await createAuthModules();
 
+  await createLog({ level: "info", message: "Creating swagger..." });
   logger.info("Creating swagger...");
   const swaggerModule = await createSwagger();
 
   const userEntity = entities.find(
     (entity) => entity.name === USER_ENTITY_NAME
   );
+  await createLog({ level: "info", message: "Creating seed script..." });
   logger.info("Creating seed script...");
   const seedModule = await createSeedModule(userEntity as Entity);
 
+  await createLog({
+    level: "info",
+    message: "Creating Message broker modules...",
+  });
   logger.info("Creating Message broker modules...");
   const messageBrokerModules = await createMessageBroker({});
 
+  await createLog({ level: "info", message: "Creating application module..." });
   logger.info("Creating application module...");
   const appModule = await createAppModule({
     modulesFiles: [...resourcesModules, ...staticModules],
@@ -92,6 +109,7 @@ async function createServerInternal(
     ...messageBrokerModules,
   ];
 
+  await createLog({ level: "info", message: "Formatting code..." });
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
@@ -102,9 +120,14 @@ async function createServerInternal(
     code: formatJson(module.code),
   }));
 
+  await createLog({ level: "info", message: "Creating Prisma schema..." });
   logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
+  await createLog({
+    level: "info",
+    message: "Creating access control grants...",
+  });
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);
   const dotEnvModule = await createDotEnvModule({

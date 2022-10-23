@@ -12,6 +12,8 @@ export class Env {
   static readonly CREATE_PR_SUCCESS_TOPIC = 'CREATE_PR_SUCCESS_TOPIC';
   static readonly CREATE_PR_FAILURE_TOPIC = 'CREATE_PR_FAILURE_TOPIC';
 
+  static readonly DSG_LOG_TOPIC = 'DSG_LOG_TOPIC';
+
   static readonly DSG_RUNNER_URL = 'DSG_RUNNER_URL';
 
   static readonly BASE_BUILDS_FOLDER = 'BASE_BUILDS_FOLDER';

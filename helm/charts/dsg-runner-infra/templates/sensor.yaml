@@ -39,6 +39,8 @@ spec:
                             value: null # provided in parameters
                           - name: STATUS_UPDATE_URL
                             value: http://amplication-build-manager.next.svc.cluster.local/build-runner/complete-code-generation-step
+                          - name: CREATE_LOG_URL
+                            value: http://amplication-build-manager.next.svc.cluster.local/build-logger/create-log
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs
