@@ -335,12 +335,12 @@ export class BuildService {
       GENERATE_STEP_MESSAGE,
       async step => {
         const { resourceId, id: buildId, version: buildVersion } = build;
-        
+
         const [
           dataServiceGeneratorLogger,
           logPromises
         ] = this.createDataServiceLogger(build, step);
-        
+
         const dsgResourceData = await this.getDSGResourceData(
           resourceId,
           buildId,
@@ -416,7 +416,11 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  public async onCreatePRSuccess({ response }: { response: SendPullRequestResponse; }): Promise<void> {
+  public async onCreatePRSuccess({
+    response
+  }: {
+    response: SendPullRequestResponse;
+  }): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find(step => step.name === PUSH_TO_GITHUB_STEP_NAME);
@@ -490,7 +494,7 @@ export class BuildService {
     const commit = await this.commitService.findOne({
       where: { id: build.commitId }
     });
-    
+
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
     const commitMessage =

@@ -14,7 +14,7 @@ export const DEFAULT_BUILDS_FOLDER = join(
 );
 
 export const SERVICE_NAME = 'amplication-git-pull-request-service';
-  
+
 export type PrModule = {
   path: string;
   code: string | null;

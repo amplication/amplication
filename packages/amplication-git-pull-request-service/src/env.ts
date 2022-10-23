@@ -8,4 +8,3 @@ export class Env {
   static readonly BASE_BUILDS_FOLDER: 'BASE_BUILDS_FOLDER';
   static readonly BUILD_OUTPUT_FOLDER: 'BUILD_OUTPUT_FOLDER';
 }
-
