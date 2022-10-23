@@ -5,7 +5,7 @@ import { Env } from '../env';
 import { QueueService } from '../queue/queue.service';
 
 @Controller('build-logger')
-export class BuildRunnerController {
+export class BuildLoggerController {
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly queueService: QueueService,
