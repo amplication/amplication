@@ -13,7 +13,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { KafkaMessage } from 'kafkajs';
-import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
+import { Env } from '../../env';
 import { EnvironmentVariables } from '../../services/environmentVariables';
 import { SendPullRequestArgs } from './dto/sendPullRequest';
 import { PullRequestService } from './pull-request.service';
@@ -21,21 +21,15 @@ import { QueueService } from './queue.service';
 
 @Controller()
 export class PullRequestController {
-  private readonly createPullRequestCompleted: string;
-
   constructor(
     private readonly pullRequestService: PullRequestService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService<Env, true>,
     private readonly queueService: QueueService,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
-  ) {
-    this.createPullRequestCompleted =
-      this.configService.get<string>('CREATE_PULL_REQUEST_COMPLETED_TOPIC') ??
-      '';
-  }
+  ) {}
 
-  @EventPattern(EnvironmentVariables.get(GENERATE_PULL_REQUEST_TOPIC, true))
+  @EventPattern(EnvironmentVariables.get(Env.CREATE_PR_REQUEST_TOPIC, true))
   async generatePullRequest(
     @Payload() message: KafkaMessage,
     @Ctx() context: KafkaContext
@@ -66,7 +60,7 @@ export class PullRequestController {
       const response = { url: pullRequest, buildId: validArgs.newBuildId };
 
       this.queueService.emitMessage(
-        this.createPullRequestCompleted,
+        this.configService.get(Env.CREATE_PR_SUCCESS_TOPIC),
         JSON.stringify(response)
       );
     } catch (error) {
@@ -82,7 +76,7 @@ export class PullRequestController {
       };
 
       this.queueService.emitMessage(
-        this.createPullRequestCompleted,
+        this.configService.get(Env.CREATE_PR_FAILURE_TOPIC),
         JSON.stringify(response)
       );
     }
