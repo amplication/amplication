@@ -119,9 +119,10 @@ amplication-git-pull-request-service:
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
 
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      CREATE_PULL_REQUEST_COMPLETED_TOPIC: git.internal.pull-request.completed.0
-      
+      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
+      CREATE_PR_SUCCESS_TOPIC: internal.create-pr.success.0
+      CREATE_PR_FAILURE_TOPIC: internal.create-pr.failure.0
+
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       BUILD_OUTPUT_FOLDER: output
       GITHUB_APP_APP_ID: "225471"
