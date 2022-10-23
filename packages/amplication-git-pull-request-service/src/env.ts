@@ -6,9 +6,6 @@ export class Env {
   static readonly CREATE_PR_FAILURE_TOPIC: 'CREATE_PR_FAILURE_TOPIC';
 
   static readonly BASE_BUILDS_FOLDER: 'BASE_BUILDS_FOLDER';
-  static readonly RESOURCE_DATA_FILE_NAME: 'RESOURCE_DATA_FILE_NAME';
-
-  static readonly BASE_BUILDS_FOLDER: 'BASE_BUILDS_FOLDER';
   static readonly BUILD_OUTPUT_FOLDER: 'BUILD_OUTPUT_FOLDER';
 }
 
