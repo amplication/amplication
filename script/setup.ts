@@ -6,8 +6,7 @@ import { argv } from "yargs";
 
 const { combine, colorize, simple } = format;
 
-const spinner = ora();
-spinner.color = "green";
+const spinner = ora({ color: "green" });
 
 const logo = `  
             ...   :..              
