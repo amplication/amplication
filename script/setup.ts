@@ -1,7 +1,8 @@
 import { exec } from "child_process";
-import { satisfies } from "semver";
-import { createLogger, format, Logger, transports } from "winston";
 import * as ora from "ora";
+import { satisfies } from "semver";
+import { createLogger, format, transports } from "winston";
+import { argv } from "yargs";
 
 const { combine, colorize, simple } = format;
 
@@ -120,7 +121,6 @@ const prismaMigration: Task[] = [
 ];
 
 const tasks: Task[][] = [
-  clean,
   bootstrap,
   buildStep,
   dockerCompose,
@@ -130,6 +130,11 @@ const tasks: Task[][] = [
 ];
 
 if (require.main === module) {
+  const args = argv;
+  if (args.clean) {
+    tasks.unshift(clean);
+  }
+
   (async () => {
     try {
       preValidate();
