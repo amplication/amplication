@@ -51,8 +51,10 @@ export type MethodsIdsActionEntityTriplet = {
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
 
-const templatePath = require.resolve("./controller.template.ts");
-const baseTemplatePath = require.resolve("./controller.base.template.ts");
+const controllerTemplatePath = require.resolve("./controller.template.ts");
+const controllerBaseTemplatePath = require.resolve(
+  "./controller.base.template.ts"
+);
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
 export async function createControllerModules(
@@ -68,6 +70,9 @@ export async function createControllerModules(
   const { authProvider } = settings;
   const entityDTOs = DTOs[entity.name];
   const entityDTO = entityDTOs.entity;
+
+  const template = await readFile(controllerTemplatePath);
+  const templateBase = await readFile(controllerBaseTemplatePath);
 
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
@@ -120,7 +125,7 @@ export async function createControllerModules(
       createControllerModule,
       EventNames.CreateEntityController,
       {
-        templatePath,
+        template,
         entityName,
         entityServiceModule,
         templateMapping,
@@ -132,7 +137,7 @@ export async function createControllerModules(
       createControllerBaseModule,
       EventNames.CreateEntityControllerBase,
       {
-        baseTemplatePath,
+        template: templateBase,
         entityName,
         entityType,
         entityServiceModule,
@@ -146,7 +151,7 @@ export async function createControllerModules(
 }
 
 async function createControllerModule({
-  templatePath,
+  template,
   entityName,
   entityServiceModule,
   templateMapping,
@@ -157,15 +162,13 @@ async function createControllerModule({
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.controller.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
 
-  const file = await readFile(templatePath);
-
-  interpolate(file, templateMapping);
+  interpolate(template, templateMapping);
 
   const serviceImport = importNames(
     [serviceId],
     relativeImportPath(modulePath, entityServiceModule)
   );
-  addImports(file, [
+  addImports(template, [
     serviceImport,
     importNames(
       [controllerBaseId],
@@ -173,22 +176,22 @@ async function createControllerModule({
     ),
   ]);
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
-  removeTSClassDeclares(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
 
   return [
     {
       path: modulePath,
-      code: print(file).code,
+      code: print(template).code,
     },
   ];
 }
 
 async function createControllerBaseModule({
-  baseTemplatePath,
+  template,
   entityName,
   entityType,
   entityServiceModule,
@@ -200,18 +203,12 @@ async function createControllerBaseModule({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
-  const file = await readFile(baseTemplatePath);
 
   const entityDTOs = DTOs[entity.name];
 
-  interpolate(file, templateMapping);
+  interpolate(template, templateMapping);
 
-  const serviceImport = importNames(
-    [serviceId],
-    relativeImportPath(moduleBasePath, entityServiceModule)
-  );
-
-  const classDeclaration = getClassDeclarationById(file, controllerBaseId);
+  const classDeclaration = getClassDeclarationById(template, controllerBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelationMethods = (
     await Promise.all(
@@ -227,6 +224,11 @@ async function createControllerBaseModule({
       )
     )
   ).flat();
+
+  const serviceImport = importNames(
+    [serviceId],
+    relativeImportPath(moduleBasePath, entityServiceModule)
+  );
 
   const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
     {
@@ -274,26 +276,26 @@ async function createControllerBaseModule({
 
   const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
-    file,
+    template,
     getImportableDTOs(moduleBasePath, dtoNameToPath)
   );
   const identifiersImports = importContainedIdentifiers(
-    file,
+    template,
     IMPORTABLE_IDENTIFIERS_NAMES
   );
-  addImports(file, [serviceImport, ...identifiersImports, ...dtoImports]);
+  addImports(template, [serviceImport, ...identifiersImports, ...dtoImports]);
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
-  removeTSClassDeclares(file);
-  addAutoGenerationComment(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
+  addAutoGenerationComment(template);
 
   return [
     {
       path: moduleBasePath,
-      code: print(file).code,
+      code: print(template).code,
     },
   ];
 }

@@ -58,3 +58,4 @@ infra/tilt/.temp/**
 
 # Next.js
 .next
+.env.local

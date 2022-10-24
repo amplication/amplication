@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useField } from "formik";
-import { useDebouncedCallback } from "use-debounce";
+import React from "react";
+import { useField, ErrorMessage } from "formik";
 import { TextInput, TextInputProps } from "@amplication/design-system";
 import "./NameField.scss";
 
@@ -15,8 +14,6 @@ const CAPITALIZED_NAME_PATTERN = CAPITALIZED_NAME_REGEX.toString().slice(1, -1);
 const CAPITALIZED_HELP_TEXT =
   "Name must only contain letters, numbers, the dollar sign, or the underscore character and must start with a capital letter";
 
-const SHOW_MESSAGE_DURATION = 3000;
-
 const CLASS_NAME = "amp-name-field";
 
 type Props = Omit<TextInputProps, "helpText" | "hasError"> & {
@@ -28,23 +25,10 @@ const NameField = ({ capitalized, ...rest }: Props) => {
     ? [CAPITALIZED_NAME_REGEX, CAPITALIZED_NAME_PATTERN, CAPITALIZED_HELP_TEXT]
     : [NAME_REGEX, NAME_PATTERN, HELP_TEXT];
   // @ts-ignore
-  const [field, meta] = useField<string>({
+  const [field] = useField<string>({
     ...rest,
     validate: (value) => (value.match(regexp) ? undefined : helpText),
   });
-  const [showMessage, setShowMessage] = useState<boolean>(false);
-
-  const [debouncedHideMessage] = useDebouncedCallback(() => {
-    setShowMessage(false);
-  }, SHOW_MESSAGE_DURATION);
-
-  useEffect(() => {
-    if (meta.error) {
-      setShowMessage(true);
-    } else {
-      debouncedHideMessage();
-    }
-  }, [meta.error, setShowMessage, debouncedHideMessage]);
 
   return (
     <div className={CLASS_NAME}>
@@ -56,9 +40,11 @@ const NameField = ({ capitalized, ...rest }: Props) => {
         minLength={1}
         pattern={pattern}
       />
-      {showMessage && (
-        <div className={`${CLASS_NAME}__tooltip`}>{helpText}</div>
-      )}
+      <ErrorMessage
+        name="name"
+        component="div"
+        className="amplication-label__error"
+      />
     </div>
   );
 };

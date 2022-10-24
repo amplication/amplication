@@ -561,7 +561,7 @@ describe('ResourceResolver', () => {
     );
   });
 
-  it('should delete an resource', async () => {
+  it('should delete a resource', async () => {
     const res = await apolloClient.query({
       query: DELETE_RESOURCE_MUTATION,
       variables: {
@@ -602,7 +602,7 @@ describe('ResourceResolver', () => {
     });
   });
 
-  it('should update an resource', async () => {
+  it('should update a resource', async () => {
     const res = await apolloClient.query({
       query: UPDATE_RESOURCE_MUTATION,
       variables: {
