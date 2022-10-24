@@ -46,8 +46,8 @@ jobs:
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
 
-      - name: Nx Format Check
-        run: npx nx format:check
+      # - name: Nx Format Check
+      #   run: npx nx format:check
 
       - name: Lint
         run: npx nx affected --target=lint --parallel=3
