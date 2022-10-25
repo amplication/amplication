@@ -37,30 +37,14 @@ export type Events = {
   [EventNames.CreatePrismaSchema]?: PluginEventType<CreatePrismaSchemaParams>;
 
   [EventNames.CreateMessageBroker]?: PluginEventType<CreateMessageBrokerParams>;
-  [EventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<
-    CreateMessageBrokerTopicsEnumParams
-  >;
-  [EventNames.CreateMessageBrokerNestJSModule]?: PluginEventType<
-    CreateMessageBrokerNestJSModuleParams
-  >;
-  [EventNames.CreateMessageBrokerClientOptionsFactory]?: PluginEventType<
-    CreateMessageBrokerClientOptionsFactoryParams
-  >;
-  [EventNames.CreateMessageBrokerService]?: PluginEventType<
-    CreateMessageBrokerServiceParams
-  >;
-  [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<
-    CreateMessageBrokerServiceBaseParams
-  >;
-  [EventNames.CreateServerPackageJson]?: PluginEventType<
-    CreateServerPackageJsonParams
-  >;
+  [EventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<CreateMessageBrokerTopicsEnumParams>;
+  [EventNames.CreateMessageBrokerNestJSModule]?: PluginEventType<CreateMessageBrokerNestJSModuleParams>;
+  [EventNames.CreateMessageBrokerClientOptionsFactory]?: PluginEventType<CreateMessageBrokerClientOptionsFactoryParams>;
+  [EventNames.CreateMessageBrokerService]?: PluginEventType<CreateMessageBrokerServiceParams>;
+  [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<CreateMessageBrokerServiceBaseParams>;
+  [EventNames.CreateServerPackageJson]?: PluginEventType<CreateServerPackageJsonParams>;
   [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIParams>;
-  [EventNames.CreateServerAppModule]?: PluginEventType<
-    CreateServerAppModuleParams
-  >;
+  [EventNames.CreateServerAppModule]?: PluginEventType<CreateServerAppModuleParams>;
   [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;
-  [EventNames.CreateEntityModuleBase]?: PluginEventType<
-    CreateEntityModuleBaseParams
-  >;
+  [EventNames.CreateEntityModuleBase]?: PluginEventType<CreateEntityModuleBaseParams>;
 };
