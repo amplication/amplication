@@ -33,10 +33,7 @@ spec:
                       - name: dsg-container
                         image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:0.0.13"
                         command: ["sh", "-c"]
-                        args:
-                          [
-                            "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/input.json /efs/output",
-                          ]
+                        args: [ "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/input.json /efs/output" ]
                         env:
                           - name: BUILD_ID
                             value: null # provided in parameters
@@ -52,8 +49,7 @@ spec:
                       - name: persistent-storage
                         persistentVolumeClaim:
                           claimName: efs-claim-{{ .Values.envName }}-dsg
-                ttlSecondsAfterFinished:
-                  { { .Values.job.ttlSecondsAfterFinished } }
+                ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
                 backoffLimit: 0
           parameters:
             - src:
