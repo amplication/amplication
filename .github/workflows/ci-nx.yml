@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - feature/nx
+      - feature/nx-october
   pull_request:
 
 jobs:
