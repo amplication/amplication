@@ -160,7 +160,7 @@ _See code: [src/commands/config/unset.ts](https://github.com/amplication/amplica
 
 ## `amp entities`
 
-list entities for an resource
+list entities for a resource
 
 ```
 USAGE
@@ -503,7 +503,7 @@ _See code: [src/commands/resources/current.ts](https://github.com/amplication/am
 
 ## `amp resources:info`
 
-show detailed information for an resource
+show detailed information for a resource
 
 ```
 USAGE
@@ -530,7 +530,7 @@ _See code: [src/commands/resources/info.ts](https://github.com/amplication/ampli
 
 ## `amp resources:update`
 
-update an resource
+update a resource
 
 ```
 USAGE

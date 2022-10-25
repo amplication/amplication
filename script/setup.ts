@@ -1,14 +1,14 @@
 import { exec } from "child_process";
+import * as ora from "ora";
 import { satisfies } from "semver";
 import { createLogger, format, transports } from "winston";
-import ora from "ora";
+import { argv } from "yargs";
 
 const { combine, colorize, simple } = format;
 
 const isDebugMode = process.env.DEBUG === "true";
 
-const spinner = ora();
-spinner.color = "green";
+const spinner = ora({ color: "green" });
 
 const logo = `  
             ...   :..              
@@ -147,6 +147,11 @@ const tasks: Task[][] = [
 ];
 
 if (require.main === module) {
+  const args = argv;
+  if ((args as any).clean) {
+    tasks.unshift(clean);
+  }
+
   (async () => {
     try {
       preValidate();

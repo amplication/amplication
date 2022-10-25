@@ -35,6 +35,11 @@ $expandable-transition-duration: 0.1s;
     cursor: pointer;
     &:hover {
       background: var(--panel-hover-background);
+      border: $border-black20;
+
+      .amp-horizontal-rule {
+        border-top: $border-black20;
+      }
     }
   }
 

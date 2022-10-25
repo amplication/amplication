@@ -10,7 +10,7 @@ export const ENV_VARIABLES: VariableDictionary = [
   { COMPOSE_PROJECT_NAME: "amp_${resourceId}" },
   { JWT_SECRET_KEY: "Change_ME!!!" },
   { JWT_EXPIRATION: "2d" },
-  { SERVER_PORT: "3000" },
+  { PORT: "3000" },
 ];
 
 export const DOCKER_COMPOSE_FILE_NAME = "docker-compose.template.yml";

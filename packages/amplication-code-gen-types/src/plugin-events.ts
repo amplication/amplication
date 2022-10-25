@@ -1,6 +1,6 @@
 import {
-  CreateAdminModulesParams,
-  CreateAuthModulesParams,
+  CreateAdminUIParams,
+  CreateServerAuthParams,
   CreateEntityControllerBaseParams,
   CreateEntityControllerParams,
   CreateEntityServiceBaseParams,
@@ -18,12 +18,14 @@ import {
   CreateServerDotEnvParams,
   CreateServerPackageJsonParams,
   CreateServerParams,
+  CreateEntityModuleParams,
+  CreateEntityModuleBaseParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
 export type Events = {
-  [EventNames.CreateAuthModules]?: PluginEventType<CreateAuthModulesParams>;
-  [EventNames.CreateAdminModules]?: PluginEventType<CreateAdminModulesParams>;
+  [EventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
+  [EventNames.CreateAdminUI]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
   [EventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;
   [EventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
@@ -35,11 +37,30 @@ export type Events = {
   [EventNames.CreatePrismaSchema]?: PluginEventType<CreatePrismaSchemaParams>;
 
   [EventNames.CreateMessageBroker]?: PluginEventType<CreateMessageBrokerParams>;
-  [EventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<CreateMessageBrokerTopicsEnumParams>;
-  [EventNames.CreateMessageBrokerNestJSModule]?: PluginEventType<CreateMessageBrokerNestJSModuleParams>;
-  [EventNames.CreateMessageBrokerClientOptionsFactory]?: PluginEventType<CreateMessageBrokerClientOptionsFactoryParams>;
-  [EventNames.CreateMessageBrokerService]?: PluginEventType<CreateMessageBrokerServiceParams>;
-  [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<CreateMessageBrokerServiceBaseParams>;
-  [EventNames.CreatePackageJson]?: PluginEventType<CreateServerPackageJsonParams>;
-  [EventNames.CreateServerAppModule]?: PluginEventType<CreateServerAppModuleParams>;
+  [EventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<
+    CreateMessageBrokerTopicsEnumParams
+  >;
+  [EventNames.CreateMessageBrokerNestJSModule]?: PluginEventType<
+    CreateMessageBrokerNestJSModuleParams
+  >;
+  [EventNames.CreateMessageBrokerClientOptionsFactory]?: PluginEventType<
+    CreateMessageBrokerClientOptionsFactoryParams
+  >;
+  [EventNames.CreateMessageBrokerService]?: PluginEventType<
+    CreateMessageBrokerServiceParams
+  >;
+  [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<
+    CreateMessageBrokerServiceBaseParams
+  >;
+  [EventNames.CreateServerPackageJson]?: PluginEventType<
+    CreateServerPackageJsonParams
+  >;
+  [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIParams>;
+  [EventNames.CreateServerAppModule]?: PluginEventType<
+    CreateServerAppModuleParams
+  >;
+  [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;
+  [EventNames.CreateEntityModuleBase]?: PluginEventType<
+    CreateEntityModuleBaseParams
+  >;
 };
