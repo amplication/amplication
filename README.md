@@ -128,7 +128,7 @@ Amplication is currently in its version 1.  This is the first major release of A
 
 Ask your questions and participate in discussions on Amplication-related and web-dev topics at the Amplication Discord channel. 
 
-<a href="https://discord.gg/Z2CG3rUFnu" target="blank_"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
+<a href="https://discord.gg/Z2CG3rUFnu" target="_blank"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
 ## Create a bug report
 
