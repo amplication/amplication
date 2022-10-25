@@ -3,7 +3,7 @@ global:
     name: staging-efs-claim
   pv:
     name: efs-pv-staging
-    handle: fs-0a87872138ddc7f6d::fsap-0369ff368700f58c3
+    handle: fs-03a0a5ba30d788595::fsap-0369ff368700f58c3
 
 cp-helm-charts:
   enabled: false
