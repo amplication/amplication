@@ -3,7 +3,7 @@ global:
     name: common-efs-claim
   pv:
     name: efs-pv-common
-    handle: fs-0a87872138ddc7f6d::fsap-0e0ed55af55fbdf11
+    handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
 
 cp-helm-charts:
   enabled: true
@@ -140,7 +140,6 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server.staging.amplication-dev.com/github/callback"
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-
 
 amplication-git-push-webhook-service:
   image:
