@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { IStorage } from "../../contracts/interfaces/storage.interface";
+import { Storage } from "../../interfaces";
 import * as fse from "fs-extra";
 import fs from "fs";
-import { CustomError } from "../../errors/CustomError";
+import { CustomError } from "../../errors/custom-error";
 
 @Injectable()
-export class StorageService implements IStorage {
+export class StorageService implements Storage {
   async copyDir(srcDir: string, destDir: string): Promise<void> {
     try {
       await fse.copy(srcDir, destDir);
