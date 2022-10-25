@@ -5,8 +5,8 @@ import { utimes, open } from "fs/promises";
 import { sync } from "glob";
 import { join } from "path";
 import {
-  BASE_BUILDS_FOLDER,
-  BUILD_OUTPUT_FOLDER,
+  BUILD_ARTIFACTS_BASE_FOLDER,
+  BUILD_ARTIFACTS_CODE_FOLDER,
   DEFAULT_BUILDS_FOLDER,
 } from "../constants";
 import { FileMeta } from "./dto/FileMeta";
@@ -20,13 +20,13 @@ export class StorageService {
   private buildOutputFolder: string;
   constructor(
     configService: ConfigService<
-      { BASE_BUILDS_FOLDER: string; BUILD_OUTPUT_FOLDER: string },
+      { BUILD_ARTIFACTS_BASE_FOLDER: string; BUILD_ARTIFACTS_CODE_FOLDER: string },
       true
     >
   ) {
-    const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
+    const buildsFolder = configService.get<string>(BUILD_ARTIFACTS_BASE_FOLDER);
     this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
-    this.buildOutputFolder = configService.get(BUILD_OUTPUT_FOLDER);
+    this.buildOutputFolder = configService.get(BUILD_ARTIFACTS_CODE_FOLDER);
   }
 
   getBuildFilesList(

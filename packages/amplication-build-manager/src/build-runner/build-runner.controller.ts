@@ -25,6 +25,7 @@ export class BuildRunnerController {
     @Body() dto: CompleteCodeGenerationStep,
   ): Promise<void> {
     if (dto.status === ActionStepStatus.Success) {
+      await this.buildRunnerService.copyFromJobToArtifact(dto.buildId);
       this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
         JSON.stringify({ buildId: dto.buildId }),

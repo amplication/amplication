@@ -1,3 +1,20 @@
 {{ include "base.deployment" (list . "amplication-build-manager.deployment") -}}
 {{- define "amplication-build-manager.deployment" -}}
+spec:
+  template:
+    spec:
+      containers:
+        - volumeMounts:
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.path }}
+            - name: {{ .Values.dsg-volume.name }}
+              mountPath: {{ .Values.dsg-volume.path }}
+      volumes:
+        - name: {{ .Values.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.global.pvc.name }}
+        - name: {{ .Values.dsg-volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.global.dsg-pvc.name }}
 {{- end }}
+          
