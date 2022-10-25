@@ -3,7 +3,7 @@ global:
     name: common-efs-claim
   pv:
     name: efs-pv-common
-    handle: fs-03a0a5ba30d788595::fsap-0e0ed55af55fbdf11
+    handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
 
 cp-helm-charts:
   enabled: true
