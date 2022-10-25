@@ -39,7 +39,8 @@ amplication-server:
       CLIENT_HOST: "https://app-next.amplication-dev.com"
 
       #KAFKA
-      KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
@@ -90,7 +91,7 @@ amplication-git-push-webhook-service:
     hostname: webhook-next.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
@@ -109,7 +110,7 @@ amplication-git-pull-service:
       GITHUB_APP_CLIENT_ID: "Iv1.ba108fc312eb8265"
       GIT_DEFAULT_ORIGIN_NAME: origin
 
-      KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
@@ -118,7 +119,7 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
 
@@ -135,7 +136,7 @@ amplication-storage-gateway:
     hostname: server-next.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       BUILD_OUTPUT_FOLDER: output
       GITHUB_APP_APP_ID: "225471"
@@ -161,4 +162,3 @@ amplication-build-manager:
 
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       RESOURCE_DATA_FILE_NAME: input.json
-
