@@ -6,3 +6,12 @@ pvc:
 pv:
   name: efs-pv-custom
   handle: fs-0a87872138ddc7f6d::fsap-0e0ed55af55fbdf11
+
+dsg-pvc:
+  name: dsg-efs-pvc
+  storageRequest: 1Gi
+  storageName: efs-sc
+
+dsg-pv:
+  name: dsg-efs-pv
+  handle: fs-069dec8bf2c02d851::fsap-0c7c88c3dd7a241a7

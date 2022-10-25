@@ -53,10 +53,6 @@ amplication-server:
 
       DSG_LOG_TOPIC: internal.dsg-log.0
 
-      #EFS
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
-      BUILD_INPUT_FILE_NAME: input.json
-
       #GCP - APPS Builder
       DEFAULT_DISK: gcs
       LOCAL_DISK_ROOT: /artifacts
@@ -126,8 +122,9 @@ amplication-git-pull-request-service:
       CREATE_PR_SUCCESS_TOPIC: internal.create-pr.success.0
       CREATE_PR_FAILURE_TOPIC: internal.create-pr.failure.0
 
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
-      BUILD_OUTPUT_FOLDER: output
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
+
       GITHUB_APP_APP_ID: "225471"
 
 amplication-storage-gateway:
@@ -136,8 +133,10 @@ amplication-storage-gateway:
   config:
     env:
       KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
-      BUILD_OUTPUT_FOLDER: output
+      
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
+
       GITHUB_APP_APP_ID: "225471"
 
 amplication-build-manager:
@@ -159,6 +158,11 @@ amplication-build-manager:
 
       DSG_RUNNER_URL: http://webhook-eventsource-svc.next-dsg.svc.cluster.local:12000/example
 
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
-      RESOURCE_DATA_FILE_NAME: input.json
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
+
+      DSG_JOBS_BASE_FOLDER: /dsg-jobs
+      DSG_JOBS_CODE_FOLDER: code
+
+      DSG_JOBS_RESOURCE_DATA_FILE: input.json
 

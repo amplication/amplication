@@ -29,5 +29,9 @@ service:
   protocol: TCP
 
 volume:
-  name: amplication-data
-  path: /amplication-data
+  name: build-artifacts
+  path: /build-artifacts
+
+dsg-volume:
+  name: dsg-jobs
+  path: /dsg-jobs
