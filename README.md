@@ -129,7 +129,7 @@ Amplication is currently in its version 1.  This is the first major release of A
 Ask your questions and participate in discussions on Amplication-related and web-dev topics at the Amplication Discord channel. 
 
 <a href="https://discord.gg/Z2CG3rUFnu" target="_blank"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
-:NOTE: IN markdown it doesn't open in new tab so , For windows press `ctrl` + `left click` and for Mac `cmd` + `left click` .
+>NOTE: IN markdown it doesn't open in new tab so , For windows press `ctrl` + `left click` and for Mac `cmd` + `left click` .
 
 ## Create a bug report
 
