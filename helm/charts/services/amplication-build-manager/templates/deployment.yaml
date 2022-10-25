@@ -13,7 +13,7 @@ spec:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.global.pvc.name }}
-        - name: {{ .Values.dsg-volume.name }}
+        - name: {{ .Values.dsgVolume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.global.dsgPvc.name }}
 {{- end }}
