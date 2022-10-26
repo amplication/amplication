@@ -14,22 +14,10 @@ import { PrismaModule } from "../prisma/prisma.module";
   providers: [
     GitPullEventService,
     GitHostProviderService,
-    {
-      provide: "GitHostProviderFactory",
-      useClass: GitHostProviderFactory,
-    },
-    {
-      provide: "GitClient",
-      useClass: GitClientService,
-    },
-    {
-      provide: "GitPullEventRepository",
-      useClass: GitPullEventRepository,
-    },
-    {
-      provide: "Storage",
-      useClass: StorageService,
-    },
+    GitHostProviderFactory,
+    GitClientService,
+    GitPullEventRepository,
+    StorageService,
   ],
   exports: [GitPullEventService],
 })
