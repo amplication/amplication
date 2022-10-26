@@ -4,10 +4,6 @@
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
-    "build": "run-s build:update-version build:compile build:copy-files",
-    "build:compile": "tsc",
-    "build:copy-files": "ts-node scripts/copy-files.ts",
-    "build:update-version": "ts-node scripts/update-version.ts",
     "check-format": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -59,7 +55,7 @@
     "eslint-plugin-import": "2.23.4",
     "get-port": "5.1.1",
     "sleep-promise": "9.1.0",
-    "ts-node": "9.1.1"
+    "ts-node": "^10.9.1"
   },
   "oldDevDependencies": {
     "eslint-plugin-react": "7.24.0",
@@ -85,7 +81,7 @@
     "normalize-path": "3.0.0",
     "npm-run-all": "4.1.5",
     "rxjs": "7.5.6",
-    "typescript": "4.6.2"
+    "typescript": "^4.8.4"
   },
   "jest": {
     "preset": "ts-jest",

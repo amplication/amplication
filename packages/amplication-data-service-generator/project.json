@@ -3,5 +3,23 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-data-service-generator/src",
   "projectType": "application",
-  "implicitDependencies": ["amplication-code-gen-types"]
+  "implicitDependencies": ["amplication-code-gen-types"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/**/*"],
+      "outputs": [
+        "{workspaceRoot}/dist/packages/amplication-data-service-generator"
+      ],
+      "options": {
+        "commands": [
+          "ts-node scripts/update-version.ts",
+          "tsc",
+          "ts-node scripts/copy-files.ts"
+        ],
+        "cwd": "packages/amplication-data-service-generator",
+        "parallel": false
+      }
+    }
+  }
 }
