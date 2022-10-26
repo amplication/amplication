@@ -1,4 +1,3 @@
-const CopyPlugin = require("copy-webpack-plugin");
 const GeneratePackageJsonPlugin = require("generate-package-json-webpack-plugin");
 const path = require("path");
 const packageJson = require("../../../package.json");
