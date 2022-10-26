@@ -1,3 +1,11 @@
-{{ include "base.pvc" (list . "infra.dsgPvc") -}}
-{{- define "infra.dsgPvc" -}}
-{{- end }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dsg-jobs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 5Gi

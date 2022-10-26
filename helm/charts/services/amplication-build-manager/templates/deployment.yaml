@@ -52,14 +52,14 @@ spec:
           volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.path }}
-            - name: {{ .Values.dsgVolume.name }}
-              mountPath: {{ .Values.dsgVolume.path }}
+            - name: dsg-jobs
+              mountPath: /dsg-jobs
       volumes:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.global.pvc.name }}
-        - name: {{ .Values.dsgVolume.name }}
+        - name: dsg-jobs
           persistentVolumeClaim:
-            claimName: {{ .Values.global.dsgPvc.name }}
+            claimName: dsg-jobs-pvc
 {{- end }}
           
