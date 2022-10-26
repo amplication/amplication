@@ -90,7 +90,7 @@ function ResourceList() {
       <div className={`${CLASS_NAME}__title`}>Project Settings</div>
 
       <div className={`${CLASS_NAME}__settings`}>
-        {projectConfigurationResource && (
+        {!loadingResources && projectConfigurationResource && (
           <ResourceListItem resource={projectConfigurationResource} />
         )}
       </div>
@@ -108,15 +108,14 @@ function ResourceList() {
             image={EnumImages.AddResource}
           />
         ) : (
-          <>
-            {resources.map((resource) => (
-              <ResourceListItem
-                key={resource.id}
-                resource={resource}
-                onDelete={handleDelete}
-              />
-            ))}
-          </>
+          !loadingResources &&
+          resources.map((resource) => (
+            <ResourceListItem
+              key={resource.id}
+              resource={resource}
+              onDelete={handleDelete}
+            />
+          ))
         )}
       </div>
 

@@ -21,7 +21,7 @@ export const ENTITY_COLUMNS: Table.table.Columns<any> = {
 };
 
 export default class EntitiesIndex extends ConfiguredCommand {
-  static description = 'list entities for an resource';
+  static description = 'list entities for a resource';
 
   static examples = [
     'amp entities',

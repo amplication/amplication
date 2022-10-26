@@ -6,7 +6,7 @@ import { EnvironmentService } from '../environment/environment.service';
 import { gql } from 'apollo-server-express';
 import {
   ApolloServerTestClient,
-  createTestClient
+  createTestClient,
 } from 'apollo-server-testing';
 import { GqlAuthGuard } from '../../guards/gql-auth.guard';
 import { ResourceResolver } from './resource.resolver';
@@ -50,7 +50,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   resourceId: EXAMPLE_RESOURCE_ID,
   name: EXAMPLE_NAME,
-  address: EXAMPLE_ADDRESS
+  address: EXAMPLE_ADDRESS,
 };
 
 const EXAMPLE_BUILD: Build = {
@@ -60,7 +60,7 @@ const EXAMPLE_BUILD: Build = {
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
-  commitId: EXAMPLE_COMMIT_ID
+  commitId: EXAMPLE_COMMIT_ID,
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -70,7 +70,7 @@ const EXAMPLE_ENTITY: Entity = {
   resourceId: EXAMPLE_RESOURCE_ID,
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME
+  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -83,18 +83,18 @@ const EXAMPLE_RESOURCE: Resource = {
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT],
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
 };
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  isOwner: true
+  isOwner: true,
 };
 
 const FIND_ONE_RESOURCE_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     resource(where: { id: $id }) {
       id
       createdAt
@@ -134,7 +134,7 @@ const FIND_ONE_RESOURCE_QUERY = gql`
 `;
 
 const FIND_MANY_ENTITIES_QUERY = gql`
-  query($resourceId: String!, $entityId: String!) {
+  query ($resourceId: String!, $entityId: String!) {
     resource(where: { id: $resourceId }) {
       entities(where: { id: { equals: $entityId } }) {
         id
@@ -150,7 +150,7 @@ const FIND_MANY_ENTITIES_QUERY = gql`
 `;
 
 const FIND_MANY_BUILDS_QUERY = gql`
-  query($resourceId: String!) {
+  query ($resourceId: String!) {
     resource(where: { id: $resourceId }) {
       builds {
         id
@@ -166,7 +166,7 @@ const FIND_MANY_BUILDS_QUERY = gql`
 `;
 
 const FIND_MANY_ENVIRONMENTS_QUERY = gql`
-  query($resourceId: String!) {
+  query ($resourceId: String!) {
     resource(where: { id: $resourceId }) {
       environments {
         id
@@ -181,7 +181,7 @@ const FIND_MANY_ENVIRONMENTS_QUERY = gql`
 `;
 
 const CREATE_SERVICE_MUTATION = gql`
-  mutation($data: ResourceCreateInput!) {
+  mutation ($data: ResourceCreateInput!) {
     createService(data: $data) {
       id
       createdAt
@@ -220,7 +220,7 @@ const CREATE_SERVICE_MUTATION = gql`
   }
 `;
 const DELETE_RESOURCE_MUTATION = gql`
-  mutation($id: String!) {
+  mutation ($id: String!) {
     deleteResource(where: { id: $id }) {
       id
       createdAt
@@ -259,7 +259,7 @@ const DELETE_RESOURCE_MUTATION = gql`
   }
 `;
 const UPDATE_RESOURCE_MUTATION = gql`
-  mutation($name: String!, $id: String!) {
+  mutation ($name: String!, $id: String!) {
     updateResource(data: { name: $name }, where: { id: $id }) {
       id
       createdAt
@@ -338,51 +338,51 @@ describe('ResourceResolver', () => {
             resource: resourceMock,
             createService: createServiceMock,
             deleteResource: deleteResourceMock,
-            updateResource: updateResourceMock
-          }))
+            updateResource: updateResourceMock,
+          })),
         },
         {
           provide: UserService,
           useClass: jest.fn(() => ({
-            findUser: userServiceFindUserMock
-          }))
+            findUser: userServiceFindUserMock,
+          })),
         },
         {
           provide: EntityService,
           useClass: jest.fn(() => ({
-            entities: entitiesMock
-          }))
+            entities: entitiesMock,
+          })),
         },
         {
           provide: BuildService,
           useClass: jest.fn(() => ({
-            findMany: findManyBuildMock
-          }))
+            findMany: findManyBuildMock,
+          })),
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn()
-          }))
+            error: jest.fn(),
+          })),
         },
         {
           provide: EnvironmentService,
           useClass: jest.fn(() => ({
-            findMany: findManyEnvironmentsMock
-          }))
+            findMany: findManyEnvironmentsMock,
+          })),
         },
         {
           provide: PrismaService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({})),
         },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: jest.fn()
-          }))
-        }
+            get: jest.fn(),
+          })),
+        },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })]
+      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -397,7 +397,7 @@ describe('ResourceResolver', () => {
   it('should find one resource', async () => {
     const res = await apolloClient.query({
       query: FIND_ONE_RESOURCE_QUERY,
-      variables: { id: EXAMPLE_RESOURCE_ID }
+      variables: { id: EXAMPLE_RESOURCE_ID },
     });
     const args = { where: { id: EXAMPLE_RESOURCE_ID } };
     expect(res.errors).toBeUndefined();
@@ -412,23 +412,23 @@ describe('ResourceResolver', () => {
           {
             ...EXAMPLE_ENTITY,
             createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
-          }
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString(),
+          },
         ],
         builds: [
           {
             ...EXAMPLE_BUILD,
-            createdAt: EXAMPLE_BUILD.createdAt.toISOString()
-          }
+            createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
+          },
         ],
         environments: [
           {
             ...EXAMPLE_ENVIRONMENT,
             createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString()
-          }
-        ]
-      }
+            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString(),
+          },
+        ],
+      },
     });
     expect(resourceMock).toBeCalledTimes(1);
     expect(resourceMock).toBeCalledWith(args);
@@ -439,14 +439,14 @@ describe('ResourceResolver', () => {
       query: FIND_MANY_ENTITIES_QUERY,
       variables: {
         resourceId: EXAMPLE_RESOURCE_ID,
-        entityId: EXAMPLE_ENTITY_ID
-      }
+        entityId: EXAMPLE_ENTITY_ID,
+      },
     });
     const args = {
       where: {
         id: { equals: EXAMPLE_ENTITY_ID },
-        resource: { id: EXAMPLE_RESOURCE_ID }
-      }
+        resource: { id: EXAMPLE_RESOURCE_ID },
+      },
     };
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -455,10 +455,10 @@ describe('ResourceResolver', () => {
           {
             ...EXAMPLE_ENTITY,
             createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
-          }
-        ]
-      }
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString(),
+          },
+        ],
+      },
     });
     expect(entitiesMock).toBeCalledTimes(1);
     expect(entitiesMock).toBeCalledWith(args);
@@ -467,10 +467,10 @@ describe('ResourceResolver', () => {
   it('should find many builds', async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_BUILDS_QUERY,
-      variables: { resourceId: EXAMPLE_RESOURCE_ID }
+      variables: { resourceId: EXAMPLE_RESOURCE_ID },
     });
     const args = {
-      where: { resource: { id: EXAMPLE_RESOURCE_ID } }
+      where: { resource: { id: EXAMPLE_RESOURCE_ID } },
     };
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -478,10 +478,10 @@ describe('ResourceResolver', () => {
         builds: [
           {
             ...EXAMPLE_BUILD,
-            createdAt: EXAMPLE_BUILD.createdAt.toISOString()
-          }
-        ]
-      }
+            createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
+          },
+        ],
+      },
     });
     expect(findManyBuildMock).toBeCalledTimes(1);
     expect(findManyBuildMock).toBeCalledWith(args);
@@ -490,7 +490,7 @@ describe('ResourceResolver', () => {
   it('should find many environments', async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_ENVIRONMENTS_QUERY,
-      variables: { resourceId: EXAMPLE_RESOURCE_ID }
+      variables: { resourceId: EXAMPLE_RESOURCE_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -499,14 +499,14 @@ describe('ResourceResolver', () => {
           {
             ...EXAMPLE_ENVIRONMENT,
             createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString()
-          }
-        ]
-      }
+            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString(),
+          },
+        ],
+      },
     });
     expect(findManyEnvironmentsMock).toBeCalledTimes(1);
     expect(findManyEnvironmentsMock).toBeCalledWith({
-      where: { resource: { id: EXAMPLE_RESOURCE_ID } }
+      where: { resource: { id: EXAMPLE_RESOURCE_ID } },
     });
   });
 
@@ -515,13 +515,13 @@ describe('ResourceResolver', () => {
       name: EXAMPLE_NAME,
       description: EXAMPLE_DESCRIPTION,
       resourceType: EnumResourceType.Service,
-      project: { connect: { id: EXAMPLE_PROJECT_ID } }
+      project: { connect: { id: EXAMPLE_PROJECT_ID } },
     };
     const res = await apolloClient.query({
       query: CREATE_SERVICE_MUTATION,
       variables: {
-        data: resourceCreateInput
-      }
+        data: resourceCreateInput,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -534,39 +534,39 @@ describe('ResourceResolver', () => {
           {
             ...EXAMPLE_ENTITY,
             createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
-          }
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString(),
+          },
         ],
         builds: [
           {
             ...EXAMPLE_BUILD,
-            createdAt: EXAMPLE_BUILD.createdAt.toISOString()
-          }
+            createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
+          },
         ],
         environments: [
           {
             ...EXAMPLE_ENVIRONMENT,
             createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString()
-          }
-        ]
-      }
+            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString(),
+          },
+        ],
+      },
     });
     expect(createServiceMock).toBeCalledTimes(1);
     expect(createServiceMock).toBeCalledWith(
       {
-        data: resourceCreateInput
+        data: resourceCreateInput,
       },
       EXAMPLE_USER
     );
   });
 
-  it('should delete an resource', async () => {
+  it('should delete a resource', async () => {
     const res = await apolloClient.query({
       query: DELETE_RESOURCE_MUTATION,
       variables: {
-        id: EXAMPLE_RESOURCE_ID
-      }
+        id: EXAMPLE_RESOURCE_ID,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -578,37 +578,37 @@ describe('ResourceResolver', () => {
           {
             ...EXAMPLE_ENTITY,
             createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
-          }
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString(),
+          },
         ],
         builds: [
           {
             ...EXAMPLE_BUILD,
-            createdAt: EXAMPLE_BUILD.createdAt.toISOString()
-          }
+            createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
+          },
         ],
         environments: [
           {
             ...EXAMPLE_ENVIRONMENT,
             createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString()
-          }
-        ]
-      }
+            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString(),
+          },
+        ],
+      },
     });
     expect(deleteResourceMock).toBeCalledTimes(1);
     expect(deleteResourceMock).toBeCalledWith({
-      where: { id: EXAMPLE_RESOURCE_ID }
+      where: { id: EXAMPLE_RESOURCE_ID },
     });
   });
 
-  it('should update an resource', async () => {
+  it('should update a resource', async () => {
     const res = await apolloClient.query({
       query: UPDATE_RESOURCE_MUTATION,
       variables: {
         name: EXAMPLE_NAME,
-        id: EXAMPLE_RESOURCE_ID
-      }
+        id: EXAMPLE_RESOURCE_ID,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -620,28 +620,28 @@ describe('ResourceResolver', () => {
           {
             ...EXAMPLE_ENTITY,
             createdAt: EXAMPLE_ENTITY.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString()
-          }
+            updatedAt: EXAMPLE_ENTITY.updatedAt.toISOString(),
+          },
         ],
         builds: [
           {
             ...EXAMPLE_BUILD,
-            createdAt: EXAMPLE_BUILD.createdAt.toISOString()
-          }
+            createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
+          },
         ],
         environments: [
           {
             ...EXAMPLE_ENVIRONMENT,
             createdAt: EXAMPLE_ENVIRONMENT.createdAt.toISOString(),
-            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString()
-          }
-        ]
-      }
+            updatedAt: EXAMPLE_ENVIRONMENT.updatedAt.toISOString(),
+          },
+        ],
+      },
     });
     expect(updateResourceMock).toBeCalledTimes(1);
     expect(updateResourceMock).toBeCalledWith({
       data: { name: EXAMPLE_NAME },
-      where: { id: EXAMPLE_RESOURCE_ID }
+      where: { id: EXAMPLE_RESOURCE_ID },
     });
   });
 });

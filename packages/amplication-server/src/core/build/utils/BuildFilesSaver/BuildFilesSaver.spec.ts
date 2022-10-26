@@ -29,7 +29,7 @@ describe('Testing the BuildFilesSaver service', () => {
     //@ts-ignore
     buildFilesSaver = new BuildFilesSaver(configService, logger);
   });
-  it('should save an resource files to a build folder', async () => {
+  it('should save a resource files to a build folder', async () => {
     await buildFilesSaver.saveFiles(relativePath, [
       {
         code: 'code',

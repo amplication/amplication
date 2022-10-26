@@ -52,7 +52,7 @@ amplication-server:
 
       #KAFKA
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
@@ -95,7 +95,7 @@ amplication-git-push-webhook-service:
   config:
     env:
       #KAFKA
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
@@ -116,7 +116,7 @@ amplication-git-pull-service:
       GITHUB_APP_PRIVATE_KEY: ""
 
       #KAFKA
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
@@ -132,7 +132,7 @@ amplication-git-pull-request-service:
   config:
     env:
       #KAFKA
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
@@ -150,7 +150,7 @@ amplication-storage-gateway:
   config:
     env:
       #KAFKA
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
