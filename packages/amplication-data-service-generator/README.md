@@ -1,6 +1,6 @@
 # Amplication Data Service Generator
 
-Amplication Data Service Generator is the component responsible for generating the source code for Amplication's users and managing the plugin integration inside the generation process.
+DSG (Data Service Generator) is the component responsible for the generation of source code by Amplication, and allows the integration of plugins into the code generation process.
 
 ## Technologies
 
