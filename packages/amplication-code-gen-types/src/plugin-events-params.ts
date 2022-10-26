@@ -124,12 +124,11 @@ export interface CreateEntityResolverParams extends EventParams {
 }
 
 export interface CreateEntityResolverBaseParams extends EventParams {
-  templateBase: namedTypes.File;
+  template: namedTypes.File;
   entityName: string;
   entityType: string;
   entityServiceModule: string;
   entity: Entity;
-  entityDTO: NamedClassDeclaration;
   serviceId: namedTypes.Identifier;
   resolverBaseId: namedTypes.Identifier;
   createArgs: NamedClassDeclaration | undefined;

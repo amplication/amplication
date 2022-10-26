@@ -204,12 +204,11 @@ async function createResolverModule({
 }
 
 async function createResolverBaseModule({
-  templateBase,
+  template,
   entityName,
   entityType,
   entityServiceModule,
   entity,
-  entityDTO,
   serviceId,
   resolverBaseId,
   createArgs,
@@ -221,11 +220,12 @@ async function createResolverBaseModule({
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { serverDirectories, DTOs } = DsgContext.getInstance;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
-
-  interpolate(templateBase, templateMapping);
+  const entityDTOs = DTOs[entity.name];
+  const { entity: entityDTO } = entityDTOs;
+  interpolate(template, templateMapping);
 
   const classDeclaration = getClassDeclarationById(
-    templateBase,
+    template,
     resolverBaseId
   );
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
@@ -308,33 +308,33 @@ async function createResolverBaseModule({
 
   const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
-    templateBase,
+    template,
     getImportableDTOs(moduleBasePath, dtoNameToPath)
   );
   const identifiersImports = importContainedIdentifiers(
-    templateBase,
+    template,
     IMPORTABLE_IDENTIFIERS_NAMES
   );
-  addImports(templateBase, [...identifiersImports, ...dtoImports]);
+  addImports(template, [...identifiersImports, ...dtoImports]);
 
   const serviceImport = importNames(
     [serviceId],
     relativeImportPath(moduleBasePath, entityServiceModule)
   );
 
-  addImports(templateBase, [serviceImport]);
-  removeTSIgnoreComments(templateBase);
-  removeImportsTSIgnoreComments(templateBase);
-  removeESLintComments(templateBase);
-  removeTSVariableDeclares(templateBase);
-  removeTSInterfaceDeclares(templateBase);
-  removeTSClassDeclares(templateBase);
-  addAutoGenerationComment(templateBase);
+  addImports(template, [serviceImport]);
+  removeTSIgnoreComments(template);
+  removeImportsTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
+  addAutoGenerationComment(template);
 
   return [
     {
       path: moduleBasePath,
-      code: print(templateBase).code,
+      code: print(template).code,
     },
   ];
 }
