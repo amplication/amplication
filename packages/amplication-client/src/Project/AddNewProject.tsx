@@ -27,7 +27,7 @@ const AddNewProject = () => {
         className="new-entity-dialog"
         isOpen={projectDialogStatus}
         onDismiss={handleNewProjectClick}
-        title="New Project"
+        title="Create new project"
       >
         <NewProject onProjectCreated={handleProjectCreated} />
       </Dialog>
