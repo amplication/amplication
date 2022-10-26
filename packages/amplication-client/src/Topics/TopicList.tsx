@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { isEmpty } from "lodash";
-import { gql, useQuery } from "@apollo/client";
+import { gql, Reference, useMutation, useQuery } from "@apollo/client";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import {
@@ -42,11 +42,11 @@ export const TopicList = React.memo(
 
     const { data, loading, error } = useQuery<TData>(GET_TOPICS, {
       variables: {
-        where: { 
+        where: {
           resource: { id: resourceId },
           displayName: searchPhrase !== "" ? {
-            contains: searchPhrase,
-            mode: models.QueryMode.Insensitive,
+                  contains: searchPhrase,
+                  mode: models.QueryMode.Insensitive,
           } : undefined,
         },
         orderBy: {
@@ -54,8 +54,6 @@ export const TopicList = React.memo(
         }
       },
     });
-
-    const errorMessage = formatError(error);
 
     const handleTopicChange = useCallback(
       (topic: models.Topic) => {
@@ -65,11 +63,61 @@ export const TopicList = React.memo(
       [history, resourceId, currentWorkspace, currentProject]
     );
 
+    const [createTopic] = useMutation(CREATE_TOPIC, {
+      update(cache, { data }) {
+        if (!data) return;
+
+        const newTopic = data.createTopic;
+
+        cache.modify({
+          fields: {
+            Topics(existingTopicRefs = [], { readField }) {
+              const newTopicRef = cache.writeFragment({
+                data: newTopic,
+                fragment: NEW_TOPIC_FRAGMENT,
+              });
+
+              if (
+                existingTopicRefs.some(
+                  (topicRef: Reference) =>
+                    readField("id", topicRef) === newTopic.id
+                )
+              ) {
+                return existingTopicRefs;
+              }
+
+              return [...existingTopicRefs, newTopicRef];
+            },
+          },
+        });
+      },
+    });
+
+    const errorMessage = formatError(error);
+
     useEffect(() => {
       if (selectFirst && data && !isEmpty(data.Topics)) {
         const topic = data.Topics[0];
         const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics/${topic.id}`;
         history.push(fieldUrl);
+      }
+      if (!data || isEmpty(data?.Topics)) {
+        createTopic({
+          variables: {
+            data: {
+              ...data,
+              displayName: "Topic1",
+              name: "topic.1",
+              description:
+                "An automatically created topic to be used with the Message Broker",
+              resource: { connect: { id: resourceId } },
+            },
+          },
+        })
+          .then((result) => {
+            console.log(result);
+          })
+          .catch(console.error);
       }
     }, [
       data,
@@ -78,6 +126,7 @@ export const TopicList = React.memo(
       history,
       currentWorkspace,
       currentProject,
+      createTopic,
     ]);
 
     return (
@@ -113,18 +162,32 @@ export const TopicList = React.memo(
 );
 
 export const GET_TOPICS = gql`
-  query Topics(
-    $where: TopicWhereInput
-    $orderBy: TopicOrderByInput
-  ) {
-    Topics(
-      where: $where
-      orderBy: $orderBy
-    ) {
+  query Topics($where: TopicWhereInput, $orderBy: TopicOrderByInput) {
+    Topics(where: $where, orderBy: $orderBy) {
       id
       name
       displayName
       description
     }
+  }
+`;
+
+export const CREATE_TOPIC = gql`
+  mutation createTopic($data: TopicCreateInput!) {
+    createTopic(data: $data) {
+      id
+      name
+      displayName
+      description
+    }
+  }
+`;
+
+export const NEW_TOPIC_FRAGMENT = gql`
+  fragment NewTopic on Topic {
+    id
+    name
+    displayName
+    description
   }
 `;

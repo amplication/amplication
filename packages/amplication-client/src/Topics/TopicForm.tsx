@@ -1,13 +1,13 @@
-import React, { useMemo } from "react";
-import { Formik } from "formik";
-import { Form } from "../Components/Form";
-import { omit } from "lodash";
-import * as models from "../models";
 import { TextField } from "@amplication/design-system";
+import { Formik } from "formik";
+import { omit } from "lodash";
+import React, { useMemo } from "react";
+import { Form } from "../Components/Form";
+import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
 
-import FormikAutoSave from "../util/formikAutoSave";
 import TopicNameField from "../Components/TopicNameField";
+import FormikAutoSave from "../util/formikAutoSave";
 
 type Props = {
   onSubmit: (values: models.Topic) => void;
@@ -64,12 +64,8 @@ const TopicForm = ({ onSubmit, defaultValues }: Props) => {
     >
       <Form childrenAsBlocks>
         <FormikAutoSave debounceMS={1000} />
-        <TopicNameField
-          name="displayName"
-          label="Display Name"
-          minLength={1}
-        />
-        <TopicNameField name="name" />
+        <TopicNameField name="displayName" label="Display Name" minLength={1} />
+        <TopicNameField name="name" label="Name" />
         <TextField name="description" label="Description" textarea rows={3} />
       </Form>
     </Formik>

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useField } from "formik";
-import { useDebouncedCallback } from "use-debounce";
 import { TextInput, TextInputProps } from "@amplication/design-system";
+import { useField } from "formik";
+import React, { useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import "./NameField.scss";
 
 const TOPIC_REGEX = /^[a-zA-Z0-9._-]+$/;
@@ -41,7 +41,7 @@ const TopicNameField = ({ name, ...rest }: Props) => {
       <TextInput
         {...field}
         {...rest}
-        label="Name"
+        label={rest.label}
         autoComplete="off"
         minLength={1}
         pattern={TOPIC_PATTERN}
