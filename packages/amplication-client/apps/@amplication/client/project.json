@@ -1,0 +1,7 @@
+{
+  "name": "@amplication-client",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/@amplication/client/src",
+  "projectType": "application",
+  "tags": []
+}

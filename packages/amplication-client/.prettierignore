@@ -1,4 +1,4 @@
-node_modules/
-build/
-package-lock.json
-coverage/
+# Add files here to ignore them from prettier formatting
+
+/dist
+/coverage
