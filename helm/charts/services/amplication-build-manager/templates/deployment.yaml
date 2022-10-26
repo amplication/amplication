@@ -7,14 +7,14 @@ spec:
         - volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.path }}
-            - name: {{ .Values.dsgVolume.name }}
-              mountPath: {{ .Values.dsgVolume.path }}
+            - name: {{ .Values.dsg-volume.name }}
+              mountPath: {{ .Values.dsg-volume.path }}
       volumes:
         - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.global.pvc.name }}
-        - name: {{ .Values.dsgVolume.name }}
+        - name: {{ .Values.dsg-volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.global.dsgPvc.name }}
+            claimName: {{ .Values.global.dsg-pvc.name }}
 {{- end }}
           

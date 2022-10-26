@@ -32,6 +32,6 @@ volume:
   name: build-artifacts
   path: /build-artifacts
 
-dsgVolume:
+dsg-volume:
   name: dsg-jobs
   path: /dsg-jobs
