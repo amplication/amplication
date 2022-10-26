@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { Storage } from "../../interfaces";
+import { Storage } from "./types";
 import * as fse from "fs-extra";
 import fs from "fs";
-import { CustomError } from "../../errors/custom-error";
 
 @Injectable()
 export class StorageService implements Storage {
@@ -10,7 +9,9 @@ export class StorageService implements Storage {
     try {
       await fse.copy(srcDir, destDir);
     } catch (err) {
-      throw new CustomError("failed to copy files from srcDir to destDir", err);
+      throw new Error("failed to copy files from srcDir to destDir", {
+        cause: err,
+      });
     }
   }
 
@@ -22,7 +23,7 @@ export class StorageService implements Storage {
         }
       });
     } catch (err) {
-      throw new CustomError("failed to delete directory", err);
+      throw new Error("failed to delete directory", { cause: err });
     }
   }
 }

@@ -1,12 +1,11 @@
 import {
   GitHostProviderFactory as GitHostProviderFactoryInterface,
   GitProvider,
-} from "../../interfaces";
+  GitProviderEnum
+} from "./types";
 import { Injectable } from "@nestjs/common";
-import { GitProviderEnum } from "../../enums";
-import { CustomError } from "../../errors/custom-error";
 import { GitHostProviderService } from "./git-host-provider.service";
-import { ErrorMessages } from "../../constants/error-messages";
+import { ErrorMessages } from "./constants";
 
 @Injectable()
 export class GitHostProviderFactory implements GitHostProviderFactoryInterface {
@@ -16,7 +15,7 @@ export class GitHostProviderFactory implements GitHostProviderFactoryInterface {
       case GitProviderEnum.Github:
         return this.gitHubHostProvider;
       default:
-        throw new CustomError(ErrorMessages.GIT_HOST_PROVIDER_ERROR);
+        throw new Error(ErrorMessages.GIT_HOST_PROVIDER_ERROR);
     }
   }
 }

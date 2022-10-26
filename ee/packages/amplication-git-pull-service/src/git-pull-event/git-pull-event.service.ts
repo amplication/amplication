@@ -1,7 +1,6 @@
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
-import { EnumGitPullEventStatus, GitProviderEnum } from "../enums";
 import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
-import { LoggerMessages } from "../constants/logger-messages";
+import { LoggerMessages } from "./constants";
 import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
 import { DEFAULT_GITHUB_PULL_FOLDER } from "../constants";
@@ -13,7 +12,9 @@ import {
   Storage,
   GitClient,
   GitHostProviderFactory,
-} from "../interfaces";
+  GitProviderEnum,
+  GitPullEventStatusEnum
+} from "./types";
 const ROOT_STORAGE_DIR = "STORAGE_PATH";
 const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
 
@@ -27,7 +28,7 @@ export class GitPullEventService implements GitPullEvent {
     private gitHostProviderFactory: GitHostProviderFactory,
     @Inject("GitPullEventRepository")
     private gitPullEventRepository: GitPullEventRepository,
-    @Inject("IGitClient") private gitClientService: GitClient,
+    @Inject("GitClient") private gitClientService: GitClient,
     @Inject("Storage") private storageService: Storage,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
   ) {
@@ -85,7 +86,7 @@ export class GitPullEventService implements GitPullEvent {
 
       await this.gitPullEventRepository.update(
         newPullEventRecord.id,
-        EnumGitPullEventStatus.Ready
+        GitPullEventStatusEnum.Ready
       );
     } catch (err) {
       if (err instanceof Error) {
@@ -107,7 +108,7 @@ export class GitPullEventService implements GitPullEvent {
     const { ...gitPullEventParams } = pushEventMessage;
     const newPullEventRecord = await this.gitPullEventRepository.create({
       ...gitPullEventParams,
-      status: EnumGitPullEventStatus.Created,
+      status: GitPullEventStatusEnum.Created,
     });
 
     this.logger.log(
@@ -204,7 +205,7 @@ export class GitPullEventService implements GitPullEvent {
     this.storageService.deleteDir(dirToDelete);
     await this.gitPullEventRepository.update(
       pullEventRecordId,
-      EnumGitPullEventStatus.Deleted
+      GitPullEventStatusEnum.Deleted
     );
 
     this.logger.log(

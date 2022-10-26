@@ -2,10 +2,8 @@ import * as fs from "fs";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
-import { CustomError } from "../../errors/custom-error";
-import { ErrorMessages } from "../../constants/error-messages";
-import { GitProviderEnum } from "../../enums";
-import { GitClient, PushEventMessage } from "../../interfaces";
+import { ErrorMessages } from "./constants";
+import { GitClient, PushEventMessage, GitProviderEnum } from "./types";
 
 const REMOTE_ORIGIN = "ENV_REMOTE_ORIGIN";
 
@@ -80,7 +78,7 @@ export class GitClientService implements GitClient {
         .cwd(baseDir)
         .checkout(commit);
     } catch (err) {
-      throw new CustomError(ErrorMessages.REPOSITORY_CLONE_FAILURE, err);
+      throw new Error(ErrorMessages.REPOSITORY_CLONE_FAILURE, { cause: err });
     }
   }
 
@@ -101,7 +99,7 @@ export class GitClientService implements GitClient {
     try {
       await this.git.cwd(baseDir).fetch(repository, branch).merge([commit]);
     } catch (err) {
-      throw new CustomError(ErrorMessages.REPOSITORY_PULL_FAILURE, err);
+      throw new Error(ErrorMessages.REPOSITORY_PULL_FAILURE, { cause: err });
     }
   }
 }

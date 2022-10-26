@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import {
   EventData,
   GitPullEventRepository as GitPullEventRepositoryInterface,
-} from "../interfaces";
-import { CustomError } from "../errors/custom-error";
-import { EnumGitPullEventStatus, GitProviderEnum } from "../enums";
+  GitPullEventStatusEnum,
+  GitProviderEnum,
+} from "./types";
 
 @Injectable()
 export class GitPullEventRepository implements GitPullEventRepositoryInterface {
@@ -20,20 +20,20 @@ export class GitPullEventRepository implements GitPullEventRepositoryInterface {
         },
       });
     } catch (err) {
-      throw new CustomError("failed to create a new record in DB", err);
+      throw new Error("failed to create a new record in DB", { cause: err });
     }
   }
 
-  async update(id: bigint, status: EnumGitPullEventStatus): Promise<boolean> {
+  async update(id: bigint, status: GitPullEventStatusEnum): Promise<boolean> {
     try {
       const updatedEvent = await this.prisma.gitPullEvent.update({
         where: { id: id },
         data: { status: status },
       });
 
-      return updatedEvent.status === EnumGitPullEventStatus.Ready;
+      return updatedEvent.status === GitPullEventStatusEnum.Ready;
     } catch (err) {
-      throw new CustomError("failed to create a new record in DB", err);
+      throw new Error("failed to create a new record in DB", { cause: err });
     }
   }
 
@@ -52,7 +52,7 @@ export class GitPullEventRepository implements GitPullEventRepositoryInterface {
           repositoryOwner: repositoryOwner,
           repositoryName: repositoryName,
           branch: branch,
-          status: EnumGitPullEventStatus.Ready,
+          status: GitPullEventStatusEnum.Ready,
           pushedAt: {
             lt: pushedAt,
           },
@@ -76,7 +76,9 @@ export class GitPullEventRepository implements GitPullEventRepositoryInterface {
 
       return previousReadyCommit.shift();
     } catch (err) {
-      throw new CustomError("failed to find previous ready commit in DB", err);
+      throw new Error("failed to find previous ready commit in DB", {
+        cause: err,
+      });
     }
   }
 }
