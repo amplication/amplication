@@ -1,0 +1,42 @@
+@import "../../style/index.scss";
+
+.search-field {
+  margin-left: var(--default-spacing);
+  position: relative;
+
+  input {
+    box-sizing: border-box;
+    border: $border-black10;
+    background-color: var(--white);
+    height: var(--default-button-height);
+    border-radius: var(--default-button-radius);
+    width: 100%;
+
+    font-size: var(--normal-font-size);
+    font-family: var(--primary-font-family);
+    padding-left: calc(20px + var(--default-spacing));
+    padding-right: var(--default-spacing);
+
+    &::placeholder {
+      color: var(--black40);
+    }
+    color: var(--black100);
+    &:hover,
+    &:active,
+    &:focus {
+      @include textField--active;
+      color: var(--black100);
+    }
+  }
+
+  i {
+    position: absolute;
+    color: var(--black40);
+    font-size: 18px;
+    line-height: 32px;
+    padding-left: var(--default-spacing);
+    width: 20px;
+    left: 0;
+    top: 0;
+  }
+}

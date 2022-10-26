@@ -1,0 +1,79 @@
+@import "../../style/index.scss";
+
+@mixin circleSize($size) {
+  width: var($size);
+  height: var($size);
+  min-width: var($size);
+  min-height: var($size);
+}
+
+.circle-badge {
+  @include title1;
+  box-sizing: border-box;
+  transition: all var(--menu-expand-animation-duration) ease-in;
+  text-decoration: none;
+  color: var(--static-white);
+  border: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--primary-font-family);
+  background-color: var(--secondary-turquoise);
+
+  &.xxsmall {
+    @include circleSize(--icon-size-xxsmall);
+    .amp-icon {
+      color: var(--black2);
+      font-size: var(--text-field-label-font-size);
+    }
+  }
+
+  &.xsmall {
+    @include circleSize(--icon-size-xsmall);
+    .amp-icon {
+      color: var(--black2);
+      font-size: var(--text-field-label-font-size);
+    }
+  }
+
+  &.small {
+    @include circleSize(--icon-size-small);
+    .amp-icon {
+      color: var(--black2);
+      font-size: var(--title3-font-size);
+    }
+  }
+
+  &.medium {
+    @include circleSize(--icon-size-medium);
+    .amp-icon {
+      color: var(--black2);
+      font-size: var(--title3-font-size);
+    }
+  }
+
+  &.large {
+    @include circleSize(--icon-size-large);
+    .amp-icon {
+      color: var(--black2);
+      font-size: var(--large-icon-font-size);
+    }
+  }
+
+  &.xlarge {
+    @include circleSize(--icon-size-xlarge);
+    .amp-icon {
+      color: var(--black2);
+      font-size: var(--title4-font-size);
+    }
+  }
+
+  &.xxlarge {
+    @include circleSize(--icon-size-xxlarge);
+    .amp-icon {
+      color: var(--black2);
+      font-size: var(--title4-font-size);
+    }
+  }
+}

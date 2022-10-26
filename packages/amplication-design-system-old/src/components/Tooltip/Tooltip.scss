@@ -1,0 +1,34 @@
+@import "../../style/index.scss";
+
+$width-short: 100px;
+
+.amp-tooltip {
+  &:after {
+    background-color: var(--tooltip-background);
+    color: var(--static-white);
+  }
+
+  &:before,
+  &.tooltipped-n:before,
+  &.tooltipped-nw:before,
+  &.tooltipped-ne:before {
+    border-top-color: var(--tooltip-background) !important;
+  }
+
+  &.tooltipped-e:before {
+    border-top-color: transparent !important;
+    border-right-color: var(--tooltip-background) !important;
+  }
+
+  &.tooltipped-w:before {
+    border-top-color: transparent !important;
+    border-left-color: var(--tooltip-background) !important;
+  }
+
+  &.tooltipped-s:before,
+  &.tooltipped-sw:before,
+  &.tooltipped-se:before {
+    border-top-color: transparent !important;
+    border-bottom-color: var(--tooltip-background) !important;
+  }
+}

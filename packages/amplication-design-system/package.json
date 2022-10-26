@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "1.0.3",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "scripts": {
     "check-format": "prettier --check .",
@@ -8,7 +8,6 @@
     "lint": "eslint --cache .",
     "build": "npx rollup -c",
     "watch": "npm run build -- --watch",
-    "prepare": "npm run build",
     "storybook": "start-storybook -p 6006 -c .storybook watch-css -s ./src",
     "build-storybook": "build-storybook"
   },

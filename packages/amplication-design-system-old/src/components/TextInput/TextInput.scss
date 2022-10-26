@@ -1,0 +1,79 @@
+@import "../../style/index.scss";
+
+.text-input {
+  position: relative;
+
+  &--with-trailing-button .text-input__inner-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+
+    .amp-button {
+      border-radius: 0 var(--default-border-radius) var(--default-border-radius)
+        0 !important;
+      margin-bottom: var(--default-spacing-small);
+    }
+
+    input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      height: var(--default-button-height);
+      border-right: 0;
+      &:active,
+      &:hover,
+      &:focus {
+        border-right: 0;
+      }
+    }
+  }
+
+  &__invalid {
+    color: var(--negative);
+    position: absolute;
+    right: 8px;
+    bottom: 10px;
+  }
+
+  label {
+    @include label;
+    position: relative;
+  }
+
+  input,
+  textarea {
+    @include textField;
+    max-width: var(--form-field-long);
+    display: block;
+
+    &:active:not(:disabled),
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
+      @include textField--active;
+    }
+
+    &:disabled {
+      @include textField--disabled;
+    }
+  }
+
+  textarea {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    height: var(--textarea-height);
+    resize: none;
+  }
+
+  &--has-error {
+    input,
+    textarea {
+      border-color: var(--negative);
+
+      &:active:not(:disabled),
+      &:hover:not(:disabled),
+      &:focus:not(:disabled) {
+        border-color: var(--negative);
+      }
+    }
+  }
+}

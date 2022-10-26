@@ -1,0 +1,20 @@
+@import "../../style/index.scss";
+
+.amp-skeleton {
+  position: relative;
+
+  &__skeleton {
+    position: absolute;
+
+    height: var(--time-since-height);
+    border-radius: calc(var(--time-since-height) / 2);
+    left: 0;
+    right: 0;
+    top: -2px;
+    background-color: var(--black10);
+
+    .ssc-head-line {
+      background-color: var(--black10);
+    }
+  }
+}

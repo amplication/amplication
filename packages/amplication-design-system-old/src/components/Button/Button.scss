@@ -1,0 +1,207 @@
+@import "../../style/index.scss";
+
+$split-icon-font-size: 20px;
+
+.amp-button {
+  height: var(--default-button-height);
+  min-width: 120px;
+  border-radius: var(--default-button-radius) !important;
+  border: $border-primary;
+  box-sizing: border-box;
+  /** @todo: create mixin for font size and weight */
+  font-size: var(--normal-font-size) !important;
+  font-weight: 400 !important;
+  box-shadow: none !important;
+  position: relative;
+  display: inline-flex !important;
+  justify-content: center;
+  align-items: center;
+  letter-spacing: 1px;
+  font-family: var(--primary-font-family);
+
+  &[disabled] {
+    cursor: default;
+    font-family: var(--primary-font-family);
+  }
+
+  &__icon {
+    margin: 0 var(--icon-spacing);
+  }
+
+  &.amp-button--primary {
+    background-color: var(--primary);
+    color: var(--static-white);
+    border: $border-primary;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--dark-purple);
+      border-color: var(--dark-purple);
+    }
+
+    &[disabled] {
+      background-color: var(--black20);
+      color: var(--white);
+      border: none;
+    }
+  }
+
+  &.amp-button--danger {
+    background-color: var(--negative);
+    color: var(--static-white);
+    border: 1px solid var(--negative);
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--negative-dark);
+      border-color: var(--negative-dark);
+    }
+
+    &[disabled] {
+      background-color: var(--black20);
+      color: var(--white);
+      border: none;
+    }
+  }
+
+  &.amp-button--call-to-action {
+    background-color: var(--black90);
+    color: var(--white);
+    border: $border-primary;
+    border-color: var(--black90);
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--black100);
+      border-color: var(--black100);
+    }
+
+    &[disabled] {
+      background-color: var(--black40);
+      border-color: var(--black40);
+      color: var(--black20);
+    }
+  }
+
+  &.amp-button--secondary {
+    background-color: transparent;
+    color: var(--black100);
+    border: $border-black20;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--black10);
+      border-color: none !important;
+      color: var(--black100);
+    }
+
+    &[disabled] {
+      color: var(--black20);
+      background-color: transparent;
+      border: none;
+    }
+  }
+
+  &.amp-button--clear {
+    background-color: transparent;
+    color: var(--black100);
+    border: none;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--black10);
+      border-color: none !important;
+      color: var(--black100);
+    }
+
+    &[disabled] {
+      color: var(--black20);
+      background-color: transparent;
+      border: none;
+    }
+  }
+
+  &.amp-button--text {
+    background-color: transparent;
+    color: var(--black100);
+    border: none;
+    min-width: var(--default-button-height);
+    height: var(--default-button-height);
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover,
+    &:active,
+    &:focus {
+      color: var(--black80);
+      background-color: transparent;
+    }
+
+    &[disabled] {
+      color: var(--black40);
+      background-color: transparent;
+      border: none;
+    }
+  }
+
+  &.amp-button--split {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: center;
+
+    &[disabled] .amp-button__split:after {
+      border-left-color: var(--black10);
+    }
+
+    .amp-button__split {
+      padding-left: var(--default-spacing);
+      margin-left: var(--default-spacing);
+      position: relative;
+
+      &:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: -6px;
+        bottom: -6px;
+        border: none;
+        border-left: $border-primary;
+      }
+
+      .split-icon {
+        font-size: $split-icon-font-size;
+      }
+    }
+  }
+
+  &.amp-button--outline {
+    background-color: transparent;
+    color: var(--black100);
+    border: 1px solid var(--black100);
+    border-radius: 20px !important; //overwrite the amp-button radius
+    padding: 4px 12px;
+    transition: all 0.5s;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: var(--dark-purple);
+      border-color: var(--dark-purple);
+      color: var(--static-white);
+    }
+
+    &[disabled] {
+      background-color: var(--black20);
+      color: var(--white);
+      border: none;
+    }
+  }
+}

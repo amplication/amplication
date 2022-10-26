@@ -1,0 +1,52 @@
+$default-size: 20px;
+$font-size: 15px;
+$padding: 5px;
+
+$large-size: 28px;
+$large-font-size: 20px;
+
+$small-size: 15px;
+$small-font-size: 12px;
+
+.circle-icon {
+  width: $default-size;
+  height: $default-size;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: var(--white);
+  padding: $padding;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  i {
+    font-size: $font-size;
+  }
+
+  &--positive {
+    background-color: var(--positive-default);
+  }
+  &--warning {
+    background-color: var(--warning-default);
+  }
+  &--negative {
+    background-color: var(--negative);
+  }
+
+  &--large {
+    width: $large-size;
+    height: $large-size;
+    i {
+      font-size: $large-font-size;
+    }
+  }
+
+  &--small {
+    width: $small-size;
+    height: $small-size;
+    i {
+      font-weight: bold;
+      font-size: $small-font-size;
+    }
+  }
+}

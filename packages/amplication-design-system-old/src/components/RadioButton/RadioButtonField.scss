@@ -1,0 +1,20 @@
+@import "../../style/index.scss";
+:root {
+  --checkbox-field-size: 16px;
+}
+
+.amp-radio-field {
+  .MuiFormControlLabel-label {
+    font-size: var(--normal-font-size);
+    color: var(--black100);
+    padding-left: var(--default-spacing-small);
+  }
+
+  .PrivateSwitchBase-root {
+    color: var(--black20);
+
+    &.Mui-checked {
+      color: var(--primary);
+    }
+  }
+}
