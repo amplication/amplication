@@ -27,9 +27,6 @@ module.exports = {
         paths: ["."],
         extensions: [".js", ".jsx", ".ts", ".tsx", ".d.ts"],
       },
-      "eslint-import-resolver-lerna": {
-        packages: path.resolve(__dirname, ".."),
-      },
     },
   },
   overrides: [
