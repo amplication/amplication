@@ -4,7 +4,8 @@ spec:
   template:
     spec:
       containers:
-        - volumeMounts:
+        - name: '{{ .Values.name }}'
+          volumeMounts:
             - name: {{ .Values.volume.name }}
               mountPath: {{ .Values.volume.path }}
             - name: {{ .Values.dsgVolume.name }}
