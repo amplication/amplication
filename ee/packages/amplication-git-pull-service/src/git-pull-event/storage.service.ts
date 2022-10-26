@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Storage } from "./types";
+import { Storage } from "./git-pull-event.types";
 import * as fse from "fs-extra";
 import fs from "fs";
 
@@ -9,9 +9,7 @@ export class StorageService implements Storage {
     try {
       await fse.copy(srcDir, destDir);
     } catch (err) {
-      throw new Error("failed to copy files from srcDir to destDir", {
-        cause: err,
-      });
+      throw new Error(`failed to copy files from srcDir to destDir: ${err}`);
     }
   }
 
@@ -23,7 +21,7 @@ export class StorageService implements Storage {
         }
       });
     } catch (err) {
-      throw new Error("failed to delete directory", { cause: err });
+      throw new Error(`failed to delete directory ${err}`);
     }
   }
 }

@@ -1,11 +1,11 @@
 import {
   GitHostProviderFactory as GitHostProviderFactoryInterface,
   GitProvider,
-  GitProviderEnum
-} from "./types";
+  GitProviderEnum,
+} from "./git-pull-event.types";
 import { Injectable } from "@nestjs/common";
 import { GitHostProviderService } from "./git-host-provider.service";
-import { ErrorMessages } from "./constants";
+import { ErrorMessages } from "./git-pull-event.constants";
 
 @Injectable()
 export class GitHostProviderFactory implements GitHostProviderFactoryInterface {

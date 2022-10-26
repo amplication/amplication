@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { GitProvider } from "./types";
+import { GitProvider } from "./git-pull-event.types";
 import { App } from "octokit";
 import { convertToNumber } from "../utils/convert-to-number";
 import { ConfigService } from "@nestjs/config";
-import { ErrorMessages } from "./constants";
+import { ErrorMessages } from "./git-pull-event.constants";
 
 const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
 const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
@@ -41,7 +41,7 @@ export class GitHostProviderService implements GitProvider {
       );
       return data.token;
     } catch (err) {
-      throw new Error(ErrorMessages.ACCESS_TOKEN_ERROR, { cause: err });
+      throw new Error(`${ErrorMessages.ACCESS_TOKEN_ERROR}: ${err}`);
     }
   }
 }

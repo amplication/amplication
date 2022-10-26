@@ -5,7 +5,7 @@ import {
   GitPullEventRepository as GitPullEventRepositoryInterface,
   GitPullEventStatusEnum,
   GitProviderEnum,
-} from "./types";
+} from "./git-pull-event.types";
 
 @Injectable()
 export class GitPullEventRepository implements GitPullEventRepositoryInterface {
@@ -20,7 +20,7 @@ export class GitPullEventRepository implements GitPullEventRepositoryInterface {
         },
       });
     } catch (err) {
-      throw new Error("failed to create a new record in DB", { cause: err });
+      throw new Error(`failed to create a new record in DB: ${err}`);
     }
   }
 
@@ -33,7 +33,7 @@ export class GitPullEventRepository implements GitPullEventRepositoryInterface {
 
       return updatedEvent.status === GitPullEventStatusEnum.Ready;
     } catch (err) {
-      throw new Error("failed to create a new record in DB", { cause: err });
+      throw new Error(`failed to create a new record in DB: ${err}`);
     }
   }
 
@@ -76,9 +76,7 @@ export class GitPullEventRepository implements GitPullEventRepositoryInterface {
 
       return previousReadyCommit.shift();
     } catch (err) {
-      throw new Error("failed to find previous ready commit in DB", {
-        cause: err,
-      });
+      throw new Error(`failed to find previous ready commit in DB: ${err}`);
     }
   }
 }
