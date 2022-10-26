@@ -13,17 +13,17 @@ const PACKAGE_JSON_ENCODING = "utf-8";
 const PACKAGE_JSON_TEMPLATE = "package.template.json";
 const PACKAGE_JSON_FILE_NAME = "package.json";
 
-export function createPackageJson(
+export function createServerPackageJson(
   eventParams: CreateServerPackageJsonParams
 ): Promise<Module[]> {
   return pluginWrapper(
-    createPackageJsonInternal,
+    createServerPackageJsonInternal,
     EventNames.CreateServerPackageJson,
     eventParams
   );
 }
 
-export async function createPackageJsonInternal({
+async function createServerPackageJsonInternal({
   updateProperties,
 }: CreateServerPackageJsonParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;

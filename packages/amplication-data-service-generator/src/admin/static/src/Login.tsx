@@ -8,11 +8,7 @@ import "./login.scss";
 
 const CLASS_NAME = "login-page";
 
-type Props = {
-  theme?: Record<string, unknown>;
-};
-
-const Login: React.FC<Props> = ({ theme }) => {
+const Login = ({ theme }: any) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const login = useLogin();
