@@ -5,7 +5,7 @@ WORKDIR /app
 COPY ./dist/ee/packages/amplication-git-pull-service/package-lock.json .
 COPY ./dist/ee/packages/amplication-git-pull-service/package.json .
 
-COPY packages/amplication-nest-logger-module packages/amplication-nest-logger-module
+COPY ../../packages/amplication-nest-logger-module packages/amplication-nest-logger-module
 
 RUN npm ci --omit=dev
 
