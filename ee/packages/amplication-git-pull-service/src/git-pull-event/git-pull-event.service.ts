@@ -1,5 +1,4 @@
-import { Inject, Injectable, LoggerService } from "@nestjs/common";
-import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
+import { Inject, Injectable } from "@nestjs/common";
 import { LoggerMessages } from "./git-pull-event.constants";
 import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
@@ -15,6 +14,10 @@ import {
   GitProviderEnum,
   GitPullEventStatusEnum,
 } from "./git-pull-event.types";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from "@amplication/nest-logger-module";
 const ROOT_STORAGE_DIR = "STORAGE_PATH";
 const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
 
@@ -28,7 +31,8 @@ export class GitPullEventService implements GitPullEvent {
     private gitPullEventRepository: GitPullEventRepository,
     private gitClientService: GitClient,
     private storageService: Storage,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {
     this.rootStorageDir =
       this.configService.get<string>(ROOT_STORAGE_DIR) ||
