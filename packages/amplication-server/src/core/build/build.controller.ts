@@ -5,13 +5,13 @@ import {
   Controller,
   UseInterceptors,
   NotFoundException,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { MorganInterceptor } from 'nest-morgan';
 import {
   BuildService,
-  WINSTON_LEVEL_TO_ACTION_LOG_LEVEL
+  WINSTON_LEVEL_TO_ACTION_LOG_LEVEL,
 } from './build.service';
 import { BuildResultNotFound } from './errors/BuildResultNotFound';
 import { BuildNotFoundError } from './errors/BuildNotFoundError';
@@ -63,7 +63,7 @@ export class BuildController {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       'Content-Type': ZIP_MIME,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Disposition': `attachment; filename="${id}.zip"`
+      'Content-Disposition': `attachment; filename="${id}.zip"`,
     });
     stream.pipe(res);
   }
@@ -77,7 +77,11 @@ export class BuildController {
     const validArgs = plainToInstance(CanUserAccessArgs, message.value);
     const isUserCanAccess = await this.buildService.canUserAccess(validArgs);
     return {
-      value: { error: null, status: StatusEnum.Success, value: isUserCanAccess }
+      value: {
+        error: null,
+        status: StatusEnum.Success,
+        value: isUserCanAccess,
+      },
     };
   }
 

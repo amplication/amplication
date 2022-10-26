@@ -8,7 +8,7 @@ import {
   Action,
   ActionStep,
   EnumActionLogLevel,
-  FindOneActionArgs
+  FindOneActionArgs,
 } from './dto/';
 import { StepNameEmptyError } from './errors/StepNameEmptyError';
 import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
@@ -34,18 +34,18 @@ export class ActionService {
   async getSteps(actionId: string): Promise<ActionStep[]> {
     return this.prisma.actionStep.findMany({
       where: {
-        actionId: actionId
+        actionId: actionId,
       },
       orderBy: {
-        createdAt: Prisma.SortOrder.asc
+        createdAt: Prisma.SortOrder.asc,
       },
       include: {
         logs: {
           orderBy: {
-            createdAt: Prisma.SortOrder.asc
-          }
-        }
-      }
+            createdAt: Prisma.SortOrder.asc,
+          },
+        },
+      },
     });
   }
 
@@ -70,9 +70,9 @@ export class ActionService {
         message,
         name: stepName,
         action: {
-          connect: { id: actionId }
-        }
-      }
+          connect: { id: actionId },
+        },
+      },
     });
   }
 
@@ -87,13 +87,13 @@ export class ActionService {
   ): Promise<void> {
     await this.prisma.actionStep.update({
       where: {
-        id: step.id
+        id: step.id,
       },
       data: {
         status,
-        completedAt: new Date()
+        completedAt: new Date(),
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
   }
 
@@ -102,7 +102,7 @@ export class ActionService {
     status: EnumActionStepStatus
   ): Promise<void> {
     const step = await this.prisma.actionStep.findUnique({
-      where: { id: actionStepId }
+      where: { id: actionStepId },
     });
     switch (status) {
       case EnumActionStepStatus.Success:
@@ -129,10 +129,10 @@ export class ActionService {
         message: message.toString(),
         meta,
         step: {
-          connect: { id: step.id }
-        }
+          connect: { id: step.id },
+        },
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
   }
 

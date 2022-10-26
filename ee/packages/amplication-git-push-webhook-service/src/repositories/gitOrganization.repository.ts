@@ -13,6 +13,7 @@ export class GitOrganizationRepository implements GitOrganizationInterface {
   ): Promise<GitOrganization> {
     return await this.prisma.gitOrganization.findUnique({
       where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         provider_installationId: {
           installationId,
           provider,

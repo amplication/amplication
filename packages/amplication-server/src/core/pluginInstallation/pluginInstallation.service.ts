@@ -26,7 +26,7 @@ const reOrderPlugins = (
     (orderedObj: { [key: string]: string }, plugin: PluginOrderItem) => {
       if (currId === plugin.pluginId) return orderedObj;
 
-      orderIndex = orderedObj.hasOwnProperty(orderIndex)
+      orderIndex = Object.hasOwn(orderedObj, orderIndex)
         ? orderIndex + 1
         : orderIndex;
 
@@ -70,11 +70,11 @@ export class PluginInstallationService extends BlockTypeService<
     await this.setOrder(
       {
         data: {
-          order: -1
+          order: -1,
         },
         where: {
-          id: newPlugin.id
-        }
+          id: newPlugin.id,
+        },
       },
       user
     );
@@ -88,8 +88,8 @@ export class PluginInstallationService extends BlockTypeService<
   ): Promise<PluginInstallation> {
     const installation = await super.findOne({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     args.data.pluginId = installation.pluginId;
@@ -101,16 +101,16 @@ export class PluginInstallationService extends BlockTypeService<
   async setOrder(args: SetPluginOrderArgs, user: User): Promise<PluginOrder> {
     const installation = await super.findOne({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     const [currentOrder] = await this.pluginOrderService.findMany({
       where: {
         resource: {
-          id: installation.resourceId
-        }
-      }
+          id: installation.resourceId,
+        },
+      },
     });
 
     if (!currentOrder) {
@@ -121,15 +121,15 @@ export class PluginInstallationService extends BlockTypeService<
             order: [
               {
                 pluginId: installation.pluginId,
-                order: 1
-              }
+                order: 1,
+              },
             ],
             resource: {
               connect: {
-                id: installation.resourceId
-              }
-            }
-          }
+                id: installation.resourceId,
+              },
+            },
+          },
         },
         user
       );
@@ -142,7 +142,7 @@ export class PluginInstallationService extends BlockTypeService<
         order:
           args.data.order === -1
             ? currentOrder.order.length + 1
-            : args.data.order
+            : args.data.order,
       },
       orderedPluginArr
     );
@@ -150,11 +150,11 @@ export class PluginInstallationService extends BlockTypeService<
     return this.pluginOrderService.update(
       {
         data: {
-          order: sortPluginsArr(newOrderedPlugins)
+          order: sortPluginsArr(newOrderedPlugins),
         },
         where: {
-          id: currentOrder.id
-        }
+          id: currentOrder.id,
+        },
       },
       user
     );

@@ -151,7 +151,9 @@ export class AppService implements AppInterface {
     let res = 0;
     try {
       res = parseInt(value);
-    } catch (error) {}
+    } catch (error) {
+      this.logger.error(error);
+    }
     return res;
   }
 }

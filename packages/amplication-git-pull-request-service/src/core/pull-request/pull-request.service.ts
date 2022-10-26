@@ -1,4 +1,4 @@
-import { GitService } from '@amplication/git-service';
+import { GitService } from '@amplication/git-utils';
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,

@@ -49,7 +49,7 @@ spec:
                       - name: persistent-storage
                         persistentVolumeClaim:
                           claimName: efs-claim-{{ .Values.envName }}-dsg
-                ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+                ttlSecondsAfterFinished: "{{ .Values.job.ttlSecondsAfterFinished }}"
                 backoffLimit: 0
           parameters:
             - src:

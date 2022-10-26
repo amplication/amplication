@@ -1,5 +1,5 @@
-import { EnumGitPullEventStatus } from '../enums/gitPullEventStatus.enum';
-import { GitProviderEnum } from '../enums/gitProvider.enum';
+import { EnumGitPullEventStatus } from "../enums/gitPullEventStatus.enum";
+import { GitProviderEnum } from "../enums/gitProvider.enum";
 
 export class EventData {
   id: bigint;

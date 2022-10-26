@@ -1,9 +1,9 @@
-import { ConfigModule } from '@nestjs/config';
-import { GitClientService } from '../../../providers/gitClient/gitClient.service';
-import { Test, TestingModule } from '@nestjs/testing';
-import { cloneStub, pullStub } from '../../../__mocks__/stubs/gitClient.stub';
+import { ConfigModule } from "@nestjs/config";
+import { GitClientService } from "../../../providers/gitClient/gitClient.service";
+import { Test, TestingModule } from "@nestjs/testing";
+import { cloneStub, pullStub } from "../../../__mocks__/stubs/gitClient.stub";
 
-describe('Testing GitClientService', () => {
+describe("Testing GitClientService", () => {
   let gitClientService: GitClientService;
 
   beforeEach(async () => {
@@ -16,12 +16,12 @@ describe('Testing GitClientService', () => {
     gitClientService = module.get<GitClientService>(GitClientService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(gitClientService).toBeDefined();
   });
 
-  it.skip('should clone a repository to a specific dir', async () => {
-    jest.mock('simple-git', () => {
+  it.skip("should clone a repository to a specific dir", async () => {
+    jest.mock("simple-git", () => {
       return {
         clone: jest.fn(() => Promise.resolve()),
       };
@@ -34,7 +34,7 @@ describe('Testing GitClientService', () => {
     expect(result).toEqual(undefined);
   });
 
-  it.skip('should pull a repository to a specific dir', async () => {
+  it.skip("should pull a repository to a specific dir", async () => {
     const result = await gitClientService.pull(
       pullStub.pushEventMessage,
       pullStub.baseDir,

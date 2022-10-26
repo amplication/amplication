@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { IGitProvider } from '../../contracts/interfaces/gitProvider.interface';
-import { App } from 'octokit';
-import { convertToNumber } from '../../utils/convertToNumber';
-import { ConfigService } from '@nestjs/config';
-import { CustomError } from '../../errors/CustomError';
-import { ErrorMessages } from '../../constants/errorMessages';
+import { Injectable } from "@nestjs/common";
+import { IGitProvider } from "../../contracts/interfaces/gitProvider.interface";
+import { App } from "octokit";
+import { convertToNumber } from "../../utils/convertToNumber";
+import { ConfigService } from "@nestjs/config";
+import { CustomError } from "../../errors/CustomError";
+import { ErrorMessages } from "../../constants/errorMessages";
 
-const GITHUB_APP_APP_ID_VAR = 'GITHUB_APP_APP_ID';
-const GITHUB_APP_PRIVATE_KEY_VAR = 'GITHUB_APP_PRIVATE_KEY';
+const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
+const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
 /*
  * Octokit integration
  * */
@@ -19,7 +19,7 @@ export class GitHostProviderService implements IGitProvider {
     const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
     const privateKey = this.configService
       .get(GITHUB_APP_PRIVATE_KEY_VAR)
-      .replace(/\\n/g, '\n');
+      .replace(/\\n/g, "\n");
 
     this.app = new App({
       appId,
@@ -36,6 +36,7 @@ export class GitHostProviderService implements IGitProvider {
       const { data } = await octokit.request(
         `POST /app/installations/${installationId}/access_tokens`,
         {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           installation_id: installationIdNumber,
         }
       );

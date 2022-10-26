@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import diffDefault from 'jest-diff';
+import { diff } from 'jest-diff';
 import generateGraphQLSchema from './generate-graphql-schema';
 
 const SCHEMA_PATH = path.join(__dirname, '..', 'src', 'schema.graphql');
@@ -15,7 +15,7 @@ async function checkGraphQLSchema() {
   const generatedSchema = await readGraphQLSchema();
   await fs.promises.writeFile(SCHEMA_PATH, existingSchema);
   if (existingSchema !== generatedSchema) {
-    console.log(diffDefault(existingSchema, generatedSchema));
+    console.log(diff(existingSchema, generatedSchema));
     throw new Error('Generated schema does not match the existing schema');
   }
 }
@@ -23,7 +23,7 @@ async function checkGraphQLSchema() {
 if (require.main === module) {
   checkGraphQLSchema()
     .then(() => process.exit(0))
-    .catch(error => {
+    .catch((error) => {
       console.error(error);
       process.exit(1);
     });

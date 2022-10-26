@@ -2,8 +2,8 @@ import {
   GitModule,
   GitService,
   GithubService,
-  GitServiceFactory
-} from '@amplication/git-service';
+  GitServiceFactory,
+} from '@amplication/git-utils';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
 import { Resource } from '../../../models/Resource';
@@ -22,7 +22,7 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   name: 'repositoryTest',
   gitOrganizationId: 'exampleGitOrganizationId',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
 const EXAMPLE_GIT_ORGANIZATION: GitOrganization = {
@@ -32,11 +32,11 @@ const EXAMPLE_GIT_ORGANIZATION: GitOrganization = {
   name: 'organizationTest',
   installationId: '123456',
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 };
 
 const DEFAULT_RESOURCE_DATA = {
-  color: 'DEFAULT_RESOURCE_COLOR'
+  color: 'DEFAULT_RESOURCE_COLOR',
 };
 
 const EXAMPLE_SERVICE_RESOURCE: Resource = {
@@ -48,7 +48,7 @@ const EXAMPLE_SERVICE_RESOURCE: Resource = {
   name: 'EXAMPLE_RESOURCE_NAME',
   description: 'EXAMPLE_RESOURCE_DESCRIPTION',
   deletedAt: null,
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
 };
 
 const prismaGitRepositoryCreateMock = jest.fn(() => {
@@ -83,28 +83,28 @@ describe('GitService', () => {
             gitRepository: {
               create: prismaGitRepositoryCreateMock,
               findUnique: prismaGitRepositoryReturnEmptyMock,
-              findFirst: () => null
+              findFirst: () => null,
             },
             gitOrganization: {
-              findUnique: prismaGitOrganizationCreateMock
+              findUnique: prismaGitOrganizationCreateMock,
             },
             resource: {
-              findUnique: prismaResourceCreateMock
-            }
-          }
+              findUnique: prismaResourceCreateMock,
+            },
+          },
         },
         {
           provide: GitServiceFactory,
-          useValue: MOCK_GIT_SERVICE_FACTORY
+          useValue: MOCK_GIT_SERVICE_FACTORY,
         },
         {
           provide: ResourceService,
           useValue: {
-            resource: () => EXAMPLE_SERVICE_RESOURCE
-          }
-        }
+            resource: () => EXAMPLE_SERVICE_RESOURCE,
+          },
+        },
       ],
-      imports: [GitModule]
+      imports: [GitModule],
     }).compile();
 
     gitService = module.get<GitProviderService>(GitProviderService);
@@ -117,12 +117,13 @@ describe('GitService', () => {
   {
     describe('GitService.getReposOfOrganization()', () => {
       it('should return RemoteGitRepositories[]', async () => {
-        const remoteGitRepositoriesWhereUniqueInput: RemoteGitRepositoriesWhereUniqueInput = {
-          gitOrganizationId: 'exampleGitOrganizationId',
-          gitProvider: EnumGitProvider.Github,
-          limit: 2,
-          page: 1
-        };
+        const remoteGitRepositoriesWhereUniqueInput: RemoteGitRepositoriesWhereUniqueInput =
+          {
+            gitOrganizationId: 'exampleGitOrganizationId',
+            gitProvider: EnumGitProvider.Github,
+            limit: 2,
+            page: 1,
+          };
         const remoteGitRepositories = await gitService.getReposOfOrganization(
           remoteGitRepositoriesWhereUniqueInput
         );
@@ -137,7 +138,7 @@ describe('GitService', () => {
           gitOrganizationId: 'exampleGitOrganizationId',
           gitProvider: EnumGitProvider.Github,
           public: true,
-          gitOrganizationType: EnumGitOrganizationType.Organization
+          gitOrganizationType: EnumGitOrganizationType.Organization,
         };
         expect(
           await gitService.createRemoteGitRepository(createGitRepositoryInput)

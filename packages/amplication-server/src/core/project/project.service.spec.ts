@@ -7,15 +7,15 @@ import {
   Commit,
   Entity,
   EntityVersion,
-  Resource
+  Resource,
 } from '../../models';
 import { Environment } from '../environment/dto';
 import { Build } from '../build/dto/Build';
 import {
   EnumResourceType,
   EnumPendingChangeAction,
-  EnumPendingChangeOriginType
-} from '@amplication/code-gen-types/dist/models';
+  EnumPendingChangeOriginType,
+} from '@amplication/code-gen-types/models';
 import { PendingChange } from '../resource/dto/PendingChange';
 import { ResourceService } from '../resource/resource.service';
 import { BuildService } from '../build/build.service';
@@ -54,7 +54,7 @@ const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  message: EXAMPLE_MESSAGE
+  message: EXAMPLE_MESSAGE,
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
@@ -63,7 +63,7 @@ const EXAMPLE_ENVIRONMENT: Environment = {
   updatedAt: new Date(),
   resourceId: EXAMPLE_RESOURCE_ID,
   name: EXAMPLE_NAME,
-  address: EXAMPLE_ADDRESS
+  address: EXAMPLE_ADDRESS,
 };
 
 const EXAMPLE_BUILD: Build = {
@@ -73,7 +73,7 @@ const EXAMPLE_BUILD: Build = {
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
-  commitId: EXAMPLE_COMMIT_ID
+  commitId: EXAMPLE_COMMIT_ID,
 };
 
 const EXAMPLE_ENTITY: Entity = {
@@ -83,7 +83,7 @@ const EXAMPLE_ENTITY: Entity = {
   resourceId: EXAMPLE_RESOURCE_ID,
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME
+  pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
 };
 
 const EXAMPLE_BLOCK: Block = {
@@ -95,7 +95,7 @@ const EXAMPLE_BLOCK: Block = {
   blockType: EnumBlockType.ServiceSettings,
   parentBlock: null,
   versionNumber: CURRENT_VERSION_NUMBER,
-  description: 'example block description'
+  description: 'example block description',
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -108,7 +108,7 @@ const EXAMPLE_RESOURCE: Resource = {
   entities: [EXAMPLE_ENTITY],
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT],
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {
@@ -117,7 +117,7 @@ const EXAMPLE_CHANGED_ENTITY: PendingChange = {
   originType: EnumPendingChangeOriginType.Entity,
   versionNumber: 1,
   origin: EXAMPLE_ENTITY,
-  resource: EXAMPLE_RESOURCE
+  resource: EXAMPLE_RESOURCE,
 };
 
 const EXAMPLE_CHANGED_BLOCK: PendingChange = {
@@ -126,7 +126,7 @@ const EXAMPLE_CHANGED_BLOCK: PendingChange = {
   originType: EnumPendingChangeOriginType.Block,
   versionNumber: 1,
   origin: EXAMPLE_BLOCK,
-  resource: EXAMPLE_RESOURCE
+  resource: EXAMPLE_RESOURCE,
 };
 
 const EXAMPLE_ENTITY_VERSION: EntityVersion = {
@@ -137,7 +137,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   versionNumber: EXAMPLE_VERSION_NUMBER,
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
-  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME
+  pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
 };
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
@@ -145,7 +145,7 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   createdAt: new Date(),
   updatedAt: new Date(),
   versionNumber: EXAMPLE_VERSION_NUMBER,
-  displayName: EXAMPLE_BLOCK_DISPLAY_NAME
+  displayName: EXAMPLE_BLOCK_DISPLAY_NAME,
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION = {};
@@ -195,45 +195,45 @@ describe('ProjectService', () => {
           useClass: jest.fn().mockImplementation(() => ({
             resource: {
               create: prismaResourceCreateMock,
-              findMany: prismaResourceFindManyMock
+              findMany: prismaResourceFindManyMock,
             },
             entity: {
-              findMany: prismaEntityFindManyMock
+              findMany: prismaEntityFindManyMock,
             },
             commit: {
-              create: prismaCommitCreateMock
-            }
-          }))
+              create: prismaCommitCreateMock,
+            },
+          })),
         },
         {
           provide: BuildService,
           useClass: jest.fn(() => ({
-            create: buildServiceCreateMock
-          }))
+            create: buildServiceCreateMock,
+          })),
         },
         {
           provide: EntityService,
           useClass: jest.fn().mockImplementation(() => ({
             createVersion: entityServiceCreateVersionMock,
             getChangedEntities: entityServiceGetChangedEntitiesMock,
-            releaseLock: entityServiceReleaseLockMock
-          }))
+            releaseLock: entityServiceReleaseLockMock,
+          })),
         },
         {
           provide: BlockService,
           useValue: {
             getChangedBlocks: blockServiceGetChangedBlocksMock,
             createVersion: blockServiceCreateVersionMock,
-            releaseLock: blockServiceReleaseLockMock
-          }
+            releaseLock: blockServiceReleaseLockMock,
+          },
         },
         {
           provide: ResourceService,
           useClass: jest.fn(() => ({
-            createProjectConfiguration: createProjectConfigurationMock
-          }))
-        }
-      ]
+            createProjectConfiguration: createProjectConfigurationMock,
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<ProjectService>(ProjectService);
@@ -247,8 +247,8 @@ describe('ProjectService', () => {
       data: {
         message: EXAMPLE_MESSAGE,
         project: { connect: { id: EXAMPLE_PROJECT_ID } },
-        user: { connect: { id: EXAMPLE_USER_ID } }
-      }
+        user: { connect: { id: EXAMPLE_USER_ID } },
+      },
     };
     const findManyArgs = {
       where: {
@@ -258,65 +258,65 @@ describe('ProjectService', () => {
           workspace: {
             users: {
               some: {
-                id: EXAMPLE_USER_ID
-              }
-            }
-          }
-        }
-      }
+                id: EXAMPLE_USER_ID,
+              },
+            },
+          },
+        },
+      },
     };
 
     const createVersionArgs = {
       data: {
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
+            id: EXAMPLE_COMMIT_ID,
+          },
         },
         entity: {
           connect: {
-            id: EXAMPLE_ENTITY_ID
-          }
-        }
-      }
+            id: EXAMPLE_ENTITY_ID,
+          },
+        },
+      },
     };
     const blockCreateVersionArgs = {
       data: {
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
+            id: EXAMPLE_COMMIT_ID,
+          },
         },
         block: {
           connect: {
-            id: EXAMPLE_BLOCK_ID
-          }
-        }
-      }
+            id: EXAMPLE_BLOCK_ID,
+          },
+        },
+      },
     };
     const changesArgs = {
       projectId: EXAMPLE_PROJECT_ID,
-      userId: EXAMPLE_USER_ID
+      userId: EXAMPLE_USER_ID,
     };
     const buildCreateArgs = {
       data: {
         resource: {
           connect: {
-            id: EXAMPLE_RESOURCE_ID
-          }
+            id: EXAMPLE_RESOURCE_ID,
+          },
         },
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
+            id: EXAMPLE_COMMIT_ID,
+          },
         },
         createdBy: {
           connect: {
-            id: EXAMPLE_USER_ID
-          }
+            id: EXAMPLE_USER_ID,
+          },
         },
-        message: args.data.message
-      }
+        message: args.data.message,
+      },
     };
     expect(await service.commit(args, false)).toEqual(EXAMPLE_COMMIT);
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);

@@ -6,7 +6,7 @@ import { EnumBlockType } from '../../enums/EnumBlockType';
 import {
   DEFAULT_SERVICE_SETTINGS,
   ServiceSettingsValues,
-  ServiceSettingsValuesExtended
+  ServiceSettingsValuesExtended,
 } from './constants';
 import { User } from '../../models';
 import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
@@ -32,7 +32,7 @@ export class ServiceSettingsService {
       dbUser,
       authProvider,
       serverSettings,
-      adminUISettings
+      adminUISettings,
     } = await this.getServiceSettingsBlock(args, user);
 
     return {
@@ -44,7 +44,7 @@ export class ServiceSettingsService {
       resourceId: args.where.id,
       authProvider,
       serverSettings,
-      adminUISettings
+      adminUISettings,
     };
   }
 
@@ -52,24 +52,23 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettings> {
-    const [serviceSettings] = await this.blockService.findManyByBlockType<
-      ServiceSettings
-    >(
-      {
-        where: {
-          resource: {
-            id: args.where.id
-          }
-        }
-      },
-      EnumBlockType.ServiceSettings
-    );
+    const [serviceSettings] =
+      await this.blockService.findManyByBlockType<ServiceSettings>(
+        {
+          where: {
+            resource: {
+              id: args.where.id,
+            },
+          },
+        },
+        EnumBlockType.ServiceSettings
+      );
 
     return {
       ...serviceSettings,
       authProvider: serviceSettings.authProvider || EnumAuthProviderType.Jwt,
-      ...(!serviceSettings.hasOwnProperty('serverSettings') ||
-      !serviceSettings.hasOwnProperty('adminUISettings')
+      ...(!Object.hasOwn(serviceSettings, 'serverSettings') ||
+      !Object.hasOwn(serviceSettings, 'adminUISettings')
         ? this.updateServiceSettings(
             {
               data: {
@@ -77,20 +76,20 @@ export class ServiceSettingsService {
                 serverSettings: {
                   generateGraphQL: true,
                   generateRestApi: true,
-                  serverPath: ''
+                  serverPath: '',
                 },
                 adminUISettings: {
                   generateAdminUI: true,
-                  adminUIPath: ''
-                }
+                  adminUIPath: '',
+                },
               },
               where: {
-                id: args.where.id
-              }
+                id: args.where.id,
+              },
             },
             user
           )
-        : {})
+        : {}),
     };
   }
 
@@ -100,7 +99,7 @@ export class ServiceSettingsService {
   ): Promise<ServiceSettings> {
     const serviceSettingsBlock = await this.getServiceSettingsBlock(
       {
-        where: { id: args.where.id }
+        where: { id: args.where.id },
       },
       user
     );
@@ -108,7 +107,7 @@ export class ServiceSettingsService {
     return this.blockService.update<ServiceSettings>(
       {
         where: {
-          id: serviceSettingsBlock.id
+          id: serviceSettingsBlock.id,
         },
         data: {
           ...serviceSettingsBlock,
@@ -121,7 +120,7 @@ export class ServiceSettingsService {
               args.data?.adminUISettings?.generateAdminUI
             )
               ? args.data?.adminUISettings?.generateAdminUI
-              : serviceSettingsBlock.adminUISettings.generateAdminUI
+              : serviceSettingsBlock.adminUISettings.generateAdminUI,
           },
           ...{
             serverSettings: {
@@ -137,8 +136,8 @@ export class ServiceSettingsService {
                 : serviceSettingsBlock.serverSettings.generateRestApi,
               serverPath: isStringBool(args.data?.serverSettings?.serverPath)
                 ? args.data?.serverSettings?.serverPath
-                : serviceSettingsBlock.serverSettings.serverPath
-            }
+                : serviceSettingsBlock.serverSettings.serverPath,
+            },
           },
           ...(!args.data.serverSettings.generateGraphQL
             ? {
@@ -148,11 +147,11 @@ export class ServiceSettingsService {
                   )
                     ? args.data?.adminUISettings?.adminUIPath
                     : serviceSettingsBlock.adminUISettings.adminUIPath,
-                  generateAdminUI: false
-                }
+                  generateAdminUI: false,
+                },
               }
-            : {})
-        }
+            : {}),
+        },
       },
       user
     );
@@ -173,12 +172,12 @@ export class ServiceSettingsService {
         data: {
           resource: {
             connect: {
-              id: resourceId
-            }
+              id: resourceId,
+            },
           },
           ...settings,
-          blockType: EnumBlockType.ServiceSettings
-        }
+          blockType: EnumBlockType.ServiceSettings,
+        },
       },
       user.id
     );
@@ -189,12 +188,12 @@ export class ServiceSettingsService {
   ): void {
     (settings.adminUISettings = {
       generateAdminUI: generationSettings.generateAdminUI,
-      adminUIPath: ''
+      adminUIPath: '',
     }),
       (settings.serverSettings = {
         generateGraphQL: generationSettings.generateGraphQL,
         generateRestApi: generationSettings.generateRestApi,
-        serverPath: ''
+        serverPath: '',
       });
   }
 }

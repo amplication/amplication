@@ -1,30 +1,30 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Resource } from './Resource'; // eslint-disable-line import/no-cycle
-import { BlockVersion } from './BlockVersion'; // eslint-disable-line import/no-cycle
+import { Resource } from './Resource';
+import { BlockVersion } from './BlockVersion';
 import { EnumBlockType } from '../enums/EnumBlockType';
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class Block {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   /** @todo: do we need the Resource property on the block? should we allow navigation from Block to Resource? */
   @Field(() => Resource, {
-    nullable: true
+    nullable: true,
   })
   resource?: Resource;
 
@@ -32,7 +32,7 @@ export class Block {
   resourceId: string;
 
   @Field(() => Block, {
-    nullable: true
+    nullable: true,
   })
   parentBlock?: Block;
 
@@ -40,37 +40,37 @@ export class Block {
   parentBlockId?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   description?: string;
 
   @Field(() => EnumBlockType, {
-    nullable: false
+    nullable: false,
   })
   blockType: keyof typeof EnumBlockType;
 
   @Field(() => Number, {
-    nullable: true
+    nullable: true,
   })
   versionNumber?: number;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   lockedByUserId?: string;
 
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
   lockedAt?: Date;
 
   @Field(() => [BlockVersion], {
-    nullable: true
+    nullable: true,
   })
   versions?: BlockVersion[] | null;
 }

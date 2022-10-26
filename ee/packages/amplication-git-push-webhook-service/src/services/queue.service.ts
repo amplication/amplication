@@ -14,7 +14,7 @@ export class QueueService implements QueueInterface {
 
   constructor(
     @Inject(QUEUE_SERVICE_NAME)
-    private readonly RepositoryClient: ClientKafka,
+    private readonly repositoryClient: ClientKafka,
     configService: ConfigService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -48,7 +48,7 @@ export class QueueService implements QueueInterface {
     });
 
     try {
-      await this.RepositoryClient.emit(
+      await this.repositoryClient.emit(
         this.kafkaRepositoryPushQueue,
         new RepositoryPushCreateEvent(
           provider,

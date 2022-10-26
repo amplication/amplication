@@ -1,4 +1,4 @@
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from "@nestjs/config";
 
 export interface ISecretsManager {
   getSecret: (key: string) => Promise<any | null>;

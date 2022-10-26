@@ -1,5 +1,5 @@
-describe('Testing GitPullEventService', () => {
-  it('should should pass', async () => {
+describe("Testing GitPullEventService", () => {
+  it("should should pass", async () => {
     expect(undefined).toBeUndefined();
   });
 });
