@@ -11,6 +11,7 @@
     "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
     "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-server": "packages/amplication-server",
-    "amplication-storage-gateway": "packages/amplication-storage-gateway"
+    "amplication-storage-gateway": "packages/amplication-storage-gateway",
+    "amplication-data-service-generator": "packages/amplication-data-service-generator"
   }
 }

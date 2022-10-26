@@ -1,0 +1,7 @@
+{
+  "name": "amplication-data-service-generator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-data-service-generator/src",
+  "projectType": "application",
+  "implicitDependencies": ["amplication-code-gen-types"]
+}
