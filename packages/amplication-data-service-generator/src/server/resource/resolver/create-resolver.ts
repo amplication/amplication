@@ -224,10 +224,7 @@ async function createResolverBaseModule({
   const { entity: entityDTO } = entityDTOs;
   interpolate(template, templateMapping);
 
-  const classDeclaration = getClassDeclarationById(
-    template,
-    resolverBaseId
-  );
+  const classDeclaration = getClassDeclarationById(template, resolverBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelationMethods = (
     await Promise.all(
