@@ -212,7 +212,7 @@ import \\"./login.scss\\";
 
 const CLASS_NAME = \\"login-page\\";
 
-const Login = ({ theme }: { theme?: object }) => {
+const Login = ({ theme }: any) => {
   const [username, setUsername] = useState(\\"\\");
   const [password, setPassword] = useState(\\"\\");
   const login = useLogin();
@@ -1659,6 +1659,7 @@ const httpLink = createHttpLink({
   uri: \`\${process.env.REACT_APP_SERVER_URL}/graphql\`,
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
   return {
@@ -1759,6 +1760,7 @@ export const EmptyTitle = (record: TEmpty): string => {
 import ReactDOM from \\"react-dom\\";
 import \\"./index.css\\";
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
 
@@ -2327,15 +2329,17 @@ export const ProfileTitle = (record: TProfile): string => {
 ",
   "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
-const reportWebVitals = (onPerfEntry?: ReportHandler) => {
+const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
   if (onPerfEntry && onPerfEntry instanceof Function) {
-    import(\\"web-vitals\\").then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(onPerfEntry);
-      getFID(onPerfEntry);
-      getFCP(onPerfEntry);
-      getLCP(onPerfEntry);
-      getTTFB(onPerfEntry);
-    });
+    void import(\\"web-vitals\\").then(
+      ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+        getCLS(onPerfEntry);
+        getFID(onPerfEntry);
+        getFCP(onPerfEntry);
+        getLCP(onPerfEntry);
+        getTTFB(onPerfEntry);
+      }
+    );
   }
 };
 
@@ -2869,7 +2873,7 @@ export class StringNullableFilter {
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
-SERVER_PORT=3000
+PORT=3000
 DB_USER=testUsername
 DB_PASSWORD=1234
 DB_PORT=5433
@@ -2900,7 +2904,7 @@ services:
       args:
         NPM_LOG_LEVEL: notice
     ports:
-      - \${SERVER_PORT}:3000
+      - \${PORT}:3000
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
@@ -2933,12 +2937,9 @@ services:
     healthcheck:
       test:
         - CMD
-        - pg_isready
-        - -q
-        - -d
-        - \${DB_DB_NAME}
-        - -U
-        - \${DB_USER}
+        - sh
+        - -c
+        - pg_isready -q -d \${DB_DB_NAME} -U \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
@@ -3031,8 +3032,8 @@ networks:
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
     \\"ts-node\\": \\"9.1.1\\",
-    \\"@nestjs/microservices\\": \\"^8.2.3\\",
-    \\"kafkajs\\": \\"^2.2.0\\"
+    \\"@nestjs/microservices\\": \\"8.2.3\\",
+    \\"kafkajs\\": \\"2.2.0\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -3332,6 +3333,7 @@ import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
+import { KafkaModule } from \\"./kafka/kafka.module\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
@@ -3350,6 +3352,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     AuthModule,
     HealthModule,
     SecretsManagerModule,
+    KafkaModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
