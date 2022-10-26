@@ -10,7 +10,9 @@ export class BuildPathFactory {
   private readonly outputFolder: string;
   constructor(private readonly configService: ConfigService) {
     // absolute path to the builds folder
-    const envFilePath = this.configService.get<string>(Env.BUILD_ARTIFACTS_BASE_FOLDER);
+    const envFilePath = this.configService.get<string>(
+      Env.BUILD_ARTIFACTS_BASE_FOLDER
+    );
     this.buildsFolder = envFilePath
       ? normalize(envFilePath)
       : DEFAULT_BUILDS_FOLDER;

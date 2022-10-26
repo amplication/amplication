@@ -20,7 +20,10 @@ export class StorageService {
   private buildOutputFolder: string;
   constructor(
     configService: ConfigService<
-      { BUILD_ARTIFACTS_BASE_FOLDER: string; BUILD_ARTIFACTS_CODE_FOLDER: string },
+      {
+        BUILD_ARTIFACTS_BASE_FOLDER: string;
+        BUILD_ARTIFACTS_CODE_FOLDER: string;
+      },
       true
     >
   ) {
