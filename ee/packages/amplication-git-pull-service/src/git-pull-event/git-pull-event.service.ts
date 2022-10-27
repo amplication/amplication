@@ -1,5 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { LoggerMessages } from "./git-pull-event.constants";
 import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
 import { DEFAULT_GITHUB_PULL_FOLDER } from "./git-pull-event.constants";
