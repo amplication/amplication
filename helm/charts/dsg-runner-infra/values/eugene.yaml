@@ -1,5 +1,9 @@
 envName: "eugene"
 
+dsgJobsPv:
+  name: dsg-jobs
+  volumeHandle: fs-0a5d600fe9ec1387f::fsap-0c0986f263735b48c
+
 amplication-build-manager:
   config:
     env:
