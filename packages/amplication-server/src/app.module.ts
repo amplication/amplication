@@ -36,13 +36,7 @@ import { join } from 'path';
         return {
           autoSchemaFile:
             configService.get('GRAPHQL_SCHEMA_DEST') ||
-            join(
-              process.cwd(),
-              'packages',
-              'amplication-server',
-              'src',
-              'schema.graphql'
-            ),
+            join(process.cwd(), 'src', 'schema.graphql'),
           debug: configService.get('GRAPHQL_DEBUG') === '1',
           playground: configService.get('PLAYGROUND_ENABLE') === '1',
           context: ({ req }: { req: Request }) => ({
