@@ -20,6 +20,7 @@
           "prepare",
           "check-format",
           "test",
+          "test:update-snapshot",
           "db:init",
           "lint",
           "test:e2e",

@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "types": ["jest", "node"],
+    "emitDecoratorMetadata": true,
+    "target": "es2017",
+    "declaration": true,
+    "removeComments": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "jsx": "react",
+    "lib": ["es2020", "dom"]
+  },
+  "exclude": [
+    "**/**.template.ts",
+    "**/**.template.tsx",
+    "**/**.template.env",
+    "**/static/**/**"
+  ],
+  "include": ["jest.config.ts", "**/*.test.ts", "**/*.spec.ts", "**/*.d.ts"]
+}

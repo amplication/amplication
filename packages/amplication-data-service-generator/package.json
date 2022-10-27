@@ -2,7 +2,7 @@
   "name": "@amplication/data-service-generator",
   "version": "1.0.3",
   "private": true,
-  "main": "./dist/index.js",
+  "main": "./main.js",
   "scripts": {
     "check-format": "prettier --check .",
     "format": "prettier --write .",
@@ -10,9 +10,8 @@
     "lint:fix": "eslint --fix .",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
     "generate-code": "node ./dist/generate-code.js",
-    "generate-test-data-service": "ts-node scripts/generate-test-data-service.ts generated",
+    "generate-test-data-service": "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated",
     "update-test-data-service-snapshot": "jest -u src/tests/*.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
@@ -36,16 +35,21 @@
     "recast": "0.20.5",
     "replace-ext": "2.0.0",
     "semver": "7.3.5",
-    "winston": "3.8.2",
+    "winston": "^3.8.2",
     "yaml": "2.1.1"
   },
   "devDependencies": {
     "@apollo/client": "3.6.9",
     "@babel/types": "^7.19.4",
+    "@testing-library/react": "11.2.7",
+    "@types/react": "16.14.11",
+    "@types/react-dom": "16.9.14",
+    "@types/react-router-dom": "5.3.3",
     "@types/base-64": "1.0.0",
     "@types/replace-ext": "2.0.0",
     "@typescript-eslint/eslint-plugin": "4.28.3",
     "@typescript-eslint/parser": "4.28.3",
+    "babylon": "^6.18.0",
     "base-64": "1.0.0",
     "colors": "^1.4.0",
     "cross-fetch": "3.1.5",
@@ -82,24 +86,5 @@
     "npm-run-all": "4.1.5",
     "rxjs": "7.5.6",
     "typescript": "^4.8.4"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "coverageProvider": "v8",
-    "collectCoverageFrom": [
-      "**/*.{ts,tsx}",
-      "!**/*.template.{ts,tsx}",
-      "!**/*.spec.{ts,tsx}",
-      "!**/*.e2e-spec.{ts,tsx}",
-      "!**/node_modules/**"
-    ],
-    "modulePathIgnorePatterns": [
-      "dist",
-      "generated",
-      "src/server/static",
-      "src/admin/static",
-      "src/server/auth/token"
-    ]
   }
 }

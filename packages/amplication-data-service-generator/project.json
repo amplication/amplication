@@ -5,20 +5,67 @@
   "projectType": "application",
   "implicitDependencies": ["amplication-code-gen-types"],
   "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"]
+    },
     "build": {
-      "executor": "nx:run-commands",
-      "inputs": ["{projectRoot}/src/**/*"],
-      "outputs": [
-        "{workspaceRoot}/dist/packages/amplication-data-service-generator"
-      ],
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
       "options": {
-        "commands": [
-          "ts-node scripts/update-version.ts",
-          "tsc",
-          "ts-node scripts/copy-files.ts"
-        ],
-        "cwd": "packages/amplication-data-service-generator",
-        "parallel": false
+        "outputPath": "dist/packages/amplication-data-service-generator",
+        "main": "packages/amplication-data-service-generator/src/index.ts",
+        "tsConfig": "packages/amplication-data-service-generator/tsconfig.app.json",
+        "webpackConfig": "packages/amplication-data-service-generator/webpack.config.js",
+        "assets": [
+          {
+            "glob": "**/static/**/*",
+            "input": "packages/amplication-data-service-generator/src",
+            "output": "assets"
+          },
+          {
+            "glob": "**/*.template.*",
+            "input": "packages/amplication-data-service-generator/src",
+            "output": "assets"
+          },
+          {
+            "glob": "**/*.base.*",
+            "input": "packages/amplication-data-service-generator/src",
+            "output": "assets"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/amplication-data-service-generator"],
+      "options": {
+        "jestConfig": "packages/amplication-data-service-generator/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "test:update-snapshot": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": ["jest -u src/tests/*.spec.ts", "jest -u src/tests/server"],
+        "parallel": false,
+        "cwd": "packages/amplication-data-service-generator"
+      }
+    },
+    "generate:test-data-service": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/generated"],
+      "options": {
+        "command": "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated",
+        "cwd": "packages/amplication-data-service-generator"
       }
     }
   }

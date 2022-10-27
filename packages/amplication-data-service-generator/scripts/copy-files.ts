@@ -10,7 +10,13 @@ import normalize from "normalize-path";
 /** The directory of the source code */
 const SRC_DIRECTORY = path.join(__dirname, "..", "src");
 /** The directory of the compiled code */
-const DIST_DIRECTORY = path.join(__dirname, "..", "dist");
+const DIST_DIRECTORY = path.join(
+  __dirname,
+  "../../../",
+  "dist",
+  "packages",
+  "amplication-data-service-generator"
+);
 /*** The directory of the server source code */
 const SERVER_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "server");
 /*** The directory of the admin source code */
