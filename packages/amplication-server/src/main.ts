@@ -5,7 +5,11 @@ import { sendServerLoadEvent } from './util/sendServerLoadEvent';
 import { createNestjsKafkaConfig } from '@amplication/kafka';
 import { MicroserviceOptions } from '@nestjs/microservices';
 
+console.log('test1');
+
 async function bootstrap() {
+  console.log('test2');
+
   /**
    * Send server load notification:
    * sending runtime environment details.

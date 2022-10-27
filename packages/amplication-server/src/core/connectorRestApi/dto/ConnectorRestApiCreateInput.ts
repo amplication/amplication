@@ -1,27 +1,27 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { JsonValue } from 'type-fest';
+import type { JsonValue } from 'type-fest';
 import { EnumConnectorRestApiAuthenticationType } from './EnumConnectorRestApiAuthenticationType';
 import { PrivateKeyAuthenticationSettings } from './PrivateKeyAuthenticationSettings';
 import { HttpBasicAuthenticationSettings } from './HttpBasicAuthenticationSettings';
 import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ConnectorRestApiCreateInput extends BlockCreateInput {
   @Field(() => EnumConnectorRestApiAuthenticationType, {
-    nullable: false
+    nullable: false,
   })
   authenticationType!: keyof typeof EnumConnectorRestApiAuthenticationType;
 
   @Field(() => PrivateKeyAuthenticationSettings, {
-    nullable: true
+    nullable: true,
   })
   privateKeyAuthenticationSettings: PrivateKeyAuthenticationSettings &
     JsonValue;
 
   @Field(() => HttpBasicAuthenticationSettings, {
-    nullable: true
+    nullable: true,
   })
   httpBasicAuthenticationSettings: HttpBasicAuthenticationSettings & JsonValue;
 }
