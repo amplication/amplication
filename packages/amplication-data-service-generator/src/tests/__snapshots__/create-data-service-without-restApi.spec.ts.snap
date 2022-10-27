@@ -10256,8 +10256,6 @@ export const INVALID_CREDENTIALS: Credentials = {
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
 import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.strategy.base\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../../user/user.service\\";
 import { TEST_USER } from \\"../constants\\";
 
@@ -10306,7 +10304,6 @@ describe(\\"Testing the TokenServiceBase\\", () => {
       ).toBe(\\"YWRtaW46YWRtaW4=\\");
     });
     it(\\"should reject when username missing\\", () => {
-      //@ts-ignore
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
         //@ts-ignore
@@ -10316,7 +10313,6 @@ describe(\\"Testing the TokenServiceBase\\", () => {
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
     });
     it(\\"should reject when password missing\\", () => {
-      //@ts-ignore
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
         username: VALID_CREDENTIALS.username,

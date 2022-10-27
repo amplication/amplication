@@ -9,7 +9,10 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewProject.scss";
 
@@ -19,12 +22,19 @@ const INITIAL_VALUES: CreateProjectType = {
   name: "",
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["name"],
   properties: {
     name: {
       type: "string",
       minLength: 2,
+    },
+  },
+  errorMessage: {
+    properties: {
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };
