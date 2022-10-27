@@ -6,9 +6,10 @@ import {
   LoggerService,
   Inject,
 } from '@nestjs/common';
-import { AppService } from '../services/app.service';
-import { EnumProvider } from '../entities/enums/provider';
+import { AppService } from './app.service';
+
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { EnumProvider } from './git-organization/git-organization.types';
 @Controller()
 export class AppController {
   constructor(

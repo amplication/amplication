@@ -1,5 +1,8 @@
-import { GitOrganization } from '@amplication/prisma-db';
-import { EnumProvider } from '../entities/enums/provider';
+import { GitOrganization } from '@amplication/prisma-clients/amplication-prisma-db';
+
+export enum EnumProvider {
+  Github = 'Github',
+}
 
 export interface GitOrganizationInterface {
   getOrganizationByInstallationId(

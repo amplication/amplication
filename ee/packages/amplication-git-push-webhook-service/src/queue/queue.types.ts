@@ -1,5 +1,10 @@
+import { CreateRepositoryPushRequest } from './dto/create-repository-push-request';
 import { EmitterWebhookEventName } from '@octokit/webhooks';
-import { EnumProvider } from '../entities/enums/provider';
+import { EnumProvider } from '../git-organization/git-organization.types';
+
+export interface QueueInterface {
+  createPushRequest(createRepositoryPushRequest: CreateRepositoryPushRequest);
+}
 
 export interface AppInterface {
   createMessage(

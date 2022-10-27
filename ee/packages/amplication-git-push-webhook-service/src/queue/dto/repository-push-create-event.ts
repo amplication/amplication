@@ -1,4 +1,5 @@
-import { EnumProvider } from '../enums/provider';
+import { EnumProvider } from "../../git-organization/git-organization.types";
+
 
 export class RepositoryPushCreateEvent {
   constructor(

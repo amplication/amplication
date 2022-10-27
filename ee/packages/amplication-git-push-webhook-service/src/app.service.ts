@@ -1,13 +1,13 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { EmitterWebhookEventName, Webhooks } from '@octokit/webhooks';
-import { CreateRepositoryPushRequest } from '../entities/dto/CreateRepositoryPushRequest';
-import { EnumProvider } from '../entities/enums/provider';
-import { QueueService } from './queue.service';
+import { CreateRepositoryPushRequest } from './queue/dto/create-repository-push-request';
+import { AppInterface } from './queue/queue.types';
+import { QueueService } from './queue/queue.service';
 import { ConfigService } from '@nestjs/config';
-import { GitOrganizationRepository } from '../repositories/gitOrganization.repository';
+import { GitOrganizationRepository } from './git-organization/git-organization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
-import { AppInterface } from '../contracts/app.interface';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { EnumProvider } from './git-organization/git-organization.types';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 

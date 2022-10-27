@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './controllers/app.controller';
-import { AppService } from './services/app.service';
-import { QueueModule } from './modules/queue.module';
-import { GitOrganizationModule } from './repositories/gitOrganization.module';
-import { RootWinstonModule } from './modules/root-winston.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { QueueModule } from './queue/queue.module';
+import { GitOrganizationModule } from './git-organization/git-organization.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -15,7 +14,6 @@ import { HealthModule } from './health/health.module';
     }),
     QueueModule,
     GitOrganizationModule,
-    RootWinstonModule,
     HealthModule,
   ],
   providers: [AppService],

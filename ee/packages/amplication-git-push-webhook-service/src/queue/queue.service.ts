@@ -1,8 +1,8 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { QueueInterface } from '../contracts/queue.interface';
-import { CreateRepositoryPushRequest } from '../entities/dto/CreateRepositoryPushRequest';
-import { RepositoryPushCreateEvent } from '../entities/dto/RepositoryPushCreateEvent';
+import { QueueInterface } from './queue.types';
+import { CreateRepositoryPushRequest } from './dto/create-repository-push-request';
+import { RepositoryPushCreateEvent } from './dto/repository-push-create-event';
 import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
