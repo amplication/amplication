@@ -1,4 +1,3 @@
-{{- define "base.service.tpl" -}}
 apiVersion: v1
 kind: Service
 metadata:
