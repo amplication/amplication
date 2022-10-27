@@ -146,7 +146,7 @@ amplication-build-manager:
     env:
       PORT: "80"
 
-      KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless:9092'
+      KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless.eugene.svc.cluster.local:9092'
       KAFKA_CLIENT_ID: build-manager
       KAFKA_GROUP_ID: build-manager
 
