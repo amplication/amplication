@@ -8,7 +8,7 @@ import { resource } from '../../flags/resource-flag';
 import { RESOURCE_COLUMNS } from './index';
 
 export default class ResourcesUpdate extends ConfiguredCommand {
-  static description = 'update an resource';
+  static description = 'update a resource';
 
   static examples = [
     'amp resources:update --name="my new name"',

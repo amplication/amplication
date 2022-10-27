@@ -37,10 +37,9 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
           <h2 className={`${CLASS_NAME}__header__title`}>Overview</h2>
         </div>
         <div className={`${CLASS_NAME}__message`}>
-          Your Amplication-generated resource is ready. We created it using the
-          amazing open-source technologies. Push the auto-generated code to
-          GitHub or download the source-code and take it to the moon with your
-          coding skills.
+          Your Amplication-generated resource is ready.
+          We created it using amazing open-source technologies.
+          Push the auto-generated code to GitHub and take it to the moon with your coding skills.
         </div>
         <div className={`${CLASS_NAME}__content`}>
           <div className={`${CLASS_NAME}__content__item`}>

@@ -8,7 +8,10 @@ import { TextField, Snackbar } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import "./NewRole.scss";
 import { AppContext } from "../context/appContext";
 
@@ -23,12 +26,19 @@ type Props = {
   onRoleAdd?: (role: models.ResourceRole) => void;
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["displayName"],
   properties: {
     displayName: {
       type: "string",
       minLength: 2,
+    },
+  },
+  errorMessage: {
+    properties: {
+      displayName: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };

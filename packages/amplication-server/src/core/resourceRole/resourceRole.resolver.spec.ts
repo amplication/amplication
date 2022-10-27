@@ -211,7 +211,7 @@ describe('ResourceRoleResolver', () => {
     expect(getResourceRolesMock).toBeCalledWith({});
   });
 
-  it('should create an ResourceRole', async () => {
+  it('should create a resourceRole', async () => {
     const res = await apolloClient.query({
       query: CREATE_RESOURCE_ROLE_MUTATION,
       variables: {
@@ -240,7 +240,7 @@ describe('ResourceRoleResolver', () => {
     });
   });
 
-  it('should delete an ResourceRole', async () => {
+  it('should delete a resourceRole', async () => {
     const res = await apolloClient.query({
       query: DELETE_APP_ROLE_MUTATION,
       variables: { id: EXAMPLE_RESOURCE_ROLE_ID }
@@ -259,7 +259,7 @@ describe('ResourceRoleResolver', () => {
     });
   });
 
-  it('should update an ResourceRole', async () => {
+  it('should update a resourceRole', async () => {
     const res = await apolloClient.query({
       query: UPDATE_APP_ROLE_MUTATION,
       variables: {
