@@ -52,6 +52,7 @@
         "graphql:schema:check"
       ],
       "options": {
+        "webpackConfig": "packages/amplication-server/webpack.config.js",
         "outputPath": "dist/packages/amplication-server",
         "main": "packages/amplication-server/src/main.ts",
         "tsConfig": "packages/amplication-server/tsconfig.app.json"
@@ -110,6 +111,15 @@
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/check-graphql-schema",
         "cwd": "packages/amplication-server"
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": [
+          "amplication/server:latest"
+        ]
       }
     }
   },
