@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { GitProvider } from "./git-pull-event.types";
 import { App } from "octokit";
 import { convertToNumber } from "../utils/convert-to-number";
 import { ConfigService } from "@nestjs/config";
@@ -11,7 +10,7 @@ const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
  * Octokit integration
  * */
 @Injectable()
-export class GitHostProviderService implements GitProvider {
+export class GitHostProviderService {
   private app: App;
 
   constructor(private readonly configService: ConfigService) {

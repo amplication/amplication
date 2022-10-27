@@ -2,13 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import {
   EventData,
-  GitPullEventRepository as GitPullEventRepositoryInterface,
   GitPullEventStatusEnum,
   GitProviderEnum,
 } from "./git-pull-event.types";
 
 @Injectable()
-export class GitPullEventRepository implements GitPullEventRepositoryInterface {
+export class GitPullEventRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(eventData: EventData): Promise<{ id: bigint }> {

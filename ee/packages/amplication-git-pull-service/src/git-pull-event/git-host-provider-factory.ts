@@ -1,5 +1,4 @@
 import {
-  GitHostProviderFactory as GitHostProviderFactoryInterface,
   GitProvider,
   GitProviderEnum,
 } from "./git-pull-event.types";
@@ -8,7 +7,7 @@ import { GitHostProviderService } from "./git-host-provider.service";
 import { ErrorMessages } from "./git-pull-event.types";
 
 @Injectable()
-export class GitHostProviderFactory implements GitHostProviderFactoryInterface {
+export class GitHostProviderFactory {
   constructor(private gitHubHostProvider: GitHostProviderService) {}
   getHostProvider(provider: GitProviderEnum): GitProvider {
     switch (provider) {

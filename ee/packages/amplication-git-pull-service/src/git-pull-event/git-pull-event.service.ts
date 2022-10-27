@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
 import { DEFAULT_GITHUB_PULL_FOLDER } from "./git-pull-event.constants";
 import {
-  GitPullEvent,
   EventData,
   PushEventMessage,
   GitPullEventRepository,
@@ -21,7 +20,7 @@ const ROOT_STORAGE_DIR = "STORAGE_PATH";
 const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
 
 @Injectable()
-export class GitPullEventService implements GitPullEvent {
+export class GitPullEventService {
   rootStorageDir: string;
   skipPrismaValue: number;
   constructor(

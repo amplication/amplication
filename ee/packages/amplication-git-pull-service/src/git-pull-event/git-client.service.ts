@@ -3,7 +3,6 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
 import {
-  GitClient,
   PushEventMessage,
   GitProviderEnum,
   ErrorMessages,
@@ -15,7 +14,7 @@ const REMOTE_ORIGIN = "ENV_REMOTE_ORIGIN";
  * SimpleGit integration
  * */
 @Injectable()
-export class GitClientService implements GitClient {
+export class GitClientService {
   git: SimpleGit;
   remoteOrigin: string;
   gitHostDomains: Record<GitProviderEnum, string>;

@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Storage } from "./git-pull-event.types";
 import * as fse from "fs-extra";
 import { promises as fs } from "fs";
 
 @Injectable()
-export class StorageService implements Storage {
+export class StorageService {
   async copyDir(srcDir: string, destDir: string): Promise<void> {
     try {
       await fse.copy(srcDir, destDir);
