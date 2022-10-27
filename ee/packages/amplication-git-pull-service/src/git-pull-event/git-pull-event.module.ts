@@ -1,12 +1,13 @@
 import { Module } from "@nestjs/common";
-import { GitPullEventService } from "./git-pull-event.service";
 import { GitPullEventController } from "./git-pull-event.controller";
+import { GitPullEventService } from "./git-pull-event.service";
 import { GitPullEventRepository } from "./git-pull-event.repository";
-import { StorageService } from "./storage.service";
 import { GitHostProviderService } from "./git-host-provider.service";
+import { StorageService } from "./storage.service";
 import { GitClientService } from "./git-client.service";
 import { GitHostProviderFactory } from "./git-host-provider-factory";
 import { PrismaModule } from "../prisma/prisma.module";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Module({
   imports: [PrismaModule],
@@ -18,6 +19,7 @@ import { PrismaModule } from "../prisma/prisma.module";
     GitClientService,
     GitPullEventRepository,
     StorageService,
+    PrismaService
   ],
   exports: [GitPullEventService],
 })

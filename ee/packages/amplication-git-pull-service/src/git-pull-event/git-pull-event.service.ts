@@ -3,19 +3,14 @@ import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
 import { DEFAULT_GITHUB_PULL_FOLDER } from "./git-pull-event.constants";
 import {
-  EventData,
-  PushEventMessage,
-  GitPullEventRepository,
-  Storage,
-  GitClient,
-  GitHostProviderFactory,
-  GitProviderEnum,
-  GitPullEventStatusEnum,
-} from "./git-pull-event.types";
-import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
+import { GitHostProviderFactory } from "./git-host-provider-factory";
+import { GitPullEventRepository } from "./git-pull-event.repository";
+import { GitClientService } from "./git-client.service";
+import { StorageService } from "./storage.service";
+import { EventData, GitProviderEnum, GitPullEventStatusEnum, PushEventMessage } from "./git-pull-event.types";
 const ROOT_STORAGE_DIR = "STORAGE_PATH";
 const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
 
@@ -27,8 +22,8 @@ export class GitPullEventService {
     private configService: ConfigService,
     private gitHostProviderFactory: GitHostProviderFactory,
     private gitPullEventRepository: GitPullEventRepository,
-    private gitClientService: GitClient,
-    private storageService: Storage,
+    private gitClientService: GitClientService,
+    private storageService: StorageService,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {
