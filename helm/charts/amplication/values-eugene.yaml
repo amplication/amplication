@@ -3,9 +3,9 @@ global:
     name: eugene-efs-claim
   pv:
     name: efs-pv-eugene
-  dsgPv: 
+  dsgJobsPv: 
     name: dsg-efs-pv-eugene
-  dsgPvc:
+  dsgJobsPvc:
     name: dsg-efs-pvc-eugene
 
   nodeSelector:
