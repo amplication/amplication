@@ -79,10 +79,10 @@ spec:
       volumes:
         - name: build-artifacts
           persistentVolumeClaim:
-            claimName: {{ Values.name }}-build-artifacts
+            claimName: {{ .Values.name }}-build-artifacts
         - name: dsg-jobs
           persistentVolumeClaim:
-            claimName: {{ Values.name }}-dsg-jobs
+            claimName: {{ .Values.name }}-dsg-jobs
       {{- end }}
       {{- if hasKey .Values.global "nodeSelector"}}
       nodeSelector:

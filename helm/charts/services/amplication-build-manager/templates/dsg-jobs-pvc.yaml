@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Release.Namespace }}-dsg
-  name: {{ Values.name }}-dsg-jobs
+  name: {{ .Values.name }}-dsg-jobs
 spec:
   accessModes:
     - ReadWriteMany
