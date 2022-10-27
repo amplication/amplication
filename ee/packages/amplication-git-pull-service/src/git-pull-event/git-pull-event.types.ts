@@ -1,4 +1,9 @@
-// enums
+// #region enums
+
+export enum KafkaTopics {
+  GitExternalPush = 'git.external.push.event.0'
+}
+
 export enum GitFetchTypeEnum {
   Clone = "clone",
   Pull = "pull",
@@ -14,7 +19,10 @@ export enum GitPullEventStatusEnum {
   Deleted = "Deleted",
 }
 
-// interfaces
+// #endregion
+
+// #region interfaces
+
 export interface EventData {
   id: bigint;
   provider: keyof typeof GitProviderEnum;
@@ -68,3 +76,4 @@ export interface Storage {
   copyDir: (srcDir: string, destDir: string) => Promise<void>;
   deleteDir: (dir: string) => void;
 }
+// #endregion
