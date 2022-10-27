@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: dsg-jobs-{{ .Values.envName }}-dsg
+  name: "{{ .Values.dsgJobsPv.name }}"
 spec:
   capacity:
     storage: 5Gi
@@ -12,4 +12,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: "{{ .Values.persistentVolume.volumeHandle }}"
+    volumeHandle: "{{ .Values.dsgJobsPv.volumeHandle }}"

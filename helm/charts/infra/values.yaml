@@ -7,3 +7,6 @@ pv:
   name: efs-pv-custom
   handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
 
+dsgJobsPv:
+  name: dsg-jobs
+  handle: fs-0a5d600fe9ec1387f::fsap-0c0986f263735b48c

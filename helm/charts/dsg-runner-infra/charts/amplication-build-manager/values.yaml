@@ -27,11 +27,3 @@ service:
   port:
     target: 80
   protocol: TCP
-
-volume:
-  name: build-artifacts
-  path: /build-artifacts
-
-dsgVolume:
-  name: dsg-jobs
-  path: /dsg-jobs

@@ -48,16 +48,16 @@ spec:
             - containerPort: {{ .Values.service.port.target }}
           {{- end }}
           volumeMounts:
-            - name: {{ .Values.volume.name }}
-              mountPath: {{ .Values.volume.path }}
+            - name: build-artifacts
+              mountPath: /build-artifacts
             - name: dsg-jobs
               mountPath: /dsg-jobs
       volumes:
-        - name: {{ .Values.volume.name }}
+        - name: build-artifacts
           persistentVolumeClaim:
-            claimName: {{ .Values.global.pvc.name }}
+            claimName: build-artifacts
         - name: dsg-jobs
           persistentVolumeClaim:
-            claimName: dsg-jobs-pvc
+            claimName: dsg-jobs
 {{- end }}
           
