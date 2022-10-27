@@ -1,12 +1,31 @@
-{{ include "base.deployment" (list . "amplication-build-manager.deployment") -}}
-{{- define "amplication-build-manager.deployment" -}}
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  namespace: '{{ .Release.Namespace }}-dsg'
+  name: {{ .Values.name }}
+  namespace: {{ .Release.Namespace }}-dsg
+  labels:
+    app: {{ .Values.name }}
 spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
   template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ .Values.name }}
     spec:
+      {{- with .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: default
       containers:
-        - name: '{{ .Values.name }}'
+        - name: {{ .Values.name }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if .Values.autoscaling.enabled }}
@@ -18,6 +37,8 @@ spec:
           {{- if hasKey .Values "config" }}
           envFrom:
           - configMapRef:
+              name: '{{ .Values.name }}'
+          - secretRef:
               name: '{{ .Values.name }}'
           {{- end }}
           env:
@@ -49,6 +70,7 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port.target }}
           {{- end }}
+      {{- if hasKey .Values "volume" }}
           volumeMounts:
             - name: build-artifacts
               mountPath: /build-artifacts
@@ -57,9 +79,18 @@ spec:
       volumes:
         - name: build-artifacts
           persistentVolumeClaim:
-            claimName: build-artifacts
+            claimName: {{ Values.name }}-build-artifacts
         - name: dsg-jobs
           persistentVolumeClaim:
-            claimName: dsg-jobs
-{{- end }}
-          
+            claimName: {{ Values.name }}-dsg-jobs
+      {{- end }}
+      {{- if hasKey .Values.global "nodeSelector"}}
+      nodeSelector:
+      {{- with .Values.global.nodeSelector -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.global.tolerations -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
