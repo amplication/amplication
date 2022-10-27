@@ -2,9 +2,6 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "include": [],
-  "compilerOptions": {
-    "resolveJsonModule": true
-  },
   "references": [
     {
       "path": "./tsconfig.app.json"

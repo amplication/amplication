@@ -3,7 +3,7 @@
 exports[`createDataService creates resource as expected 1`] = `
 Object {
   "admin-ui/.env": "PORT=3001
-REACT_APP_SERVER_URL =http://localhost:3000",
+REACT_APP_SERVER_URL=http://localhost:3000",
   "admin-ui/package.json": "{
   \\"name\\": \\"@sample-application/admin\\",
   \\"version\\": \\"0.1.3\\",
