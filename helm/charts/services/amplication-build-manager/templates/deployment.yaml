@@ -1,5 +1,7 @@
 {{ include "base.deployment" (list . "amplication-build-manager.deployment") -}}
 {{- define "amplication-build-manager.deployment" -}}
+metadata:
+  namespace: {{ .Release.Namespace }}-dsg
 spec:
   template:
     spec:

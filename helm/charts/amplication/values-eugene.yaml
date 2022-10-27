@@ -3,6 +3,8 @@ global:
     name: eugene-efs-claim
   pv:
     name: efs-pv-eugene
+  dsgJobsPv:
+    name: dsg-jobs-eugene
   nodeSelector:
     role: custom-envs
   tolerations:

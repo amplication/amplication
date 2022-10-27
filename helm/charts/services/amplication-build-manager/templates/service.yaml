@@ -1,0 +1,16 @@
+{{- define "base.service.tpl" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: amplication-build-manager
+  namespace: {{ .Release.Namespace }}-dsg
+  labels:
+    app: amplication-build-manager
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+  selector:
+    app: amplication-build-manager
