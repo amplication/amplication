@@ -43,13 +43,8 @@ export class GitPullEventService implements GitPullEvent {
   }
 
   async handlePushEvent(pushEventMessage: PushEventMessage): Promise<void> {
-    const {
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-    } = pushEventMessage;
+    const { provider, repositoryOwner, repositoryName, branch, commit } =
+      pushEventMessage;
 
     const repositoryDir = `${this.rootStorageDir}/git-remote/${provider}/${repositoryOwner}/${repositoryName}/${branch}`;
     const currentCommitDir = `${repositoryDir}/${commit}`;
@@ -95,7 +90,6 @@ export class GitPullEventService implements GitPullEvent {
         this.logger.error(
           GitPullEventService.name,
           { err: err.message },
-          LoggerMessages.error.CATCH_ERROR_MESSAGE,
           "pushEventHandler method"
         );
       } else {
@@ -114,7 +108,7 @@ export class GitPullEventService implements GitPullEvent {
     });
 
     this.logger.log(
-      LoggerMessages.log.NEW_GIT_PULL_EVENT_RECORD_CREATED,
+      "Git pull event has been recorded in the databsae",
       GitPullEventService.name,
       { newPullEventRecord }
     );
@@ -125,24 +119,20 @@ export class GitPullEventService implements GitPullEvent {
   private async findPreviousReadyCommit(
     pushEventMessage: PushEventMessage
   ): Promise<EventData | undefined> {
-    const {
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      pushedAt,
-    } = pushEventMessage;
-    const previousReadyCommit = await this.gitPullEventRepository.findByPreviousReadyCommit(
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      pushedAt,
-      this.skipPrismaValue
-    );
+    const { provider, repositoryOwner, repositoryName, branch, pushedAt } =
+      pushEventMessage;
+    const previousReadyCommit =
+      await this.gitPullEventRepository.findByPreviousReadyCommit(
+        provider,
+        repositoryOwner,
+        repositoryName,
+        branch,
+        pushedAt,
+        this.skipPrismaValue
+      );
 
     this.logger.log(
-      LoggerMessages.log.FOUND_PREVIOUS_READY_COMMIT,
+      "Found an existing commit in Ready status",
       GitPullEventService.name,
       {
         previousReadyCommit,
@@ -162,7 +152,7 @@ export class GitPullEventService implements GitPullEvent {
       .createInstallationAccessToken(pushEventMessage.installationId);
 
     this.logger.log(
-      LoggerMessages.log.GENERATE_OCTOKIT_ACCESS_TOKEN,
+      "Octokit access token generated",
       GitPullEventService.name,
       {
         accessToken,
@@ -171,7 +161,7 @@ export class GitPullEventService implements GitPullEvent {
 
     await this.gitClientService.clone(pushEventMessage, baseDir, accessToken);
 
-    this.logger.log(LoggerMessages.log.CLONE_SUCCESS, GitPullEventService.name);
+    this.logger.log("Repository cloned successfully", GitPullEventService.name);
   }
 
   private async pullRepository(
@@ -189,7 +179,7 @@ export class GitPullEventService implements GitPullEvent {
       accessToken
     );
 
-    this.logger.log(LoggerMessages.log.PULL_SUCCESS, GitPullEventService.name);
+    this.logger.log("Repository pulled successfully", GitPullEventService.name);
   }
 
   private async copyPrevCommitDirToCurrCommitDir(
@@ -204,15 +194,14 @@ export class GitPullEventService implements GitPullEvent {
   }
 
   private async manageDelete(pullEventRecordId: bigint, dirToDelete: string) {
-    this.storageService.deleteDir(dirToDelete);
+    await this.storageService.deleteDir(dirToDelete);
+    this.logger.log("Files deleted successfully", GitPullEventService.name);
+
     await this.gitPullEventRepository.update(
       pullEventRecordId,
       GitPullEventStatusEnum.Deleted
     );
 
-    this.logger.log(
-      LoggerMessages.log.DELETE_SUCCESSFULLY,
-      GitPullEventService.name
-    );
+    this.logger.log("Repository has been archive", GitPullEventService.name);
   }
 }

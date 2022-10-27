@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Storage } from "./git-pull-event.types";
 import * as fse from "fs-extra";
-import fs from "fs";
+import { promises as fs } from "fs";
 
 @Injectable()
 export class StorageService implements Storage {
@@ -13,13 +13,9 @@ export class StorageService implements Storage {
     }
   }
 
-  deleteDir(dir: string): void {
+  async deleteDir(dir: string): Promise<void> {
     try {
-      fs.rm(dir, { recursive: true }, (err) => {
-        if (!err) {
-          console.log("succeeded");
-        }
-      });
+      await fs.rm(dir, { recursive: true });
     } catch (err) {
       throw new Error(`failed to delete directory ${err}`);
     }
