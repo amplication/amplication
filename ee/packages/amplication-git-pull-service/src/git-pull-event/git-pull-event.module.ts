@@ -7,7 +7,6 @@ import { StorageService } from "./storage.service";
 import { GitClientService } from "./git-client.service";
 import { GitHostProviderFactory } from "./git-host-provider-factory";
 import { PrismaModule } from "../prisma/prisma.module";
-import { PrismaService } from "../prisma/prisma.service";
 
 @Module({
   imports: [PrismaModule],
@@ -19,7 +18,6 @@ import { PrismaService } from "../prisma/prisma.service";
     GitClientService,
     GitPullEventRepository,
     StorageService,
-    PrismaService
   ],
   exports: [GitPullEventService],
 })
