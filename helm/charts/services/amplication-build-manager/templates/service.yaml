@@ -7,10 +7,9 @@ metadata:
   labels:
     app: amplication-build-manager
 spec:
-  type: ClusterIP
+  selector:
+    app: amplication-build-manager
   ports:
     - name: http
       protocol: TCP
       port: 80
-  selector:
-    app: amplication-build-manager
