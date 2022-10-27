@@ -189,7 +189,7 @@ export class GitPullEventService implements GitPullEvent {
     const prevCommitDir = `${repositoryDir}/${prevCommit}`;
     await this.storageService.copyDir(prevCommitDir, currentCommitDir);
 
-    this.logger.log(LoggerMessages.log.COPY_SUCCESS, GitPullEventService.name);
+    this.logger.log("Files copied successfully", GitPullEventService.name);
   }
 
   private async manageDelete(pullEventRecordId: bigint, dirToDelete: string) {

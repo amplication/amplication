@@ -2,11 +2,11 @@ import * as fs from "fs";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import simpleGit, { SimpleGit, SimpleGitOptions } from "simple-git";
-import { ErrorMessages } from "./git-pull-event.constants";
 import {
   GitClient,
   PushEventMessage,
   GitProviderEnum,
+  ErrorMessages,
 } from "./git-pull-event.types";
 
 const REMOTE_ORIGIN = "ENV_REMOTE_ORIGIN";
@@ -74,15 +74,17 @@ export class GitClientService implements GitClient {
         branch,
         commit,
       } = pushEventMessage;
-      fs.mkdirSync(baseDir, { recursive: true });
       const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
+      
+      fs.mkdirSync(baseDir, { recursive: true });
+      
       // TODO: filter out assets and files > 250KB
       await this.git
         .clone(repository, baseDir, ["--branch", branch])
         .cwd(baseDir)
         .checkout(commit);
     } catch (err) {
-      throw new Error(`${ErrorMessages.REPOSITORY_CLONE_FAILURE}, ${err}`);
+      throw new Error(`${ErrorMessages.RepositoryCloneFailure}, ${err}`);
     }
   }
 
@@ -103,7 +105,7 @@ export class GitClientService implements GitClient {
     try {
       await this.git.cwd(baseDir).fetch(repository, branch).merge([commit]);
     } catch (err) {
-      throw new Error(`${ErrorMessages.REPOSITORY_PULL_FAILURE}: ${err}`);
+      throw new Error(`${ErrorMessages.RepositoryPullFailure}: ${err}`);
     }
   }
 }

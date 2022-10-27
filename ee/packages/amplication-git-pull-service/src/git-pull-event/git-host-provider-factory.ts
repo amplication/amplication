@@ -5,7 +5,7 @@ import {
 } from "./git-pull-event.types";
 import { Injectable } from "@nestjs/common";
 import { GitHostProviderService } from "./git-host-provider.service";
-import { ErrorMessages } from "./git-pull-event.constants";
+import { ErrorMessages } from "./git-pull-event.types";
 
 @Injectable()
 export class GitHostProviderFactory implements GitHostProviderFactoryInterface {
@@ -15,7 +15,7 @@ export class GitHostProviderFactory implements GitHostProviderFactoryInterface {
       case GitProviderEnum.Github:
         return this.gitHubHostProvider;
       default:
-        throw new Error(ErrorMessages.GIT_HOST_PROVIDER_ERROR);
+        throw new Error(ErrorMessages.GitHostProviderError);
     }
   }
 }
