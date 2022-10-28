@@ -14,12 +14,10 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .build();
 
 export const customOptions: SwaggerCustomOptions = {
-  swaggerSetupOptions = {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-    customCssUrl: "../swagger/swagger.css",
-    customfavIcon: "../swagger/favicon.png",
-    customSiteTitle: TITLE,
-  }
+  swaggerOptions: {
+    persistAuthorization: true,
+  },
+  customCssUrl: "../swagger/swagger.css",
+  customfavIcon: "../swagger/favicon.png",
+  customSiteTitle: TITLE,
 };
