@@ -66,11 +66,11 @@ export class CONTROLLER_BASE {
   })
   @common.Post()
   @swagger.ApiBody({ type: [CREATE_INPUT] })
-  @swagger.ApiCreatedResponse({ type: ENTITY })
+  @swagger.ApiCreatedResponse({ type: [ENTITY] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async CREATE_ENTITY_FUNCTION(
     @common.Body() data: [CREATE_INPUT]
-  ): Promise<ENTITY> {
+  ): Promise<ENTITY[]> {
     try {
       return await Promise.all(data.map(async _data => {
         await this.service.create({
