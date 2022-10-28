@@ -1,7 +1,6 @@
 import { EnvironmentVariables } from "./";
 import { AssertionError } from "assert";
 
-const ARRAY_ENV_KEY = "ARRAY_ENV_KEY";
 const STRING_ENV_KEY = "STRING_ENV_KEY";
 const EMPTY_ENV_KEY = "EMPTY_ENV_KEY";
 

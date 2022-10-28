@@ -1,25 +1,24 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EmitterWebhookEventName, Webhooks } from '@octokit/webhooks';
-import { CreateRepositoryPushRequest } from '../entities/dto/CreateRepositoryPushRequest';
-import { EnumProvider } from '../entities/enums/provider';
-import { QueueService } from './queue.service';
+import { CreateRepositoryPush } from '../queue/dto/create-repository-push.dto';
+import { QueueService } from '../queue/queue.service';
 import { ConfigService } from '@nestjs/config';
-import { GitOrganizationRepository } from '../repositories/gitOrganization.repository';
+import { GitOrganizationRepository } from '../git-organization/git-organization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
-import { AppInterface } from '../contracts/app.interface';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { EnumProvider } from '../git-organization/git-organization.types';
+import { AmplicationLogger, AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
 @Injectable()
-export class AppService implements AppInterface {
+export class WebhookService {
   private webhooks: Webhooks;
   constructor(
     private readonly queueService: QueueService,
     configService: ConfigService,
     private readonly gitOrganizationRepository: GitOrganizationRepository,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger,
   ) {
     this.webhooks = new Webhooks({
       secret: configService.get<string>(WEBHOOKS_SECRET_KEY),
@@ -33,7 +32,7 @@ export class AppService implements AppInterface {
     signature: string,
     provider: EnumProvider,
   ) {
-    this.logger.log('start createMessage', { class: AppService.name, id });
+    this.logger.log('start createMessage', { class: WebhookService.name, id });
     switch (eventName.toString().toLowerCase()) {
       case 'push':
         await this.createPushMessage(
@@ -84,7 +83,7 @@ export class AppService implements AppInterface {
     if (gitInstallationId) return true;
     this.logger.log(
       `createWebhooksMessage not send, installationId: ${installationId} does not exist`,
-      { class: AppService.name, id },
+      { class: WebhookService.name, id },
     );
     return false;
   }
@@ -105,7 +104,7 @@ export class AppService implements AppInterface {
     } catch (error) {
       this.logger.error(
         `failed to createWebhooksMessage: verifyAndReceive, error: ${error}`,
-        { class: AppService.name, id },
+        { class: WebhookService.name, id },
       );
       return false;
     }
@@ -123,7 +122,7 @@ export class AppService implements AppInterface {
     if (currentBranch === masterBranch) return true;
     this.logger.log(
       `createWebhooksMessage not send, not master branch, branch name: ${payload.ref}`,
-      { class: AppService.name, id },
+      { class: WebhookService.name, id },
     );
     return false;
   }
@@ -131,8 +130,8 @@ export class AppService implements AppInterface {
   async createPushRequestObject(
     payload: PushEvent,
     id: string,
-  ): Promise<CreateRepositoryPushRequest> {
-    const req: CreateRepositoryPushRequest = {
+  ): Promise<CreateRepositoryPush> {
+    const req: CreateRepositoryPush = {
       provider: EnumProvider.Github,
       repositoryOwner: payload.repository.owner.login,
       repositoryName: payload.repository.name,
