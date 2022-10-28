@@ -11,7 +11,7 @@ $circle-badge-border: 2px;
   &__header {
     @include flexFullRowWithSpacing;
     @include pageTitle;
-    color: var(--static-white);
+    color: var(--black5);
     border-radius: var(--default-border-radius);
     position: relative;
     z-index: 0;
