@@ -26,7 +26,7 @@ const reOrderPlugins = (
     (orderedObj: { [key: string]: string }, plugin: PluginOrderItem) => {
       if (currId === plugin.pluginId) return orderedObj;
 
-      orderIndex = Object.hasOwn(orderedObj, orderIndex)
+      orderIndex = orderedObj.hasOwnProperty(orderIndex)
         ? orderIndex + 1
         : orderIndex;
 
