@@ -35,11 +35,8 @@
     "test": {
       "dependsOn": ["db:prisma:generate"]
     },
-    "db:prisma:generate": {
-      "dependsOn": ["^db:prisma:generate"]
-    },
     "build": {
-      "dependsOn": ["^build", "db:prisma:generate"]
+      "dependsOn": ["^build", "db:prisma:generate", "^db:prisma:generate"]
     },
     "serve": {
       "dependsOn": ["db:prisma:generate"]
