@@ -13,11 +13,13 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .AUTH_FUNCTION()
   .build();
 
-export const swaggerSetupOptions = {
-  swaggerOptions: {
-    persistAuthorization: true,
-  },
-  customCssUrl: "../swagger/swagger.css",
-  customfavIcon: "../swagger/favicon.png",
-  customSiteTitle: TITLE,
+export const customOptions: SwaggerCustomOptions = {
+  swaggerSetupOptions = {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+    customCssUrl: "../swagger/swagger.css",
+    customfavIcon: "../swagger/favicon.png",
+    customSiteTitle: TITLE,
+  }
 };
