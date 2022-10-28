@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { QueueModule } from './queue/queue.module';
 import { GitOrganizationModule } from './git-organization/git-organization.module';
 import { HealthModule } from './health/health.module';
 import { AmplicationLoggerModule } from '@amplication/nest-logger-module';
+import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
@@ -18,10 +17,8 @@ import { AmplicationLoggerModule } from '@amplication/nest-logger-module';
     }),
     QueueModule,
     GitOrganizationModule,
+    WebhookModule,
     HealthModule,
   ],
-  providers: [AppService],
-  exports: [AppService],
-  controllers: [AppController],
 })
 export class AppModule {}
