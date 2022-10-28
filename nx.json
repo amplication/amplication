@@ -33,7 +33,7 @@
   },
   "targetDefaults": {
     "test": {
-      "dependsOn": ["db:prisma:generate"]
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate"]
     },
     "build": {
       "dependsOn": ["^build", "db:prisma:generate", "^db:prisma:generate"]
