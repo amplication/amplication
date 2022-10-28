@@ -2,13 +2,12 @@
 
 @import "../style/index.scss";
 
-$info-panel-height: 140px;
+$info-panel-height: 180px;
 $application-badge-size-large: 100px;
 $app-icon-large-font-size: 70px;
 $circle-badge-border: 2px;
 
 .resource-home {
-
   &__header {
     @include flexFullRowWithSpacing;
     @include pageTitle;
