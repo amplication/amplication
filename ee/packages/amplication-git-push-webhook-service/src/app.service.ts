@@ -1,7 +1,6 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { EmitterWebhookEventName, Webhooks } from '@octokit/webhooks';
 import { CreateRepositoryPush } from './queue/dto/create-repository-push.dto';
-import { AppInterface } from './queue/queue.types';
 import { QueueService } from './queue/queue.service';
 import { ConfigService } from '@nestjs/config';
 import { GitOrganizationRepository } from './git-organization/git-organization.repository';
@@ -12,7 +11,7 @@ import { EnumProvider } from './git-organization/git-organization.types';
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
 @Injectable()
-export class AppService implements AppInterface {
+export class AppService {
   private webhooks: Webhooks;
   constructor(
     private readonly queueService: QueueService,

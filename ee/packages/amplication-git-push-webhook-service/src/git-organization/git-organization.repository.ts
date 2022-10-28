@@ -1,15 +1,9 @@
-import {
-  GitOrganization,
-  PrismaService,
-} from '@amplication/prisma-db';
+import { GitOrganization, PrismaService } from '@amplication/prisma-db';
 import { Injectable } from '@nestjs/common';
-import {
-  EnumProvider,
-  GitOrganizationInterface,
-} from './git-organization.types';
+import { EnumProvider } from './git-organization.types';
 
 @Injectable()
-export class GitOrganizationRepository implements GitOrganizationInterface {
+export class GitOrganizationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async getOrganizationByInstallationId(

@@ -1,10 +1,9 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { KafkaTopics, QueueInterface } from './queue.types';
+import { KafkaTopics } from './queue.types';
 import { CreateRepositoryPush } from './dto/create-repository-push.dto';
 import { CreateEventRepositoryPush } from './dto/create-event-repository-push.dto';
 import { ConfigService } from '@nestjs/config';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
@@ -13,7 +12,7 @@ import {
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
 
 @Injectable()
-export class QueueService implements QueueInterface {
+export class QueueService {
   private kafkaRepositoryPushQueue: string;
 
   constructor(
