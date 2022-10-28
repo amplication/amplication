@@ -1,26 +1,29 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { QueueInterface } from '../contracts/queue.interface';
-import { CreateRepositoryPushRequest } from '../entities/dto/CreateRepositoryPushRequest';
-import { RepositoryPushCreateEvent } from '../entities/dto/RepositoryPushCreateEvent';
+import { KafkaTopics } from './queue.types';
+import { CreateRepositoryPush } from './dto/create-repository-push.dto';
+import { CreateEventRepositoryPush } from './dto/create-event-repository-push.dto';
 import { ConfigService } from '@nestjs/config';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from '@amplication/nest-logger-module';
 
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
-const KAFKA_REPOSITORY_PUSH_QUEUE_VAR = 'KAFKA_REPOSITORY_PUSH_QUEUE';
+
 @Injectable()
-export class QueueService implements QueueInterface {
+export class QueueService {
   private kafkaRepositoryPushQueue: string;
 
   constructor(
     @Inject(QUEUE_SERVICE_NAME)
     private readonly repositoryClient: ClientKafka,
     configService: ConfigService,
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger,
   ) {
     this.kafkaRepositoryPushQueue = configService.get<string>(
-      KAFKA_REPOSITORY_PUSH_QUEUE_VAR,
+      KafkaTopics.KafkaRepositoryPush,
     );
   }
   async createPushRequest({
@@ -32,7 +35,7 @@ export class QueueService implements QueueInterface {
     pushedAt,
     installationId,
     messageId,
-  }: CreateRepositoryPushRequest) {
+  }: CreateRepositoryPush) {
     this.logger.log('start createPushRequest', {
       class: QueueService.name,
       createRepositoryPushRequest: {
@@ -50,7 +53,7 @@ export class QueueService implements QueueInterface {
     try {
       await this.repositoryClient.emit(
         this.kafkaRepositoryPushQueue,
-        new RepositoryPushCreateEvent(
+        new CreateEventRepositoryPush(
           provider,
           repositoryOwner,
           repositoryName,

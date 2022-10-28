@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '@amplication/prisma-db';
-import { GitOrganizationRepository } from './gitOrganization.repository';
+import { GitOrganizationRepository } from './git-organization.repository';
 
 @Module({
   imports: [PrismaModule],
