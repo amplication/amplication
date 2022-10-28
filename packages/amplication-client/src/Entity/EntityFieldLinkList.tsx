@@ -20,7 +20,7 @@ type Props = {
 };
 
 export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
-  const {currentWorkspace, currentProject} = useContext(AppContext); 
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const { data, error } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
@@ -35,7 +35,7 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
       const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
-    [data, history, entityId,currentWorkspace,currentProject]
+    [data, history, entityId, currentWorkspace, currentProject]
   );
 
   const errorMessage = formatError(error);
@@ -43,14 +43,13 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
   return (
     <>
       {data?.entity.fields?.map((field) => (
-        <div key={field.id}>
-          <InnerTabLink
-            icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${data?.entity.id}/fields/${field.id}`}
-          >
-            <span>{field.displayName}</span>
-          </InnerTabLink>
-        </div>
+        <InnerTabLink
+          key={field.id}
+          icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${data?.entity.id}/fields/${field.id}`}
+        >
+          <span>{field.displayName}</span>
+        </InnerTabLink>
       ))}
       {data?.entity && (
         <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />

@@ -3,12 +3,12 @@
 @mixin active-link {
   background-color: var(--black10);
   color: var(--black100);
+  padding: var(--default-spacing-small);
 }
 
 .inner-tab-link {
   @include body2;
   display: flex;
-  width: 100%;
   align-items: center;
   justify-content: flex-start;
   margin-bottom: var(--default-spacing-small);
