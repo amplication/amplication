@@ -1,7 +1,7 @@
 import { EnumProvider } from "../../git-organization/git-organization.types";
 
 
-export class CreateRepositoryPushRequest {
+export class CreateRepositoryPush {
   provider: EnumProvider;
   repositoryOwner: string;
   repositoryName: string;

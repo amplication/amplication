@@ -1,7 +1,7 @@
 import { EnumProvider } from "../../git-organization/git-organization.types";
 
 
-export class RepositoryPushCreateEvent {
+export class CreateEventRepositoryPush {
   constructor(
     public readonly provider: EnumProvider,
     public readonly repositoryOwner: string,

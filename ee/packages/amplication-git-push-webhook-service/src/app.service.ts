@@ -1,6 +1,6 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { EmitterWebhookEventName, Webhooks } from '@octokit/webhooks';
-import { CreateRepositoryPushRequest } from './queue/dto/create-repository-push-request';
+import { CreateRepositoryPush } from './queue/dto/create-repository-push.dto';
 import { AppInterface } from './queue/queue.types';
 import { QueueService } from './queue/queue.service';
 import { ConfigService } from '@nestjs/config';
@@ -131,8 +131,8 @@ export class AppService implements AppInterface {
   async createPushRequestObject(
     payload: PushEvent,
     id: string,
-  ): Promise<CreateRepositoryPushRequest> {
-    const req: CreateRepositoryPushRequest = {
+  ): Promise<CreateRepositoryPush> {
+    const req: CreateRepositoryPush = {
       provider: EnumProvider.Github,
       repositoryOwner: payload.repository.owner.login,
       repositoryName: payload.repository.name,
