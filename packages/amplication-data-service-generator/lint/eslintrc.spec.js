@@ -1,8 +1,8 @@
 /** @type {import('eslint').Linter.ConfigOverride} */
 module.exports = {
-  files: ["**/static/**/*.ts"],
+  files: ["**/*.spec.ts"],
   rules: {
     ...require("./common-rules"),
-    "import/no-unresolved": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
   },
 };

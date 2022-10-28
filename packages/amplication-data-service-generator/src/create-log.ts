@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "axios";
 import { LogEntry } from "winston";
 
 export const createLog = async (log: LogEntry): Promise<void> => {

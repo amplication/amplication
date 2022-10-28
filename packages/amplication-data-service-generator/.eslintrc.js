@@ -4,9 +4,19 @@ const path = require("path");
 module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: "tsconfig.json",
+    project: "packages/amplication-data-service-generator/tsconfig.*?.json",
     sourceType: "module",
   },
+  ignorePatterns: [
+    "test",
+    "src/tests/__snapshots__",
+    "scripts",
+    // Static and template files should not be linted
+    "src/**/*.template.*",
+    "src/**/static/**/*",
+    // React Admin UI public files
+    "src/admin/public-files",
+  ],
   plugins: ["@typescript-eslint/eslint-plugin", "import"],
   extends: [
     "plugin:@typescript-eslint/eslint-recommended",
@@ -14,8 +24,6 @@ module.exports = {
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
-    "react-app",
-    "react-app/jest",
   ],
   root: true,
   env: {
@@ -30,8 +38,11 @@ module.exports = {
     },
   },
   overrides: [
+    require("./lint/eslintrc.spec.js"),
     require("./lint/eslintrc.template.js"),
     require("./lint/eslintrc.static.js"),
   ],
-  rules: require("./lint/common-rules"),
+  rules: {
+    ...require("./lint/common-rules"),
+  },
 };

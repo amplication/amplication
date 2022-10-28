@@ -7,7 +7,12 @@
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"]
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-data-service-generator/src/**/*"
+        ]
+      }
     },
     "build": {
       "executor": "@nrwl/node:webpack",
