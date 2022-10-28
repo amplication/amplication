@@ -2,6 +2,22 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "include": [],
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "target": "es2017",
+    "declaration": true,
+    "removeComments": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "jsx": "react",
+    "lib": ["es2020", "dom"]
+  },
   "references": [
     {
       "path": "./tsconfig.app.json"

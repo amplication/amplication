@@ -16,6 +16,7 @@ export default {
     "!**/node_modules/**",
   ],
   modulePathIgnorePatterns: [
+    "lint",
     "generated",
     "src/server/static",
     "src/admin/static",
