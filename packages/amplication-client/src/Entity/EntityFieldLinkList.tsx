@@ -43,13 +43,14 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
   return (
     <>
       {data?.entity.fields?.map((field) => (
-        <InnerTabLink
-          key={field.id}
-          icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${data?.entity.id}/fields/${field.id}`}
-        >
-          <span>{field.displayName}</span>
-        </InnerTabLink>
+        <div key={field.id}>
+          <InnerTabLink
+            icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${data?.entity.id}/fields/${field.id}`}
+          >
+            <span>{field.displayName}</span>
+          </InnerTabLink>
+        </div>
       ))}
       {data?.entity && (
         <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
