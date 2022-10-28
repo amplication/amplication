@@ -1,6 +1,6 @@
 import { Difference } from 'dir-compare';
 import { mock } from 'jest-mock-extended';
-import { deleteFilesVisitor } from './delete-files';
+import { deleteFilesVisitor } from '../../src/diff/delete-files';
 import { missingFolderMock } from './mocks';
 
 describe('Testing the delete files visitor', () => {

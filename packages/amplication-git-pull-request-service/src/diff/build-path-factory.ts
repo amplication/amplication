@@ -4,7 +4,7 @@ import { join, normalize } from 'path';
 import {
   BUILDS_FOLDER_PATH_ENV_KEY,
   DEFAULT_BUILDS_FOLDER,
-} from '../../../constants';
+} from '../constants';
 
 @Injectable()
 export class BuildPathFactory {

@@ -1,5 +1,5 @@
 import { IsUrl } from 'class-validator';
-export class SendPullRequestResponse {
+export class PullRequestResponse {
   @IsUrl()
   url!: string;
 }

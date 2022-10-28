@@ -12,12 +12,10 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { KafkaMessage } from 'kafkajs';
-import { GENERATE_PULL_REQUEST_TOPIC } from '../../constants';
-import { EnvironmentVariables } from '../../services/environmentVariables';
-import { ResultMessage } from './dto/ResultMessage';
-import { SendPullRequestArgs } from './dto/sendPullRequest';
-import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
-import { StatusEnum } from './dto/StatusEnum';
+import { ResultMessage } from './dto/result-message.dto';
+import { CreatePullRequestArgs } from './dto/create-pull-request.args';
+import { PullRequestResponse } from './dto/pull-request-response.dto';
+import { KafkaTopics, StatusEnum } from './pull-request.type';
 import { PullRequestService } from './pull-request.service';
 
 @Controller()
@@ -27,12 +25,12 @@ export class PullRequestController {
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {}
-  @MessagePattern(EnvironmentVariables.get(GENERATE_PULL_REQUEST_TOPIC, true))
+  @MessagePattern(KafkaTopics.GeneralPullRequest)
   async generatePullRequest(
     @Payload() message: KafkaMessage,
     @Ctx() context: KafkaContext
-  ): Promise<{ value: ResultMessage<SendPullRequestResponse> }> {
-    const validArgs = plainToInstance(SendPullRequestArgs, message.value);
+  ): Promise<{ value: ResultMessage<PullRequestResponse> }> {
+    const validArgs = plainToInstance(CreatePullRequestArgs, message.value);
     await validateOrReject(validArgs);
     this.logger.info(`Got a new generate pull request item from queue.`, {
       topic: context.getTopic(),
