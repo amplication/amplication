@@ -65,15 +65,22 @@ export class CONTROLLER_BASE {
     possession: "any",
   })
   @common.Post()
+  @swagger.ApiBody({ type: [CREATE_INPUT] })
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async CREATE_ENTITY_FUNCTION(
-    @common.Body() data: CREATE_INPUT
+    @common.Body() data: [CREATE_INPUT]
   ): Promise<ENTITY> {
-    return await this.service.create({
-      data: CREATE_DATA_MAPPING,
-      select: SELECT,
-    });
+    try {
+      return await Promise.all(data.map(async _data => {
+        await this.service.create({
+          data: CREATE_DATA_MAPPING, // TODO: replace one with many
+          select: SELECT,
+        });
+      });
+    } catch (error) {      
+      throw error;
+    }
   }
 
   // @ts-ignore
