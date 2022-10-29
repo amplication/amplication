@@ -50,7 +50,7 @@ export type MethodsIdsActionEntityTriplet = {
 
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
-export const _DATA_ID = builders.identifier("_data");
+export const DATA_ITEM_ID = builders.identifier("dataItem");
 
 const controllerTemplatePath = require.resolve("./controller.template.ts");
 const controllerBaseTemplatePath = require.resolve(
@@ -97,7 +97,7 @@ export async function createControllerModules(
     CREATE_DATA_MAPPING: createDataMapping(
       entity,
       entityDTOs.createInput,
-      _DATA_ID
+      DATA_ITEM_ID
     ),
     UPDATE_INPUT: entityDTOs.updateInput.id,
     UPDATE_DATA_MAPPING: createDataMapping(

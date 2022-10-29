@@ -5702,54 +5702,65 @@ export class CustomerControllerBase {
     possession: \\"any\\",
   })
   @common.Post()
-  @swagger.ApiCreatedResponse({ type: Customer })
+  @swagger.ApiBody({ type: [CustomerCreateInput] })
+  @swagger.ApiCreatedResponse({ type: [Customer] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
-    return await this.service.create({
-      data: {
-        ...data,
+  async create(
+    @common.Body() data: [CustomerCreateInput]
+  ): Promise<Customer[]> {
+    try {
+      return await Promise.all(
+        data.map(async (dataItem) => {
+          return await this.service.create({
+            data: {
+              ...dataItem,
 
-        organization: data.organization
-          ? {
-              connect: data.organization,
-            }
-          : undefined,
+              organization: dataItem.organization
+                ? {
+                    connect: dataItem.organization,
+                  }
+                : undefined,
 
-        vipOrganization: data.vipOrganization
-          ? {
-              connect: data.vipOrganization,
-            }
-          : undefined,
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
+              vipOrganization: dataItem.vipOrganization
+                ? {
+                    connect: dataItem.vipOrganization,
+                  }
+                : undefined,
+            },
+            select: {
+              id: true,
+              createdAt: true,
+              updatedAt: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+              isVip: true,
+              birthData: true,
+              averageSale: true,
+              favoriteNumber: true,
+              geoLocation: true,
+              comments: true,
+              favoriteColors: true,
+              customerType: true,
 
-        organization: {
-          select: {
-            id: true,
-          },
-        },
+              organization: {
+                select: {
+                  id: true,
+                },
+              },
 
-        vipOrganization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+              vipOrganization: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          });
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -7138,17 +7149,26 @@ export class EmptyControllerBase {
     possession: \\"any\\",
   })
   @common.Post()
-  @swagger.ApiCreatedResponse({ type: Empty })
+  @swagger.ApiBody({ type: [EmptyCreateInput] })
+  @swagger.ApiCreatedResponse({ type: [Empty] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
-    return await this.service.create({
-      data: data,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+  async create(@common.Body() data: [EmptyCreateInput]): Promise<Empty[]> {
+    try {
+      return await Promise.all(
+        data.map(async (dataItem) => {
+          return await this.service.create({
+            data: dataItem,
+            select: {
+              id: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          });
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -9118,32 +9138,41 @@ export class OrderControllerBase {
 
   @Public()
   @common.Post()
-  @swagger.ApiCreatedResponse({ type: Order })
+  @swagger.ApiBody({ type: [OrderCreateInput] })
+  @swagger.ApiCreatedResponse({ type: [Order] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(@common.Body() data: OrderCreateInput): Promise<Order> {
-    return await this.service.create({
-      data: {
-        ...data,
+  async create(@common.Body() data: [OrderCreateInput]): Promise<Order[]> {
+    try {
+      return await Promise.all(
+        data.map(async (dataItem) => {
+          return await this.service.create({
+            data: {
+              ...dataItem,
 
-        customer: {
-          connect: data.customer,
-        },
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
+              customer: {
+                connect: dataItem.customer,
+              },
+            },
+            select: {
+              id: true,
+              createdAt: true,
+              updatedAt: true,
 
-        customer: {
-          select: {
-            id: true,
-          },
-        },
+              customer: {
+                select: {
+                  id: true,
+                },
+              },
 
-        status: true,
-        label: true,
-      },
-    });
+              status: true,
+              label: true,
+            },
+          });
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Public()
@@ -10554,20 +10583,29 @@ export class OrganizationControllerBase {
     possession: \\"any\\",
   })
   @common.Post()
-  @swagger.ApiCreatedResponse({ type: Organization })
+  @swagger.ApiBody({ type: [OrganizationCreateInput] })
+  @swagger.ApiCreatedResponse({ type: [Organization] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
-    @common.Body() data: OrganizationCreateInput
-  ): Promise<Organization> {
-    return await this.service.create({
-      data: data,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
+    @common.Body() data: [OrganizationCreateInput]
+  ): Promise<Organization[]> {
+    try {
+      return await Promise.all(
+        data.map(async (dataItem) => {
+          return await this.service.create({
+            data: dataItem,
+            select: {
+              id: true,
+              createdAt: true,
+              updatedAt: true,
+              name: true,
+            },
+          });
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -12226,32 +12264,41 @@ export class ProfileControllerBase {
     possession: \\"any\\",
   })
   @common.Post()
-  @swagger.ApiCreatedResponse({ type: Profile })
+  @swagger.ApiBody({ type: [ProfileCreateInput] })
+  @swagger.ApiCreatedResponse({ type: [Profile] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
-    return await this.service.create({
-      data: {
-        ...data,
+  async create(@common.Body() data: [ProfileCreateInput]): Promise<Profile[]> {
+    try {
+      return await Promise.all(
+        data.map(async (dataItem) => {
+          return await this.service.create({
+            data: {
+              ...dataItem,
 
-        user: data.user
-          ? {
-              connect: data.user,
-            }
-          : undefined,
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
+              user: dataItem.user
+                ? {
+                    connect: dataItem.user,
+                  }
+                : undefined,
+            },
+            select: {
+              id: true,
+              createdAt: true,
+              updatedAt: true,
+              email: true,
 
-        user: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+              user: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          });
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
@@ -14693,55 +14740,64 @@ export class UserControllerBase {
     possession: \\"any\\",
   })
   @common.Post()
-  @swagger.ApiCreatedResponse({ type: User })
+  @swagger.ApiBody({ type: [UserCreateInput] })
+  @swagger.ApiCreatedResponse({ type: [User] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async create(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.create({
-      data: {
-        ...data,
+  async create(@common.Body() data: [UserCreateInput]): Promise<User[]> {
+    try {
+      return await Promise.all(
+        data.map(async (dataItem) => {
+          return await this.service.create({
+            data: {
+              ...dataItem,
 
-        manager: data.manager
-          ? {
-              connect: data.manager,
-            }
-          : undefined,
+              manager: dataItem.manager
+                ? {
+                    connect: dataItem.manager,
+                  }
+                : undefined,
 
-        profile: data.profile
-          ? {
-              connect: data.profile,
-            }
-          : undefined,
-      },
-      select: {
-        username: true,
-        roles: true,
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
+              profile: dataItem.profile
+                ? {
+                    connect: dataItem.profile,
+                  }
+                : undefined,
+            },
+            select: {
+              username: true,
+              roles: true,
+              id: true,
+              name: true,
+              bio: true,
+              email: true,
+              age: true,
+              birthDate: true,
+              score: true,
 
-        manager: {
-          select: {
-            id: true,
-          },
-        },
+              manager: {
+                select: {
+                  id: true,
+                },
+              },
 
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
+              interests: true,
+              priority: true,
+              isCurious: true,
+              location: true,
+              extendedProperties: true,
 
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
+              profile: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          });
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)

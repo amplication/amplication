@@ -73,7 +73,7 @@ export class CONTROLLER_BASE {
   ): Promise<ENTITY[]> {
     try {
       return await Promise.all(
-        data.map(async (_data) => {
+        data.map(async (dataItem) => {
           return await this.service.create({
             data: CREATE_DATA_MAPPING,
             select: SELECT,
