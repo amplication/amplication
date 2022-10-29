@@ -77,7 +77,7 @@ export class CONTROLLER_BASE {
           data: CREATE_DATA_MAPPING, // TODO: replace one with many
           select: SELECT,
         });
-      });
+      }));
     } catch (error) {      
       throw error;
     }
