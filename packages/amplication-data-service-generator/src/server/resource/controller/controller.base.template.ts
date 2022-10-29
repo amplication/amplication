@@ -12,20 +12,20 @@ import { plainToClass } from "class-transformer";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 
-declare interface CREATE_INPUT {}
-declare interface WHERE_INPUT {}
-declare interface WHERE_UNIQUE_INPUT {}
+declare interface CREATE_INPUT { }
+declare interface WHERE_INPUT { }
+declare interface WHERE_UNIQUE_INPUT { }
 declare class FIND_MANY_ARGS {
   where: WHERE_INPUT;
 }
-declare interface UPDATE_INPUT {}
+declare interface UPDATE_INPUT { }
 
 declare const FINE_ONE_PATH: string;
 declare const UPDATE_PATH: string;
 declare const DELETE_PATH: string;
 
-declare class ENTITY {}
-declare interface Select {}
+declare class ENTITY { }
+declare interface Select { }
 
 declare interface SERVICE {
   create(args: { data: CREATE_INPUT; select: Select }): Promise<ENTITY>;
@@ -55,7 +55,7 @@ export class CONTROLLER_BASE {
   constructor(
     protected readonly service: SERVICE,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  ) { }
 
   // @ts-ignore
   @common.UseInterceptors(AclValidateRequestInterceptor)
@@ -73,12 +73,12 @@ export class CONTROLLER_BASE {
   ): Promise<ENTITY[]> {
     try {
       return await Promise.all(data.map(async _data => {
-        await this.service.create({
-          data: CREATE_DATA_MAPPING, // TODO: replace one with many
+        return await this.service.create({
+          data: CREATE_DATA_MAPPING,
           select: SELECT,
         });
       }));
-    } catch (error) {      
+    } catch (error) {
       throw error;
     }
   }
