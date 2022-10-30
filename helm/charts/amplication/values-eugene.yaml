@@ -1,8 +1,13 @@
 global:
   pvc:
     name: build-artifacts-eugene
+    storageRequest: 5Gi
+    storageName: efs-sc
   pv:
     name: build-artifacts-eugene
+    storageCapacity: 5Gi
+    handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
+
   nodeSelector:
     role: custom-envs
   tolerations:
