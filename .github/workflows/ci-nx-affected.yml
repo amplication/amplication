@@ -1,4 +1,4 @@
-name: Continuous Integration (Nx)
+name: Continuous Integration (Nx - Affected)
 
 on:
   workflow_dispatch:
@@ -70,7 +70,7 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo ::set-output name=affected::"$(npx nx print-affected | jq -c .projects)"
+          echo ::set-output name=affected::"$(npx nx print-affected --type=app | jq -c .projects)"
 
   dockerize:
     name: Dockerize

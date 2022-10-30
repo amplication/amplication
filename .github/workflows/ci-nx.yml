@@ -1,4 +1,4 @@
-name: Continuous Integration (Nx)
+name: Continuous Integration (Nx - All)
 
 on:
   workflow_dispatch:
@@ -21,8 +21,6 @@ jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-latest
-    outputs:
-      affected: ${{ steps.set-affected.outputs.affected }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -55,21 +53,21 @@ jobs:
       #   run: npx nx format:check
 
       - name: Lint
-        run: npx run-many --target=lint --parallel=3
+        run: npx affected --all --target=lint --parallel=3
 
       - name: Test
-        run: npx run-many --target=test --parallel=3
+        run: npx affected --all --target=test --parallel=3
 
       - name: Build
         run: |
-          npx run-many --target=prebuild --parallel=3
-          npx run-many --target=build --parallel=3
-          npx run-many --target=postbuild --parallel=3
+          npx affected --all --target=prebuild --parallel=3
+          npx affected --all --target=build --parallel=3
+          npx affected --all --target=postbuild --parallel=3
 
       - name: Set Affected
         id: set-affected
         run: |
-          echo ::set-output name=affected::"$(npx nx print-affected | jq -c .projects)"
+          echo ::set-output name=affected::"$(npx nx print-affected --type=app --all | jq -c .projects)"
 
   dockerize:
     name: Dockerize
@@ -77,7 +75,8 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project: ${{ fromJson(needs.ci.outputs.affected) }}
+        project:
+          - amplication-server
     steps:
       - uses: actions/checkout@v2
         with:
@@ -129,7 +128,7 @@ jobs:
             type=ref,event=tag
 
       - name: Dockerize
-        run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
+        run: npx nx affected --all --target docker:build --projects=${{ matrix.project }}
         env:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
