@@ -48,7 +48,7 @@ spec:
                     volumes:
                       - name: persistent-storage
                         persistentVolumeClaim:
-                          claimName: efs-claim-{{ .Values.envName }}-dsg
+                          claimName: dsg-jobs
                 ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
                 backoffLimit: 0
           parameters:
