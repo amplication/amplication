@@ -1,11 +1,12 @@
 {
-  "name": "amplication-git-pull-service",
+  "name": "amplication-build-manager",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-build-manager/src",
   "projectType": "application",
   "implicitDependencies": [
     "amplication-kafka",
-    "amplication-nest-logger-module"
+    "amplication-nest-logger-module",
+    "amplication-code-gen-types"
   ],
   "targets": {
     "lint": {
@@ -43,75 +44,21 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-service:build",
+        "buildTarget": "amplication-build-manager:build",
         "inspect": true,
         "port": 9229
       },
       "configurations": {
         "production": {
-          "buildTarget": "amplication-git-pull-service:build:production"
+          "buildTarget": "amplication-build-manager:build:production"
         }
-      }
-    },
-    "db:prisma:studio": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma studio",
-        "cwd": "packages/amplication-build-manager"
-      }
-    },
-    "db:migrate:dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma migrate dev",
-        "cwd": "packages/amplication-build-manager"
-      }
-    },
-    "db:migrate:deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma migrate deploy",
-        "cwd": "packages/amplication-build-manager"
-      }
-    },
-    "db:migrate:rollback": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma migrate resolve --rolled-back",
-        "cwd": "packages/amplication-build-manager"
-      }
-    },
-    "db:init": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "nx db:migrate:dev amplication-git-pull-service",
-          "nx db:migrate:deploy amplication-git-pull-service",
-          "nx db:seed amplication-git-pull-service"
-        ],
-        "parallel": false,
-        "cwd": "packages/amplication-build-manager"
-      }
-    },
-    "db:seed": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "ts-node scripts/seed.ts",
-        "cwd": "packages/amplication-build-manager"
-      }
-    },
-    "db:clean": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "ts-node scripts/clean.ts",
-        "cwd": "packages/amplication-build-manager"
       }
     },
     "docker:build": {
       "executor": "@nx-tools/nx-docker:build",
       "options": {
         "push": false,
-        "tags": ["amplication/git-pull-service:latest"]
+        "tags": ["amplication/build-manager:latest"]
       }
     }
   },
