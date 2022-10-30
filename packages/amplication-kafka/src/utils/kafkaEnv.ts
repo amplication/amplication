@@ -24,7 +24,7 @@ export class KafkaEnvironmentVariables {
       false
     );
   }
-  
+
   getClientId() {
     return EnvironmentVariables.instance.get(
       `${KAFKA_CLIENT_ID}${this.envSuffix}`,

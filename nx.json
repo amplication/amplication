@@ -33,9 +33,9 @@
     }
   },
   "targetDefaults": {
-    "format": {
+    "format:check": {
       "options": {
-        "exclude": ["{workspaceRoot}/helm/**/*"]
+        "exclude": ["**/helm/**/*"]
       }
     },
     "test": {

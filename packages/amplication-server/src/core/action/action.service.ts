@@ -147,11 +147,11 @@ export class ActionService {
         level,
         message,
         step: {
-          connect: { id: stepId }
+          connect: { id: stepId },
         },
-        meta
+        meta,
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
   }
 
