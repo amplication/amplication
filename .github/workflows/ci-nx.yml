@@ -3,14 +3,13 @@ name: Continuous Integration (Nx)
 on:
   workflow_dispatch:
   push:
-    branches:
-      - feature/nx
+    branches: ["feature/nx"]
     paths-ignore:
       - "**/*.md"
       - ".all-contributorsrc"
-  pull_request:
-    branches:
-      - feature/nx
+  pull_request_target:
+    branches: ["feature/nx"]
+    types: [opened, reopened]
     paths-ignore:
       - "**/*.md"
       - ".all-contributorsrc"
