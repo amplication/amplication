@@ -19,7 +19,6 @@
           "prebuild",
           "build",
           "prepare",
-          "check-format",
           "test",
           "test:update-snapshot",
           "db:init",
@@ -34,6 +33,11 @@
     }
   },
   "targetDefaults": {
+    "format": {
+      "options": {
+        "exclude": ["{workspaceRoot}/helm/**/*"]
+      }
+    },
     "test": {
       "dependsOn": ["db:prisma:generate"]
     },

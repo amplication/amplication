@@ -3,6 +3,7 @@
   "version": 2,
   "projects": {
     "amplication-code-gen-types": "packages/amplication-code-gen-types",
+    "amplication-data-service-generator": "packages/amplication-data-service-generator",
     "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
     "amplication-git-push-webhook-service": "ee/packages/amplication-git-push-webhook-service",
@@ -11,7 +12,6 @@
     "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
     "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-server": "packages/amplication-server",
-    "amplication-storage-gateway": "packages/amplication-storage-gateway",
-    "amplication-data-service-generator": "packages/amplication-data-service-generator"
+    "amplication-storage-gateway": "packages/amplication-storage-gateway"
   }
 }

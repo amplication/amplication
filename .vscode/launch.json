@@ -71,14 +71,13 @@
       "name": "Launch DSG",
       "type": "node",
       "request": "launch",
-      "runtimeArgs": [
-      ],
+      "runtimeArgs": [],
       "args": [
         "${workspaceFolder}/packages/amplication-data-service-generator/src/index.ts"
       ],
       "env": {
         "STATUS_UPDATE_URL": "https://2a08-77-252-192-146.eu.ngrok.io/generated-apps/update-action-step-status"
-      },
+      }
     },
     {
       "type": "node",
@@ -92,12 +91,10 @@
         "/home/eugene/dsg-jobs/cl89zpn4p2454380vv8jw4thr81/output"
       ],
       "runtimeExecutable": "npm",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "env": {
         "STATUS_UPDATE_URL": "https://2a08-77-252-192-146.eu.ngrok.io/generated-apps/update-action-step-status"
       }
-    },
+    }
   ]
 }
