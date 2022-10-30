@@ -49,6 +49,7 @@
       }
     },
     "test": {
+      "dependsOn": ["prebuild"],
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/amplication-data-service-generator"],
       "options": {
@@ -57,6 +58,7 @@
       }
     },
     "test:update-snapshot": {
+      "dependsOn": ["prebuild"],
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/src/tests/__snapshots__"],
       "options": {
