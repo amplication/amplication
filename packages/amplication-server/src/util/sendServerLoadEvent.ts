@@ -2,7 +2,10 @@ import os from 'os';
 import fetch from 'node-fetch';
 import { JsonHelper } from './jsonHelper';
 import { v4 as uuid } from 'uuid';
-import { name as APP_NAME, version as APP_VERSION } from '../../package.json';
+import {
+  name as APP_NAME,
+  version as APP_VERSION,
+} from '../../../../package.json';
 
 const getOSVersion = () =>
   os['version'] instanceof Function ? os['version']() : 'UNKNOWN';
@@ -20,7 +23,7 @@ const HEADERS = {};
 HEADERS['Content-Type'] = 'application/json';
 
 export const sendServerLoadEvent = (): void => {
-  void getServerId().then(runtimeId => {
+  void getServerId().then((runtimeId) => {
     const data = {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       api_key: POSTHOG_ID,
@@ -34,15 +37,15 @@ export const sendServerLoadEvent = (): void => {
         osName: OS_NAME,
         osVersion: OS_VERSION,
         hostName: HOST_NAME,
-        timezone: TIMEZONE
+        timezone: TIMEZONE,
       },
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     void fetch('https://app.posthog.com/capture/', {
       method: 'POST',
       body: JSON.stringify(data),
-      headers: HEADERS
+      headers: HEADERS,
     });
   });
 };

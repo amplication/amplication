@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: amplication-server
+  namespace: next-dsg
+spec:
+  type: ExternalName
+  externalName: amplication-server.next.svc.cluster.local
+  ports:
+  - port: 80
+    targetPort: 3000

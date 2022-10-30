@@ -5,7 +5,19 @@ on:
   push:
     branches:
       - feature/nx
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
   pull_request:
+    branches:
+      - feature/nx
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.ref_name }}
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -55,7 +67,10 @@ jobs:
         run: npx nx affected --target=test --parallel=3
 
       - name: Build
-        run: npx nx affected --target=build --parallel=3
+        run: |
+          npx nx affected --target=prebuild --parallel=3
+          npx nx affected --target=build --parallel=3
+          npx nx affected --target=postbuild --parallel=3
 
       - name: Set Affected
         id: set-affected

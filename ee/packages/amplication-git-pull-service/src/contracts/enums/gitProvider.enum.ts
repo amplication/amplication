@@ -1,3 +1,3 @@
 export enum GitProviderEnum {
-  Github = 'Github',
+  Github = "Github",
 }

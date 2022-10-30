@@ -42,19 +42,13 @@ COPY --from=build /app/packages/amplication-server/dist /app/packages/amplicatio
 
 COPY --from=build /app/packages/amplication-server/index.html /app/packages/amplication-client/build/index.html
 
-
 COPY --from=build /app/packages/amplication-code-gen-types/package.json /app/packages/amplication-code-gen-types/package.json
 COPY --from=build /app/packages/amplication-code-gen-types/node_modules /app/packages/amplication-code-gen-types/node_modules
 COPY --from=build /app/packages/amplication-code-gen-types/dist /app/packages/amplication-code-gen-types/dist
 
-COPY --from=build /app/packages/amplication-data-service-generator/package.json /app/packages/amplication-data-service-generator/package.json
-COPY --from=build /app/packages/amplication-data-service-generator/node_modules /app/packages/amplication-data-service-generator/node_modules
-COPY --from=build /app/packages/amplication-data-service-generator/dist /app/packages/amplication-data-service-generator/dist
-
 COPY --from=build /app/packages/amplication-git-service/package.json /app/packages/amplication-git-service/package.json
 COPY --from=build /app/packages/amplication-git-service/node_modules /app/packages/amplication-git-service/node_modules
 COPY --from=build /app/packages/amplication-git-service/dist /app/packages/amplication-git-service/dist
-
 
 COPY --from=build /app/packages/amplication-prisma-db/package.json /app/packages/amplication-prisma-db/package.json
 COPY --from=build /app/packages/amplication-prisma-db/node_modules /app/packages/amplication-prisma-db/node_modules

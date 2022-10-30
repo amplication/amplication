@@ -3,10 +3,12 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -1325,6 +1327,12 @@ export type PropertySelectorInput = {
 
 export type Query = {
   __typename?: 'Query';
+  PluginInstallation?: Maybe<PluginInstallation>;
+  PluginInstallations: Array<PluginInstallation>;
+  ServiceTopics?: Maybe<ServiceTopics>;
+  ServiceTopicsList: Array<ServiceTopics>;
+  Topic?: Maybe<Topic>;
+  Topics: Array<Topic>;
   account: Account;
   action: Action;
   block: Block;
@@ -1341,8 +1349,6 @@ export type Query = {
   me: User;
   messageBrokerConnectedServices: Array<Resource>;
   pendingChanges: Array<PendingChange>;
-  PluginInstallation?: Maybe<PluginInstallation>;
-  PluginInstallations: Array<PluginInstallation>;
   pluginOrder: PluginOrder;
   project?: Maybe<Project>;
   projectConfigurationSettings: ProjectConfigurationSettings;
@@ -1353,14 +1359,43 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
-  ServiceTopics?: Maybe<ServiceTopics>;
-  ServiceTopicsList: Array<ServiceTopics>;
-  Topic?: Maybe<Topic>;
-  Topics: Array<Topic>;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   workspaces: Array<Workspace>;
+};
+
+export type QueryPluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryPluginInstallationsArgs = {
+  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<PluginInstallationWhereInput>;
+};
+
+export type QueryServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryServiceTopicsListArgs = {
+  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<ServiceTopicsWhereInput>;
+};
+
+export type QueryTopicArgs = {
+  where: WhereUniqueInput;
+};
+
+export type QueryTopicsArgs = {
+  orderBy?: InputMaybe<TopicOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']>;
+  take?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<TopicWhereInput>;
 };
 
 export type QueryActionArgs = {
@@ -1430,17 +1465,6 @@ export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
 
-export type QueryPluginInstallationArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryPluginInstallationsArgs = {
-  orderBy?: InputMaybe<PluginInstallationOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<PluginInstallationWhereInput>;
-};
-
 export type QueryPluginOrderArgs = {
   where: WhereUniqueInput;
 };
@@ -1491,28 +1515,6 @@ export type QueryServiceSettingsArgs = {
   where: WhereUniqueInput;
 };
 
-export type QueryServiceTopicsArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryServiceTopicsListArgs = {
-  orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<ServiceTopicsWhereInput>;
-};
-
-export type QueryTopicArgs = {
-  where: WhereUniqueInput;
-};
-
-export type QueryTopicsArgs = {
-  orderBy?: InputMaybe<TopicOrderByInput>;
-  skip?: InputMaybe<Scalars['Int']>;
-  take?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<TopicWhereInput>;
-};
-
 export type QueryWorkspaceArgs = {
   where: WhereUniqueInput;
 };
@@ -1553,11 +1555,11 @@ export type Resource = {
   description: Scalars['String'];
   entities: Array<Entity>;
   environments: Array<Environment>;
-  githubLastMessage?: Maybe<Scalars['String']>;
-  githubLastSync?: Maybe<Scalars['DateTime']>;
   gitRepository?: Maybe<GitRepository>;
   gitRepositoryId?: Maybe<Scalars['String']>;
   gitRepositoryOverride: Scalars['Boolean'];
+  githubLastMessage?: Maybe<Scalars['String']>;
+  githubLastSync?: Maybe<Scalars['DateTime']>;
   id: Scalars['String'];
   name: Scalars['String'];
   project?: Maybe<Project>;
@@ -1830,16 +1832,16 @@ export type StringFilter = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  cancellationEffectiveDate?: Maybe<Scalars['DateTime']>;
   cancelUrl?: Maybe<Scalars['String']>;
+  cancellationEffectiveDate?: Maybe<Scalars['DateTime']>;
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   nextBillDate?: Maybe<Scalars['DateTime']>;
   price?: Maybe<Scalars['Float']>;
   status: EnumSubscriptionStatus;
   subscriptionPlan: EnumSubscriptionPlan;
-  updatedAt: Scalars['DateTime'];
   updateUrl?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
   workspace?: Maybe<Workspace>;
   workspaceId: Scalars['String'];
 };

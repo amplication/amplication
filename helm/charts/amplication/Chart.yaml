@@ -24,6 +24,9 @@ dependencies:
   - name: amplication-storage-gateway
     version: "0.1.0"
     repository: "file://../services/amplication-storage-gateway"
+  - name: amplication-build-manager
+    version: "0.1.0"
+    repository: "file://../services/amplication-build-manager"
   - name: infra
     version: "0.1.0"
     repository: "file://../infra"

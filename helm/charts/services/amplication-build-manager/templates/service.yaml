@@ -1,0 +1,3 @@
+{{ include "base.service" (list . "amplication-build-manager.service") -}}
+{{- define "amplication-build-manager.service" -}}
+{{- end }}

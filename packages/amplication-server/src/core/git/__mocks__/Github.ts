@@ -1,4 +1,4 @@
-import { GithubService } from '@amplication/git-service';
+import { GithubService } from '@amplication/git-utils';
 import { mock } from 'jest-mock-extended';
 import { TEST_GIT_REPO } from './GitRepo';
 import { TEST_GIT_REPOS } from './GitRepos';

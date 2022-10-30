@@ -1,4 +1,4 @@
-import { GitService } from '@amplication/git-service';
+import { GitService } from '@amplication/git-utils';
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
@@ -6,10 +6,7 @@ import {
 import { Inject, Injectable } from '@nestjs/common';
 import { PrModule } from '../../constants';
 import { DiffService } from '../diff';
-import { ResultMessage } from './dto/ResultMessage';
 import { SendPullRequestArgs } from './dto/sendPullRequest';
-import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
-import { StatusEnum } from './dto/StatusEnum';
 
 @Injectable()
 export class PullRequestService {
@@ -19,6 +16,7 @@ export class PullRequestService {
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {}
+
   async createPullRequest({
     resourceId,
     oldBuildId,
@@ -29,13 +27,14 @@ export class PullRequestService {
     commit,
     gitProvider,
     gitResourceMeta,
-  }: SendPullRequestArgs): Promise<ResultMessage<SendPullRequestResponse>> {
+  }: SendPullRequestArgs): Promise<string> {
     const { base, body, head, title } = commit;
     const changedFiles = await this.diffService.listOfChangedFiles(
       resourceId,
       oldBuildId,
       newBuildId
     );
+
     this.logger.info(
       'The changed files has return from the diff service listOfChangedFiles',
       { lengthOfFile: changedFiles.length }
@@ -54,8 +53,9 @@ export class PullRequestService {
       base
     );
     this.logger.info('Opened a new pull request', { prUrl });
-    return { value: { url: prUrl }, status: StatusEnum.Success, error: null };
+    return prUrl;
   }
+
   private static removeFirstSlashFromPath(
     changedFiles: PrModule[]
   ): PrModule[] {

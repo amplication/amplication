@@ -1,0 +1,63 @@
+{{ include "base.deployment" (list . "amplication-build-manager.deployment") -}}
+{{- define "amplication-build-manager.deployment" -}}
+spec:
+  template:
+    spec:
+      containers:
+        - name: '{{ .Values.name }}'
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.autoscaling.enabled }}
+          resources:
+            requests:
+              cpu: {{ .Values.minCPU }}
+              memory: {{ .Values.maxMemory }}
+          {{- end }}
+          {{- if hasKey .Values "config" }}
+          envFrom:
+          - configMapRef:
+              name: '{{ .Values.name }}'
+          {{- end }}
+          env:
+            - name: ENVIRONMENT
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{- if hasKey .Values "securityContext" }}
+          securityContext:
+          {{- with .Values.securityContext -}}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if hasKey .Values "healthCheck"}}
+          readinessProbe:
+            httpGet:
+                path: {{ .Values.healthCheck.readiness.path }}
+                port: {{ .Values.healthCheck.readiness.port }}
+            initialDelaySeconds: {{ .Values.healthCheck.readiness.initialDelaySeconds | default 5 }}
+            periodSeconds:  {{ .Values.healthCheck.readiness.periodSeconds | default 5 }}
+          livenessProbe:
+            httpGet:
+                path: {{ .Values.healthCheck.liveness.path }}
+                port: {{ .Values.healthCheck.liveness.port }}
+            initialDelaySeconds: {{ .Values.healthCheck.liveness.initialDelaySeconds | default 60 }}
+            periodSeconds:  {{ .Values.healthCheck.liveness.periodSeconds | default 60 }}
+          {{- end}}
+          {{- if  hasKey .Values "service" }}
+          ports:
+            - containerPort: {{ .Values.service.port.target }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ .Values.volume.name }}
+              mountPath: {{ .Values.volume.path }}
+            - name: dsg-jobs
+              mountPath: /dsg-jobs
+      volumes:
+        - name: {{ .Values.volume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.global.pvc.name }}
+        - name: dsg-jobs
+          persistentVolumeClaim:
+            claimName: dsg-jobs-pvc
+{{- end }}
+          

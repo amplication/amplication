@@ -1,11 +1,11 @@
-import { GitHostProviderService } from '../../../providers/gitProvider/gitHostProvider.service';
-import { ConfigModule } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MOCK_GITHUB_PROVIDER_SERVICE } from '../../../__mocks__/providers/gitProvider/gitHubProviderService';
-import { MOCK_INSTALLATION_ID } from '../../../__mocks__/stubs/gitProvider.stub';
-import { MOCK_ACCESS_TOKEN } from '../../../__mocks__/stubs/gitClient.stub';
+import { GitHostProviderService } from "../../../providers/gitProvider/gitHostProvider.service";
+import { ConfigModule } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
+import { MOCK_GITHUB_PROVIDER_SERVICE } from "../../../__mocks__/providers/gitProvider/gitHubProviderService";
+import { MOCK_INSTALLATION_ID } from "../../../__mocks__/stubs/gitProvider.stub";
+import { MOCK_ACCESS_TOKEN } from "../../../__mocks__/stubs/gitClient.stub";
 
-describe('Testing GitProviderService', () => {
+describe("Testing GitProviderService", () => {
   let gitProviderService: GitHostProviderService;
 
   beforeEach(async () => {
@@ -25,11 +25,11 @@ describe('Testing GitProviderService', () => {
     );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(gitProviderService).toBeDefined();
   });
 
-  it('should return access token', async () => {
+  it("should return access token", async () => {
     const token: any = await gitProviderService.createInstallationAccessToken(
       MOCK_INSTALLATION_ID
     );
