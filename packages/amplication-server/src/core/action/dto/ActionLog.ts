@@ -1,10 +1,10 @@
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { JsonValue } from 'type-fest';
+import type { JsonValue } from 'type-fest';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { EnumActionLogLevel } from './EnumActionLogLevel';
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ActionLog {
   @Field(() => String, {})
