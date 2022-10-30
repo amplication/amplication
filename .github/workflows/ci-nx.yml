@@ -126,10 +126,10 @@ jobs:
           images: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
           tags: |
             type=sha,prefix=sha-
-            type=ref,event=branch
-            type=ref,event=pr
-            type=ref,event=tag
-            type=raw,value=${{ github.run_id }}
+            type=ref,event=branch,prefix=branch-
+            type=ref,event=pr,prefix=pr-
+            type=ref,event=tag,prefix=tag-
+            type=raw,value=${{ github.run_id }},prefix=gh-
 
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
