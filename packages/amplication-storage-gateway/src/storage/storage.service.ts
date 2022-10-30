@@ -21,7 +21,9 @@ export class StorageService {
   constructor(
     configService: ConfigService<
       {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BUILD_ARTIFACTS_BASE_FOLDER: string;
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BUILD_ARTIFACTS_CODE_FOLDER: string;
       },
       true

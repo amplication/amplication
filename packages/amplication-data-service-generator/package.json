@@ -16,7 +16,6 @@
     "update-test-data-service-snapshot": "jest -u src/tests/*.spec.ts && jest -u src/tests/server"
   },
   "dependencies": {
-    "@amplication/code-gen-types": "^1.0.3",
     "@amplication/plugin-auth-basic": "^1.0.3",
     "@amplication/plugin-auth-jwt": "^1.0.4",
     "@amplication/plugin-broker-kafka": "^0.0.10",
