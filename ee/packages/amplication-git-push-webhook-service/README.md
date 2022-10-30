@@ -9,7 +9,6 @@
 | POSTGRESQL_PASSWORD | password for the local database | admin |
 | SERVICE_DB_NAME | database name | amplication-git-push-webhook-service |
 | KAFKA_BROKERS | kafka client must be configured with at least one broker. The brokers on the list are considered seed brokers and are only used to bootstrap the client and load initial metadata | ["localhost:9092"] |
-| KAFKA_REPOSITORY_PUSH_QUEUE | queue name | git-pull-event |
 | WEBHOOKS_SECRET_KEY | secret key for webhook | [your webhooks secret key] |
 ## Installation
 

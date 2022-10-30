@@ -2,7 +2,7 @@ node_modules/
 lerna-debug.log
 .DS_Store
 .idea/
-secrets/
+helm/**/secrets/
 lib/
 *.tgz
 values-secret*
