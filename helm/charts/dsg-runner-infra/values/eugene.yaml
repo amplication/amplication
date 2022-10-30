@@ -1,19 +1,19 @@
 envName: "eugene"
 
 dsgJobsPv:
-  name: dsg-jobs-eugene
+  name: dsg-jobs-eugene-dsg
   volumeHandle: fs-0a5d600fe9ec1387f::fsap-0c0986f263735b48c
 
 buildArtifactsPv:
-  name: build-artifacts-eugene
-  volumeHandle: 
+  name: build-artifacts-eugene-dsg
+  volumeHandle: fs-03a0a5ba30d788595::fsap-0369ff368700f58c3
 
 amplication-build-manager:
   config:
     env:
       PORT: "80"
 
-      KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless:9092'
+      KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless.eugene.svc.cluster.local:9092'
       KAFKA_CLIENT_ID: build-manager
       KAFKA_GROUP_ID: build-manager
 

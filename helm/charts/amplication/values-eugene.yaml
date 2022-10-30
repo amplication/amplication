@@ -1,10 +1,8 @@
 global:
   pvc:
-    name: eugene-efs-claim
+    name: build-artifacts-eugene
   pv:
-    name: efs-pv-eugene
-  dsgJobsPv:
-    name: dsg-jobs-eugene
+    name: build-artifacts-eugene
   nodeSelector:
     role: custom-envs
   tolerations:
@@ -140,29 +138,3 @@ amplication-storage-gateway:
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       BUILD_OUTPUT_FOLDER: code
       GITHUB_APP_APP_ID: "227239"
-
-amplication-build-manager:
-  config:
-    env:
-      PORT: "80"
-
-      KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless.eugene.svc.cluster.local:9092'
-      KAFKA_CLIENT_ID: build-manager
-      KAFKA_GROUP_ID: build-manager
-
-      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
-
-      CODE_GENERATION_REQUEST_TOPIC: internal.code-generation.request.0
-      CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
-      CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
-
-      DSG_LOG_TOPIC: internal.dsg-log.0
-
-      DSG_RUNNER_URL: http://webhook-eventsource-svc.eugene-dsg.svc.cluster.local:12000/example
-
-      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
-      BUILD_ARTIFACTS_CODE_FOLDER: code
-
-      DSG_JOBS_BASE_FOLDER: /dsg-jobs
-      DSG_JOBS_CODE_FOLDER: code
-      DSG_JOBS_RESOURCE_DATA_FILE: input.json
