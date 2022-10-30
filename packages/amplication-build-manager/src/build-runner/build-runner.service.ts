@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { DSGResourceData } from '@amplication/code-gen-types';
 
 import { promises as fs } from 'fs';
-import fse from 'fs-extra';
+import { copy } from 'fs-extra';
 import { join, dirname } from 'path';
 import { Env } from '../env';
 
@@ -41,6 +41,6 @@ export class BuildRunnerService {
       this.configService.get(Env.BUILD_ARTIFACTS_CODE_FOLDER),
     );
 
-    await fse.copy(jobPath, artifactPath);
+    await copy(jobPath, artifactPath);
   }
 }

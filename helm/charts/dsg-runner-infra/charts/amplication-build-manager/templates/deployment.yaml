@@ -1,10 +1,30 @@
-{{ include "base.deployment" (list . "amplication-build-manager.deployment") -}}
-{{- define "amplication-build-manager.deployment" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    app: {{ .Values.name }}
 spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
   template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ .Values.name }}
     spec:
+      {{- with .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: default
       containers:
-        - name: '{{ .Values.name }}'
+        - name: {{ .Values.name }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if .Values.autoscaling.enabled }}
@@ -48,16 +68,24 @@ spec:
             - containerPort: {{ .Values.service.port.target }}
           {{- end }}
           volumeMounts:
-            - name: {{ .Values.volume.name }}
-              mountPath: {{ .Values.volume.path }}
+            - name: build-artifacts
+              mountPath: /build-artifacts
             - name: dsg-jobs
               mountPath: /dsg-jobs
       volumes:
-        - name: {{ .Values.volume.name }}
+        - name: build-artifacts
           persistentVolumeClaim:
-            claimName: {{ .Values.global.pvc.name }}
+            claimName: build-artifacts
         - name: dsg-jobs
           persistentVolumeClaim:
-            claimName: dsg-jobs-pvc
-{{- end }}
-          
+            claimName: dsg-jobs
+      {{- if hasKey .Values.global "nodeSelector"}}
+      nodeSelector:
+      {{- with .Values.global.nodeSelector -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- with .Values.global.tolerations -}}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
