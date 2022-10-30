@@ -16,6 +16,7 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.ref_name }}
 
 jobs:
   ci:
@@ -55,16 +56,16 @@ jobs:
       #   run: npx nx format:check
 
       - name: Lint
-        run: npx run-many --target=lint --parallel=3
+        run: npx nx affected --target=lint --parallel=3
 
       - name: Test
-        run: npx run-many --target=test --parallel=3
+        run: npx nx affected --target=test --parallel=3
 
       - name: Build
         run: |
-          npx run-many --target=prebuild --parallel=3
-          npx run-many --target=build --parallel=3
-          npx run-many --target=postbuild --parallel=3
+          npx nx affected --target=prebuild --parallel=3
+          npx nx affected --target=build --parallel=3
+          npx nx affected --target=postbuild --parallel=3
 
       - name: Set Affected
         id: set-affected
@@ -77,7 +78,8 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project: ${{ fromJson(needs.ci.outputs.affected) }}
+        # project: ${{ fromJson(needs.ci.outputs.affected) }}
+        project: ["amplication-git-pull-service"]
     steps:
       - uses: actions/checkout@v2
         with:
