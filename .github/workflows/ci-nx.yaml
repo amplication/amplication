@@ -1,0 +1,17 @@
+name: Continuous Integration (Nx)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/nx
+  pull_request:
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    outputs:
+      affected: ${{ steps.set-affected.outputs.affected }}
+    steps:
+      - run: echo "placeholder"
