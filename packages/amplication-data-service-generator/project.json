@@ -15,37 +15,22 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/amplication-data-service-generator",
-        "main": "packages/amplication-data-service-generator/src/index.ts",
         "tsConfig": "packages/amplication-data-service-generator/tsconfig.app.json",
-        "webpackConfig": "packages/amplication-data-service-generator/webpack.config.js",
-        "assets": [
-          {
-            "glob": "**/static/**/*",
-            "input": "packages/amplication-data-service-generator/src",
-            "output": "assets"
-          },
-          {
-            "glob": "**/*.template.*",
-            "input": "packages/amplication-data-service-generator/src",
-            "output": "assets"
-          },
-          {
-            "glob": "**/*.base.*",
-            "input": "packages/amplication-data-service-generator/src",
-            "output": "assets"
-          }
-        ]
-      },
-      "configurations": {
-        "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false
-        }
+        "packageJson": "packages/amplication-data-service-generator/package.json",
+        "main": "packages/amplication-data-service-generator/src/index.ts",
+        "assets": ["packages/amplication-data-service-generator/*.md"]
+      }
+    },
+    "copy-files-to-dist": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["ts-node scripts/copy-files.ts"],
+        "parallel": false,
+        "cwd": "packages/amplication-data-service-generator"
       }
     },
     "test": {

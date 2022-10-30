@@ -10,7 +10,8 @@
     "lint:fix": "eslint --fix .",
     "test": "jest",
     "test:watch": "jest --watch",
-    "generate-code": "node ./dist/generate-code.js",
+    "generate-code:dev": "ts-node src/generate-code.ts",
+    "generate-code:prod": "node ./src/generate-code.js",
     "generate-test-data-service": "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated",
     "update-test-data-service-snapshot": "jest -u src/tests/*.spec.ts && jest -u src/tests/server"
   },

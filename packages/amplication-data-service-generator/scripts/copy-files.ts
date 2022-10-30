@@ -15,7 +15,8 @@ const DIST_DIRECTORY = path.join(
   "../../../",
   "dist",
   "packages",
-  "amplication-data-service-generator"
+  "amplication-data-service-generator",
+  "src"
 );
 /*** The directory of the server source code */
 const SERVER_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "server");

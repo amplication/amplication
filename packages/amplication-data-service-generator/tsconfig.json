@@ -10,6 +10,7 @@
     "declaration": true,
     "removeComments": true,
     "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
