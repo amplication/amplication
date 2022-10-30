@@ -44,7 +44,7 @@ spec:
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs
-                            subPathExpr: build-data/$(BUILD_ID)
+                            subPathExpr: $(BUILD_ID)
                     volumes:
                       - name: persistent-storage
                         persistentVolumeClaim:
