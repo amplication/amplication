@@ -5,13 +5,15 @@ on:
   push:
     branches:
       - feature/nx
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
   pull_request:
     branches:
       - feature/nx
-
-env:
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  NX_BRANCH: ${{ github.ref_name }}
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
