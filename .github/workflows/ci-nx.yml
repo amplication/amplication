@@ -1,6 +1,7 @@
 name: Continuous Integration (Nx)
 
 on:
+  workflow_dispatch:
   push:
     branches: ["feature/nx"]
     paths-ignore:
@@ -12,7 +13,6 @@ on:
     paths-ignore:
       - "**/*.md"
       - ".all-contributorsrc"
-  workflow_dispatch:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
