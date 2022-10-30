@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.name }}-build-artifacts
-  namespace: {{ .Release.Namespace }}-dsg
+  name: dsg-jobs
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 1Gi
-  volumeName: efs-pv-{{ .Release.Namespace }}
+      storage: 5Gi
+  volumeName: {{ .Values.dsgJobsPv.name }}
   storageClassName: efs-sc
   volumeMode: Filesystem

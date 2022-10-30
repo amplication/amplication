@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.name }}
-  namespace: {{ .Release.Namespace }}-dsg
   labels:
     app: {{ .Values.name }}
 spec:
@@ -77,10 +76,10 @@ spec:
       volumes:
         - name: build-artifacts
           persistentVolumeClaim:
-            claimName: {{ .Values.name }}-build-artifacts
+            claimName: build-artifacts
         - name: dsg-jobs
           persistentVolumeClaim:
-            claimName: {{ .Values.name }}-dsg-jobs
+            claimName: dsg-jobs
       {{- end }}
       {{- if hasKey .Values.global "nodeSelector"}}
       nodeSelector:
