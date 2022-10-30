@@ -32,7 +32,7 @@
         "outputPath": "dist/packages/amplication-git-pull-request-service",
         "main": "packages/amplication-git-pull-request-service/src/main.ts",
         "tsConfig": "packages/amplication-git-pull-request-service/tsconfig.app.json",
-        "webpackConfig": "ee/packages/amplication-git-push-webhook-service/webpack.config.js"
+        "webpackConfig": "packages/amplication-git-pull-request-service/webpack.config.js"
       },
       "configurations": {
         "production": {

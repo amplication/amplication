@@ -26,7 +26,8 @@
       "options": {
         "outputPath": "dist/packages/amplication-storage-gateway",
         "main": "packages/amplication-storage-gateway/src/main.ts",
-        "tsConfig": "packages/amplication-storage-gateway/tsconfig.app.json"
+        "tsConfig": "packages/amplication-storage-gateway/tsconfig.app.json",
+        "webpackConfig": "packages/amplication-storage-gateway/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -45,6 +46,13 @@
         "production": {
           "buildTarget": "amplication-git-pull-service:build:production"
         }
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/storage-gateway:latest"]
       }
     }
   },
