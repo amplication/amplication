@@ -1,4 +1,4 @@
-name: Continuous Integration (Nx - All)
+name: Continuous Integration (Nx - Affected)
 
 on:
   workflow_dispatch:
@@ -16,11 +16,14 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.ref_name }}
 
 jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-latest
+    outputs:
+      affected: ${{ steps.set-affected.outputs.affected }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -42,13 +45,8 @@ jobs:
         with:
           node-version: 16.x
 
-      - name: Install Dependencies - Nx Workspace
+      - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Install Dependencies - Data Service Generator
-        if: steps.cache.outputs.cache-hit != 'true'
-        working-directory: packages/amplication-data-service-generator
         run: npm ci
 
       - name: Nx Workspace Lint
@@ -58,21 +56,21 @@ jobs:
       #   run: npx nx format:check
 
       - name: Lint
-        run: npx affected --all --target=lint --parallel=3
+        run: npx nx affected --target=lint --parallel=3
 
       - name: Test
-        run: npx affected --all --target=test --parallel=3
+        run: npx nx affected --target=test --parallel=3
 
       - name: Build
         run: |
-          npx affected --all --target=prebuild --parallel=3
-          npx affected --all --target=build --parallel=3
-          npx affected --all --target=postbuild --parallel=3
+          npx nx affected --target=prebuild --parallel=3
+          npx nx affected --target=build --parallel=3
+          npx nx affected --target=postbuild --parallel=3
 
       - name: Set Affected
         id: set-affected
         run: |
-          echo ::set-output name=affected::"$(npx nx print-affected --type=app --all | jq -c .projects)"
+          echo ::set-output name=affected::"$(npx nx print-affected --type=app | jq -c .projects)"
 
   dockerize:
     name: Dockerize
@@ -80,8 +78,7 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        project:
-          - amplication-server
+        project: ${{ fromJson(needs.ci.outputs.affected) }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -133,7 +130,7 @@ jobs:
             type=ref,event=tag
 
       - name: Dockerize
-        run: npx nx affected --all --target docker:build --projects=${{ matrix.project }}
+        run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
         env:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
