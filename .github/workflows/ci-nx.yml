@@ -42,8 +42,13 @@ jobs:
         with:
           node-version: 16.x
 
-      - name: Install Dependencies
+      - name: Install Dependencies - Nx Workspace
         if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Install Dependencies - Data Service Generator
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: packages/amplication-data-service-generator
         run: npm ci
 
       - name: Nx Workspace Lint
