@@ -111,7 +111,7 @@ jobs:
         uses: docker/metadata-action@v4
         id: meta
         with:
-          images: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}-nx-test"
+          images: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
           tags: |
             type=sha,prefix=sha-
             type=ref,event=branch
