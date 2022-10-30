@@ -45,16 +45,16 @@ jobs:
       #   run: npx nx format:check
 
       - name: Lint
-        run: npx run-many --target=lint --parallel=3
+        run: npx nx run-many --target=lint --parallel=3
 
       - name: Test
-        run: npx run-many --target=test --parallel=3
+        run: npx nx run-many --target=test --parallel=3
 
       - name: Build
         run: |
-          npx run-many --target=prebuild --parallel=3
-          npx run-many --target=build --parallel=3
-          npx run-many --target=postbuild --parallel=3
+          npx nx run-many --target=prebuild --parallel=3
+          npx nx run-many --target=build --parallel=3
+          npx nx run-many --target=postbuild --parallel=3
 
       - name: Set Affected
         id: set-affected
