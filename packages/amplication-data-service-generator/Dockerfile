@@ -10,3 +10,6 @@ WORKDIR /workspace/packages/amplication-data-service-generator
 COPY ./dist/packages/amplication-data-service-generator/package.json .
 RUN npm i --omit-dev
 COPY ./dist/packages/amplication-data-service-generator .
+
+COPY ./packages/amplication-data-service-generator/build-spec.json .
+RUN npm run generate-code:prod ./build-spec.json ./temp

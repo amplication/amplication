@@ -14,9 +14,23 @@
         ]
       }
     },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/package.json",
+        "{projectRoot}/package-lock.json"
+      ],
+      "outputs": ["{projectRoot}/node_modules"],
+      "options": {
+        "commands": ["npm install"],
+        "parallel": false,
+        "cwd": "packages/amplication-data-service-generator"
+      }
+    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": ["^build", "db:prisma:generate", "^db:prisma:generate"],
       "options": {
         "outputPath": "dist/packages/amplication-data-service-generator",
         "tsConfig": "packages/amplication-data-service-generator/tsconfig.app.json",
@@ -25,7 +39,7 @@
         "assets": ["packages/amplication-data-service-generator/*.md"]
       }
     },
-    "copy-files-to-dist": {
+    "postbuild": {
       "executor": "nx:run-commands",
       "options": {
         "commands": ["ts-node scripts/copy-files.ts"],
@@ -56,6 +70,13 @@
       "options": {
         "command": "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated",
         "cwd": "packages/amplication-data-service-generator"
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/data-service-generator:latest"]
       }
     }
   }

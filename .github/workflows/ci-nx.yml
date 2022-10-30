@@ -55,7 +55,10 @@ jobs:
         run: npx nx affected --target=test --parallel=3
 
       - name: Build
-        run: npx nx affected --target=build --parallel=3
+        run: |
+          npx nx affected --target=prebuild --parallel=3
+          npx nx affected --target=build --parallel=3
+          npx nx affected --target=postbuild --parallel=3
 
       - name: Set Affected
         id: set-affected
