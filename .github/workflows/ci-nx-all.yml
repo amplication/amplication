@@ -117,6 +117,7 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=ref,event=tag
+            type=raw,value=${{ github.run_id }}
 
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
