@@ -8,23 +8,22 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      SERVICE_DB_NAME: ${SERVICE_DB_NAME}
     volumes:
       - postgres:/var/lib/postgresql/data
 
-  # kafka-ui:
-  #   container_name: kafka-ui
-  #   image: provectuslabs/kafka-ui:latest
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - zookeeper
-  #     - kafka
-  #   environment:
-  #     KAFKA_CLUSTERS_0_NAME: local
-  #     KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-  #     KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-  #     KAFKA_CLUSTERS_0_JMXPORT: 9997
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_JMXPORT: 9997
 
   zookeeper:
     image: confluentinc/cp-zookeeper:5.2.4
@@ -54,7 +53,7 @@ services:
   kafka-init-topics:
     image: confluentinc/cp-kafka:5.3.1
     volumes:
-      - /opt/kafka-init-topics/message.json:/data/message.json
+      - ./message.json:/data/message.json
     depends_on:
       - kafka
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
