@@ -67,7 +67,6 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port.target }}
           {{- end }}
-      {{- if hasKey .Values "volume" }}
           volumeMounts:
             - name: build-artifacts
               mountPath: /build-artifacts
@@ -80,7 +79,6 @@ spec:
         - name: dsg-jobs
           persistentVolumeClaim:
             claimName: dsg-jobs
-      {{- end }}
       {{- if hasKey .Values.global "nodeSelector"}}
       nodeSelector:
       {{- with .Values.global.nodeSelector -}}

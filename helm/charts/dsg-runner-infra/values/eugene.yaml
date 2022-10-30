@@ -6,7 +6,7 @@ dsgJobsPv:
 
 buildArtifactsPv:
   name: build-artifacts-eugene-dsg
-  volumeHandle: fs-03a0a5ba30d788595::fsap-0369ff368700f58c3
+  volumeHandle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
 
 amplication-build-manager:
   config:
