@@ -5,7 +5,4 @@ module.exports = {
     ...require("./common-rules"),
     "import/no-unresolved": "off",
   },
-  parserOptions: {
-    project: "./tsconfig.only-parse.json",
-  },
 };

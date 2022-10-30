@@ -5,7 +5,8 @@
   "projectType": "application",
   "implicitDependencies": [
     "amplication-kafka",
-    "amplication-nest-logger-module"
+    "amplication-nest-logger-module",
+    "amplication-prisma-db"
   ],
   "targets": {
     "lint": {

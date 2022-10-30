@@ -8,7 +8,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import * as winston from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { omit, orderBy } from 'lodash';
-import path, { join } from 'path';
+import path from 'path';
 import * as CodeGenTypes from '@amplication/code-gen-types';
 import { ResourceRole, User } from '../../models';
 import { Build } from './dto/Build';
@@ -31,21 +31,23 @@ import {
 import { UserService } from '../user/user.service';
 import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
 import { ActionService } from '../action/action.service';
+import { CommitService } from '../commit/commit.service';
 
 import { createZipFileFromModules } from './zip';
 import { LocalDiskService } from '../storage/local.disk.service';
 import { createTarGzFileFromModules } from './tar';
 import { StepNotFoundError } from './errors/StepNotFoundError';
 import { QueueService } from '../queue/queue.service';
-import { previousBuild, BuildFilesSaver } from './utils';
+import { previousBuild } from './utils';
 import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
 import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
-import { GitResourceMeta } from './dto/GitResourceMeta';
 
 import { TopicService } from '../topic/topic.service';
 import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
+import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
+import { Env } from '../../env';
 
 export const HOST_VAR = 'HOST';
 export const CLIENT_HOST_VAR = 'CLIENT_HOST';
@@ -103,7 +105,7 @@ export const ACTION_INCLUDE = {
   },
 };
 
-const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+export const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
 } = {
   error: EnumActionLogLevel.Error,
@@ -156,9 +158,9 @@ export class BuildService {
     private readonly localDiskService: LocalDiskService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
+    private readonly commitService: CommitService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
-    private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
@@ -222,20 +224,12 @@ export class BuildService {
       },
     });
 
-    const oldBuild = await previousBuild(
-      this.prisma,
-      resourceId,
-      build.id,
-      build.createdAt
-    );
-
     const logger = this.logger.child({
       buildId: build.id,
     });
 
     logger.info(JOB_STARTED_LOG);
-    await this.generate(build, user, oldBuild?.id);
-    logger.info(JOB_DONE_LOG);
+    await this.generate(build, user);
 
     return build;
   }
@@ -248,9 +242,7 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
-  private async getGenerateCodeStep(
-    buildId: string
-  ): Promise<ActionStep | undefined> {
+  async getGenerateCodeStep(buildId: string): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
       .findUnique({
         where: {
@@ -332,65 +324,38 @@ export class BuildService {
    * Generates code for given build and saves it to storage
    * @DSG The connection between the server and the DSG (Data Service Generator)
    * @param build the build object to generate code for
-   * @param user
-   * @param oldBuildId
+   * @param user the user that triggered the build
    */
-  private async generate(
-    build: Build,
-    user: User,
-    oldBuildId: string | undefined
-  ): Promise<string> {
+  private async generate(build: Build, user: User): Promise<string> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
       async (step) => {
         const { resourceId, id: buildId, version: buildVersion } = build;
-        //#region getting all the resource data
-        const dSGResourceData = await this.getDSGResourceData(
+
+        const [dataServiceGeneratorLogger, logPromises] =
+          this.createDataServiceLogger(build, step);
+
+        const dsgResourceData = await this.getDSGResourceData(
           resourceId,
           buildId,
           buildVersion,
           user
         );
-        const { resourceInfo } = dSGResourceData;
-        //#endregion
-        const [dataServiceGeneratorLogger, logPromises] =
-          this.createDataServiceLogger(build, step);
-
-        const modules = [];
-        // await DataServiceGenerator.createDataService(
-        //   dSGResourceData,
-        //   dataServiceGeneratorLogger
-        // );
 
         await Promise.all(logPromises);
 
         dataServiceGeneratorLogger.destroy();
-        if (modules.length === 0) {
-          await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-          return null;
-        }
 
-        await this.actionService.logInfo(step, ACTION_ZIP_LOG);
-
-        // the path to the tar.gz artifact
-        const tarballURL = await this.save(build, modules);
-
-        await this.buildFilesSaver.saveFiles(
-          join(resourceId, build.id),
-          modules
+        this.queueService.emitMessage(
+          this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
+          JSON.stringify({ buildId, dsgResourceData })
         );
 
-        await this.saveToGitHub(build, oldBuildId, {
-          adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
-          serverPath: resourceInfo.settings.serverSettings.serverPath,
-        });
-
-        await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-
-        return tarballURL;
-      }
+        return null;
+      },
+      true
     );
   }
 
@@ -449,14 +414,69 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(
-    build: Build,
-    oldBuildId: string,
-    gitResourceMeta: GitResourceMeta
-  ): Promise<void> {
-    const resource = build.resource;
+  public async onCreatePRSuccess({
+    response,
+  }: {
+    response: SendPullRequestResponse;
+  }): Promise<void> {
+    const build = await this.findOne({ where: { id: response.buildId } });
+    const steps = await this.actionService.getSteps(build.actionId);
+    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
+
+    try {
+      if (response.errorMessage) {
+        throw Error(response.errorMessage);
+      }
+
+      await this.resourceService.reportSyncMessage(
+        build.resourceId,
+        'Sync Completed Successfully'
+      );
+
+      await this.actionService.logInfo(step, response.url, {
+        githubUrl: response.url,
+      });
+      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
+      await this.actionService.complete(step, EnumActionStepStatus.Success);
+    } catch (error) {
+      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+      await this.actionService.logInfo(step, error);
+      await this.actionService.complete(step, EnumActionStepStatus.Failed);
+      await this.resourceService.reportSyncMessage(
+        build.resourceId,
+        `Error: ${error}`
+      );
+    }
+  }
+
+  async saveToGitHub(buildId: string): Promise<void> {
+    const build = await this.findOne({ where: { id: buildId } });
+
+    const oldBuild = await previousBuild(
+      this.prisma,
+      build.resourceId,
+      build.id,
+      build.createdAt
+    );
+
+    const user = await this.userService.findUser({
+      where: { id: build.userId },
+    });
+
+    const dSGResourceData = await this.getDSGResourceData(
+      build.resourceId,
+      build.id,
+      build.version,
+      user
+    );
+    const { resourceInfo } = dSGResourceData;
+
+    const resource = await this.resourceService.findOne({
+      where: { id: build.resourceId },
+    });
+
     const resourceRepository = await this.resourceService.gitRepository(
-      resource.id
+      build.resourceId
     );
 
     if (!resourceRepository) {
@@ -468,7 +488,10 @@ export class BuildService {
         where: { id: resource.id },
       });
 
-    const commit = build.commit;
+    const commit = await this.commitService.findOne({
+      where: { id: build.commitId },
+    });
+
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
     const commitMessage =
@@ -480,63 +503,50 @@ export class BuildService {
 
     const project = await this.prisma.project.findUnique({
       where: {
-        id: build.resource.projectId,
+        id: resource.projectId,
       },
     });
 
-    const url = `${clientHost}/${project.workspaceId}/${build.resource.projectId}/${build.resourceId}/builds/${build.id}`;
+    const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/builds/${build.id}`;
 
     return this.actionService.run(
       build.actionId,
       PUSH_TO_GITHUB_STEP_NAME,
       PUSH_TO_GITHUB_STEP_MESSAGE,
       async (step) => {
-        await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
         try {
-          const pullRequestResponse =
-            await this.queueService.sendCreateGitPullRequest({
-              gitOrganizationName: gitOrganization.name,
-              gitRepositoryName: resourceRepository.name,
-              resourceId: resource.id,
-              gitProvider: EnumGitProvider.Github,
-              installationId: gitOrganization.installationId,
-              newBuildId: build.id,
-              oldBuildId,
-              commit: {
-                head: `amplication-build-${build.id}`,
-                title: commitMessage,
-                body: `Amplication build # ${build.id}.
-                Commit message: ${commit.message}
-                
-                ${url}
-                `,
-              },
-              gitResourceMeta,
-            });
+          await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          await this.resourceService.reportSyncMessage(
-            build.resourceId,
-            'Sync Completed Successfully'
-          );
-          await this.actionService.logInfo(step, pullRequestResponse.url, {
-            githubUrl: pullRequestResponse.url,
-          });
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GITHUB_STEP_FINISH_LOG
-          );
+          const createPullRequestArgs = {
+            gitOrganizationName: gitOrganization.name,
+            gitRepositoryName: resourceRepository.name,
+            resourceId: resource.id,
+            gitProvider: EnumGitProvider.Github,
+            installationId: gitOrganization.installationId,
+            newBuildId: build.id,
+            oldBuildId: oldBuild?.id,
+            commit: {
+              head: `amplication-build-${build.id}`,
+              title: commitMessage,
+              body: `Amplication build # ${build.id}.
+              Commit message: ${commit.message}
+              
+              ${url}
+              `,
+            },
+            gitResourceMeta: {
+              adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
+              serverPath: resourceInfo.settings.serverSettings.serverPath,
+            },
+          };
 
-          await this.actionService.complete(step, EnumActionStepStatus.Success);
+          await this.queueService.emitMessage(
+            this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
+            JSON.stringify(createPullRequestArgs)
+          );
         } catch (error) {
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GITHUB_STEP_FAILED_LOG
-          );
-          await this.actionService.logInfo(step, error);
-          await this.actionService.complete(step, EnumActionStepStatus.Failed);
-          await this.resourceService.reportSyncMessage(
-            build.resourceId,
-            `Error: ${error}`
+          this.logger.error(
+            `Failed to emit Create Pull Request Message. Error: ${error}`
           );
         }
       },

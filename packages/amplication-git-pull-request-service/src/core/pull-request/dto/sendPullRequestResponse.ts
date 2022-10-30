@@ -1,5 +1,11 @@
-import { IsUrl } from 'class-validator';
+import { IsString, IsUrl } from 'class-validator';
 export class SendPullRequestResponse {
+  @IsString()
+  buildId!: string;
+
   @IsUrl()
-  url!: string;
+  url?: string;
+
+  @IsString()
+  errorMessage?: string;
 }

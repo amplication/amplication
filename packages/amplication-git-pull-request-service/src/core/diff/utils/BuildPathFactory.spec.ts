@@ -14,7 +14,7 @@ describe('Testing the BuildPathFactory', () => {
     configService.get.mockReturnValue(rootEnvPath);
     buildPathFactory = new BuildPathFactory(configService);
   });
-  it('should combine the root folder that get form the env, the folder with resourceId and the new buildId', () => {
+  xit('should combine the root folder that get form the env, the folder with resourceId and the new buildId', () => {
     const path = buildPathFactory.get(resourceId, buildId);
     expect(path).toBe(join(rootEnvPath, resourceId, buildId));
   });
