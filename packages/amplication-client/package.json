@@ -100,6 +100,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-syntax-class-static-block": "^7.14.5",
     "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "9.5.0",
     "@testing-library/react-hooks": "^7.0.2",
