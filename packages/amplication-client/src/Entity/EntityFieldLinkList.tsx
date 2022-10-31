@@ -24,7 +24,7 @@ type Props = {
 };
 
 export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
-  const {currentWorkspace, currentProject} = useContext(AppContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const { data, error } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
@@ -39,7 +39,7 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
       const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
-    [data, history, entityId,currentWorkspace,currentProject]
+    [data, history, entityId, currentWorkspace, currentProject]
   );
 
   const errorMessage = formatError(error);

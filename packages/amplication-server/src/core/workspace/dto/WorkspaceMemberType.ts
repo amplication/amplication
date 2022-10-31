@@ -1,6 +1,6 @@
 import { createUnionType } from '@nestjs/graphql';
-import { User } from '../../../models'; // eslint-disable-line import/no-cycle
-import { Invitation } from './Invitation'; // eslint-disable-line import/no-cycle
+import { User } from '../../../models';
+import { Invitation } from './Invitation';
 
 // eslint-disable-next-line  @typescript-eslint/naming-convention
 export const WorkspaceMemberType = createUnionType({
@@ -11,5 +11,5 @@ export const WorkspaceMemberType = createUnionType({
       return Invitation;
     }
     return User;
-  }
+  },
 });

@@ -1,30 +1,30 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from './User'; // eslint-disable-line import/no-cycle
+import { User } from './User';
 import { Role } from '../enums/Role';
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class UserRole {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   user?: User;
 
   @Field(() => Role, {
-    nullable: false
+    nullable: false,
   })
   role!: string;
 }

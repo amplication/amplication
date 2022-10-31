@@ -1,37 +1,37 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User, Workspace } from '../../../models'; // eslint-disable-line import/no-cycle
+import { User, Workspace } from '../../../models';
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class Invitation {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   email!: string;
 
   @Field(() => Workspace, {
-    nullable: true
+    nullable: true,
   })
   workspace?: Workspace;
 
   @Field(() => User, {
-    nullable: true
+    nullable: true,
   })
   invitedByUser?: User;
 }

@@ -7,9 +7,8 @@ import "./ProjectConfigurationSettingsPage.scss";
 const CLASS_NAME = "project-configuration-settings";
 
 const ProjectConfigurationSettingsPage: React.FC<{}> = () => {
-  const { currentWorkspace, currentProject, currentResource } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
 
   return (
     <div className={CLASS_NAME}>

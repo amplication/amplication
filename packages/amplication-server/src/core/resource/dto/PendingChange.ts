@@ -1,37 +1,37 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { EnumPendingChangeAction } from './EnumPendingChangeAction';
-import { Entity } from '../../../models/Entity'; // eslint-disable-line import/no-cycle
-import { Block } from '../../../models/Block'; // eslint-disable-line import/no-cycle
+import { Entity } from '../../../models/Entity';
+import { Block } from '../../../models/Block';
 import { EnumPendingChangeOriginType } from './EnumPendingChangeOriginType';
-import { PendingChangeOrigin } from './PendingChangeOrigin'; // eslint-disable-line import/no-cycle
+import { PendingChangeOrigin } from './PendingChangeOrigin';
 import { Resource } from '../../../models';
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class PendingChange {
   @Field(() => EnumPendingChangeAction, {
-    nullable: false
+    nullable: false,
   })
   action: EnumPendingChangeAction;
 
   @Field(() => EnumPendingChangeOriginType, {
-    nullable: false
+    nullable: false,
   })
   originType: EnumPendingChangeOriginType;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   originId!: string;
 
   @Field(() => PendingChangeOrigin, {
-    nullable: false
+    nullable: false,
   })
   origin: Entity | Block;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: false,
   })
   versionNumber!: number;
 

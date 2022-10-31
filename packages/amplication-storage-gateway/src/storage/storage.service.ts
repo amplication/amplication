@@ -21,7 +21,9 @@ export class StorageService {
   constructor(
     configService: ConfigService<
       {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BUILD_ARTIFACTS_BASE_FOLDER: string;
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         BUILD_ARTIFACTS_CODE_FOLDER: string;
       },
       true
@@ -32,11 +34,7 @@ export class StorageService {
     this.buildOutputFolder = configService.get(BUILD_ARTIFACTS_CODE_FOLDER);
   }
 
-  getBuildFilesList(
-    resourceId: string,
-    buildId: string,
-    relativePath: string = ""
-  ) {
+  getBuildFilesList(resourceId: string, buildId: string, relativePath = "") {
     const results: FilesDictionary = {};
 
     const cwd = join(
@@ -86,7 +84,7 @@ export class StorageService {
     });
   }
 
-  fileContent(resourceId: string, buildId: string, path: string = ""): string {
+  fileContent(resourceId: string, buildId: string, path = ""): string {
     const filePath = join(
       join(this.buildsFolder, buildId, this.buildOutputFolder),
       path
@@ -103,7 +101,7 @@ export class StorageService {
         if ("ENOENT" !== err.code) {
           throw err;
         }
-        let fh = await open(filename, "a");
+        const fh = await open(filename, "a");
         await fh.close();
       }
     );

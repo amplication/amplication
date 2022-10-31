@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
-import { QueueModule } from '../queue/queue.module';
-import { BuildRunnerController } from './build-runner.controller';
-import { BuildRunnerService } from './build-runner.service';
+import { Module } from "@nestjs/common";
+import { QueueModule } from "../queue/queue.module";
+import { BuildRunnerController } from "./build-runner.controller";
+import { BuildRunnerService } from "./build-runner.service";
 
 @Module({
   imports: [QueueModule],

@@ -1,42 +1,42 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from './User'; // eslint-disable-line import/no-cycle
+import { User } from './User';
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class Account {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   email!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   firstName!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   lastName!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   password!: string;
 
@@ -45,7 +45,7 @@ export class Account {
   currentUser?: User | null;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   githubId?: string | null;
 }
