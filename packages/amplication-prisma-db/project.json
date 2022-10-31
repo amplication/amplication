@@ -23,7 +23,8 @@
       "options": {
         "outputPath": "dist/packages/amplication-prisma-db",
         "main": "packages/amplication-prisma-db/src/index.ts",
-        "tsConfig": "packages/amplication-prisma-db/tsconfig.lib.json"
+        "tsConfig": "packages/amplication-prisma-db/tsconfig.lib.json",
+        "webpackConfig": "packages/amplication-prisma-db/webpack.config.js"
       },
       "configurations": {
         "production": {
