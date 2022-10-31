@@ -1,7 +1,5 @@
 import { join } from 'path';
 
-export const BUILDS_FOLDER_PATH_ENV_KEY = 'BASE_BUILDS_FOLDER';
-
 export const DOT_AMPLICATION_FOLDER = join(
   process.cwd(),
   '..',
@@ -14,5 +12,3 @@ export const DEFAULT_BUILDS_FOLDER = join(
   'storage',
   'builds'
 );
-
-export const SERVICE_NAME = 'amplication-git-pull-request-service';

@@ -1,6 +1,6 @@
 import { DiffSet } from 'dir-compare';
 import { PrModule } from '../types';
-import { DiffVisitorFn } from './types';
+import { DiffVisitorFn } from './diff.types';
 
 /**
  * This method takes the diffSets and visitor functions and returns an array of modules.
