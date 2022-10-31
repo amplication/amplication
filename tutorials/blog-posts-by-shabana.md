@@ -7,6 +7,4 @@
 ### 2. On Medium:
 https://medium.com/@shabananaik1702/meet-amplication-an-open-source-development-too-76b031743e86
 
----
-### 3. LinkeedIn Post
-https://www.linkedin.com/posts/shabana-n_amplication-opensource-nodejs-activity-6992525968888225792-1omp?utm_source=share&utm_medium=member_android
+🎯 Hope to add more blog post and Tutorials as I keep Learning with Amplication.
