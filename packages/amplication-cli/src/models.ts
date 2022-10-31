@@ -1,14 +1,8 @@
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -115,6 +109,7 @@ export type Block = {
   versionNumber?: Maybe<Scalars['Float']>;
   versions?: Maybe<Array<BlockVersion>>;
 };
+
 
 export type BlockVersionsArgs = {
   orderBy?: InputMaybe<BlockVersionOrderByInput>;
@@ -258,6 +253,7 @@ export type Commit = {
   userId: Scalars['String'];
 };
 
+
 export type CommitBuildsArgs = {
   orderBy?: InputMaybe<BuildOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
@@ -337,12 +333,14 @@ export type Entity = {
   versions?: Maybe<Array<EntityVersion>>;
 };
 
+
 export type EntityFieldsArgs = {
   orderBy?: InputMaybe<EntityFieldOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<EntityFieldWhereInput>;
 };
+
 
 export type EntityVersionsArgs = {
   orderBy?: InputMaybe<EntityVersionOrderByInput>;
@@ -538,6 +536,7 @@ export type EntityVersion = {
   versionNumber: Scalars['Int'];
 };
 
+
 export type EntityVersionFieldsArgs = {
   orderBy?: InputMaybe<EntityFieldOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
@@ -586,19 +585,19 @@ export enum EnumActionLogLevel {
   Debug = 'Debug',
   Error = 'Error',
   Info = 'Info',
-  Warning = 'Warning',
+  Warning = 'Warning'
 }
 
 export enum EnumActionStepStatus {
   Failed = 'Failed',
   Running = 'Running',
   Success = 'Success',
-  Waiting = 'Waiting',
+  Waiting = 'Waiting'
 }
 
 export enum EnumAuthProviderType {
   Http = 'Http',
-  Jwt = 'Jwt',
+  Jwt = 'Jwt'
 }
 
 export enum EnumBlockType {
@@ -619,7 +618,7 @@ export enum EnumBlockType {
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
   ServiceSettings = 'ServiceSettings',
   ServiceTopics = 'ServiceTopics',
-  Topic = 'Topic',
+  Topic = 'Topic'
 }
 
 export type EnumBlockTypeFilter = {
@@ -633,7 +632,7 @@ export enum EnumBuildStatus {
   Completed = 'Completed',
   Failed = 'Failed',
   Invalid = 'Invalid',
-  Running = 'Running',
+  Running = 'Running'
 }
 
 export enum EnumDataType {
@@ -654,7 +653,7 @@ export enum EnumDataType {
   SingleLineText = 'SingleLineText',
   UpdatedAt = 'UpdatedAt',
   Username = 'Username',
-  WholeNumber = 'WholeNumber',
+  WholeNumber = 'WholeNumber'
 }
 
 export type EnumDataTypeFilter = {
@@ -669,46 +668,46 @@ export enum EnumEntityAction {
   Delete = 'Delete',
   Search = 'Search',
   Update = 'Update',
-  View = 'View',
+  View = 'View'
 }
 
 export enum EnumEntityPermissionType {
   AllRoles = 'AllRoles',
   Disabled = 'Disabled',
   Granular = 'Granular',
-  Public = 'Public',
+  Public = 'Public'
 }
 
 export enum EnumGitOrganizationType {
   Organization = 'Organization',
-  User = 'User',
+  User = 'User'
 }
 
 export enum EnumGitProvider {
-  Github = 'Github',
+  Github = 'Github'
 }
 
 export enum EnumMessagePatternConnectionOptions {
   None = 'None',
   Receive = 'Receive',
-  Send = 'Send',
+  Send = 'Send'
 }
 
 export enum EnumPendingChangeAction {
   Create = 'Create',
   Delete = 'Delete',
-  Update = 'Update',
+  Update = 'Update'
 }
 
 export enum EnumPendingChangeOriginType {
   Block = 'Block',
-  Entity = 'Entity',
+  Entity = 'Entity'
 }
 
 export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
   ProjectConfiguration = 'ProjectConfiguration',
-  Service = 'Service',
+  Service = 'Service'
 }
 
 export type EnumResourceTypeFilter = {
@@ -721,7 +720,7 @@ export type EnumResourceTypeFilter = {
 export enum EnumSubscriptionPlan {
   Business = 'Business',
   Enterprise = 'Enterprise',
-  Pro = 'Pro',
+  Pro = 'Pro'
 }
 
 export enum EnumSubscriptionStatus {
@@ -729,12 +728,12 @@ export enum EnumSubscriptionStatus {
   Deleted = 'Deleted',
   PastDue = 'PastDue',
   Paused = 'Paused',
-  Trailing = 'Trailing',
+  Trailing = 'Trailing'
 }
 
 export enum EnumWorkspaceMemberType {
   Invitation = 'Invitation',
-  User = 'User',
+  User = 'User'
 }
 
 export type Environment = {
@@ -902,37 +901,46 @@ export type Mutation = {
   updateWorkspace?: Maybe<Workspace>;
 };
 
+
 export type MutationAddEntityPermissionFieldArgs = {
   data: EntityAddPermissionFieldInput;
 };
+
 
 export type MutationChangePasswordArgs = {
   data: ChangePasswordInput;
 };
 
+
 export type MutationCommitArgs = {
   data: CommitCreateInput;
 };
+
 
 export type MutationCompleteInvitationArgs = {
   data: CompleteInvitationInput;
 };
 
+
 export type MutationConnectResourceGitRepositoryArgs = {
   data: ConnectGitRepositoryInput;
 };
+
 
 export type MutationConnectResourceToProjectRepositoryArgs = {
   resourceId: Scalars['String'];
 };
 
+
 export type MutationCreateApiTokenArgs = {
   data: ApiTokenCreateInput;
 };
 
+
 export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
 };
+
 
 export type MutationCreateDefaultRelatedFieldArgs = {
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
@@ -940,158 +948,196 @@ export type MutationCreateDefaultRelatedFieldArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationCreateEntityFieldArgs = {
   data: EntityFieldCreateInput;
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
 };
 
+
 export type MutationCreateEntityFieldByDisplayNameArgs = {
   data: EntityFieldCreateByDisplayNameInput;
 };
+
 
 export type MutationCreateGitRepositoryArgs = {
   data: CreateGitRepositoryInput;
 };
 
+
 export type MutationCreateMessageBrokerArgs = {
   data: ResourceCreateInput;
 };
+
 
 export type MutationCreateOneEntityArgs = {
   data: EntityCreateInput;
 };
 
+
 export type MutationCreateOrganizationArgs = {
   data: GitOrganizationCreateInput;
 };
+
 
 export type MutationCreatePluginInstallationArgs = {
   data: PluginInstallationCreateInput;
 };
 
+
 export type MutationCreateProjectArgs = {
   data: ProjectCreateInput;
 };
+
 
 export type MutationCreateResourceRoleArgs = {
   data: ResourceRoleCreateInput;
 };
 
+
 export type MutationCreateServiceArgs = {
   data: ResourceCreateInput;
 };
+
 
 export type MutationCreateServiceTopicsArgs = {
   data: ServiceTopicsCreateInput;
 };
 
+
 export type MutationCreateServiceWithEntitiesArgs = {
   data: ResourceCreateWithEntitiesInput;
 };
+
 
 export type MutationCreateTopicArgs = {
   data: TopicCreateInput;
 };
 
+
 export type MutationCreateWorkspaceArgs = {
   data: WorkspaceCreateInput;
 };
+
 
 export type MutationDeleteApiTokenArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationDeleteEntityArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type MutationDeleteEntityFieldArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationDeleteEntityPermissionFieldArgs = {
   where: EntityPermissionFieldWhereUniqueInput;
 };
+
 
 export type MutationDeleteGitOrganizationArgs = {
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
 };
 
+
 export type MutationDeleteGitRepositoryArgs = {
   gitRepositoryId: Scalars['String'];
 };
+
 
 export type MutationDeleteResourceArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationDeleteResourceRoleArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type MutationDeleteUserArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationDeleteWorkspaceArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type MutationDiscardPendingChangesArgs = {
   data: PendingChangesDiscardInput;
 };
 
+
 export type MutationDisconnectResourceGitRepositoryArgs = {
   resourceId: Scalars['String'];
 };
+
 
 export type MutationGetGitResourceInstallationUrlArgs = {
   data: GitGetInstallationUrlInput;
 };
 
+
 export type MutationInviteUserArgs = {
   data: InviteUserInput;
 };
+
 
 export type MutationLockEntityArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationLoginArgs = {
   data: LoginInput;
 };
+
 
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationRevokeInvitationArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationSetCurrentWorkspaceArgs = {
   data: WhereUniqueInput;
 };
+
 
 export type MutationSetPluginOrderArgs = {
   data: PluginSetOrderInput;
   where: WhereUniqueInput;
 };
 
+
 export type MutationSignupArgs = {
   data: SignupInput;
 };
+
 
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
 };
 
+
 export type MutationUpdateEntityArgs = {
   data: EntityUpdateInput;
   where: WhereUniqueInput;
 };
+
 
 export type MutationUpdateEntityFieldArgs = {
   data: EntityFieldUpdateInput;
@@ -1100,58 +1146,70 @@ export type MutationUpdateEntityFieldArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type MutationUpdateEntityPermissionArgs = {
   data: EntityUpdatePermissionInput;
   where: WhereUniqueInput;
 };
 
+
 export type MutationUpdateEntityPermissionFieldRolesArgs = {
   data: EntityUpdatePermissionFieldRolesInput;
 };
 
+
 export type MutationUpdateEntityPermissionRolesArgs = {
   data: EntityUpdatePermissionRolesInput;
 };
+
 
 export type MutationUpdatePluginInstallationArgs = {
   data: PluginInstallationUpdateInput;
   where: WhereUniqueInput;
 };
 
+
 export type MutationUpdateProjectArgs = {
   data: ProjectUpdateInput;
   where: WhereUniqueInput;
 };
+
 
 export type MutationUpdateProjectConfigurationSettingsArgs = {
   data: ProjectConfigurationSettingsUpdateInput;
   where: WhereUniqueInput;
 };
 
+
 export type MutationUpdateResourceArgs = {
   data: ResourceUpdateInput;
   where: WhereUniqueInput;
 };
+
 
 export type MutationUpdateResourceRoleArgs = {
   data: ResourceRoleUpdateInput;
   where: WhereUniqueInput;
 };
 
+
 export type MutationUpdateServiceSettingsArgs = {
   data: ServiceSettingsUpdateInput;
   where: WhereUniqueInput;
 };
+
 
 export type MutationUpdateServiceTopicsArgs = {
   data: ServiceTopicsUpdateInput;
   where: WhereUniqueInput;
 };
 
+
 export type MutationUpdateTopicArgs = {
   data: TopicUpdateInput;
   where: WhereUniqueInput;
 };
+
 
 export type MutationUpdateWorkspaceArgs = {
   data: WorkspaceUpdateInput;
@@ -1365,9 +1423,11 @@ export type Query = {
   workspaces: Array<Workspace>;
 };
 
+
 export type QueryPluginInstallationArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryPluginInstallationsArgs = {
   orderBy?: InputMaybe<PluginInstallationOrderByInput>;
@@ -1376,9 +1436,11 @@ export type QueryPluginInstallationsArgs = {
   where?: InputMaybe<PluginInstallationWhereInput>;
 };
 
+
 export type QueryServiceTopicsArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryServiceTopicsListArgs = {
   orderBy?: InputMaybe<ServiceTopicsOrderByInput>;
@@ -1387,9 +1449,11 @@ export type QueryServiceTopicsListArgs = {
   where?: InputMaybe<ServiceTopicsWhereInput>;
 };
 
+
 export type QueryTopicArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryTopicsArgs = {
   orderBy?: InputMaybe<TopicOrderByInput>;
@@ -1398,13 +1462,16 @@ export type QueryTopicsArgs = {
   where?: InputMaybe<TopicWhereInput>;
 };
 
+
 export type QueryActionArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type QueryBlockArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryBlocksArgs = {
   orderBy?: InputMaybe<BlockOrderByInput>;
@@ -1413,9 +1480,11 @@ export type QueryBlocksArgs = {
   where?: InputMaybe<BlockWhereInput>;
 };
 
+
 export type QueryBuildArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryBuildsArgs = {
   orderBy?: InputMaybe<BuildOrderByInput>;
@@ -1424,9 +1493,11 @@ export type QueryBuildsArgs = {
   where?: InputMaybe<BuildWhereInput>;
 };
 
+
 export type QueryCommitArgs = {
   where: CommitWhereUniqueInput;
 };
+
 
 export type QueryCommitsArgs = {
   cursor?: InputMaybe<CommitWhereUniqueInput>;
@@ -1436,6 +1507,7 @@ export type QueryCommitsArgs = {
   where?: InputMaybe<CommitWhereInput>;
 };
 
+
 export type QueryEntitiesArgs = {
   orderBy?: InputMaybe<EntityOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
@@ -1443,13 +1515,16 @@ export type QueryEntitiesArgs = {
   where?: InputMaybe<EntityWhereInput>;
 };
 
+
 export type QueryEntityArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type QueryGitOrganizationArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryGitOrganizationsArgs = {
   skip?: InputMaybe<Scalars['Float']>;
@@ -1457,25 +1532,31 @@ export type QueryGitOrganizationsArgs = {
   where?: InputMaybe<GitOrganizationWhereInput>;
 };
 
+
 export type QueryMessageBrokerConnectedServicesArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryPendingChangesArgs = {
   where: PendingChangesFindInput;
 };
 
+
 export type QueryPluginOrderArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryProjectArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type QueryProjectConfigurationSettingsArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryProjectsArgs = {
   orderBy?: InputMaybe<ProjectOrderByInput>;
@@ -1484,18 +1565,22 @@ export type QueryProjectsArgs = {
   where?: InputMaybe<ProjectWhereInput>;
 };
 
+
 export type QueryRemoteGitRepositoriesArgs = {
   where: RemoteGitRepositoriesWhereUniqueInput;
 };
+
 
 export type QueryResourceArgs = {
   where: WhereUniqueInput;
 };
 
+
 export type QueryResourceRoleArgs = {
   version?: InputMaybe<Scalars['Float']>;
   where: WhereUniqueInput;
 };
+
 
 export type QueryResourceRolesArgs = {
   orderBy?: InputMaybe<ResourceRoleOrderByInput>;
@@ -1504,6 +1589,7 @@ export type QueryResourceRolesArgs = {
   where?: InputMaybe<ResourceRoleWhereInput>;
 };
 
+
 export type QueryResourcesArgs = {
   orderBy?: InputMaybe<Array<ResourceOrderByInput>>;
   skip?: InputMaybe<Scalars['Int']>;
@@ -1511,9 +1597,11 @@ export type QueryResourcesArgs = {
   where?: InputMaybe<ResourceWhereInput>;
 };
 
+
 export type QueryServiceSettingsArgs = {
   where: WhereUniqueInput;
 };
+
 
 export type QueryWorkspaceArgs = {
   where: WhereUniqueInput;
@@ -1521,7 +1609,7 @@ export type QueryWorkspaceArgs = {
 
 export enum QueryMode {
   Default = 'Default',
-  Insensitive = 'Insensitive',
+  Insensitive = 'Insensitive'
 }
 
 export type RemoteGitRepos = {
@@ -1568,12 +1656,14 @@ export type Resource = {
   updatedAt: Scalars['DateTime'];
 };
 
+
 export type ResourceBuildsArgs = {
   orderBy?: InputMaybe<BuildOrderByInput>;
   skip?: InputMaybe<Scalars['Int']>;
   take?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<BuildWhereInput>;
 };
+
 
 export type ResourceEntitiesArgs = {
   orderBy?: InputMaybe<EntityOrderByInput>;
@@ -1691,7 +1781,7 @@ export enum Role {
   Admin = 'Admin',
   OrganizationAdmin = 'OrganizationAdmin',
   ProjectAdmin = 'ProjectAdmin',
-  User = 'User',
+  User = 'User'
 }
 
 export type ServerSettings = {
@@ -1812,7 +1902,7 @@ export type SignupInput = {
 
 export enum SortOrder {
   Asc = 'Asc',
-  Desc = 'Desc',
+  Desc = 'Desc'
 }
 
 export type StringFilter = {

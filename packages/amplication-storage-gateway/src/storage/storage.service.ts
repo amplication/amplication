@@ -4,7 +4,11 @@ import { readFileSync } from "fs";
 import { utimes, open } from "fs/promises";
 import { sync } from "glob";
 import { join } from "path";
-import { BASE_BUILDS_FOLDER, DEFAULT_BUILDS_FOLDER } from "../constants";
+import {
+  BUILD_ARTIFACTS_BASE_FOLDER,
+  BUILD_ARTIFACTS_CODE_FOLDER,
+  DEFAULT_BUILDS_FOLDER,
+} from "../constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 
@@ -13,27 +17,32 @@ type FilesDictionary = { [name: string]: FileMeta };
 @Injectable()
 export class StorageService {
   private buildsFolder: string;
-  constructor(configService: ConfigService) {
-    const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
-    this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
-  }
-
-  private static buildFolder(
-    buildsFolder: string,
-    resourceId: string,
-    buildId: string
+  private buildOutputFolder: string;
+  constructor(
+    configService: ConfigService<
+      {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        BUILD_ARTIFACTS_BASE_FOLDER: string;
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        BUILD_ARTIFACTS_CODE_FOLDER: string;
+      },
+      true
+    >
   ) {
-    return join(buildsFolder, resourceId, buildId);
+    const buildsFolder = configService.get<string>(BUILD_ARTIFACTS_BASE_FOLDER);
+    this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
+    this.buildOutputFolder = configService.get(BUILD_ARTIFACTS_CODE_FOLDER);
   }
 
   getBuildFilesList(resourceId: string, buildId: string, relativePath = "") {
     const results: FilesDictionary = {};
 
-    const cwd = `${StorageService.buildFolder(
+    const cwd = join(
       this.buildsFolder,
-      resourceId,
-      buildId
-    )}/${relativePath || ""}`;
+      buildId,
+      this.buildOutputFolder,
+      relativePath
+    );
 
     console.log(`Current working directory is ${cwd}`);
 
@@ -77,7 +86,7 @@ export class StorageService {
 
   fileContent(resourceId: string, buildId: string, path = ""): string {
     const filePath = join(
-      StorageService.buildFolder(this.buildsFolder, resourceId, buildId),
+      join(this.buildsFolder, buildId, this.buildOutputFolder),
       path
     );
     return readFileSync(filePath).toString();

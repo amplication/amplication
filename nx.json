@@ -16,10 +16,11 @@
       "runner": "@nrwl/nx-cloud",
       "options": {
         "cacheableOperations": [
+          "prebuild",
           "build",
           "prepare",
-          "check-format",
           "test",
+          "test:update-snapshot",
           "db:init",
           "lint",
           "test:e2e",
@@ -32,23 +33,36 @@
     }
   },
   "targetDefaults": {
+    "format:check": {
+      "options": {
+        "exclude": ["**/helm/**/*"]
+      }
+    },
     "test": {
       "dependsOn": ["db:prisma:generate", "^db:prisma:generate"]
     },
+    "prebuild": {
+      "dependsOn": ["^prebuild"]
+    },
     "build": {
-      "dependsOn": ["^build", "db:prisma:generate", "^db:prisma:generate"]
+      "dependsOn": [
+        "prebuild",
+        "^build",
+        "db:prisma:generate",
+        "^db:prisma:generate"
+      ]
+    },
+    "postbuild": {
+      "dependsOn": ["build", "^postbuild"]
     },
     "serve": {
       "dependsOn": ["db:prisma:generate"]
-    },
-    "prepare": {
-      "dependsOn": ["^prepare"]
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
     },
     "docker:build": {
-      "dependsOn": ["build"]
+      "dependsOn": ["prebuild", "build", "postbuild"]
     }
   }
 }

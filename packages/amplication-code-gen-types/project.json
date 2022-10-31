@@ -5,7 +5,7 @@
   "projectType": "library",
 
   "targets": {
-    "prepare": {
+    "prebuild": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/src/types"],
       "options": {
@@ -16,7 +16,7 @@
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": ["prepare"],
+      "dependsOn": ["prebuild"],
       "options": {
         "outputPath": "dist/packages/amplication-code-gen-types",
         "tsConfig": "packages/amplication-code-gen-types/tsconfig.lib.json",

@@ -15,6 +15,7 @@ import { createControllerSpecModule } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 import { builders } from "ast-types";
 import DsgContext from "../../dsg-context";
+import { createLog } from "../../create-log";
 
 export async function createResourcesModules(
   entities: Entity[],
@@ -36,7 +37,7 @@ async function createResourceModules(
 
   validateEntityName(entity);
 
-  logger.info(`Creating ${entityType}...`);
+  await createLog({ level: "info", message: `Creating ${entityType}...` });
   const entityName = camelCase(entityType);
   const resource = camelCase(plural(entityName));
   const serviceId = createServiceId(entityType);
