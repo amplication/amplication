@@ -115,6 +115,9 @@
     },
     "docker:build": {
       "executor": "@nx-tools/nx-docker:build",
+      "dependsOn": [
+        "build"
+      ],
       "options": {
         "push": false,
         "tags": [

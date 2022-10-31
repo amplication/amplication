@@ -1,5 +1,4 @@
 import { config } from "dotenv";
-import assert from "assert";
 
 export class EnvironmentVariables {
   private static _instance: EnvironmentVariables = new EnvironmentVariables();
@@ -17,7 +16,9 @@ export class EnvironmentVariables {
   get(key: string, strict: boolean): string | undefined {
     const envValue: string | undefined = process.env[key];
     if (strict) {
-      assert(envValue, `Missing ${key} in the env`);
+      if (!envValue) {
+        throw new Error(`Missing ${key} in the env`);
+      }
     }
     return envValue;
   }
