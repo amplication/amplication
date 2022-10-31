@@ -2,13 +2,13 @@ import { types } from "recast";
 const { builders } = types;
 
 export class EnumBuilder {
-  #ast: types.namedTypes.TSEnumDeclaration;
+  private _ast: types.namedTypes.TSEnumDeclaration;
   constructor(public readonly enumName: string) {
-    this.#ast = builders.tsEnumDeclaration(builders.identifier(enumName), []);
+    this._ast = builders.tsEnumDeclaration(builders.identifier(enumName), []);
   }
 
   createMember(key: string, value?: string): EnumBuilder {
-    this.#ast.members.push(
+    this._ast.members.push(
       builders.tsEnumMember(
         builders.identifier(key),
         value ? builders.stringLiteral(value) : undefined
@@ -19,13 +19,13 @@ export class EnumBuilder {
   }
 
   readMember(key: string): types.namedTypes.TSEnumMember | undefined {
-    return this.#ast.members.find(
+    return this._ast.members.find(
       (member) => (member.id as types.namedTypes.Identifier).name === key
     );
   }
 
   updateMember(key: string, value: string): EnumBuilder {
-    const member = this.#ast.members.find(
+    const member = this._ast.members.find(
       (member) => (member.id as types.namedTypes.Identifier).name === key
     );
     if (!member) {
@@ -36,6 +36,6 @@ export class EnumBuilder {
   }
 
   public get ast(): types.namedTypes.TSEnumDeclaration {
-    return this.#ast;
+    return this._ast;
   }
 }
