@@ -41,6 +41,7 @@ export class BuildRunnerService {
       this.configService.get(Env.BUILD_ARTIFACTS_CODE_FOLDER),
     );
 
+    console.log(`Copying from ${jobPath} to ${artifactPath}`);
     await copy(jobPath, artifactPath);
   }
 }
