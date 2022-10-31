@@ -40,7 +40,4 @@ module.exports = {
       { selector: "enumMember", format: ["PascalCase"] },
     ],
   },
-  parserOptions: {
-    project: "./tsconfig.only-parse.json",
-  },
 };

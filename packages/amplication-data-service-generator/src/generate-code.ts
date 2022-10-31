@@ -1,10 +1,10 @@
 import { join, dirname } from "path";
 import { mkdir, readFile, writeFile } from "fs/promises";
 
-import { BuildContext, Module } from "@amplication/code-gen-types";
+import { DSGResourceData, Module } from "@amplication/code-gen-types";
 import { createDataServiceImpl } from "./create-data-service-impl";
 import { defaultLogger } from "./server/logging";
-import axios from "axios";
+// import axios from "axios";
 
 const [, , source, destination] = process.argv;
 if (!source) {
@@ -25,22 +25,19 @@ export default async function generateCode(
 ): Promise<void> {
   try {
     const file = await readFile(source, "utf8");
-    const buildContext: BuildContext = JSON.parse(file);
-    const modules = await createDataServiceImpl(
-      buildContext.data,
-      defaultLogger
-    );
+    const resourceData: DSGResourceData = JSON.parse(file);
+    const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
-    await axios.put(process.env.STATUS_UPDATE_URL || "", {
-      buildId: process.env.BUILD_ID,
-      status: "Success",
-    });
+    // await axios.put(process.env.STATUS_UPDATE_URL || "", {
+    //   buildId: process.env.BUILD_ID,
+    //   status: "Success",
+    // });
   } catch (err) {
     console.error(err);
-    await axios.put(process.env.STATUS_UPDATE_URL || "", {
-      buildId: process.env.BUILD_ID,
-      status: "Failed",
-    });
+    // await axios.put(process.env.STATUS_UPDATE_URL || "", {
+    //   buildId: process.env.BUILD_ID,
+    //   status: "Failed",
+    // });
   }
 }
 

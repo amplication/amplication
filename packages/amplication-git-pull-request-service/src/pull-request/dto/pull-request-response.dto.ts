@@ -1,5 +1,8 @@
-import { IsUrl } from 'class-validator';
+import { IsString, IsUrl } from 'class-validator';
 export class PullRequestResponse {
   @IsUrl()
-  url!: string;
+  url?: string;
+
+  @IsString()
+  errorMessage?: string;
 }

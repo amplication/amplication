@@ -1,5 +1,5 @@
 import { exec } from "child_process";
-import * as ora from "ora";
+import ora from "ora";
 import { satisfies } from "semver";
 import { createLogger, format, transports } from "winston";
 import { argv } from "yargs";
@@ -138,12 +138,11 @@ const prismaMigration: Task[] = [
 ];
 
 const tasks: Task[][] = [
-  clean,
   install,
   preparePrisma,
   prepareGraphQL,
   build,
-  // dockerCompose,
+  dockerCompose,
 ];
 
 if (require.main === module) {

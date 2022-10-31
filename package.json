@@ -5,8 +5,6 @@
     "build": "lerna run --ignore server-template --ignore admin-template --sort --include-dependencies build",
     "clean": "nx clear-cache",
     "graphql-codegen": "graphql-codegen",
-    "build-storybook": "lerna run build-storybook",
-    "generate-test-data-service": "lerna run --scope @amplication/data-service-generator generate-test-data-service",
     "setup:dev": "ts-node ./script/setup.ts",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up"
   },
@@ -96,7 +94,7 @@
     "ts-morph": "^13.0.3",
     "tslib": "^2.3.0",
     "uuid": "^8.3.2",
-    "winston": "3.3.4",
+    "winston": "3.8.2",
     "winston-cloud-logging": "^1.0.2",
     "zlib": "^1.0.5"
   },

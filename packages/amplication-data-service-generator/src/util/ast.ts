@@ -852,5 +852,5 @@ export function findFirstDecoratorByName(
     );
   }
 
-  return decorator;
+  return decorator as any;
 }

@@ -2,7 +2,9 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "amplication-build-manager": "packages/amplication-build-manager",
     "amplication-code-gen-types": "packages/amplication-code-gen-types",
+    "amplication-data-service-generator": "packages/amplication-data-service-generator",
     "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
     "amplication-git-push-webhook-service": "ee/packages/amplication-git-push-webhook-service",

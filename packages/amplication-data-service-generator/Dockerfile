@@ -1,26 +1,12 @@
-ARG ALPINE_VERSION=alpine3.14
-ARG NODE_VERSION=16.13.1
+FROM node:16.16-alpine AS base
+RUN apk add g++ make python3
 
-FROM node:$NODE_VERSION-$ALPINE_VERSION AS base
-COPY ./ /app
+WORKDIR /workspace/packages/amplication-code-gen-types
+COPY ./dist/packages/amplication-code-gen-types/package.json .
+RUN npm i --omit-dev
+COPY ./dist/packages/amplication-code-gen-types .
 
-WORKDIR /app
-
-RUN npm ci
-
-RUN npm run bootstrap -- --scope @amplication/data-service-generator --include-dependencies
-
-RUN npm run build -- --scope @amplication/data-service-generator --include-dependencies
-
-
-FROM node:$NODE_VERSION-$ALPINE_VERSION as final
-WORKDIR /app
-
-COPY --from=base /app/packages/amplication-data-service-generator/package.json /app/packages/amplication-data-service-generator/package.json
-COPY --from=base /app/packages/amplication-data-service-generator/node_modules /app/packages/amplication-data-service-generator/node_modules
-COPY --from=base /app/packages/amplication-data-service-generator/dist /app/packages/amplication-data-service-generator/dist
-
-
-COPY --from=base /app/packages/amplication-code-gen-types/package.json /app/packages/amplication-code-gen-types/package.json
-COPY --from=base /app/packages/amplication-code-gen-types/node_modules /app/packages/amplication-code-gen-types/node_modules
-COPY --from=base /app/packages/amplication-code-gen-types/dist /app/packages/amplication-code-gen-types/dist
+WORKDIR /workspace/packages/amplication-data-service-generator
+COPY ./dist/packages/amplication-data-service-generator/package.json .
+RUN npm i --omit-dev
+COPY ./dist/packages/amplication-data-service-generator .
