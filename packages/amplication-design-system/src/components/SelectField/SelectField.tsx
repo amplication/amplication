@@ -73,6 +73,8 @@ export const SelectField = ({
           isDisabled={disabled}
         />
       </label>
+      {/*
+      // @ts-ignore */}
       <ErrorMessage name={name} component="div" className="text-input__error" />
     </div>
   );
@@ -97,7 +99,7 @@ const CustomOption = <
     data,
   } = props;
 
-  const icon = ((data as unknown) as OptionItem).icon;
+  const icon = (data as unknown as OptionItem).icon;
 
   return (
     <div

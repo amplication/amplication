@@ -19,6 +19,7 @@
           "build",
           "prepare",
           "check-format",
+          "format",
           "test",
           "db:init",
           "lint",
