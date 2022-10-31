@@ -124,25 +124,12 @@ const build: Task[] = [
     label: "building packages 📦",
   },
 ];
-const dockerCompose: Task[] = [
-  {
-    command: "npm run docker:dev",
-    label: "docker compose 🐳",
-  },
-];
-const prismaMigration: Task[] = [
-  {
-    command: "npm run migrate:up",
-    label: "prisma migration 🏗 ",
-  },
-];
 
 const tasks: Task[][] = [
   install,
   preparePrisma,
   prepareGraphQL,
   build,
-  dockerCompose,
 ];
 
 if (require.main === module) {

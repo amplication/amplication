@@ -6,7 +6,8 @@
     "clean": "nx clear-cache",
     "graphql-codegen": "graphql-codegen",
     "setup:dev": "ts-node ./script/setup.ts",
-    "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up"
+    "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
+    "db:migrate:deploy": "npx nx run-many --target=db:migrate:deploy"
   },
   "dependencies": {
     "@apollo/gateway": "^0.42.3",
