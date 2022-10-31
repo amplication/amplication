@@ -1,8 +1,5 @@
 import { IsString, IsUrl } from 'class-validator';
-export class SendPullRequestResponse {
-  @IsString()
-  buildId!: string;
-
+export class PullRequestResponse {
   @IsUrl()
   url?: string;
 

@@ -4,9 +4,9 @@ import {
   AMPLICATION_LOGGER_PROVIDER,
 } from '@amplication/nest-logger-module';
 import { Inject, Injectable } from '@nestjs/common';
-import { PrModule } from '../../constants';
-import { DiffService } from '../diff';
-import { SendPullRequestArgs } from './dto/sendPullRequest';
+import { CreatePullRequestArgs } from './dto/create-pull-request.args';
+import { DiffService } from '../diff/diff.service';
+import { PrModule } from '../types';
 
 @Injectable()
 export class PullRequestService {
@@ -27,7 +27,7 @@ export class PullRequestService {
     commit,
     gitProvider,
     gitResourceMeta,
-  }: SendPullRequestArgs): Promise<string> {
+  }: CreatePullRequestArgs): Promise<string> {
     const { base, body, head, title } = commit;
     const changedFiles = await this.diffService.listOfChangedFiles(
       resourceId,

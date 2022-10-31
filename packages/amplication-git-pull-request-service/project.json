@@ -45,11 +45,11 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-service:build"
+        "buildTarget": "amplication-git-pull-request-service:build"
       },
       "configurations": {
         "production": {
-          "buildTarget": "amplication-git-pull-service:build:production"
+          "buildTarget": "amplication-git-pull-request-service:build:production"
         }
       }
     },

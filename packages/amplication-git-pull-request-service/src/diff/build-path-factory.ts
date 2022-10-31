@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join, normalize } from 'path';
-import { DEFAULT_BUILDS_FOLDER } from '../../../constants';
-import { Env } from '../../../env';
+import { DEFAULT_BUILDS_FOLDER } from '../constants';
+import { Env } from '../env';
 
 @Injectable()
 export class BuildPathFactory {

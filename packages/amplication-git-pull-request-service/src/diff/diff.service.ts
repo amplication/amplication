@@ -8,10 +8,10 @@ import { compare } from 'dir-compare';
 import { sync } from 'fast-glob';
 import { existsSync, readFileSync } from 'fs';
 import { normalize } from 'path';
-import { PrModule } from '../../constants';
+import { PrModule } from '../types';
 import { mapDiffSetToPrModule } from './diffset-mapper';
-import { BuildPathFactory } from './utils/BuildPathFactory';
-import { deleteFilesVisitor } from './visitors/delete-files';
+import { BuildPathFactory } from './build-path-factory';
+import { deleteFilesVisitor } from './delete-files';
 
 @Injectable()
 export class DiffService {

@@ -13,11 +13,11 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { KafkaMessage } from 'kafkajs';
-import { Env } from '../../env';
-import { EnvironmentVariables } from '../../services/environmentVariables';
-import { SendPullRequestArgs } from './dto/sendPullRequest';
+import { CreatePullRequestArgs } from './dto/create-pull-request.args';
+import { KafkaTopics } from './pull-request.type';
 import { PullRequestService } from './pull-request.service';
 import { QueueService } from './queue.service';
+import { Env } from '../env';
 
 @Controller()
 export class PullRequestController {
@@ -29,12 +29,12 @@ export class PullRequestController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern(EnvironmentVariables.get(Env.CREATE_PR_REQUEST_TOPIC, true))
+  @EventPattern(KafkaTopics.GeneralPullRequest)
   async generatePullRequest(
     @Payload() message: KafkaMessage,
     @Ctx() context: KafkaContext
   ) {
-    const validArgs = plainToInstance(SendPullRequestArgs, message.value);
+    const validArgs = plainToInstance(CreatePullRequestArgs, message.value);
     await validateOrReject(validArgs);
     this.logger.info(`Got a new generate pull request item from queue.`, {
       topic: context.getTopic(),
