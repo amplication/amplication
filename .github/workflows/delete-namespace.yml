@@ -15,6 +15,7 @@ on:
           - alex
           - next
           - eugene
+          - staging
 
       confirm-namespace:
         type: string

@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: webhook-eventsource
+  namespace: next
+spec:
+  type: ExternalName
+  externalName: amplication-server-ext.next-dsg.svc.cluster.local
+  ports:
+  - port: 80
+    targetPort: 12000

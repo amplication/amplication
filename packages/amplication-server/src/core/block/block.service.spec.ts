@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { JsonArray, JsonObject } from 'type-fest';
+import type { JsonArray, JsonObject } from 'type-fest';
 import { BlockService } from './block.service';
 import {
   PrismaService,
   Prisma,
-  EnumResourceType
+  EnumResourceType,
 } from '@amplication/prisma-db';
 import { EnumBlockType } from '../../enums/EnumBlockType';
 import { DiffModule } from '../../services/diff.module';
@@ -14,7 +14,7 @@ import {
   BlockVersion,
   IBlock,
   BlockInputOutput,
-  User
+  User,
 } from '../../models';
 import { DiffService } from '../../services/diff.service';
 
@@ -31,7 +31,7 @@ const EXAMPLE_RESOURCE: Resource = {
   updatedAt: NOW,
   name: 'Example Resource',
   description: 'Example Resource Description',
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
 };
 
 const EXAMPLE_USER: User = {
@@ -42,9 +42,9 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name'
+    name: 'example_workspace_name',
   },
-  isOwner: true
+  isOwner: true,
 };
 
 const EXAMPLE_BLOCK: Block = {
@@ -57,19 +57,19 @@ const EXAMPLE_BLOCK: Block = {
   displayName: 'Example Block',
   description: 'Block Description',
   parentBlockId: null,
-  parentBlock: null
+  parentBlock: null,
 };
 
 const EXAMPLE_BLOCK_SETTINGS: { exampleSetting: string } = {
-  exampleSetting: 'Example Setting Value'
+  exampleSetting: 'Example Setting Value',
 };
 
 const EXAMPLE_BLOCK_INPUT: JsonObject & BlockInputOutput = {
-  name: 'BlockInput'
+  name: 'BlockInput',
 };
 
 const EXAMPLE_BLOCK_INPUT_LIST: JsonArray & BlockInputOutput[] = [
-  EXAMPLE_BLOCK_INPUT
+  EXAMPLE_BLOCK_INPUT,
 ];
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
@@ -81,7 +81,7 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   settings: EXAMPLE_BLOCK_SETTINGS,
   displayName: 'Example display name',
   inputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST },
-  outputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST }
+  outputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST },
 };
 
 type BlockType = IBlock & {
@@ -100,7 +100,7 @@ const EXAMPLE_IBLOCK: BlockType = {
   parentBlock: EXAMPLE_BLOCK.parentBlock,
   versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
   resourceId: EXAMPLE_RESOURCE.id,
-  ...EXAMPLE_BLOCK_SETTINGS
+  ...EXAMPLE_BLOCK_SETTINGS,
 };
 
 const prismaBlockFindOneMock = jest.fn(() => {
@@ -151,19 +151,19 @@ describe('BlockService', () => {
               findUnique: prismaBlockFindOneMock,
               findFirst: prismaBlockFindFirstMock,
               findMany: prismaBlockFindManyMock,
-              update: prismaBlockUpdateMock
+              update: prismaBlockUpdateMock,
             },
             blockVersion: {
               create: prismaBlockVersionCreateMock,
               findMany: prismaBlockVersionFindManyMock,
               findUnique: prismaBlockVersionFindOneMock,
-              update: prismaBlockVersionUpdateMock
-            }
-          }))
+              update: prismaBlockVersionUpdateMock,
+            },
+          })),
         },
-        BlockService
+        BlockService,
       ],
-      imports: [DiffModule]
+      imports: [DiffModule],
     })
       .overrideProvider(DiffService)
       .useValue({ areDifferent: areDifferentMock })
@@ -182,16 +182,16 @@ describe('BlockService', () => {
         data: {
           resource: {
             connect: {
-              id: EXAMPLE_BLOCK.resourceId
-            }
+              id: EXAMPLE_BLOCK.resourceId,
+            },
           },
           blockType: EnumBlockType[EXAMPLE_BLOCK.blockType],
           displayName: EXAMPLE_BLOCK.displayName,
           description: EXAMPLE_BLOCK.description,
           inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
           outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
-          ...EXAMPLE_BLOCK_SETTINGS
-        }
+          ...EXAMPLE_BLOCK_SETTINGS,
+        },
       },
       EXAMPLE_USER.id
     );
@@ -204,8 +204,8 @@ describe('BlockService', () => {
           create: {
             resource: {
               connect: {
-                id: EXAMPLE_RESOURCE.id
-              }
+                id: EXAMPLE_RESOURCE.id,
+              },
             },
             blockType: EXAMPLE_BLOCK.blockType,
             description: EXAMPLE_BLOCK.description,
@@ -213,40 +213,40 @@ describe('BlockService', () => {
             lockedAt: expect.any(Date),
             lockedByUser: {
               connect: {
-                id: EXAMPLE_USER_ID
-              }
+                id: EXAMPLE_USER_ID,
+              },
             },
 
-            parentBlock: undefined
-          }
+            parentBlock: undefined,
+          },
         },
         settings: EXAMPLE_BLOCK_VERSION.settings,
         commit: undefined,
         displayName: EXAMPLE_BLOCK.displayName,
         description: EXAMPLE_BLOCK.description,
         inputParameters: {
-          params: EXAMPLE_BLOCK_INPUT_LIST
+          params: EXAMPLE_BLOCK_INPUT_LIST,
         },
         outputParameters: {
-          params: EXAMPLE_BLOCK_INPUT_LIST
-        }
+          params: EXAMPLE_BLOCK_INPUT_LIST,
+        },
       },
       include: {
         block: {
           include: {
             resource: true,
-            parentBlock: true
-          }
-        }
-      }
+            parentBlock: true,
+          },
+        },
+      },
     });
   });
 
   it('finds a block correctly', async () => {
     const result = await service.findOne({
       where: {
-        id: EXAMPLE_BLOCK.id
-      }
+        id: EXAMPLE_BLOCK.id,
+      },
     });
     expect(result).toEqual(EXAMPLE_IBLOCK);
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledTimes(1);
@@ -255,16 +255,16 @@ describe('BlockService', () => {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: EXAMPLE_BLOCK.id,
-          versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber
-        }
+          versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
+        },
       },
       include: {
         block: {
           include: {
-            parentBlock: true
-          }
-        }
-      }
+            parentBlock: true,
+          },
+        },
+      },
     });
   });
 
@@ -275,26 +275,26 @@ describe('BlockService', () => {
       data: {
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
+            id: EXAMPLE_COMMIT_ID,
+          },
         },
         block: {
           connect: {
-            id: EXAMPLE_BLOCK.id
-          }
-        }
-      }
+            id: EXAMPLE_BLOCK.id,
+          },
+        },
+      },
     });
     expect(result).toEqual(EXAMPLE_BLOCK_VERSION);
 
     expect(prismaBlockVersionFindManyMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionFindManyMock).toHaveBeenCalledWith({
       where: {
-        block: { id: EXAMPLE_BLOCK.id }
+        block: { id: EXAMPLE_BLOCK.id },
       },
       orderBy: {
-        versionNumber: Prisma.SortOrder.asc
-      }
+        versionNumber: Prisma.SortOrder.asc,
+      },
     });
 
     expect(prismaBlockVersionCreateMock).toHaveBeenCalledTimes(1);
@@ -307,16 +307,16 @@ describe('BlockService', () => {
         settings: EXAMPLE_BLOCK_VERSION.settings,
         commit: {
           connect: {
-            id: EXAMPLE_COMMIT_ID
-          }
+            id: EXAMPLE_COMMIT_ID,
+          },
         },
         versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber + 1,
         block: {
           connect: {
-            id: EXAMPLE_BLOCK.id
-          }
-        }
-      }
+            id: EXAMPLE_BLOCK.id,
+          },
+        },
+      },
     });
   });
 
@@ -324,13 +324,13 @@ describe('BlockService', () => {
     const result = await service.update<BlockType>(
       {
         where: {
-          id: EXAMPLE_BLOCK.resourceId
+          id: EXAMPLE_BLOCK.resourceId,
         },
         data: {
           displayName: EXAMPLE_BLOCK.displayName,
           description: EXAMPLE_BLOCK.description,
-          ...EXAMPLE_BLOCK_SETTINGS
-        }
+          ...EXAMPLE_BLOCK_SETTINGS,
+        },
       },
       EXAMPLE_USER
     );
@@ -344,24 +344,24 @@ describe('BlockService', () => {
         block: {
           update: {
             displayName: EXAMPLE_BLOCK.displayName,
-            description: EXAMPLE_BLOCK.description
-          }
-        }
+            description: EXAMPLE_BLOCK.description,
+          },
+        },
       },
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: EXAMPLE_BLOCK.resourceId,
-          versionNumber: INITIAL_VERSION_NUMBER
-        }
+          versionNumber: INITIAL_VERSION_NUMBER,
+        },
       },
       include: {
         block: {
           include: {
-            parentBlock: true
-          }
-        }
-      }
+            parentBlock: true,
+          },
+        },
+      },
     });
   });
 
@@ -373,13 +373,13 @@ describe('BlockService', () => {
 
     const args = {
       where: {
-        id: EXAMPLE_BLOCK.id
+        id: EXAMPLE_BLOCK.id,
       },
       data: {
         displayName: EXAMPLE_BLOCK.displayName,
         description: EXAMPLE_BLOCK.description,
-        ...EXAMPLE_BLOCK_SETTINGS
-      }
+        ...EXAMPLE_BLOCK_SETTINGS,
+      },
     };
     await expect(service.update(args, EXAMPLE_USER)).rejects.toThrowError();
     expect(service.updateLock).toBeCalled();
@@ -394,25 +394,25 @@ describe('BlockService', () => {
 
   it('should find many blocks by block type', async () => {
     prismaBlockFindManyMock.mockImplementation(() => [
-      { ...EXAMPLE_BLOCK, versions: [EXAMPLE_BLOCK_VERSION] }
+      { ...EXAMPLE_BLOCK, versions: [EXAMPLE_BLOCK_VERSION] },
     ]);
     const functionArgs = {
       args: {},
-      blockType: EnumBlockType.ConnectorRestApi
+      blockType: EnumBlockType.ConnectorRestApi,
     };
     const blocksArgs = {
       ...functionArgs.args,
       where: {
-        blockType: { equals: functionArgs.blockType }
+        blockType: { equals: functionArgs.blockType },
       },
       include: {
         versions: {
           where: {
-            versionNumber: INITIAL_VERSION_NUMBER
-          }
+            versionNumber: INITIAL_VERSION_NUMBER,
+          },
         },
-        parentBlock: true
-      }
+        parentBlock: true,
+      },
     };
     expect(
       await service.findManyByBlockType(
@@ -435,7 +435,7 @@ describe('BlockService', () => {
   it('should get a parent block when one is provided', async () => {
     const block = {
       parentBlockId: EXAMPLE_BLOCK.parentBlockId,
-      parentBlock: EXAMPLE_BLOCK.parentBlock
+      parentBlock: EXAMPLE_BLOCK.parentBlock,
     };
     expect(await service.getParentBlock(block)).toEqual(null);
   });
@@ -447,25 +447,25 @@ describe('BlockService', () => {
 
   it('should find a parent block when only a parent block id is provided', async () => {
     const block = {
-      parentBlockId: EXAMPLE_BLOCK.id
+      parentBlockId: EXAMPLE_BLOCK.id,
     };
     expect(await service.getParentBlock(block)).toEqual(EXAMPLE_BLOCK);
     expect(prismaBlockFindOneMock).toBeCalledTimes(1);
     expect(prismaBlockFindOneMock).toBeCalledWith({
-      where: { id: block.parentBlockId }
+      where: { id: block.parentBlockId },
     });
   });
 
   it('should have no pending changes when the current and last block versions are the same', async () => {
     const LAST_BLOCK_VERSION = {
       ...EXAMPLE_BLOCK_VERSION,
-      versionNumber: 2
+      versionNumber: 2,
     };
 
     prismaBlockVersionFindManyMock.mockImplementation(() => [
       EXAMPLE_BLOCK_VERSION,
       { ...EXAMPLE_BLOCK_VERSION, versionNumber: 1 },
-      LAST_BLOCK_VERSION
+      LAST_BLOCK_VERSION,
     ]);
     areDifferentMock.mockImplementationOnce(() => false);
 
@@ -480,12 +480,12 @@ describe('BlockService', () => {
   it('should have pending changes when the current and last block versions are different', async () => {
     const CURRENT_BLOCK_VERSION = {
       ...EXAMPLE_BLOCK_VERSION,
-      displayName: 'new block name'
+      displayName: 'new block name',
     };
 
     prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
       CURRENT_BLOCK_VERSION,
-      EXAMPLE_BLOCK_VERSION
+      EXAMPLE_BLOCK_VERSION,
     ]);
     areDifferentMock.mockImplementationOnce(() => true);
 
@@ -499,7 +499,7 @@ describe('BlockService', () => {
 
   it('should have pending changes when there is only one block version', async () => {
     prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
-      EXAMPLE_BLOCK_VERSION
+      EXAMPLE_BLOCK_VERSION,
     ]);
     areDifferentMock.mockImplementationOnce(() => true);
 
@@ -515,8 +515,8 @@ describe('BlockService', () => {
     prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
       {
         ...EXAMPLE_BLOCK_VERSION,
-        deleted: true
-      }
+        deleted: true,
+      },
     ]);
     areDifferentMock.mockImplementationOnce(() => true);
 

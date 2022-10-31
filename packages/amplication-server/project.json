@@ -12,14 +12,20 @@
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["packages/amplication-server/**/*.ts"]
+        "lintFilePatterns": [
+          "packages/amplication-server/**/*.ts"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-server"],
+      "outputs": [
+        "coverage/packages/amplication-server"
+      ],
       "options": {
         "jestConfig": "packages/amplication-server/jest.config.ts",
         "passWithNoTests": true
@@ -27,7 +33,9 @@
     },
     "test:e2e": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-server"],
+      "outputs": [
+        "coverage/packages/amplication-server"
+      ],
       "options": {
         "jestConfig": "packages/amplication-server/jest.config.e2e.ts",
         "passWithNoTests": true,
@@ -36,9 +44,15 @@
     },
     "build": {
       "executor": "@nrwl/node:webpack",
-      "outputs": ["{options.outputPath}"],
-      "dependsOn": ["graphql:schema:generate", "graphql:schema:check"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "dependsOn": [
+        "graphql:schema:generate",
+        "graphql:schema:check"
+      ],
       "options": {
+        "webpackConfig": "packages/amplication-server/webpack.config.js",
         "outputPath": "dist/packages/amplication-server",
         "main": "packages/amplication-server/src/main.ts",
         "tsConfig": "packages/amplication-server/tsconfig.app.json"
@@ -54,11 +68,11 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-service:build"
+        "buildTarget": "amplication-server:build"
       },
       "configurations": {
         "production": {
-          "buildTarget": "amplication-git-pull-service:build:production"
+          "buildTarget": "amplication-server:build:production"
         }
       }
     },
@@ -72,8 +86,15 @@
     },
     "graphql:schema:generate": {
       "executor": "nx:run-commands",
-      "inputs": ["{projectRoot}/src/**/*.ts"],
-      "outputs": ["packages/amplication-server/src/schema.graphql"],
+      "inputs": [
+        "{projectRoot}/src/**/*.ts"
+      ],
+      "dependsOn": [
+        "^db:prisma:generate"
+      ],
+      "outputs": [
+        "packages/amplication-server/src/schema.graphql"
+      ],
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/generate-graphql-schema.ts",
         "cwd": "packages/amplication-server"
@@ -81,11 +102,24 @@
     },
     "graphql:schema:check": {
       "executor": "nx:run-commands",
-      "inputs": ["{projectRoot}/src/schema.graphql"],
-      "dependsOn": ["graphql:schema:generate"],
+      "inputs": [
+        "{projectRoot}/src/schema.graphql"
+      ],
+      "dependsOn": [
+        "graphql:schema:generate"
+      ],
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/check-graphql-schema",
         "cwd": "packages/amplication-server"
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": [
+          "amplication/server:latest"
+        ]
       }
     }
   },

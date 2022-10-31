@@ -1,9 +1,13 @@
 {
-  "name": "amplication-server",
+  "name": "amplication-git-pull-service",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ee/packages/amplication-git-pull-service/src",
   "projectType": "application",
-  "implicitDependencies": ["amplication-kafka"],
+  "implicitDependencies": [
+    "amplication-kafka",
+    "amplication-nest-logger-module",
+    "amplication-prisma-db"
+  ],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",

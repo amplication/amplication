@@ -2,6 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "amplication-build-manager": "packages/amplication-build-manager",
     "amplication-code-gen-types": "packages/amplication-code-gen-types",
     "amplication-client": "packages/amplication-client",
     "amplication-design-system": "packages/amplication-design-system",

@@ -1,12 +1,18 @@
-name: Continuous Integration (Nx)
+name: Continuous Integration (Nx - Affected)
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - feature/nx
-      - feature/nx-october
-  pull_request:
+    branches: ["feature/nx"]
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
+  pull_request_target:
+    branches: ["feature/nx"]
+    types: [opened, reopened]
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -56,21 +62,24 @@ jobs:
         run: npx nx affected --target=test --parallel=3
 
       - name: Build
-        run: npx nx affected --target=build --parallel=3
+        run: |
+          npx nx affected --target=prebuild --parallel=3
+          npx nx affected --target=build --parallel=3
+          npx nx affected --target=postbuild --parallel=3
 
       - name: Set Affected
         id: set-affected
         run: |
-          echo ::set-output name=affected::"$(npx nx print-affected | jq -c .projects)"
+          echo ::set-output name=affected::"$(npx nx print-affected --type=app | jq -c .projects)"
 
   dockerize:
+    if: ${{ needs.ci.outputs.affected != '[]' }}
     name: Dockerize
     runs-on: ubuntu-latest
     needs: ci
     strategy:
       matrix:
-        # project: ${{ fromJson(needs.ci.outputs.affected) }}
-        project: ["amplication-git-pull-service"]
+        project: ${{ fromJson(needs.ci.outputs.affected) }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -114,12 +123,13 @@ jobs:
         uses: docker/metadata-action@v4
         id: meta
         with:
-          images: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}-nx-test"
+          images: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
           tags: |
             type=sha,prefix=sha-
             type=ref,event=branch
-            type=ref,event=pr
-            type=ref,event=tag
+            type=ref,event=pr,prefix=pr-
+            type=ref,event=tag,prefix=tag-
+            type=raw,value=${{ github.run_id }},prefix=gh-
 
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}

@@ -67,8 +67,8 @@ export class ServiceSettingsService {
     return {
       ...serviceSettings,
       authProvider: serviceSettings.authProvider || EnumAuthProviderType.Jwt,
-      ...(!Object.hasOwn(serviceSettings, 'serverSettings') ||
-      !Object.hasOwn(serviceSettings, 'adminUISettings')
+      ...(!serviceSettings.hasOwnProperty('serverSettings') ||
+      !serviceSettings.hasOwnProperty('adminUISettings')
         ? this.updateServiceSettings(
             {
               data: {
