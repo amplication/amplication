@@ -1,7 +1,6 @@
 import { DiffSet } from 'dir-compare';
 import { mapDiffSetToPrModule } from '../../src/diff/diffset-mapper';
-import { DiffVisitorFn } from '../../src/diff/types';
-
+import { DiffVisitorFn } from '../../src/diff/diff.types';
 
 describe('Testing the diffset module mapper', () => {
   it('should return an empty array if no visitors are provided', () => {
