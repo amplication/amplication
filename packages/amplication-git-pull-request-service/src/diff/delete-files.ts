@@ -1,6 +1,6 @@
 import { Difference } from 'dir-compare';
 import { join } from 'path';
-import { PrModule } from '../../../constants';
+import { PrModule } from '../types';
 
 export function deleteFilesVisitor(diff: Difference): PrModule | null {
   const { state, name1, type1, type2, relativePath } = diff;

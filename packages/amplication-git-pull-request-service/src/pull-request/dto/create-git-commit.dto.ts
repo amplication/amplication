@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class GitCommit {
+export class CreateGitCommit {
   @IsString()
   @IsOptional()
   base?: string;

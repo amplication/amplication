@@ -1,4 +1,4 @@
-import { BuildPathFactory } from './BuildPathFactory';
+import { BuildPathFactory } from '../../src/diff/build-path-factory';
 import { ConfigService } from '@nestjs/config';
 import { mock } from 'jest-mock-extended';
 import { join } from 'path';
