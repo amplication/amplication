@@ -6,14 +6,38 @@
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["packages/amplication-prisma-db/**/*.ts"]
+        "lintFilePatterns": [
+          "packages/amplication-prisma-db/**/*.ts"
+        ]
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-prisma-db",
+        "main": "packages/amplication-prisma-db/src/index.ts",
+        "tsConfig": "packages/amplication-prisma-db/tsconfig.lib.json"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-prisma-db"],
+      "outputs": [
+        "coverage/packages/amplication-prisma-db"
+      ],
       "options": {
         "jestConfig": "packages/amplication-prisma-db/jest.config.ts",
         "passWithNoTests": true
