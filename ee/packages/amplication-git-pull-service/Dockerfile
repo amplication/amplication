@@ -8,7 +8,7 @@ RUN npm i --omit=dev
 
 COPY ./dist/ee/packages/amplication-git-pull-service .
 
-# This is required because this services uses the shared database
+# This is required to include the Prisma client in the image
 COPY ./node_modules/@amplication/prisma-clients/amplication-git-pull-service ./node_modules/@amplication/prisma-clients/amplication-git-pull-service
 
 ENV PORT=3333
