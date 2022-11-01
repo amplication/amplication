@@ -5,8 +5,7 @@
   "projectType": "application",
   "implicitDependencies": [
     "amplication-kafka",
-    "amplication-nest-logger-module",
-    "amplication-prisma-db"
+    "amplication-nest-logger-module"
   ],
   "targets": {
     "lint": {
@@ -26,12 +25,20 @@
     },
     "build": {
       "executor": "@nrwl/node:webpack",
+      "inputs": ["{projectRoot}/**/*"],
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/ee/packages/amplication-git-pull-service",
         "main": "ee/packages/amplication-git-pull-service/src/main.ts",
         "tsConfig": "ee/packages/amplication-git-pull-service/tsconfig.app.json",
-        "webpackConfig": "ee/packages/amplication-git-pull-service/webpack.config.js"
+        "webpackConfig": "ee/packages/amplication-git-pull-service/webpack.config.js",
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "ee/packages/amplication-git-pull-service",
+            "output": "prisma"
+          }
+        ]
       },
       "configurations": {
         "production": {
@@ -122,7 +129,7 @@
       "executor": "@nx-tools/nx-docker:build",
       "options": {
         "push": false,
-        "tags": ["amplication/git-pull-service:latest"]
+        "tags": ["amplication/git-pull-service"]
       }
     }
   },
