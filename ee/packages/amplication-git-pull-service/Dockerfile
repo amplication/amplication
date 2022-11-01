@@ -7,6 +7,7 @@ COPY ./dist/ee/packages/amplication-git-pull-service/package.json .
 RUN npm i --omit=dev
 
 COPY ./dist/ee/packages/amplication-git-pull-service .
+COPY ./node_modules/@amplication/prisma-clients/amplication-git-pull-service ./node_modules/@amplication/prisma-clients/amplication-git-pull-service
 
 ENV PORT=3333
 EXPOSE $PORT
