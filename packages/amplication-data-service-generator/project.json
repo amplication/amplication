@@ -49,7 +49,7 @@
       }
     },
     "test": {
-      "dependsOn": ["prebuild"],
+      "dependsOn": ["prebuild", "^prebuild"],
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/amplication-data-service-generator"],
       "options": {
