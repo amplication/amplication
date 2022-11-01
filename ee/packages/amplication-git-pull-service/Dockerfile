@@ -7,6 +7,8 @@ COPY ./dist/ee/packages/amplication-git-pull-service/package.json .
 RUN npm i --omit=dev
 
 COPY ./dist/ee/packages/amplication-git-pull-service .
+
+# This is required because this services uses the shared database
 COPY ./node_modules/@amplication/prisma-clients/amplication-git-pull-service ./node_modules/@amplication/prisma-clients/amplication-git-pull-service
 
 ENV PORT=3333
