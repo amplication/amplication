@@ -16,7 +16,7 @@ spec:
               memory: {{ .Values.maxMemory }}
           {{- end }}
           command: ["/bin/sh"]
-          args: ["-c", "npm run migrate:up", ";", "exit"]
+          args: ["-c", "npx prisma migrate deploy", ";", "exit"]
           env:
           - name: POSTGRESQL_URL
             valueFrom:
