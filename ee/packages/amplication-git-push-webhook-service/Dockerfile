@@ -8,6 +8,9 @@ RUN npm i --omit=dev
 
 COPY ./dist/ee/packages/amplication-git-push-webhook-service .
 
+# This is required to include the Prisma client in the image
+COPY ./node_modules/@amplication/prisma-clients/amplication-prisma-db ./node_modules/@amplication/prisma-clients/amplication-prisma-db
+
 ENV PORT=3333
 EXPOSE $PORT
 
