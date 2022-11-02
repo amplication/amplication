@@ -47,6 +47,9 @@ function generatePackageJson() {
     'class-validator',
     '@nestjs/platform-express',
     'reflect-metadata',
+    'apollo-server-express',
+    'kafkajs',
+    'swagger-ui-express'
   ];
   const dependencies = implicitDeps.reduce((acc, dep) => {
     acc[dep] = packageJson.dependencies[dep];

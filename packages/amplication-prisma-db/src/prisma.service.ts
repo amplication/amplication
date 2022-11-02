@@ -4,7 +4,11 @@ import { PrismaClient } from '@amplication/prisma-clients/amplication-prisma-db'
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
-    await this.$connect();
+    try {
+      await this.$connect();
+    } catch (error) {
+      console.error('Prisma connection error', error);
+    }
   }
 
   async enableShutdownHooks(app: INestApplication) {

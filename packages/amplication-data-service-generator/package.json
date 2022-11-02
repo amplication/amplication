@@ -3,18 +3,7 @@
   "version": "1.0.3",
   "private": true,
   "main": "./main.js",
-  "scripts": {
-    "check-format": "prettier --check .",
-    "format": "prettier --write .",
-    "lint": "eslint --cache .",
-    "lint:fix": "eslint --fix .",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "generate-code:dev": "ts-node src/generate-code.ts",
-    "generate-code:prod": "node ./src/generate-code.js",
-    "generate-test-data-service": "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated",
-    "update-test-data-service-snapshot": "jest -u src/tests/*.spec.ts && jest -u src/tests/server"
-  },
+  "scripts": {},
   "dependencies": {
     "@amplication/plugin-auth-basic": "^1.0.3",
     "@amplication/plugin-auth-jwt": "^1.0.4",
