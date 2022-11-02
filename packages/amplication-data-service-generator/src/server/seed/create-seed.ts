@@ -1,9 +1,11 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
 import {
+  CreateSeedParams,
   Entity,
   EntityField,
   EnumDataType,
+  EventNames,
   Module,
   types,
 } from "@amplication/code-gen-types";
@@ -27,6 +29,7 @@ import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
 import { createEnumName } from "../prisma/create-prisma-schema";
 import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 
 const seedTemplatePath = require.resolve("./seed.template.ts");
 
@@ -67,7 +70,11 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
 ];
 
-export async function createSeedModule(userEntity: Entity): Promise<Module> {
+export function createSeed(eventParams: CreateSeedParams): Promise<Module[]> {
+  return pluginWrapper(createSeedInternal, EventNames.CreateSeed, eventParams);
+}
+
+async function createSeedInternal(userEntity: Entity): Promise<Module[]> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.scriptsDirectory}/seed.ts`;
@@ -91,10 +98,12 @@ export async function createSeedModule(userEntity: Entity): Promise<Module> {
 
   addImports(file, dtoImports);
 
-  return {
-    path: MODULE_PATH,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: MODULE_PATH,
+      code: print(file).code,
+    },
+  ];
 }
 
 export function createUserObjectCustomProperties(
