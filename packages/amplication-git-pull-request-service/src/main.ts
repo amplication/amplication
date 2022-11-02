@@ -4,12 +4,12 @@ import { MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    createNestjsKafkaConfig()
-  );
+  const app = await NestFactory.create(AppModule, {});
+  app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
+  
+  await app.startAllMicroservices();
 
-  await app.listen();
+  await app.listen(process.env.PORT || 3331);
 }
 
 bootstrap().catch((error) => {
