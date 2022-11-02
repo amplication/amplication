@@ -22,7 +22,7 @@ export const INSTRUCTIONS_BUFFER = "\n\n";
 
 export function createSwagger(
   eventParams: CreateSwaggerParams
-): Promise<Module> {
+): Promise<Module[]> {
   return pluginWrapper(
     createSwaggerInternal,
     EventNames.CreateSwagger,

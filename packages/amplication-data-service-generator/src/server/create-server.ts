@@ -79,7 +79,7 @@ async function createServerInternal(
 
   await createLog({ level: "info", message: "Creating swagger..." });
   logger.info("Creating swagger...");
-  const swaggerModule = await createSwagger({});
+  const swagger = await createSwagger({});
 
   const userEntity = entities.find(
     (entity) => entity.name === USER_ENTITY_NAME
@@ -104,7 +104,7 @@ async function createServerInternal(
   const createdModules = [
     ...resourcesModules,
     ...dtoModules,
-    swaggerModule,
+    ...swagger,
     ...appModule,
     seedModule,
     ...authModules,
