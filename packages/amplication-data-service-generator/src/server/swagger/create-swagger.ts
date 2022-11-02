@@ -1,7 +1,12 @@
 import { builders, namedTypes } from "ast-types";
 import { EnumAuthProviderType } from "../../models";
 import { print } from "recast";
-import { AppInfo, Module } from "@amplication/code-gen-types";
+import {
+  AppInfo,
+  CreateSwaggerParams,
+  EventNames,
+  Module,
+} from "@amplication/code-gen-types";
 import {
   interpolate,
   removeTSIgnoreComments,
@@ -9,12 +14,23 @@ import {
 } from "../../util/ast";
 import { readFile } from "../../util/module";
 import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
-export async function createSwagger(): Promise<Module> {
+export function createSwagger(
+  eventParams: CreateSwaggerParams
+): Promise<Module> {
+  return pluginWrapper(
+    createSwaggerInternal,
+    EventNames.CreateSwagger,
+    eventParams
+  );
+}
+
+async function createSwaggerInternal(): Promise<Module[]> {
   const { serverDirectories, appInfo } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.srcDirectory}/swagger.ts`;
   const { settings } = appInfo;
@@ -35,10 +51,12 @@ export async function createSwagger(): Promise<Module> {
 
   removeTSVariableDeclares(file);
   removeTSIgnoreComments(file);
-  return {
-    code: print(file).code,
-    path: MODULE_PATH,
-  };
+  return [
+    {
+      code: print(file).code,
+      path: MODULE_PATH,
+    },
+  ];
 }
 
 export async function createDescription(appInfo: AppInfo): Promise<string> {
