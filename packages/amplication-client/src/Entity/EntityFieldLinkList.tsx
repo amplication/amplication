@@ -39,7 +39,7 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
       const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
-    [data, history, entityId,currentWorkspace,currentProject]
+    [data, history, entityId, currentWorkspace, currentProject]
   );
 
   const errorMessage = formatError(error);
