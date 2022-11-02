@@ -1,11 +1,7 @@
-name: Continuous Integration (Nx)
+name: Continuous Integration (Nx - All)
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/nx
-  pull_request:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -49,18 +45,21 @@ jobs:
       #   run: npx nx format:check
 
       - name: Lint
-        run: npx nx affected --target=lint --parallel=3
+        run: npx run-many --target=lint --parallel=3
 
       - name: Test
-        run: npx nx affected --target=test --parallel=3
+        run: npx run-many --target=test --parallel=3
 
       - name: Build
-        run: npx nx affected --target=build --parallel=3
+        run: |
+          npx run-many --target=prebuild --parallel=3
+          npx run-many --target=build --parallel=3
+          npx run-many --target=postbuild --parallel=3
 
       - name: Set Affected
         id: set-affected
         run: |
-          echo ::set-output name=affected::"$(npx nx print-affected | jq -c .projects)"
+          echo ::set-output name=affected::"$(npx nx print-affected --all --type=app | jq -c .projects)"
 
   dockerize:
     name: Dockerize
@@ -68,8 +67,7 @@ jobs:
     needs: ci
     strategy:
       matrix:
-        # project: ${{ fromJson(needs.ci.outputs.affected) }}
-        project: ["amplication-git-pull-service"]
+        project: ${{ fromJson(needs.ci.outputs.affected) }}
     steps:
       - uses: actions/checkout@v2
         with:
