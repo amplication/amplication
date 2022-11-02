@@ -1,26 +1,26 @@
-import React, { useState, useCallback, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { isEmpty } from "lodash";
-import { gql, useQuery } from "@apollo/client";
-import { formatError } from "../util/error";
-import * as models from "../models";
+import React, { useState, useCallback, useEffect, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
+import { isEmpty } from 'lodash';
+import { gql, useQuery } from '@apollo/client';
+import { formatError } from '../util/error';
+import * as models from '../models';
 import {
   SearchField,
   Snackbar,
   CircularProgress,
-} from "@amplication/design-system";
-import NewTopic from "./NewTopic";
-import InnerTabLink from "../Layout/InnerTabLink";
-import "./TopicList.scss";
-import { AppContext } from "../context/appContext";
-import { pluralize } from "../util/pluralize";
+} from '@amplication/design-system';
+import NewTopic from './NewTopic';
+import InnerTabLink from '../Layout/InnerTabLink';
+import './TopicList.scss';
+import { AppContext } from '../context/appContext';
+import { pluralize } from '../util/pluralize';
 
 type TData = {
   Topics: models.Topic[];
 };
 
-const DATE_CREATED_FIELD = "createdAt";
-const CLASS_NAME = "topic-list";
+const DATE_CREATED_FIELD = 'createdAt';
+const CLASS_NAME = 'topic-list';
 
 type Props = {
   resourceId: string;
@@ -29,9 +29,8 @@ type Props = {
 
 export const TopicList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
-    const [searchPhrase, setSearchPhrase] = useState<string>("");
+    const [searchPhrase, setSearchPhrase] = useState<string>('');
     const { currentWorkspace, currentProject } = useContext(AppContext);
-
     const handleSearchChange = useCallback(
       (value) => {
         setSearchPhrase(value);
@@ -42,16 +41,19 @@ export const TopicList = React.memo(
 
     const { data, loading, error } = useQuery<TData>(GET_TOPICS, {
       variables: {
-        where: { 
+        where: {
           resource: { id: resourceId },
-          displayName: searchPhrase !== "" ? {
-            contains: searchPhrase,
-            mode: models.QueryMode.Insensitive,
-          } : undefined,
+          displayName:
+            searchPhrase !== ''
+              ? {
+                  contains: searchPhrase,
+                  mode: models.QueryMode.Insensitive,
+                }
+              : undefined,
         },
         orderBy: {
           [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-        }
+        },
       },
     });
 
@@ -88,7 +90,8 @@ export const TopicList = React.memo(
           onChange={handleSearchChange}
         />
         <div className={`${CLASS_NAME}__header`}>
-          {data?.Topics.length} {pluralize(data?.Topics.length, 'Topic', 'Topics')}
+          {data?.Topics.length}{' '}
+          {pluralize(data?.Topics.length, 'Topic', 'Topics')}
         </div>
         {loading && <CircularProgress />}
         <div className={`${CLASS_NAME}__list`}>
@@ -113,14 +116,8 @@ export const TopicList = React.memo(
 );
 
 export const GET_TOPICS = gql`
-  query Topics(
-    $where: TopicWhereInput
-    $orderBy: TopicOrderByInput
-  ) {
-    Topics(
-      where: $where
-      orderBy: $orderBy
-    ) {
+  query Topics($where: TopicWhereInput, $orderBy: TopicOrderByInput) {
+    Topics(where: $where, orderBy: $orderBy) {
       id
       name
       displayName

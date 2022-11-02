@@ -1,25 +1,25 @@
-import React, { useState, useCallback, useContext } from "react";
-import { isEmpty } from "lodash";
-import { Link } from "react-router-dom";
-import { formatError } from "../util/error";
-import PendingChange from "./PendingChange";
-import { Button, EnumButtonStyle } from "../Components/Button";
+import React, { useState, useCallback, useContext } from 'react';
+import { isEmpty } from 'lodash';
+import { Link } from 'react-router-dom';
+import { formatError } from '../util/error';
+import PendingChange from './PendingChange';
+import { Button, EnumButtonStyle } from '../Components/Button';
 import {
   CircularProgress,
   Dialog,
   Snackbar,
   Tooltip,
-} from "@amplication/design-system";
-import Commit from "./Commit";
-import DiscardChanges from "./DiscardChanges";
-import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
+} from '@amplication/design-system';
+import Commit from './Commit';
+import DiscardChanges from './DiscardChanges';
+import { SvgThemeImage, EnumImages } from '../Components/SvgThemeImage';
 
-import "./PendingChanges.scss";
-import { AppContext } from "../context/appContext";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import './PendingChanges.scss';
+import { AppContext } from '../context/appContext';
+import ResourceCircleBadge from '../Components/ResourceCircleBadge';
+import usePendingChanges from '../Workspaces/hooks/usePendingChanges';
 
-const CLASS_NAME = "pending-changes";
+const CLASS_NAME = 'pending-changes';
 
 type Props = {
   projectId: string;
@@ -86,8 +86,9 @@ const PendingChanges = ({ projectId }: Props) => {
                   />
                   <span>{group.resource.name}</span>
                 </div>
-                {group.changes.map((change) => (
+                {group.changes.map((change, index) => (
                   <PendingChange
+                    topicIndex={index}
                     key={change.originId}
                     change={change}
                     linkToOrigin
@@ -110,7 +111,7 @@ const PendingChanges = ({ projectId }: Props) => {
             {pendingChanges.length}
           </span>
           <div className="spacer" />
-          <Tooltip aria-label={"Compare Changes"} direction="nw">
+          <Tooltip aria-label={'Compare Changes'} direction="nw">
             <Link
               to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
             >
@@ -121,7 +122,7 @@ const PendingChanges = ({ projectId }: Props) => {
               />
             </Link>
           </Tooltip>
-          <Tooltip aria-label={"Discard Pending Changes"} direction="nw">
+          <Tooltip aria-label={'Discard Pending Changes'} direction="nw">
             <Button
               buttonStyle={EnumButtonStyle.Text}
               onClick={handleToggleDiscardDialog}
