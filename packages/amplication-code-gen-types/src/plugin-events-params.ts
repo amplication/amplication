@@ -112,7 +112,9 @@ export interface CreateEntityModuleBaseParams extends EventParams {
   moduleBaseId: namedTypes.Identifier;
 }
 
-export interface CreateSwaggerParams extends EventParams {}
+export interface CreateSwaggerParams extends EventParams {
+  template: namedTypes.File;
+}
 
 export interface CreateSeedParams extends EventParams {
   template: namedTypes.File;
