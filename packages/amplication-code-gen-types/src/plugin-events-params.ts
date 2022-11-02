@@ -115,5 +115,5 @@ export interface CreateEntityModuleBaseParams extends EventParams {
 export interface CreateSwaggerParams extends EventParams {}
 
 export interface CreateSeedParams extends EventParams {
-  entities: Entity[];
+  template: namedTypes.File;
 }

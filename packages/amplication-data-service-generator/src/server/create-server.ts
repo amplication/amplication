@@ -15,7 +15,7 @@ import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
-import { createSeedModule } from "./seed/create-seed";
+import { createSeed } from "./seed/create-seed";
 import DsgContext from "../dsg-context";
 import { ENV_VARIABLES } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
@@ -86,7 +86,7 @@ async function createServerInternal(
   );
   await createLog({ level: "info", message: "Creating seed script..." });
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(userEntity as Entity);
+  const seedModule = await createSeed();
 
   await createLog({
     level: "info",
@@ -106,7 +106,7 @@ async function createServerInternal(
     ...dtoModules,
     ...swagger,
     ...appModule,
-    seedModule,
+    ...seedModule,
     ...authModules,
     ...messageBrokerModules,
   ];
