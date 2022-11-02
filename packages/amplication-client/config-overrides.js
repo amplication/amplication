@@ -19,6 +19,7 @@ module.exports = function override(config, env) {
   for (const peerDependency of Object.keys(designSystemPkg.peerDependencies)) {
     aliasDependencyToTopLevel(config, peerDependency);
   }
+
   return config;
 };
 

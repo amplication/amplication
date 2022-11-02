@@ -9,8 +9,10 @@
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
+  "exclude": ["node_modules"],
   "files": [],
   "include": [],
   "references": [

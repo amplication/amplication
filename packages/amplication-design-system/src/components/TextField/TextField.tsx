@@ -13,7 +13,7 @@ export const TextField = (props: Props) => {
   const { onChange, ...rest } = props;
 
   const handleChange = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       if (onChange) {
         onChange(event);
       }

@@ -18,7 +18,7 @@ import "./SelectMenu.scss";
 interface ButtonProps {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
-  title: string | Element;
+  title: string | React.ReactNode;
   icon?: string;
   openIcon?: string;
   buttonClassName?: string;
@@ -94,8 +94,10 @@ export const SelectMenu = ({
 
 export type SelectMenuModalProps = PrimerSelectMenuModalProps;
 
-export const SelectMenuModal = (props: SelectMenuModalProps) => {
+export const SelectMenuModal: React.FC<SelectMenuModalProps> = (props) => {
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <PrimerSelectMenu.Modal
       className={classNames("select-menu__modal", props.className)}
       {...props}
@@ -118,7 +120,7 @@ export const SelectMenuItem = ({
   ...rest
 }: SelectMenuItemProps) => {
   const handleClick = useCallback(
-    (e) => {
+    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       if (onSelectionChange) {
         onSelectionChange(itemData);
         if (!closeAfterSelectionChange) {

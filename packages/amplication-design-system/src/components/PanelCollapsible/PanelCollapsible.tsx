@@ -88,7 +88,7 @@ const PanelCollapsibleHeader = ({
   onCollapseChange,
 }: PanelCollapsibleHeaderProps) => {
   const handleCollapseChange = useCallback(
-    (event) => {
+    (event: React.MouseEvent<HTMLElement>) => {
       event.stopPropagation();
       if (!manualCollapseDisabled) {
         onCollapseChange();

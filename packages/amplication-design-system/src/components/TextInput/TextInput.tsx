@@ -5,7 +5,9 @@ import { Button } from "../Button/Button";
 import "./TextInput.scss";
 import { Label, LabelTypes } from "../Label/Label";
 
-export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
+export type Props = React.HTMLProps<
+  HTMLTextAreaElement | HTMLInputElement
+> & {
   helpText?: string;
   trailingButton?: {
     title?: string;
