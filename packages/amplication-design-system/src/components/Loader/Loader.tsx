@@ -20,9 +20,6 @@ export const Loader: React.FC<Props> = ({
   onTimeout,
   ...rest
 }) => {
-  console.log(process.cwd());
-  console.log(React.version);
-
   useEffect(() => {
     if (!minimumLoadTimeMS) return;
     const timer = setTimeout(() => {
