@@ -1,15 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { PrModule } from "../types";
-import { GitResourceMeta } from "../contracts/GitResourceMeta";
-import { GithubFile } from "../Dto/entities/GithubFile";
-import { RemoteGitOrganization } from "../Dto/entities/RemoteGitOrganization";
-import {
-  RemoteGitRepos,
-  RemoteGitRepository,
-} from "../Dto/entities/RemoteGitRepository";
-import { EnumGitOrganizationType } from "../Dto/enums/EnumGitOrganizationType";
-import { EnumGitProvider } from "../Dto/enums/EnumGitProvider";
-import { GitServiceFactory } from "../utils/GitServiceFactory";
+import { EnumGitOrganizationType, EnumGitProvider, GitResourceMeta, PrModule } from "./git.types";
+import { GithubFile } from "./dto/github-file.dto";
+import { GitServiceFactory } from "./git-service-factory";
+import { RemoteGitRepos, RemoteGitRepository } from "./dto/remote-git-repository";
+import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 
 @Injectable()
 export class GitService {

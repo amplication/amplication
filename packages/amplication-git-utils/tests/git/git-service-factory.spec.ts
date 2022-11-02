@@ -1,6 +1,6 @@
-import { EnumGitProvider } from "../Dto/enums/EnumGitProvider";
-import { GithubService } from "../providers/github.service";
-import { GitServiceFactory } from "../utils/GitServiceFactory";
+import { EnumGitProvider } from "../../src/git/git.types";
+import { GithubService } from "../../src/git/github.service";
+import { GitServiceFactory } from "../../src/git/git-service-factory";
 import { mock } from "jest-mock-extended";
 
 describe("GitServiceFactory", () => {
