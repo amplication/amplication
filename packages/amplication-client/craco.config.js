@@ -29,7 +29,7 @@ module.exports = {
           delete babelLoader.include;
         }
       });
-      console.log(config);
+
       return {
         ...config,
         resolve: {
