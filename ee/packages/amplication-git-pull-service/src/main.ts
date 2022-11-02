@@ -1,14 +1,10 @@
 import { NestFactory } from "@nestjs/core";
-import { MicroserviceOptions } from "@nestjs/microservices";
 import { AppModule } from "./app.module";
 
-
 async function main() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule
-  );
-
-  app.listen();
+  const app = await NestFactory.create(AppModule);
+  await app.startAllMicroservices();
+  await app.listen(3333);
 
   return app;
 }
