@@ -122,7 +122,9 @@ npx nx serve amplication-server
 npx nx serve amplication-client
 ```
 
-You are good to go. Happy hacking! 👾
+That's it, you are good to go! Happy hacking! 👾
+
+You can always find more information in each app/library's respective README.md file.
 
 ### Setting Up Amplication Manually
 
@@ -144,7 +146,7 @@ Amplication is currently in version 1. This is the first major release of Amplic
 
 ## Support
 
-Ask your questions and participate in discussions regarding Amplication-related and web-dev topics at the Amplication Discord channel. 
+Ask your questions and participate in discussions regarding Amplication-related and web-dev topics at the Amplication Discord server. 
 
 <a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
