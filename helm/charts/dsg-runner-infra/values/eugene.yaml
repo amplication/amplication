@@ -17,11 +17,9 @@ amplication-build-manager:
       KAFKA_CLIENT_ID: build-manager
       KAFKA_GROUP_ID: build-manager
 
-      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
-
-      CODE_GENERATION_REQUEST_TOPIC: internal.code-generation.request.0
-      CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
-      CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 
       DSG_LOG_TOPIC: internal.dsg-log.0
 
