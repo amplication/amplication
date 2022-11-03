@@ -60,7 +60,7 @@ export class PullRequestController {
       const response = { url: pullRequest, buildId: validArgs.newBuildId };
 
       this.queueService.emitMessage(
-        this.configService.get(KafkaTopics.CreatePrSuccess),
+        KafkaTopics.CreatePrSuccess,
         JSON.stringify(response)
       );
     } catch (error) {
@@ -76,7 +76,7 @@ export class PullRequestController {
       };
 
       this.queueService.emitMessage(
-        this.configService.get(KafkaTopics.CreatePrFailure),
+        KafkaTopics.CreatePrFailure,
         JSON.stringify(response)
       );
     }
