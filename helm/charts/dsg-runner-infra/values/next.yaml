@@ -13,7 +13,7 @@ amplication-build-manager:
     env:
       PORT: "80"
 
-      KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless.next.svc.cluster.local:9092'
+      KAFKA_BROKERS: 'amplication-next-cp-kafka-headless.next.svc.cluster.local:9092'
       KAFKA_CLIENT_ID: build-manager
       KAFKA_GROUP_ID: build-manager
 
