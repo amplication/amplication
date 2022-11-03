@@ -5,7 +5,7 @@
   "dependencies": {
     "@apollo/client": "3.6.9",
     "@extra-set/difference": "2.2.3",
-    "@monaco-editor/react": "^4.4.4",
+    "@monaco-editor/react": "^4.4.6",
     "@rooks/use-window-size": "3.6.0",
     "ajv-errors": "3.0.0",
     "axios": "0.27.2",
@@ -114,7 +114,6 @@
     "@types/react": "16.14.11",
     "@types/react-beautiful-dnd": "13.1.1",
     "@types/react-command-palette": "^0.18.0",
-    "@types/react-dom": "16.9.14",
     "@types/react-helmet": "6.1.5",
     "@types/react-lazylog": "4.5.1",
     "@types/react-router-dom": "5.3.3",
