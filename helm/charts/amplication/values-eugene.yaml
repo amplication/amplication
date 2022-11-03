@@ -56,7 +56,7 @@ amplication-server:
       CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.1
       CODE_GENERATION_FAILURE_TOPIC: build.internal.code-generation.failure.1
 
-      DSG_LOG_TOPIC: internal.dsg-log.0
+      DSG_LOG_TOPIC: build.internal.dsg-log.1
 
       #GCP - APPS Builder
 
@@ -76,7 +76,7 @@ amplication-server:
 
       DOCKER_HOST: tcp://docker:2375
 
-      DSG_RUNNER_URL: http://webhook-eventsource-svc.next-dsg.svc.cluster.local:12000/example
+      DSG_RUNNER_URL: http://webhook-eventsource-svc.eugene-dsg.svc.cluster.local:12000/example
 
       #GitHub App
       GITHUB_APP_APP_ID: "227239"
