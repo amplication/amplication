@@ -1,6 +1,6 @@
 global:
   pvc:
-    name: build-artifacts-eugene
+    name: build-artifacts
     storageRequest: 5Gi
     storageName: efs-sc
   pv:
@@ -52,9 +52,9 @@ amplication-server:
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 
-      CODE_GENERATION_REQUEST_TOPIC: internal.code-generation.request.0
-      CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
-      CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
+      CODE_GENERATION_REQUEST_TOPIC: build.internal.code-generation.request.1
+      CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.1
+      CODE_GENERATION_FAILURE_TOPIC: build.internal.code-generation.failure.1
 
       DSG_LOG_TOPIC: internal.dsg-log.0
 
