@@ -40,15 +40,21 @@ amplication-server:
 
       #KAFKA
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      KAFKA_BROKERS: 'amplication-next-cp-kafka-headless:9092'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
-      #EFS
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
+      CREATE_PR_SUCCESS_TOPIC: internal.create-pr.success.0
+      CREATE_PR_FAILURE_TOPIC: internal.create-pr.failure.0
+
+      CODE_GENERATION_REQUEST_TOPIC: internal.code-generation.request.0
+      CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
+      CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
+
+      DSG_LOG_TOPIC: internal.dsg-log.0
 
       #GCP - APPS Builder
-
       DEFAULT_DISK: gcs
       LOCAL_DISK_ROOT: /artifacts
       CONTAINER_BUILDER_DEFAULT: cloud-build
@@ -65,6 +71,8 @@ amplication-server:
 
       DOCKER_HOST: tcp://docker:2375
 
+      DSG_RUNNER_URL: http://webhook-eventsource-svc.next-dsg.svc.cluster.local:12000/example
+
       #GitHub App
       GITHUB_APP_APP_ID: "225471"
       GITHUB_APP_CLIENT_ID: "Iv1.ba108fc312eb8265"
@@ -79,7 +87,7 @@ amplication-git-push-webhook-service:
     hostname: webhook-next.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: 'amplication-next-cp-kafka-headless:9092'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
@@ -98,7 +106,7 @@ amplication-git-pull-service:
       GITHUB_APP_CLIENT_ID: "Iv1.ba108fc312eb8265"
       GIT_DEFAULT_ORIGIN_NAME: origin
 
-      KAFKA_BROKERS: 'amplication-next-cp-kafka-headless:9092'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
@@ -107,11 +115,17 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: 'amplication-next-cp-kafka-headless:9092'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
+      CREATE_PR_SUCCESS_TOPIC: internal.create-pr.success.0
+      CREATE_PR_FAILURE_TOPIC: internal.create-pr.failure.0
+
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
+
       GITHUB_APP_APP_ID: "225471"
 
 amplication-storage-gateway:
@@ -119,6 +133,29 @@ amplication-storage-gateway:
     hostname: server-next.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: 'amplication-next-cp-kafka-headless:9092'
+      KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       BASE_BUILDS_FOLDER: /amplication-data/build-data
+      BUILD_OUTPUT_FOLDER: output
       GITHUB_APP_APP_ID: "225471"
+
+amplication-build-manager:
+  config:
+    env:
+      PORT: "80"
+
+      KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
+      KAFKA_CLIENT_ID: build-manager
+      KAFKA_GROUP_ID: build-manager
+
+      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
+
+      CODE_GENERATION_REQUEST_TOPIC: internal.code-generation.request.0
+      CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
+      CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
+
+      DSG_LOG_TOPIC: internal.dsg-log.0
+
+      DSG_RUNNER_URL: http://webhook-eventsource-svc.next-dsg.svc.cluster.local:12000/example
+
+      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      RESOURCE_DATA_FILE_NAME: input.json

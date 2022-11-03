@@ -8,7 +8,6 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      SERVICE_DB_NAME: ${SERVICE_DB_NAME}
     volumes:
       - postgres:/var/lib/postgresql/data
 

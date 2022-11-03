@@ -1,4 +1,4 @@
-import { Get, HttpStatus, Inject, Res } from "@nestjs/common";
+import { Get, HttpStatus, Res } from "@nestjs/common";
 import { Response } from "express";
 import { HealthService } from "../health.service";
 import { AmplicationLogger } from "@amplication/nest-logger-module";

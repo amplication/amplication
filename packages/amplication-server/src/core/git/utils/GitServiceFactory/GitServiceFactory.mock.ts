@@ -1,4 +1,4 @@
-import { GitServiceFactory } from '@amplication/git-service';
+import { GitServiceFactory } from '@amplication/git-utils';
 import { mock } from 'jest-mock-extended';
 import { EnumGitProvider } from '../../dto/enums/EnumGitProvider';
 import { MOCK_GITHUB_SERVICE } from '../../__mocks__/Github';

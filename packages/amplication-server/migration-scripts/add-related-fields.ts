@@ -13,8 +13,8 @@ async function main() {
     where: {
       dataType: EnumDataType.Lookup,
       entityVersion: {
-        versionNumber: 0
-      }
+        versionNumber: 0,
+      },
     },
     include: {
       entityVersion: {
@@ -25,29 +25,29 @@ async function main() {
                 include: {
                   workspace: {
                     include: {
-                      users: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                      users: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
   console.info(`Found ${lookupFields.length} fields`);
   // Filter out fields that have relatedFieldId already or their related entity id is corrupt
-  const fieldsToUpdate = lookupFields.filter(field => {
-    const properties = (field.properties as unknown) as types.Lookup;
+  const fieldsToUpdate = lookupFields.filter((field) => {
+    const properties = field.properties as unknown as types.Lookup;
     return (
       !properties.relatedFieldId && !properties.relatedEntityId.startsWith('[')
     );
   });
   console.info(`Attempting to update ${fieldsToUpdate.length} fields`);
   await Promise.all(
-    fieldsToUpdate.map(async field => {
-      const properties = (field.properties as unknown) as types.Lookup;
+    fieldsToUpdate.map(async (field) => {
+      const properties = field.properties as unknown as types.Lookup;
       const { entity } = field.entityVersion;
       const [user] = entity.app.workspace.users;
       console.info(`Adding related field for ${field.id}...`);
@@ -57,17 +57,18 @@ async function main() {
       // Find fields with the desired related field name
       const existingFieldWithName = await client.entityField.findFirst({
         where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           OR: [
             { name: relatedFieldName },
             {
-              displayName: relatedFieldDisplayName
-            }
+              displayName: relatedFieldDisplayName,
+            },
           ],
           entityVersion: {
             entityId: properties.relatedEntityId,
-            versionNumber: 0
-          }
-        }
+            versionNumber: 0,
+          },
+        },
       });
 
       // In case name exists use a generated name
@@ -83,31 +84,31 @@ async function main() {
       // Lock the entity
       await client.entity.update({
         where: {
-          id: entity.id
+          id: entity.id,
         },
         data: {
           lockedByUser: {
             connect: {
-              id: user.id
-            }
+              id: user.id,
+            },
           },
-          lockedAt: new Date()
-        }
+          lockedAt: new Date(),
+        },
       });
 
       // Lock the related entity
       await client.entity.update({
         where: {
-          id: properties.relatedEntityId
+          id: properties.relatedEntityId,
         },
         data: {
           lockedByUser: {
             connect: {
-              id: user.id
-            }
+              id: user.id,
+            },
           },
-          lockedAt: new Date()
-        }
+          lockedAt: new Date(),
+        },
       });
 
       let relatedField;
@@ -127,16 +128,16 @@ async function main() {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 entityId_versionNumber: {
                   entityId: properties.relatedEntityId,
-                  versionNumber: 0
-                }
-              }
+                  versionNumber: 0,
+                },
+              },
             },
             properties: {
               allowMultipleSelection: !properties.allowMultipleSelection,
               relatedEntityId: field.entityVersion.entity.id,
-              relatedFieldId: field.permanentId
-            }
-          }
+              relatedFieldId: field.permanentId,
+            },
+          },
         });
       } catch (error) {
         relatedField = await client.entityField.create({
@@ -153,16 +154,16 @@ async function main() {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 entityId_versionNumber: {
                   entityId: properties.relatedEntityId,
-                  versionNumber: 0
-                }
-              }
+                  versionNumber: 0,
+                },
+              },
             },
             properties: {
               allowMultipleSelection: !properties.allowMultipleSelection,
               relatedEntityId: field.entityVersion.entity.id,
-              relatedFieldId: field.permanentId
-            }
-          }
+              relatedFieldId: field.permanentId,
+            },
+          },
         });
       }
       // Update the field with the related field id
@@ -171,9 +172,9 @@ async function main() {
         data: {
           properties: {
             ...properties,
-            relatedFieldId: relatedField.permanentId
-          }
-        }
+            relatedFieldId: relatedField.permanentId,
+          },
+        },
       });
     })
   );

@@ -44,9 +44,8 @@ function WorkspaceForm() {
 
   const { trackEvent } = useTracking();
 
-  const [updateWorkspace, { error: updateError }] = useMutation<TData>(
-    UPDATE_WORKSPACE
-  );
+  const [updateWorkspace, { error: updateError }] =
+    useMutation<TData>(UPDATE_WORKSPACE);
 
   const handleSubmit = useCallback(
     (newData) => {
@@ -70,7 +69,10 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <PageContent pageTitle="Workspace settings" sideContent={<ProjectSideBar />}>
+    <PageContent
+      pageTitle="Workspace settings"
+      sideContent={<ProjectSideBar />}
+    >
       <div className={CLASS_NAME}>
         <h2>Workspace Settings</h2>
         {currentWorkspace && (

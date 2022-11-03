@@ -1,30 +1,30 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { JsonValue } from 'type-fest';
-import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/no-cycle
+import type { JsonValue } from 'type-fest';
+import { EntityVersion } from './EntityVersion';
 import { EnumDataType } from './../enums/EnumDataType';
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityField {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   permanentId!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
@@ -33,47 +33,47 @@ export class EntityField {
   entityVersion?: EntityVersion;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   displayName!: string;
 
   @Field(() => EnumDataType, {
-    nullable: false
+    nullable: false,
   })
   dataType!: keyof typeof EnumDataType;
 
   @Field(() => GraphQLJSONObject, {
-    nullable: true
+    nullable: true,
   })
   properties!: JsonValue;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   required!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   unique!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   searchable!: boolean;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   description: string;
 
   @Field(() => Int, {
-    nullable: true
+    nullable: true,
   })
   position?: number;
 }

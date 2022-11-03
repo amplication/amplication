@@ -7,7 +7,7 @@ import {
   Req,
   UseFilters,
   Logger,
-  Inject
+  Inject,
 } from '@nestjs/common';
 import { MorganInterceptor } from 'nest-morgan';
 import { Response } from 'express';
@@ -48,13 +48,14 @@ export class AuthController {
 
     this.logger.log({
       level: 'info',
-      message: `receive login callback from github account_id=${user.account.id}`
+      message: `receive login callback from github account_id=${user.account.id}`,
     });
 
     const token = await this.authService.prepareToken(user);
     const url = stringifyUrl({
       url: this.host,
-      query: { token, 'complete-signup': isNew ? '1' : '0' }
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      query: { token, 'complete-signup': isNew ? '1' : '0' },
     });
     response.redirect(301, url);
   }

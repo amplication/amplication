@@ -27,7 +27,7 @@ spec:
       containers:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}@{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if .Values.autoscaling.enabled }}
           resources:
             requests:
