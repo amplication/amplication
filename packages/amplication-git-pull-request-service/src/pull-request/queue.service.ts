@@ -6,8 +6,6 @@ export const KAFKA_CLIENT = 'KAFKA_CLIENT';
 
 @Injectable()
 export class QueueService {
-  private readonly getBuildByRunIdTopic: string;
-
   constructor(
     @Inject(KAFKA_CLIENT)
     private readonly kafkaClient: ClientKafka,

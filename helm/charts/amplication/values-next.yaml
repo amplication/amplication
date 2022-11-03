@@ -1,8 +1,13 @@
 global:
   pvc:
-    name: next-efs-claim
+    name: build-artifacts
+    storageRequest: 5Gi
+    storageName: efs-sc
   pv:
-    name: efs-pv-next
+    name: build-artifacts-eugene
+    storageCapacity: 5Gi
+    handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
+
   nodeSelector:
     role: custom-envs
   tolerations:
@@ -135,27 +140,6 @@ amplication-storage-gateway:
     env:
       KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-      BUILD_OUTPUT_FOLDER: output
+      BUILD_OUTPUT_FOLDER: code
       GITHUB_APP_APP_ID: "225471"
 
-amplication-build-manager:
-  config:
-    env:
-      PORT: "80"
-
-      KAFKA_BROKERS: '["amplication-next-cp-kafka-headless:9092"]'
-      KAFKA_CLIENT_ID: build-manager
-      KAFKA_GROUP_ID: build-manager
-
-      CREATE_PR_REQUEST_TOPIC: internal.create-pr.request.0
-
-      CODE_GENERATION_REQUEST_TOPIC: internal.code-generation.request.0
-      CODE_GENERATION_SUCCESS_TOPIC: internal.code-generation.success.0
-      CODE_GENERATION_FAILURE_TOPIC: internal.code-generation.failure.0
-
-      DSG_LOG_TOPIC: internal.dsg-log.0
-
-      DSG_RUNNER_URL: http://webhook-eventsource-svc.next-dsg.svc.cluster.local:12000/example
-
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
-      RESOURCE_DATA_FILE_NAME: input.json
