@@ -23,7 +23,6 @@ import { createMessageBroker } from "./message-broker/create-service-message-bro
 import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
-import { USER_ENTITY_NAME } from "./user-entity";
 import { createLog } from "../create-log";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
