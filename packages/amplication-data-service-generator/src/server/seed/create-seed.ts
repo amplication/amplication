@@ -71,40 +71,54 @@ export const DEFAULT_AUTH_PROPERTIES = [
 ];
 
 export async function createSeed(): Promise<Module[]> {
-  const template = await readFile(seedTemplatePath);
-  return pluginWrapper(createSeedInternal, EventNames.CreateSeed, { template });
-}
+  const { serverDirectories, entities } = DsgContext.getInstance;
 
-async function createSeedInternal(
-  template: namedTypes.File
-): Promise<Module[]> {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { DTOs, serverDirectories, entities } = DsgContext.getInstance;
-  const MODULE_PATH = `${serverDirectories.scriptsDirectory}/seed.ts`;
+  const fileDir = serverDirectories.scriptsDirectory;
+  const outputFileName = "seed.ts";
 
   const userEntity = entities.find((entity) => entity.name === "User")!;
   const customProperties = createUserObjectCustomProperties(userEntity);
 
-  interpolate(template, {
+  const template = await readFile(seedTemplatePath);
+  const templateMapping = {
     DATA: builders.objectExpression([
       ...DEFAULT_AUTH_PROPERTIES,
       ...customProperties,
     ]),
+  };
+
+  return pluginWrapper(createSeedInternal, EventNames.CreateSeed, {
+    template,
+    templateMapping,
+    fileDir,
+    outputFileName,
   });
+}
+
+async function createSeedInternal({
+  template,
+  templateMapping,
+  fileDir,
+  outputFileName,
+}: CreateSeedParams): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
+
+  interpolate(template, templateMapping);
 
   removeTSVariableDeclares(template);
 
   const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
     template,
-    getImportableDTOs(MODULE_PATH, dtoNameToPath)
+    getImportableDTOs(`${fileDir}/${outputFileName}`, dtoNameToPath)
   );
 
   addImports(template, dtoImports);
 
   return [
     {
-      path: MODULE_PATH,
+      path: `${fileDir}/${outputFileName}`,
       code: print(template).code,
     },
   ];
