@@ -10,7 +10,7 @@ import {
   TEST_GIT_REPO,
   TEST_GIT_REPOS,
 } from "./git.constants";
-import { GithubService } from "../../src/github/github.service";
+import { GithubService } from "../../src/git/github.service";
 
 export const MOCK_GIT_SERVICE_FACTORY = mock<GitServiceFactory>();
 

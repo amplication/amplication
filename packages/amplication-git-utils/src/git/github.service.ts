@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { App, Octokit } from "octokit";
-import { GithubFile } from "../git/dto/github-file.dto";
+import { GithubFile } from "./dto/github-file.dto";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { createAppAuth } from "@octokit/auth-app";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
 import {
   AMPLICATION_IGNORED_FOLDER,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE,
-} from "../git/git.constants";
+} from "./git.constants";
 import { components } from "@octokit/openapi-types";
 import { join } from "path";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
@@ -16,12 +16,12 @@ import {
   EnumGitOrganizationType,
   GitResourceMeta,
   PrModule,
-} from "../git/git.types";
+} from "./git.types";
 import {
   RemoteGitRepos,
   RemoteGitRepository,
-} from "../git/dto/remote-git-repository";
-import { RemoteGitOrganization } from "../git/dto/remote-git-organization.dto";
+} from "./dto/remote-git-repository";
+import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
