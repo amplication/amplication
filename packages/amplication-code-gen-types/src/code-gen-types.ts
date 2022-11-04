@@ -1,6 +1,5 @@
 import { namedTypes } from "ast-types";
 import * as models from "./models";
-import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { DSGResourceData } from "./dsg-resource-data";
 
@@ -84,7 +83,7 @@ export type EntityField = Omit<
   dataType: models.EnumDataType;
 };
 
-export type LookupResolvedProperties = Lookup & {
+export type LookupResolvedProperties = models.EnumDataType.Lookup & {
   relatedEntity: Entity;
   relatedField: EntityField;
   isOneToOneWithoutForeignKey?: boolean; //in one-to-one only one side should have a foreign key
@@ -95,14 +94,14 @@ export type EntityLookupField = Omit<EntityField, "properties"> & {
 };
 
 export type EntityOptionSetField = Omit<EntityField, "properties"> & {
-  properties: OptionSet;
+  properties: models.EnumDataType.OptionSet;
 };
 
 export type EntityMultiSelectOptionSetField = Omit<
   EntityField,
   "properties"
 > & {
-  properties: MultiSelectOptionSet;
+  properties: models.EnumDataType.MultiSelectOptionSet;
 };
 
 export type Entity = Omit<
