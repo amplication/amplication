@@ -17,6 +17,7 @@ import { GitRepository } from '../../../models/GitRepository';
 import { GitOrganization } from '../../../models/GitOrganization';
 import { EnumGitOrganizationType } from '../dto/enums/EnumGitOrganizationType';
 import { ResourceService } from '../../resource/resource.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: 'exampleGitRepositoryId',
   name: 'repositoryTest',
@@ -72,11 +73,23 @@ describe('GitService', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [GitModule, ConfigModule],
       providers: [
         GitProviderService,
         GitService,
         GitServiceFactory,
         GithubService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              if (!key) {
+                return null;
+              }
+              return key;
+            }),
+          },
+        },
         {
           provide: PrismaService,
           useValue: {
@@ -104,7 +117,6 @@ describe('GitService', () => {
           },
         },
       ],
-      imports: [GitModule],
     }).compile();
 
     gitService = module.get<GitProviderService>(GitProviderService);
