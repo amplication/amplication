@@ -125,12 +125,7 @@ const build: Task[] = [
   },
 ];
 
-const tasks: Task[][] = [
-  install,
-  preparePrisma,
-  prepareGraphQL,
-  build,
-];
+const tasks: Task[][] = [install, preparePrisma, prepareGraphQL, build];
 
 if (require.main === module) {
   const args = argv;
@@ -157,9 +152,18 @@ if (require.main === module) {
       }
       logger.info("Setup complete. Have fun! 👾");
       logger.info(
-        "✋ To run a specific service, go to its README file and follow the instructions❗️"
+        "✋ To start developing a specific app, run:",
+        "npx nx serve <service-name>",
+        "",
+        "For example, to run the Amplication Server:",
+        "npx nx serve amplication-server",
+        "",
+        "To run the Amplication Client:",
+        "npx nx serve amplication-client"
       );
-      logger.info("Link to our docs: 'https://docs.amplication.com/docs/' 📜");
+      logger.info(
+        "Check out the Amplication Docs at https://docs.amplication.com/docs/ 📜"
+      );
     } catch (error) {
       spinner.fail();
       console.error((error as Error).message);

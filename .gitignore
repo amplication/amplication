@@ -55,6 +55,7 @@ Thumbs.db
 
 infra/tilt/.temp/**
 !infra/tilt/.temp/.gitkeep
+.temp
 
 # Next.js
 .next

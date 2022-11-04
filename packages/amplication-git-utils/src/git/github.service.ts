@@ -1,26 +1,27 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { App, Octokit } from "octokit";
-import { IGitClient } from "../contracts/IGitClient";
-import { GithubFile } from "../Dto/entities/GithubFile";
-import { RemoteGitOrganization } from "../Dto/entities/RemoteGitOrganization";
-import {
-  RemoteGitRepository,
-  RemoteGitRepos,
-} from "../Dto/entities/RemoteGitRepository";
-import { EnumGitOrganizationType } from "../Dto/enums/EnumGitOrganizationType";
-import { ConverterUtil } from "../utils/ConverterUtil";
+import { GithubFile } from "./dto/github-file.dto";
+import { ConverterUtil } from "../utils/convert-to-number";
 import { createAppAuth } from "@octokit/auth-app";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
 import {
   AMPLICATION_IGNORED_FOLDER,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE,
-} from "../utils/constants";
+} from "./git.constants";
 import { components } from "@octokit/openapi-types";
 import { join } from "path";
-import { AmplicationIgnoreManger } from "../utils/AmplicationIgnoreManger";
-import { GitResourceMeta } from "../contracts/GitResourceMeta";
-import { PrModule } from "../types";
+import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
+import {
+  EnumGitOrganizationType,
+  GitResourceMeta,
+  PrModule,
+} from "./git.types";
+import {
+  RemoteGitRepos,
+  RemoteGitRepository,
+} from "./dto/remote-git-repository";
+import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -31,7 +32,7 @@ export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encodin
 
 type DirectoryItem = components["schemas"]["content-directory"][number];
 @Injectable()
-export class GithubService implements IGitClient {
+export class GithubService {
   private app: App;
   private gitInstallationUrl: string;
 
