@@ -114,6 +114,9 @@ export interface CreateEntityModuleBaseParams extends EventParams {
 
 export interface CreateSwaggerParams extends EventParams {
   template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
 }
 
 export interface CreateSeedParams extends EventParams {

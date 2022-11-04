@@ -29,7 +29,7 @@ export class PullRequestController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern(KafkaTopics.GeneralPullRequest)
+  @EventPattern(KafkaTopics.CreatePrRequest)
   async generatePullRequest(
     @Payload() message: KafkaMessage,
     @Ctx() context: KafkaContext
@@ -60,7 +60,7 @@ export class PullRequestController {
       const response = { url: pullRequest, buildId: validArgs.newBuildId };
 
       this.queueService.emitMessage(
-        this.configService.get(Env.CREATE_PR_SUCCESS_TOPIC),
+        KafkaTopics.CreatePrSuccess,
         JSON.stringify(response)
       );
     } catch (error) {
@@ -76,7 +76,7 @@ export class PullRequestController {
       };
 
       this.queueService.emitMessage(
-        this.configService.get(Env.CREATE_PR_FAILURE_TOPIC),
+        KafkaTopics.CreatePrFailure,
         JSON.stringify(response)
       );
     }

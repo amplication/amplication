@@ -2,12 +2,13 @@
   "name": "amplication",
   "version": "1.0.3",
   "scripts": {
-    "build": "npx nx run-many --target=build",
+    "postinstall": "nx run-many --target=install",
+    "build": "nx run-many --target=build",
     "clean": "nx clear-cache",
     "graphql-codegen": "graphql-codegen",
     "setup:dev": "ts-node ./script/setup.ts",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
-    "db:migrate:deploy": "npx nx run-many --target=db:migrate:deploy"
+    "db:migrate:deploy": "nx run-many --target=db:migrate:deploy"
   },
   "dependencies": {
     "@apollo/gateway": "^0.42.3",

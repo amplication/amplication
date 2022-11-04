@@ -5,8 +5,8 @@
   "main": "./main.js",
   "scripts": {},
   "dependencies": {
-    "@amplication/plugin-auth-basic": "^1.0.3",
-    "@amplication/plugin-auth-jwt": "^1.0.4",
+    "@amplication/plugin-auth-basic": "^1.0.4",
+    "@amplication/plugin-auth-jwt": "^1.0.5",
     "@amplication/plugin-broker-kafka": "^0.0.10",
     "@amplication/plugin-db-mysql": "^0.0.6",
     "@amplication/plugin-db-postgres": "^1.0.3",
