@@ -16,6 +16,7 @@
       "runner": "@nrwl/nx-cloud",
       "options": {
         "cacheableOperations": [
+          "install",
           "prebuild",
           "build",
           "prepare",

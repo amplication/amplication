@@ -1,13 +1,14 @@
 {
   "name": "amplication",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
-    "build": "lerna run --ignore server-template --ignore admin-template --sort --include-dependencies build",
+    "postinstall": "nx run-many --target=install",
+    "build": "nx run-many --target=build",
     "clean": "nx clear-cache",
     "graphql-codegen": "graphql-codegen",
     "setup:dev": "ts-node ./script/setup.ts",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
-    "db:migrate:deploy": "npx nx run-many --target=db:migrate:deploy"
+    "db:migrate:deploy": "nx run-many --target=db:migrate:deploy"
   },
   "dependencies": {
     "@apollo/gateway": "^0.42.3",

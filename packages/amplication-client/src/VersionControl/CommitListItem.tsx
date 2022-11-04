@@ -18,12 +18,12 @@ export const CommitListItem = ({ commit, projectId }: Props) => {
   const { currentWorkspace } = useContext(AppContext);
   const { commitStatus } = useCommitStatus(commit);
   return (
-    <div className={CLASS_NAME}>
+    <div className={`${CLASS_NAME}__row`}>
       <InnerTabLink
         icon=""
         to={`/${currentWorkspace?.id}/${projectId}/commits/${commit.id}`}
       >
-        <div className={`${CLASS_NAME}`}>
+        <div className={CLASS_NAME}>
           <CommitData commit={commit} />
           <CommitBuildsStatusIcon commitBuildStatus={commitStatus} />
         </div>
