@@ -14,7 +14,7 @@ import {
   TEST_GIT_REPO,
   TEST_GIT_REPOS,
 } from "./git.constants";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 describe("GitService", () => {
   let gitService: GitService;
@@ -27,6 +27,17 @@ describe("GitService", () => {
         {
           provide: GitServiceFactory,
           useValue: MOCK_GIT_SERVICE_FACTORY,
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              if (!key) {
+                return null;
+              }
+              return key;
+            }),
+          },
         },
       ],
     }).compile();
