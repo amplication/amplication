@@ -21,23 +21,16 @@ const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
 export async function createSwagger(): Promise<Module[]> {
-  const template = await readFile(swaggerTemplatePath);
-  return pluginWrapper(createSwaggerInternal, EventNames.CreateSwagger, {
-    template,
-  });
-}
-
-async function createSwaggerInternal(
-  template: namedTypes.File
-): Promise<Module[]> {
   const { serverDirectories, appInfo } = DsgContext.getInstance;
-  const MODULE_PATH = `${serverDirectories.srcDirectory}/swagger.ts`;
   const { settings } = appInfo;
   const { authProvider } = settings;
 
   const description = await createDescription(appInfo);
+  const outputFileName = "swagger.ts";
+  const fileDir = serverDirectories.srcDirectory;
 
-  interpolate(template, {
+  const template = await readFile(swaggerTemplatePath);
+  const templateMapping = {
     TITLE: builders.stringLiteral(appInfo.name),
     DESCRIPTION: builders.stringLiteral(description),
     VERSION: builders.stringLiteral(appInfo.version),
@@ -46,14 +39,30 @@ async function createSwaggerInternal(
         ? "addBasicAuth"
         : "addBearerAuth"
     ),
+  };
+
+  return pluginWrapper(createSwaggerInternal, EventNames.CreateSwagger, {
+    template,
+    templateMapping,
+    fileDir,
+    outputFileName,
   });
+}
+
+async function createSwaggerInternal({
+  template,
+  templateMapping,
+  fileDir,
+  outputFileName,
+}: CreateSwaggerParams): Promise<Module[]> {
+  interpolate(template, templateMapping);
 
   removeTSVariableDeclares(template);
   removeTSIgnoreComments(template);
   return [
     {
       code: print(template).code,
-      path: MODULE_PATH,
+      path: `${fileDir}/${outputFileName}`,
     },
   ];
 }
