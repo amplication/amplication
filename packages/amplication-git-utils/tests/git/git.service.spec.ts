@@ -21,7 +21,7 @@ describe("GitService", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({})],
+      imports: [ConfigModule.forRoot({ isGlobal: true })],
       providers: [
         GitService,
         {
