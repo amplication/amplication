@@ -19,7 +19,6 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "dependsOn": ["^prebuild"],
       "outputs": ["coverage/packages/amplication-server"],
       "options": {
         "jestConfig": "packages/amplication-server/jest.config.ts",

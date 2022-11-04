@@ -40,7 +40,7 @@
       }
     },
     "test": {
-      "dependsOn": ["db:prisma:generate", "^db:prisma:generate"]
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
     },
     "prebuild": {
       "dependsOn": ["^prebuild"]
