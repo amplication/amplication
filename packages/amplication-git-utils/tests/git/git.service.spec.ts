@@ -6,13 +6,22 @@ import {
 import { GitService } from "../../src/git/git.service";
 import { GitServiceFactory } from "../../src/git/git-service-factory";
 import { MOCK_GIT_SERVICE_FACTORY } from "./mocks";
-import { GIT_HUB_FILE, INSTALLATION_URL, PR_HTML_URL, TEST_GIT_REMOTE_ORGANIZATION, TEST_GIT_REPO, TEST_GIT_REPOS } from "./git.constants";
+import {
+  GIT_HUB_FILE,
+  INSTALLATION_URL,
+  PR_HTML_URL,
+  TEST_GIT_REMOTE_ORGANIZATION,
+  TEST_GIT_REPO,
+  TEST_GIT_REPOS,
+} from "./git.constants";
+import { ConfigModule } from "@nestjs/config";
 
 describe("GitService", () => {
   let gitService: GitService;
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({})],
       providers: [
         GitService,
         {
