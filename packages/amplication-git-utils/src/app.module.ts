@@ -7,7 +7,6 @@ import { GitModule } from "./git/git.module";
 @Module({
   imports: [
     GitModule,
-    ConfigModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [".env.local", ".env"],
