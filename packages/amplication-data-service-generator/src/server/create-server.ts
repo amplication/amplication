@@ -3,7 +3,6 @@ import { paramCase } from "param-case";
 import {
   Module,
   EventNames,
-  Entity,
   CreateServerParams,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
@@ -81,9 +80,6 @@ async function createServerInternal(
   logger.info("Creating swagger...");
   const swagger = await createSwagger();
 
-  const userEntity = entities.find(
-    (entity) => entity.name === USER_ENTITY_NAME
-  );
   await createLog({ level: "info", message: "Creating seed script..." });
   logger.info("Creating seed script...");
   const seedModule = await createSeed();
