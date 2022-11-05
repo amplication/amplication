@@ -58,8 +58,8 @@ export default function TopicsList({
       />
     ) : (
       <EmptyState
-        message="This message broker has no topics"
-        image={EnumImages.CommitEmptyState}
+        message="There are no connected message brokers to show"
+        image={EnumImages.MessageBrokerEmptyState}
       />
     )
   ) : null;

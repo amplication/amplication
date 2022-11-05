@@ -9,6 +9,7 @@ import { AppRouteProps } from "../routes/routesUtil";
 
 import useServiceConnection from "./hooks/useServiceConnection";
 import { ServiceConnectionsList } from "./ServiceConnectionsList";
+import { isEmpty } from "lodash";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
@@ -51,7 +52,7 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
       );
   }, [resources, data?.ServiceTopicsList]);
 
-  const hasServiceTopicList = messageBrokerList.length > 0;
+  const hasServiceTopicList = !isEmpty(messageBrokerList);
 
   return (
     <PageContent
