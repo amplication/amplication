@@ -76,8 +76,10 @@ export async function createSeed(): Promise<Module[]> {
   const fileDir = serverDirectories.scriptsDirectory;
   const outputFileName = "seed.ts";
 
-  const userEntity = entities.find((entity) => entity.name === "User")!;
-  const customProperties = createUserObjectCustomProperties(userEntity);
+  const userEntity = entities.find((entity) => entity.name === "User");
+  const customProperties = createUserObjectCustomProperties(
+    userEntity as Entity
+  );
 
   const template = await readFile(seedTemplatePath);
 
