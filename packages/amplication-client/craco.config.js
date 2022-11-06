@@ -1,6 +1,9 @@
 const path = require("path");
 const TsConfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const ModuleScopePlugin = require("react-dev-utils/ModuleScopePlugin");
+const { set } = require("lodash");
+const designSystemPkg = require("../amplication-design-system/package.json");
+
 module.exports = {
   webpack: {
     configure: (config) => {
@@ -30,6 +33,19 @@ module.exports = {
         }
       });
 
+      /**
+       * Force Webpack to resolve peer dependencies to the version in node_modules top level
+       * This has to be done because, correct to November 2020, when using Lerna
+       * with npm Webpack sees peer dependencies in @amplication/design-system as
+       * different packages (even if their versions match)
+       * @see https://stackoverflow.com/a/31170775/5798553
+       */
+      for (const peerDependency of Object.keys(
+        designSystemPkg.peerDependencies
+      )) {
+        aliasDependencyToTopLevel(config, peerDependency);
+      }
+
       return {
         ...config,
         resolve: {
@@ -37,6 +53,7 @@ module.exports = {
           alias: {
             ...config.resolve.alias,
             react: path.resolve("../../node_modules/react"),
+            "react-dom": path.resolve("../../node_modules/react-dom"),
           },
         },
       };
@@ -49,3 +66,11 @@ module.exports = {
     },
   },
 };
+
+function aliasDependencyToTopLevel(config, dependency) {
+  set(
+    config,
+    ["resolve", "alias", dependency],
+    path.resolve(`./node_modules/${dependency}`)
+  );
+}
