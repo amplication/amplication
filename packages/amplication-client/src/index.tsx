@@ -23,7 +23,7 @@ const token = params.get("token");
 if (token) {
   setToken(token);
 }
-console.log(process.env)
+
 if (!REACT_APP_DATA_SOURCE) {
   throw new Error("Missing ֿREACT_APP_DATA_SOURCE env variable");
 }
@@ -52,10 +52,10 @@ const apolloClient = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <App />
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <App />
+        </Router>
       </QueryClientProvider>
     </ApolloProvider>
   </React.StrictMode>,
