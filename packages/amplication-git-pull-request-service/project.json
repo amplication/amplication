@@ -5,7 +5,8 @@
   "projectType": "application",
   "implicitDependencies": [
     "amplication-nest-logger-module",
-    "amplication-git-utils"
+    "amplication-git-utils",
+    "amplication-kafka"
   ],
   "targets": {
     "lint": {

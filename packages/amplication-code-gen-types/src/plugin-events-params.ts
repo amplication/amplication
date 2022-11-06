@@ -1,5 +1,5 @@
 import { namedTypes } from "ast-types";
-import { JsonValue } from "type-fest";
+
 import {
   Entity,
   EntityField,
@@ -110,4 +110,11 @@ export interface CreateEntityModuleParams extends EventParams {
 export interface CreateEntityModuleBaseParams extends EventParams {
   entityName: string;
   moduleBaseId: namedTypes.Identifier;
+}
+
+export interface CreateSwaggerParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
 }
