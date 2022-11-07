@@ -3,7 +3,6 @@ import { paramCase } from "param-case";
 import {
   Module,
   EventNames,
-  Entity,
   CreateServerParams,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
@@ -15,7 +14,7 @@ import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
-import { createSeedModule } from "./seed/create-seed";
+import { createSeed } from "./seed/create-seed";
 import DsgContext from "../dsg-context";
 import { ENV_VARIABLES } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
@@ -24,7 +23,6 @@ import { createMessageBroker } from "./message-broker/create-service-message-bro
 import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
-import { USER_ENTITY_NAME } from "./user-entity";
 import { createLog } from "../create-log";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
@@ -81,12 +79,9 @@ async function createServerInternal(
   logger.info("Creating swagger...");
   const swagger = await createSwagger();
 
-  const userEntity = entities.find(
-    (entity) => entity.name === USER_ENTITY_NAME
-  );
   await createLog({ level: "info", message: "Creating seed script..." });
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(userEntity as Entity);
+  const seedModule = await createSeed();
 
   await createLog({
     level: "info",
@@ -106,7 +101,7 @@ async function createServerInternal(
     ...dtoModules,
     ...swagger,
     ...appModule,
-    seedModule,
+    ...seedModule,
     ...authModules,
     ...messageBrokerModules,
   ];
