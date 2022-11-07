@@ -1,7 +1,7 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { Resource } from './Resource';
-import { BlockVersion } from './BlockVersion';
-import { EnumBlockType } from '../enums/EnumBlockType';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Resource } from "./Resource";
+import { BlockVersion } from "./BlockVersion";
+import { EnumBlockType } from "../enums/EnumBlockType";
 
 @ObjectType({
   isAbstract: true,

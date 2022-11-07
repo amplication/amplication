@@ -10,7 +10,12 @@ import { GitHostProviderFactory } from "./git-host-provider-factory";
 import { GitPullEventRepository } from "./git-pull-event.repository";
 import { GitClientService } from "./git-client.service";
 import { StorageService } from "./storage.service";
-import { EventData, GitProviderEnum, GitPullEventStatusEnum, PushEventMessage } from "./git-pull-event.types";
+import {
+  EventData,
+  GitProviderEnum,
+  GitPullEventStatusEnum,
+  PushEventMessage,
+} from "./git-pull-event.types";
 const ROOT_STORAGE_DIR = "STORAGE_PATH";
 const PRISMA_SKIP_VALUE = "MAX_SNAPSHOTS";
 

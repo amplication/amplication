@@ -21,6 +21,8 @@ import {
   CreateEntityModuleParams,
   CreateEntityModuleBaseParams,
   CreateSwaggerParams,
+  CreateSeedParams,
+  CreateEntityControllerSpecParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -36,7 +38,6 @@ export type Events = {
   [EventNames.CreateServerDockerCompose]?: PluginEventType<CreateServerDockerComposeParams>;
   [EventNames.CreateServerDockerComposeDB]?: PluginEventType<CreateServerDockerComposeDBParams>;
   [EventNames.CreatePrismaSchema]?: PluginEventType<CreatePrismaSchemaParams>;
-
   [EventNames.CreateMessageBroker]?: PluginEventType<CreateMessageBrokerParams>;
   [EventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<CreateMessageBrokerTopicsEnumParams>;
   [EventNames.CreateMessageBrokerNestJSModule]?: PluginEventType<CreateMessageBrokerNestJSModuleParams>;
@@ -49,4 +50,6 @@ export type Events = {
   [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;
   [EventNames.CreateEntityModuleBase]?: PluginEventType<CreateEntityModuleBaseParams>;
   [EventNames.CreateSwagger]?: PluginEventType<CreateSwaggerParams>;
+  [EventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
+  [EventNames.CreateEntityControllerSpec]?: PluginEventType<CreateEntityControllerSpecParams>;
 };

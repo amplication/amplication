@@ -1,22 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BlockService } from '../block/block.service';
-import { EntityPageService } from './entityPage.service';
-import { EntityService } from '../entity/entity.service';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { EntityPageSingleRecordSettings } from './dto/EntityPageSingleRecordSettings';
-import { EntityPageListSettings } from './dto/EntityPageListSettings';
-import type { JsonValue } from 'type-fest';
-import { EnumEntityPageType } from './dto/EnumEntityPageType';
-import { EntityPage } from './dto/EntityPage';
-import { EntityPageCreateInput } from './dto/EntityPageCreateInput';
-import { User } from '../../models';
+import { Test, TestingModule } from "@nestjs/testing";
+import { BlockService } from "../block/block.service";
+import { EntityPageService } from "./entityPage.service";
+import { EntityService } from "../entity/entity.service";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { EntityPageSingleRecordSettings } from "./dto/EntityPageSingleRecordSettings";
+import { EntityPageListSettings } from "./dto/EntityPageListSettings";
+import type { JsonValue } from "type-fest";
+import { EnumEntityPageType } from "./dto/EnumEntityPageType";
+import { EntityPage } from "./dto/EntityPage";
+import { EntityPageCreateInput } from "./dto/EntityPageCreateInput";
+import { User } from "../../models";
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
-const EXAMPLE_SINGLE_RECORD_NAME = 'Example Single Record Entity Page';
-const EXAMPLE_LIST_NAME = 'Example List Entity Page';
-const EXAMPLE_RESOURCE_ID = 'ExampleResource';
-const EXAMPLE_ENTITY_ID = 'ExampleEntityId';
+const EXAMPLE_SINGLE_RECORD_NAME = "Example Single Record Entity Page";
+const EXAMPLE_LIST_NAME = "Example List Entity Page";
+const EXAMPLE_RESOURCE_ID = "ExampleResource";
+const EXAMPLE_ENTITY_ID = "ExampleEntityId";
 const NOW = new Date();
 const VERSION_NUMBER = 0;
 
@@ -27,8 +27,8 @@ const EXAMPLE_SINGLE_RECORD_SETTINGS: EntityPageSingleRecordSettings &
   allowUpdate: true,
 };
 
-const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
+const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -38,7 +38,7 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name',
+    name: "example_workspace_name",
   },
   isOwner: true,
 };
@@ -47,11 +47,11 @@ const EXAMPLE_LIST_SETTINGS: EntityPageListSettings & JsonValue = {
   allowCreation: true,
   allowDeletion: true,
   enableSearch: false,
-  navigateToPageId: 'ExamplePageId',
+  navigateToPageId: "ExamplePageId",
 };
 
 const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
-  id: 'ExampleSingleRecordEntityPage',
+  id: "ExampleSingleRecordEntityPage",
   updatedAt: NOW,
   createdAt: NOW,
   blockType: EnumBlockType.EntityPage,
@@ -70,7 +70,7 @@ const EXAMPLE_SINGLE_RECORD_ENTITY_PAGE: EntityPage = {
 };
 
 const EXAMPLE_LIST_ENTITY_PAGE: EntityPage = {
-  id: 'ExampleListEntityPage',
+  id: "ExampleListEntityPage",
   updatedAt: NOW,
   createdAt: NOW,
   blockType: EnumBlockType.EntityPage,
@@ -140,7 +140,7 @@ const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_ENTITY_PAGES);
 const isEntityInSameResourceMock = jest.fn(() => true);
 const validateAllFieldsExistMock = jest.fn(() => true);
 
-describe('EntityPageService', () => {
+describe("EntityPageService", () => {
   let service: EntityPageService;
 
   beforeEach(async () => {
@@ -176,11 +176,11 @@ describe('EntityPageService', () => {
     service = module.get<EntityPageService>(EntityPageService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should find one', async () => {
+  it("should find one", async () => {
     const args = {
       where: { id: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.id },
       version: EXAMPLE_SINGLE_RECORD_ENTITY_PAGE.versionNumber,
@@ -190,7 +190,7 @@ describe('EntityPageService', () => {
     expect(findOneMock).toBeCalledWith(args);
   });
 
-  it('should find many', async () => {
+  it("should find many", async () => {
     expect(await service.findMany({})).toEqual(EXAMPLE_ENTITY_PAGES);
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
     expect(findManyByBlockTypeMock).toBeCalledWith(
@@ -199,7 +199,7 @@ describe('EntityPageService', () => {
     );
   });
 
-  it('should create single record entity page', async () => {
+  it("should create single record entity page", async () => {
     const args = {
       data: SINGLE_RECORD_CREATE_INPUT,
     };
@@ -210,7 +210,7 @@ describe('EntityPageService', () => {
     expect(createMock).toBeCalledWith(args, EXAMPLE_USER.id);
   });
 
-  it('should create list entity page', async () => {
+  it("should create list entity page", async () => {
     const args = {
       data: LIST_CREATE_INPUT,
     };
@@ -221,7 +221,7 @@ describe('EntityPageService', () => {
     expect(createMock).toBeCalledWith(args, EXAMPLE_USER.id);
   });
 
-  it('should update an entity page', async () => {
+  it("should update an entity page", async () => {
     const args = {
       data: {
         entityId: EXAMPLE_ENTITY_ID,

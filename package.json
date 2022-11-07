@@ -8,7 +8,8 @@
     "graphql-codegen": "graphql-codegen",
     "setup:dev": "ts-node ./script/setup.ts",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
-    "db:migrate:deploy": "nx run-many --target=db:migrate:deploy"
+    "db:migrate:deploy": "nx run-many --target=db:migrate:deploy",
+    "format": "npx nx format --write"
   },
   "dependencies": {
     "@apollo/gateway": "^0.42.3",
@@ -144,6 +145,7 @@
     "@types/passport-http": "^0.3.9",
     "@types/passport-jwt": "^3.0.7",
     "@types/pluralize": "^0.0.29",
+    "@types/prettier": "^2.7.1",
     "@types/query-string": "^6.3.0",
     "@types/rc": "^1.2.1",
     "@types/react": "^17.0.2",

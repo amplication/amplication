@@ -1,7 +1,7 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { EntityPermission } from './EntityPermission';
-import { EntityField } from './EntityField';
-import { EntityPermissionRole } from './EntityPermissionRole';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { EntityPermission } from "./EntityPermission";
+import { EntityField } from "./EntityField";
+import { EntityPermissionRole } from "./EntityPermissionRole";
 
 /**
  * Defines a set of {@linkcode EntityPermissionRole} allowed to perform an

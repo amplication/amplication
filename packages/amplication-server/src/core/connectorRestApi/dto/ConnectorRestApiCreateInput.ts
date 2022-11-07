@@ -1,9 +1,9 @@
-import { Field, InputType } from '@nestjs/graphql';
-import type { JsonValue } from 'type-fest';
-import { EnumConnectorRestApiAuthenticationType } from './EnumConnectorRestApiAuthenticationType';
-import { PrivateKeyAuthenticationSettings } from './PrivateKeyAuthenticationSettings';
-import { HttpBasicAuthenticationSettings } from './HttpBasicAuthenticationSettings';
-import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
+import { Field, InputType } from "@nestjs/graphql";
+import type { JsonValue } from "type-fest";
+import { EnumConnectorRestApiAuthenticationType } from "./EnumConnectorRestApiAuthenticationType";
+import { PrivateKeyAuthenticationSettings } from "./PrivateKeyAuthenticationSettings";
+import { HttpBasicAuthenticationSettings } from "./HttpBasicAuthenticationSettings";
+import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
 
 @InputType({
   isAbstract: true,

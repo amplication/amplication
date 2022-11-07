@@ -11,7 +11,8 @@ import NewProject from "./NewProject";
 const CLASS_NAME = "add-new-project";
 
 const AddNewProject = () => {
-  const [projectDialogStatus, setProjectDialogStatus] = useState<boolean>(false);
+  const [projectDialogStatus, setProjectDialogStatus] =
+    useState<boolean>(false);
 
   const handleNewProjectClick = useCallback(() => {
     setProjectDialogStatus(!projectDialogStatus);

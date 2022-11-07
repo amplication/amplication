@@ -1,48 +1,48 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { EnumResourceType, PrismaService } from '@amplication/prisma-db';
-import { BuildService } from '../build/build.service';
-import { EntityService } from '../entity/entity.service';
-import { EnvironmentService } from '../environment/environment.service';
-import { gql } from 'apollo-server-express';
+import { Test, TestingModule } from "@nestjs/testing";
+import { EnumResourceType, PrismaService } from "@amplication/prisma-db";
+import { BuildService } from "../build/build.service";
+import { EntityService } from "../entity/entity.service";
+import { EnvironmentService } from "../environment/environment.service";
+import { gql } from "apollo-server-express";
 import {
   ApolloServerTestClient,
   createTestClient,
-} from 'apollo-server-testing';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { ResourceResolver } from './resource.resolver';
-import { INestApplication } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ResourceService } from './resource.service';
-import { Resource } from '../../models/Resource';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ConfigService } from '@nestjs/config';
-import { Entity } from '../../models/Entity';
-import { Build } from '../build/dto/Build';
-import { Environment } from '../environment/dto/Environment';
-import { User } from '../../models/User';
-import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
-import { UserService } from '../user/user.service';
-import { ResourceCreateInput } from './dto';
+} from "apollo-server-testing";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { ResourceResolver } from "./resource.resolver";
+import { INestApplication } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
+import { ResourceService } from "./resource.service";
+import { Resource } from "../../models/Resource";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { ConfigService } from "@nestjs/config";
+import { Entity } from "../../models/Entity";
+import { Build } from "../build/dto/Build";
+import { Environment } from "../environment/dto/Environment";
+import { User } from "../../models/User";
+import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { UserService } from "../user/user.service";
+import { ResourceCreateInput } from "./dto";
 
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
-const EXAMPLE_NAME = 'exampleName';
-const EXAMPLE_DESCRIPTION = 'exampleDescription';
-const EXAMPLE_DISPLAY_NAME = 'exampleDisplayName';
-const EXAMPLE_PLURAL_DISPLAY_NAME = 'examplePluralDisplayName';
+const EXAMPLE_RESOURCE_ID = "exampleResourceId";
+const EXAMPLE_NAME = "exampleName";
+const EXAMPLE_DESCRIPTION = "exampleDescription";
+const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
+const EXAMPLE_PLURAL_DISPLAY_NAME = "examplePluralDisplayName";
 
-const EXAMPLE_BUILD_ID = 'exampleBuildId';
-const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_VERSION = 'exampleVersion';
-const EXAMPLE_ACTION_ID = 'exampleActionId';
+const EXAMPLE_BUILD_ID = "exampleBuildId";
+const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_VERSION = "exampleVersion";
+const EXAMPLE_ACTION_ID = "exampleActionId";
 
-const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
-const EXAMPLE_ADDRESS = 'exampleAddress';
+const EXAMPLE_ENVIRONMENT_ID = "exampleEnvironmentId";
+const EXAMPLE_ADDRESS = "exampleAddress";
 
-const EXAMPLE_COMMIT_ID = 'exampleCommitId';
+const EXAMPLE_COMMIT_ID = "exampleCommitId";
 
-const EXAMPLE_ENTITY_ID = 'exampleEntityId';
+const EXAMPLE_ENTITY_ID = "exampleEntityId";
 
-const EXAMPLE_PROJECT_ID = 'exampleProjectId';
+const EXAMPLE_PROJECT_ID = "exampleProjectId";
 
 const EXAMPLE_ENVIRONMENT: Environment = {
   id: EXAMPLE_ENVIRONMENT_ID,
@@ -323,7 +323,7 @@ const userServiceFindUserMock = jest.fn(() => EXAMPLE_USER);
 
 const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
-describe('ResourceResolver', () => {
+describe("ResourceResolver", () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -394,7 +394,7 @@ describe('ResourceResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should find one resource', async () => {
+  it("should find one resource", async () => {
     const res = await apolloClient.query({
       query: FIND_ONE_RESOURCE_QUERY,
       variables: { id: EXAMPLE_RESOURCE_ID },
@@ -434,7 +434,7 @@ describe('ResourceResolver', () => {
     expect(resourceMock).toBeCalledWith(args);
   });
 
-  it('should find many entities', async () => {
+  it("should find many entities", async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_ENTITIES_QUERY,
       variables: {
@@ -464,7 +464,7 @@ describe('ResourceResolver', () => {
     expect(entitiesMock).toBeCalledWith(args);
   });
 
-  it('should find many builds', async () => {
+  it("should find many builds", async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_BUILDS_QUERY,
       variables: { resourceId: EXAMPLE_RESOURCE_ID },
@@ -487,7 +487,7 @@ describe('ResourceResolver', () => {
     expect(findManyBuildMock).toBeCalledWith(args);
   });
 
-  it('should find many environments', async () => {
+  it("should find many environments", async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_ENVIRONMENTS_QUERY,
       variables: { resourceId: EXAMPLE_RESOURCE_ID },
@@ -510,7 +510,7 @@ describe('ResourceResolver', () => {
     });
   });
 
-  it('should create a service', async () => {
+  it("should create a service", async () => {
     const resourceCreateInput: ResourceCreateInput = {
       name: EXAMPLE_NAME,
       description: EXAMPLE_DESCRIPTION,
@@ -561,7 +561,7 @@ describe('ResourceResolver', () => {
     );
   });
 
-  it('should delete a resource', async () => {
+  it("should delete a resource", async () => {
     const res = await apolloClient.query({
       query: DELETE_RESOURCE_MUTATION,
       variables: {
@@ -602,7 +602,7 @@ describe('ResourceResolver', () => {
     });
   });
 
-  it('should update a resource', async () => {
+  it("should update a resource", async () => {
     const res = await apolloClient.query({
       query: UPDATE_RESOURCE_MUTATION,
       variables: {

@@ -1,46 +1,46 @@
-import { INestApplication } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { Test, TestingModule } from '@nestjs/testing';
-import { gql } from 'apollo-server-express';
+import { INestApplication } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
+import { gql } from "apollo-server-express";
 import {
   ApolloServerTestClient,
   createTestClient,
-} from 'apollo-server-testing';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { Commit, Entity, Resource, User } from '../../models';
-import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
-import { Environment } from '../environment/dto';
-import { Build } from '../build/dto/Build';
-import { ProjectResolver } from './project.resolver';
-import { ProjectService } from './project.service';
+} from "apollo-server-testing";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, Entity, Resource, User } from "../../models";
+import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { Environment } from "../environment/dto";
+import { Build } from "../build/dto/Build";
+import { ProjectResolver } from "./project.resolver";
+import { ProjectService } from "./project.service";
 import {
   EnumResourceType,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-} from '@amplication/code-gen-types/models';
-import { PendingChange } from '../resource/dto/PendingChange';
-import { ResourceService } from '../resource/resource.service';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ConfigService } from '@nestjs/config';
+} from "@amplication/code-gen-types/models";
+import { PendingChange } from "../resource/dto/PendingChange";
+import { ResourceService } from "../resource/resource.service";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { ConfigService } from "@nestjs/config";
 
 /** values mock */
-const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_MESSAGE = 'exampleMessage';
-const EXAMPLE_PROJECT_ID = 'exampleProjectId';
-const EXAMPLE_COMMIT_ID = 'exampleCommitId';
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
-const EXAMPLE_ENTITY_ID = 'exampleEntityId';
-const EXAMPLE_ORIGIN_ID = 'exampleOriginId';
+const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_MESSAGE = "exampleMessage";
+const EXAMPLE_PROJECT_ID = "exampleProjectId";
+const EXAMPLE_COMMIT_ID = "exampleCommitId";
+const EXAMPLE_RESOURCE_ID = "exampleResourceId";
+const EXAMPLE_ENTITY_ID = "exampleEntityId";
+const EXAMPLE_ORIGIN_ID = "exampleOriginId";
 const EXAMPLE_VERSION_NUMBER = 1;
-const EXAMPLE_NAME = 'exampleName';
-const EXAMPLE_DESCRIPTION = 'exampleDescription';
-const EXAMPLE_DISPLAY_NAME = 'exampleDisplayName';
-const EXAMPLE_PLURAL_DISPLAY_NAME = 'examplePluralDisplayName';
-const EXAMPLE_BUILD_ID = 'exampleBuildId';
-const EXAMPLE_VERSION = 'exampleVersion';
-const EXAMPLE_ACTION_ID = 'exampleActionId';
-const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
-const EXAMPLE_ADDRESS = 'exampleAddress';
+const EXAMPLE_NAME = "exampleName";
+const EXAMPLE_DESCRIPTION = "exampleDescription";
+const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
+const EXAMPLE_PLURAL_DISPLAY_NAME = "examplePluralDisplayName";
+const EXAMPLE_BUILD_ID = "exampleBuildId";
+const EXAMPLE_VERSION = "exampleVersion";
+const EXAMPLE_ACTION_ID = "exampleActionId";
+const EXAMPLE_ENVIRONMENT_ID = "exampleEnvironmentId";
+const EXAMPLE_ADDRESS = "exampleAddress";
 
 /** models mock */
 const EXAMPLE_USER: User = {
@@ -205,7 +205,7 @@ const getPendingChangesMock = jest.fn(() => {
   return [EXAMPLE_PENDING_CHANGE];
 });
 
-describe('ProjectResolver', () => {
+describe("ProjectResolver", () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -253,7 +253,7 @@ describe('ProjectResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should commit', async () => {
+  it("should commit", async () => {
     const res = await apolloClient.query({
       query: COMMIT_MUTATION,
       variables: { message: EXAMPLE_MESSAGE, projectId: EXAMPLE_PROJECT_ID },
@@ -274,7 +274,7 @@ describe('ProjectResolver', () => {
     });
   });
 
-  it('should discard pending changes', async () => {
+  it("should discard pending changes", async () => {
     const res = await apolloClient.query({
       query: DISCARD_CHANGES_MUTATION,
       variables: { projectId: EXAMPLE_PROJECT_ID },
@@ -289,7 +289,7 @@ describe('ProjectResolver', () => {
     });
   });
 
-  it('should get a pending change', async () => {
+  it("should get a pending change", async () => {
     const res = await apolloClient.query({
       query: PENDING_CHANGE_QUERY,
       variables: { projectId: EXAMPLE_PROJECT_ID },

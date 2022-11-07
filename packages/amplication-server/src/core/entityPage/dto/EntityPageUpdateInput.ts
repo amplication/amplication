@@ -1,10 +1,10 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { EnumEntityPageType } from './EnumEntityPageType';
-import { EntityPageSingleRecordSettings } from './EntityPageSingleRecordSettings';
-import { EntityPageListSettings } from './EntityPageListSettings';
-import type { JsonValue } from 'type-fest';
-import { ValidateIf, IsNotEmpty } from 'class-validator';
-import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
+import { Field, InputType } from "@nestjs/graphql";
+import { EnumEntityPageType } from "./EnumEntityPageType";
+import { EntityPageSingleRecordSettings } from "./EntityPageSingleRecordSettings";
+import { EntityPageListSettings } from "./EntityPageListSettings";
+import type { JsonValue } from "type-fest";
+import { ValidateIf, IsNotEmpty } from "class-validator";
+import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
 
 @InputType({
   isAbstract: true,

@@ -66,17 +66,12 @@ export class GitClientService {
     accessToken: string
   ): Promise<void> {
     try {
-      const {
-        provider,
-        repositoryOwner,
-        repositoryName,
-        branch,
-        commit,
-      } = pushEventMessage;
+      const { provider, repositoryOwner, repositoryName, branch, commit } =
+        pushEventMessage;
       const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
-      
+
       fs.mkdirSync(baseDir, { recursive: true });
-      
+
       // TODO: filter out assets and files > 250KB
       await this.git
         .clone(repository, baseDir, ["--branch", branch])
@@ -92,13 +87,8 @@ export class GitClientService {
     baseDir: string,
     accessToken: string
   ): Promise<void> {
-    const {
-      provider,
-      repositoryOwner,
-      repositoryName,
-      branch,
-      commit,
-    } = pushEventMessage;
+    const { provider, repositoryOwner, repositoryName, branch, commit } =
+      pushEventMessage;
 
     const repository = `https://${repositoryOwner}:${accessToken}@${this.gitHostDomains[provider]}/${repositoryOwner}/${repositoryName}.git`;
     try {

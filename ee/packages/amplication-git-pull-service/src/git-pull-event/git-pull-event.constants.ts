@@ -13,4 +13,3 @@ export const DEFAULT_GITHUB_PULL_FOLDER = join(
   "github",
   "pulls"
 );
-

@@ -1,10 +1,10 @@
-import { Difference } from 'dir-compare';
-import { mock } from 'jest-mock-extended';
-import { deleteFilesVisitor } from '../../src/diff/delete-files';
-import { missingFolderMock } from './mocks';
+import { Difference } from "dir-compare";
+import { mock } from "jest-mock-extended";
+import { deleteFilesVisitor } from "../../src/diff/delete-files";
+import { missingFolderMock } from "./mocks";
 
-describe('Testing the delete files visitor', () => {
-  it('should return null if diff indicates an addition', () => {
+describe("Testing the delete files visitor", () => {
+  it("should return null if diff indicates an addition", () => {
     // Arrange
     const diff = mock<Difference>({});
     // Act
@@ -13,7 +13,7 @@ describe('Testing the delete files visitor', () => {
     expect(result).toBeNull();
   });
 
-  it('should ignore folders', () => {
+  it("should ignore folders", () => {
     // Act
     const result = deleteFilesVisitor(missingFolderMock);
     // Assert

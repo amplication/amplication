@@ -1,4 +1,4 @@
-import { ActionStepStatus } from './ActionStepStatus';
+import { ActionStepStatus } from "./ActionStepStatus";
 
 export class CompleteCodeGenerationStep {
   buildId!: string;

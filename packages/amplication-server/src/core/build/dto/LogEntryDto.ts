@@ -1,4 +1,4 @@
-import { LogEntry } from 'winston';
+import { LogEntry } from "winston";
 
 export class LogEntryDto implements LogEntry {
   level: string;

@@ -7,3 +7,6 @@ package-lock.json
 /coverage
 /**/models.ts
 helm
+.amplication
+/generated
+/build

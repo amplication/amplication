@@ -46,6 +46,17 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
+export interface CreateEntityControllerSpecParams extends EventParams {
+  entity: Entity;
+  entityType: string;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  entityServiceModulePath: string;
+  entityControllerModulePath: string;
+  entityControllerBaseModulePath: string;
+  controllerId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+}
 export interface CreateServerAuthParams extends EventParams {
   srcDir: string;
 }
@@ -113,6 +124,13 @@ export interface CreateEntityModuleBaseParams extends EventParams {
 }
 
 export interface CreateSwaggerParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
+}
+
+export interface CreateSeedParams extends EventParams {
   template: namedTypes.File;
   templateMapping: { [key: string]: any };
   fileDir: string;

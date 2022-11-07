@@ -1,9 +1,9 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { EntityVersion } from './EntityVersion';
-import { EntityField } from './EntityField';
-import { User } from './User';
-import { Resource } from './Resource';
-import { EntityPermission } from './EntityPermission';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { EntityVersion } from "./EntityVersion";
+import { EntityField } from "./EntityField";
+import { User } from "./User";
+import { Resource } from "./Resource";
+import { EntityPermission } from "./EntityPermission";
 
 @ObjectType({
   isAbstract: true,

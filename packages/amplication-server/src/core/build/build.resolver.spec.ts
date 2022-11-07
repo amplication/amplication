@@ -1,33 +1,33 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { gql } from 'apollo-server-express';
+import { Test, TestingModule } from "@nestjs/testing";
+import { gql } from "apollo-server-express";
 import {
   ApolloServerTestClient,
   createTestClient,
-} from 'apollo-server-testing';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { INestApplication } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ConfigService } from '@nestjs/config';
-import { BuildResolver } from './build.resolver';
-import { BuildService } from './build.service';
-import { ActionService } from '../action/action.service';
-import { UserService } from '../user/user.service';
-import { Build } from './dto/Build';
-import { Commit, Resource, User } from '../../models';
-import { Action } from '../action/dto';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { CommitService } from '../commit/commit.service';
-import { EnumResourceType } from '@amplication/code-gen-types/models';
-import { ResourceService } from '../resource/resource.service';
+} from "apollo-server-testing";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { INestApplication } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { ConfigService } from "@nestjs/config";
+import { BuildResolver } from "./build.resolver";
+import { BuildService } from "./build.service";
+import { ActionService } from "../action/action.service";
+import { UserService } from "../user/user.service";
+import { Build } from "./dto/Build";
+import { Commit, Resource, User } from "../../models";
+import { Action } from "../action/dto";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { CommitService } from "../commit/commit.service";
+import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { ResourceService } from "../resource/resource.service";
 
-const EXAMPLE_BUILD_ID = 'exampleBuildId';
-const EXAMPLE_COMMIT_ID = 'exampleCommitId';
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
-const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_VERSION = 'exampleVersion';
-const EXAMPLE_ACTION_ID = 'exampleActionId';
-const EXAMPLE_MESSAGE = 'exampleMessage';
+const EXAMPLE_BUILD_ID = "exampleBuildId";
+const EXAMPLE_COMMIT_ID = "exampleCommitId";
+const EXAMPLE_RESOURCE_ID = "exampleResourceId";
+const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_VERSION = "exampleVersion";
+const EXAMPLE_ACTION_ID = "exampleActionId";
+const EXAMPLE_MESSAGE = "exampleMessage";
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -63,8 +63,8 @@ const EXAMPLE_RESOURCE: Resource = {
   resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: 'exampleName',
-  description: 'exampleDescription',
+  name: "exampleName",
+  description: "exampleDescription",
   builds: [EXAMPLE_BUILD],
   gitRepositoryOverride: false,
 };
@@ -171,7 +171,7 @@ const buildServiceCalcBuildStatusMock = jest.fn(() => {
 
 const mockCanActivate = jest.fn(() => true);
 
-describe('BuildResolver', () => {
+describe("BuildResolver", () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -238,7 +238,7 @@ describe('BuildResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should find many builds', async () => {
+  it("should find many builds", async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_BUILDS_QUERY,
       variables: {},
@@ -256,7 +256,7 @@ describe('BuildResolver', () => {
     expect(buildServiceFindManyMock).toBeCalledWith({});
   });
 
-  it('should find one build', async () => {
+  it("should find one build", async () => {
     const res = await apolloClient.query({
       query: FIND_ONE_BUILD_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
@@ -274,7 +274,7 @@ describe('BuildResolver', () => {
     });
   });
 
-  it('should find a builds creating user', async () => {
+  it("should find a builds creating user", async () => {
     const res = await apolloClient.query({
       query: FIND_USER_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
@@ -296,7 +296,7 @@ describe('BuildResolver', () => {
     });
   });
 
-  it('should find a builds action', async () => {
+  it("should find a builds action", async () => {
     const res = await apolloClient.query({
       query: FIND_ACTION_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
@@ -316,7 +316,7 @@ describe('BuildResolver', () => {
     });
   });
 
-  it('should return the build archive URI', async () => {
+  it("should return the build archive URI", async () => {
     const res = await apolloClient.query({
       query: ARCHIVE_URI_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
@@ -329,7 +329,7 @@ describe('BuildResolver', () => {
     });
   });
 
-  it('should get a build status', async () => {
+  it("should get a build status", async () => {
     const res = await apolloClient.query({
       query: BUILD_STATUS_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
@@ -344,7 +344,7 @@ describe('BuildResolver', () => {
     expect(buildServiceCalcBuildStatusMock).toBeCalledWith(EXAMPLE_BUILD_ID);
   });
 
-  it('should create a build', async () => {
+  it("should create a build", async () => {
     const args = {
       data: {
         resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
