@@ -7,5 +7,6 @@ import { GithubService } from "./github.service";
 @Module({
   imports: [ConfigModule],
   providers: [GitService, GitServiceFactory, GithubService],
+  exports: [GitService, GitServiceFactory, GithubService],
 })
 export class GitModule {}
