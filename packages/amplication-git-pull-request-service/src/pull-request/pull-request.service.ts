@@ -1,12 +1,12 @@
-import { GitService } from '@amplication/git-utils';
+import { GitService } from "@amplication/git-utils";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
-} from '@amplication/nest-logger-module';
-import { Inject, Injectable } from '@nestjs/common';
-import { CreatePullRequestArgs } from './dto/create-pull-request.args';
-import { DiffService } from '../diff/diff.service';
-import { PrModule } from '../types';
+} from "@amplication/nest-logger-module";
+import { Inject, Injectable } from "@nestjs/common";
+import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
+import { DiffService } from "../diff/diff.service";
+import { PrModule } from "../types";
 
 @Injectable()
 export class PullRequestService {
@@ -36,7 +36,7 @@ export class PullRequestService {
     );
 
     this.logger.info(
-      'The changed files has return from the diff service listOfChangedFiles',
+      "The changed files has return from the diff service listOfChangedFiles",
       { lengthOfFile: changedFiles.length }
     );
 
@@ -52,7 +52,7 @@ export class PullRequestService {
       gitResourceMeta,
       base
     );
-    this.logger.info('Opened a new pull request', { prUrl });
+    this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
 
@@ -60,7 +60,7 @@ export class PullRequestService {
     changedFiles: PrModule[]
   ): PrModule[] {
     return changedFiles.map((module) => {
-      return { ...module, path: module.path.replace(new RegExp('^/'), '') };
+      return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });
   }
 }

@@ -2,16 +2,16 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-} from '@nestjs/common';
-import type { JsonObject } from 'type-fest';
-import { pick, head, last } from 'lodash';
+} from "@nestjs/common";
+import type { JsonObject } from "type-fest";
+import { pick, head, last } from "lodash";
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
   Prisma,
   PrismaService,
-} from '@amplication/prisma-db';
-import { DiffService } from '../../services/diff.service';
+} from "@amplication/prisma-db";
+import { DiffService } from "../../services/diff.service";
 import {
   Block,
   BlockVersion,
@@ -19,8 +19,8 @@ import {
   BlockInputOutput,
   User,
   Resource,
-} from '../../models';
-import { revertDeletedItemName } from '../../util/softDelete';
+} from "../../models";
+import { revertDeletedItemName } from "../../util/softDelete";
 import {
   CreateBlockArgs,
   UpdateBlockArgs,
@@ -29,23 +29,23 @@ import {
   CreateBlockVersionArgs,
   FindManyBlockVersionArgs,
   LockBlockArgs,
-} from './dto';
-import { FindOneArgs } from '../../dto';
-import { EnumBlockType } from '../../enums/EnumBlockType';
+} from "./dto";
+import { FindOneArgs } from "../../dto";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
   PendingChange,
-} from '../resource/dto';
+} from "../resource/dto";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
 const NON_COMPARABLE_PROPERTIES = [
-  'id',
-  'createdAt',
-  'updatedAt',
-  'versionNumber',
-  'commitId',
+  "id",
+  "createdAt",
+  "updatedAt",
+  "versionNumber",
+  "commitId",
 ];
 
 export type BlockPendingChange = {
@@ -114,7 +114,7 @@ export class BlockService {
 
       return block;
     }
-    throw new Error('Unexpected length of matchingBlocks');
+    throw new Error("Unexpected length of matchingBlocks");
   }
 
   async block(args: FindOneArgs): Promise<Block | null> {
@@ -136,7 +136,7 @@ export class BlockService {
    */
   async create<T extends IBlock>(
     args: CreateBlockArgs & {
-      data: CreateBlockArgs['data'] & { blockType: keyof typeof EnumBlockType };
+      data: CreateBlockArgs["data"] & { blockType: keyof typeof EnumBlockType };
     },
     userId: string
   ): Promise<T> {
@@ -745,7 +745,7 @@ export class BlockService {
       throw new Error(`Can't find target (Block Version ${targetVersionId})`);
     }
 
-    const names = pick(sourceVersion, ['displayName', 'description']);
+    const names = pick(sourceVersion, ["displayName", "description"]);
 
     //update the target version with its fields, and the its parent block
     targetVersion = await this.prisma.blockVersion.update({

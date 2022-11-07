@@ -1,22 +1,22 @@
-import { join } from 'path';
+import { join } from "path";
 
-export const BASE_BUILDS_FOLDER = 'BASE_BUILDS_FOLDER';
-export const DSG_RUNNER_URL = 'DSG_RUNNER_URL';
-export const BUILD_INPUT_FILE_NAME = 'BUILD_INPUT_FILE_NAME';
-export const GENERATE_PULL_REQUEST_TOPIC = 'GENERATE_PULL_REQUEST_TOPIC';
-export const CHECK_USER_ACCESS_TOPIC = 'CHECK_USER_ACCESS_TOPIC';
+export const BASE_BUILDS_FOLDER = "BASE_BUILDS_FOLDER";
+export const DSG_RUNNER_URL = "DSG_RUNNER_URL";
+export const BUILD_INPUT_FILE_NAME = "BUILD_INPUT_FILE_NAME";
+export const GENERATE_PULL_REQUEST_TOPIC = "GENERATE_PULL_REQUEST_TOPIC";
+export const CHECK_USER_ACCESS_TOPIC = "CHECK_USER_ACCESS_TOPIC";
 export const CREATE_PULL_REQUEST_COMPLETED_TOPIC =
-  'CREATE_PULL_REQUEST_COMPLETED_TOPIC';
-export const CODE_GENERATION_SUCCESS_TOPIC = 'CODE_GENERATION_SUCCESS_TOPIC';
+  "CREATE_PULL_REQUEST_COMPLETED_TOPIC";
+export const CODE_GENERATION_SUCCESS_TOPIC = "CODE_GENERATION_SUCCESS_TOPIC";
 
 export const DOT_AMPLICATION_FOLDER = join(
   process.cwd(),
-  '..',
-  '..',
-  '.amplication'
+  "..",
+  "..",
+  ".amplication"
 );
 export const DEFAULT_BUILDS_FOLDER = join(
   DOT_AMPLICATION_FOLDER,
-  'storage',
-  'builds'
+  "storage",
+  "builds"
 );

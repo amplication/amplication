@@ -1,32 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { isEmpty } from 'lodash';
+import { Injectable } from "@nestjs/common";
+import { isEmpty } from "lodash";
 import {
   EnumResourceType,
   Prisma,
   PrismaService,
-} from '@amplication/prisma-db';
-import { FindOneArgs } from '../../dto';
-import { AmplicationError } from '../../errors/AmplicationError';
-import { Resource } from '../../models/Resource';
-import { GitOrganization } from '../../models/GitOrganization';
-import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
-import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
-import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
-import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
-import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
-import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
-import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
-import { RemoteGitRepos } from './dto/objects/RemoteGitRepository';
-import { GitService, EnumGitOrganizationType } from '@amplication/git-utils';
+} from "@amplication/prisma-db";
+import { FindOneArgs } from "../../dto";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { Resource } from "../../models/Resource";
+import { GitOrganization } from "../../models/GitOrganization";
+import { CreateGitOrganizationArgs } from "./dto/args/CreateGitOrganizationArgs";
+import { DeleteGitOrganizationArgs } from "./dto/args/DeleteGitOrganizationArgs";
+import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
+import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
+import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
+import { ConnectGitRepositoryInput } from "./dto/inputs/ConnectGitRepositoryInput";
+import { CreateGitRepositoryInput } from "./dto/inputs/CreateGitRepositoryInput";
+import { RemoteGitRepositoriesWhereUniqueInput } from "./dto/inputs/RemoteGitRepositoriesWhereUniqueInput";
+import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
+import { GitService, EnumGitOrganizationType } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
   ResourceService,
-} from '../resource/resource.service';
+} from "../resource/resource.service";
 
 const GIT_REPOSITORY_EXIST =
-  'Git Repository already connected to an other Resource';
-const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
+  "Git Repository already connected to an other Resource";
+const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
 
 @Injectable()
 export class GitProviderService {

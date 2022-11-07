@@ -1,79 +1,79 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import cuid from 'cuid';
+import { Test, TestingModule } from "@nestjs/testing";
+import cuid from "cuid";
 import {
   INVALID_RESOURCE_ID,
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService,
-} from './resource.service';
+} from "./resource.service";
 
-import { GitService } from '@amplication/git-utils';
+import { GitService } from "@amplication/git-utils";
 import {
   EnumResourceType,
   GitRepository,
   PrismaService,
   Prisma,
-} from '@amplication/prisma-db';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { EnumDataType } from '../../enums/EnumDataType';
-import { QueryMode } from '../../enums/QueryMode';
-import { BlockVersion, Commit, EntityVersion } from '../../models';
-import { Block } from '../../models/Block';
-import { Entity } from '../../models/Entity';
-import { EntityField } from '../../models/EntityField';
-import { Resource } from '../../models/Resource';
-import { User } from '../../models/User';
-import { prepareDeletedItemName } from '../../util/softDelete';
-import { BlockService } from '../block/block.service';
-import { BuildService } from '../build/build.service';
-import { Build } from '../build/dto/Build';
-import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from '../entity/constants';
-import { EntityService } from '../entity/entity.service';
-import { Environment } from '../environment/dto/Environment';
+} from "@amplication/prisma-db";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { QueryMode } from "../../enums/QueryMode";
+import { BlockVersion, Commit, EntityVersion } from "../../models";
+import { Block } from "../../models/Block";
+import { Entity } from "../../models/Entity";
+import { EntityField } from "../../models/EntityField";
+import { Resource } from "../../models/Resource";
+import { User } from "../../models/User";
+import { prepareDeletedItemName } from "../../util/softDelete";
+import { BlockService } from "../block/block.service";
+import { BuildService } from "../build/build.service";
+import { Build } from "../build/dto/Build";
+import { CURRENT_VERSION_NUMBER, USER_ENTITY_NAME } from "../entity/constants";
+import { EntityService } from "../entity/entity.service";
+import { Environment } from "../environment/dto/Environment";
 import {
   DEFAULT_ENVIRONMENT_NAME,
   EnvironmentService,
-} from '../environment/environment.service';
+} from "../environment/environment.service";
 import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
   ResourceCreateInput,
-} from './dto';
-import { PendingChange } from './dto/PendingChange';
-import { ReservedEntityNameError } from './ReservedEntityNameError';
-import { ServiceSettings } from '../serviceSettings/dto';
-import { EnumAuthProviderType } from '../serviceSettings/dto/EnumAuthenticationProviderType';
-import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
-import { DEFAULT_RESOURCE_COLORS } from './constants';
-import { ProjectConfigurationSettingsService } from '../projectConfigurationSettings/projectConfigurationSettings.service';
-import { ProjectService } from '../project/project.service';
-import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
+} from "./dto";
+import { PendingChange } from "./dto/PendingChange";
+import { ReservedEntityNameError } from "./ReservedEntityNameError";
+import { ServiceSettings } from "../serviceSettings/dto";
+import { EnumAuthProviderType } from "../serviceSettings/dto/EnumAuthenticationProviderType";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { DEFAULT_RESOURCE_COLORS } from "./constants";
+import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
+import { ProjectService } from "../project/project.service";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 
-const EXAMPLE_MESSAGE = 'exampleMessage';
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_MESSAGE = "exampleMessage";
+const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID =
-  'exampleProjectConfigurationResourceId';
-const EXAMPLE_PROJECT_ID = 'exampleProjectId';
-const EXAMPLE_RESOURCE_NAME = 'exampleResourceName';
-const EXAMPLE_RESOURCE_DESCRIPTION = 'exampleResourceName';
+  "exampleProjectConfigurationResourceId";
+const EXAMPLE_PROJECT_ID = "exampleProjectId";
+const EXAMPLE_RESOURCE_NAME = "exampleResourceName";
+const EXAMPLE_RESOURCE_DESCRIPTION = "exampleResourceName";
 
-const EXAMPLE_CUID = 'EXAMPLE_CUID';
+const EXAMPLE_CUID = "EXAMPLE_CUID";
 
-const EXAMPLE_BUILD_ID = 'ExampleBuildId';
-const EXAMPLE_WORKSPACE_ID = 'ExampleWorkspaceId';
+const EXAMPLE_BUILD_ID = "ExampleBuildId";
+const EXAMPLE_WORKSPACE_ID = "ExampleWorkspaceId";
 
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
-  id: 'exampleGitRepositoryId',
-  name: 'repositoryTest',
-  gitOrganizationId: 'exampleGitOrganizationId',
+  id: "exampleGitRepositoryId",
+  name: "repositoryTest",
+  gitOrganizationId: "exampleGitOrganizationId",
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
-  description: 'Sample Service for task management',
-  name: 'My sample service',
+  description: "Sample Service for task management",
+  name: "My sample service",
   resourceType: EnumResourceType.Service,
-  project: { connect: { id: 'exampleProjectId' } },
+  project: { connect: { id: "exampleProjectId" } },
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -98,7 +98,7 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
   gitRepositoryOverride: false,
 };
 
-const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_USER_ID = "exampleUserId";
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -108,19 +108,19 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name',
+    name: "example_workspace_name",
   },
   isOwner: true,
 };
 
-const EXAMPLE_ENTITY_ID = 'exampleEntityId';
-const EXAMPLE_ENTITY_NAME = 'ExampleEntityName';
-const EXAMPLE_ENTITY_DISPLAY_NAME = 'Example Entity Name';
-const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'Example Entity Names';
-const EXAMPLE_ENTITY_FIELD_NAME = 'exampleEntityFieldName';
+const EXAMPLE_ENTITY_ID = "exampleEntityId";
+const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_ENTITY_DISPLAY_NAME = "Example Entity Name";
+const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
+const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
 
-const EXAMPLE_BLOCK_ID = 'exampleBlockId';
-const EXAMPLE_BLOCK_DISPLAY_NAME = 'Example Entity Name';
+const EXAMPLE_BLOCK_ID = "exampleBlockId";
+const EXAMPLE_BLOCK_DISPLAY_NAME = "Example Entity Name";
 
 const EXAMPLE_ENTITY: Entity = {
   id: EXAMPLE_ENTITY_ID,
@@ -141,7 +141,7 @@ const EXAMPLE_BLOCK: Block = {
   blockType: EnumBlockType.ServiceSettings,
   parentBlock: null,
   versionNumber: CURRENT_VERSION_NUMBER,
-  description: 'example block description',
+  description: "example block description",
 };
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
@@ -150,9 +150,9 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   updatedAt: new Date(),
   name: EXAMPLE_ENTITY_FIELD_NAME,
   dataType: EnumDataType.SingleLineText,
-  description: 'SampleEntityDescription',
-  displayName: 'SampleEntityFieldDisplayName',
-  permanentId: 'SampleFieldPermanentId',
+  description: "SampleEntityDescription",
+  displayName: "SampleEntityFieldDisplayName",
+  permanentId: "SampleFieldPermanentId",
   properties: {},
   required: false,
   unique: false,
@@ -177,8 +177,8 @@ const EXAMPLE_CHANGED_BLOCK: PendingChange = {
   resource: EXAMPLE_RESOURCE,
 };
 
-const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
-const EXAMPLE_BLOCK_VERSION_ID = 'exampleBlockVersionId';
+const EXAMPLE_ENTITY_VERSION_ID = "exampleEntityVersionId";
+const EXAMPLE_BLOCK_VERSION_ID = "exampleBlockVersionId";
 const EXAMPLE_VERSION_NUMBER = 0;
 
 const EXAMPLE_ENTITY_VERSION: EntityVersion = {
@@ -200,7 +200,7 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   displayName: EXAMPLE_BLOCK_DISPLAY_NAME,
 };
 
-const EXAMPLE_COMMIT_ID = 'exampleCommitId';
+const EXAMPLE_COMMIT_ID = "exampleCommitId";
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
@@ -210,13 +210,13 @@ const EXAMPLE_COMMIT: Commit = {
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
-  id: 'ExampleEnvironmentId',
+  id: "ExampleEnvironmentId",
   createdAt: new Date(),
   updatedAt: new Date(),
-  address: 'ExampleEnvironmentAddress',
+  address: "ExampleEnvironmentAddress",
   name: DEFAULT_ENVIRONMENT_NAME,
   resourceId: EXAMPLE_RESOURCE_ID,
-  description: 'ExampleEnvironmentDescription',
+  description: "ExampleEnvironmentDescription",
 };
 
 const EXAMPLE_BUILD: Build = {
@@ -224,28 +224,28 @@ const EXAMPLE_BUILD: Build = {
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   resourceId: EXAMPLE_RESOURCE_ID,
-  version: '1.0.0',
-  message: 'new build',
-  actionId: 'ExampleActionId',
+  version: "1.0.0",
+  message: "new build",
+  actionId: "ExampleActionId",
   commitId: EXAMPLE_COMMIT_ID,
 };
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   resourceId: EXAMPLE_RESOURCE_ID,
-  dbHost: 'exampleDbHost',
-  dbName: 'exampleDbName',
-  dbUser: 'exampleDbUser',
-  dbPassword: 'exampleDbPassword',
+  dbHost: "exampleDbHost",
+  dbName: "exampleDbName",
+  dbUser: "exampleDbUser",
+  dbPassword: "exampleDbPassword",
   dbPort: 5532,
   authProvider: EnumAuthProviderType.Http,
   adminUISettings: undefined,
   serverSettings: undefined,
-  id: 'exampleId',
+  id: "exampleId",
   createdAt: new Date(),
   updatedAt: new Date(),
   parentBlock: new Block(),
-  displayName: 'exampleDisplayName',
-  description: 'exampleDescription',
+  displayName: "exampleDisplayName",
+  description: "exampleDescription",
   blockType: EnumBlockType.ServiceSettings,
   versionNumber: 0,
   inputParameters: [],
@@ -314,7 +314,7 @@ const blockServiceCreateVersionMock = jest.fn(
 const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 
 const USER_ENTITY_MOCK = {
-  id: 'USER_ENTITY_MOCK_ID',
+  id: "USER_ENTITY_MOCK_ID",
 };
 
 const entityServiceCreateDefaultEntitiesMock = jest.fn();
@@ -328,12 +328,12 @@ const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
 });
 
-jest.mock('cuid');
+jest.mock("cuid");
 // eslint-disable-next-line
 // @ts-ignore
 cuid.mockImplementation(() => EXAMPLE_CUID);
 
-describe('ResourceService', () => {
+describe("ResourceService", () => {
   let service: ResourceService;
 
   beforeEach(async () => {
@@ -431,11 +431,11 @@ describe('ResourceService', () => {
     service = module.get<ResourceService>(ResourceService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a resource', async () => {
+  it("should create a resource", async () => {
     const createResourceArgs = {
       args: {
         data: {
@@ -471,12 +471,12 @@ describe('ResourceService', () => {
     );
   });
 
-  it('should fail to create resource with entities with a reserved name', async () => {
+  it("should fail to create resource with entities with a reserved name", async () => {
     await expect(
       service.createServiceWithEntities(
         {
           resource: SAMPLE_SERVICE_DATA,
-          commitMessage: 'commitMessage',
+          commitMessage: "commitMessage",
           entities: [
             {
               name: USER_ENTITY_NAME,
@@ -499,8 +499,8 @@ describe('ResourceService', () => {
     ).rejects.toThrow(new ReservedEntityNameError(USER_ENTITY_NAME));
   });
 
-  it('should create resource with entities', async () => {
-    const commitMessage = 'CreateWithEntitiesCommitMessage';
+  it("should create resource with entities", async () => {
+    const commitMessage = "CreateWithEntitiesCommitMessage";
     const createOneEntityArgs = {
       data: {
         resource: {
@@ -582,7 +582,7 @@ describe('ResourceService', () => {
     );
   });
 
-  it('should find a resource', async () => {
+  it("should find a resource", async () => {
     const args = {
       where: {
         deletedAt: null,
@@ -594,7 +594,7 @@ describe('ResourceService', () => {
     expect(prismaResourceFindOneMock).toBeCalledWith(args);
   });
 
-  it('should find many resources', async () => {
+  it("should find many resources", async () => {
     const args = {
       where: {
         deletedAt: null,
@@ -606,9 +606,9 @@ describe('ResourceService', () => {
     expect(prismaResourceFindManyMock).toBeCalledWith(args);
   });
 
-  it('should delete a resource', async () => {
+  it("should delete a resource", async () => {
     const args = { where: { id: EXAMPLE_RESOURCE_ID } };
-    const dateSpy = jest.spyOn(global, 'Date');
+    const dateSpy = jest.spyOn(global, "Date");
     expect(await service.deleteResource(args)).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith({
@@ -626,14 +626,14 @@ describe('ResourceService', () => {
     });
   });
 
-  it('should not delete a resource of Project configuration', async () => {
+  it("should not delete a resource of Project configuration", async () => {
     const args = { where: { id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID } };
     await expect(service.deleteResource(args)).rejects.toThrow(
       new Error(INVALID_DELETE_PROJECT_CONFIGURATION)
     );
   });
 
-  it('should update a resource', async () => {
+  it("should update a resource", async () => {
     const args = {
       data: { name: EXAMPLE_RESOURCE_NAME },
       where: { id: EXAMPLE_RESOURCE_ID },
@@ -643,7 +643,7 @@ describe('ResourceService', () => {
     expect(prismaResourceUpdateMock).toBeCalledWith(args);
   });
 
-  describe('deleted resources', () => {
+  describe("deleted resources", () => {
     beforeEach(() => {
       EXAMPLE_RESOURCE.deletedAt = new Date();
       prismaResourceFindOneMock.mockImplementationOnce(() => {
@@ -654,14 +654,14 @@ describe('ResourceService', () => {
       EXAMPLE_RESOURCE.deletedAt = null;
     });
 
-    it('should fail to fetch a deleted resource', async () => {
+    it("should fail to fetch a deleted resource", async () => {
       const args = { where: { id: EXAMPLE_RESOURCE_ID } };
       await expect(service.resource(args)).rejects.toThrow(
         new Error(INVALID_RESOURCE_ID)
       );
     });
 
-    it('should fail to update a deleted resource', async () => {
+    it("should fail to update a deleted resource", async () => {
       const args = {
         data: { name: EXAMPLE_RESOURCE_NAME },
         where: { id: EXAMPLE_RESOURCE_ID },

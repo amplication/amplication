@@ -1,7 +1,7 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from './User';
-import { GitOrganization } from './GitOrganization';
-import { Project } from './Project';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { User } from "./User";
+import { GitOrganization } from "./GitOrganization";
+import { Project } from "./Project";
 
 @ObjectType({
   isAbstract: true,

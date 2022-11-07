@@ -1,9 +1,9 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { EntityVersion } from './EntityVersion';
-import { EntityPermissionRole } from './EntityPermissionRole';
-import { EntityPermissionField } from './EntityPermissionField';
-import { EnumEntityAction } from './../enums/EnumEntityAction';
-import { EnumEntityPermissionType } from './../enums/EnumEntityPermissionType';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { EntityVersion } from "./EntityVersion";
+import { EntityPermissionRole } from "./EntityPermissionRole";
+import { EntityPermissionField } from "./EntityPermissionField";
+import { EnumEntityAction } from "./../enums/EnumEntityAction";
+import { EnumEntityPermissionType } from "./../enums/EnumEntityPermissionType";
 
 /**
  * Defines a set of {@linkcode EntityPermissionRole} allowed to perform an

@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { Inject, Injectable } from "@nestjs/common";
+import { ClientKafka } from "@nestjs/microservices";
 
-export const QUEUE_SERVICE_NAME = 'QUEUE_SERVICE';
+export const QUEUE_SERVICE_NAME = "QUEUE_SERVICE";
 
 @Injectable()
 export class QueueService {

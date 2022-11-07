@@ -1,9 +1,9 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { IBlock } from '../../../models';
-import { EnumEntityPageType } from './EnumEntityPageType';
-import { EntityPageSingleRecordSettings, EntityPageListSettings } from '.';
-import type { JsonValue } from 'type-fest';
-import { ValidateIf, IsNotEmpty } from 'class-validator';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { IBlock } from "../../../models";
+import { EnumEntityPageType } from "./EnumEntityPageType";
+import { EntityPageSingleRecordSettings, EntityPageListSettings } from ".";
+import type { JsonValue } from "type-fest";
+import { ValidateIf, IsNotEmpty } from "class-validator";
 
 @ObjectType({
   isAbstract: true,

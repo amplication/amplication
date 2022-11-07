@@ -1,7 +1,7 @@
-import { EnumGitProvider } from '@amplication/git-utils';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
-import { GitCommit } from './GitCommit';
-import { GitResourceMeta } from './GitResourceMeta';
+import { EnumGitProvider } from "@amplication/git-utils";
+import { IsOptional, IsString, ValidateNested } from "class-validator";
+import { GitCommit } from "./GitCommit";
+import { GitResourceMeta } from "./GitResourceMeta";
 export class SendPullRequestArgs {
   @IsString()
   resourceId!: string;

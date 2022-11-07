@@ -1,6 +1,6 @@
-import { PrismaService } from '@amplication/prisma-db';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProjectService } from './project.service';
+import { PrismaService } from "@amplication/prisma-db";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ProjectService } from "./project.service";
 import {
   Block,
   BlockVersion,
@@ -8,46 +8,46 @@ import {
   Entity,
   EntityVersion,
   Resource,
-} from '../../models';
-import { Environment } from '../environment/dto';
-import { Build } from '../build/dto/Build';
+} from "../../models";
+import { Environment } from "../environment/dto";
+import { Build } from "../build/dto/Build";
 import {
   EnumResourceType,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
-} from '@amplication/code-gen-types/models';
-import { PendingChange } from '../resource/dto/PendingChange';
-import { ResourceService } from '../resource/resource.service';
-import { BuildService } from '../build/build.service';
-import { EntityService } from '../entity/entity.service';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { CURRENT_VERSION_NUMBER } from '../entity/constants';
-import { BlockService } from '../block/block.service';
+} from "@amplication/code-gen-types/models";
+import { PendingChange } from "../resource/dto/PendingChange";
+import { ResourceService } from "../resource/resource.service";
+import { BuildService } from "../build/build.service";
+import { EntityService } from "../entity/entity.service";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { CURRENT_VERSION_NUMBER } from "../entity/constants";
+import { BlockService } from "../block/block.service";
 
 /** values mock */
-const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_MESSAGE = 'exampleMessage';
-const EXAMPLE_PROJECT_ID = 'exampleProjectId';
-const EXAMPLE_COMMIT_ID = 'exampleCommitId';
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
-const EXAMPLE_ENTITY_ID = 'exampleEntityId';
+const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_MESSAGE = "exampleMessage";
+const EXAMPLE_PROJECT_ID = "exampleProjectId";
+const EXAMPLE_COMMIT_ID = "exampleCommitId";
+const EXAMPLE_RESOURCE_ID = "exampleResourceId";
+const EXAMPLE_ENTITY_ID = "exampleEntityId";
 const EXAMPLE_VERSION_NUMBER = 1;
-const EXAMPLE_NAME = 'exampleName';
-const EXAMPLE_DESCRIPTION = 'exampleDescription';
-const EXAMPLE_DISPLAY_NAME = 'exampleDisplayName';
-const EXAMPLE_PLURAL_DISPLAY_NAME = 'examplePluralDisplayName';
-const EXAMPLE_BUILD_ID = 'exampleBuildId';
-const EXAMPLE_VERSION = 'exampleVersion';
-const EXAMPLE_ACTION_ID = 'exampleActionId';
-const EXAMPLE_ENVIRONMENT_ID = 'exampleEnvironmentId';
-const EXAMPLE_ADDRESS = 'exampleAddress';
-const EXAMPLE_BLOCK_ID = 'exampleBlockId';
-const EXAMPLE_BLOCK_DISPLAY_NAME = 'Example Entity Name';
-const EXAMPLE_ENTITY_VERSION_ID = 'exampleEntityVersionId';
-const EXAMPLE_ENTITY_NAME = 'ExampleEntityName';
-const EXAMPLE_ENTITY_DISPLAY_NAME = 'Example Entity Name';
-const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = 'Example Entity Names';
-const EXAMPLE_BLOCK_VERSION_ID = 'exampleBlockVersionId';
+const EXAMPLE_NAME = "exampleName";
+const EXAMPLE_DESCRIPTION = "exampleDescription";
+const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
+const EXAMPLE_PLURAL_DISPLAY_NAME = "examplePluralDisplayName";
+const EXAMPLE_BUILD_ID = "exampleBuildId";
+const EXAMPLE_VERSION = "exampleVersion";
+const EXAMPLE_ACTION_ID = "exampleActionId";
+const EXAMPLE_ENVIRONMENT_ID = "exampleEnvironmentId";
+const EXAMPLE_ADDRESS = "exampleAddress";
+const EXAMPLE_BLOCK_ID = "exampleBlockId";
+const EXAMPLE_BLOCK_DISPLAY_NAME = "Example Entity Name";
+const EXAMPLE_ENTITY_VERSION_ID = "exampleEntityVersionId";
+const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
+const EXAMPLE_ENTITY_DISPLAY_NAME = "Example Entity Name";
+const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
+const EXAMPLE_BLOCK_VERSION_ID = "exampleBlockVersionId";
 
 /** models mock */
 const EXAMPLE_COMMIT: Commit = {
@@ -95,7 +95,7 @@ const EXAMPLE_BLOCK: Block = {
   blockType: EnumBlockType.ServiceSettings,
   parentBlock: null,
   versionNumber: CURRENT_VERSION_NUMBER,
-  description: 'example block description',
+  description: "example block description",
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -182,7 +182,7 @@ const createProjectConfigurationMock = jest.fn(() => {
 });
 const blockServiceReleaseLockMock = jest.fn(async () => EXAMPLE_BLOCK);
 
-describe('ProjectService', () => {
+describe("ProjectService", () => {
   let service: ProjectService;
 
   beforeEach(async () => {
@@ -239,10 +239,10 @@ describe('ProjectService', () => {
     service = module.get<ProjectService>(ProjectService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
-  it('should commit', async () => {
+  it("should commit", async () => {
     const args = {
       data: {
         message: EXAMPLE_MESSAGE,

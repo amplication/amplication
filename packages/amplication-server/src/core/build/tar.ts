@@ -1,7 +1,7 @@
-import zlib from 'zlib';
-import tar from 'tar-stream';
-import getStream from 'get-stream';
-import { Module } from '@amplication/code-gen-types';
+import zlib from "zlib";
+import tar from "tar-stream";
+import getStream from "get-stream";
+import { Module } from "@amplication/code-gen-types";
 
 export function createTarGzFileFromModules(modules: Module[]): Promise<Buffer> {
   const pack = tar.pack();

@@ -1,8 +1,8 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Entity } from '../models/Entity';
-import { EntityField } from '../models/EntityField';
-import { Commit } from '../models/Commit';
-import { EntityPermission } from './EntityPermission';
+import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { Entity } from "../models/Entity";
+import { EntityField } from "../models/EntityField";
+import { Commit } from "../models/Commit";
+import { EntityPermission } from "./EntityPermission";
 
 @ObjectType({
   isAbstract: true,

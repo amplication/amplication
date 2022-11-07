@@ -1,6 +1,6 @@
 export enum ActionStepStatus {
-  Waiting = 'Waiting',
-  Running = 'Running',
-  Failed = 'Failed',
-  Success = 'Success',
+  Waiting = "Waiting",
+  Running = "Running",
+  Failed = "Failed",
+  Success = "Success",
 }

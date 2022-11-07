@@ -1,10 +1,10 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { Entity } from './Entity';
-import { Build } from '../core/build/dto/Build';
-import { Environment } from '../core/environment/dto/Environment';
-import { GitRepository } from './GitRepository';
-import { EnumResourceType } from '../core/resource/dto/EnumResourceType';
-import { Project } from './Project';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Entity } from "./Entity";
+import { Build } from "../core/build/dto/Build";
+import { Environment } from "../core/environment/dto/Environment";
+import { GitRepository } from "./GitRepository";
+import { EnumResourceType } from "../core/resource/dto/EnumResourceType";
+import { Project } from "./Project";
 
 @ObjectType({
   isAbstract: true,

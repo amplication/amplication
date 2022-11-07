@@ -1,6 +1,6 @@
-const GeneratePackageJsonPlugin = require('generate-package-json-webpack-plugin');
-const path = require('path');
-const packageJson = require('../../package.json');
+const GeneratePackageJsonPlugin = require("generate-package-json-webpack-plugin");
+const path = require("path");
+const packageJson = require("../../package.json");
 
 /**
  * Extend the default Webpack configuration from nx / ng.
@@ -43,13 +43,13 @@ function extractRelevantNodeModules(outputPath) {
  */
 function generatePackageJson() {
   const implicitDeps = [
-    'class-transformer',
-    'class-validator',
-    '@nestjs/platform-express',
-    'reflect-metadata',
-    'apollo-server-express',
-    'kafkajs',
-    'swagger-ui-express'
+    "class-transformer",
+    "class-validator",
+    "@nestjs/platform-express",
+    "reflect-metadata",
+    "apollo-server-express",
+    "kafkajs",
+    "swagger-ui-express",
   ];
   const dependencies = implicitDeps.reduce((acc, dep) => {
     acc[dep] = packageJson.dependencies[dep];
@@ -58,9 +58,9 @@ function generatePackageJson() {
   const basePackageJson = {
     dependencies,
   };
-  const pathToPackageJson = path.join(__dirname, '../..', 'package.json');
+  const pathToPackageJson = path.join(__dirname, "../..", "package.json");
   return new GeneratePackageJsonPlugin(basePackageJson, {
-    excludeDependencies: ['@amplication/prisma-clients'],
+    excludeDependencies: ["@amplication/prisma-clients"],
     sourcePackageFilenames: [pathToPackageJson],
   });
 }

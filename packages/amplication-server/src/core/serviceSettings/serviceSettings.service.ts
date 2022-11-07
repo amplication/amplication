@@ -1,19 +1,19 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ServiceSettings, UpdateServiceSettingsArgs } from './dto';
-import { FindOneArgs } from '../../dto';
-import { BlockService } from '../block/block.service';
-import { EnumBlockType } from '../../enums/EnumBlockType';
+import { Injectable, Inject } from "@nestjs/common";
+import { ServiceSettings, UpdateServiceSettingsArgs } from "./dto";
+import { FindOneArgs } from "../../dto";
+import { BlockService } from "../block/block.service";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 import {
   DEFAULT_SERVICE_SETTINGS,
   ServiceSettingsValues,
   ServiceSettingsValuesExtended,
-} from './constants';
-import { User } from '../../models';
-import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
-import { ResourceGenSettingsCreateInput } from '../resource/dto/ResourceGenSettingsCreateInput';
+} from "./constants";
+import { User } from "../../models";
+import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
+import { ResourceGenSettingsCreateInput } from "../resource/dto/ResourceGenSettingsCreateInput";
 
 export const isStringBool = (val: string | boolean): boolean =>
-  typeof val === 'boolean' || typeof val === 'string';
+  typeof val === "boolean" || typeof val === "string";
 
 @Injectable()
 export class ServiceSettingsService {
@@ -67,8 +67,8 @@ export class ServiceSettingsService {
     return {
       ...serviceSettings,
       authProvider: serviceSettings.authProvider || EnumAuthProviderType.Jwt,
-      ...(!serviceSettings.hasOwnProperty('serverSettings') ||
-      !serviceSettings.hasOwnProperty('adminUISettings')
+      ...(!serviceSettings.hasOwnProperty("serverSettings") ||
+      !serviceSettings.hasOwnProperty("adminUISettings")
         ? this.updateServiceSettings(
             {
               data: {
@@ -76,11 +76,11 @@ export class ServiceSettingsService {
                 serverSettings: {
                   generateGraphQL: true,
                   generateRestApi: true,
-                  serverPath: '',
+                  serverPath: "",
                 },
                 adminUISettings: {
                   generateAdminUI: true,
-                  adminUIPath: '',
+                  adminUIPath: "",
                 },
               },
               where: {
@@ -188,12 +188,12 @@ export class ServiceSettingsService {
   ): void {
     (settings.adminUISettings = {
       generateAdminUI: generationSettings.generateAdminUI,
-      adminUIPath: '',
+      adminUIPath: "",
     }),
       (settings.serverSettings = {
         generateGraphQL: generationSettings.generateGraphQL,
         generateRestApi: generationSettings.generateRestApi,
-        serverPath: '',
+        serverPath: "",
       });
   }
 }

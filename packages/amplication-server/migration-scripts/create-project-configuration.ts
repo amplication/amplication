@@ -2,21 +2,21 @@ import {
   PrismaClient,
   EnumResourceType,
   EnumBlockType,
-} from '@amplication/prisma-db';
+} from "@amplication/prisma-db";
 
-import { DEFAULT_RESOURCE_COLORS } from '../src/core/resource/constants';
+import { DEFAULT_RESOURCE_COLORS } from "../src/core/resource/constants";
 
-const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
+const DEFAULT_PROJECT_CONFIGURATION_NAME = "Project Configuration";
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
-  'This resource is used to store project configuration.';
+  "This resource is used to store project configuration.";
 
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME =
-  'Project Configuration Settings';
+  "Project Configuration Settings";
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION =
-  'This block is used to store project configuration settings.';
+  "This block is used to store project configuration settings.";
 
 const blockVersionSettings = {
-  baseDirectory: '/',
+  baseDirectory: "/",
 };
 
 function chunkArrayInGroups(arr, size) {
