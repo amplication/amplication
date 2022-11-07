@@ -139,7 +139,7 @@ amplication-storage-gateway:
   config:
     env:
       KAFKA_BROKERS: "amplication-next-cp-kafka-headless:9092"
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
-      BUILD_OUTPUT_FOLDER: code
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
       GITHUB_APP_APP_ID: "225471"
 
