@@ -1,13 +1,44 @@
-import { PrModule } from "../types";
-import { GithubFile } from "../Dto/entities/GithubFile";
-import { RemoteGitOrganization } from "../Dto/entities/RemoteGitOrganization";
+import { registerEnumType } from "@nestjs/graphql";
+import { GithubFile } from "./dto/github-file.dto";
+import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import {
-  RemoteGitRepository,
   RemoteGitRepos,
-} from "../Dto/entities/RemoteGitRepository";
-import { GitResourceMeta } from "./GitResourceMeta";
+  RemoteGitRepository,
+} from "./dto/remote-git-repository";
 
-export interface IGitClient {
+export type PrModule = {
+  path: string;
+  code: string | null;
+};
+
+export enum EnumGitOrganizationType {
+  User = "User",
+  Organization = "Organization",
+}
+
+registerEnumType(EnumGitOrganizationType, {
+  name: "EnumGitOrganizationType",
+});
+
+export enum EnumGitProvider {
+  Github = "Github",
+}
+
+registerEnumType(EnumGitProvider, {
+  name: "EnumGitProvider",
+});
+
+export interface GitResourceMeta {
+  serverPath: string;
+  adminUIPath: string;
+}
+
+export interface GitResourceMeta {
+  serverPath: string;
+  adminUIPath: string;
+}
+
+export interface GitClient {
   createUserRepository(
     installationId: string,
     owner: string,

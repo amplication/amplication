@@ -1,25 +1,43 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { EnumGitProvider } from "../../Dto/enums/EnumGitProvider";
-import { GitService } from "../../services/git.service";
-import { GitServiceFactory } from "../../utils/GitServiceFactory";
-import { MOCK_GIT_SERVICE_FACTORY } from "../../__mocks__/GitServiceFactory.mock";
-import { EnumGitOrganizationType } from "../../Dto/enums/EnumGitOrganizationType";
-import { TEST_GIT_REPO } from "../../__mocks__/RemoteGitRepository";
-import { TEST_GIT_REPOS } from "../../__mocks__/RemoteGitRepositories";
-import { TEST_GIT_REMOTE_ORGANIZATION } from "../../__mocks__/RemoteGitOrganization";
-import { INSTALLATION_URL, PR_HTML_URL } from "../../__mocks__/Constants";
-import { GIT_HUB_FILE } from "../../__mocks__/GithubFile";
+import {
+  EnumGitOrganizationType,
+  EnumGitProvider,
+} from "../../src/git/git.types";
+import { GitService } from "../../src/git/git.service";
+import { GitServiceFactory } from "../../src/git/git-service-factory";
+import { MOCK_GIT_SERVICE_FACTORY } from "./mocks";
+import {
+  GIT_HUB_FILE,
+  INSTALLATION_URL,
+  PR_HTML_URL,
+  TEST_GIT_REMOTE_ORGANIZATION,
+  TEST_GIT_REPO,
+  TEST_GIT_REPOS,
+} from "./git.constants";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 describe("GitService", () => {
   let gitService: GitService;
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule],
       providers: [
         GitService,
         {
           provide: GitServiceFactory,
           useValue: MOCK_GIT_SERVICE_FACTORY,
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              if (!key) {
+                return null;
+              }
+              return key;
+            }),
+          },
         },
       ],
     }).compile();

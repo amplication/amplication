@@ -79,6 +79,7 @@ export enum EventNames {
   CreateAdminUIPackageJson = "CreateAdminUIPackageJson",
   CreateEntityModule = "CreateEntityModule",
   CreateEntityModuleBase = "CreateEntityModuleBase",
+  CreateSwagger = "CreateSwagger",
 }
 
 export interface AmplicationPlugin {
