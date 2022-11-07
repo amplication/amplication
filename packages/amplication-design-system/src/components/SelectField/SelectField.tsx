@@ -66,15 +66,12 @@ export const SelectField = ({
           {...field}
           isMulti={isMulti}
           isClearable={isClearable}
-          // @ts-ignore
           value={value}
           onChange={handleChange}
           options={options}
           isDisabled={disabled}
         />
       </label>
-      {/*
-      // @ts-ignore */}
       <ErrorMessage name={name} component="div" className="text-input__error" />
     </div>
   );
