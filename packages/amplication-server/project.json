@@ -75,7 +75,7 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-server:build",
+        "buildTarget": "amplication-server:build"
       },
       "configurations": {
         "production": {

@@ -20,7 +20,7 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: feature/nx
+          main-branch-name: ${{ github.base_ref || 'next' }}
 
       - name: Cache node modules
         id: cache
@@ -37,6 +37,9 @@ jobs:
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
+
+      - name: Nx Version Print
+        run: npx nx --version
 
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
