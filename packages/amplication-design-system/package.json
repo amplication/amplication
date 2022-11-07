@@ -1,6 +1,6 @@
 {
   "name": "@amplication/design-system",
-  "version": "0.0.1",
+  "version": "1.0.3",
   "main": "dist/index.js",
   "scripts": {
     "check-format": "prettier --check .",
@@ -76,9 +76,6 @@
       "react/jsx-no-useless-fragment": "error",
       "no-duplicate-imports": "error"
     }
-  },
-  "resolutions": {
-    "@types/react": "^17.0.2"
   },
   "peerDependencies": {
     "formik": "^2.2.9",

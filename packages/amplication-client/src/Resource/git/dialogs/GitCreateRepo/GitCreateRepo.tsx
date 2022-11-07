@@ -1,4 +1,4 @@
-import { Resource } from "@amplication/code-gen-types//models";
+import { Resource } from "@amplication/code-gen-types/models";
 import {
   Button,
   CircularProgress,
