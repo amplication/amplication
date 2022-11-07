@@ -48,6 +48,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Nx Version Print
+        run: npx nx --version
+
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
 
