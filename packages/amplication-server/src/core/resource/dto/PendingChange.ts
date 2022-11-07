@@ -1,10 +1,10 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { EnumPendingChangeAction } from './EnumPendingChangeAction';
-import { Entity } from '../../../models/Entity';
-import { Block } from '../../../models/Block';
-import { EnumPendingChangeOriginType } from './EnumPendingChangeOriginType';
-import { PendingChangeOrigin } from './PendingChangeOrigin';
-import { Resource } from '../../../models';
+import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { EnumPendingChangeAction } from "./EnumPendingChangeAction";
+import { Entity } from "../../../models/Entity";
+import { Block } from "../../../models/Block";
+import { EnumPendingChangeOriginType } from "./EnumPendingChangeOriginType";
+import { PendingChangeOrigin } from "./PendingChangeOrigin";
+import { Resource } from "../../../models";
 
 @ObjectType({
   isAbstract: true,

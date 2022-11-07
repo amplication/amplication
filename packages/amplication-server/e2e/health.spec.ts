@@ -1,9 +1,9 @@
-import { Test } from '@nestjs/testing';
-import { HealthController } from '../src/core/health/health.controller';
-import request from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { Test } from "@nestjs/testing";
+import { HealthController } from "../src/core/health/health.controller";
+import request from "supertest";
+import { INestApplication } from "@nestjs/common";
 
-describe('HealthController', () => {
+describe("HealthController", () => {
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -16,7 +16,7 @@ describe('HealthController', () => {
   });
 
   it(`GET /_health/live should return empty response`, () => {
-    return request(app.getHttpServer()).get('/_health/live').expect(204);
+    return request(app.getHttpServer()).get("/_health/live").expect(204);
   });
 
   afterAll(async () => {

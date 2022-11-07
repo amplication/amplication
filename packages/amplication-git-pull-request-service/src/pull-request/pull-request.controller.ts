@@ -1,23 +1,23 @@
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
-} from '@amplication/nest-logger-module';
-import { Controller, Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+} from "@amplication/nest-logger-module";
+import { Controller, Inject } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import {
   Ctx,
   EventPattern,
   KafkaContext,
   Payload,
-} from '@nestjs/microservices';
-import { plainToInstance } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
-import { KafkaMessage } from 'kafkajs';
-import { CreatePullRequestArgs } from './dto/create-pull-request.args';
-import { KafkaTopics } from './pull-request.type';
-import { PullRequestService } from './pull-request.service';
-import { QueueService } from './queue.service';
-import { Env } from '../env';
+} from "@nestjs/microservices";
+import { plainToInstance } from "class-transformer";
+import { validateOrReject } from "class-validator";
+import { KafkaMessage } from "kafkajs";
+import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
+import { KafkaTopics } from "./pull-request.type";
+import { PullRequestService } from "./pull-request.service";
+import { QueueService } from "./queue.service";
+import { Env } from "../env";
 
 @Controller()
 export class PullRequestController {

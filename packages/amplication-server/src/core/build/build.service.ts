@@ -1,80 +1,80 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Storage, MethodNotSupported } from '@slynova/flydrive';
-import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
-import { StorageService } from '@codebrew/nestjs-storage';
-import { Prisma, PrismaService } from '@amplication/prisma-db';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import * as winston from 'winston';
-import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
-import { omit, orderBy } from 'lodash';
-import path from 'path';
-import * as CodeGenTypes from '@amplication/code-gen-types';
-import { ResourceRole, User } from '../../models';
-import { Build } from './dto/Build';
-import { CreateBuildArgs } from './dto/CreateBuildArgs';
-import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { getBuildZipFilePath, getBuildTarGzFilePath } from './storage';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { EntityService } from '../entity/entity.service';
-import { StepNotCompleteError } from './errors/StepNotCompleteError';
-import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { ResourceRoleService } from '../resourceRole/resourceRole.service';
-import { ResourceService } from '../resource/resource.service';
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Storage, MethodNotSupported } from "@slynova/flydrive";
+import { GoogleCloudStorage } from "@slynova/flydrive-gcs";
+import { StorageService } from "@codebrew/nestjs-storage";
+import { Prisma, PrismaService } from "@amplication/prisma-db";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import * as winston from "winston";
+import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
+import { omit, orderBy } from "lodash";
+import path from "path";
+import * as CodeGenTypes from "@amplication/code-gen-types";
+import { ResourceRole, User } from "../../models";
+import { Build } from "./dto/Build";
+import { CreateBuildArgs } from "./dto/CreateBuildArgs";
+import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
+import { getBuildZipFilePath, getBuildTarGzFilePath } from "./storage";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
+import { BuildNotFoundError } from "./errors/BuildNotFoundError";
+import { EntityService } from "../entity/entity.service";
+import { StepNotCompleteError } from "./errors/StepNotCompleteError";
+import { BuildResultNotFound } from "./errors/BuildResultNotFound";
+import { ResourceRoleService } from "../resourceRole/resourceRole.service";
+import { ResourceService } from "../resource/resource.service";
 import {
   EnumActionStepStatus,
   EnumActionLogLevel,
   ActionStep,
-} from '../action/dto';
-import { UserService } from '../user/user.service';
-import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service';
-import { ActionService } from '../action/action.service';
-import { CommitService } from '../commit/commit.service';
+} from "../action/dto";
+import { UserService } from "../user/user.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ActionService } from "../action/action.service";
+import { CommitService } from "../commit/commit.service";
 
-import { createZipFileFromModules } from './zip';
-import { LocalDiskService } from '../storage/local.disk.service';
-import { createTarGzFileFromModules } from './tar';
-import { StepNotFoundError } from './errors/StepNotFoundError';
-import { QueueService } from '../queue/queue.service';
-import { previousBuild } from './utils';
-import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
-import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
+import { createZipFileFromModules } from "./zip";
+import { LocalDiskService } from "../storage/local.disk.service";
+import { createTarGzFileFromModules } from "./tar";
+import { StepNotFoundError } from "./errors/StepNotFoundError";
+import { QueueService } from "../queue/queue.service";
+import { previousBuild } from "./utils";
+import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
+import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
 
-import { TopicService } from '../topic/topic.service';
-import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
-import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
-import { EnumResourceType } from '../resource/dto/EnumResourceType';
-import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
-import { Env } from '../../env';
+import { TopicService } from "../topic/topic.service";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { SendPullRequestResponse } from "./dto/sendPullRequestResponse";
+import { Env } from "../../env";
 
-export const HOST_VAR = 'HOST';
-export const CLIENT_HOST_VAR = 'CLIENT_HOST';
-export const GENERATE_STEP_MESSAGE = 'Generating Application';
-export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
-export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
-export const BUILD_DOCKER_IMAGE_STEP_NAME = 'BUILD_DOCKER';
+export const HOST_VAR = "HOST";
+export const CLIENT_HOST_VAR = "CLIENT_HOST";
+export const GENERATE_STEP_MESSAGE = "Generating Application";
+export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = "Building Docker image";
+export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
-  'Built Docker image successfully';
-export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = 'Build Docker failed';
+  "Built Docker image successfully";
+export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = "Build Docker failed";
 export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
-  'Waiting for Docker image...';
+  "Waiting for Docker image...";
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
-  'Starting to build Docker image. It should take a few minutes.';
+  "Starting to build Docker image. It should take a few minutes.";
 
-export const PUSH_TO_GITHUB_STEP_NAME = 'PUSH_TO_GITHUB';
-export const PUSH_TO_GITHUB_STEP_MESSAGE = 'Push changes to GitHub';
+export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
+export const PUSH_TO_GITHUB_STEP_MESSAGE = "Push changes to GitHub";
 export const PUSH_TO_GITHUB_STEP_START_LOG =
-  'Starting to push changes to GitHub.';
+  "Starting to push changes to GitHub.";
 export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
-  'Successfully pushed changes to GitHub';
-export const PUSH_TO_GITHUB_STEP_FAILED_LOG = 'Push changes to GitHub failed';
+  "Successfully pushed changes to GitHub";
+export const PUSH_TO_GITHUB_STEP_FAILED_LOG = "Push changes to GitHub failed";
 
-export const ACTION_ZIP_LOG = 'Creating ZIP file';
-export const ACTION_JOB_DONE_LOG = 'Build job done';
-export const JOB_STARTED_LOG = 'Build job started';
-export const JOB_DONE_LOG = 'Build job done';
+export const ACTION_ZIP_LOG = "Creating ZIP file";
+export const ACTION_JOB_DONE_LOG = "Build job done";
+export const JOB_STARTED_LOG = "Build job started";
+export const JOB_DONE_LOG = "Build job done";
 export const ENTITIES_INCLUDE = {
   fields: true,
   permissions: {
@@ -114,22 +114,22 @@ export const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   debug: EnumActionLogLevel.Debug,
 };
 
-const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
+const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
 
 export function createInitialStepData(
   version: string,
   message: string
 ): Prisma.ActionStepCreateWithoutActionInput {
   return {
-    message: 'Adding task to queue',
-    name: 'ADD_TO_QUEUE',
+    message: "Adding task to queue",
+    name: "ADD_TO_QUEUE",
     status: EnumActionStepStatus.Success,
     completedAt: new Date(),
     logs: {
       create: [
         {
           level: EnumActionLogLevel.Info,
-          message: 'create build generation task',
+          message: "create build generation task",
           meta: {},
         },
         {
@@ -169,10 +169,10 @@ export class BuildService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
-    this.storageService.registerDriver('gcs', GoogleCloudStorage);
+    this.storageService.registerDriver("gcs", GoogleCloudStorage);
     this.host = this.configService.get(HOST_VAR);
     if (!this.host) {
-      throw new Error('Missing HOST_VAR in env');
+      throw new Error("Missing HOST_VAR in env");
     }
   }
   host: string;
@@ -285,7 +285,7 @@ export class BuildService {
   ): Promise<void> {
     const step = await this.getGenerateCodeStep(buildId);
     if (!step) {
-      throw new Error('Could not find generate code step');
+      throw new Error("Could not find generate code step");
     }
     await this.actionService.complete(step, status);
   }
@@ -375,7 +375,7 @@ export class BuildService {
   ): [winston.Logger, Array<Promise<void>>] {
     const transport = new winston.transports.Console();
     const logPromises: Array<Promise<void>> = [];
-    transport.on('logged', (info) => {
+    transport.on("logged", (info) => {
       logPromises.push(this.createLog(step, info));
     });
     return [
@@ -430,7 +430,7 @@ export class BuildService {
 
       await this.resourceService.reportSyncMessage(
         build.resourceId,
-        'Sync Completed Successfully'
+        "Sync Completed Successfully"
       );
 
       await this.actionService.logInfo(step, response.url, {

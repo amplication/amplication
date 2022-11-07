@@ -1,5 +1,5 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from './User';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { User } from "./User";
 
 @ObjectType({
   isAbstract: true,

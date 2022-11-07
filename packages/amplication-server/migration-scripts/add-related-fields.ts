@@ -1,9 +1,9 @@
 // 2020-01-04 Script to add related field id to lookup fields
 
-import { PrismaClient, EnumDataType } from '@amplication/prisma-db';
-import { types } from '@amplication/code-gen-types';
-import { camelCase } from 'camel-case';
-import cuid from 'cuid';
+import { PrismaClient, EnumDataType } from "@amplication/prisma-db";
+import { types } from "@amplication/code-gen-types";
+import { camelCase } from "camel-case";
+import cuid from "cuid";
 
 // For every existing lookup field create a related field
 async function main() {
@@ -41,7 +41,7 @@ async function main() {
   const fieldsToUpdate = lookupFields.filter((field) => {
     const properties = field.properties as unknown as types.Lookup;
     return (
-      !properties.relatedFieldId && !properties.relatedEntityId.startsWith('[')
+      !properties.relatedFieldId && !properties.relatedEntityId.startsWith("[")
     );
   });
   console.info(`Attempting to update ${fieldsToUpdate.length} fields`);
@@ -76,7 +76,7 @@ async function main() {
         existingFieldWithName?.name === relatedFieldName &&
         existingFieldWithName?.displayName === relatedFieldDisplayName
       ) {
-        const name = `a${cuid().replace(/[^A-z0-9]/g, '')}`;
+        const name = `a${cuid().replace(/[^A-z0-9]/g, "")}`;
         relatedFieldName = name;
         relatedFieldDisplayName = name;
       }
@@ -119,7 +119,7 @@ async function main() {
             unique: false,
             required: false,
             searchable: false,
-            description: '',
+            description: "",
             name: relatedFieldName,
             displayName: relatedFieldDisplayName,
             dataType: EnumDataType.Lookup,
@@ -145,7 +145,7 @@ async function main() {
             unique: false,
             required: false,
             searchable: false,
-            description: '',
+            description: "",
             name: cuid(),
             displayName: cuid(),
             dataType: EnumDataType.Lookup,

@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import cuid from 'cuid';
+import cuid from "cuid";
 import {
   Injectable,
   NotFoundException,
   ConflictException,
-} from '@nestjs/common';
-import { DataConflictError } from '../../errors/DataConflictError';
-import { Prisma, PrismaService } from '@amplication/prisma-db';
-import { AmplicationError } from '../../errors/AmplicationError';
-import { camelCase } from 'camel-case';
-import difference from '@extra-set/difference';
-import { isEmpty, pick, last, head, omit } from 'lodash';
+} from "@nestjs/common";
+import { DataConflictError } from "../../errors/DataConflictError";
+import { Prisma, PrismaService } from "@amplication/prisma-db";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { camelCase } from "camel-case";
+import difference from "@extra-set/difference";
+import { isEmpty, pick, last, head, omit } from "lodash";
 import {
   Entity,
   EntityField,
@@ -21,15 +21,15 @@ import {
   EntityPermission,
   EntityPermissionField,
   Resource,
-} from '../../models';
-import type { JsonObject } from 'type-fest';
-import { getSchemaForDataType, types } from '@amplication/code-gen-types';
-import { JsonSchemaValidationService } from '../../services/jsonSchemaValidation.service';
-import { DiffService } from '../../services/diff.service';
-import { SchemaValidationResult } from '../../dto/schemaValidationResult';
-import { EnumDataType } from '../../enums/EnumDataType';
-import { EnumEntityAction } from '../../enums/EnumEntityAction';
-import { isReservedName } from './reservedNames';
+} from "../../models";
+import type { JsonObject } from "type-fest";
+import { getSchemaForDataType, types } from "@amplication/code-gen-types";
+import { JsonSchemaValidationService } from "../../services/jsonSchemaValidation.service";
+import { DiffService } from "../../services/diff.service";
+import { SchemaValidationResult } from "../../dto/schemaValidationResult";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { EnumEntityAction } from "../../enums/EnumEntityAction";
+import { isReservedName } from "./reservedNames";
 import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
@@ -39,17 +39,17 @@ import {
   DEFAULT_PERMISSIONS,
   SYSTEM_DATA_TYPES,
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
-} from './constants';
+} from "./constants";
 import {
   prepareDeletedItemName,
   revertDeletedItemName,
-} from '../../util/softDelete';
+} from "../../util/softDelete";
 
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
   PendingChange,
-} from '../resource/dto';
+} from "../resource/dto";
 
 import {
   CreateOneEntityFieldArgs,
@@ -71,12 +71,12 @@ import {
   UpdateEntityPermissionFieldRolesArgs,
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs,
-} from './dto';
-import { ReservedNameError } from '../resource/ReservedNameError';
+} from "./dto";
+import { ReservedNameError } from "../resource/ReservedNameError";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
-  'entityFields' | 'entityPermissions' | 'entity'
+  "entityFields" | "entityPermissions" | "entity"
 > & {
   fields?: boolean;
   permissions?: boolean | Prisma.EntityPermissionFindManyArgs;
@@ -84,12 +84,12 @@ type EntityInclude = Omit<
 
 export type BulkEntityFieldData = Omit<
   EntityField,
-  | 'id'
-  | 'createdAt'
-  | 'updatedAt'
-  | 'permanentId'
-  | 'properties'
-  | 'entityVersionId'
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "permanentId"
+  | "properties"
+  | "entityVersionId"
 > & {
   permanentId?: string;
   properties: JsonObject;
@@ -97,7 +97,7 @@ export type BulkEntityFieldData = Omit<
 
 export type BulkEntityData = Omit<
   Entity,
-  'id' | 'createdAt' | 'updatedAt' | 'resourceId' | 'resource' | 'fields'
+  "id" | "createdAt" | "updatedAt" | "resourceId" | "resource" | "fields"
 > & {
   id?: string;
   fields: BulkEntityFieldData[];
@@ -122,38 +122,38 @@ export type EntityPendingChange = {
  */
 const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 export const NAME_VALIDATION_ERROR_MESSAGE =
-  'Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number';
+  "Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number";
 
 export const DELETE_ONE_USER_ENTITY_ERROR_MESSAGE = `The 'user' entity is a reserved entity and it cannot be deleted`;
 
 const RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
-  'When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null';
+  "When data.dataType is Lookup and data.properties.relatedFieldId is defined, relatedFieldName and relatedFieldDisplayName must be null";
 
 const RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE =
-  'When data.dataType is Lookup, either data.properties.relatedFieldId must be defined or relatedFieldName and relatedFieldDisplayName must not be null and not be empty';
+  "When data.dataType is Lookup, either data.properties.relatedFieldId must be defined or relatedFieldName and relatedFieldDisplayName must not be null and not be empty";
 
 const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
-  'When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null';
+  "When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null";
 
 const BASE_FIELD: Pick<
   EntityField,
-  'required' | 'searchable' | 'description' | 'unique'
+  "required" | "searchable" | "description" | "unique"
 > = {
   required: false,
   unique: false,
   searchable: true,
-  description: '',
+  description: "",
 };
 
 const NON_COMPARABLE_PROPERTIES = [
-  'id',
-  'createdAt',
-  'updatedAt',
-  'versionNumber',
-  'commitId',
-  'permissionId',
-  'entityVersionId',
-  'resourceRoleId',
+  "id",
+  "createdAt",
+  "updatedAt",
+  "versionNumber",
+  "commitId",
+  "permissionId",
+  "entityVersionId",
+  "resourceRoleId",
 ];
 
 @Injectable()
@@ -197,7 +197,7 @@ export class EntityService {
   }
 
   async getEntitiesByVersions(args: {
-    where: Omit<Prisma.EntityVersionWhereInput, 'entity'>;
+    where: Omit<Prisma.EntityVersionWhereInput, "entity">;
     include?: EntityInclude;
   }): Promise<Entity[]> {
     const { fields, permissions, ...rest } = args.include;
@@ -332,10 +332,10 @@ export class EntityService {
     await Promise.all(
       entities.map((entity) => {
         const names = pick(entity, [
-          'name',
-          'displayName',
-          'pluralDisplayName',
-          'description',
+          "name",
+          "displayName",
+          "pluralDisplayName",
+          "description",
         ]);
         return this.prisma.entity.create({
           data: {
@@ -978,14 +978,14 @@ export class EntityService {
     // Duplicate the fields of the source version, omitting entityVersionId and
     // id properties.
     const duplicatedFields = sourceVersion.fields.map((field) =>
-      omit(field, ['entityVersionId', 'id'])
+      omit(field, ["entityVersionId", "id"])
     );
 
     const names = pick(sourceVersion, [
-      'name',
-      'displayName',
-      'pluralDisplayName',
-      'description',
+      "name",
+      "displayName",
+      "pluralDisplayName",
+      "description",
     ]);
 
     //update the target version with its fields, and the its parent entity
@@ -1386,7 +1386,7 @@ export class EntityService {
         );
         if (nonMatchingNames.size > 0) {
           throw new NotFoundException(
-            `Invalid field selected: ${Array.from(nonMatchingNames).join(', ')}`
+            `Invalid field selected: ${Array.from(nonMatchingNames).join(", ")}`
           );
         }
 
@@ -1665,24 +1665,24 @@ export class EntityService {
 
     if (args.data.dataType) {
       dataType = args.data.dataType as EnumDataType;
-    } else if (lowerCaseName.includes('date')) {
+    } else if (lowerCaseName.includes("date")) {
       dataType = EnumDataType.DateTime;
     } else if (
-      lowerCaseName.includes('description') ||
-      lowerCaseName.includes('comments')
+      lowerCaseName.includes("description") ||
+      lowerCaseName.includes("comments")
     ) {
       dataType = EnumDataType.MultiLineText;
-    } else if (lowerCaseName.includes('email')) {
+    } else if (lowerCaseName.includes("email")) {
       dataType = EnumDataType.Email;
-    } else if (lowerCaseName.includes('status')) {
+    } else if (lowerCaseName.includes("status")) {
       dataType = EnumDataType.OptionSet;
-    } else if (lowerCaseName.startsWith('is')) {
+    } else if (lowerCaseName.startsWith("is")) {
       dataType = EnumDataType.Boolean;
-    } else if (lowerCaseName.includes('price')) {
+    } else if (lowerCaseName.includes("price")) {
       dataType = EnumDataType.DecimalNumber;
     } else if (
-      lowerCaseName.includes('quantity') ||
-      lowerCaseName.includes('qty')
+      lowerCaseName.includes("quantity") ||
+      lowerCaseName.includes("qty")
     ) {
       dataType = EnumDataType.WholeNumber;
     }
@@ -1846,7 +1846,7 @@ export class EntityService {
     }
 
     // Omit entity from received data
-    const data = omit(args.data, ['entity']);
+    const data = omit(args.data, ["entity"]);
 
     return await this.useLocking(
       args.data.entity.connect.id,
@@ -2131,7 +2131,7 @@ export class EntityService {
         }
 
         return this.prisma.entityField.update(
-          omit(args, ['relatedFieldName', 'relatedFieldDisplayName'])
+          omit(args, ["relatedFieldName", "relatedFieldDisplayName"])
         );
       }
     );
@@ -2175,7 +2175,7 @@ export class EntityService {
             //continue to delete the field even if the deletion of the related field failed.
             //This is done in order to allow the user to workaround issues in any case when a related field is missing
             console.log(
-              'Continue with FieldDelete even though the related field could not be deleted or was not found ',
+              "Continue with FieldDelete even though the related field could not be deleted or was not found ",
               error
             );
           }

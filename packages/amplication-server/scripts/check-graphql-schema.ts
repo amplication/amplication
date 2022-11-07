@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { diff } from 'jest-diff';
-import generateGraphQLSchema from './generate-graphql-schema';
+import * as fs from "fs";
+import * as path from "path";
+import { diff } from "jest-diff";
+import generateGraphQLSchema from "./generate-graphql-schema";
 
-const SCHEMA_PATH = path.join(__dirname, '..', 'src', 'schema.graphql');
+const SCHEMA_PATH = path.join(__dirname, "..", "src", "schema.graphql");
 
 function readGraphQLSchema(): Promise<string> {
-  return fs.promises.readFile(SCHEMA_PATH, 'utf-8');
+  return fs.promises.readFile(SCHEMA_PATH, "utf-8");
 }
 
 async function checkGraphQLSchema() {
@@ -16,7 +16,7 @@ async function checkGraphQLSchema() {
   await fs.promises.writeFile(SCHEMA_PATH, existingSchema);
   if (existingSchema !== generatedSchema) {
     console.log(diff(existingSchema, generatedSchema));
-    throw new Error('Generated schema does not match the existing schema');
+    throw new Error("Generated schema does not match the existing schema");
   }
 }
 

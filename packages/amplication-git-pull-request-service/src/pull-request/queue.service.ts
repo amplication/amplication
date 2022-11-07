@@ -1,8 +1,8 @@
-import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { Inject, Injectable, LoggerService } from "@nestjs/common";
+import { ClientKafka } from "@nestjs/microservices";
 
-export const KAFKA_CLIENT = 'KAFKA_CLIENT';
+export const KAFKA_CLIENT = "KAFKA_CLIENT";
 
 @Injectable()
 export class QueueService {

@@ -1,6 +1,6 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from './User';
-import { Role } from '../enums/Role';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { User } from "./User";
+import { Role } from "../enums/Role";
 
 @ObjectType({
   isAbstract: true,

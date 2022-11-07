@@ -1,9 +1,9 @@
-import { Field, ObjectType, Int } from '@nestjs/graphql';
-import { IBlock } from '../../../models';
-import type { JsonValue } from 'type-fest';
-import { AdminUISettings } from './AdminUISettings';
-import { EnumAuthProviderType } from './EnumAuthenticationProviderType';
-import { ServerSettings } from './ServerSettings';
+import { Field, ObjectType, Int } from "@nestjs/graphql";
+import { IBlock } from "../../../models";
+import type { JsonValue } from "type-fest";
+import { AdminUISettings } from "./AdminUISettings";
+import { EnumAuthProviderType } from "./EnumAuthenticationProviderType";
+import { ServerSettings } from "./ServerSettings";
 
 @ObjectType({
   implements: IBlock,

@@ -1,7 +1,7 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { Account } from './Account';
-import { Workspace } from './Workspace';
-import { UserRole } from './UserRole';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Account } from "./Account";
+import { Workspace } from "./Workspace";
+import { UserRole } from "./UserRole";
 
 @ObjectType({
   isAbstract: true,

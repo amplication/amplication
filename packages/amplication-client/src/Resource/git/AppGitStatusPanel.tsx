@@ -23,9 +23,8 @@ const CLASS_NAME = "app-git-status-panel";
 const DATE_FORMAT = "PP p";
 
 const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
-  const { currentWorkspace, currentProject, gitRepositoryUrl } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, gitRepositoryUrl } =
+    useContext(AppContext);
 
   const lastSync = resource?.githubLastSync
     ? new Date(resource.githubLastSync)

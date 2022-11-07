@@ -1,7 +1,7 @@
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
-import { EnumGitProvider } from '../../models';
-import { CreateGitCommit } from './create-git-commit.dto';
-import { GitResourceMeta } from './git-resource-meta.dto';
+import { IsOptional, IsString, ValidateNested } from "class-validator";
+import { EnumGitProvider } from "../../models";
+import { CreateGitCommit } from "./create-git-commit.dto";
+import { GitResourceMeta } from "./git-resource-meta.dto";
 
 export class CreatePullRequestArgs {
   @IsString()

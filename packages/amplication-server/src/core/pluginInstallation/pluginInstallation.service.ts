@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { User } from '../../models';
-import { BlockTypeService } from '../block/blockType.service';
-import { CreatePluginInstallationArgs } from './dto/CreatePluginInstallationArgs';
-import { FindManyPluginInstallationArgs } from './dto/FindManyPluginInstallationArgs';
-import { PluginInstallation } from './dto/PluginInstallation';
-import { UpdatePluginInstallationArgs } from './dto/UpdatePluginInstallationArgs';
-import { BlockService } from '../block/block.service';
-import { PluginOrderService } from './pluginOrder.service';
-import { PluginOrder } from './dto/PluginOrder';
-import { SetPluginOrderArgs } from './dto/SetPluginOrderArgs';
-import { PluginOrderItem } from './dto/PluginOrderItem';
+import { Injectable } from "@nestjs/common";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { User } from "../../models";
+import { BlockTypeService } from "../block/blockType.service";
+import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
+import { FindManyPluginInstallationArgs } from "./dto/FindManyPluginInstallationArgs";
+import { PluginInstallation } from "./dto/PluginInstallation";
+import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
+import { BlockService } from "../block/block.service";
+import { PluginOrderService } from "./pluginOrder.service";
+import { PluginOrder } from "./dto/PluginOrder";
+import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
+import { PluginOrderItem } from "./dto/PluginOrderItem";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -117,7 +117,7 @@ export class PluginInstallationService extends BlockTypeService<
       return await this.pluginOrderService.create(
         {
           data: {
-            displayName: 'Plugin Order',
+            displayName: "Plugin Order",
             order: [
               {
                 pluginId: installation.pluginId,

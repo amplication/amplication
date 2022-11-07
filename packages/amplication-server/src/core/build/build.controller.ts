@@ -6,34 +6,34 @@ import {
   UseInterceptors,
   NotFoundException,
   BadRequestException,
-} from '@nestjs/common';
-import { Response } from 'express';
-import { MorganInterceptor } from 'nest-morgan';
+} from "@nestjs/common";
+import { Response } from "express";
+import { MorganInterceptor } from "nest-morgan";
 import {
   BuildService,
   WINSTON_LEVEL_TO_ACTION_LOG_LEVEL,
-} from './build.service';
-import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { StepNotCompleteError } from './errors/StepNotCompleteError';
-import { StepNotFoundError } from './errors/StepNotFoundError';
-import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
-import { plainToInstance } from 'class-transformer';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
-import { KafkaMessage } from 'kafkajs';
-import { ResultMessage } from '../queue/dto/ResultMessage';
-import { StatusEnum } from '../queue/dto/StatusEnum';
-import { EnvironmentVariables } from '@amplication/kafka';
-import { SendPullRequestResponse } from './dto/sendPullRequestResponse';
-import { CodeGenerationSuccess } from './dto/CodeGenerationSuccess';
-import { Env } from '../../env';
-import { EnumActionStepStatus } from '../action/dto';
-import { CHECK_USER_ACCESS_TOPIC } from '../../constants';
-import { ActionService } from '../action/action.service';
-import { LogEntryDto } from './dto/LogEntryDto';
+} from "./build.service";
+import { BuildResultNotFound } from "./errors/BuildResultNotFound";
+import { BuildNotFoundError } from "./errors/BuildNotFoundError";
+import { StepNotCompleteError } from "./errors/StepNotCompleteError";
+import { StepNotFoundError } from "./errors/StepNotFoundError";
+import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
+import { plainToInstance } from "class-transformer";
+import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
+import { KafkaMessage } from "kafkajs";
+import { ResultMessage } from "../queue/dto/ResultMessage";
+import { StatusEnum } from "../queue/dto/StatusEnum";
+import { EnvironmentVariables } from "@amplication/kafka";
+import { SendPullRequestResponse } from "./dto/sendPullRequestResponse";
+import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
+import { Env } from "../../env";
+import { EnumActionStepStatus } from "../action/dto";
+import { CHECK_USER_ACCESS_TOPIC } from "../../constants";
+import { ActionService } from "../action/action.service";
+import { LogEntryDto } from "./dto/LogEntryDto";
 
-const ZIP_MIME = 'application/zip';
-@Controller('generated-apps')
+const ZIP_MIME = "application/zip";
+@Controller("generated-apps")
 export class BuildController {
   constructor(
     private readonly buildService: BuildService,
@@ -41,8 +41,8 @@ export class BuildController {
   ) {}
 
   @Get(`/:id.zip`)
-  @UseInterceptors(MorganInterceptor('combined'))
-  async getGeneratedAppArchive(@Param('id') id: string, @Res() res: Response) {
+  @UseInterceptors(MorganInterceptor("combined"))
+  async getGeneratedAppArchive(@Param("id") id: string, @Res() res: Response) {
     let stream: NodeJS.ReadableStream;
     try {
       stream = await this.buildService.download({ where: { id } });
@@ -61,9 +61,9 @@ export class BuildController {
     }
     res.set({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Type': ZIP_MIME,
+      "Content-Type": ZIP_MIME,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      'Content-Disposition': `attachment; filename="${id}.zip"`,
+      "Content-Disposition": `attachment; filename="${id}.zip"`,
     });
     stream.pipe(res);
   }

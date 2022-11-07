@@ -1,9 +1,9 @@
 // 2020-11-24 Script to update deploy step name on ActionStep
 
-import { PrismaClient } from '@amplication/prisma-db';
+import { PrismaClient } from "@amplication/prisma-db";
 
-const EXISTING_STEP_NAME = 'Deploy app';
-const NEW_STEP_NAME = 'DEPLOY_APP';
+const EXISTING_STEP_NAME = "Deploy app";
+const NEW_STEP_NAME = "DEPLOY_APP";
 
 async function main() {
   const client = new PrismaClient();

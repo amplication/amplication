@@ -1,7 +1,7 @@
-import { createNestjsKafkaConfig } from '@amplication/kafka';
-import { Module } from '@nestjs/common';
-import { ClientsModule } from '@nestjs/microservices';
-import { QueueService, KAFKA_CLIENT } from './queue.service';
+import { createNestjsKafkaConfig } from "@amplication/kafka";
+import { Module } from "@nestjs/common";
+import { ClientsModule } from "@nestjs/microservices";
+import { QueueService, KAFKA_CLIENT } from "./queue.service";
 
 @Module({
   imports: [

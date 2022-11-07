@@ -1,17 +1,17 @@
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
-} from '@amplication/nest-logger-module';
-import { Inject, Injectable } from '@nestjs/common';
-import assert from 'assert';
-import { compare } from 'dir-compare';
-import { sync } from 'fast-glob';
-import { existsSync, readFileSync } from 'fs';
-import { normalize } from 'path';
-import { PrModule } from '../types';
-import { mapDiffSetToPrModule } from './diffset-mapper';
-import { BuildPathFactory } from './build-path-factory';
-import { deleteFilesVisitor } from './delete-files';
+} from "@amplication/nest-logger-module";
+import { Inject, Injectable } from "@nestjs/common";
+import assert from "assert";
+import { compare } from "dir-compare";
+import { sync } from "fast-glob";
+import { existsSync, readFileSync } from "fs";
+import { normalize } from "path";
+import { PrModule } from "../types";
+import { mapDiffSetToPrModule } from "./diffset-mapper";
+import { BuildPathFactory } from "./build-path-factory";
+import { deleteFilesVisitor } from "./delete-files";
 
 @Injectable()
 export class DiffService {
@@ -31,7 +31,7 @@ export class DiffService {
       return this.getAllModulesForPath(newBuildPath);
     }
     const oldBuildPath = this.buildsPathFactory.get(previousAmplicationBuildId);
-    this.logger.info('List of the paths', {
+    this.logger.info("List of the paths", {
       resourceId,
       previousAmplicationBuildId,
       newAmplicationBuildId,
@@ -39,7 +39,7 @@ export class DiffService {
     assert.notStrictEqual(
       oldBuildPath,
       newBuildPath,
-      'Cant get the same build id'
+      "Cant get the same build id"
     );
 
     DiffService.assertBuildExist(oldBuildPath);
@@ -53,10 +53,10 @@ export class DiffService {
       skipEmptyDirs: true,
     });
 
-    this.logger.debug('Finish the dir-compare lib process');
+    this.logger.debug("Finish the dir-compare lib process");
 
     if (!res?.diffSet) {
-      throw new Error('Error in creating a diff set');
+      throw new Error("Error in creating a diff set");
     }
 
     const modules = mapDiffSetToPrModule(res.diffSet, [deleteFilesVisitor]);
@@ -73,7 +73,7 @@ export class DiffService {
     const files = sync(`${buildPath}/**`, { dot: true }).map(
       async (fullPath) => {
         const path = normalize(fullPath.slice(basePathLength));
-        const code = await readFileSync(fullPath).toString('utf8');
+        const code = await readFileSync(fullPath).toString("utf8");
         return {
           path,
           code,

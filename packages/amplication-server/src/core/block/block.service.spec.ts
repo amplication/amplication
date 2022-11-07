@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import type { JsonArray, JsonObject } from 'type-fest';
-import { BlockService } from './block.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import type { JsonArray, JsonObject } from "type-fest";
+import { BlockService } from "./block.service";
 import {
   PrismaService,
   Prisma,
   EnumResourceType,
-} from '@amplication/prisma-db';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { DiffModule } from '../../services/diff.module';
+} from "@amplication/prisma-db";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { DiffModule } from "../../services/diff.module";
 import {
   Resource,
   Block,
@@ -15,22 +15,22 @@ import {
   IBlock,
   BlockInputOutput,
   User,
-} from '../../models';
-import { DiffService } from '../../services/diff.service';
+} from "../../models";
+import { DiffService } from "../../services/diff.service";
 
 const INITIAL_VERSION_NUMBER = 0;
 const NOW = new Date();
-const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
-const EXAMPLE_COMMIT_ID = 'exampleCommitId';
+const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
+const EXAMPLE_COMMIT_ID = "exampleCommitId";
 
 const EXAMPLE_RESOURCE: Resource = {
-  id: 'ExampleResource',
+  id: "ExampleResource",
   resourceType: EnumResourceType.Service,
   createdAt: NOW,
   updatedAt: NOW,
-  name: 'Example Resource',
-  description: 'Example Resource Description',
+  name: "Example Resource",
+  description: "Example Resource Description",
   gitRepositoryOverride: false,
 };
 
@@ -42,30 +42,30 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name',
+    name: "example_workspace_name",
   },
   isOwner: true,
 };
 
 const EXAMPLE_BLOCK: Block = {
-  id: 'ExampleBlock',
+  id: "ExampleBlock",
   createdAt: NOW,
   updatedAt: NOW,
   resourceId: EXAMPLE_RESOURCE.id,
   resource: EXAMPLE_RESOURCE,
   blockType: EnumBlockType.ConnectorRestApi,
-  displayName: 'Example Block',
-  description: 'Block Description',
+  displayName: "Example Block",
+  description: "Block Description",
   parentBlockId: null,
   parentBlock: null,
 };
 
 const EXAMPLE_BLOCK_SETTINGS: { exampleSetting: string } = {
-  exampleSetting: 'Example Setting Value',
+  exampleSetting: "Example Setting Value",
 };
 
 const EXAMPLE_BLOCK_INPUT: JsonObject & BlockInputOutput = {
-  name: 'BlockInput',
+  name: "BlockInput",
 };
 
 const EXAMPLE_BLOCK_INPUT_LIST: JsonArray & BlockInputOutput[] = [
@@ -73,13 +73,13 @@ const EXAMPLE_BLOCK_INPUT_LIST: JsonArray & BlockInputOutput[] = [
 ];
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
-  id: 'ExampleBlockVersion',
+  id: "ExampleBlockVersion",
   createdAt: NOW,
   updatedAt: NOW,
   block: EXAMPLE_BLOCK,
   versionNumber: 0,
   settings: EXAMPLE_BLOCK_SETTINGS,
-  displayName: 'Example display name',
+  displayName: "Example display name",
   inputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST },
   outputParameters: { params: EXAMPLE_BLOCK_INPUT_LIST },
 };
@@ -129,7 +129,7 @@ const prismaBlockVersionUpdateMock = jest.fn(() => {
 });
 const areDifferentMock = jest.fn(() => true);
 
-describe('BlockService', () => {
+describe("BlockService", () => {
   let service: BlockService;
   prismaBlockFindOneMock.mockClear();
   prismaBlockUpdateMock.mockClear();
@@ -172,11 +172,11 @@ describe('BlockService', () => {
     service = module.get<BlockService>(BlockService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('creates block correctly', async () => {
+  it("creates block correctly", async () => {
     const result = await service.create<BlockType>(
       {
         data: {
@@ -242,7 +242,7 @@ describe('BlockService', () => {
     });
   });
 
-  it('finds a block correctly', async () => {
+  it("finds a block correctly", async () => {
     const result = await service.findOne({
       where: {
         id: EXAMPLE_BLOCK.id,
@@ -268,7 +268,7 @@ describe('BlockService', () => {
     });
   });
 
-  it('creates a version', async () => {
+  it("creates a version", async () => {
     prismaBlockVersionFindManyMock.mockClear();
     prismaBlockVersionCreateMock.mockClear();
     const result = await service.createVersion({
@@ -320,7 +320,7 @@ describe('BlockService', () => {
     });
   });
 
-  it('updates block correctly', async () => {
+  it("updates block correctly", async () => {
     const result = await service.update<BlockType>(
       {
         where: {
@@ -365,8 +365,8 @@ describe('BlockService', () => {
     });
   });
 
-  it('should still call updateLock when an error occurs', async () => {
-    jest.spyOn(service, 'updateLock');
+  it("should still call updateLock when an error occurs", async () => {
+    jest.spyOn(service, "updateLock");
     prismaBlockVersionUpdateMock.mockImplementation(() => {
       throw new Error();
     });
@@ -385,14 +385,14 @@ describe('BlockService', () => {
     expect(service.updateLock).toBeCalled();
   });
 
-  it('should find many blocks', async () => {
+  it("should find many blocks", async () => {
     const args = {};
     expect(await service.findMany(args)).toEqual([EXAMPLE_BLOCK]);
     expect(prismaBlockFindManyMock).toBeCalledTimes(1);
     expect(prismaBlockFindManyMock).toBeCalledWith(args);
   });
 
-  it('should find many blocks by block type', async () => {
+  it("should find many blocks by block type", async () => {
     prismaBlockFindManyMock.mockImplementation(() => [
       { ...EXAMPLE_BLOCK, versions: [EXAMPLE_BLOCK_VERSION] },
     ]);
@@ -424,7 +424,7 @@ describe('BlockService', () => {
     expect(prismaBlockFindManyMock).toBeCalledWith(blocksArgs);
   });
 
-  it('should get many versions', async () => {
+  it("should get many versions", async () => {
     const args = {};
 
     expect(await service.getVersions(args)).toEqual([EXAMPLE_BLOCK_VERSION]);
@@ -432,7 +432,7 @@ describe('BlockService', () => {
     expect(prismaBlockVersionFindManyMock).toBeCalledWith(args);
   });
 
-  it('should get a parent block when one is provided', async () => {
+  it("should get a parent block when one is provided", async () => {
     const block = {
       parentBlockId: EXAMPLE_BLOCK.parentBlockId,
       parentBlock: EXAMPLE_BLOCK.parentBlock,
@@ -440,12 +440,12 @@ describe('BlockService', () => {
     expect(await service.getParentBlock(block)).toEqual(null);
   });
 
-  it('should return null when no parent block id is provided', async () => {
+  it("should return null when no parent block id is provided", async () => {
     const block = {};
     expect(await service.getParentBlock(block)).toEqual(null);
   });
 
-  it('should find a parent block when only a parent block id is provided', async () => {
+  it("should find a parent block when only a parent block id is provided", async () => {
     const block = {
       parentBlockId: EXAMPLE_BLOCK.id,
     };
@@ -456,7 +456,7 @@ describe('BlockService', () => {
     });
   });
 
-  it('should have no pending changes when the current and last block versions are the same', async () => {
+  it("should have no pending changes when the current and last block versions are the same", async () => {
     const LAST_BLOCK_VERSION = {
       ...EXAMPLE_BLOCK_VERSION,
       versionNumber: 2,
@@ -477,10 +477,10 @@ describe('BlockService', () => {
     );
   });
 
-  it('should have pending changes when the current and last block versions are different', async () => {
+  it("should have pending changes when the current and last block versions are different", async () => {
     const CURRENT_BLOCK_VERSION = {
       ...EXAMPLE_BLOCK_VERSION,
-      displayName: 'new block name',
+      displayName: "new block name",
     };
 
     prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
@@ -497,7 +497,7 @@ describe('BlockService', () => {
     );
   });
 
-  it('should have pending changes when there is only one block version', async () => {
+  it("should have pending changes when there is only one block version", async () => {
     prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
       EXAMPLE_BLOCK_VERSION,
     ]);
@@ -511,7 +511,7 @@ describe('BlockService', () => {
     );
   });
 
-  it('should have no pending changes when there is only one block version and it was deleted', async () => {
+  it("should have no pending changes when there is only one block version and it was deleted", async () => {
     prismaBlockVersionFindManyMock.mockImplementationOnce(() => [
       {
         ...EXAMPLE_BLOCK_VERSION,
