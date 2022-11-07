@@ -80,6 +80,7 @@ export enum EventNames {
   CreateEntityModule = "CreateEntityModule",
   CreateEntityModuleBase = "CreateEntityModuleBase",
   CreateSwagger = "CreateSwagger",
+  CreateEntityControllerSpec = "CreateEntityControllerSpec",
 }
 
 export interface AmplicationPlugin {

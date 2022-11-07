@@ -11,7 +11,7 @@ import {
 } from "./service/create-service";
 import { createControllerModules } from "./controller/create-controller";
 import { createModules } from "./module/create-module";
-import { createControllerSpecModule } from "./test/create-controller-spec";
+import { createEntityControllerSpec } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 import { builders } from "ast-types";
 import DsgContext from "../../dsg-context";
@@ -88,21 +88,22 @@ async function createResourceModules(
   );
 
   const testModule =
-    controllerModule &&
-    (await createControllerSpecModule(
-      resource,
-      entity,
-      entityType,
-      serviceModule.path,
-      controllerModule.path,
-      controllerBaseModule.path
-    ));
+    (controllerModule &&
+      (await createEntityControllerSpec(
+        resource,
+        entity,
+        entityType,
+        serviceModule.path,
+        controllerModule.path,
+        controllerBaseModule.path
+      ))) ||
+    [];
 
   return [
     ...serviceModules,
     ...controllerModules,
     ...resolverModules,
     ...resourceModules,
-    ...(testModule ? [testModule] : []),
+    ...testModule,
   ];
 }
