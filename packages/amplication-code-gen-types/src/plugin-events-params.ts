@@ -121,7 +121,7 @@ export interface CreateSwaggerParams extends EventParams {
 
 export interface CreateSeedParams extends EventParams {
   template: namedTypes.File;
-  seedingProperties: namedTypes.ObjectProperty[];
+  templateMapping: { [key: string]: any };
   fileDir: string;
   outputFileName: string;
 }

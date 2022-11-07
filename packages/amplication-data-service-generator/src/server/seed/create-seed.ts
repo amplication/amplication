@@ -82,10 +82,14 @@ export async function createSeed(): Promise<Module[]> {
   );
 
   const template = await readFile(seedTemplatePath);
+  const seedingProperties = [...DEFAULT_AUTH_PROPERTIES, ...customProperties];
+  const templateMapping = {
+    DATA: builders.objectExpression(seedingProperties),
+  };
 
   return pluginWrapper(createSeedInternal, EventNames.CreateSeed, {
     template,
-    seedingProperties: [...DEFAULT_AUTH_PROPERTIES, ...customProperties],
+    templateMapping,
     fileDir,
     outputFileName,
   });
@@ -93,16 +97,13 @@ export async function createSeed(): Promise<Module[]> {
 
 async function createSeedInternal({
   template,
-  seedingProperties,
+  templateMapping,
   fileDir,
   outputFileName,
 }: CreateSeedParams): Promise<Module[]> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs } = DsgContext.getInstance;
 
-  const templateMapping = {
-    DATA: builders.objectExpression(seedingProperties),
-  };
   interpolate(template, templateMapping);
 
   removeTSVariableDeclares(template);
