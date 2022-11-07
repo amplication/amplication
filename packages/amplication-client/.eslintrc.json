@@ -1,6 +1,5 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*"],
   "plugins": ["@nrwl/nx"],
   "overrides": [
     {
