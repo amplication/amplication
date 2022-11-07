@@ -20,7 +20,7 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: feature/nx
+          main-branch-name: ${{ github.base_ref || 'next' }}
 
       - name: Cache node modules
         id: cache
