@@ -30,7 +30,8 @@ const LastBuild = ({ resourceId }: Props) => {
 
   const lastBuild = useMemo(() => {
     if (loading || isEmpty(data?.builds)) return null;
-    const [last] = data?.builds;
+
+    const [last] = data?.builds ?? [];
     return last;
   }, [loading, data]);
 
