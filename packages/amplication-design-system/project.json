@@ -6,17 +6,16 @@
   "tags": [],
   "targets": {
     "install": {
-        "executor": "nx:run-commands",
-        "inputs": [
-          "{projectRoot}/package.json",
-          "{projectRoot}/package-lock.json"
-        ],
-        "outputs": ["{projectRoot}/node_modules"],
-        "options": {
-          "commands": ["npm install"],
-          "parallel": false,
-          "cwd": "packages/amplication-design-system"
-        }
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/package.json",
+        "{projectRoot}/package-lock.json"
+      ],
+      "outputs": ["{projectRoot}/node_modules"],
+      "options": {
+        "commands": ["npm install"],
+        "parallel": false,
+        "cwd": "packages/amplication-design-system"
       }
     },
     "build": {
