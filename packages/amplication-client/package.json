@@ -102,7 +102,6 @@
     "@types/amplitude-js": "5.11.3",
     "@types/chalk-pipe": "2.0.0",
     "@types/downloadjs": "1.4.3",
-    "@types/jest": "24.9.1",
     "@types/lodash": "4.14.182",
     "@types/node": "12.20.16",
     "@types/pluralize": "0.0.29",
@@ -115,7 +114,6 @@
     "@types/react-tracking": "7.0.4",
     "@types/semver": "7.3.9",
     "jest-mock-extended": "^2.0.4",
-    "prettier": "2.1.1",
-    "typescript": "3.9.10"
+    "prettier": "2.1.1"
   }
 }
