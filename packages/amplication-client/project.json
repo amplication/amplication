@@ -7,5 +7,20 @@
     "amplication-design-system",
     "amplication-code-gen-types"
   ],
-  "tags": []
+  "tags": [],
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/package.json",
+        "{projectRoot}/package-lock.json"
+      ],
+      "outputs": ["{projectRoot}/node_modules"],
+      "options": {
+        "commands": ["npm install"],
+        "parallel": false,
+        "cwd": "packages/amplication-client"
+      }
+    }
+  }
 }
