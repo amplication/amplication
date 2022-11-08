@@ -49,7 +49,7 @@
   "scripts": {
     "start": "craco start",
     "start:debug": "npm start",
-    "build": "BUILD_PATH=../../dist/apps/@amplication/client craco build",
+    "build": "CI=false BUILD_PATH=../../dist/apps/@amplication/client craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "lint": "eslint --cache .",
