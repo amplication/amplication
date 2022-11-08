@@ -148,8 +148,8 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
                   extraLines={0}
                   enableSearch={false}
                   text={stepData.messages}
-                  height={10}
-                  selectableLines={true} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
+                  height={10} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
+                  selectableLines={true}
                 />
               </div>
             )}
