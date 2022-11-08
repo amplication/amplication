@@ -42,6 +42,7 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
           entityName={entityDisplayName}
           relatedField={relatedField}
           relatedEntityName={data.entity.displayName}
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
           onSubmit={() => {}}
         />
       )}

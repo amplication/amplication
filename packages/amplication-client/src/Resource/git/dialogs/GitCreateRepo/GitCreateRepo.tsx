@@ -19,6 +19,7 @@ type Props = {
   gitProvider: EnumGitProvider;
   resource: Resource;
   gitOrganizationId: string;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   onCompleted: Function;
   gitOrganizationName: string;
 };
