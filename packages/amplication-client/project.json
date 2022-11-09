@@ -21,6 +21,13 @@
         "parallel": false,
         "cwd": "packages/amplication-client"
       }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/client:latest"]
+      }
     }
   }
 }
