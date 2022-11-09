@@ -9,7 +9,7 @@ import { EnvironmentVariables } from "@amplication/kafka";
 import { EventPattern, Payload } from "@nestjs/microservices";
 import { KafkaMessage } from "kafkajs";
 import { plainToInstance } from "class-transformer";
-import { CreatePRRequest } from "./dto/CreatePRRequest";
+import { CodeGenerationRequest } from "./dto/CodeGenerationRequest";
 import axios from "axios";
 
 @Controller("build-runner")
@@ -25,7 +25,7 @@ export class BuildRunnerController {
     @Body() dto: CompleteCodeGenerationStep
   ): Promise<void> {
     if (dto.status === ActionStepStatus.Success) {
-      await this.buildRunnerService.copyFromJobToArtifact(dto.buildId);
+      await this.buildRunnerService.copyFromJobToArtifact(dto.resourceId, dto.buildId);
       this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
         JSON.stringify({ buildId: dto.buildId })
@@ -42,13 +42,14 @@ export class BuildRunnerController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
   )
   async onCreatePRRequest(@Payload() message: KafkaMessage): Promise<void> {
-    const args = plainToInstance(CreatePRRequest, message.value);
+    const args = plainToInstance(CodeGenerationRequest, message.value);
     await this.buildRunnerService.saveDsgResourceData(
       args.buildId,
       args.dsgResourceData
     );
     const url = this.configService.get(Env.DSG_RUNNER_URL);
     await axios.post(url, {
+      resourceId: args.resourceId,
       buildId: args.buildId,
     });
   }

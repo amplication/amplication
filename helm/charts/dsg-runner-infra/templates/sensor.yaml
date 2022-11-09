@@ -6,7 +6,10 @@ spec:
   template:
     serviceAccountName: argo-events-sa
   dependencies:
-    - name: test-dep
+    - name: resource-id
+      eventSourceName: webhook
+      eventName: example
+    - name: build-id
       eventSourceName: webhook
       eventName: example
   triggers:
@@ -37,6 +40,8 @@ spec:
                         env:
                           - name: BUILD_ID
                             value: null # provided in parameters
+                          - name: RESOURCE_ID
+                            value: null # provided in parameters
                           - name: STATUS_UPDATE_URL
                             value: http://amplication-build-manager/build-runner/complete-code-generation-step
                           - name: CREATE_LOG_URL
@@ -53,6 +58,10 @@ spec:
                 backoffLimit: 0
           parameters:
             - src:
-                dependencyName: test-dep
+                dependencyName: build-id
                 dataKey: body.buildId
               dest: spec.template.spec.containers.0.env.0.value
+            - src:
+                dependencyName: resource-id
+                dataKey: body.resourceId
+              dest: spec.template.spec.containers.0.env.1.value

@@ -350,7 +350,7 @@ export class BuildService {
 
         this.queueService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
-          JSON.stringify({ buildId, dsgResourceData })
+          JSON.stringify({ resourceId, buildId, dsgResourceData })
         );
 
         return null;
