@@ -31,7 +31,7 @@ spec:
                     restartPolicy: Never
                     containers:
                       - name: dsg-container
-                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:0.0.13"
+                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:fs-structure"
                         command: ["sh", "-c"]
                         args: [ "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/input.json /efs/code" ]
                         env:
