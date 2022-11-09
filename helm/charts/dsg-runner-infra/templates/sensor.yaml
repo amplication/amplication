@@ -33,7 +33,7 @@ spec:
                       - name: dsg-container
                         image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:fs-structure"
                         command: ["sh", "-c"]
-                        args: [ "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/input.json /efs/code" ]
+                        args: [ "cd /workspace/packages/amplication-data-service-generator; node ./src/generate-code.js /efs/input.json /efs/code" ]
                         env:
                           - name: BUILD_ID
                             value: null # provided in parameters
