@@ -98,20 +98,9 @@ export class ServiceTopicsService extends BlockTypeService<
       const topicToRemove = serviceTopics.patterns.findIndex(
         topic => topic.topicId === topicId
       );
-      console.log({ topicToRemove });
       if (topicToRemove === -1) return;
 
-      console.log(
-        serviceTopics.patterns,
-        'serviceTopics.patterns before remove'
-      );
-
       serviceTopics.patterns.splice(topicToRemove, 1);
-
-      console.log(
-        serviceTopics.patterns,
-        'serviceTopics.patterns after remove'
-      );
 
       const updatePatterns: MessagePatternCreateInput[] = [];
       serviceTopics.patterns.forEach(pattern => {
