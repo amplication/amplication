@@ -87,7 +87,7 @@ const BuildPage = ({ match }: Props) => {
               />
             )}
             <div className={`${CLASS_NAME}__build-details`}>
-              <BuildSteps build={data.build} onError={setError} />
+              <BuildSteps build={data.build} />
               <aside className="log-container">
                 <ActionLog
                   action={actionLog?.action}
