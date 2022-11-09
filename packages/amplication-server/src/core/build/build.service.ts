@@ -17,10 +17,7 @@ import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
 import { getBuildZipFilePath, getBuildTarGzFilePath } from "./storage";
 import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
-import { BuildNotFoundError } from "./errors/BuildNotFoundError";
 import { EntityService } from "../entity/entity.service";
-import { StepNotCompleteError } from "./errors/StepNotCompleteError";
-import { BuildResultNotFound } from "./errors/BuildResultNotFound";
 import { ResourceRoleService } from "../resourceRole/resourceRole.service";
 import { ResourceService } from "../resource/resource.service";
 import {
@@ -36,7 +33,6 @@ import { CommitService } from "../commit/commit.service";
 import { createZipFileFromModules } from "./zip";
 import { LocalDiskService } from "../storage/local.disk.service";
 import { createTarGzFileFromModules } from "./tar";
-import { StepNotFoundError } from "./errors/StepNotFoundError";
 import { QueueService } from "../queue/queue.service";
 import { previousBuild } from "./utils";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
@@ -288,36 +284,6 @@ export class BuildService {
       throw new Error("Could not find generate code step");
     }
     await this.actionService.complete(step, status);
-  }
-  /**
-   *
-   * Give the ReadableStream of the build zip file
-   * @returns the zip file of the build
-   */
-  async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
-    const build = await this.findOne(args);
-    const { id } = args.where;
-    if (build === null) {
-      throw new BuildNotFoundError(id);
-    }
-
-    const generatedCodeStep = await this.getGenerateCodeStep(id);
-    if (!generatedCodeStep) {
-      throw new StepNotFoundError(GENERATE_STEP_NAME);
-    }
-    if (generatedCodeStep.status !== EnumActionStepStatus.Success) {
-      throw new StepNotCompleteError(
-        GENERATE_STEP_NAME,
-        EnumActionStepStatus[generatedCodeStep.status]
-      );
-    }
-    const filePath = getBuildZipFilePath(id);
-    const disk = this.storageService.getDisk();
-    const { exists } = await disk.exists(filePath);
-    if (!exists) {
-      throw new BuildResultNotFound(build.id);
-    }
-    return disk.getStream(filePath);
   }
 
   /**
