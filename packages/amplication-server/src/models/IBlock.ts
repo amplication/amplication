@@ -1,72 +1,72 @@
-import { InterfaceType, Field } from '@nestjs/graphql';
-import { EnumBlockType } from '../enums/EnumBlockType';
-import { Block } from './Block';
-import { BlockInputOutput } from './BlockInputOutput';
+import { InterfaceType, Field } from "@nestjs/graphql";
+import { EnumBlockType } from "../enums/EnumBlockType";
+import { Block } from "./Block";
+import { BlockInputOutput } from "./BlockInputOutput";
 
 @InterfaceType()
 export abstract class IBlock {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   resourceId?: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   @Field(() => Block, {
-    nullable: true
+    nullable: true,
   })
   parentBlock!: Block | null;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   description!: string;
 
   @Field(() => EnumBlockType, {
-    nullable: false
+    nullable: false,
   })
   blockType!: keyof typeof EnumBlockType;
 
   @Field(() => Number, {
-    nullable: false
+    nullable: false,
   })
   versionNumber!: number;
 
   @Field(() => [BlockInputOutput], {
-    nullable: false
+    nullable: false,
   })
   inputParameters!: BlockInputOutput[];
 
   @Field(() => [BlockInputOutput], {
-    nullable: false
+    nullable: false,
   })
   outputParameters!: BlockInputOutput[];
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   lockedByUserId?: string;
 
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
   lockedAt?: Date;
 }

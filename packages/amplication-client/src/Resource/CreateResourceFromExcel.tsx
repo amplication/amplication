@@ -118,27 +118,28 @@ export function CreateResourceFromExcel() {
     return resourcesData && !isEmpty(resourcesData.resources);
   }, [resourcesData]);
 
-  const [createServiceWithEntities, { loading, data, error }] = useMutation<
-    TData
-  >(CREATE_RESOURCE_WITH_ENTITIES, {
-    update(cache, { data }) {
-      if (!data) return;
-      const queryData = cache.readQuery<{ resources: Array<models.Resource> }>({
-        query: GET_RESOURCES,
-      });
-      if (queryData === null) {
-        return;
-      }
-      cache.writeQuery({
-        query: GET_RESOURCES,
-        data: {
-          resources: queryData.resources.concat([
-            data.createServiceWithEntities,
-          ]),
-        },
-      });
-    },
-  });
+  const [createServiceWithEntities, { loading, data, error }] =
+    useMutation<TData>(CREATE_RESOURCE_WITH_ENTITIES, {
+      update(cache, { data }) {
+        if (!data) return;
+        const queryData = cache.readQuery<{
+          resources: Array<models.Resource>;
+        }>({
+          query: GET_RESOURCES,
+        });
+        if (queryData === null) {
+          return;
+        }
+        cache.writeQuery({
+          query: GET_RESOURCES,
+          data: {
+            resources: queryData.resources.concat([
+              data.createServiceWithEntities,
+            ]),
+          },
+        });
+      },
+    });
 
   const clearSelectedFile = useCallback(() => {
     setFileName(null);

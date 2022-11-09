@@ -19,7 +19,9 @@ function RouteWithAnalytics(props: Props) {
       render={(props) => {
         return (
           <RouteWithAnalyticsContent>
-            {component ? React.createElement(component, { ...props, pageTitle }) : children}
+            {component
+              ? React.createElement(component, { ...props, pageTitle })
+              : children}
           </RouteWithAnalyticsContent>
         );
       }}

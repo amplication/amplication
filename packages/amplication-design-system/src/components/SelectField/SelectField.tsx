@@ -3,7 +3,12 @@ import { useField, ErrorMessage } from "formik";
 import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
 
-import Select, { OptionProps, GroupBase, MultiValue, SingleValue } from "react-select";
+import Select, {
+  OptionProps,
+  GroupBase,
+  MultiValue,
+  SingleValue,
+} from "react-select";
 import { OptionItem } from "../types";
 import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
 

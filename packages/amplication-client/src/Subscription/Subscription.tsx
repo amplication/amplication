@@ -9,7 +9,12 @@ import {
   cancelSubscription as cancelPaddleSubscription,
   updateSubscription as updatePaddleSubscription,
 } from "../util/paddle";
-import { EnumPanelStyle, Panel,CircularProgress,Icon } from "@amplication/design-system";
+import {
+  EnumPanelStyle,
+  Panel,
+  CircularProgress,
+  Icon,
+} from "@amplication/design-system";
 import { format } from "date-fns";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { SubscriptionStatus } from "./SubscriptionStatus";
@@ -22,9 +27,8 @@ type TData = {
 const POLL_INTERVAL = 2000;
 
 function Subscription() {
-  const [transactionCompleted, setTransactionCompleted] = useState<boolean>(
-    false
-  );
+  const [transactionCompleted, setTransactionCompleted] =
+    useState<boolean>(false);
   const { trackEvent } = useTracking();
 
   const { data, startPolling, stopPolling } = useQuery<TData>(
@@ -88,9 +92,10 @@ function Subscription() {
     ? new Date(currentSubscription?.nextBillDate)
     : undefined;
 
-  const cancellationEffectiveDate = currentSubscription?.cancellationEffectiveDate
-    ? new Date(currentSubscription?.cancellationEffectiveDate)
-    : undefined;
+  const cancellationEffectiveDate =
+    currentSubscription?.cancellationEffectiveDate
+      ? new Date(currentSubscription?.cancellationEffectiveDate)
+      : undefined;
 
   return (
     <div className={CLASS_NAME}>

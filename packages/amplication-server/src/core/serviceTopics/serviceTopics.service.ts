@@ -1,17 +1,17 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { BlockTypeService } from '../block/blockType.service';
-import { CreateServiceTopicsArgs } from './dto/CreateServiceTopicsArgs';
-import { FindManyServiceTopicsArgs } from './dto/FindManyServiceTopicsArgs';
-import { ServiceTopics } from './dto/ServiceTopics';
-import { UpdateServiceTopicsArgs } from './dto/UpdateServiceTopicsArgs';
-import { User } from '../../models';
-import { ResourceService } from '../resource/resource.service';
-import { EnumResourceType } from '../resource/dto/EnumResourceType';
-import { AmplicationError } from '../../errors/AmplicationError';
-import { BlockService } from '../block/block.service';
-import { DeleteServiceTopicsArgs } from './dto/DeleteServiceTopicsArgs';
-import { MessagePatternCreateInput } from '@amplication/code-gen-types/dist/models';
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { BlockTypeService } from "../block/blockType.service";
+import { CreateServiceTopicsArgs } from "./dto/CreateServiceTopicsArgs";
+import { FindManyServiceTopicsArgs } from "./dto/FindManyServiceTopicsArgs";
+import { ServiceTopics } from "./dto/ServiceTopics";
+import { UpdateServiceTopicsArgs } from "./dto/UpdateServiceTopicsArgs";
+import { User } from "../../models";
+import { ResourceService } from "../resource/resource.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { BlockService } from "../block/block.service";
+import { DeleteServiceTopicsArgs } from "./dto/DeleteServiceTopicsArgs";
+import { MessagePatternCreateInput } from "@amplication/code-gen-types/dist/models";
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
@@ -38,20 +38,20 @@ export class ServiceTopicsService extends BlockTypeService<
   ) {
     const resource = await this.resourceService.resource({
       where: {
-        id: resourceId
-      }
+        id: resourceId,
+      },
     });
 
     const broker = await this.resourceService.resources({
       where: {
         project: {
-          id: resource.projectId
+          id: resource.projectId,
         },
         id: messageBrokerId,
         resourceType: {
-          equals: EnumResourceType.MessageBroker
-        }
-      }
+          equals: EnumResourceType.MessageBroker,
+        },
+      },
     });
 
     if (!broker.length) {
@@ -77,9 +77,9 @@ export class ServiceTopicsService extends BlockTypeService<
     args: UpdateServiceTopicsArgs,
     user: User
   ): Promise<ServiceTopics> {
-    console.log('update service topic');
+    console.log("update service topic");
     const block = await this.blockService.findOne({
-      where: args.where
+      where: args.where,
     });
 
     await this.validateConnectedResource(
@@ -91,19 +91,21 @@ export class ServiceTopicsService extends BlockTypeService<
   }
 
   async removeTopicFromAllServices(topicId: string, user: User): Promise<void> {
-    const serviceTopicList = await this.blockService.findManyByBlockType<
-      ServiceTopics
-    >({}, EnumBlockType.ServiceTopics);
-    serviceTopicList.forEach(async serviceTopics => {
+    const serviceTopicList =
+      await this.blockService.findManyByBlockType<ServiceTopics>(
+        {},
+        EnumBlockType.ServiceTopics
+      );
+    serviceTopicList.forEach(async (serviceTopics) => {
       const topicToRemove = serviceTopics.patterns.findIndex(
-        topic => topic.topicId === topicId
+        (topic) => topic.topicId === topicId
       );
       if (topicToRemove === -1) return;
 
       serviceTopics.patterns.splice(topicToRemove, 1);
 
       const updatePatterns: MessagePatternCreateInput[] = [];
-      serviceTopics.patterns.forEach(pattern => {
+      serviceTopics.patterns.forEach((pattern) => {
         updatePatterns.push({ type: pattern.type, topicId: pattern.topicId });
       });
 
@@ -112,11 +114,11 @@ export class ServiceTopicsService extends BlockTypeService<
           data: {
             patterns: updatePatterns,
             messageBrokerId: serviceTopics.messageBrokerId,
-            enabled: true
+            enabled: true,
           },
           where: {
-            id: serviceTopics.id
-          }
+            id: serviceTopics.id,
+          },
         },
         user
       );

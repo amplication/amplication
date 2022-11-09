@@ -43,9 +43,8 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     data && refetch && refetch();
   }, [refetch, data]);
 
-  const [setServerCurrentWorkspace, { data: setCurrentData }] = useMutation<
-    TSetData
-  >(SET_CURRENT_WORKSPACE);
+  const [setServerCurrentWorkspace, { data: setCurrentData }] =
+    useMutation<TSetData>(SET_CURRENT_WORKSPACE);
 
   const [
     createNewWorkspace,
@@ -105,7 +104,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
       history.push("/login");
 
     authenticated && !currentWorkspace && getCurrentWorkspace();
-
   }, [authenticated]);
 
   useEffect(() => {
@@ -121,7 +119,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     data &&
       data.currentWorkspace.id === workspace &&
       setCurrentWorkspace(data.currentWorkspace);
-
   }, [authenticated, data, history, loadingCurrentWorkspace, workspace]);
 
   useEffect(() => {

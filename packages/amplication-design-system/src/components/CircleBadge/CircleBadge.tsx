@@ -19,7 +19,7 @@ export type Props = {
 export const CircleBadge: React.FC<Props> = ({
   name,
   color,
-  size = "medium", 
+  size = "medium",
   children,
 }) => (
   <div

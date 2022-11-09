@@ -1,19 +1,19 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { IBlock, User } from '../../models';
-import { FindOneArgs } from '../../dto';
-import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
-import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
-import { BlockTypeService } from './blockType.service';
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { IBlock, User } from "../../models";
+import { FindOneArgs } from "../../dto";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { BlockTypeService } from "./blockType.service";
 import {
   FindManyBlockArgs,
   CreateBlockArgs,
-  UpdateBlockArgs
-} from '../block/dto';
-import { UserEntity } from '../../decorators/user.decorator';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { UseFilters, UseGuards } from '@nestjs/common';
-import { DeleteBlockArgs } from './dto/DeleteBlockArgs';
+  UpdateBlockArgs,
+} from "../block/dto";
+import { UserEntity } from "../../decorators/user.decorator";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 
 type Constructor<T> = {
   new (...args: any): T;
@@ -51,20 +51,20 @@ export function BlockTypeResolver<
 
     @Query(() => classRef, {
       name: classRef.name,
-      nullable: true
+      nullable: true,
     })
-    @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
+    @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
     async findOne(@Args() args: FindOneArgs): Promise<T | null> {
       return this.service.findOne(args);
     }
 
     @Query(() => [classRef], {
       name: findManyName,
-      nullable: false
+      nullable: false,
     })
     @AuthorizeContext(
       AuthorizableOriginParameter.ResourceId,
-      'where.resource.id'
+      "where.resource.id"
     )
     async findMany(
       @Args({ type: () => findManyArgsRef }) args: FindManyArgs
@@ -74,11 +74,11 @@ export function BlockTypeResolver<
 
     @Mutation(() => classRef, {
       name: createName,
-      nullable: false
+      nullable: false,
     })
     @AuthorizeContext(
       AuthorizableOriginParameter.ResourceId,
-      'data.resource.connect.id'
+      "data.resource.connect.id"
     )
     async [createName](
       @Args({ type: () => createArgsRef }) args: CreateArgs,
@@ -89,9 +89,9 @@ export function BlockTypeResolver<
 
     @Mutation(() => classRef, {
       name: updateName,
-      nullable: false
+      nullable: false,
     })
-    @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
+    @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
     async [updateName](
       @Args({ type: () => updateArgsRef }) args: UpdateArgs,
       @UserEntity() user: User
@@ -101,9 +101,9 @@ export function BlockTypeResolver<
 
     @Mutation(() => classRef, {
       name: deleteName,
-      nullable: false
+      nullable: false,
     })
-    @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
+    @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
     async [deleteName](
       @Args({ type: () => deleteArgsRef }) args: DeleteArgs,
       @UserEntity() user: User

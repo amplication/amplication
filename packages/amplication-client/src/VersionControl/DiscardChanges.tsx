@@ -16,9 +16,8 @@ type Props = {
 const CLASS_NAME = "discard-changes";
 
 const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
-  const { pendingChanges, resetPendingChanges, addChange } = useContext(
-    AppContext
-  );
+  const { pendingChanges, resetPendingChanges, addChange } =
+    useContext(AppContext);
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
       if (!data) return;

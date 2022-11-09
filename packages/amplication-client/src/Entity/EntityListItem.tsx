@@ -36,9 +36,8 @@ export const EntityListItem = ({
   onDelete,
   onError,
 }: Props) => {
-  const { addEntity, currentWorkspace, currentProject } = useContext(
-    AppContext
-  );
+  const { addEntity, currentWorkspace, currentProject } =
+    useContext(AppContext);
   const history = useHistory();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
