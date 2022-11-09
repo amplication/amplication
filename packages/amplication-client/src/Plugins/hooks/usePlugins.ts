@@ -162,7 +162,7 @@ const usePlugins = (resourceId: string) => {
   const sortedPluginInstallation = useMemo(() => {
     if (!pluginOrder || !pluginInstallations) return undefined;
 
-    const pluginOrderArr = [...pluginOrder?.pluginOrder.order];
+    const pluginOrderArr = [...(pluginOrder?.pluginOrder.order ?? [])];
 
     return (pluginOrderArr.map((plugin: models.PluginOrderItem) => {
       return pluginInstallations?.PluginInstallations.find(

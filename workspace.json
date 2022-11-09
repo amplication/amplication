@@ -5,6 +5,8 @@
     "amplication-build-manager": "packages/amplication-build-manager",
     "amplication-code-gen-types": "packages/amplication-code-gen-types",
     "amplication-data-service-generator": "packages/amplication-data-service-generator",
+    "amplication-client": "packages/amplication-client",
+    "amplication-design-system": "packages/amplication-design-system",
     "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
     "amplication-git-push-webhook-service": "ee/packages/amplication-git-push-webhook-service",

@@ -28,14 +28,15 @@ export const validationErrorMessages = {
 
 export function validate<T>(
   values: T,
-  validationSchema: object
+  validationSchema: {[key: string]: any}
 ): FormikErrors<T> {
   const errors: FormikErrors<T> = {};
 
   const ajv = new Ajv({ allErrors: true });
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   require("ajv-errors")(ajv);
 
-  let isValid = ajv.validate(validationSchema, values);
+  const isValid = ajv.validate(validationSchema, values);
 
   if (!isValid && ajv.errors) {
     for (const error of ajv.errors) {

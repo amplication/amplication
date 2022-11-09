@@ -84,7 +84,6 @@ const useProjectSelector = (
         }`
       );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentWorkspace?.id,
     history,

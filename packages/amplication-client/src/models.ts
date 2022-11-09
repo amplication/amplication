@@ -295,12 +295,12 @@ export type ConnectGitRepositoryInput = {
 };
 
 export type CreateGitRepositoryInput = {
-  gitOrganizationId: Scalars['String'];
-  gitOrganizationType: EnumGitOrganizationType;
-  gitProvider: EnumGitProvider;
+  gitOrganizationId?: Scalars['String'];
+  gitOrganizationType?: EnumGitOrganizationType;
+  gitProvider?: EnumGitProvider;
   name: Scalars['String'];
   public: Scalars['Boolean'];
-  resourceId: Scalars['String'];
+  resourceId?: Scalars['String'];
 };
 
 export type DateTimeFilter = {

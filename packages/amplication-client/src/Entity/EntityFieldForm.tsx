@@ -23,6 +23,7 @@ export type Values = {
   required: boolean;
   searchable: boolean;
   description: string | null;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   properties: Object;
 };
 
@@ -96,10 +97,12 @@ const EntityFieldForm = ({
         );
         //validate the field dynamic properties
         const schema = getSchemaForDataType(values.dataType);
+        // eslint-disable-next-line @typescript-eslint/ban-types
         const propertiesError = validate<Object>(values.properties, schema);
 
         // Ignore related field ID error
         if ("relatedFieldId" in propertiesError) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           delete propertiesError.relatedFieldId;
         }

@@ -15,6 +15,7 @@ import useProjectConfigSettingsHook from "../useProjectConfigSettingsHook";
 
 const CLASS_NAME = "generation-settings-form";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
   const {
     handleSubmit,

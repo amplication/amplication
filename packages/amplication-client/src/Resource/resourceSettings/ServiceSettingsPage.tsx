@@ -5,6 +5,7 @@ import "./ServiceSettingsPage.scss";
 
 const CLASS_NAME = "service-settings";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const ServiceSettingsPage: React.FC<{}> = () => {
   const { currentWorkspace, currentProject, currentResource } = useContext(
     AppContext

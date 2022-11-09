@@ -24,7 +24,7 @@ const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
       if (!data) return;
 
       //remove entities from cache to reflect discarded changes
-      for (var change of pendingChanges) {
+      for (const change of pendingChanges) {
         if (change.originType === models.EnumPendingChangeOriginType.Entity) {
           cache.evict({
             id: cache.identify({
