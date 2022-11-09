@@ -147,7 +147,3 @@ jobs:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
-
-      # trigger deploy action
-      # if target = next, env = next
-      # prov
