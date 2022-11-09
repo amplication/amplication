@@ -1,8 +1,13 @@
 global:
   pvc:
-    name: eugene-efs-claim
+    name: build-artifacts
+    storageRequest: 5Gi
+    storageName: efs-sc
   pv:
-    name: efs-pv-eugene
+    name: build-artifacts-eugene
+    storageCapacity: 5Gi
+    handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
+
   nodeSelector:
     role: custom-envs
   tolerations:
@@ -39,13 +44,19 @@ amplication-server:
       CLIENT_HOST: "https://app-eugene.amplication-dev.com"
 
       #KAFKA
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
       KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
-      #EFS
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
+
+      CODE_GENERATION_REQUEST_TOPIC: build.internal.code-generation.request.1
+      CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.1
+      CODE_GENERATION_FAILURE_TOPIC: build.internal.code-generation.failure.1
+
+      DSG_LOG_TOPIC: build.internal.dsg-log.1
 
       #GCP - APPS Builder
 
@@ -65,10 +76,12 @@ amplication-server:
 
       DOCKER_HOST: tcp://docker:2375
 
+      DSG_RUNNER_URL: http://webhook-eventsource-svc.eugene-dsg.svc.cluster.local:12000/example
+
       #GitHub App
       GITHUB_APP_APP_ID: "227239"
       GITHUB_APP_CLIENT_ID: "Iv1.67a34bd44a1938fb"
-      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/eugeneenvamplication/installations/new?state={state}"
+      GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/eugene-tseitlin-github-app/installations/new?state={state}"
 
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "fe0059c5fd76abbf7cb4"
@@ -110,8 +123,14 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
+
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
+
       GITHUB_APP_APP_ID: "227239"
 
 amplication-storage-gateway:
@@ -121,4 +140,5 @@ amplication-storage-gateway:
     env:
       KAFKA_BROKERS: 'amplication-eugene-cp-kafka-headless:9092'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
+      BUILD_OUTPUT_FOLDER: code
       GITHUB_APP_APP_ID: "227239"

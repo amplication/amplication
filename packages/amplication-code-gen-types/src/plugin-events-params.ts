@@ -1,5 +1,5 @@
 import { namedTypes } from "ast-types";
-import { JsonValue } from "type-fest";
+
 import {
   Entity,
   EntityField,
@@ -44,6 +44,17 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   entityServiceModule: string;
   templateMapping: { [key: string]: any };
   controllerBaseId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+}
+export interface CreateEntityControllerSpecParams extends EventParams {
+  entity: Entity;
+  entityType: string;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  entityServiceModulePath: string;
+  entityControllerModulePath: string;
+  entityControllerBaseModulePath: string;
+  controllerId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
 export interface CreateServerAuthParams extends EventParams {
@@ -110,4 +121,18 @@ export interface CreateEntityModuleParams extends EventParams {
 export interface CreateEntityModuleBaseParams extends EventParams {
   entityName: string;
   moduleBaseId: namedTypes.Identifier;
+}
+
+export interface CreateSwaggerParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
+}
+
+export interface CreateSeedParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
 }

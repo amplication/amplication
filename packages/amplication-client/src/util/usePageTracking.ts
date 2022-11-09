@@ -13,7 +13,7 @@ const usePageTracking = () => {
       url,
       params: match.params,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
 
   return null;

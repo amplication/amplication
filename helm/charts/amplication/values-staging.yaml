@@ -1,18 +1,25 @@
 global:
   pvc:
-    name: staging-efs-claim
+    name: build-artifacts
+    storageRequest: 5Gi
+    storageName: efs-sc
   pv:
-    name: efs-pv-staging
-    handle: fs-03a0a5ba30d788595::fsap-0369ff368700f58c3
+    name: build-artifacts-staging
+    storageCapacity: 5Gi
+    handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
 
-cp-helm-charts:
-  enabled: false
-  cp-kafka:
-    enabled: false
-  cp-zookeeper:
-    enabled: false
+  nodeSelector:
+    role: custom-envs
+  tolerations:
+    - key: "custom-envs"
+      operator: "Equal"
+      value: "true"
+
 postgres:
-  install: false
+  primary:
+    service:
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: postgres-staging.amplication-dev.com
 
 amplication-client:
   service:
@@ -43,11 +50,17 @@ amplication-server:
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
-      #EFS
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
+
+      CODE_GENERATION_REQUEST_TOPIC: build.internal.code-generation.request.1
+      CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.1
+      CODE_GENERATION_FAILURE_TOPIC: build.internal.code-generation.failure.1
+
+      DSG_LOG_TOPIC: build.internal.dsg-log.1
 
       #GCP - APPS Builder
-
       DEFAULT_DISK: gcs
       LOCAL_DISK_ROOT: /artifacts
       CONTAINER_BUILDER_DEFAULT: cloud-build
@@ -63,6 +76,8 @@ amplication-server:
       GCP_APPS_DOMAIN: staging.amplication.app
 
       DOCKER_HOST: tcp://docker:2375
+
+      DSG_RUNNER_URL: http://webhook-eventsource-svc.staging-dsg.svc.cluster.local:12000/example
 
       #GitHub App
       GITHUB_APP_APP_ID: "174833"
@@ -113,8 +128,14 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: 'b-1.amplicationuseast1sta.n74l10.c22.kafka.us-east-1.amazonaws.com:9092,b-2.amplicationuseast1sta.n74l10.c22.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
+
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
+
       GITHUB_APP_APP_ID: "174833"
 
 amplication-storage-gateway:
@@ -123,4 +144,7 @@ amplication-storage-gateway:
   config:
     env:
       KAFKA_BROKERS: 'b-1.amplicationuseast1sta.n74l10.c22.kafka.us-east-1.amazonaws.com:9092,b-2.amplicationuseast1sta.n74l10.c22.kafka.us-east-1.amazonaws.com:9092'
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
+      GITHUB_APP_APP_ID: "174833"
+

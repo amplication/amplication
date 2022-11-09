@@ -21,7 +21,7 @@ export const PluginTree = React.memo(
       if (/catalog|installed/.test(location.pathname)) return;
 
       history.push(`${location.pathname}/catalog`);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+
     }, [location]);
 
     return (

@@ -52,10 +52,10 @@ const apolloClient = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <App />
-      </Router>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <App />
+        </Router>
       </QueryClientProvider>
     </ApolloProvider>
   </React.StrictMode>,

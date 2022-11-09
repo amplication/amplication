@@ -17,6 +17,6 @@ export default function useNavigationTabs(
       url,
       active: true,
     });
-    // eslint-disable-next-line  react-hooks/exhaustive-deps
+
   }, [key, name, url, navigationTabsContext.registerItem]);
 }

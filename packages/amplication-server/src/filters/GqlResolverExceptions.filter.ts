@@ -5,15 +5,15 @@
 // It logs the exception with context information like IP, Host, UserId
 // It uses Winston directly to log the error
 
-import { Catch, ArgumentsHost, Inject, HttpException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { GqlExceptionFilter, GqlArgumentsHost } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
-import { Prisma } from '@amplication/prisma-db';
-import { ApolloError } from 'apollo-server-express';
-import { Request } from 'express';
-import { AmplicationError } from '../errors/AmplicationError';
+import { Catch, ArgumentsHost, Inject, HttpException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { GqlExceptionFilter, GqlArgumentsHost } from "@nestjs/graphql";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { Logger } from "winston";
+import { Prisma } from "@amplication/prisma-db";
+import { ApolloError } from "apollo-server-express";
+import { Request } from "express";
+import { AmplicationError } from "../errors/AmplicationError";
 
 export type RequestData = {
   query: string;
@@ -22,19 +22,19 @@ export type RequestData = {
   userId: string;
 };
 
-export const PRISMA_CODE_UNIQUE_KEY_VIOLATION = 'P2002';
+export const PRISMA_CODE_UNIQUE_KEY_VIOLATION = "P2002";
 
 export class UniqueKeyException extends ApolloError {
   constructor(fields: string[]) {
     super(
-      `Another record with the same key already exist (${fields.join(', ')})`
+      `Another record with the same key already exist (${fields.join(", ")})`
     );
   }
 }
 
 export class InternalServerError extends ApolloError {
   constructor() {
-    super('Internal server error');
+    super("Internal server error");
   }
 }
 
@@ -44,7 +44,7 @@ export function createRequestData(req: Request): RequestData {
     query: req.body?.query,
     hostname: req.hostname,
     ip: req.ip,
-    userId: user?.id
+    userId: user?.id,
   };
 }
 
@@ -82,7 +82,7 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
       exception.requestData = requestData;
       this.logger.error(exception);
       clientError =
-        this.configService.get('NODE_ENV') === 'production'
+        this.configService.get("NODE_ENV") === "production"
           ? new InternalServerError()
           : new ApolloError(exception.message);
     }

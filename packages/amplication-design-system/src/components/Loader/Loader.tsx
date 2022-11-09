@@ -13,13 +13,13 @@ export type Props = Omit<LottieComponentProps, "animationData"> & {
   onTimeout?: () => void;
 };
 
-export function Loader({
+export const Loader: React.FC<Props> = ({
   className,
   minimumLoadTimeMS,
   fullScreen,
   onTimeout,
   ...rest
-}: Props) {
+}) => {
   useEffect(() => {
     if (!minimumLoadTimeMS) return;
     const timer = setTimeout(() => {
@@ -40,4 +40,4 @@ export function Loader({
       </div>
     </div>
   );
-}
+};

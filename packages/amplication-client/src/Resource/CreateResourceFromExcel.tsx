@@ -483,10 +483,10 @@ const SheetAcceptedFormats = [
 
 const generateColumnKeys = (range: string | undefined): ColumnKey[] => {
   if (undefined === range) return [];
-  let keys = [],
+  const keys = [],
     TotalColumns = XLSX.utils.decode_range(range).e.c + 1;
 
-  for (var i = 0; i < TotalColumns; ++i)
+  for (let i = 0; i < TotalColumns; ++i)
     keys[i] = { name: XLSX.utils.encode_col(i), key: i };
 
   return keys;

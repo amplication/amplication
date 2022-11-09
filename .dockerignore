@@ -16,6 +16,7 @@ packages/amplication-data-service-generator/generated
 
 
 **/node_modules
+!**/node_modules/@amplication/prisma-clients
 *.md
 **/*.md
 *.yaml

@@ -36,6 +36,7 @@ DSG (Data Service Generator) is the component responsible for the generation of 
   ```
 
   Should be: `7.0.0` or newer
+
 - [Docker](https://docs.docker.com/desktop/)
 
   ```bash
@@ -43,6 +44,7 @@ DSG (Data Service Generator) is the component responsible for the generation of 
   ```
 
   Should start with: `Docker version`
+
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
   ```bash

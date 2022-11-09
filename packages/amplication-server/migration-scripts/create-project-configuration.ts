@@ -1,27 +1,27 @@
 import {
   PrismaClient,
   EnumResourceType,
-  EnumBlockType
-} from '@amplication/prisma-db';
+  EnumBlockType,
+} from "@amplication/prisma-db";
 
-import { DEFAULT_RESOURCE_COLORS } from '../src/core/resource/constants';
+import { DEFAULT_RESOURCE_COLORS } from "../src/core/resource/constants";
 
-const DEFAULT_PROJECT_CONFIGURATION_NAME = 'Project Configuration';
+const DEFAULT_PROJECT_CONFIGURATION_NAME = "Project Configuration";
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
-  'This resource is used to store project configuration.';
+  "This resource is used to store project configuration.";
 
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME =
-  'Project Configuration Settings';
+  "Project Configuration Settings";
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION =
-  'This block is used to store project configuration settings.';
+  "This block is used to store project configuration settings.";
 
 const blockVersionSettings = {
-  baseDirectory: '/'
+  baseDirectory: "/",
 };
 
 function chunkArrayInGroups(arr, size) {
-  var myArray = [];
-  for (var i = 0; i < arr.length; i += size) {
+  const myArray = [];
+  for (let i = 0; i < arr.length; i += size) {
     myArray.push(arr.slice(i, i + size));
   }
   return myArray;
@@ -34,13 +34,13 @@ async function main() {
     where: {
       resources: {
         none: {
-          resourceType: EnumResourceType.ProjectConfiguration
-        }
-      }
+          resourceType: EnumResourceType.ProjectConfiguration,
+        },
+      },
     },
     include: {
-      resources: true
-    }
+      resources: true,
+    },
   });
 
   console.log(projects.length);
@@ -48,13 +48,13 @@ async function main() {
 
   const chunks = chunkArrayInGroups(projects, 500);
 
-  for (let chunk of chunks) {
+  for (const chunk of chunks) {
     console.log(index++);
     await migrateChunk(chunk);
   }
 
   async function migrateChunk(chunk) {
-    const promises = chunk.map(async project => {
+    const promises = chunk.map(async (project) => {
       return client.blockVersion.create({
         data: {
           versionNumber: 0,
@@ -74,12 +74,12 @@ async function main() {
                   resourceType: EnumResourceType.ProjectConfiguration,
                   description: DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION,
                   name: DEFAULT_PROJECT_CONFIGURATION_NAME,
-                  project: { connect: { id: project.id } }
-                }
-              }
-            }
-          }
-        }
+                  project: { connect: { id: project.id } },
+                },
+              },
+            },
+          },
+        },
       });
     });
 

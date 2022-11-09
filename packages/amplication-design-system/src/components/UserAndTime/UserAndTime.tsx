@@ -20,9 +20,8 @@ const DIRECTION_THRESHOLD = 100;
 type DirectionType = "n" | "s";
 
 export function UserAndTime({ loading, account, time }: Props) {
-  const [tooltipDirection, setTooltipDirection] = useState<DirectionType>(
-    DIRECTION_DOWN
-  );
+  const [tooltipDirection, setTooltipDirection] =
+    useState<DirectionType>(DIRECTION_DOWN);
 
   const { firstName, lastName } = account || {};
   const formattedTime = useMemo(() => {

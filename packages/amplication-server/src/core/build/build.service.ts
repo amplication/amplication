@@ -1,148 +1,145 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Storage, MethodNotSupported } from '@slynova/flydrive';
-import { GoogleCloudStorage } from '@slynova/flydrive-gcs';
-import { StorageService } from '@codebrew/nestjs-storage';
-import { Prisma, PrismaService } from '@amplication/prisma-db';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import * as winston from 'winston';
-import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
-import { omit, orderBy } from 'lodash';
-import path, { join } from 'path';
-import * as DataServiceGenerator from '@amplication/data-service-generator';
-import * as CodeGenTypes from '@amplication/code-gen-types';
-import { ResourceRole, User } from '../../models';
-import { Build } from './dto/Build';
-import { CreateBuildArgs } from './dto/CreateBuildArgs';
-import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
-import { getBuildZipFilePath, getBuildTarGzFilePath } from './storage';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
-import { BuildNotFoundError } from './errors/BuildNotFoundError';
-import { EntityService } from '../entity/entity.service';
-import { StepNotCompleteError } from './errors/StepNotCompleteError';
-import { BuildResultNotFound } from './errors/BuildResultNotFound';
-import { ResourceRoleService } from '../resourceRole/resourceRole.service';
-import { ResourceService } from '../resource/resource.service'; // eslint-disable-line import/no-cycle
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Storage, MethodNotSupported } from "@slynova/flydrive";
+import { GoogleCloudStorage } from "@slynova/flydrive-gcs";
+import { StorageService } from "@codebrew/nestjs-storage";
+import { Prisma, PrismaService } from "@amplication/prisma-db";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import * as winston from "winston";
+import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
+import { omit, orderBy } from "lodash";
+import path from "path";
+import * as CodeGenTypes from "@amplication/code-gen-types";
+import { ResourceRole, User } from "../../models";
+import { Build } from "./dto/Build";
+import { CreateBuildArgs } from "./dto/CreateBuildArgs";
+import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
+import { getBuildZipFilePath, getBuildTarGzFilePath } from "./storage";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
+import { EntityService } from "../entity/entity.service";
+import { ResourceRoleService } from "../resourceRole/resourceRole.service";
+import { ResourceService } from "../resource/resource.service";
 import {
   EnumActionStepStatus,
   EnumActionLogLevel,
-  ActionStep
-} from '../action/dto';
-import { UserService } from '../user/user.service'; // eslint-disable-line import/no-cycle
-import { ServiceSettingsService } from '../serviceSettings/serviceSettings.service'; // eslint-disable-line import/no-cycle
-import { ActionService } from '../action/action.service';
+  ActionStep,
+} from "../action/dto";
+import { UserService } from "../user/user.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ActionService } from "../action/action.service";
+import { CommitService } from "../commit/commit.service";
 
-import { createZipFileFromModules } from './zip';
-import { LocalDiskService } from '../storage/local.disk.service';
-import { createTarGzFileFromModules } from './tar';
-import { StepNotFoundError } from './errors/StepNotFoundError';
-import { QueueService } from '../queue/queue.service';
-import { previousBuild, BuildFilesSaver } from './utils';
-import { EnumGitProvider } from '../git/dto/enums/EnumGitProvider';
-import { CanUserAccessArgs } from './dto/CanUserAccessArgs';
-import { GitResourceMeta } from './dto/GitResourceMeta';
+import { createZipFileFromModules } from "./zip";
+import { LocalDiskService } from "../storage/local.disk.service";
+import { createTarGzFileFromModules } from "./tar";
+import { QueueService } from "../queue/queue.service";
+import { previousBuild } from "./utils";
+import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
+import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
 
-import { TopicService } from '../topic/topic.service';
-import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
-import { PluginInstallationService } from '../pluginInstallation/pluginInstallation.service';
-import { EnumResourceType } from '../resource/dto/EnumResourceType';
+import { TopicService } from "../topic/topic.service";
+import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import { SendPullRequestResponse } from "./dto/sendPullRequestResponse";
+import { Env } from "../../env";
 
-export const HOST_VAR = 'HOST';
-export const CLIENT_HOST_VAR = 'CLIENT_HOST';
-export const GENERATE_STEP_MESSAGE = 'Generating Application';
-export const GENERATE_STEP_NAME = 'GENERATE_APPLICATION';
-export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = 'Building Docker image';
-export const BUILD_DOCKER_IMAGE_STEP_NAME = 'BUILD_DOCKER';
+export const HOST_VAR = "HOST";
+export const CLIENT_HOST_VAR = "CLIENT_HOST";
+export const GENERATE_STEP_MESSAGE = "Generating Application";
+export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const BUILD_DOCKER_IMAGE_STEP_MESSAGE = "Building Docker image";
+export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const BUILD_DOCKER_IMAGE_STEP_FINISH_LOG =
-  'Built Docker image successfully';
-export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = 'Build Docker failed';
+  "Built Docker image successfully";
+export const BUILD_DOCKER_IMAGE_STEP_FAILED_LOG = "Build Docker failed";
 export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
-  'Waiting for Docker image...';
+  "Waiting for Docker image...";
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
-  'Starting to build Docker image. It should take a few minutes.';
+  "Starting to build Docker image. It should take a few minutes.";
 
-export const PUSH_TO_GITHUB_STEP_NAME = 'PUSH_TO_GITHUB';
-export const PUSH_TO_GITHUB_STEP_MESSAGE = 'Push changes to GitHub';
+export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
+export const PUSH_TO_GITHUB_STEP_MESSAGE = "Push changes to GitHub";
 export const PUSH_TO_GITHUB_STEP_START_LOG =
-  'Starting to push changes to GitHub.';
+  "Starting to push changes to GitHub.";
 export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
-  'Successfully pushed changes to GitHub';
-export const PUSH_TO_GITHUB_STEP_FAILED_LOG = 'Push changes to GitHub failed';
+  "Successfully pushed changes to GitHub";
+export const PUSH_TO_GITHUB_STEP_FAILED_LOG = "Push changes to GitHub failed";
 
-export const ACTION_ZIP_LOG = 'Creating ZIP file';
-export const ACTION_JOB_DONE_LOG = 'Build job done';
-export const JOB_STARTED_LOG = 'Build job started';
-export const JOB_DONE_LOG = 'Build job done';
+export const ACTION_ZIP_LOG = "Creating ZIP file";
+export const ACTION_JOB_DONE_LOG = "Build job done";
+export const JOB_STARTED_LOG = "Build job started";
+export const JOB_DONE_LOG = "Build job done";
 export const ENTITIES_INCLUDE = {
   fields: true,
   permissions: {
     include: {
       permissionRoles: {
         include: {
-          resourceRole: true
-        }
+          resourceRole: true,
+        },
       },
       permissionFields: {
         include: {
           field: true,
           permissionRoles: {
             include: {
-              resourceRole: true
-            }
-          }
-        }
-      }
-    }
-  }
+              resourceRole: true,
+            },
+          },
+        },
+      },
+    },
+  },
 };
 export const ACTION_INCLUDE = {
   action: {
     include: {
-      steps: true
-    }
-  }
+      steps: true,
+    },
+  },
 };
 
-const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+export const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
 } = {
   error: EnumActionLogLevel.Error,
   warn: EnumActionLogLevel.Warning,
   info: EnumActionLogLevel.Info,
-  debug: EnumActionLogLevel.Debug
+  debug: EnumActionLogLevel.Debug,
 };
 
-const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, 'level'];
+const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
 
 export function createInitialStepData(
   version: string,
   message: string
 ): Prisma.ActionStepCreateWithoutActionInput {
   return {
-    message: 'Adding task to queue',
-    name: 'ADD_TO_QUEUE',
+    message: "Adding task to queue",
+    name: "ADD_TO_QUEUE",
     status: EnumActionStepStatus.Success,
     completedAt: new Date(),
     logs: {
       create: [
         {
           level: EnumActionLogLevel.Info,
-          message: 'create build generation task',
-          meta: {}
+          message: "create build generation task",
+          meta: {},
         },
         {
           level: EnumActionLogLevel.Info,
           message: `Build Version: ${version}`,
-          meta: {}
+          meta: {},
         },
         {
           level: EnumActionLogLevel.Info,
           message: `Build message: ${message}`,
-          meta: {}
-        }
-      ]
-    }
+          meta: {},
+        },
+      ],
+    },
   };
 }
 @Injectable()
@@ -157,9 +154,9 @@ export class BuildService {
     private readonly localDiskService: LocalDiskService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
+    private readonly commitService: CommitService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
-    private readonly buildFilesSaver: BuildFilesSaver,
     private readonly queueService: QueueService,
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
@@ -168,10 +165,10 @@ export class BuildService {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
     /** @todo move this to storageService config once possible */
-    this.storageService.registerDriver('gcs', GoogleCloudStorage);
+    this.storageService.registerDriver("gcs", GoogleCloudStorage);
     this.host = this.configService.get(HOST_VAR);
     if (!this.host) {
-      throw new Error('Missing HOST_VAR in env');
+      throw new Error("Missing HOST_VAR in env");
     }
   }
   host: string;
@@ -184,8 +181,8 @@ export class BuildService {
     const resourceId = args.data.resource.connect.id;
     const user = await this.userService.findUser({
       where: {
-        id: args.data.createdBy.connect.id
-      }
+        id: args.data.createdBy.connect.id,
+      },
     });
 
     //TODO
@@ -194,7 +191,7 @@ export class BuildService {
     const version = commitId.slice(commitId.length - 8);
 
     const latestEntityVersions = await this.entityService.getLatestVersions({
-      where: { resource: { id: resourceId } }
+      where: { resource: { id: resourceId } },
     });
 
     const build = await this.prisma.build.create({
@@ -204,39 +201,31 @@ export class BuildService {
         version,
         createdAt: new Date(),
         blockVersions: {
-          connect: []
+          connect: [],
         },
         entityVersions: {
-          connect: latestEntityVersions.map(version => ({ id: version.id }))
+          connect: latestEntityVersions.map((version) => ({ id: version.id })),
         },
         action: {
           create: {
             steps: {
-              create: createInitialStepData(version, args.data.message)
-            }
-          } //create action record
-        }
+              create: createInitialStepData(version, args.data.message),
+            },
+          }, //create action record
+        },
       },
       include: {
         commit: true,
-        resource: true
-      }
+        resource: true,
+      },
     });
 
-    const oldBuild = await previousBuild(
-      this.prisma,
-      resourceId,
-      build.id,
-      build.createdAt
-    );
-
     const logger = this.logger.child({
-      buildId: build.id
+      buildId: build.id,
     });
 
     logger.info(JOB_STARTED_LOG);
-    await this.generate(build, user, oldBuild?.id);
-    logger.info(JOB_DONE_LOG);
+    await this.generate(build, user);
 
     return build;
   }
@@ -249,20 +238,18 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
-  private async getGenerateCodeStepStatus(
-    buildId: string
-  ): Promise<ActionStep | undefined> {
+  async getGenerateCodeStep(buildId: string): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
       .findUnique({
         where: {
-          id: buildId
-        }
+          id: buildId,
+        },
       })
       .action()
       .steps({
         where: {
-          name: GENERATE_STEP_NAME
-        }
+          name: GENERATE_STEP_NAME,
+        },
       });
 
     return generateStep;
@@ -271,117 +258,70 @@ export class BuildService {
   async calcBuildStatus(buildId: string): Promise<EnumBuildStatus> {
     const build = await this.prisma.build.findUnique({
       where: {
-        id: buildId
+        id: buildId,
       },
-      include: ACTION_INCLUDE
+      include: ACTION_INCLUDE,
     });
 
     if (!build.action?.steps?.length) return EnumBuildStatus.Invalid;
     const steps = build.action.steps;
 
-    if (steps.every(step => step.status === EnumActionStepStatus.Success))
+    if (steps.every((step) => step.status === EnumActionStepStatus.Success))
       return EnumBuildStatus.Completed;
 
-    if (steps.some(step => step.status === EnumActionStepStatus.Failed))
+    if (steps.some((step) => step.status === EnumActionStepStatus.Failed))
       return EnumBuildStatus.Failed;
 
     return EnumBuildStatus.Running;
   }
-  /**
-   *
-   * Give the ReadableStream of the build zip file
-   * @returns the zip file of the build
-   */
-  async download(args: FindOneBuildArgs): Promise<NodeJS.ReadableStream> {
-    const build = await this.findOne(args);
-    const { id } = args.where;
-    if (build === null) {
-      throw new BuildNotFoundError(id);
-    }
 
-    const generatedCodeStep = await this.getGenerateCodeStepStatus(id);
-    if (!generatedCodeStep) {
-      throw new StepNotFoundError(GENERATE_STEP_NAME);
+  async completeCodeGenerationStep(
+    buildId: string,
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+  ): Promise<void> {
+    const step = await this.getGenerateCodeStep(buildId);
+    if (!step) {
+      throw new Error("Could not find generate code step");
     }
-    if (generatedCodeStep.status !== EnumActionStepStatus.Success) {
-      throw new StepNotCompleteError(
-        GENERATE_STEP_NAME,
-        EnumActionStepStatus[generatedCodeStep.status]
-      );
-    }
-    const filePath = getBuildZipFilePath(id);
-    const disk = this.storageService.getDisk();
-    const { exists } = await disk.exists(filePath);
-    if (!exists) {
-      throw new BuildResultNotFound(build.id);
-    }
-    return disk.getStream(filePath);
+    await this.actionService.complete(step, status);
   }
 
   /**
    * Generates code for given build and saves it to storage
    * @DSG The connection between the server and the DSG (Data Service Generator)
    * @param build the build object to generate code for
-   * @param user
-   * @param oldBuildId
+   * @param user the user that triggered the build
    */
-  private async generate(
-    build: Build,
-    user: User,
-    oldBuildId: string | undefined
-  ): Promise<string> {
+  private async generate(build: Build, user: User): Promise<string> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
       GENERATE_STEP_MESSAGE,
-      async step => {
+      async (step) => {
         const { resourceId, id: buildId, version: buildVersion } = build;
-        //#region getting all the resource data
-        const dSGResourceData = await this.getDSGResourceData(
+
+        const [dataServiceGeneratorLogger, logPromises] =
+          this.createDataServiceLogger(build, step);
+
+        const dsgResourceData = await this.getDSGResourceData(
           resourceId,
           buildId,
           buildVersion,
           user
         );
-        const { resourceInfo } = dSGResourceData;
-        //#endregion
-        const [
-          dataServiceGeneratorLogger,
-          logPromises
-        ] = this.createDataServiceLogger(build, step);
-
-        const modules = await DataServiceGenerator.createDataService(
-          dSGResourceData,
-          dataServiceGeneratorLogger
-        );
 
         await Promise.all(logPromises);
 
         dataServiceGeneratorLogger.destroy();
-        if (modules.length === 0) {
-          await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-          return null;
-        }
 
-        await this.actionService.logInfo(step, ACTION_ZIP_LOG);
-
-        // the path to the tar.gz artifact
-        const tarballURL = await this.save(build, modules);
-
-        await this.buildFilesSaver.saveFiles(
-          join(resourceId, build.id),
-          modules
+        this.queueService.emitMessage(
+          this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
+          JSON.stringify({ buildId, dsgResourceData })
         );
 
-        await this.saveToGitHub(build, oldBuildId, {
-          adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
-          serverPath: resourceInfo.settings.serverSettings.serverPath
-        });
-
-        await this.actionService.logInfo(step, ACTION_JOB_DONE_LOG);
-
-        return tarballURL;
-      }
+        return null;
+      },
+      true
     );
   }
 
@@ -389,9 +329,9 @@ export class BuildService {
     return this.resourceRoleService.getResourceRoles({
       where: {
         resource: {
-          id: resourceId
-        }
-      }
+          id: resourceId,
+        },
+      },
     });
   }
 
@@ -401,7 +341,7 @@ export class BuildService {
   ): [winston.Logger, Array<Promise<void>>] {
     const transport = new winston.transports.Console();
     const logPromises: Array<Promise<void>> = [];
-    transport.on('logged', info => {
+    transport.on("logged", (info) => {
       logPromises.push(this.createLog(step, info));
     });
     return [
@@ -409,10 +349,10 @@ export class BuildService {
         format: this.logger.format,
         transports: [transport],
         defaultMeta: {
-          buildId: build.id
-        }
+          buildId: build.id,
+        },
       }),
-      logPromises
+      logPromises,
     ];
   }
 
@@ -430,35 +370,94 @@ export class BuildService {
     const tarFilePath = getBuildTarGzFilePath(build.id);
     const disk = this.storageService.getDisk();
     await Promise.all([
-      createZipFileFromModules(modules).then(zip => disk.put(zipFilePath, zip)),
-      createTarGzFileFromModules(modules).then(tar =>
+      createZipFileFromModules(modules).then((zip) =>
+        disk.put(zipFilePath, zip)
+      ),
+      createTarGzFileFromModules(modules).then((tar) =>
         disk.put(tarFilePath, tar)
-      )
+      ),
     ]);
     return this.getFileURL(disk, tarFilePath);
   }
 
-  private async saveToGitHub(
-    build: Build,
-    oldBuildId: string,
-    gitResourceMeta: GitResourceMeta
-  ): Promise<void> {
-    const resource = build.resource;
+  public async onCreatePRSuccess({
+    response,
+  }: {
+    response: SendPullRequestResponse;
+  }): Promise<void> {
+    const build = await this.findOne({ where: { id: response.buildId } });
+    const steps = await this.actionService.getSteps(build.actionId);
+    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
+
+    try {
+      if (response.errorMessage) {
+        throw Error(response.errorMessage);
+      }
+
+      await this.resourceService.reportSyncMessage(
+        build.resourceId,
+        "Sync Completed Successfully"
+      );
+
+      await this.actionService.logInfo(step, response.url, {
+        githubUrl: response.url,
+      });
+      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
+      await this.actionService.complete(step, EnumActionStepStatus.Success);
+    } catch (error) {
+      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+      await this.actionService.logInfo(step, error);
+      await this.actionService.complete(step, EnumActionStepStatus.Failed);
+      await this.resourceService.reportSyncMessage(
+        build.resourceId,
+        `Error: ${error}`
+      );
+    }
+  }
+
+  async saveToGitHub(buildId: string): Promise<void> {
+    const build = await this.findOne({ where: { id: buildId } });
+
+    const oldBuild = await previousBuild(
+      this.prisma,
+      build.resourceId,
+      build.id,
+      build.createdAt
+    );
+
+    const user = await this.userService.findUser({
+      where: { id: build.userId },
+    });
+
+    const dSGResourceData = await this.getDSGResourceData(
+      build.resourceId,
+      build.id,
+      build.version,
+      user
+    );
+    const { resourceInfo } = dSGResourceData;
+
+    const resource = await this.resourceService.findOne({
+      where: { id: build.resourceId },
+    });
+
     const resourceRepository = await this.resourceService.gitRepository(
-      resource.id
+      build.resourceId
     );
 
     if (!resourceRepository) {
       return;
     }
 
-    const gitOrganization = await this.resourceService.gitOrganizationByResource(
-      {
-        where: { id: resource.id }
-      }
-    );
+    const gitOrganization =
+      await this.resourceService.gitOrganizationByResource({
+        where: { id: resource.id },
+      });
 
-    const commit = build.commit;
+    const commit = await this.commitService.findOne({
+      where: { id: build.commitId },
+    });
+
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
     const commitMessage =
@@ -470,64 +469,50 @@ export class BuildService {
 
     const project = await this.prisma.project.findUnique({
       where: {
-        id: build.resource.projectId
-      }
+        id: resource.projectId,
+      },
     });
 
-    const url = `${clientHost}/${project.workspaceId}/${build.resource.projectId}/${build.resourceId}/builds/${build.id}`;
+    const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/builds/${build.id}`;
 
     return this.actionService.run(
       build.actionId,
       PUSH_TO_GITHUB_STEP_NAME,
       PUSH_TO_GITHUB_STEP_MESSAGE,
-      async step => {
-        await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
+      async (step) => {
         try {
-          const pullRequestResponse = await this.queueService.sendCreateGitPullRequest(
-            {
-              gitOrganizationName: gitOrganization.name,
-              gitRepositoryName: resourceRepository.name,
-              resourceId: resource.id,
-              gitProvider: EnumGitProvider.Github,
-              installationId: gitOrganization.installationId,
-              newBuildId: build.id,
-              oldBuildId,
-              commit: {
-                head: `amplication-build-${build.id}`,
-                title: commitMessage,
-                body: `Amplication build # ${build.id}.
-                Commit message: ${commit.message}
-                
-                ${url}
-                `
-              },
-              gitResourceMeta
-            }
-          );
+          await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          await this.resourceService.reportSyncMessage(
-            build.resourceId,
-            'Sync Completed Successfully'
-          );
-          await this.actionService.logInfo(step, pullRequestResponse.url, {
-            githubUrl: pullRequestResponse.url
-          });
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GITHUB_STEP_FINISH_LOG
-          );
+          const createPullRequestArgs = {
+            gitOrganizationName: gitOrganization.name,
+            gitRepositoryName: resourceRepository.name,
+            resourceId: resource.id,
+            gitProvider: EnumGitProvider.Github,
+            installationId: gitOrganization.installationId,
+            newBuildId: build.id,
+            oldBuildId: oldBuild?.id,
+            commit: {
+              head: `amplication-build-${build.id}`,
+              title: commitMessage,
+              body: `Amplication build # ${build.id}.
+              Commit message: ${commit.message}
+              
+              ${url}
+              `,
+            },
+            gitResourceMeta: {
+              adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
+              serverPath: resourceInfo.settings.serverSettings.serverPath,
+            },
+          };
 
-          await this.actionService.complete(step, EnumActionStepStatus.Success);
+          await this.queueService.emitMessage(
+            this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
+            JSON.stringify(createPullRequestArgs)
+          );
         } catch (error) {
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GITHUB_STEP_FAILED_LOG
-          );
-          await this.actionService.logInfo(step, error);
-          await this.actionService.complete(step, EnumActionStepStatus.Failed);
-          await this.resourceService.reportSyncMessage(
-            build.resourceId,
-            `Error: ${error}`
+          this.logger.error(
+            `Failed to emit Create Pull Request Message. Error: ${error}`
           );
         }
       },
@@ -571,24 +556,24 @@ export class BuildService {
       where: {
         builds: {
           some: {
-            id: buildId
-          }
-        }
+            id: buildId,
+          },
+        },
       },
-      include: ENTITIES_INCLUDE
+      include: ENTITIES_INCLUDE,
     });
-    return (orderBy(
+    return orderBy(
       entities,
-      entity => entity.createdAt
-    ) as unknown) as CodeGenTypes.Entity[];
+      (entity) => entity.createdAt
+    ) as unknown as CodeGenTypes.Entity[];
   }
   async canUserAccess({
     userId,
-    buildId
+    buildId,
   }: CanUserAccessArgs): Promise<boolean> {
     const build = this.prisma.build.findFirst({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      where: { id: buildId, AND: { userId } }
+      where: { id: buildId, AND: { userId } },
     });
     return Boolean(build);
   }
@@ -602,23 +587,23 @@ export class BuildService {
   ): Promise<CodeGenTypes.DSGResourceData> {
     const resources = await this.resourceService.resources({
       where: {
-        project: { resources: { some: { id: resourceId } } }
-      }
+        project: { resources: { some: { id: resourceId } } },
+      },
     });
 
     const resource = resources.find(({ id }) => id === resourceId);
 
     const allPlugins = await this.pluginInstallationService.findMany({
-      where: { resource: { id: resourceId } }
+      where: { resource: { id: resourceId } },
     });
-    const plugins = allPlugins.filter(plugin => plugin.enabled);
+    const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
             {
-              where: { id: resourceId }
+              where: { id: resourceId },
             },
             user
           )
@@ -628,7 +613,7 @@ export class BuildService {
       ? await Promise.all(
           resources
             .filter(({ id }) => id !== resourceId)
-            .map(resource =>
+            .map((resource) =>
               this.getDSGResourceData(
                 resource.id,
                 buildId,
@@ -646,10 +631,10 @@ export class BuildService {
       pluginInstallations: plugins,
       resourceType: resource.resourceType,
       topics: await this.topicService.findMany({
-        where: { resource: { id: resourceId } }
+        where: { resource: { id: resourceId } },
       }),
       serviceTopics: await this.serviceTopicsService.findMany({
-        where: { resource: { id: resourceId } }
+        where: { resource: { id: resourceId } },
       }),
       resourceInfo: {
         name: resource.name,
@@ -657,9 +642,9 @@ export class BuildService {
         version: buildVersion,
         id: resourceId,
         url,
-        settings: serviceSettings
+        settings: serviceSettings,
       },
-      otherResources
+      otherResources,
     };
   }
 }

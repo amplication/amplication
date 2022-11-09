@@ -6,6 +6,7 @@ import { AppRouteProps } from "../../routes/routesUtil";
 import ProjectConfigurationSettingsPage from "./ProjectConfigurationSettingsPage";
 import ServiceSettingsPage from "./ServiceSettingsPage";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 type Props = AppRouteProps & {};
 
 const ResourceSettingsPage: React.FC<Props> = ({ innerRoutes }) => {

@@ -60,7 +60,7 @@ const Entity = ({ match }: Props) => {
     (data: Omit<models.Entity, "versionNumber">) => {
       /**@todo: check why the "fields" and "permissions" properties are not removed by omitDeep in the form */
 
-      let {
+      const {
         id,
         fields, // eslint-disable-line @typescript-eslint/no-unused-vars
         permissions, // eslint-disable-line @typescript-eslint/no-unused-vars

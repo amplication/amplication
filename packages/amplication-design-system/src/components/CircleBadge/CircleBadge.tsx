@@ -13,12 +13,13 @@ export type Props = {
     | "large"
     | "xlarge"
     | "xxlarge";
+  children: React.ReactNode;
 };
 
 export const CircleBadge: React.FC<Props> = ({
   name,
   color,
-  size = "medium",
+  size = "medium", 
   children,
 }) => (
   <div

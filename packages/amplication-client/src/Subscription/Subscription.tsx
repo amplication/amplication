@@ -11,7 +11,7 @@ import {
 } from "../util/paddle";
 import { EnumPanelStyle, Panel,CircularProgress,Icon } from "@amplication/design-system";
 import { format } from "date-fns";
-import { GET_CURRENT_WORKSPACE } from "../Workspaces/WorkspaceSelector";
+import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { SubscriptionStatus } from "./SubscriptionStatus";
 
 const CLASS_NAME = "subscription";
@@ -22,7 +22,7 @@ type TData = {
 const POLL_INTERVAL = 2000;
 
 function Subscription() {
-  const [transactionCompleted, setTransactionCompleted] = useState<Boolean>(
+  const [transactionCompleted, setTransactionCompleted] = useState<boolean>(
     false
   );
   const { trackEvent } = useTracking();

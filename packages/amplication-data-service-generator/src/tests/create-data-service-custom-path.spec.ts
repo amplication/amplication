@@ -33,6 +33,7 @@ describe("createDataService", () => {
       resourceType: EnumResourceType.Service,
       pluginInstallations: installedPlugins,
     });
+
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import download from "downloadjs";
 import { isEmpty } from "lodash";
 
@@ -30,15 +30,10 @@ export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
   build: models.Build;
-  onError: (error: Error) => void;
 };
 
-const BuildSteps = ({ build, onError }: Props) => {
+const BuildSteps = ({ build }: Props) => {
   const { data } = useBuildWatchStatus(build);
-
-  const handleDownloadClick = useCallback(() => {
-    downloadArchive(data.build.archiveURI).catch(onError);
-  }, [data.build.archiveURI, onError]);
 
   const stepGenerateCode = useMemo(() => {
     if (!data.build.action?.steps?.length) {
@@ -87,18 +82,6 @@ const BuildSteps = ({ build, onError }: Props) => {
         <span>Generate Code</span>
         <BuildStepsStatus status={stepGenerateCode.status} />
         <span className="spacer" />
-        <Button
-          buttonStyle={EnumButtonStyle.Text}
-          icon="download1"
-          disabled={
-            stepGenerateCode.status !== models.EnumActionStepStatus.Success
-          }
-          onClick={handleDownloadClick}
-          eventData={{
-            eventName: "downloadBuild",
-            versionNumber: data.build.version,
-          }}
-        />
       </Panel>
       {stepGithub && (
         <Panel
