@@ -54,7 +54,6 @@ const useServiceConnection = (resourceId: string) => {
 
     onCompleted: (data) => {
       addBlock(data.deleteTopic.id);
-      refetch(); // need to refetch from another place
     },
   });
 
