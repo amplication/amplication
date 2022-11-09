@@ -6,10 +6,7 @@ spec:
   template:
     serviceAccountName: argo-events-sa
   dependencies:
-    - name: resource-id
-      eventSourceName: webhook
-      eventName: example
-    - name: build-id
+    - name: request
       eventSourceName: webhook
       eventName: example
   triggers:
@@ -58,10 +55,10 @@ spec:
                 backoffLimit: 0
           parameters:
             - src:
-                dependencyName: build-id
+                dependencyName: request
                 dataKey: body.buildId
               dest: spec.template.spec.containers.0.env.0.value
             - src:
-                dependencyName: resource-id
+                dependencyName: request
                 dataKey: body.resourceId
               dest: spec.template.spec.containers.0.env.1.value
