@@ -4,7 +4,9 @@ import { EnumBlockType } from '../../enums/EnumBlockType';
 import { User } from '../../models';
 import { BlockService } from '../block/block.service';
 import { BlockTypeService } from '../block/blockType.service';
+import { ServiceTopicsService } from '../serviceTopics/serviceTopics.service';
 import { CreateTopicArgs } from './dto/CreateTopicArgs';
+import { DeleteTopicArgs } from './dto/DeleteTopicArgs';
 import { FindManyTopicArgs } from './dto/FindManyTopicArgs';
 import { Topic } from './dto/Topic';
 import { UpdateTopicArgs } from './dto/UpdateTopicArgs';
@@ -14,11 +16,15 @@ export class TopicService extends BlockTypeService<
   Topic,
   FindManyTopicArgs,
   CreateTopicArgs,
-  UpdateTopicArgs
+  UpdateTopicArgs,
+  DeleteTopicArgs
 > {
   blockType = EnumBlockType.Topic;
 
-  constructor(protected readonly blockService: BlockService) {
+  constructor(
+    protected readonly blockService: BlockService,
+    protected readonly serviceTopics: ServiceTopicsService
+  ) {
     super(blockService);
   }
 
@@ -31,5 +37,15 @@ export class TopicService extends BlockTypeService<
       throw new Error('Invalid name');
     }
     return super.create(args, user);
+  }
+
+  async delete(
+    args: DeleteTopicArgs,
+    @UserEntity() user: User
+  ): Promise<Topic> {
+    //todo: update service topics after delete topic
+    const topicId = args.where.id;
+    await this.serviceTopics.removeTopicFromAllServices(topicId, user);
+    return super.delete(args, user);
   }
 }

@@ -9,13 +9,15 @@ import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
 import { User } from '../../models';
 import { BlockService } from '../block/block.service';
+import { DeleteEntityPageArgs } from './dto/DeleteEntityPageArgs';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
   EntityPage,
   FindManyEntityPageArgs,
   CreateEntityPageArgs,
-  UpdateEntityPageArgs
+  UpdateEntityPageArgs,
+  DeleteEntityPageArgs
 > {
   blockType = EnumBlockType.EntityPage;
 

@@ -5,6 +5,8 @@ import { BlockTypeResolver } from '../block/blockType.resolver';
 import { EntityPage } from './dto/EntityPage';
 import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
 import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
+import { DeleteEntityFieldArgs } from '../entity/dto';
+import { DeleteEntityPageArgs } from './dto/DeleteEntityPageArgs';
 
 @Resolver(() => EntityPage)
 export class EntityPageResolver extends BlockTypeResolver(
@@ -14,7 +16,9 @@ export class EntityPageResolver extends BlockTypeResolver(
   'createEntityPage',
   CreateEntityPageArgs,
   'updateEntityPage',
-  UpdateEntityPageArgs
+  UpdateEntityPageArgs,
+  'deleteEntityPage',
+  DeleteEntityPageArgs
 ) {
   constructor(private readonly service: EntityPageService) {
     super();

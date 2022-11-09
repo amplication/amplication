@@ -868,8 +868,11 @@ export type Mutation = {
   deleteEntityPermissionField: EntityPermissionField;
   deleteGitOrganization: Scalars['Boolean'];
   deleteGitRepository: Resource;
+  deletePluginInstallation: PluginInstallation;
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
+  deleteServiceTopics: ServiceTopics;
+  deleteTopic: Topic;
   deleteUser?: Maybe<User>;
   deleteWorkspace?: Maybe<Workspace>;
   discardPendingChanges?: Maybe<Scalars['Boolean']>;
@@ -1021,11 +1024,23 @@ export type MutationDeleteGitRepositoryArgs = {
   gitRepositoryId: Scalars['String'];
 };
 
+export type MutationDeletePluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
 export type MutationDeleteResourceArgs = {
   where: WhereUniqueInput;
 };
 
 export type MutationDeleteResourceRoleArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationDeleteServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+export type MutationDeleteTopicArgs = {
   where: WhereUniqueInput;
 };
 

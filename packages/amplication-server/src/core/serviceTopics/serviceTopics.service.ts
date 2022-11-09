@@ -10,13 +10,16 @@ import { ResourceService } from '../resource/resource.service';
 import { EnumResourceType } from '../resource/dto/EnumResourceType';
 import { AmplicationError } from '../../errors/AmplicationError';
 import { BlockService } from '../block/block.service';
+import { DeleteServiceTopicsArgs } from './dto/DeleteServiceTopicsArgs';
+import { MessagePatternCreateInput } from '@amplication/code-gen-types/dist/models';
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
   ServiceTopics,
   FindManyServiceTopicsArgs,
   CreateServiceTopicsArgs,
-  UpdateServiceTopicsArgs
+  UpdateServiceTopicsArgs,
+  DeleteServiceTopicsArgs
 > {
   blockType = EnumBlockType.ServiceTopics;
 
@@ -74,6 +77,7 @@ export class ServiceTopicsService extends BlockTypeService<
     args: UpdateServiceTopicsArgs,
     user: User
   ): Promise<ServiceTopics> {
+    console.log('update service topic');
     const block = await this.blockService.findOne({
       where: args.where
     });
@@ -84,5 +88,50 @@ export class ServiceTopicsService extends BlockTypeService<
     );
 
     return super.update(args, user);
+  }
+
+  async removeTopicFromAllServices(topicId: string, user: User): Promise<void> {
+    const serviceTopicList = await this.blockService.findManyByBlockType<
+      ServiceTopics
+    >({}, EnumBlockType.ServiceTopics);
+    serviceTopicList.forEach(async serviceTopics => {
+      const topicToRemove = serviceTopics.patterns.findIndex(
+        topic => topic.topicId === topicId
+      );
+      console.log({ topicToRemove });
+      if (topicToRemove === -1) return;
+
+      console.log(
+        serviceTopics.patterns,
+        'serviceTopics.patterns before remove'
+      );
+
+      serviceTopics.patterns.splice(topicToRemove, 1);
+
+      console.log(
+        serviceTopics.patterns,
+        'serviceTopics.patterns after remove'
+      );
+
+      const updatePatterns: MessagePatternCreateInput[] = [];
+      serviceTopics.patterns.forEach(pattern => {
+        updatePatterns.push({ type: pattern.type, topicId: pattern.topicId });
+      });
+
+      await this.update(
+        {
+          data: {
+            patterns: updatePatterns,
+            messageBrokerId: serviceTopics.messageBrokerId,
+            enabled: true
+          },
+          where: {
+            id: serviceTopics.id
+          }
+        },
+        user
+      );
+    });
+    return;
   }
 }

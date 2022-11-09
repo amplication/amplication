@@ -1,16 +1,25 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { Reference, useMutation, useQuery } from "@apollo/client";
+import { useContext } from "react";
+import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
   CREATE_SERVICE_MESSAGE_BROKER_CONNECTION,
+  DELETE_TOPIC_FIELD,
   GET_SERVICE_MESSAGE_BROKER_CONNECTIONS,
   UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION,
 } from "../queries/serviceTopicsQueries";
+type TData = {
+  deleteTopic: models.Topic;
+};
 
 const useServiceConnection = (resourceId: string) => {
+  const { addBlock } = useContext(AppContext);
+
   const {
     data: serviceTopicsList,
     loading: loadingServiceTopics,
     error: errorServiceTopics,
+    refetch,
   } = useQuery<{
     ServiceTopicsList: models.ServiceTopics[];
   }>(GET_SERVICE_MESSAGE_BROKER_CONNECTIONS, {
@@ -22,27 +31,39 @@ const useServiceConnection = (resourceId: string) => {
   const [updateServiceTopics, { error: updateError }] = useMutation<{
     updateServiceTopics: models.ServiceTopics;
   }>(UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION, {
-    refetchQueries: [
-      {
-        query: GET_SERVICE_MESSAGE_BROKER_CONNECTIONS,
-        variables: {
-          resourceId: resourceId,
+    onCompleted() {
+      refetch();
+    },
+  });
+
+  const [deleteTopic] = useMutation<TData>(DELETE_TOPIC_FIELD, {
+    update(cache, { data }) {
+      if (!data || data === undefined) return;
+      const deletedTopicId = data.deleteTopic.id;
+      cache.modify({
+        fields: {
+          Topics(existingTopicRefs, { readField }) {
+            return existingTopicRefs.filter(
+              (topicRef: Reference) =>
+                deletedTopicId !== readField("id", topicRef)
+            );
+          },
         },
-      },
-    ],
+      });
+    },
+
+    onCompleted: (data) => {
+      addBlock(data.deleteTopic.id);
+      refetch(); // need to refetch from another place
+    },
   });
 
   const [createServiceTopics, { error: createError }] = useMutation<{
     createServiceTopics: models.ServiceTopics;
   }>(CREATE_SERVICE_MESSAGE_BROKER_CONNECTION, {
-    refetchQueries: [
-      {
-        query: GET_SERVICE_MESSAGE_BROKER_CONNECTIONS,
-        variables: {
-          resourceId: resourceId,
-        },
-      },
-    ],
+    onCompleted() {
+      refetch();
+    },
   });
 
   return {
@@ -53,6 +74,7 @@ const useServiceConnection = (resourceId: string) => {
     updateError,
     createServiceTopics,
     createError,
+    deleteTopic,
   };
 };
 

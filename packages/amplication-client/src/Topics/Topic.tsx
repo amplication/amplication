@@ -1,17 +1,20 @@
-import React, { useCallback } from "react";
-import { useRouteMatch } from "react-router-dom";
+import React, { useCallback, useContext, useState } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Snackbar, HorizontalRule } from "@amplication/design-system";
+import "./Topic.scss";
 
 import { formatError } from "../util/error";
 import TopicForm from "./TopicForm";
 import * as models from "../models";
+import { DeleteTopic } from "./DeleteTopic";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   Topic: models.Topic;
 };
 
-const CLASS_NAME = "topic-page";
+const CLASS_NAME = "topic";
 
 const Topic = () => {
   const match = useRouteMatch<{
@@ -19,7 +22,9 @@ const Topic = () => {
     topicId: string;
   }>("/:workspace/:project/:resource/topics/:topicId");
 
-  const { topicId } = match?.params ?? {};
+  const { topicId, resource } = match?.params ?? {};
+  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const history = useHistory();
 
   const { data, error, loading } = useQuery<TData>(GET_TOPIC, {
     variables: {
@@ -45,11 +50,27 @@ const Topic = () => {
 
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
+  const [error2, setError] = useState<Error>();
+
+  if (error2) console.log({ error2 });
+
+  const handleDeleteField = useCallback(() => {
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resource}/topics`
+    );
+  }, [history, currentWorkspace?.id, currentProject?.id, resource]);
 
   return (
     <>
       <div className={`${CLASS_NAME}__header`}>
         <h3>Topic Settings</h3>
+        {data?.Topic && (
+          <DeleteTopic
+            topic={data?.Topic}
+            onError={setError}
+            onDelete={handleDeleteField}
+          />
+        )}
       </div>
 
       <HorizontalRule />

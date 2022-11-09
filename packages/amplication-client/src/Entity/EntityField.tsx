@@ -33,7 +33,9 @@ const EntityField = () => {
   const [lookupPendingData, setLookupPendingData] = useState<Values | null>(
     null
   );
-  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(
+    AppContext
+  );
   const history = useHistory();
   const [error, setError] = useState<Error>();
 
