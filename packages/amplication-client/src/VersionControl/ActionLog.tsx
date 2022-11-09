@@ -1,15 +1,11 @@
 import React, { useMemo } from "react";
 import { LazyLog } from "react-lazylog";
 import { isEmpty, last } from "lodash";
-
 import Timer from "../Components/Timer";
-
 import { differenceInSeconds } from "date-fns";
-
 import chalk from "chalk";
 import * as models from "../models";
 import logsImage from "../assets/images/logs.svg";
-
 import "./ActionLog.scss";
 import {
   CircleIcon,
@@ -152,6 +148,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
                   extraLines={0}
                   enableSearch={false}
                   text={stepData.messages}
+                  selectableLines={true}
                   height={10} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
                 />
               </div>
