@@ -36,7 +36,11 @@ jobs:
         id: cache
         uses: actions/cache@v2
         with:
-          path: node_modules
+          path: |
+            node_modules
+            packages/amplication-client/node_modules
+            packages/amplication-data-service-generator/node_modules
+            packages/amplication-design-system/node_modules
           key: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
 
       - uses: actions/setup-node@v1
