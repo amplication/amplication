@@ -1,8 +1,7 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import * as models from "../models";
 import { ConfirmationDialog } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { AppContext } from "../context/appContext";
 import useServiceConnection from "../ServiceConnections/hooks/useServiceConnection";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
@@ -18,9 +17,8 @@ const CLASS_NAME = "delete-entity-field";
 
 export const DeleteTopic = ({ topic, onDelete, onError }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const { currentResource } = useContext(AppContext);
 
-  const { deleteTopic } = useServiceConnection(currentResource?.id);
+  const { deleteTopic } = useServiceConnection(topic.id); // move this logic to topic hooks
 
   const handleDelete = useCallback(
     (event) => {
