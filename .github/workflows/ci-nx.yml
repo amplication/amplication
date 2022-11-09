@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: cache-node-modules-${{ hashFiles('package-lock.json') }}
+          key: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
 
       - uses: actions/setup-node@v1
         if: steps.cache.outputs.cache-hit != 'true'
