@@ -20,7 +20,7 @@
           "packages/amplication-client/src/favicon.ico",
           "packages/amplication-client/src/assets"
         ],
-        "styles": ["packages/amplication-client/src/styles.scss"],
+        "styles": ["packages/amplication-client/src/index.scss"],
         "scripts": [],
         "webpackConfig": "@nrwl/react/plugins/webpack"
       },

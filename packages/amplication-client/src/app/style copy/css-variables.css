@@ -1,0 +1,19 @@
+:root {
+  --fixed-menu-panel-width: 300px;
+  --fixed-menu-panel-max-width: 300px;
+  --app-footer-height: 50px;
+
+  --theme-yellow: #f5b82e;
+  --theme-red: #ff6e6e;
+  --theme-pink: #f685a1;
+  --theme-turquoise: #41cadd;
+  --theme-green: #8dd9b9;
+  --theme-blue: #20a4f3;
+
+  --theme-turquoise-transparent: rgba(65, 202, 221, 0.1);
+
+  --negative-light: #f85b6e;
+  --negative-light-transparent: rgba(248, 91, 110, 0.1);
+
+  --negative-bg: #f8eaec;
+}
