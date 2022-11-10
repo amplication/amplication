@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { getToken } from "../../authentication/authentication";
-import { REACT_APP_STORAGE_GATEWAY_URL } from "../../../env";
+import { REACT_APP_STORAGE_GATEWAY_URL } from "../../env";
 import { NodeTypeEnum } from "./NodeTypeEnum";
 import assert from "assert";
 

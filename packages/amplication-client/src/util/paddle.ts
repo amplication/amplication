@@ -1,4 +1,4 @@
-import { REACT_APP_PADDLE_VENDOR_ID } from "../../env";
+import { REACT_APP_PADDLE_VENDOR_ID } from "../env";
 
 const PADDLE_SANDBOX_VENDOR_ID = "2673";
 

@@ -5,7 +5,7 @@ import { isMobileOnly, isMacOs } from "react-device-detect";
 
 import classNames from "classnames";
 import { unsetToken } from "../authentication/authentication";
-import { ReactComponent as LogoTextual } from "../../assets/logo-textual.svg";
+import { ReactComponent as LogoTextual } from "../assets/logo-textual.svg";
 import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 import UserBadge from "../Components/UserBadge";

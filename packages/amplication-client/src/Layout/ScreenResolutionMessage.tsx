@@ -3,7 +3,7 @@ import "./ScreenResolutionMessage.scss";
 import { isMobile } from "react-device-detect";
 import { useWindowSize } from "rooks";
 import classNames from "classnames";
-import { ReactComponent as MobileImage } from "../../assets/images/mobile-message-white.svg";
+import { ReactComponent as MobileImage } from "../assets/images/mobile-message-white.svg";
 
 const CLASS_NAME = "screen-resolution-message";
 const MIN_WIDTH = 900;

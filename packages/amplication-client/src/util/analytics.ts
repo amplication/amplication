@@ -1,5 +1,5 @@
 import * as reactTracking from "react-tracking";
-import { REACT_APP_AMPLITUDE_API_KEY } from "../../env";
+import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 
 export interface Event {
   eventName: string;

@@ -2,7 +2,7 @@ import React from "react";
 import { Icon } from "@amplication/design-system";
 import { isEmpty } from "lodash";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { REACT_APP_GITHUB_CONTROLLER_LOGIN_URL } from "../../env";
+import { REACT_APP_GITHUB_CONTROLLER_LOGIN_URL } from "../env";
 import "./GitHubLoginButton.scss";
 
 export const GitHubLoginButton = () => {

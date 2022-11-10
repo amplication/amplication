@@ -10,7 +10,7 @@ import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 
 import "./BuildSteps.scss";
-import { REACT_APP_SERVER_URI } from "../../env";
+import { REACT_APP_SERVER_URI } from "../env";
 
 const CLASS_NAME = "build-steps";
 
