@@ -75,9 +75,7 @@ export const EntitiesDiagramField = React.memo(
                 type="button"
                 onClick={handleClick}
                 icon="edit_2"
-              >
-                <></>
-              </Button>
+              />
               {selected && (
                 <div className={`${CLASS_NAME}__fields__field__edit-area`}>
                   <HotKeys keyMap={keyMap} handlers={handlers}>

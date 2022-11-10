@@ -124,17 +124,13 @@ function DragPluginsCatalogItem({
                 buttonStyle={EnumButtonStyle.Text}
                 onClick={handlePromote}
                 icon="arrow_up"
-              >
-                <></>
-              </Button>
+              />
               <span>{(pluginInstallation as any).order}</span>
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 onClick={handleDemote}
                 icon="arrow_down"
-              >
-                <></>
-              </Button>
+              />
             </div>
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />

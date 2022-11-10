@@ -117,9 +117,7 @@ const PendingChanges = ({ projectId }: Props) => {
                 buttonStyle={EnumButtonStyle.Text}
                 disabled={pendingChangesDataLoading || noChanges}
                 icon="compare"
-              >
-                <></>
-              </Button>
+              />
             </Link>
           </Tooltip>
           <Tooltip aria-label={"Discard Pending Changes"} direction="nw">
@@ -128,9 +126,7 @@ const PendingChanges = ({ projectId }: Props) => {
               onClick={handleToggleDiscardDialog}
               disabled={pendingChangesDataLoading || noChanges}
               icon="trash_2"
-            >
-              <></>
-            </Button>
+            />
           </Tooltip>
         </div>
       </div>

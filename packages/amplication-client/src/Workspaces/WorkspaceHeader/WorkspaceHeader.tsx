@@ -217,9 +217,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
                 buttonStyle={EnumButtonStyle.Text}
                 icon="search"
                 iconSize="small"
-              >
-                <></>
-              </Button>
+              />
             </Tooltip>
           }
         />
@@ -235,9 +233,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           buttonStyle={EnumButtonStyle.Text}
           icon="log_out"
           onClick={handleSignOut}
-        >
-          <></>
-        </Button>
+        />
       </div>
     </div>
   );

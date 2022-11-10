@@ -134,9 +134,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
                   formik.values.displayName
                 ),
               })}
-            >
-              <></>
-            </Button>
+            />
           </Form>
         )}
       </Formik>

@@ -19,9 +19,7 @@ const PendingChangesBar = ({ projectId, handleClick }: Props) => {
           icon="close"
           iconSize="xsmall"
           onClick={handleClick}
-        >
-          <></>
-        </Button>
+        />
         <h2>Pending Changes</h2>
       </div>
       <PendingChanges projectId={projectId} />

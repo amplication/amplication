@@ -72,9 +72,7 @@ export const DeleteApiToken = ({ apiToken, onDelete, onError }: Props) => {
             buttonStyle={EnumButtonStyle.Text}
             icon="trash_2"
             onClick={handleDelete}
-          >
-            <></>
-          </Button>
+          />
         )}
       </div>
     </>

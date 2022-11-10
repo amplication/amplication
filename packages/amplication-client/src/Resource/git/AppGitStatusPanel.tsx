@@ -71,9 +71,7 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
                 eventData={{
                   eventName: "openGithubCodeView",
                 }}
-              >
-                <></>
-              </Button>
+              />
             </a>
           </div>
           <div className={`${CLASS_NAME}__last-sync`}>

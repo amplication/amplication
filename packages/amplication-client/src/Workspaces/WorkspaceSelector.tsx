@@ -70,9 +70,7 @@ function WorkspaceSelector() {
               type="button"
               icon={isOpen ? "chevron_up" : "chevron_down"}
               iconSize="xsmall"
-            >
-              <></>
-            </Button>
+            />
           </>
         ) : (
           <CircularProgress centerToParent />

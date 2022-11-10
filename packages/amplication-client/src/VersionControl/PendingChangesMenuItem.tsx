@@ -40,9 +40,7 @@ const PendingChangesMenuItem = ({ projectId }: Props) => {
             onClick={handleClick}
             icon="pending_changes_outline"
             iconSize={ICON_SIZE}
-          >
-            <></>
-          </Button>
+          />
 
           {pendingChangesBadge && (
             <span className={`${CLASS_NAME}__badge`}>

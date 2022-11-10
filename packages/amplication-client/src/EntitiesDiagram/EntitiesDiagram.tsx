@@ -309,28 +309,21 @@ export default function EntitiesDiagram() {
           type="button"
           onClick={zoomIn}
           icon="zoom_in"
-        >
-          <></>
-        </Button>
+        />
         <Button
           className={`${CLASS_NAME}__toolbar__button`}
           buttonStyle={EnumButtonStyle.Text}
           type="button"
           onClick={zoomOut}
           icon="zoom_out"
-        >
-          <></>
-        </Button>
-
+        />
         <Button
           className={`${CLASS_NAME}__toolbar__button`}
           buttonStyle={EnumButtonStyle.Text}
           type="button"
           onClick={zoomReset}
           icon="maximize_2"
-        >
-          <></>
-        </Button>
+        />
       </div>
       <div className={`${CLASS_NAME}__scroll`}>
         <div className={`${CLASS_NAME}__scroll-content`}>

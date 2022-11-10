@@ -91,9 +91,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
                 buttonStyle={EnumButtonStyle.Text}
                 icon="trash_2"
                 onClick={handleDelete}
-              >
-                <></>
-              </Button>
+              />
             )}
           </div>
           <div className={`${CLASS_NAME}__row`}>

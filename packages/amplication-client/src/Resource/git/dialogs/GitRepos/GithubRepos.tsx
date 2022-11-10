@@ -109,9 +109,7 @@ function GitRepos({
                 }}
                 type="button"
                 icon="refresh_cw"
-              >
-                <></>
-              </Button>
+              />
             </Tooltip>
           )}
         </div>
