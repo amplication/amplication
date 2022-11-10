@@ -66,12 +66,12 @@ export const Button = ({
       )}
       {...rest}
       leadingIcon={
-        iconPosition === EnumIconPosition.Left
+        icon && iconPosition === EnumIconPosition.Left
           ? () => <Icon icon={icon as string} size={iconSize || "small"} />
           : undefined
       }
       trailingIcon={
-        iconPosition === EnumIconPosition.Right
+        icon && iconPosition === EnumIconPosition.Right
           ? () => <Icon icon={icon as string} size={iconSize || "small"} />
           : undefined
       }
