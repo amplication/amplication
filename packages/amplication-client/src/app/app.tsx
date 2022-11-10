@@ -1,13 +1,5 @@
-import "./app.scss";
-import NxWelcome from "./nx-welcome";
-
 export function App() {
-  return (
-    <>
-      <NxWelcome title="amplication-client" />
-      <div />
-    </>
-  );
+  return <div>hi my name is jeff</div>;
 }
 
 export default App;
