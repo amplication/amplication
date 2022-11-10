@@ -1,12 +1,12 @@
 import React, { useCallback, useContext } from "react";
 
-import { SelectMenu as PrimerSelectMenu } from "@primer/react-deprecated";
+import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
 import type {
   SelectMenuProps,
   SelectMenuModalProps as PrimerSelectMenuModalProps,
   SelectMenuItemProps as PrimerSelectMenuItemProps,
   SelectMenuListProps as PrimerSelectMenuListProps,
-} from "@primer/react-deprecated";
+} from "@primer/react/deprecated";
 
 import classNames from "classnames";
 import SearchField, {
