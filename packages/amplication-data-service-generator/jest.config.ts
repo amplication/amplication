@@ -1,6 +1,6 @@
 export default {
   displayName: "amplication-data-service-generator",
-  preset: "ts-jest",
+  preset: "../../jest.preset.js",
   globals: {
     "ts-jest": {
       tsconfig: "<rootDir>/tsconfig.spec.json",
