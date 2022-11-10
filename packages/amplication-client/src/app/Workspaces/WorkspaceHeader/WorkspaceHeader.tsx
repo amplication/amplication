@@ -110,12 +110,11 @@ const WorkspaceHeader: React.FC<{}> = () => {
               <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
                 <SelectMenu
                   title={
-                    "FIX ME"
-                    // <p
-                    //   className={`${CLASS_NAME}__breadcrumbs__resource__title`}
-                    // >
-                    //   {getSelectedEntities() || "Resource List"}
-                    // </p>
+                    <p
+                      className={`${CLASS_NAME}__breadcrumbs__resource__title`}
+                    >
+                      {getSelectedEntities() || "Resource List"}
+                    </p>
                   }
                   buttonStyle={EnumButtonStyle.Text}
                   buttonClassName={isResourceRoute ? "highlight" : ""}

@@ -57,13 +57,13 @@ const PendingChangesPage = () => {
                 {resourceChanges.resource.name}
               </div>
               {resourceChanges.changes.map((change) => (
+                <></>
                 // <PendingChangeWithCompare
                 //   key={change.originId}
                 //   change={change}
                 //   compareType={EnumCompareType.Pending}
                 //   splitView={splitView}
                 // />
-                <>FIX ME</>
               ))}
             </div>
           ))}

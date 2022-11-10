@@ -113,6 +113,7 @@ const PendingChangeDiffEntity = ({
       {loadingCurrentVersion || loadingOtherVersion ? (
         <CircularProgress centerToParent />
       ) : (
+        <></>
         // <ReactDiffViewer
         //   styles={DIFF_STYLES}
         //   compareMethod={DiffMethod.WORDS}

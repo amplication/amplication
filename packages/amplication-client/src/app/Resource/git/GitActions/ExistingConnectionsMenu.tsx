@@ -30,17 +30,16 @@ export default function ExistingConnectionsMenu({
 }: Props) {
   return (
     <SelectMenu
-      title="FIX ME"
-      // title={
-      //   selectedGitOrganization?.name ? (
-      //     <GitOrganizationMenuItemContent
-      //       gitOrganization={selectedGitOrganization}
-      //       isMenuTitle
-      //     />
-      //   ) : (
-      //     "Select new organization"
-      //   )
-      // }
+      title={
+        selectedGitOrganization?.name ? (
+          <GitOrganizationMenuItemContent
+            gitOrganization={selectedGitOrganization}
+            isMenuTitle
+          />
+        ) : (
+          "Select new organization"
+        )
+      }
       buttonStyle={EnumButtonStyle.Text}
       className={`${CLASS_NAME}__menu`}
       icon="chevron_down"
