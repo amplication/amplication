@@ -4,7 +4,7 @@
   "include": [],
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
+    "module": "esnext",
     "emitDecoratorMetadata": true,
     "target": "es2017",
     "declaration": true,
