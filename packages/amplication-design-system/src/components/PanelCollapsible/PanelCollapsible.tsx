@@ -107,9 +107,7 @@ const PanelCollapsibleHeader = ({
           icon="chevron_down"
           onClick={handleCollapseChange}
           disabled={!collapseEnabled}
-        >
-          <></>
-        </Button>
+        />
       )}
       <div className={`${CLASS_NAME}__header__content`}>{children}</div>
     </div>
