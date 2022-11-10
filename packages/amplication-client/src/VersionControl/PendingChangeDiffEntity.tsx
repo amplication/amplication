@@ -1,8 +1,10 @@
 import React, { useMemo } from "react";
 import YAML from "yaml";
 import { gql, useQuery } from "@apollo/client";
-import omitDeep from "deepdash-es/omitDeep";
-// import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
+const omitDeep = require("deepdash/omitDeep");
+import ReactDiffViewer, {
+  DiffMethod,
+} from "@amplication/react-diff-viewer-continued";
 import * as models from "../models";
 import "./PendingChangeDiff.scss";
 import { CircularProgress } from "@amplication/design-system";
@@ -113,16 +115,15 @@ const PendingChangeDiffEntity = ({
       {loadingCurrentVersion || loadingOtherVersion ? (
         <CircularProgress centerToParent />
       ) : (
-        <></>
-        // <ReactDiffViewer
-        //   styles={DIFF_STYLES}
-        //   compareMethod={DiffMethod.WORDS}
-        //   oldValue={otherValue}
-        //   newValue={newValue}
-        //   leftTitle={splitView ? "This Version" : undefined}
-        //   rightTitle="Previous Version"
-        //   splitView={splitView}
-        // />
+        <ReactDiffViewer
+          styles={DIFF_STYLES}
+          compareMethod={DiffMethod.WORDS}
+          oldValue={otherValue}
+          newValue={newValue}
+          leftTitle={splitView ? "This Version" : undefined}
+          rightTitle="Previous Version"
+          splitView={splitView}
+        />
       )}
     </div>
   );

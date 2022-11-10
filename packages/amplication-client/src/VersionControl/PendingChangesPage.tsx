@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext } from "react";
 import PageContent from "../Layout/PageContent";
-// import PendingChangeWithCompare from "./PendingChangeWithCompare";
+import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import { MultiStateToggle, Snackbar } from "@amplication/design-system";
 import "./PendingChangesPage.scss";
@@ -57,13 +57,12 @@ const PendingChangesPage = () => {
                 {resourceChanges.resource.name}
               </div>
               {resourceChanges.changes.map((change) => (
-                <></>
-                // <PendingChangeWithCompare
-                //   key={change.originId}
-                //   change={change}
-                //   compareType={EnumCompareType.Pending}
-                //   splitView={splitView}
-                // />
+                <PendingChangeWithCompare
+                  key={change.originId}
+                  change={change}
+                  compareType={EnumCompareType.Pending}
+                  splitView={splitView}
+                />
               ))}
             </div>
           ))}

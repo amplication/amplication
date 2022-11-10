@@ -109,6 +109,7 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-command-palette": "^0.21.1",
     "react-device-detect": "^2.2.2",
+    "@amplication/react-diff-viewer-continued": "^3.4.3",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-draggable": "^4.4.5",
