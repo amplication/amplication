@@ -13,7 +13,7 @@
         "outputPath": "dist/packages/amplication-client",
         "index": "packages/amplication-client/src/index.html",
         "baseHref": "/",
-        "main": "packages/amplication-client/src/main.tsx",
+        "main": "packages/amplication-client/src/index.tsx",
         "polyfills": "packages/amplication-client/src/polyfills.ts",
         "tsConfig": "packages/amplication-client/tsconfig.app.json",
         "assets": [
