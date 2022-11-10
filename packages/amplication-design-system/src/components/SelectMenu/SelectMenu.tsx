@@ -1,10 +1,12 @@
 import React, { useCallback, useContext } from "react";
 
-import { default as PrimerSelectMenu } from "@primer/react-deprecated/SelectMenu";
-import type { SelectMenuProps } from "@primer/react-deprecated/SelectMenu";
-import type { SelectMenuModalProps as PrimerSelectMenuModalProps } from "@primer/react-deprecated/SelectMenuModal";
-import type { SelectMenuItemProps as PrimerSelectMenuItemProps } from "@primer/react-deprecated/SelectMenuItem";
-import type { SelectMenuListProps as PrimerSelectMenuListProps } from "@primer/react-deprecated/SelectMenuList";
+import { SelectMenu as PrimerSelectMenu } from "@primer/react-deprecated";
+import type {
+  SelectMenuProps,
+  SelectMenuModalProps as PrimerSelectMenuModalProps,
+  SelectMenuItemProps as PrimerSelectMenuItemProps,
+  SelectMenuListProps as PrimerSelectMenuListProps,
+} from "@primer/react-deprecated";
 
 import classNames from "classnames";
 import SearchField, {

@@ -1,6 +1,6 @@
 import React from "react";
-import { default as PrimerButton } from "@primer/react-deprecated/Button";
-import type { ButtonProps as PrimerButtonProps } from "@primer/react-deprecated/Button";
+import { Button as PrimerButton } from "@primer/react-deprecated";
+import type { ButtonProps as PrimerButtonProps } from "@primer/react-deprecated";
 
 import classNames from "classnames";
 import { Icon, IconSize } from "../Icon/Icon";
