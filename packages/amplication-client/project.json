@@ -18,7 +18,17 @@
         "tsConfig": "packages/amplication-client/tsconfig.app.json",
         "assets": [
           "packages/amplication-client/src/favicon.ico",
-          "packages/amplication-client/src/assets"
+          "packages/amplication-client/src/assets",
+          {
+            "glob": "scripts/entrypoint.sh",
+            "input": "packages/amplication-client",
+            "output": "/scripts"
+          },
+          {
+            "glob": "scripts/inject-variables.js",
+            "input": "packages/amplication-client",
+            "output": "/scripts"
+          }
         ],
         "styles": ["packages/amplication-client/src/index.scss"],
         "scripts": [],
@@ -77,6 +87,13 @@
       "options": {
         "jestConfig": "packages/amplication-client/jest.config.ts",
         "passWithNoTests": true
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/client:latest"]
       }
     }
   },
