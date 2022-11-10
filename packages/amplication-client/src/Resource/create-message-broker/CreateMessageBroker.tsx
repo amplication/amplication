@@ -7,6 +7,7 @@ import {
 } from "@amplication/design-system";
 import React, { useCallback, useContext } from "react";
 import { match, useHistory } from "react-router-dom";
+import { useTracking, Event as TrackEvent } from "../../util/analytics";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import { AppContext } from "../../context/appContext";
@@ -23,6 +24,18 @@ type Props = AppRouteProps & {
   }>;
 };
 
+const CREATE_MESSAGE_BROKER_EVENT_DATA: TrackEvent = {
+  eventName: "createMessageBrokerClick",
+};
+
+const BACK_TO_PROJECTS_EVENT_DATA: TrackEvent = {
+  eventName: "backToProjectsClick",
+};
+
+const ERROR_CREATE_MESSAGE_BROKER_EVENT_DATA: TrackEvent = {
+  eventName: "ErrorCreateMessageBroker",
+};
+
 const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const {
     currentProject,
@@ -33,17 +46,23 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   } = useContext(AppContext);
 
   const history = useHistory();
+  const { trackEvent } = useTracking();
 
-  const errorMessage = formatError(errorCreateMessageBroker);
+  const handleErrorCreateMessageBroker = () => {
+    trackEvent(ERROR_CREATE_MESSAGE_BROKER_EVENT_DATA);
+    return formatError(errorCreateMessageBroker);
+  };
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateInput, eventName: string) => {
+      trackEvent(CREATE_MESSAGE_BROKER_EVENT_DATA);
       createMessageBroker(data, eventName);
     },
-    [createMessageBroker]
+    [createMessageBroker, trackEvent]
   );
 
   const handleBackToProjectClick = () => {
+    trackEvent(BACK_TO_PROJECTS_EVENT_DATA);
     history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
   };
 
@@ -78,22 +97,22 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
           </div>
         </div>
       ) : (
-          <div className={`${moduleClass}__wrapper`}>
-            <div className={`${moduleClass}__description`}>
-              <ResourceCircleBadge
-                type={models.EnumResourceType.MessageBroker}
-                size="large"
-              />
-              <div className={`${moduleClass}__description_top`}>
-                <h2>Message Broker Creation Wizard</h2>
-              </div>
-              <div className={`${moduleClass}__description_bottom`}>
-                <h3>
-                  Create topics and connect your services to the message broker
-                </h3>
-              </div>
+        <div className={`${moduleClass}__wrapper`}>
+          <div className={`${moduleClass}__description`}>
+            <ResourceCircleBadge
+              type={models.EnumResourceType.MessageBroker}
+              size="large"
+            />
+            <div className={`${moduleClass}__description_top`}>
+              <h2>Message Broker Creation Wizard</h2>
+            </div>
+            <div className={`${moduleClass}__description_bottom`}>
+              <h3>
+                Create topics and connect your services to the message broker
+              </h3>
             </div>
           </div>
+        </div>
       )}
       <div className={`${moduleClass}__footer`}>
         <Button
@@ -113,7 +132,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
       </div>
       <Snackbar
         open={Boolean(errorCreateMessageBroker)}
-        message={errorMessage}
+        message={handleErrorCreateMessageBroker}
       />
     </Modal>
   );

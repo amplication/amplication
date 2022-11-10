@@ -19,7 +19,7 @@ type Props = {
 };
 
 const EVENT_DATA: TrackEvent = {
-  eventName: "rolesTileClick",
+  eventName: "messageBrokerTopicsTileClick",
 };
 
 function TopicsTile({ resourceId }: Props) {

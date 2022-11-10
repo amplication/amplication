@@ -10,6 +10,7 @@ import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
 import "./NewTopic.scss";
 import { AppContext } from "../context/appContext";
+import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 const INITIAL_VALUES: Partial<models.Topic> = {
   name: "",
@@ -29,7 +30,7 @@ const FORM_SCHEMA = {
       type: "string",
       minLength: 1,
       maxLength: 249,
-    }
+    },
   },
 };
 const CLASS_NAME = "new-topic";
@@ -41,8 +42,18 @@ const prepareName = (displayName: string) => {
     .replace(/[^a-zA-Z0-9._-]/g, ""); // Remove all non-legit characters
 };
 
+const CREATE_TOPIC_EVENT_DATA: TrackEvent = {
+  eventName: "createTopicClick",
+};
+
+const CREATE_TOPIC_FAILED_EVENT_DATA: TrackEvent = {
+  eventName: "createTopicFailed",
+};
+
 const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
+  const { trackEvent } = useTracking();
   const { addEntity } = useContext(AppContext);
+
   const [createTopic, { error, loading }] = useMutation(CREATE_TOPIC, {
     update(cache, { data }) {
       if (!data) return;
@@ -77,6 +88,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
 
   const handleSubmit = useCallback(
     (data, actions) => {
+      trackEvent(CREATE_TOPIC_EVENT_DATA);
       setAutoFocus(true);
       createTopic({
         variables: {
@@ -97,10 +109,13 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
         })
         .catch(console.error);
     },
-    [createTopic, resourceId, onTopicAdd, addEntity]
+    [createTopic, resourceId, onTopicAdd, addEntity, trackEvent]
   );
 
-  const errorMessage = formatError(error);
+  const handleCreateTopicFailed = () => {
+    trackEvent(CREATE_TOPIC_FAILED_EVENT_DATA);
+    return formatError(error);
+  };
 
   return (
     <div className={CLASS_NAME}>
@@ -138,7 +153,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
           </Form>
         )}
       </Formik>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <Snackbar open={Boolean(error)} message={handleCreateTopicFailed} />
     </div>
   );
 };

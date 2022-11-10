@@ -6,14 +6,26 @@ import { Snackbar, HorizontalRule } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import TopicForm from "./TopicForm";
 import * as models from "../models";
+import { useTracking, Event as TrackEvent } from "../util/analytics";
 
 type TData = {
   Topic: models.Topic;
 };
 
+const TOPIC_NAME_EVENT_DATA: TrackEvent = {
+  eventName: "topicNameClick",
+};
+const TOPIC_DISPLAY_NAME_EVENT_DATA: TrackEvent = {
+  eventName: "topicDisplayNameClick",
+};
+const TOPIC_DESCRIPTION_EVENT_DATA: TrackEvent = {
+  eventName: "topicDescriptionClick",
+};
+
 const CLASS_NAME = "topic-page";
 
 const Topic = () => {
+  const { trackEvent } = useTracking();
   const match = useRouteMatch<{
     resource: string;
     topicId: string;
@@ -39,9 +51,25 @@ const Topic = () => {
           data,
         },
       }).catch(console.error);
+      handleTrackEventForUpdateTopic(data.updateTopic);
+      trackEvent(TOPIC_NAME_EVENT_DATA);
     },
     [updateTopic, topicId]
   );
+
+  const handleTrackEventForUpdateTopic = (updateProperty: string) => {
+    switch (updateProperty) {
+      case "name":
+        trackEvent(TOPIC_NAME_EVENT_DATA);
+        break;
+      case "displayName":
+        trackEvent(TOPIC_DISPLAY_NAME_EVENT_DATA);
+        break;
+      case "description":
+        trackEvent(TOPIC_DESCRIPTION_EVENT_DATA);
+        break;
+    }
+  };
 
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);
