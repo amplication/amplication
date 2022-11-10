@@ -1,20 +1,11 @@
 import React, { useCallback, useContext } from "react";
 
-// export type Props = any;
-// export const SelectMenu = ({}: any) => <>FIX ME</>;
+import { default as PrimerSelectMenu } from "@primer/react-deprecated/SelectMenu";
+import type { SelectMenuProps } from "@primer/react-deprecated/SelectMenu";
+import type { SelectMenuModalProps as PrimerSelectMenuModalProps } from "@primer/react-deprecated/SelectMenuModal";
+import type { SelectMenuItemProps as PrimerSelectMenuItemProps } from "@primer/react-deprecated/SelectMenuItem";
+import type { SelectMenuListProps as PrimerSelectMenuListProps } from "@primer/react-deprecated/SelectMenuList";
 
-// export const SelectMenuModal = ({}: any) => <>FIX ME</>;
-// export const SelectMenuItem = ({}: any) => <>FIX ME</>;
-// export const SelectMenuList = ({}: any) => <>FIX ME</>;
-
-import {
-  SelectMenu as PrimerSelectMenu,
-  SelectMenuProps,
-  SelectMenuModalProps as PrimerSelectMenuModalProps,
-  SelectMenuItemProps as PrimerSelectMenuItemProps,
-  SelectMenuListProps as PrimerSelectMenuListProps,
-  // @ts-ignore
-} from "@primer/react-deprecated";
 import classNames from "classnames";
 import SearchField, {
   Props as SearchFieldProps,
@@ -24,7 +15,7 @@ import { Button, EnumButtonStyle } from "../Button/Button";
 
 import "./SelectMenu.scss";
 
-interface ButtonProps {
+export interface Props extends Omit<SelectMenuProps, "title"> {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
   title: string | React.ReactNode;
@@ -33,9 +24,7 @@ interface ButtonProps {
   buttonClassName?: string;
 }
 
-export type Props = SelectMenuProps & ButtonProps;
-
-const SelectButton: React.FC<ButtonProps> = ({
+const SelectButton: React.FC<Props> = ({
   disabled,
   buttonStyle,
   title,

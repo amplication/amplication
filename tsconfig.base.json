@@ -45,6 +45,18 @@
       ],
       "@primer/react-deprecated/Button": [
         "node_modules/@primer/react/lib/deprecated/Button/Button"
+      ],
+      "@primer/react-deprecated/SelectMenu": [
+        "node_modules/@primer/react/lib/deprecated/SelectMenu/SelectMenu"
+      ],
+      "@primer/react-deprecated/SelectMenuModal": [
+        "node_modules/@primer/react/lib/deprecated/SelectMenu/SelectMenu"
+      ],
+      "@primer/react-deprecated/SelectMenuList": [
+        "node_modules/@primer/react/lib/deprecated/SelectMenu/SelectMenu"
+      ],
+      "@primer/react-deprecated/SelectMenuItem": [
+        "node_modules/@primer/react/lib/deprecated/SelectMenu/SelectMenu"
       ]
     }
   },
