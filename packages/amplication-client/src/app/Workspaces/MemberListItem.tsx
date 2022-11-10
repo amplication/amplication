@@ -151,7 +151,9 @@ function MemberListItem({ member, onDelete, onError }: Props) {
                 buttonStyle={EnumButtonStyle.Text}
                 icon="mail"
                 onClick={handleResendInvitation}
-              />
+              >
+                <></>
+              </Button>
             </Tooltip>
           )}
           {!data.isOwner && !deleteLoading && !revokeLoading && (
@@ -166,7 +168,9 @@ function MemberListItem({ member, onDelete, onError }: Props) {
                 buttonStyle={EnumButtonStyle.Text}
                 icon="trash_2"
                 onClick={handleDelete}
-              />
+              >
+                <></>
+              </Button>
             </Tooltip>
           )}
         </div>

@@ -138,7 +138,9 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
                   formik.values.displayName
                 ),
               })}
-            />
+            >
+              <></>
+            </Button>
           </Form>
         )}
       </Formik>

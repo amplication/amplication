@@ -40,7 +40,9 @@ const PendingChangesMenuItem = ({ projectId }: Props) => {
             onClick={handleClick}
             icon="pending_changes_outline"
             iconSize={ICON_SIZE}
-          />
+          >
+            <></>
+          </Button>
 
           {pendingChangesBadge && (
             <span className={`${CLASS_NAME}__badge`}>
@@ -51,10 +53,7 @@ const PendingChangesMenuItem = ({ projectId }: Props) => {
       </div>
       {panelOpen && (
         <AsidePanel.Source>
-          <PendingChangesBar
-            projectId={projectId}
-            handleClick={handleClick}
-          />
+          <PendingChangesBar projectId={projectId} handleClick={handleClick} />
         </AsidePanel.Source>
       )}
     </div>

@@ -144,7 +144,9 @@ const OptionSetOption = ({
           buttonStyle={EnumButtonStyle.Text}
           icon="trash_2"
           onClick={handleRemoveOption}
-        />
+        >
+          <></>
+        </Button>
       </div>
     </div>
   );

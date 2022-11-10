@@ -57,7 +57,8 @@ export const EntitiesDiagramField = React.memo(
                   [`${CLASS_NAME}__fields__field--selected`]: selected,
                 },
                 {
-                  [`${CLASS_NAME}__fields__field--dragged`]: snapshot.isDragging,
+                  [`${CLASS_NAME}__fields__field--dragged`]:
+                    snapshot.isDragging,
                 }
               )}
               {...provided.dragHandleProps}
@@ -74,7 +75,9 @@ export const EntitiesDiagramField = React.memo(
                 type="button"
                 onClick={handleClick}
                 icon="edit_2"
-              />
+              >
+                <></>
+              </Button>
               {selected && (
                 <div className={`${CLASS_NAME}__fields__field__edit-area`}>
                   <HotKeys keyMap={keyMap} handlers={handlers}>

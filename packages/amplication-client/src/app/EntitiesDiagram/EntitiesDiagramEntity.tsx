@@ -112,7 +112,9 @@ export const EntitiesDiagramEntity = React.memo(
                         type="button"
                         onClick={handleDeleteEntity}
                         icon="trash_2"
-                      />
+                      >
+                        <></>
+                      </Button>
                     )}
                     <Button
                       className={`${CLASS_NAME}__entities__entity__edit`}
@@ -120,7 +122,9 @@ export const EntitiesDiagramEntity = React.memo(
                       type="button"
                       onClick={handleEditEntity}
                       icon="edit_2"
-                    />
+                    >
+                      <></>
+                    </Button>
                   </>
                 )}
 
@@ -130,7 +134,9 @@ export const EntitiesDiagramEntity = React.memo(
                   onClick={handleAddEntity}
                   type="button"
                   icon="plus"
-                />
+                >
+                  <></>
+                </Button>
               </div>
             </HotKeys>
 
@@ -181,7 +187,8 @@ export const EntitiesDiagramEntity = React.memo(
                         {...provided.droppableProps}
                         ref={provided.innerRef}
                         className={classNames(`${CLASS_NAME}__droppable`, {
-                          [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
+                          [`${CLASS_NAME}__droppable--over`]:
+                            snapshot.isDraggingOver,
                         })}
                       >
                         {entity.fields.map((field, fieldIndex) => (

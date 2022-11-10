@@ -28,9 +28,8 @@ const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 function ResourceListItem({ resource, onDelete }: Props) {
-  const { currentWorkspace, currentProject, setResource } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, setResource } =
+    useContext(AppContext);
   const { id, name, description, gitRepository } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -92,7 +91,9 @@ function ResourceListItem({ resource, onDelete }: Props) {
                 buttonStyle={EnumButtonStyle.Text}
                 icon="trash_2"
                 onClick={handleDelete}
-              />
+              >
+                <></>
+              </Button>
             )}
           </div>
           <div className={`${CLASS_NAME}__row`}>

@@ -123,7 +123,7 @@ const CommandPalette = ({ trigger }: Props) => {
   const commands = useMemo(
     () =>
       data
-        ? getCommands(data, history, currentResource.id, projectBaseUrl)
+        ? getCommands(data, history, currentResource as any, projectBaseUrl)
         : [],
     [data, history, currentResource, projectBaseUrl]
   );

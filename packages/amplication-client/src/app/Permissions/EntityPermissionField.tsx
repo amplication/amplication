@@ -148,7 +148,9 @@ export const EntityPermissionField = ({
           buttonStyle={EnumButtonStyle.Text}
           icon="trash_2"
           onClick={handleDeleteField}
-        />
+        >
+          <></>
+        </Button>
       </PanelHeader>
       <ActionRoleList
         availableRoles={availableRoles}

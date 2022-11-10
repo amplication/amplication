@@ -135,7 +135,9 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
                 [`${CLASS_NAME}__add-field__button--show`]:
                   formik.values.displayName.length > 0,
               })}
-            />
+            >
+              <></>
+            </Button>
           </Form>
         )}
       </Formik>

@@ -78,13 +78,17 @@ function PluginsCatalogItem({
                 buttonStyle={EnumButtonStyle.Text}
                 onClick={handleDemote}
                 icon="arrow_up"
-              />
+              >
+                <></>
+              </Button>
               <span>{order}</span>
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 onClick={handlePromote}
                 icon="arrow_down"
-              />
+              >
+                <></>
+              </Button>
             </div>
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />

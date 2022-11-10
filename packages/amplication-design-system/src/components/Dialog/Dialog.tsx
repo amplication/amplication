@@ -64,7 +64,9 @@ export const Dialog: React.FC<Props> = ({
             icon="close"
             buttonStyle={EnumButtonStyle.Text}
             onClick={onDismiss}
-          />
+          >
+            <></>
+          </Button>
         </div>
         <div className={`${CLASS_NAME}__body`}>{children}</div>
       </PrimerDialog>

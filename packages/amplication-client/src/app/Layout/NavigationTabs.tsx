@@ -62,7 +62,9 @@ const Tab = ({ item, defaultTabUrl, tabsCount }: TabProps) => {
         icon="close"
         iconSize="xsmall"
         onClick={handleCloseTab}
-      />
+      >
+        <></>
+      </Button>
     </span>
   );
 };

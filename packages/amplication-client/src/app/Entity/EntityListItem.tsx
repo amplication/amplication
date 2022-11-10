@@ -36,7 +36,8 @@ export const EntityListItem = ({
   onDelete,
   onError,
 }: Props) => {
-  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } =
+    useContext(AppContext);
   const history = useHistory();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -130,7 +131,9 @@ export const EntityListItem = ({
               buttonStyle={EnumButtonStyle.Text}
               icon="trash_2"
               onClick={handleDelete}
-            />
+            >
+              <></>
+            </Button>
           )}
         </div>
         <div className={`${CLASS_NAME}__row`}>

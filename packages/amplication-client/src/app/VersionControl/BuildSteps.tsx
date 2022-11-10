@@ -103,7 +103,9 @@ const BuildSteps = ({ build }: Props) => {
                 eventData={{
                   eventName: "openGithubPullRequest",
                 }}
-              />
+              >
+                <></>
+              </Button>
             </a>
           )}
         </Panel>

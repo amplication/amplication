@@ -15,9 +15,8 @@ export const WORKSPACE_COLOR = "#A787FF";
 const CLASS_NAME = "workspaces-selector";
 
 function WorkspaceSelector() {
-  const { currentWorkspace, handleSetCurrentWorkspace } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, handleSetCurrentWorkspace } =
+    useContext(AppContext);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [newWorkspace, setNewWorkspace] = useState<boolean>(false);
 
@@ -71,7 +70,9 @@ function WorkspaceSelector() {
               type="button"
               icon={isOpen ? "chevron_up" : "chevron_down"}
               iconSize="xsmall"
-            />
+            >
+              <></>
+            </Button>
           </>
         ) : (
           <CircularProgress centerToParent />

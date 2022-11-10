@@ -19,6 +19,11 @@ $split-icon-font-size: 20px;
   letter-spacing: 1px;
   font-family: var(--primary-font-family);
 
+  span[data-component="leadingIcon"] {
+    margin-right: 0px;
+    margin-top: 4px;
+  }
+
   &[disabled] {
     cursor: default;
     font-family: var(--primary-font-family);
