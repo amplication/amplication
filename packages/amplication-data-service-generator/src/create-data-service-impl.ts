@@ -17,7 +17,7 @@ export async function createDataServiceImpl(
     logger.info("No code to generate for a message broker");
     return [];
   }
-  
+
   const timer = logger.startTimer();
 
   await prepareContext(dSGResourceData, logger);

@@ -40,7 +40,6 @@
       ],
       "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
       "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
-      /** This is required by the Amplication Client for as long as we are using a deprecated version of Primer React **/
       "@primer/react/deprecated": ["node_modules/@primer/react/lib/deprecated"]
     }
   },
