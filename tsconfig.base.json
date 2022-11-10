@@ -42,6 +42,9 @@
       "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
       "@primer/react-deprecated": [
         "node_modules/@primer/react/lib/deprecated/index.js"
+      ],
+      "@primer/react-deprecated/Button": [
+        "node_modules/@primer/react/lib/deprecated/Button/Button"
       ]
     }
   },

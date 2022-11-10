@@ -1,8 +1,7 @@
 import React from "react";
-import {
-  Button as PrimerButton,
-  ButtonProps as PrimerButtonProps,
-} from "@primer/react";
+import { default as PrimerButton } from "@primer/react-deprecated/Button";
+import type { ButtonProps as PrimerButtonProps } from "@primer/react-deprecated/Button";
+
 import classNames from "classnames";
 import { Icon, IconSize } from "../Icon/Icon";
 import { isEmpty } from "lodash";
@@ -65,18 +64,16 @@ export const Button = ({
         `amp-button--${buttonStyle}`
       )}
       {...rest}
-      leadingIcon={
-        icon && iconPosition === EnumIconPosition.Left
-          ? () => <Icon icon={icon as string} size={iconSize || "small"} />
-          : undefined
-      }
-      trailingIcon={
-        icon && iconPosition === EnumIconPosition.Right
-          ? () => <Icon icon={icon as string} size={iconSize || "small"} />
-          : undefined
-      }
     >
-      {children}
+      {iconPosition === EnumIconPosition.Right && children}
+      {!isEmpty(icon) && (
+        <Icon
+          icon={icon as string}
+          size={iconSize || "small"}
+          className={`amp-button__icon ${iconStyle ? ` ${iconStyle}` : ""}`}
+        />
+      )}
+      {iconPosition === EnumIconPosition.Left && children}
       {isSplit && (
         <span className="amp-button__split">
           {splitValue ? (
