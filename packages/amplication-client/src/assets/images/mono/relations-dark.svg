@@ -1,0 +1,15 @@
+<svg width="124" height="124" viewBox="0 0 124 124" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="4.5" y="37.5" width="39" height="49" rx="3.5" stroke="#8F5BFF"/>
+<line x1="4" y1="46.5" x2="44" y2="46.5" stroke="#8F5BFF"/>
+<rect x="8.5" y="52.5" width="30" height="3" rx="1.5" stroke="white"/>
+<rect x="8.5" y="64.5" width="30" height="3" rx="1.5" stroke="white"/>
+<rect x="8.5" y="76.5" width="30" height="3" rx="1.5" stroke="white"/>
+<rect x="79.5" y="37" width="39" height="49" rx="3.5" stroke="#8F5BFF"/>
+<line x1="79" y1="46" x2="119" y2="46" stroke="#8F5BFF"/>
+<rect x="84.5" y="52.5" width="30" height="3" rx="1.5" stroke="white"/>
+<rect x="84.5" y="64.5" width="30" height="3" rx="1.5" stroke="white"/>
+<rect x="84.5" y="76.5" width="30" height="3" rx="1.5" stroke="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M58 62L44 62L44 61L58 61L58 62Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M79 62L66 62L66 61L79 61L79 62Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M67 62C67 64.7614 64.7614 67 62 67C59.2386 67 57 64.7614 57 62C57 59.2386 59.2386 57 62 57C64.7614 57 67 59.2386 67 62ZM62 66C64.2091 66 66 64.2091 66 62C66 59.7909 64.2091 58 62 58C59.7909 58 58 59.7909 58 62C58 64.2091 59.7909 66 62 66Z" fill="white"/>
+</svg>

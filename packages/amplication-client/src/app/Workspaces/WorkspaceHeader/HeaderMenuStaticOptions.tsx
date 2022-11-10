@@ -1,7 +1,9 @@
 import { Icon, SelectMenuItem } from "@amplication/design-system";
-import { join } from "path";
 import React, { useMemo } from "react";
-import { WORK_SPACE_HEADER_CLASS_NAME, PROJECT_CONFIGURATION_RESOURCE_NAME } from "./WorkspaceHeader";
+import {
+  WORK_SPACE_HEADER_CLASS_NAME,
+  PROJECT_CONFIGURATION_RESOURCE_NAME,
+} from "./WorkspaceHeader";
 
 type Props = {
   currentProjectConfigurationId: string | undefined;
@@ -42,8 +44,12 @@ export default function HeaderMenuStaticOptions({
   return (
     <>
       {MENU_OPTIONS.map((option, index) => {
-        const link =
-          "/" + join(currentWorkspaceId || "", currentProjectId, option.link);
+        const link = [
+          "/",
+          currentWorkspaceId || "",
+          currentProjectId,
+          option.link,
+        ].join("/");
 
         return (
           <SelectMenuItem

@@ -3,16 +3,16 @@ import React, { useCallback, useState } from "react";
 import ThemeProvider from "./Layout/ThemeProvider";
 // import { track, dispatch, init as initAnalytics } from "./util/analytics";
 // import { init as initPaddle } from "./util/paddle";
-// import { Routes } from "./routes/appRoutes";
-// import { routesGenerator } from "./routes/routesUtil";
+import { Routes } from "./routes/appRoutes";
+import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
 import { Loader } from "@amplication/design-system";
 
-// const GeneratedRoutes = routesGenerator(Routes);
-// const context = {
-//   source: "amplication-client",
-// };
+const GeneratedRoutes = routesGenerator(Routes);
+const context = {
+  source: "amplication-client",
+};
 
 const MIN_ANIMATION_TIME = 2000;
 
@@ -54,23 +54,14 @@ function App() {
   return (
     <ThemeProvider>
       {showLoadingAnimation && (
-        <></>
-        // <Loader
-        //   fullScreen
-        //   minimumLoadTimeMS={MIN_ANIMATION_TIME}
-        //   onTimeout={handleTimeout}
-        // />
+        <Loader
+          fullScreen
+          minimumLoadTimeMS={MIN_ANIMATION_TIME}
+          onTimeout={handleTimeout}
+        />
       )}
+      {!currentWorkspaceLoading && GeneratedRoutes}
     </ThemeProvider>
-    //   {showLoadingAnimation && (
-    //     <Loader
-    //       fullScreen
-    //       minimumLoadTimeMS={MIN_ANIMATION_TIME}
-    //       onTimeout={handleTimeout}
-    //     />
-    //   )}
-
-    //   {!currentWorkspaceLoading && GeneratedRoutes}
   );
 }
 

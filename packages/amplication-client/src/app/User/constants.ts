@@ -1,6 +1,6 @@
 import { PageContent } from "../Layout/WelcomePage";
-import amplicationLogo from "../assets/logo-amplication-white.svg";
-import recastLogo from "../assets/logo-recast.svg";
+import amplicationLogo from "../../assets/logo-amplication-white.svg";
+import recastLogo from "../../assets/logo-recast.svg";
 
 type PageContentOptions = {
   [key: string]: PageContent;

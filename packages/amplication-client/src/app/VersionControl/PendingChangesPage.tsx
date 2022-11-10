@@ -63,6 +63,7 @@ const PendingChangesPage = () => {
                 //   compareType={EnumCompareType.Pending}
                 //   splitView={splitView}
                 // />
+                <>FIX ME</>
               ))}
             </div>
           ))}
