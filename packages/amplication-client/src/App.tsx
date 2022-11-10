@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from "react";
-// import * as reactHotkeys from "react-hotkeys";
+import React, { useCallback, useState, useEffect } from "react";
+import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
-// import { track, dispatch, init as initAnalytics } from "./util/analytics";
-// import { init as initPaddle } from "./util/paddle";
+import { track, dispatch, init as initAnalytics } from "./util/analytics";
+import { init as initPaddle } from "./util/paddle";
 import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
@@ -16,14 +16,14 @@ const context = {
 
 const MIN_ANIMATION_TIME = 2000;
 
-// export const enhance = track<keyof typeof context>(
-//   // app-level tracking data
-//   context,
+export const enhance = track<keyof typeof context>(
+  // app-level tracking data
+  context,
 
-//   {
-//     dispatch,
-//   }
-// );
+  {
+    dispatch,
+  }
+);
 
 function App() {
   const authenticated = useAuthenticated();
@@ -31,23 +31,23 @@ function App() {
   const [keepLoadingAnimation, setKeepLoadingAnimation] =
     useState<boolean>(true);
 
-  //   useEffect(() => {
-  //     initAnalytics();
-  //     initPaddle();
-  //   }, []);
+  useEffect(() => {
+    initAnalytics();
+    initPaddle();
+  }, []);
 
   const handleTimeout = useCallback(() => {
     setKeepLoadingAnimation(false);
   }, []);
 
-  //   //The default behavior across all <HotKeys> components
-  //   reactHotkeys.configure({
-  //     //Disable simulate keypress events for the keys that do not natively emit them
-  //     //When Enabled - events are not captured after using Enter in <textarea/>
-  //     simulateMissingKeyPressEvents: false,
-  //     //Clear the ignoreTags array to includes events on textarea and input
-  //     ignoreTags: [],
-  //   });
+  //The default behavior across all <HotKeys> components
+  reactHotkeys.configure({
+    //Disable simulate keypress events for the keys that do not natively emit them
+    //When Enabled - events are not captured after using Enter in <textarea/>
+    simulateMissingKeyPressEvents: false,
+    //Clear the ignoreTags array to includes events on textarea and input
+    ignoreTags: [],
+  });
 
   const showLoadingAnimation = keepLoadingAnimation || currentWorkspaceLoading;
 
@@ -65,5 +65,4 @@ function App() {
   );
 }
 
-// export default enhance(App);
-export default App;
+export default enhance(App);
