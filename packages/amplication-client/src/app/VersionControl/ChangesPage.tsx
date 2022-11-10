@@ -10,7 +10,7 @@ import { formatError } from "../util/error";
 import useCommits from "./hooks/useCommits";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import "./PendingChangesPage.scss";
-import PendingChangeWithCompare from "./PendingChangeWithCompare";
+// import PendingChangeWithCompare from "./PendingChangeWithCompare";
 
 const CLASS_NAME = "changes-page";
 const SPLIT = "Split";
@@ -72,12 +72,13 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
         <div className={`${CLASS_NAME}__changes`}>
           {commitResourceChanges &&
             commitResourceChanges.map((change: PendingChange) => (
-              <PendingChangeWithCompare
-                key={change.originId}
-                change={change}
-                compareType={EnumCompareType.Previous}
-                splitView={splitView}
-              />
+              <></>
+              // <PendingChangeWithCompare
+              //   key={change.originId}
+              //   change={change}
+              //   compareType={EnumCompareType.Previous}
+              //   splitView={splitView}
+              // />
             ))}
         </div>
       </PageContent>

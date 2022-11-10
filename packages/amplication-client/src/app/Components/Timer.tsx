@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { differenceInMilliseconds } from "date-fns";
-import TimerComponent from "react-compound-timer";
+// import TimerComponent from "react-compound-timer"; TODO: replace with a maintained component
 
 const CLASS_NAME = "amp-timer";
 const EMPTY_TIMER = "0m 0s";
@@ -29,16 +29,17 @@ function Timer({ startTime, endTime, runTimer }: Props) {
       {!startTime ? (
         EMPTY_TIMER
       ) : (
-        <TimerComponent
-          key={timerKey}
-          initialTime={initialTime}
-          startImmediately={startImmediately}
-        >
-          <TimerComponent.Hours
-            formatValue={(value) => (value ? `${value}h ` : "")}
-          />
-          <TimerComponent.Minutes />m <TimerComponent.Seconds />s
-        </TimerComponent>
+        <></>
+        // <TimerComponent
+        //   key={timerKey}
+        //   initialTime={initialTime}
+        //   startImmediately={startImmediately}
+        // >
+        //   <TimerComponent.Hours
+        //     formatValue={(value) => (value ? `${value}h ` : "")}
+        //   />
+        //   <TimerComponent.Minutes />m <TimerComponent.Seconds />s
+        // </TimerComponent>
       )}
     </span>
   );

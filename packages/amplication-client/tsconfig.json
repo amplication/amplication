@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "allowJs": true,
+    "lib": ["es2021", "es2017", "dom"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true

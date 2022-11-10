@@ -30,7 +30,8 @@ const ResourceSelector = ({
         <Label text="Select resource" />
       </div>
       <SelectMenu
-        title={<ResourceSelectorItem resource={selectedResource} />}
+        // title={<ResourceSelectorItem resource={selectedResource} />}
+        title="FIX ME"
         buttonStyle={EnumButtonStyle.Secondary}
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"

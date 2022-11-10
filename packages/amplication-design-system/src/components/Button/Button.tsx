@@ -2,7 +2,7 @@ import React from "react";
 import {
   Button as PrimerButton,
   ButtonProps as PrimerButtonProps,
-} from "@primer/react";
+} from "@primer/react/lib/deprecated";
 import classNames from "classnames";
 import { Icon, IconSize } from "../Icon/Icon";
 import { isEmpty } from "lodash";
@@ -23,8 +23,7 @@ export enum EnumIconPosition {
   Left = "left",
   Right = "right",
 }
-
-type ButtonProps = {
+export interface Props extends PrimerButtonProps {
   /** The display style of the button */
   buttonStyle?: EnumButtonStyle;
   /** Whether to show an expand icon in the button. Ignored when buttonStyle is "Clear" */
@@ -36,9 +35,8 @@ type ButtonProps = {
   iconStyle?: string;
   /** Icon can have left or right position. Default position is right */
   iconPosition?: EnumIconPosition;
-};
-
-export type Props = PrimerButtonProps & ButtonProps;
+  to?: string;
+}
 
 export const Button = ({
   buttonStyle = EnumButtonStyle.Primary,

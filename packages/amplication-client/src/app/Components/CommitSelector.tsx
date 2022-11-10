@@ -27,7 +27,8 @@ const CommitSelector = ({ commits, onSelectCommit, selectedCommit }: Props) => {
         <Label text="Select commit" />
       </div>
       <SelectMenu
-        title={<CommitSelectorItem commit={selectedCommit} />}
+        title="FIX ME"
+        // title={<CommitSelectorItem commit={selectedCommit} />}
         buttonStyle={EnumButtonStyle.Secondary}
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"

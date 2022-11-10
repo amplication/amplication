@@ -7,6 +7,7 @@ import RelatedEntityFieldField from "./RelatedEntityFieldField";
 import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
 import { Schema } from "@amplication/code-gen-types";
 import OptionSet from "../Entity/OptionSet";
+import { JSONSchema7 } from "json-schema";
 
 export const SchemaField = ({
   propertyName,
@@ -66,7 +67,7 @@ export const SchemaField = ({
         throw new Error("Array schema must define items");
       }
 
-      switch (propertySchema.items.type) {
+      switch ((propertySchema.items as JSONSchema7).type) {
         case "object": {
           return (
             <OptionSet label={label} name={fieldName} isDisabled={isDisabled} />
