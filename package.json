@@ -12,6 +12,7 @@
     "format": "npx nx format --write"
   },
   "dependencies": {
+    "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
     "@apollo/gateway": "^0.42.3",
     "@codebrew/nestjs-storage": "^0.1.7",
@@ -60,7 +61,7 @@
     "apollo-server-express": "^3.10.2",
     "ast-types": "^0.14.2",
     "bcrypt": "^5.0.1",
-    "chalk": "^2.4.2",
+    "chalk": "^5.1.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "classnames": "^2.3.2",
@@ -109,7 +110,6 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-command-palette": "^0.21.1",
     "react-device-detect": "^2.2.2",
-    "@amplication/react-diff-viewer-continued": "^3.4.3",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-draggable": "^4.4.5",

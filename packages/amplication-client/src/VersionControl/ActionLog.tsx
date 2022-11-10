@@ -24,8 +24,6 @@ const CLASS_NAME = "action-log";
 const SECOND_STRING = "s";
 const LOG_ROW_HEIGHT = 19;
 
-// Make chalk work
-chalk.enabled = true;
 /** @see https://github.com/chalk/chalk#chalklevel */
 chalk.level = 3;
 
@@ -56,9 +54,9 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
         duration: duration,
         messages: step.logs
           ?.map((log) => {
-            return chalk`{${LOG_LEVEL_TO_CHALK[log.level]} ${
+            return `${chalk[LOG_LEVEL_TO_CHALK[log.level]](
               log.createdAt
-            }  {gray (${log.level})} ${log.message} }`;
+            )} ${chalk.gray(`(${log.level}) ${chalk.white(log.message)}`)}`;
           })
           .join("\n"),
       };
