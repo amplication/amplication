@@ -1,10 +1,10 @@
-import React, { useCallback, useState, useContext } from "react";
-import { gql, useMutation, Reference } from "@apollo/client";
-import * as models from "../models";
 import { ConfirmationDialog } from "@amplication/design-system";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { SYSTEM_DATA_TYPES } from "./constants";
+import { gql, Reference, useMutation } from "@apollo/client";
+import React, { useCallback, useContext, useState } from "react";
+import DeleteButton from "../Components/DeleteButton";
 import { AppContext } from "../context/appContext";
+import * as models from "../models";
+import { SYSTEM_DATA_TYPES } from "./constants";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -31,7 +31,7 @@ export const DeleteEntityField = ({
   onError,
 }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const { addEntity, } = useContext(AppContext);
+  const { addEntity } = useContext(AppContext);
 
   const [deleteEntityField, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY_FIELD,
@@ -101,15 +101,7 @@ export const DeleteEntityField = ({
 
       <div className={CLASS_NAME}>
         {!deleteLoading && !SYSTEM_DATA_TYPES.has(entityField.dataType) && (
-          <Button
-            buttonStyle={
-              showLabel ? EnumButtonStyle.Clear : EnumButtonStyle.Text
-            }
-            icon="trash_2"
-            onClick={handleDelete}
-          >
-            {showLabel && "Delete"}
-          </Button>
+          <DeleteButton onClick={handleDelete} showLabel={showLabel} />
         )}
       </div>
     </>
