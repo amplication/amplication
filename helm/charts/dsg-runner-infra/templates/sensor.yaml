@@ -39,10 +39,8 @@ spec:
                             value: null # provided in parameters
                           - name: RESOURCE_ID
                             value: null # provided in parameters
-                          - name: STATUS_UPDATE_URL
-                            value: http://amplication-build-manager/build-runner/complete-code-generation-step
-                          - name: CREATE_LOG_URL
-                            value: http://amplication-build-manager/build-logger/create-log
+                          - name: BUILD_MANAGER_URL
+                            value: http://amplication-build-manager
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs
