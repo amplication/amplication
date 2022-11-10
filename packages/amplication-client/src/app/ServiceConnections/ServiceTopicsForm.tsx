@@ -1,5 +1,5 @@
 import { HorizontalRule, ToggleField } from "@amplication/design-system";
-import omitDeep from "deepdash-es/omitDeep";
+const omitDeep = require("deepdash/omitDeep");
 import { Formik } from "formik";
 import React, { useMemo } from "react";
 import { Form } from "../Components/Form";

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
 
-import omitDeep from "deepdash-es/omitDeep";
+const omitDeep = require("deepdash/omitDeep");
 
 import * as models from "../models";
 import { TextField } from "@amplication/design-system";
