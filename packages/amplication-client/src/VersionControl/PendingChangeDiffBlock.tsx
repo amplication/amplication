@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import YAML from "yaml";
 import { gql, useQuery } from "@apollo/client";
-const omitDeep = require("deepdash/omitDeep");
 import ReactDiffViewer, {
   DiffMethod,
 } from "@amplication/react-diff-viewer-continued";
@@ -9,6 +8,10 @@ import * as models from "../models";
 import { EnumCompareType, DIFF_STYLES } from "./PendingChangeDiffEntity";
 import "./PendingChangeDiff.scss";
 import { CircularProgress } from "@amplication/design-system";
+
+// This must be here unless we get rid of deepdash as it does not support ES imports
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const omitDeep = require("deepdash/omitDeep");
 
 const CLASS_NAME = "pending-change-diff";
 const CURRENT_VERSION_NUMBER = 0;

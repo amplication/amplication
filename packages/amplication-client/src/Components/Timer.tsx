@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { differenceInMilliseconds } from "date-fns";
+// import React, { useMemo } from "react";
+// import { differenceInMilliseconds } from "date-fns";
 // import TimerComponent from "react-compound-timer";
 
 const CLASS_NAME = "amp-timer";
@@ -12,17 +12,17 @@ type Props = {
 };
 
 function Timer({ startTime, endTime, runTimer }: Props) {
-  const initialTime = useMemo(() => {
-    const endDate = endTime ? new Date(endTime) : new Date();
-    return differenceInMilliseconds(endDate, new Date(startTime));
-  }, [startTime, endTime]);
+  // const initialTime = useMemo(() => {
+  //   const endDate = endTime ? new Date(endTime) : new Date();
+  //   return differenceInMilliseconds(endDate, new Date(startTime));
+  // }, [startTime, endTime]);
 
-  const startImmediately = !endTime && runTimer;
+  // const startImmediately = !endTime && runTimer;
 
   // use a unique key to force re-render of Timer when startTime or endTime change
-  const timerKey =
-    (startTime ? startTime.toString() : "") +
-    (endTime ? endTime.toString() : "");
+  // const timerKey =
+  //   (startTime ? startTime.toString() : "") +
+  //   (endTime ? endTime.toString() : "");
 
   return (
     <span className={`${CLASS_NAME}`}>

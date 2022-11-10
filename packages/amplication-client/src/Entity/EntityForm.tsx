@@ -1,8 +1,6 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
 
-const omitDeep = require("deepdash/omitDeep");
-
 import * as models from "../models";
 import { TextField } from "@amplication/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
@@ -15,6 +13,10 @@ import {
 } from "../util/formikValidateJsonSchema";
 import { USER_ENTITY } from "./constants";
 import { isEqual } from "../util/customValidations";
+
+// This must be here unless we get rid of deepdash as it does not support ES imports
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const omitDeep = require("deepdash/omitDeep");
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
