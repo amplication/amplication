@@ -1,0 +1,33 @@
+@import "../style/index.scss";
+
+.api-token-list {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+    h3 {
+      margin: 0;
+      @include title-18();
+    }
+  }
+
+  &__message {
+    margin-bottom: var(--double-spacing);
+    @include regular-14();
+  }
+
+  &__add-button {
+    min-width: 0;
+  }
+  &__new-token {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    margin: 0;
+    margin-bottom: var(--default-spacing);
+    background-color: var(--theme-turquoise-transparent);
+    border: 1px solid var(--theme-turquoise);
+  }
+
+  &__new-token-message {
+    margin-bottom: var(--default-spacing);
+  }
+}

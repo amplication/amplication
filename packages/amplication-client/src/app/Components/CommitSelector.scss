@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+.commit-selector {
+  &__label-title {
+    padding-bottom: var(--icon-spacing);
+    color: var(--black80);
+  }
+
+  &__hour {
+    @include regular-8;
+    color: var(--black80);
+  }
+
+  .select-menu {
+    margin-left: 0;
+    .select-menu__modal > div {
+      width: 264px;
+    }
+  }
+  .amp-button {
+    width: 100%;
+  }
+}

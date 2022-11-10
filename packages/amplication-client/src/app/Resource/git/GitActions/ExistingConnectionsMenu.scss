@@ -1,0 +1,43 @@
+@import "../../../style/index.scss";
+
+.git-organization-select-menu {
+  &__select-menu {
+    background: var(--black2);
+  }
+  &__menu {
+    margin-left: 0 !important;
+    box-sizing: border-box;
+    padding: 0px 6px;
+    gap: 8px;
+    width: 248px;
+    height: 28px;
+    background: var(--black5);
+    border: $border-black20;
+    border-radius: var(--small-border-radius);
+
+    .amp-button {
+      height: 28px;
+      width: 100%;
+      justify-content: space-between;
+      padding-left: 2px;
+
+      .menu-item-content__text {
+        max-width: 180px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+
+    &__add-icon {
+      position: absolute;
+      margin-right: var(--double-spacing);
+    }
+  }
+  &__hr {
+    border: none;
+    border-top: $border-black5;
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
+  }
+}

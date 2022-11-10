@@ -1,0 +1,10 @@
+@import "../../style/index.scss";
+
+.service-topic-pattern-menu {
+  &__label {
+    @include headline-description;
+    font-weight: 400;
+    color: var(--menu-item-color);
+    margin-bottom: 4px;
+  }
+}

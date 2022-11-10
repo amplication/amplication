@@ -11,7 +11,7 @@ import { setContext } from "@apollo/client/link/context";
 import { getToken, setToken } from "./app/authentication/authentication";
 // import "@amplication/design-system/icons";
 // import "./index.scss";
-// import App from "./App";
+import App from "./app/App";
 import { REACT_APP_DATA_SOURCE } from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
 
@@ -56,8 +56,7 @@ root.render(
   <ApolloProvider client={apolloClient}>
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div>Hi</div>
-        {/* <App /> */}
+        <App />
       </Router>
     </QueryClientProvider>
   </ApolloProvider>

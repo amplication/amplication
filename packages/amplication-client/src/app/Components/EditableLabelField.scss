@@ -1,0 +1,22 @@
+@import "../style/index.scss";
+
+.text-input.editable-label-field {
+  margin-bottom: 0;
+  label {
+    display: inline;
+
+    > span {
+      display: none;
+    }
+  }
+  input {
+    display: inline;
+    width: auto;
+    border-color: transparent;
+    background: none;
+    margin-left: calc(var(--default-spacing) * -1);
+    padding-top: 0;
+    padding-bottom: 0;
+    height: auto;
+  }
+}

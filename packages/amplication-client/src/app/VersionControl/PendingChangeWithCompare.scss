@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.pending-change-with-compare {
+  .pending-change {
+    margin-bottom: 0;
+  }
+
+  .amp-panel-collapsible__body {
+    padding: 0;
+  }
+}

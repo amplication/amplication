@@ -1,0 +1,30 @@
+@import "../style/index.scss";
+
+.workspaces-layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface);
+  color: var(--black100);
+
+  &__page_content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  &__main_content {
+    flex: 1;
+    display: flex;
+  }
+
+  &__changes_menu {
+    width: var(--changes-menu-width);
+    min-width: var(--changes-menu-width);
+    background: var(--menu-background-color);
+    border-left: $border-black10;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+  }
+}

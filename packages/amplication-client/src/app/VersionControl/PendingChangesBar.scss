@@ -1,0 +1,30 @@
+@import "../style/index.scss";
+
+.pending-changes-bar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+
+  &__heading {
+    h2 {
+      @include title1;
+      font-size: 14px;
+      font-weight: 700;
+      margin: var(--default-spacing);
+    }
+  }
+
+  .last-commit {
+    border-top: $border-black10;
+    margin: 0;
+  }
+
+  .build-header {
+    // margin-top: var(--double-spacing);
+    margin-bottom: var(--default-spacing);
+    padding-top: var(--double-spacing);
+    // border-top: $border-black10;
+  }
+}

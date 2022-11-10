@@ -1,0 +1,25 @@
+@import "../style/index.scss";
+
+.entity-permission-fields {
+  &__add-field {
+    @include flexFullRow;
+    justify-content: flex-start;
+    color: var(--black90);
+  }
+
+  &__field {
+    display: block;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__header {
+    @include flexFullRow;
+    color: var(--black80);
+    // margin-bottom: var(--default-spacing);
+  }
+  &__action-name {
+    color: var(--black100);
+  }
+}

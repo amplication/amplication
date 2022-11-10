@@ -1,0 +1,96 @@
+@import "../style/index.scss";
+
+$panel-tag-width: 64px;
+
+.api-token-list-item {
+  margin: 0;
+  margin-bottom: var(--default-spacing);
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  overflow-x: auto;
+
+  &--expired {
+    .api-token-list-item {
+      &__panel-tag {
+        background-color: var(--negative-light-transparent);
+        border: 1px solid var(--negative-light);
+        color: var(--negative-light);
+      }
+      &__expiration {
+        .time-since__icon {
+          background-color: var(--negative-light);
+        }
+      }
+    }
+  }
+
+  &__panel-tag {
+    width: $panel-tag-width;
+    min-width: $panel-tag-width;
+    background-color: var(--white);
+    border-radius: var(--default-border-radius) 0 0 var(--default-border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &__panel-details {
+    padding: var(--default-spacing);
+    flex: 1;
+  }
+
+  &__row {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+
+    h3 {
+      margin: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  &__title {
+    @include body1;
+    color: var(--black100);
+  }
+  &__description {
+    @include body2;
+    color: var(--black80);
+  }
+
+  &__created {
+    @include flexFullRow;
+    .time-since {
+      margin-left: var(--default-spacing-small);
+    }
+  }
+  &__expiration {
+    @include flexFullRow;
+    .time-since {
+      margin-left: var(--default-spacing-small);
+    }
+  }
+
+  &__token-preview {
+    color: var(--black80);
+  }
+  &--new {
+    .api-token-list-item {
+      &__panel-tag {
+        background-color: var(--theme-turquoise-transparent);
+        border: 1px solid var(--theme-turquoise);
+        color: var(--theme-turquoise);
+      }
+    }
+  }
+  &__row:nth-child(2):not(:last-child) {
+    word-break: break-all;
+    overflow-wrap: break-word;
+    border: $border-black20;
+    padding: var(--default-spacing);
+    border-radius: var(--default-border-radius);
+    color: var(--black80);
+  }
+}

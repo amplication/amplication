@@ -1,0 +1,19 @@
+@import "../style/index.scss";
+
+.entity-field-list {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+
+    .search-field {
+      flex: 1;
+    }
+  }
+  &__title {
+    @include body2;
+    margin-bottom: var(--large-spacing);
+  }
+  &__add-button {
+    min-width: 0;
+  }
+}
