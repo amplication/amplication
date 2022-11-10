@@ -12,6 +12,7 @@
     "format": "npx nx format --write"
   },
   "dependencies": {
+    "@amplication/react-compound-timer": "^2.1.0",
     "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
     "@apollo/gateway": "^0.42.3",
