@@ -11,7 +11,7 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BlockService } from "../block/block.service";
 import { DeleteServiceTopicsArgs } from "./dto/DeleteServiceTopicsArgs";
-import { MessagePatternCreateInput } from "@amplication/code-gen-types/dist/models";
+import { MessagePatternCreateInput } from "@amplication/code-gen-types/models";
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
