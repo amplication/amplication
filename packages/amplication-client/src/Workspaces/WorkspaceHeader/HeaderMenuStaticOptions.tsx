@@ -1,5 +1,7 @@
 import { Icon, SelectMenuItem } from "@amplication/design-system";
 import React, { useMemo } from "react";
+import { useRouteMatch } from "react-router-dom";
+
 import {
   WORK_SPACE_HEADER_CLASS_NAME,
   PROJECT_CONFIGURATION_RESOURCE_NAME,
@@ -41,15 +43,12 @@ export default function HeaderMenuStaticOptions({
     [currentProjectConfigurationId]
   );
 
+  const match = useRouteMatch();
+
   return (
     <>
       {MENU_OPTIONS.map((option, index) => {
-        const link = [
-          "/",
-          currentWorkspaceId || "",
-          currentProjectId,
-          option.link,
-        ].join("/");
+        const link = [match.url, currentProjectId, option.link].join("/");
 
         return (
           <SelectMenuItem
