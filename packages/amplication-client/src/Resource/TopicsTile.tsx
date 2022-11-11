@@ -13,13 +13,10 @@ import { GET_TOPICS } from "../Topics/TopicList";
 import { useTracking, Event as TrackEvent } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   resourceId: string;
-};
-
-const EVENT_DATA: TrackEvent = {
-  eventName: "messageBrokerTopicsTileClick",
 };
 
 function TopicsTile({ resourceId }: Props) {
@@ -35,7 +32,7 @@ function TopicsTile({ resourceId }: Props) {
   const { trackEvent } = useTracking();
 
   const handleClick = useCallback(() => {
-    trackEvent(EVENT_DATA);
+    trackEvent({ eventName: AnalyticsEventNames.MessageBrokerTopicsTileClick });
     history.push(
       `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/topics`
     );

@@ -13,13 +13,10 @@ import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
 import { Resource } from "../models";
 import { GET_MESSAGE_BROKER_CONNECTED_SERVICES } from "../Workspaces/queries/resourcesQueries";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   resourceId: string;
-};
-
-const EVENT_DATA: TrackEvent = {
-  eventName: "messageBrokerConnectedServicesTileClick",
 };
 
 function ServicesTile({ resourceId }: Props) {
@@ -37,7 +34,7 @@ function ServicesTile({ resourceId }: Props) {
   }, []);
 
   const handleClick = useCallback(() => {
-    trackEvent(EVENT_DATA);
+    trackEvent({eventName: AnalyticsEventNames.MessageBrokerConnectedServicesTileClick});
     history.push(
       `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/services`
     );

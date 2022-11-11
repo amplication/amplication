@@ -8,7 +8,7 @@ export enum AnalyticsEventNames {
   CheckoutPlanSelected = "checkoutPlanSelected",
   ThemeSet = "setTheme",
 
-  // tiles
+  // tiles that exists in all kinds of resources (service, message broker, etc.)
   DocsTileClick = "docsTileClick",
   FeatureRequestTileClick = "featureRequestTileClick",
   NewVersionTileFixEntitiesClick = "newVersionTileClick-fixEntities",
@@ -25,8 +25,14 @@ export enum AnalyticsEventNames {
   // account
   AccountInfoUpdate = "updateAccountInfo",
 
+  // project configuration
+  ProjectConfigurationsSettingsUpdate = "updateProjectConfigurationsSettings",
+
   // project
   ProjectCreate = "createProject",
+
+  // service
+  ServiceSettingsUpdate = "updateServiceSettings",
 
   // resource
   ResourceFromFileCreate = "createResourceFromFile",
@@ -34,8 +40,15 @@ export enum AnalyticsEventNames {
   ResourceFromScratchCreate = "createResourceFromScratch",
   ResourceInfoUpdate = "updateResourceInfo",
 
-  // message broker and topic
+  // message broker
+  MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
+  MessageBrokerTopicsTileClick = "messageBrokerTopicsTileClick",
+
+  // topic
 
   // schema
   FileToImportSchemaUpload = "uploadFileToImportSchema",
+
+  // code view
+  CodeViewTileClick = "viewCodeViewTileClick",
 }
