@@ -3,6 +3,10 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-client/src",
   "projectType": "application",
+  "implicitDependencies": [
+    "amplication-design-system",
+    "amplication-code-gen-types"
+  ],
   "targets": {
     "build": {
       "executor": "@nrwl/webpack:webpack",
