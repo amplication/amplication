@@ -17,6 +17,5 @@ export default function useNavigationTabs(
       url,
       active: true,
     });
-
   }, [key, name, url, navigationTabsContext.registerItem]);
 }

@@ -55,7 +55,10 @@ const WorkspaceHeader: React.FC<{}> = () => {
       (isResourceRoute && currentResource) ||
       (isResourceRoute && currentProjectConfiguration)
     )
-      return currentResource?.resourceType ===  models.EnumResourceType.ProjectConfiguration ?  PROJECT_CONFIGURATION_RESOURCE_NAME : currentResource?.name 
+      return currentResource?.resourceType ===
+        models.EnumResourceType.ProjectConfiguration
+        ? PROJECT_CONFIGURATION_RESOURCE_NAME
+        : currentResource?.name;
 
     if (isCommitsRoute) return "Commits";
 
@@ -106,7 +109,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
               </div>
               <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
                 <SelectMenu
-                  css={undefined}
                   title={
                     <p
                       className={`${CLASS_NAME}__breadcrumbs__resource__title`}

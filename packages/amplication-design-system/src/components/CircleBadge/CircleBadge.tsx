@@ -20,7 +20,7 @@ export const CircleBadge: React.FC<Props> = ({
   name,
   color,
   size = "medium",
-  children,
+  children = null,
 }) => (
   <div
     className={`circle-badge${size ? ` ${size}` : ""}`}

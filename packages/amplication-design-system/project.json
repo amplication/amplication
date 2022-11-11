@@ -5,39 +5,6 @@
   "projectType": "library",
   "tags": [],
   "targets": {
-    "install": {
-      "executor": "nx:run-commands",
-      "inputs": [
-        "{projectRoot}/package.json",
-        "{projectRoot}/package-lock.json"
-      ],
-      "outputs": ["{projectRoot}/node_modules"],
-      "options": {
-        "commands": ["npm install"],
-        "parallel": false,
-        "cwd": "packages/amplication-design-system"
-      }
-    },
-    "build": {
-      "executor": "@nrwl/web:rollup",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/amplication-design-system",
-        "tsConfig": "packages/amplication-design-system/tsconfig.lib.json",
-        "project": "packages/amplication-design-system/package.json",
-        "entryFile": "packages/amplication-design-system/src/index.ts",
-        "external": ["react/jsx-runtime"],
-        "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
-        "compiler": "swc",
-        "assets": [
-          {
-            "glob": "packages/amplication-design-system/README.md",
-            "input": ".",
-            "output": "."
-          }
-        ]
-      }
-    },
     "format": {
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src"],

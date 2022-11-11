@@ -7,9 +7,8 @@ const CLASS_NAME = "service-settings";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 const ServiceSettingsPage: React.FC<{}> = () => {
-  const { currentWorkspace, currentProject, currentResource } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
 
   return (
     <div className={CLASS_NAME}>
