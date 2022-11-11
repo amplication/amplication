@@ -5,9 +5,14 @@ export enum AnalyticsEventNames {
   SupportCommunityClick = "supportCommunityClick",
   SupportFeatureRequestClick = "supportFeatureRequestClick",
   SupportIssueClick = "supportIssueClick",
-  DocsTileClick = "docsTileClick",
   CheckoutPlanSelected = "checkoutPlanSelected",
   ThemeSet = "setTheme",
+
+  // tiles
+  DocsTileClick = "docsTileClick",
+  FeatureRequestTileClick = "featureRequestTileClick",
+  NewVersionTileFixEntitiesClick = "newVersionTileClick-fixEntities",
+  RolesTileClick = "rolesTileClick",
 
   // entity
   EntityCreate = "createEntity",
@@ -15,21 +20,22 @@ export enum AnalyticsEventNames {
   EntityFieldCreate = "createEntityField",
   EntityFieldUpdate = "updateEntityField",
   RelatedEntityFix = "fixRelatedEntity",
+  EntitiesTileClick = "entitiesTileClick",
 
   // account
-  UpdateAccountInfo = "updateAccountInfo",
+  AccountInfoUpdate = "updateAccountInfo",
 
   // project
-  CreateProject = "createProject",
+  ProjectCreate = "createProject",
 
   // resource
-  CreateResourceFromFile = "createResourceFromFile",
-  CreateResourceFromSample = "createResourceFromSample",
-  CreateResourceFromScratch = "createResourceFromScratch",
+  ResourceFromFileCreate = "createResourceFromFile",
+  ResourceFromSampleCreate = "createResourceFromSample",
+  ResourceFromScratchCreate = "createResourceFromScratch",
+  ResourceInfoUpdate = "updateResourceInfo",
 
   // message broker and topic
 
   // schema
-  UploadFileToImportSchema = "uploadFileToImportSchema",
- 
+  FileToImportSchemaUpload = "uploadFileToImportSchema",
 }

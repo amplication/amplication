@@ -27,6 +27,7 @@ import {
   sampleServiceResourceWithoutEntities,
 } from "./constants";
 import ProgressBar from "../Components/ProgressBar";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type ColumnKey = {
   name: string;
@@ -96,7 +97,7 @@ export function CreateResourceFromExcel() {
 
         const columns = generateColumnKeys(ws["!ref"]);
         trackEvent({
-          eventName: "uploadFileToImportSchema",
+          eventName: AnalyticsEventNames.FileToImportSchemaUpload,
           resourceName: fileName,
         });
         buildImportList(rest as WorksheetData, headers as string[], columns);
@@ -193,7 +194,7 @@ export function CreateResourceFromExcel() {
       }
 
       trackEvent({
-        eventName: "createResourceFromFile",
+        eventName: AnalyticsEventNames.ResourceFromFileCreate,
         resourceName: data.resource.name,
       });
       createServiceWithEntities({ variables: { data } }).catch(console.error);
@@ -205,7 +206,7 @@ export function CreateResourceFromExcel() {
 
   const handleStartFromSample = useCallback(() => {
     trackEvent({
-      eventName: "createResourceFromSample",
+      eventName: AnalyticsEventNames.ResourceFromSampleCreate,
     });
     createServiceWithEntities({
       variables: { data: sampleServiceResourceWithEntities },
@@ -214,7 +215,7 @@ export function CreateResourceFromExcel() {
 
   const handleStartFromScratch = useCallback(() => {
     trackEvent({
-      eventName: "createResourceFromScratch",
+      eventName: AnalyticsEventNames.ResourceFromScratchCreate,
     });
     createServiceWithEntities({
       variables: { data: sampleServiceResourceWithoutEntities },

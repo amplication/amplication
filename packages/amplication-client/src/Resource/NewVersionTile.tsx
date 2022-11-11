@@ -13,6 +13,7 @@ import { AppContext } from "../context/appContext";
 import { GET_LOOKUP_FIELDS } from "../Entity/RelatedFieldsMigrationFix";
 import * as models from "../models";
 import { Event as TrackEvent, useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./NewVersionTile.scss";
 
 type TData = {
@@ -25,10 +26,6 @@ type Props = {
 
 const CLASS_NAME = "new-version-tile";
 
-const EVENT_DATA: TrackEvent = {
-  eventName: "newVersionTileClick-fixEntities",
-};
-
 function NewVersionTile({ resourceId }: Props) {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
@@ -40,15 +37,14 @@ function NewVersionTile({ resourceId }: Props) {
   });
   const { trackEvent } = useTracking();
 
-  const handleClick = useCallback(
-    (event) => {
-      trackEvent(EVENT_DATA);
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}${resourceId}/fix-related-entities`
-      );
-    },
-    [history, trackEvent, resourceId, currentWorkspace, currentProject]
-  );
+  const handleClick = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.NewVersionTileFixEntitiesClick,
+    });
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}${resourceId}/fix-related-entities`
+    );
+  }, [history, trackEvent, resourceId, currentWorkspace, currentProject]);
 
   const requiredFixesCount = useMemo(() => {
     if (!data) return 0;
