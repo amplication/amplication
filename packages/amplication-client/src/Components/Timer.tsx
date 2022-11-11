@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { differenceInMilliseconds } from "date-fns";
-import TimerComponent from "react-compound-timer";
+import TimerComponent from "@amplication/react-compound-timer";
 
 const CLASS_NAME = "amp-timer";
 const EMPTY_TIMER = "0m 0s";
@@ -19,7 +19,7 @@ function Timer({ startTime, endTime, runTimer }: Props) {
 
   const startImmediately = !endTime && runTimer;
 
-  //use a unique key to force re-render of Timer when startTime or endTime change
+  // use a unique key to force re-render of Timer when startTime or endTime change
   const timerKey =
     (startTime ? startTime.toString() : "") +
     (endTime ? endTime.toString() : "");
@@ -43,5 +43,4 @@ function Timer({ startTime, endTime, runTimer }: Props) {
     </span>
   );
 }
-
 export default Timer;

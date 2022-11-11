@@ -27,9 +27,8 @@ type Props = {
 
 const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
-  const { currentWorkspace, currentProject, pendingChanges } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, pendingChanges } =
+    useContext(AppContext);
   const {
     pendingChangesByResource,
     pendingChangesDataError,

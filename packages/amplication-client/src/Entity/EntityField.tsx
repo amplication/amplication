@@ -34,7 +34,8 @@ const EntityField = () => {
   const [lookupPendingData, setLookupPendingData] = useState<Values | null>(
     null
   );
-  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } =
+    useContext(AppContext);
   const history = useHistory();
   const [error, setError] = useState<Error>();
 
@@ -50,15 +51,16 @@ const EntityField = () => {
     throw new Error("resource parameters is required in the query string");
   }
 
-  const { data, error: loadingError, loading } = useQuery<TData>(
-    GET_ENTITY_FIELD,
-    {
-      variables: {
-        entity,
-        field,
-      },
-    }
-  );
+  const {
+    data,
+    error: loadingError,
+    loading,
+  } = useQuery<TData>(GET_ENTITY_FIELD, {
+    variables: {
+      entity,
+      field,
+    },
+  });
 
   const entityField = data?.entity.fields?.[0];
   const entityDisplayName = data?.entity.displayName;
@@ -200,7 +202,7 @@ const EntityField = () => {
         <RelatedFieldDialog
           isOpen={lookupPendingData !== null}
           onDismiss={hideRelatedFieldDialog}
-          onSubmit={handleRelatedFieldFormSubmit}
+          onSubmit={handleRelatedFieldFormSubmit as any} // TODO: address after Nx React migration
           relatedEntityId={lookupPendingData?.properties?.relatedEntityId}
           allowMultipleSelection={
             !lookupPendingData?.properties?.allowMultipleSelection

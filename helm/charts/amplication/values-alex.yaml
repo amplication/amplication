@@ -21,10 +21,10 @@ amplication-client:
     hostname: app-alex.amplication-dev.com
   config:
     env:
-      REACT_APP_SERVER_URI: "https://server-alex.amplication-dev.com"
-      REACT_APP_DATA_SOURCE: "https://server-alex.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-alex.amplication-dev.com/github"
-      REACT_APP_STORAGE_GATEWAY_URL: https://server-alex.amplication-dev.com
+      NX_REACT_APP_SERVER_URI: "https://server-alex.amplication-dev.com"
+      NX_REACT_APP_DATA_SOURCE: "https://server-alex.amplication-dev.com/graphql"
+      NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-alex.amplication-dev.com/github"
+      NX_REACT_APP_STORAGE_GATEWAY_URL: https://server-alex.amplication-dev.com
 
 amplication-server:
   ingress:

@@ -5,7 +5,7 @@
 
 const fs = require("fs");
 
-const REACT_APP_ENV_REGEXP = /^REACT_APP_/;
+const REACT_APP_ENV_REGEXP = /^NX_REACT_APP_/;
 const HTML_HEAD_CLOSING_TAG = "</head>";
 
 if (require.main === module) {

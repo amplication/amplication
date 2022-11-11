@@ -13,7 +13,6 @@ const usePageTracking = () => {
       url,
       params: match.params,
     });
-
   }, []);
 
   return null;

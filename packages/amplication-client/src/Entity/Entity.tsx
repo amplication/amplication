@@ -34,9 +34,8 @@ type UpdateData = {
 const Entity = ({ match }: Props) => {
   const { entityId, resource } = match.params;
   const { trackEvent } = useTracking();
-  const { addEntity, currentWorkspace, currentProject } = useContext(
-    AppContext
-  );
+  const { addEntity, currentWorkspace, currentProject } =
+    useContext(AppContext);
 
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {

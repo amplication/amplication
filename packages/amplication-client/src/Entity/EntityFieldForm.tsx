@@ -24,7 +24,10 @@ export type Values = {
   searchable: boolean;
   description: string | null;
   // eslint-disable-next-line @typescript-eslint/ban-types
-  properties: Object;
+  properties: {
+    relatedEntityId?: string;
+    allowMultipleSelection?: string;
+  };
 };
 
 type Props = {
@@ -108,7 +111,7 @@ const EntityFieldForm = ({
         }
 
         if (!isEmpty(propertiesError)) {
-          errors.properties = propertiesError;
+          errors.properties = propertiesError as any; // TODO: remove eslint rules and fix this
         }
 
         return errors;

@@ -1,11 +1,13 @@
 import React, { useCallback, useContext } from "react";
-import {
-  SelectMenu as PrimerSelectMenu,
+
+import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
+import type {
   SelectMenuProps,
   SelectMenuModalProps as PrimerSelectMenuModalProps,
   SelectMenuItemProps as PrimerSelectMenuItemProps,
   SelectMenuListProps as PrimerSelectMenuListProps,
-} from "@primer/react";
+} from "@primer/react/deprecated";
+
 import classNames from "classnames";
 import SearchField, {
   Props as SearchFieldProps,
@@ -15,7 +17,7 @@ import { Button, EnumButtonStyle } from "../Button/Button";
 
 import "./SelectMenu.scss";
 
-interface ButtonProps {
+export interface Props extends Omit<SelectMenuProps, "title"> {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
   title: string | React.ReactNode;
@@ -24,9 +26,7 @@ interface ButtonProps {
   buttonClassName?: string;
 }
 
-export type Props = SelectMenuProps & ButtonProps;
-
-const SelectButton: React.FC<ButtonProps> = ({
+const SelectButton: React.FC<Props> = ({
   disabled,
   buttonStyle,
   title,
@@ -41,7 +41,7 @@ const SelectButton: React.FC<ButtonProps> = ({
       {...(disabled ? { disabled } : { as: "summary" })}
       className={className}
       buttonStyle={buttonStyle}
-      icon={openIcon ? (menuContext.open ? openIcon : icon) : icon}
+      icon={openIcon ? ((menuContext as any).open ? openIcon : icon) : icon}
       iconSize={"xsmall"}
     >
       {title}
