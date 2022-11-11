@@ -121,7 +121,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
       </div>
       <Snackbar
         open={Boolean(errorCreateMessageBroker)}
-        message={handleErrorCreateMessageBroker}
+        message={handleErrorCreateMessageBroker()}
       />
     </Modal>
   );

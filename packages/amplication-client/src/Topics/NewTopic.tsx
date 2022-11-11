@@ -146,7 +146,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
           </Form>
         )}
       </Formik>
-      <Snackbar open={Boolean(error)} message={handleCreateTopicFailed} />
+      <Snackbar open={Boolean(error)} message={handleCreateTopicFailed()} />
     </div>
   );
 };
