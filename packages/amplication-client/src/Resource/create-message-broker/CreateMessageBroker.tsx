@@ -7,7 +7,7 @@ import {
 } from "@amplication/design-system";
 import React, { useCallback, useContext } from "react";
 import { match, useHistory } from "react-router-dom";
-import { useTracking, Event as TrackEvent } from "../../util/analytics";
+import { useTracking } from "../../util/analytics";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import { AppContext } from "../../context/appContext";
@@ -16,24 +16,13 @@ import { AppRouteProps } from "../../routes/routesUtil";
 import { formatError } from "../../util/error";
 import { prepareMessageBrokerObject } from "../constants";
 import "./CreateMessageBroker.scss";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 type Props = AppRouteProps & {
   match: match<{
     workspace: string;
     project: string;
   }>;
-};
-
-const CREATE_MESSAGE_BROKER_EVENT_DATA: TrackEvent = {
-  eventName: "createMessageBrokerClick",
-};
-
-const BACK_TO_PROJECTS_EVENT_DATA: TrackEvent = {
-  eventName: "backToProjectsClick",
-};
-
-const ERROR_CREATE_MESSAGE_BROKER_EVENT_DATA: TrackEvent = {
-  eventName: "ErrorCreateMessageBroker",
 };
 
 const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
@@ -49,20 +38,20 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const { trackEvent } = useTracking();
 
   const handleErrorCreateMessageBroker = () => {
-    trackEvent(ERROR_CREATE_MESSAGE_BROKER_EVENT_DATA);
+    trackEvent({ eventName: AnalyticsEventNames.MessageBrokerErrorCreate });
     return formatError(errorCreateMessageBroker);
   };
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateInput, eventName: string) => {
-      trackEvent(CREATE_MESSAGE_BROKER_EVENT_DATA);
+      trackEvent({ eventName: AnalyticsEventNames.MessageBrokerCreateClick });
       createMessageBroker(data, eventName);
     },
     [createMessageBroker, trackEvent]
   );
 
   const handleBackToProjectClick = () => {
-    trackEvent(BACK_TO_PROJECTS_EVENT_DATA);
+    trackEvent({ eventName: AnalyticsEventNames.BackToProjectsClick });
     history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
   };
 

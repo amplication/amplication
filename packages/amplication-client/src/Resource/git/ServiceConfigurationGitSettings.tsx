@@ -5,15 +5,20 @@ import "./ServiceConfigurationGitSettings.scss";
 import AuthResourceWithGit from "./AuthResourceWithGit";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { AppContext } from "../../context/appContext";
-import {useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
-import { CONNECT_RESOURCE_PROJECT_REPO, DISCONNECT_GIT_REPOSITORY, UPDATE_RESOURCE } from "../../Workspaces/queries/resourcesQueries";
+import {
+  CONNECT_RESOURCE_PROJECT_REPO,
+  DISCONNECT_GIT_REPOSITORY,
+  UPDATE_RESOURCE,
+} from "../../Workspaces/queries/resourcesQueries";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const CLASS_NAME = "service-configuration-github-settings";
 
 type Props = {
-  resource:  models.Resource;
+  resource: models.Resource;
   onDone: () => void;
 };
 
@@ -36,49 +41,51 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
 
-    const [connectResourceToProjectRepository] = useMutation<TData>(CONNECT_RESOURCE_PROJECT_REPO, {
-      variables: { resourceId: resource.id }
-    });
+  const [connectResourceToProjectRepository] = useMutation<TData>(
+    CONNECT_RESOURCE_PROJECT_REPO,
+    {
+      variables: { resourceId: resource.id },
+    }
+  );
 
-    const [disconnectGitRepository] = useMutation(DISCONNECT_GIT_REPOSITORY, {
-      variables: { resourceId: resource.id }
-    });
-  
-    const handleDisconnectGitRepository = useCallback(() => {
-      disconnectGitRepository({
-        variables: { resourceId: resource.id },
-      }).catch(console.error);
-    }, [disconnectGitRepository, resource.id]);
+  const [disconnectGitRepository] = useMutation(DISCONNECT_GIT_REPOSITORY, {
+    variables: { resourceId: resource.id },
+  });
 
+  const handleDisconnectGitRepository = useCallback(() => {
+    disconnectGitRepository({
+      variables: { resourceId: resource.id },
+    }).catch(console.error);
+  }, [disconnectGitRepository, resource.id]);
 
-    const handleConnectProjectGitRepository = useCallback(() => {
-      connectResourceToProjectRepository({
-        variables: { resourceId: resource.id },
-      }).catch(console.error);
-    }, [connectResourceToProjectRepository, resource.id]);
+  const handleConnectProjectGitRepository = useCallback(() => {
+    connectResourceToProjectRepository({
+      variables: { resourceId: resource.id },
+    }).catch(console.error);
+  }, [connectResourceToProjectRepository, resource.id]);
 
-    const handleResourceStatusChanged = useCallback(
-      (isOverride: boolean) => {
+  const handleResourceStatusChanged = useCallback(
+    (isOverride: boolean) => {
       setIsOverride(isOverride);
-      if(isOverride) {
-        handleDisconnectGitRepository()
-      }
-      else {
+      if (isOverride) {
+        handleDisconnectGitRepository();
+      } else {
         handleConnectProjectGitRepository();
       }
     },
-    [handleDisconnectGitRepository,handleConnectProjectGitRepository]); 
+    [handleDisconnectGitRepository, handleConnectProjectGitRepository]
+  );
 
   const [updateResourceOverrideStatus] = useMutation<TData>(UPDATE_RESOURCE, {
     onCompleted: (data) => {
-      handleResourceStatusChanged(data.updateResource.gitRepositoryOverride); 
+      handleResourceStatusChanged(data.updateResource.gitRepositoryOverride);
     },
   });
 
   const handleToggleChange = useCallback(
     (gitRepositoryOverride) => {
       trackEvent({
-        eventName: "updateResourceInfo",
+        eventName: AnalyticsEventNames.ResourceInfoUpdate,
       });
       updateResourceOverrideStatus({
         variables: {
@@ -109,7 +116,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
               <Toggle
                 disabled={isToggleDisable}
                 onValueChange={handleToggleChange}
-                checked = {isOverride}
+                checked={isOverride}
               />
             </div>
           </div>

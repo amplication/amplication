@@ -14,7 +14,8 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import "./TopicList.scss";
 import { AppContext } from "../context/appContext";
 import { pluralize } from "../util/pluralize";
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   Topics: models.Topic[];
@@ -28,10 +29,6 @@ type Props = {
   selectFirst?: boolean;
 };
 
-const SEARCH_TOPICS_EVENT_DATA: TrackEvent = {
-  eventName: "searchTopicsClick",
-};
-
 export const TopicList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
     const { trackEvent } = useTracking();
@@ -40,7 +37,7 @@ export const TopicList = React.memo(
 
     const handleSearchChange = useCallback(
       (value) => {
-        trackEvent(SEARCH_TOPICS_EVENT_DATA);
+        trackEvent({ eventName: AnalyticsEventNames.TopicsSearch });
         setSearchPhrase(value);
       },
       [setSearchPhrase, trackEvent]

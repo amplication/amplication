@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Snackbar, HorizontalRule } from "@amplication/design-system";
@@ -6,40 +6,42 @@ import { Snackbar, HorizontalRule } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import TopicForm from "./TopicForm";
 import * as models from "../models";
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   Topic: models.Topic;
 };
 
-const TOPIC_NAME_EVENT_DATA: TrackEvent = {
-  eventName: "topicNameClick",
-};
-const TOPIC_DISPLAY_NAME_EVENT_DATA: TrackEvent = {
-  eventName: "topicDisplayNameClick",
-};
-const TOPIC_DESCRIPTION_EVENT_DATA: TrackEvent = {
-  eventName: "topicDescriptionClick",
-};
-
 const CLASS_NAME = "topic-page";
 
 const Topic = () => {
-  const { trackEvent } = useTracking();
   const match = useRouteMatch<{
     resource: string;
     topicId: string;
   }>("/:workspace/:project/:resource/topics/:topicId");
-
   const { topicId } = match?.params ?? {};
-
+  const [updateTopic, { error: updateError }] = useMutation(UPDATE_TOPIC);
   const { data, error, loading } = useQuery<TData>(GET_TOPIC, {
     variables: {
       topicId,
     },
   });
 
-  const [updateTopic, { error: updateError }] = useMutation(UPDATE_TOPIC);
+  const { trackEvent } = useTracking();
+  const handleTrackEventForUpdateTopic = (updateProperty: string) => {
+    switch (updateProperty) {
+      case "name":
+        trackEvent({ eventName: AnalyticsEventNames.TopicNameEdit });
+        break;
+      case "displayName":
+        trackEvent({ eventName: AnalyticsEventNames.TopicDisplayNameEdit });
+        break;
+      case "description":
+        trackEvent({ eventName: AnalyticsEventNames.TopicDescriptionEdit });
+        break;
+    }
+  };
 
   const handleSubmit = useCallback(
     (data) => {
@@ -52,24 +54,9 @@ const Topic = () => {
         },
       }).catch(console.error);
       handleTrackEventForUpdateTopic(data.updateTopic);
-      trackEvent(TOPIC_NAME_EVENT_DATA);
     },
     [updateTopic, topicId]
   );
-
-  const handleTrackEventForUpdateTopic = (updateProperty: string) => {
-    switch (updateProperty) {
-      case "name":
-        trackEvent(TOPIC_NAME_EVENT_DATA);
-        break;
-      case "displayName":
-        trackEvent(TOPIC_DISPLAY_NAME_EVENT_DATA);
-        break;
-      case "description":
-        trackEvent(TOPIC_DESCRIPTION_EVENT_DATA);
-        break;
-    }
-  };
 
   const hasError = Boolean(error) || Boolean(updateError);
   const errorMessage = formatError(error) || formatError(updateError);

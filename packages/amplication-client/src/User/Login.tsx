@@ -20,6 +20,7 @@ import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
 import { ErrorMessage } from "../Components/ErrorMessage";
 import "./Login.scss";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Values = {
   email: string;
@@ -141,7 +142,7 @@ const Login = () => {
               <Button
                 type="submit"
                 eventData={{
-                  eventName: "signInWithUserName",
+                  eventName: AnalyticsEventNames.SignInWithUserName,
                 }}
               >
                 Continue

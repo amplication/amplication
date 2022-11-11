@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTracking } from "../util/analytics";
 
 import * as models from "../models";
@@ -13,6 +13,7 @@ import {
   Tooltip,
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type DType = {
   deleteUser: models.User;
@@ -71,7 +72,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
 
     if (member.type === models.EnumWorkspaceMemberType.User) {
       trackEvent({
-        eventName: "deleteUserFromWorkspace",
+        eventName: AnalyticsEventNames.MemberFromWorkspaceDelete,
       });
       deleteUser({
         variables: {
@@ -80,7 +81,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
       }).catch(onError);
     } else {
       trackEvent({
-        eventName: "revokeInvitation",
+        eventName: AnalyticsEventNames.MemberInvitationRevoke,
       });
       revokeInvitation({
         variables: {
@@ -92,7 +93,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
 
   const handleResendInvitation = useCallback(() => {
     trackEvent({
-      eventName: "resendInvitation",
+      eventName: AnalyticsEventNames.MemberInvitationResend,
     });
     resendInvitation({
       variables: {

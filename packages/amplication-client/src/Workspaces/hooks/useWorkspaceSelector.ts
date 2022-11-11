@@ -17,6 +17,7 @@ import { setToken, unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
 import { CreateWorkspaceType, DType, TData, TSetData } from "./workspace";
 import { useTracking } from "react-tracking";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const useWorkspaceSelector = (authenticated: boolean) => {
   const apolloClient = useApolloClient();
@@ -52,7 +53,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   ] = useMutation<DType>(CREATE_WORKSPACE, {
     onCompleted: (data) => {
       trackEvent({
-        eventName: "createWorkspace",
+        eventName: AnalyticsEventNames.WorkspaceCreate,
         workspaceName: data.createWorkspace.name,
       });
       handleSetCurrentWorkspace(data.createWorkspace.id);
