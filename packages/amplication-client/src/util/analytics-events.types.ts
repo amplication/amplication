@@ -12,12 +12,10 @@ export enum AnalyticsEventNames {
   // workspace
   WorkspaceInfoUpdate = "updateWorkspaceInfo",
   WorkspaceCreate = "createWorkspace",
-
-  // members
-  MemberInvite = "inviteUser",
-  MemberInvitationResend = "resendInvitation",
-  MemberInvitationRevoke = "revokeInvitation",
-  MemberFromWorkspaceDelete = "deleteUserFromWorkspace",
+  WorkspaceMemberInvite = "inviteUser",
+  WorkspaceMemberInvitationResend = "resendInvitation",
+  WorkspaceMemberInvitationRevoke = "revokeInvitation",
+  WorkspaceMemberFromWorkspaceDelete = "deleteUserFromWorkspace",
 
   // menu
   SupportButtonClick = "supportButtonClick",

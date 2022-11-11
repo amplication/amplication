@@ -72,7 +72,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
 
     if (member.type === models.EnumWorkspaceMemberType.User) {
       trackEvent({
-        eventName: AnalyticsEventNames.MemberFromWorkspaceDelete,
+        eventName: AnalyticsEventNames.WorkspaceMemberFromWorkspaceDelete,
       });
       deleteUser({
         variables: {
@@ -81,7 +81,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
       }).catch(onError);
     } else {
       trackEvent({
-        eventName: AnalyticsEventNames.MemberInvitationRevoke,
+        eventName: AnalyticsEventNames.WorkspaceMemberInvitationRevoke,
       });
       revokeInvitation({
         variables: {
@@ -93,7 +93,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
 
   const handleResendInvitation = useCallback(() => {
     trackEvent({
-      eventName: AnalyticsEventNames.MemberInvitationResend,
+      eventName: AnalyticsEventNames.WorkspaceMemberInvitationResend,
     });
     resendInvitation({
       variables: {
