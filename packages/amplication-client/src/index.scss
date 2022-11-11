@@ -28,7 +28,8 @@ body {
 
 div[tabindex="-1"]:focus,
 button:focus,
-summary:focus {
+summary:focus,
+a:focus {
   outline: 0 !important;
 }
 
