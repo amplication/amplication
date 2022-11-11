@@ -1,5 +1,4 @@
 import { EnumResourceType } from "../models";
-import { useTracking } from "../util/analytics";
 
 export type MenuItemLinks = "entities" | "roles" | "github" | "settings";
 
@@ -69,8 +68,4 @@ export const setResourceUrlLink = (
   project: string,
   resource: string,
   iconUrl: string
-): string => {
-  const { trackEvent } = useTracking();
-  trackEvent({ eventName: `setResourceUrlLink-${iconUrl}` });
-  return `/${workspace}/${project}/${resource}${iconUrl}`;
-};
+): string => `/${workspace}/${project}/${resource}${iconUrl}`;
