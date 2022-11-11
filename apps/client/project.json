@@ -1,0 +1,106 @@
+{
+  "name": "client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/client/src",
+  "projectType": "application",
+  "implicitDependencies": ["design-system", "code-gen-types"],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/client",
+        "index": "apps/client/public/index.html",
+        "baseHref": "/",
+        "main": "apps/client/src/index.tsx",
+        "polyfills": "apps/client/src/polyfills.ts",
+        "tsConfig": "apps/client/tsconfig.app.json",
+        "assets": [
+          "apps/client/src/assets",
+          {
+            "glob": "**/*",
+            "input": "apps/client/public",
+            "output": "./"
+          },
+          {
+            "glob": "scripts/entrypoint.sh",
+            "input": "apps/client",
+            "output": "/scripts"
+          },
+          {
+            "glob": "scripts/inject-variables.js",
+            "input": "apps/client",
+            "output": "/scripts"
+          }
+        ],
+        "styles": ["apps/client/src/index.scss"],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/client/src/environments/environment.ts",
+              "with": "apps/client/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "client:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "client:build:development"
+        },
+        "production": {
+          "buildTarget": "client:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/client/**/*.{ts,tsx,js,jsx}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/client"],
+      "options": {
+        "jestConfig": "apps/client/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/client:latest"]
+      }
+    }
+  },
+  "tags": []
+}

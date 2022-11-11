@@ -1,0 +1,86 @@
+{
+  "name": "prisma-db",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/prisma-db/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/prisma-db/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/prisma-db"],
+      "options": {
+        "jestConfig": "libs/prisma-db/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "outputs": ["node_modules/@amplication/prisma-clients/prisma-db"],
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "libs/prisma-db"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "libs/prisma-db"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "libs/prisma-db"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "libs/prisma-db"
+      }
+    },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "libs/prisma-db"
+      }
+    },
+    "db:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx db:migrate:dev git-pull-service",
+          "nx db:migrate:deploy git-pull-service",
+          "nx db:seed git-pull-service"
+        ],
+        "parallel": false,
+        "cwd": "libs/prisma-db"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node prisma/seed.ts",
+        "cwd": "libs/prisma-db"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/clean.ts",
+        "cwd": "libs/prisma-db"
+      }
+    }
+  },
+  "tags": []
+}

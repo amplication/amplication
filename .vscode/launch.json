@@ -18,19 +18,19 @@
       "request": "launch",
       "name": "Launch Chrome against localhost",
       "url": "http://localhost:3001",
-      "webRoot": "${workspaceFolder}/amplication-client"
+      "webRoot": "${workspaceFolder}/client"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Jest Current File (Server)",
-      "program": "${workspaceFolder}/packages/amplication-server/node_modules/.bin/jest",
+      "program": "${workspaceFolder}/apps/server/node_modules/.bin/jest",
       "args": ["${fileBasenameNoExtension}"],
-      "cwd": "${workspaceFolder}/packages/amplication-server",
+      "cwd": "${workspaceFolder}/apps/server",
       "console": "internalConsole",
       "disableOptimisticBPs": true,
       "windows": {
-        "program": "${workspaceFolder}/packages/amplication-server/node_modules/jest/bin/jest"
+        "program": "${workspaceFolder}/apps/server/node_modules/jest/bin/jest"
       }
     },
     {
@@ -40,7 +40,7 @@
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
       "type": "pwa-node",
-      "cwd": "${workspaceFolder}/packages/amplication-data-service-generator",
+      "cwd": "${workspaceFolder}/apps/data-service-generator",
       "console": "internalConsole"
     },
     {
@@ -48,7 +48,7 @@
       "request": "launch",
       "runtimeArgs": ["run-script", "start", "--", "--debug"],
       "runtimeExecutable": "npm",
-      "cwd": "${workspaceFolder}/packages/amplication-data-service-generator/generated",
+      "cwd": "${workspaceFolder}/apps/data-service-generator/generated",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
     },
@@ -56,7 +56,7 @@
       "type": "node",
       "request": "launch",
       "name": "Debug Server",
-      "args": ["${workspaceFolder}/packages/amplication-server/src/main.ts"],
+      "args": ["${workspaceFolder}/apps/server
       "runtimeArgs": [
         "--nolazy",
         "-r",
@@ -65,7 +65,7 @@
         "tsconfig-paths/register"
       ],
       "sourceMaps": true,
-      "cwd": "${workspaceRoot}/packages/amplication-server"
+      "cwd": "${workspaceRoot}/apps/server"
     },
     {
       "name": "Launch DSG",
@@ -73,7 +73,7 @@
       "request": "launch",
       "runtimeArgs": [],
       "args": [
-        "${workspaceFolder}/packages/amplication-data-service-generator/src/index.ts"
+        "${workspaceFolder}/apps/data-service-generator/src/index.ts"
       ],
       "env": {
         "STATUS_UPDATE_URL": "https://2a08-77-252-192-146.eu.ngrok.io/generated-apps/update-action-step-status"

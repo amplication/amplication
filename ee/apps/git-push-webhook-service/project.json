@@ -1,0 +1,62 @@
+{
+  "name": "git-push-webhook-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "ee/apps/git-push-webhook-service/src",
+  "projectType": "application",
+  "implicitDependencies": ["prisma-db", "nest-logger-module", "kafka"],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["ee/apps/git-push-webhook-service/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/ee/apps/git-push-webhook-service"],
+      "options": {
+        "jestConfig": "ee/apps/git-push-webhook-service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/ee/apps/git-push-webhook-service",
+        "main": "ee/apps/git-push-webhook-service/src/main.ts",
+        "tsConfig": "ee/apps/git-push-webhook-service/tsconfig.app.json",
+        "webpackConfig": "ee/apps/git-push-webhook-service/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "git-push-webhook-service:build",
+        "inspect": true,
+        "port": 9229
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "git-push-webhook-service:build:production"
+        }
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/git-push-webhook-service:latest"]
+      }
+    }
+  },
+  "tags": []
+}

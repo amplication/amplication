@@ -1,0 +1,97 @@
+{
+  "name": "data-service-generator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/data-service-generator/src",
+  "projectType": "application",
+  "implicitDependencies": ["code-gen-types"],
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/package.json",
+        "{projectRoot}/package-lock.json"
+      ],
+      "outputs": ["{projectRoot}/node_modules"],
+      "options": {
+        "commands": ["npm install"],
+        "parallel": false,
+        "cwd": "apps/data-service-generator"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "dependsOn": ["prebuild"],
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/data-service-generator/src/**/*"]
+      }
+    },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/package.json",
+        "{projectRoot}/package-lock.json"
+      ],
+      "outputs": ["{projectRoot}/node_modules"],
+      "options": {
+        "commands": ["npm install"],
+        "parallel": false,
+        "cwd": "apps/data-service-generator"
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["^build", "db:prisma:generate", "^db:prisma:generate"],
+      "options": {
+        "outputPath": "dist/apps/data-service-generator",
+        "tsConfig": "apps/data-service-generator/tsconfig.app.json",
+        "packageJson": "apps/data-service-generator/package.json",
+        "main": "apps/data-service-generator/src/index.ts",
+        "assets": ["apps/data-service-generator/*.md"]
+      }
+    },
+    "postbuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["ts-node scripts/copy-files.ts"],
+        "parallel": false,
+        "cwd": "apps/data-service-generator"
+      }
+    },
+    "test": {
+      "dependsOn": ["prebuild", "^prebuild"],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/data-service-generator"],
+      "options": {
+        "jestConfig": "apps/data-service-generator/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "test:update-snapshot": {
+      "dependsOn": ["prebuild"],
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": ["jest -u src/tests/*.spec.ts", "jest -u src/tests/server"],
+        "parallel": false,
+        "cwd": "apps/data-service-generator"
+      }
+    },
+    "generate:test-data-service": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/generated"],
+      "options": {
+        "command": "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated",
+        "cwd": "apps/data-service-generator"
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/data-service-generator:latest"]
+      }
+    }
+  }
+}

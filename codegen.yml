@@ -1,18 +1,18 @@
-schema: "packages/amplication-server/src/schema.graphql"
+schema: "apps/server/src/schema.graphql"
 generates:
-  packages/amplication-client/src/models.ts:
+  apps/client/src/models.ts:
     plugins:
       - "typescript"
-  packages/amplication-data-service-generator/src/models.ts:
+  apps/data-service-generator/src/models.ts:
     plugins:
       - "typescript"
-  packages/amplication-code-gen-types/src/models.ts:
+  apps/git-pull-request-service/src/models.ts:
     plugins:
       - "typescript"
-  packages/amplication-cli/src/models.ts:
+  libs/code-gen-types/src/models.ts:
     plugins:
       - "typescript"
-  packages/amplication-git-pull-request-service/src/models.ts:
+  libs/cli/src/models.ts:
     plugins:
       - "typescript"
 hooks:

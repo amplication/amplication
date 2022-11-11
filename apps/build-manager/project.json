@@ -1,0 +1,62 @@
+{
+  "name": "build-manager",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/build-manager/src",
+  "projectType": "application",
+  "implicitDependencies": ["kafka", "nest-logger-module", "code-gen-types"],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/build-manager/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/build-manager"],
+      "options": {
+        "jestConfig": "apps/build-manager/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/build-manager",
+        "main": "apps/build-manager/src/main.ts",
+        "tsConfig": "apps/build-manager/tsconfig.app.json",
+        "webpackConfig": "apps/build-manager/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "build-manager:build",
+        "inspect": true,
+        "port": 9229
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "build-manager:build:production"
+        }
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/build-manager:latest"]
+      }
+    }
+  },
+  "tags": []
+}

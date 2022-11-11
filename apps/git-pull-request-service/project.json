@@ -1,0 +1,60 @@
+{
+  "name": "git-pull-request-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/git-pull-request-service/src",
+  "projectType": "application",
+  "implicitDependencies": ["nest-logger-module", "git-utils", "kafka"],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/git-pull-request-service/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/git-pull-request-service"],
+      "options": {
+        "jestConfig": "apps/git-pull-request-service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/git-pull-request-service",
+        "main": "apps/git-pull-request-service/src/main.ts",
+        "tsConfig": "apps/git-pull-request-service/tsconfig.app.json",
+        "webpackConfig": "apps/git-pull-request-service/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "git-pull-request-service:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "git-pull-request-service:build:production"
+        }
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/git-pull-request-service:latest"]
+      }
+    }
+  },
+  "tags": []
+}

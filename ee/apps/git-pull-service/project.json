@@ -1,0 +1,132 @@
+{
+  "name": "git-pull-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "ee/apps/git-pull-service/src",
+  "projectType": "application",
+  "implicitDependencies": ["kafka", "nest-logger-module"],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["ee/apps/git-pull-service/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/ee/apps/git-pull-service"],
+      "options": {
+        "jestConfig": "ee/apps/git-pull-service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "inputs": ["{projectRoot}/**/*"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/ee/apps/git-pull-service",
+        "main": "ee/apps/git-pull-service/src/main.ts",
+        "tsConfig": "ee/apps/git-pull-service/tsconfig.app.json",
+        "webpackConfig": "ee/apps/git-pull-service/webpack.config.js",
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "ee/apps/git-pull-service",
+            "output": "prisma"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "git-pull-service:build",
+        "inspect": true,
+        "port": 9229
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "git-pull-service:build:production"
+        }
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "outputs": ["node_modules/@amplication/prisma-clients/git-pull-service"],
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "ee/apps/git-pull-service"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "ee/apps/git-pull-service"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "ee/apps/git-pull-service"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "ee/apps/git-pull-service"
+      }
+    },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "ee/apps/git-pull-service"
+      }
+    },
+    "db:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx db:migrate:dev git-pull-service",
+          "nx db:migrate:deploy git-pull-service",
+          "nx db:seed git-pull-service"
+        ],
+        "parallel": false,
+        "cwd": "ee/apps/git-pull-service"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/seed.ts",
+        "cwd": "ee/apps/git-pull-service"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/clean.ts",
+        "cwd": "ee/apps/git-pull-service"
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/git-pull-service"]
+      }
+    }
+  },
+  "tags": []
+}

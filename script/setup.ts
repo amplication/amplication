@@ -156,10 +156,10 @@ if (require.main === module) {
         "npx nx serve <service-name>",
         "",
         "For example, to run the Amplication Server:",
-        "npx nx serve amplication-server",
+        "npx nx serve server",
         "",
         "To run the Amplication Client:",
-        "npx nx serve amplication-client"
+        "npx nx serve client"
       );
       logger.info(
         "Check out the Amplication Docs at https://docs.amplication.com/docs/ 📜"

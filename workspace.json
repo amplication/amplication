@@ -2,19 +2,19 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "amplication-build-manager": "packages/amplication-build-manager",
-    "amplication-client": "packages/amplication-client",
-    "amplication-code-gen-types": "packages/amplication-code-gen-types",
-    "amplication-data-service-generator": "packages/amplication-data-service-generator",
-    "amplication-design-system": "packages/amplication-design-system",
-    "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
-    "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
-    "amplication-git-push-webhook-service": "ee/packages/amplication-git-push-webhook-service",
-    "amplication-git-utils": "packages/amplication-git-utils",
-    "amplication-kafka": "packages/amplication-kafka",
-    "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
-    "amplication-prisma-db": "packages/amplication-prisma-db",
-    "amplication-server": "packages/amplication-server",
-    "amplication-storage-gateway": "packages/amplication-storage-gateway"
+    "build-manager": "apps/build-manager",
+    "client": "apps/client",
+    "code-gen-types": "libs/code-gen-types",
+    "data-service-generator": "apps/data-service-generator",
+    "design-system": "libs/design-system",
+    "git-pull-request-service": "apps/git-pull-request-service",
+    "git-pull-service": "ee/apps/git-pull-service",
+    "git-push-webhook-service": "ee/apps/git-push-webhook-service",
+    "git-utils": "libs/git-utils",
+    "kafka": "libs/kafka",
+    "nest-logger-module": "libs/nest-logger-module",
+    "prisma-db": "libs/prisma-db",
+    "server": "apps/server",
+    "storage-gateway": "apps/storage-gateway"
   }
 }

@@ -9,24 +9,18 @@ terraform
 .gitbook.yaml
 .gitignore
 docker-compose.yml
-packages/amplication-e2e-tester
-packages/amplication-server/artifacts
-packages/amplication-data-service-generator/src/tests
-packages/amplication-data-service-generator/generated
-
+apps/server/artifacts
+apps/data-service-generator/src/tests
+apps/data-service-generator/generated
 
 **/node_modules
 !**/node_modules/@amplication/prisma-clients
-*.md
-**/*.md
-*.yaml
-**/*.yaml
+_.md
+\*\*/_.md
+_.yaml
+\*\*/_.yaml
 
-packages/**/dist
-packages/amplication-client/build
-packages/**/lib
+**/\*.spec.ts
+**/\*.mock.ts
 
-**/*.spec.ts
-**/*.mock.ts
-
-!packages/amplication-data-service-generator/src/*/static
+!apps/data-service-generator/src/\*/static

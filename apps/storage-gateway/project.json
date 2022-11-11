@@ -1,0 +1,60 @@
+{
+  "name": "storage-gateway",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/storage-gateway/src",
+  "projectType": "application",
+  "implicitDependencies": ["nest-logger-module"],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/storage-gateway/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/storage-gateway"],
+      "options": {
+        "jestConfig": "apps/storage-gateway/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/storage-gateway",
+        "main": "apps/storage-gateway/src/main.ts",
+        "tsConfig": "apps/storage-gateway/tsconfig.app.json",
+        "webpackConfig": "apps/storage-gateway/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "git-pull-service:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "git-pull-service:build:production"
+        }
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/storage-gateway:latest"]
+      }
+    }
+  },
+  "tags": []
+}

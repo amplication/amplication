@@ -1,0 +1,45 @@
+{
+  "name": "code-gen-types",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": ["libs/code-gen-types/src"],
+  "projectType": "library",
+  "targets": {
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/types"],
+      "options": {
+        "command": "ts-node -P tsconfig.lib.json ./scripts/generate-types",
+        "cwd": "libs/code-gen-types"
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["prebuild"],
+      "options": {
+        "outputPath": "dist/libs/code-gen-types",
+        "tsConfig": "libs/code-gen-types/tsconfig.lib.json",
+        "packageJson": "libs/code-gen-types/package.json",
+        "main": "libs/code-gen-types/src/index.ts",
+        "assets": ["libs/code-gen-types/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/code-gen-types/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/code-gen-types"],
+      "dependsOn": ["prebuild"],
+      "options": {
+        "jestConfig": "libs/code-gen-types/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
