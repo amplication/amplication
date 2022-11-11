@@ -18,6 +18,7 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./NewEntity.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -54,7 +55,9 @@ const keyMap = {
 
 const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const { trackEvent } = useTracking();
-  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(
+    AppContext
+  );
 
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
@@ -62,7 +65,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
       onCompleted: (data) => {
         addEntity(data.createOneEntity.id);
         trackEvent({
-          eventName: "createEntity",
+          eventName: AnalyticsEventNames.EntityCreate,
           entityName: data.createOneEntity.displayName,
         });
         onSuccess();
@@ -116,8 +119,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
           },
         },
       }).catch(console.error);
-      
-
     },
     [createEntity, resourceId]
   );

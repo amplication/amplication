@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { createSubscription as createPaddleSubscription } from "../util/paddle";
 import "./PlanListItem.scss";
 
@@ -39,7 +40,7 @@ function PlanListItem({
 
   const handleClick = useCallback(() => {
     trackEvent({
-      eventName: "checkoutPlanSelected",
+      eventName: AnalyticsEventNames.CheckoutPlanSelected,
       productId: plan.productId,
     });
     if (plan.action === ACTION_CHECKOUT && plan.productId > 0) {

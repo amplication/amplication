@@ -17,6 +17,7 @@ import {
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityField.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   entity: models.Entity;
@@ -84,7 +85,7 @@ const EntityField = () => {
       onCompleted: (data) => {
         entity && addEntity(entity);
         trackEvent({
-          eventName: "updateEntityField",
+          eventName: AnalyticsEventNames.EntityFieldUpdate,
           entityFieldName: data.updateEntityField.displayName,
           dataType: data.updateEntityField.dataType,
         });
