@@ -26,8 +26,10 @@ body {
   height: 100%;
 }
 
-div[tabindex="-1"]:focus {
-  outline: 0;
+div[tabindex="-1"]:focus,
+button:focus,
+summary:focus {
+  outline: 0 !important;
 }
 
 .amp-page main {
