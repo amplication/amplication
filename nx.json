@@ -58,7 +58,7 @@
       "dependsOn": ["build", "^postbuild"]
     },
     "serve": {
-      "dependsOn": ["db:prisma:generate", "^db:prisma:generate"]
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
