@@ -116,7 +116,11 @@ jobs:
           registries: "439403303254"
 
       - name: AWS Assume Role (Old Account)
-        run: aws sts assume-role --role-session-name old-account-ecr-access --role-arn arn:aws:iam::407256539111:role/ECRFullAccessRole
+        uses: youyo/awscredswrap@v1
+        with:
+          role_arn: "arn:aws:iam::407256539111:role/ECRFullAccessRole"
+          duration_seconds: 3600
+          role_session_name: "old-account-ecr-access"
 
       - name: Login to Amazon ECR (Old Account)
         uses: aws-actions/amazon-ecr-login@v1
