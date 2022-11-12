@@ -1,3 +1,8 @@
+/**
+ * Analytics events documentation:
+ * https://www.notion.so/amplication/Amplication-Analytics-Events-74684bfd1a3a4e13a8a6ec6c253d3d7f
+ */
+
 export enum AnalyticsEventNames {
   AppSessionStart = "startAppSession",
 
