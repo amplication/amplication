@@ -30,7 +30,7 @@ export enum AnalyticsEventNames {
   SupportIssueClick = "supportIssueClick",
   ThemeSet = "setTheme",
 
-  // tiles that exists in all kinds of resources (service, message broker, etc.)
+  // tiles
   DocsTileClick = "docsTileClick",
   FeatureRequestTileClick = "featureRequestTileClick",
   NewVersionTileFixEntitiesClick = "newVersionTileClick-fixEntities",
@@ -83,7 +83,6 @@ export enum AnalyticsEventNames {
   LastBuildIdClick = "lastBuildIdClick",
 
   // code view
-  // TODO: ask about these names
   CodeViewTileClick = "viewCodeViewTileClick",
   GithubCodeViewClick = "openGithubCodeView",
 
@@ -93,7 +92,6 @@ export enum AnalyticsEventNames {
   GitHubRepositoryCreate = "createGitRepository",
   GithubRepositoryChange = "changeGithubRepository",
   GithubOpenPullRequest = "openGithubPullRequest",
-  // TODO: ask about these names
   GitHubRepositorySync = "selectGitRepository",
   GithubRepoSync = "selectGithubRepo",
 }
