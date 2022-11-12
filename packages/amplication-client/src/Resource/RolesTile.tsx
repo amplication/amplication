@@ -10,7 +10,7 @@ import {
 } from "@amplication/design-system";
 
 import { GET_ROLES } from "../Roles/RoleList";
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useTracking } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
 import { AnalyticsEventNames } from "../util/analytics-events.types";

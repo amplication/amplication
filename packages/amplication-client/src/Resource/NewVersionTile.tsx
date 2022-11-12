@@ -12,7 +12,7 @@ import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import { GET_LOOKUP_FIELDS } from "../Entity/RelatedFieldsMigrationFix";
 import * as models from "../models";
-import { Event as TrackEvent, useTracking } from "../util/analytics";
+import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./NewVersionTile.scss";
 
