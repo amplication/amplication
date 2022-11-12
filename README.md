@@ -78,6 +78,7 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 - [Node.js v16 or above](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/desktop/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
+- [ts-node](https://www.npmjs.com/package/ts-node#installation)
 
 
 ### Getting Started With Local Development
