@@ -122,7 +122,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
           role-to-assume: arn:aws:iam::407256539111:role/ECRFullAccessRole
-          role-session-name: old-account-ecr-access
 
       - name: Login to Amazon ECR (Old Account)
         uses: aws-actions/amazon-ecr-login@v1
