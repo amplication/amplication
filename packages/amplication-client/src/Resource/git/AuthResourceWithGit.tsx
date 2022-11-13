@@ -40,8 +40,10 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   const { currentWorkspace } = useContext(AppContext);
   const gitOrganizations = currentWorkspace?.gitOrganizations;
 
-  const [gitOrganization, setGitOrganization] =
-    useState<GitOrganizationFromGitRepository | null>(null);
+  const [
+    gitOrganization,
+    setGitOrganization,
+  ] = useState<GitOrganizationFromGitRepository | null>(null);
 
   useEffect(() => {
     if (gitRepository?.gitOrganization) {
@@ -61,7 +63,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
       onCompleted: (data) => {
         openSignInWindow(
           data.getGitResourceInstallationUrl.url,
-          "auth with git"
+          "auth with git",
         );
       },
     }
@@ -153,7 +155,9 @@ const START_AUTH_APP_WITH_GITHUB = gql`
   }
 `;
 
-const receiveMessage = (event: any) => {
+const receiveMessage =(
+  event: any
+) => {
   const { data } = event;
   if (data.completed) {
     triggerOnDone();
@@ -162,7 +166,10 @@ const receiveMessage = (event: any) => {
 
 let windowObjectReference: any = null;
 
-const openSignInWindow = (url: string, name: string) => {
+const openSignInWindow = (
+  url: string,
+  name: string,
+) => {
   // remove any existing event listeners
   window.removeEventListener("message", receiveMessage);
 
@@ -183,5 +190,9 @@ const openSignInWindow = (url: string, name: string) => {
   }
 
   // add the listener for receiving a message from the popup
-  window.addEventListener("message", (event) => receiveMessage(event), false);
+  window.addEventListener(
+    "message",
+    (event) => receiveMessage(event),
+    false
+  );
 };

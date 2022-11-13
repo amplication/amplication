@@ -1,19 +1,19 @@
-import { Field, ObjectType, InputType } from "@nestjs/graphql";
+import { Field, ObjectType, InputType } from '@nestjs/graphql';
 
 @ObjectType({
-  isAbstract: true,
+  isAbstract: true
 })
-@InputType("HttpBasicAuthenticationSettingsInput", {
-  isAbstract: true,
+@InputType('HttpBasicAuthenticationSettingsInput', {
+  isAbstract: true
 })
 export class HttpBasicAuthenticationSettings {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   username: string;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   password: string;
 }

@@ -1,18 +1,18 @@
-import { Workspace } from "./Workspace";
-import { Resource } from "./Resource";
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Workspace } from './Workspace';
+import { Resource } from './Resource';
+import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class Project {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   id!: string;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   name!: string;
 
@@ -21,7 +21,7 @@ export class Project {
   workspaceId?: string;
 
   @Field(() => [Resource], {
-    nullable: true,
+    nullable: true
   })
   resources?: Resource[];
 

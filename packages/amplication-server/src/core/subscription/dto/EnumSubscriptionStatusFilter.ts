@@ -1,27 +1,27 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { EnumSubscriptionStatus } from "./EnumSubscriptionStatus";
+import { Field, InputType } from '@nestjs/graphql';
+import { EnumSubscriptionStatus } from './EnumSubscriptionStatus';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class EnumSubscriptionStatusFilter {
   @Field(() => EnumSubscriptionStatus, {
-    nullable: true,
+    nullable: true
   })
   equals?: keyof typeof EnumSubscriptionStatus | null;
 
   @Field(() => EnumSubscriptionStatus, {
-    nullable: true,
+    nullable: true
   })
   not?: keyof typeof EnumSubscriptionStatus | null;
 
   @Field(() => [EnumSubscriptionStatus], {
-    nullable: true,
+    nullable: true
   })
   in?: Array<keyof typeof EnumSubscriptionStatus | null>;
 
   @Field(() => [EnumSubscriptionStatus], {
-    nullable: true,
+    nullable: true
   })
   notIn?: Array<keyof typeof EnumSubscriptionStatus | null>;
 }

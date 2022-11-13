@@ -1,19 +1,19 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { BlockService } from "../block/block.service";
-import { ServiceSettingsService } from "./serviceSettings.service";
-import { ServiceSettings } from "./dto";
-import { EnumBlockType } from "../../enums/EnumBlockType";
-import { DEFAULT_SERVICE_SETTINGS } from "./constants";
-import { User } from "../../models";
-import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
+import { Test, TestingModule } from '@nestjs/testing';
+import { BlockService } from '../block/block.service';
+import { ServiceSettingsService } from './serviceSettings.service';
+import { ServiceSettings } from './dto';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { DEFAULT_SERVICE_SETTINGS } from './constants';
+import { User } from '../../models';
+import { EnumAuthProviderType } from './dto/EnumAuthenticationProviderType';
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
-const EXAMPLE_NAME = "Example Resource Settings";
-const EXAMPLE_RESOURCE_ID = "ExampleResource";
+const EXAMPLE_NAME = 'Example Resource Settings';
+const EXAMPLE_RESOURCE_ID = 'ExampleResource';
 
-const EXAMPLE_USER_ID = "exampleUserId";
-const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
+const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -23,13 +23,13 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: "example_workspace_name",
+    name: 'example_workspace_name'
   },
-  isOwner: true,
+  isOwner: true
 };
 
 const EXAMPLE_SERVICE_SETTINGS: ServiceSettings = {
-  id: "ExampleServiceSettings",
+  id: 'ExampleServiceSettings',
   updatedAt: new Date(),
   createdAt: new Date(),
   blockType: EnumBlockType.ServiceSettings,
@@ -39,22 +39,22 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettings = {
   displayName: EXAMPLE_NAME,
   parentBlock: null,
   versionNumber: 0,
-  dbHost: "localhost",
-  dbName: "myDb",
-  dbPassword: "1234",
+  dbHost: 'localhost',
+  dbName: 'myDb',
+  dbPassword: '1234',
   dbPort: 5432,
-  dbUser: "admin",
+  dbUser: 'admin',
   authProvider: EnumAuthProviderType.Http,
   serverSettings: {
     generateGraphQL: true,
     generateRestApi: true,
-    serverPath: "",
+    serverPath: ''
   },
   adminUISettings: {
     generateAdminUI: true,
-    adminUIPath: "",
+    adminUIPath: ''
   },
-  resourceId: EXAMPLE_RESOURCE_ID,
+  resourceId: EXAMPLE_RESOURCE_ID
 };
 
 const createMock = jest.fn(() => {
@@ -64,7 +64,7 @@ const findOneMock = jest.fn(() => EXAMPLE_SERVICE_SETTINGS);
 const findManyByBlockTypeMock = jest.fn(() => [EXAMPLE_SERVICE_SETTINGS]);
 const updateMock = jest.fn(() => EXAMPLE_SERVICE_SETTINGS);
 
-describe("ServiceSettingsService", () => {
+describe('ServiceSettingsService', () => {
   let service: ServiceSettingsService;
 
   beforeEach(async () => {
@@ -80,26 +80,26 @@ describe("ServiceSettingsService", () => {
             create: createMock,
             findOne: findOneMock,
             findManyByBlockType: findManyByBlockTypeMock,
-            update: updateMock,
-          })),
+            update: updateMock
+          }))
         },
-        ServiceSettingsService,
+        ServiceSettingsService
       ],
-      imports: [],
+      imports: []
     }).compile();
 
     service = module.get<ServiceSettingsService>(ServiceSettingsService);
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it("should find one", async () => {
+  it('should find one', async () => {
     expect(
       await service.getServiceSettingsBlock(
         {
-          where: { id: EXAMPLE_RESOURCE_ID },
+          where: { id: EXAMPLE_RESOURCE_ID }
         },
         EXAMPLE_USER
       )
@@ -107,7 +107,7 @@ describe("ServiceSettingsService", () => {
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 
-  it("should create default", async () => {
+  it('should create default', async () => {
     expect(
       await service.createDefaultServiceSettings(
         EXAMPLE_RESOURCE_ID,
@@ -115,21 +115,21 @@ describe("ServiceSettingsService", () => {
       )
     ).toEqual({
       ...EXAMPLE_SERVICE_SETTINGS,
-      ...DEFAULT_SERVICE_SETTINGS,
+      ...DEFAULT_SERVICE_SETTINGS
     });
     expect(createMock).toBeCalledTimes(1);
   });
 
-  it("should update", async () => {
+  it('should update', async () => {
     expect(
       await service.updateServiceSettings(
         {
           data: {
-            ...EXAMPLE_SERVICE_SETTINGS,
+            ...EXAMPLE_SERVICE_SETTINGS
           },
           where: {
-            id: EXAMPLE_RESOURCE_ID,
-          },
+            id: EXAMPLE_RESOURCE_ID
+          }
         },
         EXAMPLE_USER
       )

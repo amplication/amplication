@@ -21,15 +21,17 @@ export const FileExplorerNode = ({ file, onSelect }: FileExplorerNodeProps) => {
     [file.type]
   );
 
-  const farIcon = useMemo(() => {
-    if (file.type !== NodeTypeEnum.Folder) return null;
+  const farIcon = useMemo(
+    () => {
+      if (file.type !== NodeTypeEnum.Folder) return null;
 
-    return file.expanded ? (
-      <Icon icon="chevron_down" />
-    ) : (
-      <Icon icon="chevron_right" />
-    );
-  }, [file.expanded, file.type]);
+      return file.expanded ? (
+        <Icon icon="chevron_down" />
+      ) : (
+        <Icon icon="chevron_right" />
+      )
+    }, [file.expanded, file.type]
+  );
 
   return (
     <TreeItem

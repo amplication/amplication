@@ -1,14 +1,14 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { EnumBlockType } from "../../enums/EnumBlockType";
-import { BlockTypeService } from "../block/blockType.service";
-import { EntityService } from "../entity/entity.service";
-import { FindManyEntityPageArgs } from "./dto/";
-import { EntityPage } from "./dto/EntityPage";
-import { EnumEntityPageType } from "./dto/EnumEntityPageType";
-import { CreateEntityPageArgs } from "./dto/CreateEntityPageArgs";
-import { UpdateEntityPageArgs } from "./dto/UpdateEntityPageArgs";
-import { User } from "../../models";
-import { BlockService } from "../block/block.service";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { BlockTypeService } from '../block/blockType.service';
+import { EntityService } from '../entity/entity.service';
+import { FindManyEntityPageArgs } from './dto/';
+import { EntityPage } from './dto/EntityPage';
+import { EnumEntityPageType } from './dto/EnumEntityPageType';
+import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
+import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
+import { User } from '../../models';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
@@ -51,7 +51,7 @@ export class EntityPageService extends BlockTypeService<
     );
     if (nonMatchingNames.size > 0) {
       throw new NotFoundException(
-        `Invalid fields selected: ${Array.from(nonMatchingNames).join(", ")}`
+        `Invalid fields selected: ${Array.from(nonMatchingNames).join(', ')}`
       );
     }
   }
@@ -78,7 +78,7 @@ export class EntityPageService extends BlockTypeService<
         args.data.entityId,
         args.data.showAllFields,
         args.data.showFieldList
-      ),
+      )
     ]);
 
     return super.create(args, user);

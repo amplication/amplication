@@ -1,30 +1,30 @@
-import { UseGuards, UseFilters } from "@nestjs/common";
+import { UseGuards, UseFilters } from '@nestjs/common';
 import {
   Args,
   Mutation,
   Resolver,
   Query,
   Parent,
-  ResolveField,
-} from "@nestjs/graphql";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Build } from "./dto/Build";
-import { CreateBuildArgs } from "./dto/CreateBuildArgs";
-import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
-import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
-import { BuildService } from "./build.service";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
-import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
-import { Commit, Resource, User } from "../../models";
-import { UserService } from "../user/user.service";
-import { Action } from "../action/dto";
-import { ActionService } from "../action/action.service";
-import { EnumBuildStatus } from "./dto/EnumBuildStatus";
-import { CommitService } from "../commit/commit.service";
-import { ResourceService } from "../resource/resource.service";
+  ResolveField
+} from '@nestjs/graphql';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { Build } from './dto/Build';
+import { CreateBuildArgs } from './dto/CreateBuildArgs';
+import { FindOneBuildArgs } from './dto/FindOneBuildArgs';
+import { FindManyBuildArgs } from './dto/FindManyBuildArgs';
+import { BuildService } from './build.service';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { InjectContextValue } from '../../decorators/injectContextValue.decorator';
+import { InjectableOriginParameter } from '../../enums/InjectableOriginParameter';
+import { Commit, Resource, User } from '../../models';
+import { UserService } from '../user/user.service';
+import { Action } from '../action/dto';
+import { ActionService } from '../action/action.service';
+import { EnumBuildStatus } from './dto/EnumBuildStatus';
+import { CommitService } from '../commit/commit.service';
+import { ResourceService } from '../resource/resource.service';
 
 @Resolver(() => Build)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -39,13 +39,13 @@ export class BuildResolver {
   ) {}
 
   @Query(() => [Build])
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resource.id")
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
   async builds(@Args() args: FindManyBuildArgs): Promise<Build[]> {
     return this.service.findMany(args);
   }
 
   @Query(() => Build)
-  @AuthorizeContext(AuthorizableOriginParameter.BuildId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.BuildId, 'where.id')
   async build(@Args() args: FindOneBuildArgs): Promise<Build> {
     return this.service.findOne(args);
   }
@@ -83,11 +83,11 @@ export class BuildResolver {
   @Mutation(() => Build)
   @InjectContextValue(
     InjectableOriginParameter.UserId,
-    "data.createdBy.connect.id"
+    'data.createdBy.connect.id'
   )
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "data.resource.connect.id"
+    'data.resource.connect.id'
   )
   async createBuild(@Args() args: CreateBuildArgs): Promise<Build> {
     return this.service.create(args);

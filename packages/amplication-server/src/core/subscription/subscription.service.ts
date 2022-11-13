@@ -1,16 +1,16 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { FindSubscriptionsArgs } from "./dto/FindSubscriptionsArgs";
-import { Subscription } from "./dto/Subscription";
-import { SubscriptionData } from "./dto";
-import { CreateSubscriptionInput } from "./dto/CreateSubscriptionInput";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { FindSubscriptionsArgs } from './dto/FindSubscriptionsArgs';
+import { Subscription } from './dto/Subscription';
+import { SubscriptionData } from './dto';
+import { CreateSubscriptionInput } from './dto/CreateSubscriptionInput';
 import {
   EnumSubscriptionStatus,
   Prisma,
   PrismaService,
-  Subscription as PrismaSubscription,
-} from "@amplication/prisma-db";
-import { UpdateSubscriptionInput } from "./dto/UpdateSubscriptionInput";
+  Subscription as PrismaSubscription
+} from '@amplication/prisma-db';
+import { UpdateSubscriptionInput } from './dto/UpdateSubscriptionInput';
 
 @Injectable()
 export class SubscriptionService {
@@ -24,7 +24,7 @@ export class SubscriptionService {
   ): Promise<Subscription[] | null> {
     const subs = await this.prisma.subscription.findMany(args);
 
-    return subs.map((sub) => {
+    return subs.map(sub => {
       return this.transformPrismaObject(sub);
     });
   }
@@ -39,17 +39,17 @@ export class SubscriptionService {
         OR: [
           {
             cancellationEffectiveDate: {
-              gt: new Date(),
-            },
+              gt: new Date()
+            }
           },
           {
-            cancellationEffectiveDate: null,
-          },
-        ],
+            cancellationEffectiveDate: null
+          }
+        ]
       },
       orderBy: {
-        createdAt: Prisma.SortOrder.desc,
-      },
+        createdAt: Prisma.SortOrder.desc
+      }
     });
 
     return this.transformPrismaObject(sub);
@@ -62,12 +62,12 @@ export class SubscriptionService {
     const subscriptions = await this.getSubscriptions({
       where: {
         workspace: {
-          id: workspaceId,
-        },
-      },
+          id: workspaceId
+        }
+      }
     });
 
-    return subscriptions.find((sub) => {
+    return subscriptions.find(sub => {
       return sub.subscriptionData.paddleSubscriptionId === paddleSubscriptionId;
     });
   }
@@ -76,7 +76,7 @@ export class SubscriptionService {
     subscription: PrismaSubscription | null
   ): Subscription | null {
     if (!subscription) return null;
-    const data = subscription.subscriptionData as unknown as SubscriptionData;
+    const data = (subscription.subscriptionData as unknown) as SubscriptionData;
 
     return {
       ...subscription,
@@ -86,18 +86,17 @@ export class SubscriptionService {
         ? new Date(data.paddleNextBillDate)
         : null,
       price: data.paddleUnitPrice,
-      subscriptionData: data,
+      subscriptionData: data
     };
   }
 
   async createSubscription(
     data: CreateSubscriptionInput
   ): Promise<Subscription> {
-    const subscriptionToUpdate =
-      await this.getSubscriptionByPaddleSubscriptionId(
-        data.workspaceId,
-        data.subscriptionData.paddleSubscriptionId
-      );
+    const subscriptionToUpdate = await this.getSubscriptionByPaddleSubscriptionId(
+      data.workspaceId,
+      data.subscriptionData.paddleSubscriptionId
+    );
 
     if (subscriptionToUpdate) {
       return this.updateSubscription(data);
@@ -108,14 +107,13 @@ export class SubscriptionService {
         data: {
           workspace: {
             connect: {
-              id: data.workspaceId,
-            },
+              id: data.workspaceId
+            }
           },
           status: data.status,
           subscriptionPlan: data.plan,
-          subscriptionData:
-            data.subscriptionData as unknown as Prisma.InputJsonValue,
-        },
+          subscriptionData: (data.subscriptionData as unknown) as Prisma.InputJsonValue
+        }
       })
     );
   }
@@ -123,11 +121,10 @@ export class SubscriptionService {
   async updateSubscription(
     data: UpdateSubscriptionInput
   ): Promise<Subscription> {
-    const subscriptionToUpdate =
-      await this.getSubscriptionByPaddleSubscriptionId(
-        data.workspaceId,
-        data.subscriptionData.paddleSubscriptionId
-      );
+    const subscriptionToUpdate = await this.getSubscriptionByPaddleSubscriptionId(
+      data.workspaceId,
+      data.subscriptionData.paddleSubscriptionId
+    );
 
     if (!subscriptionToUpdate) {
       throw new Error(
@@ -143,15 +140,14 @@ export class SubscriptionService {
     return this.transformPrismaObject(
       await this.prisma.subscription.update({
         where: {
-          id: subscriptionToUpdate.id,
+          id: subscriptionToUpdate.id
         },
         data: {
           status: data.status,
           subscriptionPlan: data.plan,
           cancellationEffectiveDate: cancellationEffectiveDate,
-          subscriptionData:
-            data.subscriptionData as unknown as Prisma.InputJsonValue,
-        },
+          subscriptionData: (data.subscriptionData as unknown) as Prisma.InputJsonValue
+        }
       })
     );
   }

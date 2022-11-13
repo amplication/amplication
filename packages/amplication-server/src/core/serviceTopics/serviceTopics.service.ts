@@ -1,15 +1,15 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import { EnumBlockType } from "../../enums/EnumBlockType";
-import { BlockTypeService } from "../block/blockType.service";
-import { CreateServiceTopicsArgs } from "./dto/CreateServiceTopicsArgs";
-import { FindManyServiceTopicsArgs } from "./dto/FindManyServiceTopicsArgs";
-import { ServiceTopics } from "./dto/ServiceTopics";
-import { UpdateServiceTopicsArgs } from "./dto/UpdateServiceTopicsArgs";
-import { User } from "../../models";
-import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { AmplicationError } from "../../errors/AmplicationError";
-import { BlockService } from "../block/block.service";
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { BlockTypeService } from '../block/blockType.service';
+import { CreateServiceTopicsArgs } from './dto/CreateServiceTopicsArgs';
+import { FindManyServiceTopicsArgs } from './dto/FindManyServiceTopicsArgs';
+import { ServiceTopics } from './dto/ServiceTopics';
+import { UpdateServiceTopicsArgs } from './dto/UpdateServiceTopicsArgs';
+import { User } from '../../models';
+import { ResourceService } from '../resource/resource.service';
+import { EnumResourceType } from '../resource/dto/EnumResourceType';
+import { AmplicationError } from '../../errors/AmplicationError';
+import { BlockService } from '../block/block.service';
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
@@ -35,20 +35,20 @@ export class ServiceTopicsService extends BlockTypeService<
   ) {
     const resource = await this.resourceService.resource({
       where: {
-        id: resourceId,
-      },
+        id: resourceId
+      }
     });
 
     const broker = await this.resourceService.resources({
       where: {
         project: {
-          id: resource.projectId,
+          id: resource.projectId
         },
         id: messageBrokerId,
         resourceType: {
-          equals: EnumResourceType.MessageBroker,
-        },
-      },
+          equals: EnumResourceType.MessageBroker
+        }
+      }
     });
 
     if (!broker.length) {
@@ -75,7 +75,7 @@ export class ServiceTopicsService extends BlockTypeService<
     user: User
   ): Promise<ServiceTopics> {
     const block = await this.blockService.findOne({
-      where: args.where,
+      where: args.where
     });
 
     await this.validateConnectedResource(

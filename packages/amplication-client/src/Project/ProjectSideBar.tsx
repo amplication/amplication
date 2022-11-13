@@ -15,7 +15,10 @@ const ProjectSideBar = () => {
       <p className={`${CLASS_NAME}__label`}>Workspace</p>
       <WorkspaceSelector />
       <hr className={`${CLASS_NAME}__divider`} />
-      <ProjectList projects={projectsList} workspaceId={currentWorkspace?.id} />
+      <ProjectList
+        projects={projectsList}
+        workspaceId={currentWorkspace?.id}
+      />
       <hr className={`${CLASS_NAME}__divider`} />
       <ProjectSideBarFooter />
     </div>

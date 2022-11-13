@@ -1,6 +1,7 @@
 @import "../style/index.scss";
 
 .resource-form {
+
   margin-top: var(--default-spacing);
 
   &__header {
@@ -10,7 +11,7 @@
 
     h3 {
       margin: 0;
-      margin-bottom: var(--default-spacing);
+      margin-bottom: var(--default-spacing); 
       @include title-18();
     }
 

@@ -1,7 +1,7 @@
-import { InputType } from "@nestjs/graphql";
-import { BlockOrderByInput } from "../../block/dto/BlockOrderByInput";
+import { InputType } from '@nestjs/graphql';
+import { BlockOrderByInput } from '../../block/dto/BlockOrderByInput';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class PluginInstallationOrderByInput extends BlockOrderByInput {}

@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from "@nestjs/graphql";
-import { ConnectorRestApiOrderByInput } from "./ConnectorRestApiOrderByInput";
-import { ConnectorRestApiWhereInput } from "./ConnectorRestApiWhereInput";
+import { ArgsType, Field, Int } from '@nestjs/graphql';
+import { ConnectorRestApiOrderByInput } from './ConnectorRestApiOrderByInput';
+import { ConnectorRestApiWhereInput } from './ConnectorRestApiWhereInput';
 
 @ArgsType()
 export class FindManyConnectorRestApiArgs {

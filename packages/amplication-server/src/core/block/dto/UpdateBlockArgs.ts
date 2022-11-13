@@ -1,6 +1,6 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { BlockUpdateInput } from "./BlockUpdateInput";
-import { WhereUniqueInput } from "../../../dto";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { BlockUpdateInput } from './BlockUpdateInput';
+import { WhereUniqueInput } from '../../../dto';
 
 @ArgsType()
 export class UpdateBlockArgs {

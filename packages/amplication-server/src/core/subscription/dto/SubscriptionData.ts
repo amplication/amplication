@@ -1,9 +1,9 @@
 export enum EnumPaddleSubscriptionStatus {
-  Active = "Active",
-  Trailing = "Trailing",
-  PastDue = "PastDue",
-  Paused = "Paused",
-  Deleted = "Deleted",
+  Active = 'Active',
+  Trailing = 'Trailing',
+  PastDue = 'PastDue',
+  Paused = 'Paused',
+  Deleted = 'Deleted'
 }
 
 export class SubscriptionData {

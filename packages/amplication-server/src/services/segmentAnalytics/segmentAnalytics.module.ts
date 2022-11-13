@@ -1,10 +1,10 @@
-import { Module, Global, DynamicModule, Provider } from "@nestjs/common";
-import { SegmentAnalyticsService } from "./segmentAnalytics.service";
+import { Module, Global, DynamicModule, Provider } from '@nestjs/common';
+import { SegmentAnalyticsService } from './segmentAnalytics.service';
 import {
   SegmentAnalyticsAsyncOptions,
-  SegmentAnalyticsOptionsFactory,
-} from "./segmentAnalytics.interfaces";
-import { GoogleSecretsManagerModule } from "../googleSecretsManager.module";
+  SegmentAnalyticsOptionsFactory
+} from './segmentAnalytics.interfaces';
+import { GoogleSecretsManagerModule } from '../googleSecretsManager.module';
 
 @Global()
 @Module({})
@@ -22,9 +22,9 @@ export class SegmentAnalyticsModule {
       imports: [GoogleSecretsManagerModule],
       providers: [
         SegmentAnalyticsService,
-        ...this.createConnectProviders(options),
+        ...this.createConnectProviders(options)
       ],
-      exports: [SegmentAnalyticsService],
+      exports: [SegmentAnalyticsService]
     };
   }
 
@@ -33,15 +33,15 @@ export class SegmentAnalyticsModule {
   ): Provider[] {
     return [
       {
-        provide: "SEGMENT_ANALYTICS_OPTIONS",
+        provide: 'SEGMENT_ANALYTICS_OPTIONS',
         useFactory: async (optionsFactory: SegmentAnalyticsOptionsFactory) =>
           await optionsFactory.createSegmentAnalyticsOptions(),
-        inject: [options.useClass],
+        inject: [options.useClass]
       },
       {
         provide: options.useClass,
-        useClass: options.useClass,
-      },
+        useClass: options.useClass
+      }
     ];
   }
 }

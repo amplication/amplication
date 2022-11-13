@@ -16,9 +16,7 @@ export const ResourceSelectorItem = ({ resource }: Props) => {
           <ResourceCircleBadge type={resource.resourceType} size={"xsmall"} />
           <div className={`${CLASS_NAME}__title`}>{resource?.name}</div>
         </>
-      ) : (
-        <div className={`${CLASS_NAME}__title`}>none</div>
-      )}
+      ): <div className={`${CLASS_NAME}__title`}>none</div>}
     </div>
   );
 };

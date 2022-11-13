@@ -1,16 +1,16 @@
-import cli from "cli-ux";
-import { ConfiguredCommand } from "../../configured-command";
-import { getResource } from "../../api";
-import { resource } from "../../flags/resource-flag";
-import { format } from "../../flags/format-flag";
-import { RESOURCE_COLUMNS } from "./index";
+import cli from 'cli-ux';
+import { ConfiguredCommand } from '../../configured-command';
+import { getResource } from '../../api';
+import { resource } from '../../flags/resource-flag';
+import { format } from '../../flags/format-flag';
+import { RESOURCE_COLUMNS } from './index';
 
 export default class ResourceInfo extends ConfiguredCommand {
-  static description = "show detailed information for a resource";
+  static description = 'show detailed information for a resource';
 
   static examples = [
-    "amp resources:info",
-    "amp resources:info -r ckm1w4vy857869go3nsw4mk2ay",
+    'amp resources:info',
+    'amp resources:info -r ckm1w4vy857869go3nsw4mk2ay',
   ];
 
   static flags = {
@@ -23,10 +23,10 @@ export default class ResourceInfo extends ConfiguredCommand {
     const { flags } = this.parse(ResourceInfo);
 
     const resourceIdFlag = flags.resource;
-    let resourceId = "";
+    let resourceId = '';
 
     if (!resourceIdFlag) {
-      resourceId = await cli.prompt("resource", { required: true });
+      resourceId = await cli.prompt('resource', { required: true });
     }
 
     const data = await getResource(this.client, resourceIdFlag || resourceId);

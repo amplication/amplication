@@ -1,6 +1,6 @@
 export enum EnumTokenType {
-  User = "User",
-  ApiToken = "ApiToken",
+  User = 'User',
+  ApiToken = 'ApiToken'
 }
 
 export interface JwtDto {

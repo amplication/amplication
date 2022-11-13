@@ -1,8 +1,8 @@
-import { DriverType, LocalStorageDisk } from "@codebrew/nestjs-storage";
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { DriverType, LocalStorageDisk } from '@codebrew/nestjs-storage';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-export const LOCAL_DISK_ROOT_VAR = "LOCAL_DISK_ROOT";
+export const LOCAL_DISK_ROOT_VAR = 'LOCAL_DISK_ROOT';
 
 @Injectable()
 export class LocalDiskService {
@@ -15,8 +15,8 @@ export class LocalDiskService {
     return {
       driver: DriverType.LOCAL,
       config: {
-        root,
-      },
+        root
+      }
     };
   }
 }

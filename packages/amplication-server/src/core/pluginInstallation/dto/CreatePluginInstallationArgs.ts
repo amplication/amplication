@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { PluginInstallationCreateInput } from "./PluginInstallationCreateInput";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { PluginInstallationCreateInput } from './PluginInstallationCreateInput';
 
 @ArgsType()
 export class CreatePluginInstallationArgs {
