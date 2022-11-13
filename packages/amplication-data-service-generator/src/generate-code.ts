@@ -28,6 +28,7 @@ export default async function generateCode(
     const resourceData: DSGResourceData = JSON.parse(file);
     const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
+    console.log("Code generation completed successfully");
     await axios.post(
       new URL(
         "build-runner/code-generation-success",
