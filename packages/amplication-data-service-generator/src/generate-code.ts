@@ -58,6 +58,8 @@ async function writeModules(
   modules: Module[],
   destination: string
 ): Promise<void> {
+  console.log("Creating base directory");
+  await mkdir(destination, { recursive: true });
   console.info(`Writing modules to ${destination} ...`);
   await Promise.all(
     modules.map(async (module) => {
