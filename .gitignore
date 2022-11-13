@@ -60,3 +60,5 @@ infra/tilt/.temp/**
 # Next.js
 .next
 .env.local
+
+src/schema.graphql
