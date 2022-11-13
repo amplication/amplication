@@ -224,8 +224,9 @@ export class BuildService {
       buildId: build.id,
     });
 
-
-    const resource = await this.resourceService.findOne({ where: { id: resourceId } });
+    const resource = await this.resourceService.findOne({
+      where: { id: resourceId },
+    });
     if (resource.resourceType !== EnumResourceType.Service) {
       logger.info("Code generation is supported only for services");
       return;
