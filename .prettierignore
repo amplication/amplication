@@ -3,7 +3,7 @@ package-lock.json
 *.md
 # Add files here to ignore them from prettier formatting
 
-/dist
+dist/
 /coverage
 /**/models.ts
 helm
