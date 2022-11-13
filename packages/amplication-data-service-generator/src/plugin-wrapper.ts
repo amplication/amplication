@@ -85,7 +85,7 @@ const pluginWrapper: PluginWrapper = async (
     context.logger.error(`failed to execute plugin event ${event}`, {
       errorMessage: JSON.stringify(error),
     });
-    createLog({
+    await createLog({
       level: "error",
       message: `failed to execute plugin event: ${event}. Error message: ${JSON.stringify(
         error
