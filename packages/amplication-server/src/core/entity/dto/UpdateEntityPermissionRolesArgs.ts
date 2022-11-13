@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { EntityUpdatePermissionRolesInput } from './EntityUpdatePermissionRolesInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { EntityUpdatePermissionRolesInput } from "./EntityUpdatePermissionRolesInput";
 
 @ArgsType()
 export class UpdateEntityPermissionRolesArgs {

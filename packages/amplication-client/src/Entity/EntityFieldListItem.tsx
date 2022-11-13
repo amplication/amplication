@@ -28,7 +28,7 @@ export const EntityFieldListItem = ({
   onError,
 }: Props) => {
   const history = useHistory();
-  const {currentWorkspace, currentProject} = useContext(AppContext); 
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const handleNavigateToRelatedEntity = useCallback(
     (event) => {
@@ -46,7 +46,14 @@ export const EntityFieldListItem = ({
     history.push(
       `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}/fields/${entityField.id}`
     );
-  }, [history, resourceId, entityField, entity, currentWorkspace, currentProject]);
+  }, [
+    history,
+    resourceId,
+    entityField,
+    entity,
+    currentWorkspace,
+    currentProject,
+  ]);
 
   const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}/fields/${entityField.id}`;
 

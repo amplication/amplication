@@ -1,53 +1,53 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { WhereUniqueInput, DateTimeFilter, StringFilter } from '../../../dto';
-import { EntityFieldFilter } from './EntityFieldFilter';
+import { Field, InputType } from "@nestjs/graphql";
+import { WhereUniqueInput, DateTimeFilter, StringFilter } from "../../../dto";
+import { EntityFieldFilter } from "./EntityFieldFilter";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityWhereInput {
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   name?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   pluralDisplayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   description?: StringFilter | null;
 
   @Field(() => EntityFieldFilter, {
-    nullable: true
+    nullable: true,
   })
   fields?: EntityFieldFilter | null;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true
+    nullable: true,
   })
   resource?: WhereUniqueInput | null;
 }

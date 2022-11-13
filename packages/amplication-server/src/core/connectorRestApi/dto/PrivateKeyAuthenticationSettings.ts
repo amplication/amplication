@@ -1,25 +1,25 @@
 //import { ConnectorRestApiAuthenticationSettings } from './connectorRestApiAuthenticationSettings';
-import { Field, ObjectType, InputType } from '@nestjs/graphql';
+import { Field, ObjectType, InputType } from "@nestjs/graphql";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
-@InputType('PrivateKeyAuthenticationSettingsInput', {
-  isAbstract: true
+@InputType("PrivateKeyAuthenticationSettingsInput", {
+  isAbstract: true,
 })
 export class PrivateKeyAuthenticationSettings {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   keyName: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   keyValue: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
-  type: 'header' | 'url';
+  type: "header" | "url";
 }

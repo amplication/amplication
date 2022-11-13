@@ -1,4 +1,4 @@
-import React from "react";  
+import React from "react";
 import { useQuery } from "@apollo/client";
 import { HorizontalRule } from "@amplication/design-system";
 import { EnumResourceType, Resource } from "../models";
@@ -16,7 +16,6 @@ type Response = {
 const CLASS_NAME = "services-page";
 
 const pageTitle = "Services";
-
 
 const Service = () => {
   const match = useRouteMatch<{
@@ -38,7 +37,9 @@ const Service = () => {
       <div className={`${CLASS_NAME}__header`}>
         <div className={`${CLASS_NAME}__header__top`}>
           <ResourceCircleBadge type={EnumResourceType.Service} />
-          <div className={`${CLASS_NAME}__header__top__title`}>Service List</div>
+          <div className={`${CLASS_NAME}__header__top__title`}>
+            Service List
+          </div>
         </div>
         <div className={`${CLASS_NAME}__header__description`}>
           Services associated with this message broker.

@@ -1,6 +1,6 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { EntityUpdatePermissionInput } from './EntityUpdatePermissionInput';
-import { WhereUniqueInput } from '../../../dto';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { EntityUpdatePermissionInput } from "./EntityUpdatePermissionInput";
+import { WhereUniqueInput } from "../../../dto";
 
 @ArgsType()
 export class UpdateEntityPermissionArgs {
