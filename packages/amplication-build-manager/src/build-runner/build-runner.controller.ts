@@ -60,9 +60,11 @@ export class BuildRunnerController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
   )
   async onCreatePRRequest(@Payload() message: KafkaMessage): Promise<void> {
+    console.log("Code generation request received");
     let args: CodeGenerationRequest;
     try {
       args = plainToInstance(CodeGenerationRequest, message.value);
+      console.log("Code Generation Request", args);
       await this.buildRunnerService.saveDsgResourceData(
         args.buildId,
         args.dsgResourceData
