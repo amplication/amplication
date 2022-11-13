@@ -11,10 +11,7 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2017", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
@@ -31,30 +28,19 @@
       "@amplication/design-system/*": [
         "packages/amplication-design-system/src/*"
       ],
-      "@amplication/git-utils": [
-        "packages/amplication-git-utils/src/index.ts"
-      ],
-      "@amplication/git-utils/*": [
-        "packages/amplication-git-utils/src/*"
-      ],
-      "@amplication/kafka": [
-        "packages/amplication-kafka/src/index.ts"
-      ],
-      "@amplication/kafka/*": [
-        "packages/amplication-kafka/src/*"
-      ],
+      "@amplication/git-utils": ["packages/amplication-git-utils/src/index.ts"],
+      "@amplication/git-utils/*": ["packages/amplication-git-utils/src/*"],
+      "@amplication/kafka": ["packages/amplication-kafka/src/index.ts"],
+      "@amplication/kafka/*": ["packages/amplication-kafka/src/*"],
       "@amplication/nest-logger-module": [
         "packages/amplication-nest-logger-module/src/index.ts"
       ],
       "@amplication/nest-logger-module/*": [
         "packages/amplication-nest-logger-module/src/*"
       ],
-      "@amplication/prisma-db": [
-        "packages/amplication-prisma-db/src/index.ts"
-      ],
-      "@amplication/prisma-db/*": [
-        "packages/amplication-prisma-db/src/*"
-      ]
+      "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
+      "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
+      "@primer/react/deprecated": ["node_modules/@primer/react/lib/deprecated"]
     }
   },
   "ts-node": {
@@ -62,8 +48,5 @@
       "module": "commonjs"
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

@@ -1,5 +1,11 @@
-import { getJestProjects } from '@nrwl/jest';
-
+/* eslint-disable */
 export default {
-  projects: getJestProjects(),
+  displayName: "amplication-client",
+  preset: "../../jest.preset.js",
+  transform: {
+    "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "@nrwl/react/plugins/jest",
+    "^.+\\.[tj]sx?$": "babel-jest",
+  },
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+  coverageDirectory: "../../coverage/packages/amplication-client",
 };

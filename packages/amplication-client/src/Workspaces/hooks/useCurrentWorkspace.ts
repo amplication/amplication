@@ -30,7 +30,6 @@ const useCurrentWorkspace = (authenticated: boolean) => {
     !authenticated && location.pathname === "/" && history.push("/login");
 
     authenticated && getCurrentWorkspace();
-
   }, [authenticated, location.pathname]);
 
   useEffect(() => {

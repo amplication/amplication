@@ -1,5 +1,6 @@
+import * as ReactDOM from "react-dom/client";
 import React from "react";
-import ReactDOM from "react-dom";
+
 import { BrowserRouter as Router } from "react-router-dom";
 import {
   ApolloClient,
@@ -7,12 +8,11 @@ import {
   createHttpLink,
   ApolloProvider,
 } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { getToken, setToken } from "./authentication/authentication";
 import "@amplication/design-system/icons";
 import "./index.scss";
 import App from "./App";
-import * as serviceWorker from "./serviceWorker";
-import { getToken, setToken } from "./authentication/authentication";
-import { setContext } from "@apollo/client/link/context";
 import { REACT_APP_DATA_SOURCE } from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
 
@@ -49,7 +49,10 @@ const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
 });
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+root.render(
   <React.StrictMode>
     <ApolloProvider client={apolloClient}>
       <QueryClientProvider client={queryClient}>
@@ -58,11 +61,5 @@ ReactDOM.render(
         </Router>
       </QueryClientProvider>
     </ApolloProvider>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();

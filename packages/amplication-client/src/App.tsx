@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
@@ -28,9 +28,8 @@ export const enhance = track<keyof typeof context>(
 function App() {
   const authenticated = useAuthenticated();
   const { currentWorkspaceLoading } = useCurrentWorkspace(authenticated);
-  const [keepLoadingAnimation, setKeepLoadingAnimation] = useState<boolean>(
-    true
-  );
+  const [keepLoadingAnimation, setKeepLoadingAnimation] =
+    useState<boolean>(true);
 
   useEffect(() => {
     initAnalytics();
@@ -61,7 +60,6 @@ function App() {
           onTimeout={handleTimeout}
         />
       )}
-
       {!currentWorkspaceLoading && GeneratedRoutes}
     </ThemeProvider>
   );

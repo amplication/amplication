@@ -3,6 +3,7 @@
   "version": 2,
   "projects": {
     "amplication-build-manager": "packages/amplication-build-manager",
+    "amplication-client": "packages/amplication-client",
     "amplication-code-gen-types": "packages/amplication-code-gen-types",
     "amplication-data-service-generator": "packages/amplication-data-service-generator",
     "amplication-design-system": "packages/amplication-design-system",

@@ -37,22 +37,14 @@
   "targetDefaults": {
     "format:check": {
       "options": {
-        "exclude": [
-          "**/helm/**/*"
-        ]
+        "exclude": ["**/helm/**/*"]
       }
     },
     "test": {
-      "dependsOn": [
-        "db:prisma:generate",
-        "^db:prisma:generate",
-        "^prebuild"
-      ]
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
     },
     "prebuild": {
-      "dependsOn": [
-        "^prebuild"
-      ]
+      "dependsOn": ["^prebuild"]
     },
     "build": {
       "dependsOn": [
@@ -63,29 +55,33 @@
       ]
     },
     "postbuild": {
-      "dependsOn": [
-        "build",
-        "^postbuild"
-      ]
+      "dependsOn": ["build", "^postbuild"]
     },
     "serve": {
-      "dependsOn": [
-        "db:prisma:generate",
-        "^db:prisma:generate"
-      ]
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
     },
     "lint": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json"
-      ]
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
     },
     "docker:build": {
-      "dependsOn": [
-        "prebuild",
-        "build",
-        "postbuild"
-      ]
+      "dependsOn": ["prebuild", "build", "postbuild"]
     }
-  }
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "scss",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "scss"
+      },
+      "library": {
+        "style": "scss",
+        "linter": "eslint"
+      }
+    }
+  },
+  "defaultProject": "amplication-client"
 }
