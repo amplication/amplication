@@ -48,14 +48,17 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   } = DsgContext.getInstance;
 
   logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
-  await createLog({ level: "info", message: `Admin path: ${clientDirectories.baseDirectory}` });
-  
+  await createLog({
+    level: "info",
+    message: `Admin path: ${clientDirectories.baseDirectory}`,
+  });
+
   logger.info("Creating admin...");
   await createLog({ level: "info", message: "Creating admin..." });
 
   logger.info("Copying static modules...");
   await createLog({ level: "info", message: "Copying static modules..." });
-  
+
   const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     clientDirectories.baseDirectory

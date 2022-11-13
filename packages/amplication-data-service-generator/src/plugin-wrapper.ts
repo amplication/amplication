@@ -14,24 +14,21 @@ export type PluginWrapper = (
   ...args: any
 ) => any;
 
-const beforeEventsPipe = (...fns: PluginBeforeEvent<EventParams>[]) => (
-  context: DsgContext,
-  eventParams: EventParams
-) =>
-  fns.reduce(
-    async (res, fn) => fn(context, await res),
-    Promise.resolve(eventParams)
-  );
+const beforeEventsPipe =
+  (...fns: PluginBeforeEvent<EventParams>[]) =>
+  (context: DsgContext, eventParams: EventParams) =>
+    fns.reduce(
+      async (res, fn) => fn(context, await res),
+      Promise.resolve(eventParams)
+    );
 
-const afterEventsPipe = (...fns: PluginAfterEvent<EventParams>[]) => (
-  context: DsgContext,
-  eventParams: EventParams,
-  modules: Module[]
-) =>
-  fns.reduce(
-    async (res, fn) => fn(context, eventParams, await res),
-    Promise.resolve(modules)
-  );
+const afterEventsPipe =
+  (...fns: PluginAfterEvent<EventParams>[]) =>
+  (context: DsgContext, eventParams: EventParams, modules: Module[]) =>
+    fns.reduce(
+      async (res, fn) => fn(context, eventParams, await res),
+      Promise.resolve(modules)
+    );
 
 const defaultBehavior = async (
   context: DsgContext,
@@ -88,7 +85,12 @@ const pluginWrapper: PluginWrapper = async (
     context.logger.error(`failed to execute plugin event ${event}`, {
       errorMessage: JSON.stringify(error),
     });
-    createLog({ level: "error", message: `failed to execute plugin event: ${event}. Error message: ${JSON.stringify(error)}` });
+    createLog({
+      level: "error",
+      message: `failed to execute plugin event: ${event}. Error message: ${JSON.stringify(
+        error
+      )}`,
+    });
     return [];
   }
 };
