@@ -11,7 +11,10 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BlockService } from "../block/block.service";
 import { DeleteServiceTopicsArgs } from "./dto/DeleteServiceTopicsArgs";
-import { MessagePatternCreateInput } from "@amplication/code-gen-types/models";
+import {
+  EnumMessagePatternConnectionOptions,
+  MessagePatternCreateInput,
+} from "@amplication/code-gen-types/models";
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
@@ -70,6 +73,23 @@ export class ServiceTopicsService extends BlockTypeService<
       args.data.messageBrokerId
     );
 
+    const serviceTopicList = await this.blockService.findManyByBlockType(
+      { where: { resource: { id: args.data.messageBrokerId } } },
+      EnumBlockType.Topic
+    );
+
+    const patterns: MessagePatternCreateInput[] = [];
+
+    serviceTopicList.forEach((topic) => {
+      const pattern = {
+        type: EnumMessagePatternConnectionOptions.None,
+        topicId: topic.id,
+      };
+      patterns.push(pattern);
+    });
+
+    args.data.patterns = patterns;
+
     return super.create(args, user);
   }
 
@@ -77,7 +97,6 @@ export class ServiceTopicsService extends BlockTypeService<
     args: UpdateServiceTopicsArgs,
     user: User
   ): Promise<ServiceTopics> {
-    console.log("update service topic");
     const block = await this.blockService.findOne({
       where: args.where,
     });

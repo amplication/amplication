@@ -43,7 +43,6 @@ export class TopicService extends BlockTypeService<
     args: DeleteTopicArgs,
     @UserEntity() user: User
   ): Promise<Topic> {
-    //todo: update service topics after delete topic
     const topicId = args.where.id;
     await this.serviceTopics.removeTopicFromAllServices(topicId, user);
     return super.delete(args, user);
