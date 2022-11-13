@@ -4,6 +4,7 @@ import {
   Entity,
   EntityField,
   Module,
+  NamedClassDeclaration,
   PrismaClientGenerator,
   PrismaDataSource,
 } from "./code-gen-types";
@@ -123,6 +124,29 @@ export interface CreateEntityModuleBaseParams extends EventParams {
   moduleBaseId: namedTypes.Identifier;
 }
 
+export interface CreateEntityResolverParams extends EventParams {
+  template: namedTypes.File;
+  entityName: string;
+  entityServiceModule: string;
+  serviceId: namedTypes.Identifier;
+  resolverBaseId: namedTypes.Identifier;
+  templateMapping: { [key: string]: any };
+}
+
+export interface CreateEntityResolverBaseParams extends EventParams {
+  template: namedTypes.File;
+  entityName: string;
+  entityType: string;
+  entityServiceModule: string;
+  entity: Entity;
+  serviceId: namedTypes.Identifier;
+  resolverBaseId: namedTypes.Identifier;
+  createArgs: NamedClassDeclaration | undefined;
+  updateArgs: NamedClassDeclaration | undefined;
+  createMutationId: namedTypes.Identifier;
+  updateMutationId: namedTypes.Identifier;
+  templateMapping: { [key: string]: any };
+}
 export interface CreateSwaggerParams extends EventParams {
   template: namedTypes.File;
   templateMapping: { [key: string]: any };

@@ -1,13 +1,17 @@
 import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
-import { ASTNode, builders, namedTypes } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
+import pluginWrapper from "../../../plugin-wrapper";
 import {
   Entity,
   EntityLookupField,
   Module,
   NamedClassDeclaration,
+  CreateEntityResolverParams,
+  CreateEntityResolverBaseParams,
   DTOs,
+  EventNames,
 } from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
@@ -46,8 +50,8 @@ import DsgContext from "../../../dsg-context";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
-const templatePath = require.resolve("./resolver.template.ts");
-const templateBasePath = require.resolve("./resolver.base.template.ts");
+const resolverTemplatePath = require.resolve("./resolver.template.ts");
+const resolverTemplateBasePath = require.resolve("./resolver.base.template.ts");
 const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
@@ -78,7 +82,10 @@ export async function createResolverModules(
   const entitiesQueryId = builders.identifier(entity.pluralName);
   const metaQueryId = builders.identifier(`_${entity.pluralName}Meta`);
 
-  const mapping = {
+  const template = await readFile(resolverTemplatePath);
+  const templateBase = await readFile(resolverTemplateBasePath);
+
+  const templateMapping = {
     RESOLVER: resolverId,
     RESOLVER_BASE: resolverBaseId,
     SERVICE: serviceId,
@@ -108,191 +115,225 @@ export async function createResolverModules(
   };
 
   return [
-    await createResolverModule(
-      templatePath,
-      entityName,
-      entityType,
-      entityServiceModule,
-      entity,
-      DTOs,
-      entityDTO,
-      serviceId,
-      resolverBaseId,
-      createArgs,
-      updateArgs,
-      createMutationId,
-      updateMutationId,
-      mapping,
-      false
-    ),
-    await createResolverModule(
-      templateBasePath,
-      entityName,
-      entityType,
-      entityServiceModule,
-      entity,
-      DTOs,
-      entityDTO,
-      serviceId,
-      resolverBaseId,
-      createArgs,
-      updateArgs,
-      createMutationId,
-      updateMutationId,
-      mapping,
-      true
-    ),
+    ...(await pluginWrapper(
+      createResolverModule,
+      EventNames.CreateEntityResolver,
+      {
+        template,
+        entityName,
+        entityServiceModule,
+        serviceId,
+        resolverBaseId,
+        templateMapping,
+      }
+    )),
+    ...(await pluginWrapper(
+      createResolverBaseModule,
+      EventNames.CreateEntityResolverBase,
+      {
+        template: templateBase,
+        entityName,
+        entityType,
+        entityServiceModule,
+        entity,
+        entityDTO,
+        serviceId,
+        resolverBaseId,
+        createArgs,
+        updateArgs,
+        createMutationId,
+        updateMutationId,
+        templateMapping,
+      }
+    )),
   ];
 }
 
-async function createResolverModule(
-  templateFilePath: string,
-  entityName: string,
-  entityType: string,
-  entityServiceModule: string,
-  entity: Entity,
-  dtos: DTOs,
-  entityDTO: NamedClassDeclaration,
-  serviceId: namedTypes.Identifier,
-  resolverBaseId: namedTypes.Identifier,
-  createArgs: NamedClassDeclaration | undefined,
-  updateArgs: NamedClassDeclaration | undefined,
-  createMutationId: namedTypes.Identifier,
-  updateMutationId: namedTypes.Identifier,
-  mapping: { [key: string]: ASTNode | undefined },
-  isBaseClass: boolean
-): Promise<Module> {
-  const { serverDirectories } = DsgContext.getInstance;
+async function createResolverModule({
+  template,
+  entityName,
+  entityServiceModule,
+  serviceId,
+  resolverBaseId,
+  templateMapping,
+}: CreateEntityResolverParams): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { serverDirectories, DTOs } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
-  const file = await readFile(templateFilePath);
 
-  interpolate(file, mapping);
+  interpolate(template, templateMapping);
 
-  if (isBaseClass) {
-    const classDeclaration = getClassDeclarationById(file, resolverBaseId);
-    const toManyRelationFields = entity.fields.filter(isToManyRelationField);
-    const toManyRelationMethods = (
-      await Promise.all(
-        toManyRelationFields.map((field) =>
-          createToManyRelationMethods(
-            field,
-            entityDTO,
-            entityType,
-            dtos,
-            serviceId
-          )
-        )
-      )
-    ).flat();
-    const toOneRelationFields = entity.fields.filter(isOneToOneRelationField);
-    const toOneRelationMethods = (
-      await Promise.all(
-        toOneRelationFields.map((field) =>
-          createToOneRelationMethods(
-            field,
-            entityDTO,
-            entityType,
-            dtos,
-            serviceId
-          )
-        )
-      )
-    ).flat();
+  addImports(template, [
+    importNames(
+      [resolverBaseId],
+      relativeImportPath(modulePath, moduleBasePath)
+    ),
+  ]);
 
-    const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
-      {
-        methodId: mapping["CREATE_MUTATION"] as namedTypes.Identifier,
-        action: EnumEntityAction.Create,
-        entity: entity,
-      },
-      {
-        methodId: mapping["ENTITIES_QUERY"] as namedTypes.Identifier,
-        action: EnumEntityAction.Search,
-        entity: entity,
-      },
-      {
-        methodId: mapping["META_QUERY"] as namedTypes.Identifier,
-        action: EnumEntityAction.Search,
-        entity: entity,
-      },
-      {
-        methodId: mapping["ENTITY_QUERY"] as namedTypes.Identifier,
-        action: EnumEntityAction.View,
-        entity: entity,
-      },
-      {
-        methodId: mapping["UPDATE_MUTATION"] as namedTypes.Identifier,
-        action: EnumEntityAction.Update,
-        entity: entity,
-      },
-      {
-        methodId: mapping["DELETE_MUTATION"] as namedTypes.Identifier,
-        action: EnumEntityAction.Delete,
-        entity: entity,
-      },
-    ];
-
-    methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
-      setEndpointPermissions(classDeclaration, methodId, action, entity);
-    });
-
-    classDeclaration.body.body.push(
-      ...toManyRelationMethods,
-      ...toOneRelationMethods
-    );
-
-    if (!createArgs) {
-      deleteClassMemberByKey(classDeclaration, createMutationId);
-    }
-    if (!updateArgs) {
-      deleteClassMemberByKey(classDeclaration, updateMutationId);
-    }
-  }
-
-  if (!isBaseClass) {
-    addImports(file, [
-      importNames(
-        [resolverBaseId],
-        relativeImportPath(modulePath, moduleBasePath)
-      ),
-    ]);
-  }
-
-  const dtoNameToPath = getDTONameToPath(dtos);
+  const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
-    file,
-    getImportableDTOs(isBaseClass ? moduleBasePath : modulePath, dtoNameToPath)
+    template,
+    getImportableDTOs(modulePath, dtoNameToPath)
   );
   const identifiersImports = importContainedIdentifiers(
-    file,
+    template,
     IMPORTABLE_IDENTIFIERS_NAMES
   );
-  addImports(file, [...identifiersImports, ...dtoImports]);
+  addImports(template, [...identifiersImports, ...dtoImports]);
 
   const serviceImport = importNames(
     [serviceId],
-    relativeImportPath(
-      isBaseClass ? moduleBasePath : modulePath,
-      entityServiceModule
-    )
+    relativeImportPath(modulePath, entityServiceModule)
   );
 
-  addImports(file, [serviceImport]);
-  removeTSIgnoreComments(file);
-  removeImportsTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
-  removeTSClassDeclares(file);
-  if (isBaseClass) {
-    addAutoGenerationComment(file);
+  addImports(template, [serviceImport]);
+  removeTSIgnoreComments(template);
+  removeImportsTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
+
+  return [
+    {
+      path: modulePath,
+      code: print(template).code,
+    },
+  ];
+}
+
+async function createResolverBaseModule({
+  template,
+  entityName,
+  entityType,
+  entityServiceModule,
+  entity,
+  serviceId,
+  resolverBaseId,
+  createArgs,
+  updateArgs,
+  createMutationId,
+  updateMutationId,
+  templateMapping,
+}: CreateEntityResolverBaseParams): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { serverDirectories, DTOs } = DsgContext.getInstance;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
+  const entityDTOs = DTOs[entity.name];
+  const { entity: entityDTO } = entityDTOs;
+  interpolate(template, templateMapping);
+
+  const classDeclaration = getClassDeclarationById(template, resolverBaseId);
+  const toManyRelationFields = entity.fields.filter(isToManyRelationField);
+  const toManyRelationMethods = (
+    await Promise.all(
+      toManyRelationFields.map((field) =>
+        createToManyRelationMethods(
+          field,
+          entityDTO,
+          entityType,
+          DTOs,
+          serviceId
+        )
+      )
+    )
+  ).flat();
+  const toOneRelationFields = entity.fields.filter(isOneToOneRelationField);
+  const toOneRelationMethods = (
+    await Promise.all(
+      toOneRelationFields.map((field) =>
+        createToOneRelationMethods(
+          field,
+          entityDTO,
+          entityType,
+          DTOs,
+          serviceId
+        )
+      )
+    )
+  ).flat();
+
+  const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+    {
+      methodId: templateMapping["CREATE_MUTATION"] as namedTypes.Identifier,
+      action: EnumEntityAction.Create,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["ENTITIES_QUERY"] as namedTypes.Identifier,
+      action: EnumEntityAction.Search,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["META_QUERY"] as namedTypes.Identifier,
+      action: EnumEntityAction.Search,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["ENTITY_QUERY"] as namedTypes.Identifier,
+      action: EnumEntityAction.View,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["UPDATE_MUTATION"] as namedTypes.Identifier,
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["DELETE_MUTATION"] as namedTypes.Identifier,
+      action: EnumEntityAction.Delete,
+      entity: entity,
+    },
+  ];
+
+  methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+    setEndpointPermissions(classDeclaration, methodId, action, entity);
+  });
+
+  classDeclaration.body.body.push(
+    ...toManyRelationMethods,
+    ...toOneRelationMethods
+  );
+
+  if (!createArgs) {
+    deleteClassMemberByKey(classDeclaration, createMutationId);
+  }
+  if (!updateArgs) {
+    deleteClassMemberByKey(classDeclaration, updateMutationId);
   }
 
-  return {
-    path: isBaseClass ? moduleBasePath : modulePath,
-    code: print(file).code,
-  };
+  const dtoNameToPath = getDTONameToPath(DTOs);
+  const dtoImports = importContainedIdentifiers(
+    template,
+    getImportableDTOs(moduleBasePath, dtoNameToPath)
+  );
+  const identifiersImports = importContainedIdentifiers(
+    template,
+    IMPORTABLE_IDENTIFIERS_NAMES
+  );
+  addImports(template, [...identifiersImports, ...dtoImports]);
+
+  const serviceImport = importNames(
+    [serviceId],
+    relativeImportPath(moduleBasePath, entityServiceModule)
+  );
+
+  addImports(template, [serviceImport]);
+  removeTSIgnoreComments(template);
+  removeImportsTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
+  addAutoGenerationComment(template);
+
+  return [
+    {
+      path: moduleBasePath,
+      code: print(template).code,
+    },
+  ];
 }
 
 export function createResolverId(entityType: string): namedTypes.Identifier {
