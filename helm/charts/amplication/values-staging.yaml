@@ -27,10 +27,10 @@ amplication-client:
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
   config:
     env:
-      REACT_APP_SERVER_URI: "https://server.staging.amplication-dev.com"
-      REACT_APP_DATA_SOURCE: "https://server.staging.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.staging.amplication-dev.com/github"
-      REACT_APP_STORAGE_GATEWAY_URL: https://server.staging.amplication-dev.com
+      NX_REACT_APP_SERVER_URI: "https://server.staging.amplication-dev.com"
+      NX_REACT_APP_DATA_SOURCE: "https://server.staging.amplication-dev.com/graphql"
+      NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.staging.amplication-dev.com/github"
+      NX_REACT_APP_STORAGE_GATEWAY_URL: https://server.staging.amplication-dev.com
 
 amplication-server:
   autoscaling:

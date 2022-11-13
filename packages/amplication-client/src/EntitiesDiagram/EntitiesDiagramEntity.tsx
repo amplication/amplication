@@ -181,7 +181,8 @@ export const EntitiesDiagramEntity = React.memo(
                         {...provided.droppableProps}
                         ref={provided.innerRef}
                         className={classNames(`${CLASS_NAME}__droppable`, {
-                          [`${CLASS_NAME}__droppable--over`]: snapshot.isDraggingOver,
+                          [`${CLASS_NAME}__droppable--over`]:
+                            snapshot.isDraggingOver,
                         })}
                       >
                         {entity.fields.map((field, fieldIndex) => (

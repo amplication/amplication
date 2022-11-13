@@ -30,7 +30,6 @@ const useCurrentWorkspace = (authenticated: boolean) => {
     !authenticated && location.pathname === "/" && history.push("/login");
 
     authenticated && getCurrentWorkspace();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated, location.pathname]);
 
   useEffect(() => {
