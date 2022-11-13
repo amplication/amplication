@@ -1,7 +1,0 @@
-envName:
-
-persistentVolume:
-  volumeHandle: 
-
-job:
-  ttlSecondsAfterFinished: 25200
