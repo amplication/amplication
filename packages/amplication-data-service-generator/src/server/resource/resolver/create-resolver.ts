@@ -131,7 +131,7 @@ export async function createResolverModules(
       createResolverBaseModule,
       EventNames.CreateEntityResolverBase,
       {
-        templateBase,
+        template: templateBase,
         entityName,
         entityType,
         entityServiceModule,
