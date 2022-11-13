@@ -34,7 +34,9 @@ function ServicesTile({ resourceId }: Props) {
   }, []);
 
   const handleClick = useCallback(() => {
-    trackEvent({eventName: AnalyticsEventNames.MessageBrokerConnectedServicesTileClick});
+    trackEvent({
+      eventName: AnalyticsEventNames.MessageBrokerConnectedServicesTileClick,
+    });
     history.push(
       `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/services`
     );
