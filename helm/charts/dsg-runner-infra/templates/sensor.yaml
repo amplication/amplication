@@ -6,7 +6,7 @@ spec:
   template:
     serviceAccountName: argo-events-sa
   dependencies:
-    - name: test-dep
+    - name: request
       eventSourceName: webhook
       eventName: example
   triggers:
@@ -31,20 +31,23 @@ spec:
                     restartPolicy: Never
                     containers:
                       - name: dsg-container
-                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:next"
+                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:fs-structure"
                         command: ["sh", "-c"]
-                        args: [ "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/input.json /efs/code" ]
+                        args: [ "cd /workspace/packages/amplication-data-service-generator; node ./src/generate-code.js /efs/input.json /efs/code" ]
                         env:
                           - name: BUILD_ID
                             value: null # provided in parameters
-                          - name: STATUS_UPDATE_URL
-                            value: http://amplication-build-manager/build-runner/complete-code-generation-step
-                          - name: CREATE_LOG_URL
-                            value: http://amplication-build-manager/build-logger/create-log
+                          - name: RESOURCE_ID
+                            value: null # provided in parameters
+                          - name: BUILD_MANAGER_URL
+                            value: http://amplication-build-manager
+                          - name: REMOTE_NEV
+                            value: true
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs
                             subPathExpr: $(BUILD_ID)
+                    imagePullPolicy: Always
                     volumes:
                       - name: persistent-storage
                         persistentVolumeClaim:
@@ -53,6 +56,10 @@ spec:
                 backoffLimit: 0
           parameters:
             - src:
-                dependencyName: test-dep
+                dependencyName: request
                 dataKey: body.buildId
               dest: spec.template.spec.containers.0.env.0.value
+            - src:
+                dependencyName: request
+                dataKey: body.resourceId
+              dest: spec.template.spec.containers.0.env.1.value

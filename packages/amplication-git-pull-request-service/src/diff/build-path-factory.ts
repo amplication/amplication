@@ -7,7 +7,6 @@ import { Env } from "../env";
 @Injectable()
 export class BuildPathFactory {
   private readonly buildsFolder: string;
-  private readonly outputFolder: string;
   constructor(private readonly configService: ConfigService) {
     // absolute path to the builds folder
     const envFilePath = this.configService.get<string>(
@@ -16,13 +15,9 @@ export class BuildPathFactory {
     this.buildsFolder = envFilePath
       ? normalize(envFilePath)
       : DEFAULT_BUILDS_FOLDER;
-
-    this.outputFolder = this.configService.get<string>(
-      Env.BUILD_ARTIFACTS_CODE_FOLDER
-    )!;
   }
 
-  public get(buildId: string) {
-    return join(this.buildsFolder, buildId, this.outputFolder);
+  public get(resourceId: string, buildId: string) {
+    return join(this.buildsFolder, resourceId, buildId);
   }
 }

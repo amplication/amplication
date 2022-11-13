@@ -80,8 +80,6 @@ export enum EventNames {
   CreateAdminUIPackageJson = "CreateAdminUIPackageJson",
   CreateEntityModule = "CreateEntityModule",
   CreateEntityModuleBase = "CreateEntityModuleBase",
-  CreateEntityResolver = "CreateEntityResolver",
-  CreateEntityResolverBase = "CreateEntityResolverBase",
   CreateSwagger = "CreateSwagger",
   CreateSeed = "CreateSeed",
 }

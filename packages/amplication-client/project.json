@@ -70,7 +70,9 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "amplication-client:build",
-        "hmr": true
+        "hmr": true,
+        "open": true,
+        "port": 3001
       },
       "configurations": {
         "development": {
