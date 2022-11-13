@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { EntityFieldCreateInput } from "./EntityFieldCreateInput";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { EntityFieldCreateInput } from './EntityFieldCreateInput';
 
 @ArgsType()
 export class CreateOneEntityFieldArgs {

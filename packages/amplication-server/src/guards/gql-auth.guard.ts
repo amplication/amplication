@@ -1,13 +1,13 @@
-import { Injectable, ExecutionContext } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { AuthGuard } from "@nestjs/passport";
-import { GqlExecutionContext } from "@nestjs/graphql";
-import { get } from "lodash";
-import { User } from "../models";
-import { PermissionsService } from "../core/permissions/permissions.service";
-import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
+import { Injectable, ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { AuthGuard } from '@nestjs/passport';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { get } from 'lodash';
+import { User } from '../models';
+import { PermissionsService } from '../core/permissions/permissions.service';
+import { AuthorizableOriginParameter } from '../enums/AuthorizableOriginParameter';
 
-export const AUTHORIZE_CONTEXT = "authorizeContext";
+export const AUTHORIZE_CONTEXT = 'authorizeContext';
 
 export type AuthorizeContextParameters = {
   parameterType: AuthorizableOriginParameter;
@@ -15,7 +15,7 @@ export type AuthorizeContextParameters = {
 };
 
 @Injectable()
-export class GqlAuthGuard extends AuthGuard("jwt") {
+export class GqlAuthGuard extends AuthGuard('jwt') {
   constructor(
     private readonly reflector: Reflector,
     private permissionsService: PermissionsService
@@ -47,7 +47,7 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
 
   // Checks if any of the required roles exist in the user role list
   private matchRoles(rolesToMatch: string[], userRoles: string[]): boolean {
-    return rolesToMatch.some((r) => userRoles.includes(r));
+    return rolesToMatch.some(r => userRoles.includes(r));
   }
 
   // This method is required for the interface - do not delete it.
@@ -58,7 +58,7 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
 
   /* eslint-disable-next-line @typescript-eslint/ban-types */
   private getExpectedRoles(handler: Function): string[] {
-    return this.reflector.get<string[]>("roles", handler);
+    return this.reflector.get<string[]>('roles', handler);
   }
 
   /* eslint-disable-next-line @typescript-eslint/ban-types */
@@ -66,7 +66,7 @@ export class GqlAuthGuard extends AuthGuard("jwt") {
     const expectedRoles = this.getExpectedRoles(handler);
 
     if (expectedRoles) {
-      const currentUserRoles = currentUser.userRoles.map((r) => r.role);
+      const currentUserRoles = currentUser.userRoles.map(r => r.role);
       return this.matchRoles(expectedRoles, currentUserRoles);
     }
 

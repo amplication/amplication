@@ -8,7 +8,9 @@ import {
 import React from "react";
 import { EnumGitOrganizationType, Resource } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import {
+  GitOrganizationFromGitRepository,
+} from "../../SyncWithGithubPage";
 import GithubSyncDetails from "./GithubSyncDetails";
 import "./RepositoryActions.scss";
 type Props = {

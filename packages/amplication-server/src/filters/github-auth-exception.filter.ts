@@ -1,9 +1,9 @@
-import { ExceptionFilter, Catch, ArgumentsHost, Inject } from "@nestjs/common";
-import { Request, Response } from "express";
-import { Logger } from "winston";
+import { ExceptionFilter, Catch, ArgumentsHost, Inject } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { Logger } from 'winston';
 
-import { ConfigService } from "@nestjs/config";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { ConfigService } from '@nestjs/config';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Catch(Error)
 export class GithubAuthExceptionFilter implements ExceptionFilter {

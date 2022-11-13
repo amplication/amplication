@@ -1,21 +1,21 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class ServerSettingsUpdateInput {
   @Field(() => Boolean, {
-    nullable: true,
+    nullable: true
   })
   generateGraphQL?: boolean;
 
   @Field(() => Boolean, {
-    nullable: true,
+    nullable: true
   })
   generateRestApi?: boolean;
 
   @Field(() => String, {
-    nullable: true,
+    nullable: true
   })
   serverPath?: string;
 }

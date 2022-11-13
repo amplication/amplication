@@ -1,14 +1,14 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class AdminUISettings {
   @Field(() => Boolean, {
-    nullable: false,
+    nullable: false
   })
   generateAdminUI!: boolean;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   adminUIPath!: string;
 }

@@ -1,7 +1,7 @@
-import { Prisma, PrismaService } from "@amplication/prisma-db";
-import { ConflictException, Injectable } from "@nestjs/common";
-import { Account, User, UserRole } from "../../models";
-import { UserRoleArgs } from "./dto";
+import { Prisma, PrismaService } from '@amplication/prisma-db';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { Account, User, UserRole } from '../../models';
+import { UserRoleArgs } from './dto';
 
 @Injectable()
 export class UserService {
@@ -12,8 +12,8 @@ export class UserService {
       ...args,
       where: {
         ...args.where,
-        deletedAt: null,
-      },
+        deletedAt: null
+      }
     });
   }
 
@@ -22,8 +22,8 @@ export class UserService {
       ...args,
       where: {
         ...args.where,
-        deletedAt: null,
-      },
+        deletedAt: null
+      }
     });
   }
 
@@ -31,10 +31,10 @@ export class UserService {
     const existingRole = await this.prisma.userRole.findMany({
       where: {
         user: {
-          id: args.where.id,
+          id: args.where.id
         },
-        role: args.data.role,
-      },
+        role: args.data.role
+      }
     });
 
     //if the role already exist do nothing and return the user
@@ -42,8 +42,8 @@ export class UserService {
       const roleData: Prisma.UserRoleCreateArgs = {
         data: {
           role: args.data.role,
-          user: { connect: { id: args.where.id } },
-        },
+          user: { connect: { id: args.where.id } }
+        }
       };
 
       await this.prisma.userRole.create(roleData);
@@ -51,8 +51,8 @@ export class UserService {
 
     return this.findUser({
       where: {
-        id: args.where.id,
-      },
+        id: args.where.id
+      }
     });
   }
 
@@ -60,25 +60,25 @@ export class UserService {
     const existingRole = await this.prisma.userRole.findMany({
       where: {
         user: {
-          id: args.where.id,
+          id: args.where.id
         },
-        role: args.data.role,
-      },
+        role: args.data.role
+      }
     });
 
     //if the role already exist do nothing and return the user
     if (existingRole && existingRole.length) {
       await this.prisma.userRole.delete({
         where: {
-          id: existingRole[0].id,
-        },
+          id: existingRole[0].id
+        }
       });
     }
 
     return this.findUser({
       where: {
-        id: args.where.id,
-      },
+        id: args.where.id
+      }
     });
   }
 
@@ -86,9 +86,9 @@ export class UserService {
     return this.prisma.userRole.findMany({
       where: {
         user: {
-          id,
-        },
-      },
+          id
+        }
+      }
     });
   }
 
@@ -96,8 +96,8 @@ export class UserService {
     return this.prisma.user
       .findUnique({
         where: {
-          id,
-        },
+          id
+        }
       })
       .account();
   }
@@ -105,8 +105,8 @@ export class UserService {
   async delete(userId: string): Promise<User> {
     const user = this.findUser({
       where: {
-        id: userId,
-      },
+        id: userId
+      }
     });
 
     if (!user) {
@@ -115,11 +115,11 @@ export class UserService {
 
     return this.prisma.user.update({
       where: {
-        id: userId,
+        id: userId
       },
       data: {
-        deletedAt: new Date(),
-      },
+        deletedAt: new Date()
+      }
     });
   }
 }

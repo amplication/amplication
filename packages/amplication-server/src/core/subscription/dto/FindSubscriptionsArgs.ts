@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { FindSubscriptionsInput } from "./FindSubscriptionsInput";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { FindSubscriptionsInput } from './FindSubscriptionsInput';
 
 @ArgsType()
 export class FindSubscriptionsArgs {

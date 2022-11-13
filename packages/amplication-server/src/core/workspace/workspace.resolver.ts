@@ -4,8 +4,8 @@ import {
   Query,
   Resolver,
   Parent,
-  ResolveField,
-} from "@nestjs/graphql";
+  ResolveField
+} from '@nestjs/graphql';
 import {
   UpdateOneWorkspaceArgs,
   InviteUserArgs,
@@ -14,21 +14,21 @@ import {
   WorkspaceMember,
   DeleteUserArgs,
   RevokeInvitationArgs,
-  ResendInvitationArgs,
-} from "./dto";
-import { FindOneArgs } from "../../dto";
+  ResendInvitationArgs
+} from './dto';
+import { FindOneArgs } from '../../dto';
 
-import { Workspace, User, Project } from "../../models";
-import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
-import { UseFilters, UseGuards } from "@nestjs/common";
-import { UserEntity } from "../../decorators/user.decorator";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { WorkspaceService } from "./workspace.service";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { GitOrganization } from "../../models/GitOrganization";
-import { Subscription } from "../subscription/dto/Subscription";
-import { ProjectService } from "../project/project.service";
+import { Workspace, User, Project } from '../../models';
+import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
+import { UseFilters, UseGuards } from '@nestjs/common';
+import { UserEntity } from '../../decorators/user.decorator';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { WorkspaceService } from './workspace.service';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { GitOrganization } from '../../models/GitOrganization';
+import { Subscription } from '../subscription/dto/Subscription';
+import { ProjectService } from '../project/project.service';
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -40,15 +40,15 @@ export class WorkspaceResolver {
   ) {}
 
   @Query(() => Workspace, {
-    nullable: true,
+    nullable: true
   })
-  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async workspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.getWorkspace(args);
   }
 
   @Query(() => Workspace, {
-    nullable: true,
+    nullable: true
   })
   async currentWorkspace(
     @UserEntity() currentUser: User
@@ -59,22 +59,22 @@ export class WorkspaceResolver {
   @ResolveField(() => [Project])
   async projects(@Parent() workspace: Workspace): Promise<Project[]> {
     return this.projectService.findProjects({
-      where: { workspace: { id: workspace.id } },
+      where: { workspace: { id: workspace.id } }
     });
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
+    nullable: true
   })
-  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async deleteWorkspace(@Args() args: FindOneArgs): Promise<Workspace | null> {
     return this.workspaceService.deleteWorkspace(args);
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
+    nullable: true
   })
-  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, 'where.id')
   async updateWorkspace(
     @Args() args: UpdateOneWorkspaceArgs
   ): Promise<Workspace | null> {
@@ -82,7 +82,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Workspace, {
-    nullable: true,
+    nullable: true
   })
   async createWorkspace(
     @UserEntity() currentUser: User,
@@ -92,7 +92,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
+    nullable: true
   })
   async inviteUser(
     @UserEntity() currentUser: User,
@@ -102,9 +102,9 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
+    nullable: true
   })
-  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, 'where.id')
   async revokeInvitation(
     @Args() args: RevokeInvitationArgs
   ): Promise<Invitation> {
@@ -112,9 +112,9 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => Invitation, {
-    nullable: true,
+    nullable: true
   })
-  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.InvitationId, 'where.id')
   async resendInvitation(
     @Args() args: ResendInvitationArgs
   ): Promise<Invitation> {
@@ -122,7 +122,7 @@ export class WorkspaceResolver {
   }
 
   @Mutation(() => User, {
-    nullable: true,
+    nullable: true
   })
   async deleteUser(
     @UserEntity() currentUser: User,
@@ -132,13 +132,13 @@ export class WorkspaceResolver {
   }
 
   @Query(() => [WorkspaceMember], {
-    nullable: true,
+    nullable: true
   })
   async workspaceMembers(
     @UserEntity() currentUser: User
   ): Promise<WorkspaceMember[]> {
     return this.workspaceService.findMembers({
-      where: { id: currentUser.workspace.id },
+      where: { id: currentUser.workspace.id }
     });
   }
 

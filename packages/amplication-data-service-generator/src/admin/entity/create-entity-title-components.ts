@@ -10,15 +10,17 @@ export async function createEntityTitleComponents(
 ): Promise<Record<string, EntityComponent>> {
   return Object.fromEntries(
     await Promise.all(
-      entities.map(async (entity): Promise<[string, EntityComponent]> => {
-        const titleComponent = await createEntityTitleComponent(
-          entity,
-          entityToDirectory,
-          entityToResource,
-          dtoNameToPath
-        );
-        return [entity.name, titleComponent];
-      })
+      entities.map(
+        async (entity): Promise<[string, EntityComponent]> => {
+          const titleComponent = await createEntityTitleComponent(
+            entity,
+            entityToDirectory,
+            entityToResource,
+            dtoNameToPath
+          );
+          return [entity.name, titleComponent];
+        }
+      )
     )
   );
 }

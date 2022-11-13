@@ -1,12 +1,12 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
+import { Field, InputType } from '@nestjs/graphql';
+import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class ConnectorRestApiCallCreateInput extends BlockCreateInput {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   url!: string;
 }

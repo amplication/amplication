@@ -1,5 +1,5 @@
-import { ArgsType, Field } from "@nestjs/graphql";
-import { CompleteAuthorizeResourceWithGithubInput } from "./CompleteAuthorizeResourceWithGithubInput";
+import { ArgsType, Field } from '@nestjs/graphql';
+import { CompleteAuthorizeResourceWithGithubInput } from './CompleteAuthorizeResourceWithGithubInput';
 
 @ArgsType()
 export class CompleteAuthorizeResourceWithGithubArgs {

@@ -1,22 +1,22 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { WhereParentIdInput, WhereUniqueInput } from "../../../dto";
+import { Field, InputType } from '@nestjs/graphql';
+import { WhereParentIdInput, WhereUniqueInput } from '../../../dto';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class EntityUpdatePermissionFieldRolesInput {
   @Field(() => WhereParentIdInput, {
-    nullable: false,
+    nullable: false
   })
   permissionField!: WhereParentIdInput;
 
   @Field(() => [WhereUniqueInput], {
-    nullable: true,
+    nullable: true
   })
   deletePermissionRoles?: WhereUniqueInput[];
 
   @Field(() => [WhereUniqueInput], {
-    nullable: true,
+    nullable: true
   })
   addPermissionRoles?: WhereUniqueInput[];
 }

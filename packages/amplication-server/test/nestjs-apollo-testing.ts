@@ -1,9 +1,9 @@
-import { TestingModule } from "@nestjs/testing";
-import { GraphQLModule } from "@nestjs/graphql";
+import { TestingModule } from '@nestjs/testing';
+import { GraphQLModule } from '@nestjs/graphql';
 import {
   ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+  createTestClient
+} from 'apollo-server-testing';
 
 /**
  * Wraps Apollo Server's createTestClient to easily work with Nest.js

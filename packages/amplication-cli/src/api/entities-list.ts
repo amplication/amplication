@@ -1,6 +1,6 @@
-import { ApolloClient, gql, NormalizedCacheObject } from "@apollo/client/core";
+import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
 
-import * as models from "../models";
+import * as models from '../models';
 
 const GET_ENTITIES = gql`
   query getEntities(

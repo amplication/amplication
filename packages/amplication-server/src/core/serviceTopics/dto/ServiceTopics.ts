@@ -1,19 +1,19 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { IBlock } from "../../../models";
-import { MessagePattern } from "./messagePattern/MessagePattern";
+import { Field, ObjectType } from '@nestjs/graphql';
+import { IBlock } from '../../../models';
+import { MessagePattern } from './messagePattern/MessagePattern';
 
 @ObjectType({
   isAbstract: true,
-  implements: [IBlock],
+  implements: [IBlock]
 })
 export class ServiceTopics extends IBlock {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   messageBrokerId!: string;
 
   @Field(() => Boolean, {
-    nullable: false,
+    nullable: false
   })
   enabled!: boolean;
 

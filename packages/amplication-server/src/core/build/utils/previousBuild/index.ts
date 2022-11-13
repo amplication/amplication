@@ -1,1 +1,1 @@
-export * from "./previousBuild";
+export * from './previousBuild';

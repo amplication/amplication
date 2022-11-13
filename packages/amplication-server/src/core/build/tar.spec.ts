@@ -1,22 +1,22 @@
-import { Buffer } from "buffer";
-import tar from "tar-stream";
-import zlib from "zlib";
-import getStream from "get-stream";
-import { createTarGzFileFromModules } from "./tar";
+import { Buffer } from 'buffer';
+import tar from 'tar-stream';
+import zlib from 'zlib';
+import getStream from 'get-stream';
+import { createTarGzFileFromModules } from './tar';
 
-jest.mock("tar");
+jest.mock('tar');
 const tarPackEntryEndMock = jest.fn();
 const tarPackEntryMock = jest.fn(() => ({
-  end: tarPackEntryEndMock,
+  end: tarPackEntryEndMock
 }));
 const tarPackFinalizeMock = jest.fn();
-const tarPackPipeMock = jest.fn(function () {
+const tarPackPipeMock = jest.fn(function() {
   return this;
 });
 const MOCK_PACK = {
   entry: tarPackEntryMock,
   finalize: tarPackFinalizeMock,
-  pipe: tarPackPipeMock,
+  pipe: tarPackPipeMock
 };
 // eslint-disable-next-line
 // @ts-ignore
@@ -24,28 +24,28 @@ tar.pack = jest.fn(() => MOCK_PACK);
 
 const EXAMPLE_BUFFER = Buffer.from([]);
 
-jest.mock("get-stream");
+jest.mock('get-stream');
 // eslint-disable-next-line
 // @ts-ignore
 getStream.buffer.mockImplementation(() => Promise.resolve(EXAMPLE_BUFFER));
 
 const EXAMPLE_GZIP = {};
 
-jest.mock("zlib");
+jest.mock('zlib');
 // eslint-disable-next-line
 // @ts-ignore
 zlib.createGzip.mockImplementation(() => EXAMPLE_GZIP);
 
-const EXAMPLE_PATH = "EXAMPLE_PATH";
-const EXAMPLE_CODE = "EXAMPLE_CODE";
+const EXAMPLE_PATH = 'EXAMPLE_PATH';
+const EXAMPLE_CODE = 'EXAMPLE_CODE';
 
-describe("createTarFileFromModules", () => {
-  test("it creates a tar file", async () => {
+describe('createTarFileFromModules', () => {
+  test('it creates a tar file', async () => {
     const modules = [
       {
         path: EXAMPLE_PATH,
-        code: EXAMPLE_CODE,
-      },
+        code: EXAMPLE_CODE
+      }
     ];
     await expect(createTarGzFileFromModules(modules)).resolves.toBe(
       EXAMPLE_BUFFER

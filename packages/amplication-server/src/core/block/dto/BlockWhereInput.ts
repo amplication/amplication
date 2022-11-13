@@ -1,49 +1,49 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { ResourceWhereInput } from "../../resource/dto";
-import { WhereUniqueInput, DateTimeFilter, StringFilter } from "../../../dto";
+import { Field, InputType } from '@nestjs/graphql';
+import { ResourceWhereInput } from '../../resource/dto';
+import { WhereUniqueInput, DateTimeFilter, StringFilter } from '../../../dto';
 
-import { EnumBlockTypeFilter } from "./EnumBlockTypeFilter";
+import { EnumBlockTypeFilter } from './EnumBlockTypeFilter';
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class BlockWhereInput {
   @Field(() => StringFilter, {
-    nullable: true,
+    nullable: true
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
+    nullable: true
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
+    nullable: true
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => ResourceWhereInput, {
-    nullable: true,
+    nullable: true
   })
   resource?: ResourceWhereInput | null;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true,
+    nullable: true
   })
   parentBlock?: WhereUniqueInput | null;
 
   @Field(() => EnumBlockTypeFilter, {
-    nullable: true,
+    nullable: true
   })
   blockType?: EnumBlockTypeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
+    nullable: true
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
+    nullable: true
   })
   description?: StringFilter | null;
 

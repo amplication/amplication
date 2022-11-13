@@ -1,11 +1,11 @@
-import { EnumBlockType } from "../../enums/EnumBlockType";
-import { BlockTypeService } from "../block/blockType.service";
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { BlockTypeService } from '../block/blockType.service';
 import {
   ConnectorRestApi,
   CreateConnectorRestApiArgs,
-  FindManyConnectorRestApiArgs,
-} from "./dto/";
-import { UpdateBlockArgs } from "../block/dto/UpdateBlockArgs";
+  FindManyConnectorRestApiArgs
+} from './dto/';
+import { UpdateBlockArgs } from '../block/dto/UpdateBlockArgs';
 
 export class ConnectorRestApiService extends BlockTypeService<
   ConnectorRestApi,

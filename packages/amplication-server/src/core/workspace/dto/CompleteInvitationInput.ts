@@ -1,11 +1,11 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class CompleteInvitationInput {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   token: string;
 }

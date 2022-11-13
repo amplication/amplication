@@ -1,11 +1,11 @@
-import { Field, InputType, Int } from "@nestjs/graphql";
+import { Field, InputType, Int } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class PluginSetOrderInput {
   @Field(() => Int, {
-    nullable: false,
+    nullable: false
   })
   order!: number;
 }

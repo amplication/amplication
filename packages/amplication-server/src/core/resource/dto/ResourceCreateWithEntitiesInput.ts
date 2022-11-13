@@ -1,64 +1,64 @@
-import { Field, InputType, Int } from "@nestjs/graphql";
-import { ResourceCreateInput } from "./ResourceCreateInput";
-import { EnumDataType } from "../../../enums/EnumDataType";
-import { ResourceGenSettingsCreateInput } from "./ResourceGenSettingsCreateInput";
+import { Field, InputType, Int } from '@nestjs/graphql';
+import { ResourceCreateInput } from './ResourceCreateInput';
+import { EnumDataType } from '../../../enums/EnumDataType';
+import { ResourceGenSettingsCreateInput } from './ResourceGenSettingsCreateInput';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class ResourceCreateWithEntitiesFieldInput {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   name!: string;
 
   @Field(() => EnumDataType, {
-    nullable: true,
+    nullable: true
   })
   dataType?: keyof typeof EnumDataType | null;
 }
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class ResourceCreateWithEntitiesEntityInput {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   name!: string;
 
   @Field(() => [ResourceCreateWithEntitiesFieldInput], {
-    nullable: false,
+    nullable: false
   })
   fields!: ResourceCreateWithEntitiesFieldInput[];
 
   @Field(() => [Int], {
-    nullable: true,
+    nullable: true
   })
   relationsToEntityIndex?: number[] | null;
 }
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class ResourceCreateWithEntitiesInput {
   @Field(() => ResourceCreateInput, {
-    nullable: false,
+    nullable: false
   })
   resource!: ResourceCreateInput;
 
   @Field(() => [ResourceCreateWithEntitiesEntityInput], {
-    nullable: false,
+    nullable: false
   })
   entities!: ResourceCreateWithEntitiesEntityInput[];
 
   @Field(() => ResourceGenSettingsCreateInput, {
-    nullable: false,
+    nullable: false
   })
   generationSettings!: ResourceGenSettingsCreateInput;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   commitMessage!: string;
 }

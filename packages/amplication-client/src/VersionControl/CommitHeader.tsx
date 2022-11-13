@@ -17,7 +17,7 @@ type Props = {
 };
 const CommitHeader = ({ resourceId, commit, clickableId }: Props) => {
   const account = commit.user?.account;
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const {currentWorkspace, currentProject} = useContext(AppContext); 
 
   return (
     <div className={`${CLASS_NAME}`}>

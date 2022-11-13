@@ -1,21 +1,21 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { EnumGitOrganizationType } from "../enums/EnumGitOrganizationType";
+import { Field, InputType } from '@nestjs/graphql';
+import { EnumGitOrganizationType } from '../enums/EnumGitOrganizationType';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class CreateGitRemoteRepoInput {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   name!: string;
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   installationId!: string;
 
   @Field(() => EnumGitOrganizationType, {
-    nullable: false,
+    nullable: false
   })
   gitOrganizationType!: EnumGitOrganizationType;
 }

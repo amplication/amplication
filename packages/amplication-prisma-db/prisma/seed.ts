@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import { PrismaClient } from "@prisma/client";
-import * as dotenv from "dotenv";
+import { PrismaClient } from '@prisma/client';
+import * as dotenv from 'dotenv';
 
 const prisma = new PrismaClient();
 
@@ -16,26 +16,26 @@ if (require.main === module) {
 
 async function main() {
   dotenv.config();
-  console.log("Seeding...");
+  console.log('Seeding...');
 
   const workspace = {
-    id: "simpsons",
-    name: "Simpsons",
+    id: 'simpsons',
+    name: 'Simpsons',
   };
   const accounts = [
     {
-      id: "lisa",
-      email: "lisa@simpson.com",
-      firstName: "Lisa",
-      lastName: "Simpson",
-      password: "$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm", // secret42
+      id: 'lisa',
+      email: 'lisa@simpson.com',
+      firstName: 'Lisa',
+      lastName: 'Simpson',
+      password: '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm', // secret42
     },
     {
-      id: "bart",
-      email: "bart@simpson.com",
-      firstName: "Bart",
-      lastName: "Simpson",
-      password: "$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm", // secret42
+      id: 'bart',
+      email: 'bart@simpson.com',
+      firstName: 'Bart',
+      lastName: 'Simpson',
+      password: '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm', // secret42
     },
   ];
   await Promise.all(
@@ -44,11 +44,11 @@ async function main() {
         where: { email: account.email },
         update: {},
         create: account,
-      })
-    )
+      }),
+    ),
   );
   const { users } = await prisma.workspace.upsert({
-    where: { id: "simpsons" },
+    where: { id: 'simpsons' },
     update: {},
     create: {
       ...workspace,
@@ -57,7 +57,7 @@ async function main() {
           account: { connect: { id: account.id } },
           userRoles: {
             create: {
-              role: "ORGANIZATION_ADMIN",
+              role: 'ORGANIZATION_ADMIN',
             },
           },
         })),
@@ -80,8 +80,8 @@ async function main() {
         where: {
           id: user.accountId,
         },
-      })
-    )
+      }),
+    ),
   );
   return { workspace, accounts };
 }

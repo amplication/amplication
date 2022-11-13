@@ -1,24 +1,24 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { WorkspaceWhereInput } from "../../workspace/dto";
-import { DateTimeFilter, StringFilter } from "../../../dto";
-import { ResourceListRelationFilter } from "../../resource/dto/ResourceListRelationFilter";
+import { Field, InputType } from '@nestjs/graphql';
+import { WorkspaceWhereInput } from '../../workspace/dto';
+import { DateTimeFilter, StringFilter } from '../../../dto';
+import { ResourceListRelationFilter } from '../../resource/dto/ResourceListRelationFilter';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class ProjectWhereInput {
   @Field(() => String, {
-    nullable: true,
+    nullable: true
   })
   id?: string | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
+    nullable: true
   })
   deletedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
+    nullable: true
   })
   name?: StringFilter | null;
 
