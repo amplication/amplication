@@ -24,6 +24,10 @@ const newAppInfo: AppInfo = {
 
 jest.setTimeout(100000);
 
+jest.mock("./create-log", () => ({
+  createLog: jest.fn(),
+}));
+
 describe("createDataService", () => {
   test("creates app as expected", async () => {
     const modules = await createDataService({
