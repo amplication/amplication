@@ -5,6 +5,7 @@ import {
   PluginAfterEvent,
   PluginBeforeEvent,
 } from "@amplication/code-gen-types";
+import { createLog } from "./create-log";
 import DsgContext from "./dsg-context";
 
 export type PluginWrapper = (
@@ -87,6 +88,7 @@ const pluginWrapper: PluginWrapper = async (
     context.logger.error(`failed to execute plugin event ${event}`, {
       errorMessage: JSON.stringify(error),
     });
+    createLog({ level: "error", message: `failed to execute plugin event: ${event}. Error message: ${JSON.stringify(error)}` });
     return [];
   }
 };

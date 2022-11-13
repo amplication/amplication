@@ -21,6 +21,7 @@ import { createDotEnvModule } from "./create-dotenv";
 import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
 import { createAdminUIPackageJson } from "./package-json/create-package-json";
+import { createLog } from "../create-log";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -47,8 +48,14 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   } = DsgContext.getInstance;
 
   logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
+  await createLog({ level: "info", message: `Admin path: ${clientDirectories.baseDirectory}` });
+  
   logger.info("Creating admin...");
+  await createLog({ level: "info", message: "Creating admin..." });
+
   logger.info("Copying static modules...");
+  await createLog({ level: "info", message: "Copying static modules..." });
+  
   const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     clientDirectories.baseDirectory
