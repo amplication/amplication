@@ -1,6 +1,6 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
-import { User } from '../models';
+import { createParamDecorator, ExecutionContext } from "@nestjs/common";
+import { GqlExecutionContext } from "@nestjs/graphql";
+import { User } from "../models";
 
 export function getUser(executionContext: ExecutionContext): User {
   const gqlExecutionContext = GqlExecutionContext.create(executionContext);

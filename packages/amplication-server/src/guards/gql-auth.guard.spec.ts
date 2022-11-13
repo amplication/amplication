@@ -1,22 +1,22 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { Reflector } from '@nestjs/core';
-import { PermissionsService } from '../core/permissions/permissions.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { Reflector } from "@nestjs/core";
+import { PermissionsService } from "../core/permissions/permissions.service";
 import {
   GqlAuthGuard,
   AUTHORIZE_CONTEXT,
-  AuthorizeContextParameters
-} from './gql-auth.guard';
-import { AuthorizableOriginParameter } from '../enums/AuthorizableOriginParameter';
-import { User } from '../models/User';
-import { UserRole } from '../models/UserRole';
-import { Workspace } from '../models/Workspace';
+  AuthorizeContextParameters,
+} from "./gql-auth.guard";
+import { AuthorizableOriginParameter } from "../enums/AuthorizableOriginParameter";
+import { User } from "../models/User";
+import { UserRole } from "../models/UserRole";
+import { Workspace } from "../models/Workspace";
 
-const EXAMPLE_WORKSPACE_ID = 'Example Workspace Id';
-const EXAMPLE_ROLE = 'Example Role';
+const EXAMPLE_WORKSPACE_ID = "Example Workspace Id";
+const EXAMPLE_ROLE = "Example Role";
 const EXAMPLE_ROLES: string[] = [EXAMPLE_ROLE];
 const EXAMPLE_AUTHORIZE_CONTEXT_PARAMETERS: AuthorizeContextParameters = {
-  parameterPath: 'where.workspace.id',
-  parameterType: AuthorizableOriginParameter.WorkspaceId
+  parameterPath: "where.workspace.id",
+  parameterType: AuthorizableOriginParameter.WorkspaceId,
 };
 const EXAMPLE_HANDLER = () => null;
 
@@ -32,8 +32,8 @@ EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
 
 const EXAMPLE_FIND_REQUEST_ARGS = {
   where: {
-    workspace: { id: EXAMPLE_WORKSPACE_ID }
-  }
+    workspace: { id: EXAMPLE_WORKSPACE_ID },
+  },
 };
 
 const validateAccessMock = jest.fn((user, originType, originId) => {
@@ -43,19 +43,19 @@ const validateAccessMock = jest.fn((user, originType, originId) => {
   );
 });
 
-const reflectorGetMock = jest.fn(metadataKey => {
+const reflectorGetMock = jest.fn((metadataKey) => {
   switch (metadataKey) {
-    case 'roles':
+    case "roles":
       return EXAMPLE_ROLES;
     case AUTHORIZE_CONTEXT:
       return EXAMPLE_AUTHORIZE_CONTEXT_PARAMETERS;
     default: {
-      throw new Error('Unexpected metadataKey');
+      throw new Error("Unexpected metadataKey");
     }
   }
 });
 
-describe('GqlAuthGuard', () => {
+describe("GqlAuthGuard", () => {
   let guard: GqlAuthGuard;
 
   beforeEach(async () => {
@@ -64,32 +64,32 @@ describe('GqlAuthGuard', () => {
         {
           provide: Reflector,
           useClass: jest.fn(() => ({
-            get: reflectorGetMock
-          }))
+            get: reflectorGetMock,
+          })),
         },
         {
           provide: PermissionsService,
           useClass: jest.fn(() => ({
-            validateAccess: validateAccessMock
-          }))
+            validateAccess: validateAccessMock,
+          })),
         },
-        GqlAuthGuard
-      ]
+        GqlAuthGuard,
+      ],
     }).compile();
 
     guard = module.get<GqlAuthGuard>(GqlAuthGuard);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(guard).toBeDefined();
   });
 
-  it('should check if can activate roles', () => {
+  it("should check if can activate roles", () => {
     expect(guard.canActivateRoles(EXAMPLE_HANDLER, EXAMPLE_USER)).toBe(true);
-    expect(reflectorGetMock).toBeCalledWith('roles', EXAMPLE_HANDLER);
+    expect(reflectorGetMock).toBeCalledWith("roles", EXAMPLE_HANDLER);
   });
 
-  it('should authorize context', async () => {
+  it("should authorize context", async () => {
     expect(
       await guard.authorizeContext(
         EXAMPLE_HANDLER,

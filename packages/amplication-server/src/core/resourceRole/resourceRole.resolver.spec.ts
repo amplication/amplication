@@ -1,25 +1,25 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '@amplication/prisma-db';
-import { gql } from 'apollo-server-express';
+import { Test, TestingModule } from "@nestjs/testing";
+import { PrismaService } from "@amplication/prisma-db";
+import { gql } from "apollo-server-express";
 import {
   ApolloServerTestClient,
-  createTestClient
-} from 'apollo-server-testing';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { INestApplication } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { ConfigService } from '@nestjs/config';
-import { ResourceRoleService } from './resourceRole.service';
-import { ResourceRoleResolver } from './resourceRole.resolver';
-import { ResourceRole } from '../../models';
+  createTestClient,
+} from "apollo-server-testing";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { INestApplication } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { ConfigService } from "@nestjs/config";
+import { ResourceRoleService } from "./resourceRole.service";
+import { ResourceRoleResolver } from "./resourceRole.resolver";
+import { ResourceRole } from "../../models";
 
-const EXAMPLE_RESOURCE_ROLE_ID = 'EXAMPLE_APP_ROLE_ID';
-const EXAMPLE_NAME = 'EXAMPLE_NAME';
-const EXAMPLE_DISPLAY_NAME = 'EXAMPLE_DISPLAY_NAME';
-const EXAMPLE_DESCRIPTION = 'exampleDescription';
+const EXAMPLE_RESOURCE_ROLE_ID = "EXAMPLE_APP_ROLE_ID";
+const EXAMPLE_NAME = "EXAMPLE_NAME";
+const EXAMPLE_DISPLAY_NAME = "EXAMPLE_DISPLAY_NAME";
+const EXAMPLE_DESCRIPTION = "exampleDescription";
 
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
+const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 
 const EXAMPLE_VERSION = 1;
 
@@ -28,11 +28,11 @@ const EXAMPLE_RESOURCE_ROLE: ResourceRole = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_NAME,
-  displayName: EXAMPLE_DISPLAY_NAME
+  displayName: EXAMPLE_DISPLAY_NAME,
 };
 
 const GET_RESOURCE_ROLE_QUERY = gql`
-  query($id: String!, $version: Float!) {
+  query ($id: String!, $version: Float!) {
     resourceRole(where: { id: $id }, version: $version) {
       id
       createdAt
@@ -56,7 +56,7 @@ const GET_RESOURCE_ROLES_QUERY = gql`
 `;
 
 const CREATE_RESOURCE_ROLE_MUTATION = gql`
-  mutation(
+  mutation (
     $name: String!
     $description: String!
     $displayName: String!
@@ -80,7 +80,7 @@ const CREATE_RESOURCE_ROLE_MUTATION = gql`
 `;
 
 const DELETE_APP_ROLE_MUTATION = gql`
-  mutation($id: String!) {
+  mutation ($id: String!) {
     deleteResourceRole(where: { id: $id }) {
       id
       createdAt
@@ -92,7 +92,7 @@ const DELETE_APP_ROLE_MUTATION = gql`
 `;
 
 const UPDATE_APP_ROLE_MUTATION = gql`
-  mutation($id: String!, $displayName: String!) {
+  mutation ($id: String!, $displayName: String!) {
     updateResourceRole(
       where: { id: $id }
       data: { displayName: $displayName }
@@ -124,7 +124,7 @@ const updateResourceRoleMock = jest.fn(() => {
 
 const mockCanActivate = jest.fn(() => true);
 
-describe('ResourceRoleResolver', () => {
+describe("ResourceRoleResolver", () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -140,28 +140,28 @@ describe('ResourceRoleResolver', () => {
             getResourceRoles: getResourceRolesMock,
             createResourceRole: createResourceRoleMock,
             deleteResourceRole: deleteResourceRoleMock,
-            updateResourceRole: updateResourceRoleMock
-          }))
+            updateResourceRole: updateResourceRoleMock,
+          })),
         },
         {
           provide: WINSTON_MODULE_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn()
-          }))
+            error: jest.fn(),
+          })),
         },
 
         {
           provide: PrismaService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({})),
         },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: jest.fn()
-          }))
-        }
+            get: jest.fn(),
+          })),
+        },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })]
+      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -173,29 +173,29 @@ describe('ResourceRoleResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should get one ResourceRole', async () => {
+  it("should get one ResourceRole", async () => {
     const res = await apolloClient.query({
       query: GET_RESOURCE_ROLE_QUERY,
-      variables: { id: EXAMPLE_RESOURCE_ROLE_ID, version: EXAMPLE_VERSION }
+      variables: { id: EXAMPLE_RESOURCE_ROLE_ID, version: EXAMPLE_VERSION },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       resourceRole: {
         ...EXAMPLE_RESOURCE_ROLE,
         createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString(),
+      },
     });
     expect(getResourceRoleMock).toBeCalledTimes(1);
     expect(getResourceRoleMock).toBeCalledWith({
       where: { id: EXAMPLE_RESOURCE_ROLE_ID },
-      version: EXAMPLE_VERSION
+      version: EXAMPLE_VERSION,
     });
   });
 
-  it('should get Many ResourceRoles', async () => {
+  it("should get Many ResourceRoles", async () => {
     const res = await apolloClient.query({
-      query: GET_RESOURCE_ROLES_QUERY
+      query: GET_RESOURCE_ROLES_QUERY,
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -203,31 +203,31 @@ describe('ResourceRoleResolver', () => {
         {
           ...EXAMPLE_RESOURCE_ROLE,
           createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
-          updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
-        }
-      ]
+          updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString(),
+        },
+      ],
     });
     expect(getResourceRolesMock).toBeCalledTimes(1);
     expect(getResourceRolesMock).toBeCalledWith({});
   });
 
-  it('should create a resourceRole', async () => {
+  it("should create a resourceRole", async () => {
     const res = await apolloClient.query({
       query: CREATE_RESOURCE_ROLE_MUTATION,
       variables: {
         name: EXAMPLE_NAME,
         description: EXAMPLE_DESCRIPTION,
         displayName: EXAMPLE_DISPLAY_NAME,
-        resourceId: EXAMPLE_RESOURCE_ID
-      }
+        resourceId: EXAMPLE_RESOURCE_ID,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       createResourceRole: {
         ...EXAMPLE_RESOURCE_ROLE,
         createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString(),
+      },
     });
     expect(createResourceRoleMock).toBeCalledTimes(1);
     expect(createResourceRoleMock).toBeCalledWith({
@@ -235,50 +235,50 @@ describe('ResourceRoleResolver', () => {
         name: EXAMPLE_NAME,
         description: EXAMPLE_DESCRIPTION,
         displayName: EXAMPLE_DISPLAY_NAME,
-        resource: { connect: { id: EXAMPLE_RESOURCE_ID } }
-      }
+        resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
+      },
     });
   });
 
-  it('should delete a resourceRole', async () => {
+  it("should delete a resourceRole", async () => {
     const res = await apolloClient.query({
       query: DELETE_APP_ROLE_MUTATION,
-      variables: { id: EXAMPLE_RESOURCE_ROLE_ID }
+      variables: { id: EXAMPLE_RESOURCE_ROLE_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       deleteResourceRole: {
         ...EXAMPLE_RESOURCE_ROLE,
         createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString(),
+      },
     });
     expect(deleteResourceRoleMock).toBeCalledTimes(1);
     expect(deleteResourceRoleMock).toBeCalledWith({
-      where: { id: EXAMPLE_RESOURCE_ROLE_ID }
+      where: { id: EXAMPLE_RESOURCE_ROLE_ID },
     });
   });
 
-  it('should update a resourceRole', async () => {
+  it("should update a resourceRole", async () => {
     const res = await apolloClient.query({
       query: UPDATE_APP_ROLE_MUTATION,
       variables: {
         id: EXAMPLE_RESOURCE_ROLE_ID,
-        displayName: EXAMPLE_DISPLAY_NAME
-      }
+        displayName: EXAMPLE_DISPLAY_NAME,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       updateResourceRole: {
         ...EXAMPLE_RESOURCE_ROLE,
         createdAt: EXAMPLE_RESOURCE_ROLE.createdAt.toISOString(),
-        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_RESOURCE_ROLE.updatedAt.toISOString(),
+      },
     });
     expect(updateResourceRoleMock).toBeCalledTimes(1);
     expect(updateResourceRoleMock).toBeCalledWith({
       where: { id: EXAMPLE_RESOURCE_ROLE_ID },
-      data: { displayName: EXAMPLE_DISPLAY_NAME }
+      data: { displayName: EXAMPLE_DISPLAY_NAME },
     });
   });
 });

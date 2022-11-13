@@ -10,12 +10,12 @@ jobs:
     if: ${{ github.event.issue.pull_request }}
     outputs:
       trigger-comment: ${{ steps.check.outputs.triggered }}
-    steps: 
+    steps:
       - uses: khan/pull-request-comment-trigger@v1.1.0
         id: check
         with:
           trigger: "run branch"
-          prefix_only: 'true'
+          prefix_only: "true"
 
   create_branch:
     runs-on: ubuntu-latest
@@ -47,7 +47,7 @@ jobs:
           repository: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.full_name }}
 
       - name: Check if branch exists
-        env: 
+        env:
           REF: ${{ fromJSON(steps.get-pr.outputs.result).head.ref }}
           PR_NUMBER: ${{ github.event.issue.number }}
         run: |
@@ -59,7 +59,7 @@ jobs:
            git push origin --delete pr/${{ env.REF }}-${{ env.PR_NUMBER }}
            echo "branch pr/${{ env.REF }}-${{ env.PR_NUMBER }} deleted" 
           fi
-  
+
       - name: Git remote add upstream
         env:
           OWNER: ${{ fromJSON(steps.get-pr.outputs.result).head.repo.owner.login }}
@@ -71,7 +71,7 @@ jobs:
           git checkout ${{ env.REF }}
           git checkout -b pr/${{ env.REF }}-${{ env.PR_NUMBER }}
           git push -f --set-upstream upstream pr/${{ env.REF }}-${{ env.PR_NUMBER }}
-          
+
           echo "Forked branch ${{ env.OWNER }}:${{ env.REF }} has been pushed to fork-to-branch repo pr/${{ env.REF }}-${{ env.PR_NUMBER }}"
 
       - name: Create comment
@@ -83,11 +83,4 @@ jobs:
           issue-number: ${{ env.PR_NUMBER }}
           body: |
             The branch 'pr/${{ env.REF }}-${{ env.PR_NUMBER }}' was created!
-          reactions: '+1'
-
-
-
-
-
-
-
+          reactions: "+1"

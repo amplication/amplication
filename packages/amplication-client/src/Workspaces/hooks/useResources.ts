@@ -51,10 +51,8 @@ const useResources = (
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
   const [resources, setResources] = useState<models.Resource[]>([]);
-  const [
-    projectConfigurationResource,
-    setProjectConfigurationResource,
-  ] = useState<models.Resource | undefined>(undefined);
+  const [projectConfigurationResource, setProjectConfigurationResource] =
+    useState<models.Resource | undefined>(undefined);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(currentResource?.gitRepository)

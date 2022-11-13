@@ -22,9 +22,7 @@ function ViewCodeViewTile({ resourceId }: Props) {
   const handleClick = useCallback(
     (event) => {
       trackEvent(EVENT_DATA);
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/code-view`
-      );
+      history.push(`/${currentWorkspace?.id}/${currentProject?.id}/code-view`);
     },
     [history, trackEvent, currentWorkspace, currentProject]
   );
