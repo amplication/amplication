@@ -6,7 +6,7 @@ const CLASS_NAME = "menu-item-content";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
-  isMenuTitle?: Boolean;
+  isMenuTitle?: boolean;
 };
 export const GitOrganizationMenuItemContent = ({
   gitOrganization: { name },

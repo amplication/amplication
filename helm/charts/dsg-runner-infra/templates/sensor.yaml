@@ -31,22 +31,24 @@ spec:
                     restartPolicy: Never
                     containers:
                       - name: dsg-container
-                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:0.0.11"
+                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:next"
                         command: ["sh", "-c"]
-                        args: [ "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/input.json /efs/output" ]
+                        args: [ "cd /app/packages/amplication-data-service-generator; npm run generate-code -- /efs/input.json /efs/code" ]
                         env:
                           - name: BUILD_ID
                             value: null # provided in parameters
                           - name: STATUS_UPDATE_URL
-                            value: http://amplication-build-manager.next.svc.cluster.local/build-runner/complete-code-generation-step
+                            value: http://amplication-build-manager/build-runner/complete-code-generation-step
+                          - name: CREATE_LOG_URL
+                            value: http://amplication-build-manager/build-logger/create-log
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs
-                            subPathExpr: build-data/$(BUILD_ID)
+                            subPathExpr: $(BUILD_ID)
                     volumes:
                       - name: persistent-storage
                         persistentVolumeClaim:
-                          claimName: efs-claim-{{ .Values.envName }}-dsg
+                          claimName: dsg-jobs
                 ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
                 backoffLimit: 0
           parameters:

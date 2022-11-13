@@ -1,27 +1,27 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { Entity } from './Entity'; // eslint-disable-line import/no-cycle
-import { Build } from '../core/build/dto/Build'; // eslint-disable-line import/no-cycle
-import { Environment } from '../core/environment/dto/Environment'; // eslint-disable-line import/no-cycle
-import { GitRepository } from './GitRepository';
-import { EnumResourceType } from '../core/resource/dto/EnumResourceType';
-import { Project } from './Project';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Entity } from "./Entity";
+import { Build } from "../core/build/dto/Build";
+import { Environment } from "../core/environment/dto/Environment";
+import { GitRepository } from "./GitRepository";
+import { EnumResourceType } from "../core/resource/dto/EnumResourceType";
+import { Project } from "./Project";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class Resource {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
@@ -32,7 +32,7 @@ export class Resource {
   projectId?: string;
 
   @Field(() => GitRepository, {
-    nullable: true
+    nullable: true,
   })
   gitRepository?: GitRepository;
 
@@ -40,37 +40,37 @@ export class Resource {
   gitRepositoryId?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   description!: string;
 
   @Field(() => [Entity], {
-    nullable: false
+    nullable: false,
   })
   entities?: Entity[];
 
   @Field(() => [Environment], {
-    nullable: false
+    nullable: false,
   })
   environments?: Environment[];
 
   @Field(() => [Build], {
-    nullable: false
+    nullable: false,
   })
   builds?: Build[];
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   githubLastMessage?: string;
 
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
   githubLastSync?: Date;
 
@@ -78,7 +78,7 @@ export class Resource {
   resourceType!: keyof typeof EnumResourceType;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   gitRepositoryOverride!: boolean;
 

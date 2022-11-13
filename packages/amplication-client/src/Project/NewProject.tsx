@@ -85,7 +85,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
     <div className={CLASS_NAME}>
       <SvgThemeImage image={EnumImages.Entities} />
       <div className={`${CLASS_NAME}__instructions`}>
-        Give your new project a name
+        Give your new project a descriptive name
       </div>
       <Formik
         initialValues={INITIAL_VALUES}
@@ -110,11 +110,13 @@ const NewProject = ({ onProjectCreated }: Props) => {
                 autoComplete="off"
               />
               <Button
+                className={CLASS_NAME}
+                style={{ backgroundColor: "#7950ED", color: "#FFFFFF" }}
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 disabled={!formik.isValid || loading}
               >
-                Create Project
+                Create new project
               </Button>
             </Form>
           );

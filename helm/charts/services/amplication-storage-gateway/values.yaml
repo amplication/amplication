@@ -36,7 +36,6 @@ ingress:
   hostname: server.amplication.com
   path: /storage
 
-
 healthCheck:
   readiness:
     path: /_health/ready

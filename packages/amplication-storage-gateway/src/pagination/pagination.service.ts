@@ -4,7 +4,6 @@ import { PaginationQuery, PaginationResult } from "./dto";
 
 @Injectable()
 export class PaginationService {
-  constructor() {}
   paginate<ResultType>(
     results: any[],
     query: PaginationQuery

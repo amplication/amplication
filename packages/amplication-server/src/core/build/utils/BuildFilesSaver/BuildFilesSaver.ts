@@ -1,15 +1,15 @@
-import { Module } from '@amplication/data-service-generator';
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { outputFile, remove } from 'fs-extra';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { join, normalize } from 'path';
+import { Module } from "@amplication/code-gen-types";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { outputFile, remove } from "fs-extra";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { join, normalize } from "path";
 import {
   BASE_BUILDS_FOLDER,
-  DEFAULT_BUILDS_FOLDER
-} from '../../../../constants';
-import { AmplicationError } from '../../../../errors/AmplicationError';
-import { Logger } from 'winston';
+  DEFAULT_BUILDS_FOLDER,
+} from "../../../../constants";
+import { AmplicationError } from "../../../../errors/AmplicationError";
+import { Logger } from "winston";
 @Injectable()
 export class BuildFilesSaver {
   private baseBuildsPath: string;
@@ -36,7 +36,7 @@ export class BuildFilesSaver {
     } catch (error) {
       await remove(join(this.baseBuildsPath, relativePath));
       throw new AmplicationError(
-        'There was a error in saving the generated files to the amplication file system'
+        "There was a error in saving the generated files to the amplication file system"
       );
     }
   }

@@ -59,6 +59,7 @@ export type PluginMap = {
 export enum EventNames {
   CreateEntityController = "CreateEntityController",
   CreateEntityControllerBase = "CreateEntityControllerBase",
+  CreateEntityControllerSpec = "CreateEntityControllerSpec",
   CreateServerAuth = "CreateServerAuth",
   CreateAdminUI = "CreateAdminUI",
   CreateServer = "CreateServer",
@@ -81,6 +82,8 @@ export enum EventNames {
   CreateEntityModuleBase = "CreateEntityModuleBase",
   CreateEntityResolver = "CreateEntityResolver",
   CreateEntityResolverBase = "CreateEntityResolverBase",
+  CreateSwagger = "CreateSwagger",
+  CreateSeed = "CreateSeed",
 }
 
 export interface AmplicationPlugin {

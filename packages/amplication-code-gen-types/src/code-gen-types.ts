@@ -1,8 +1,8 @@
-import { ASTNode, namedTypes } from "ast-types";
+import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
-import { ExpressionKind } from "ast-types/gen/kinds";
+import { DSGResourceData } from "./dsg-resource-data";
 
 export {
   EnumDataType,
@@ -219,10 +219,18 @@ export declare type PrismaClientGenerator = {
   provider: string;
 };
 
-export type DataSourceProvider = keyof typeof PrismaSchemaDSL.DataSourceProvider;
+export type DataSourceProvider =
+  keyof typeof PrismaSchemaDSL.DataSourceProvider;
 
 export type PrismaDataSource = {
   name: string;
   provider: DataSourceProvider;
   urlEnv: string;
+};
+
+export type BuildContext = {
+  buildId: string;
+  resourceId: string;
+  projectId: string;
+  data: DSGResourceData;
 };

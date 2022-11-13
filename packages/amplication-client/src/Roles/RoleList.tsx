@@ -90,7 +90,8 @@ export const RoleList = React.memo(
           onChange={handleSearchChange}
         />
         <div className={`${CLASS_NAME}__header`}>
-          {data?.resourceRoles.length} {pluralize(data?.resourceRoles.length, 'Role', 'Roles')}
+          {data?.resourceRoles.length}{" "}
+          {pluralize(data?.resourceRoles.length, "Role", "Roles")}
         </div>
         {loading && <CircularProgress centerToParent />}
         <div className={`${CLASS_NAME}__list`}>

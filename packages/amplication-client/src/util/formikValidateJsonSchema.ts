@@ -1,4 +1,5 @@
 import Ajv from "ajv";
+import ajvErrors from "ajv-errors";
 import { FormikErrors } from "formik";
 import { set } from "lodash";
 
@@ -28,19 +29,19 @@ export const validationErrorMessages = {
 
 export function validate<T>(
   values: T,
-  validationSchema: object
+  validationSchema: { [key: string]: any }
 ): FormikErrors<T> {
   const errors: FormikErrors<T> = {};
 
   const ajv = new Ajv({ allErrors: true });
-  require("ajv-errors")(ajv);
+  ajvErrors(ajv);
 
-  let isValid = ajv.validate(validationSchema, values);
+  const isValid = ajv.validate(validationSchema, values);
 
   if (!isValid && ajv.errors) {
     for (const error of ajv.errors) {
-      //remove the first dot from dataPath
-      const fieldName = error.instancePath.substring(1).replaceAll("/", ".");
+      // remove the first dot from dataPath
+      const fieldName = error.dataPath.substring(1).replaceAll("/", ".");
       set(errors, fieldName, error.message);
     }
   }
