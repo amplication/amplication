@@ -1,27 +1,27 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { isEmpty } from "lodash";
-import { FindOneArgs } from "../../dto";
-import { EnumBlockType } from "../../enums/EnumBlockType";
-import { User } from "../../models";
-import { BlockService } from "../block/block.service";
-import { BlockValuesExtended } from "../block/types";
-import { ProjectConfigurationSettings } from "./dto/ProjectConfigurationSettings";
-import { UpdateProjectConfigurationSettingsArgs } from "./dto/UpdateProjectConfigurationSettingsArgs";
-import { ProjectConfigurationSettingsExistError } from "./errors/ProjectConfigurationSettingsExistError";
+import { Inject, Injectable } from '@nestjs/common';
+import { isEmpty } from 'lodash';
+import { FindOneArgs } from '../../dto';
+import { EnumBlockType } from '../../enums/EnumBlockType';
+import { User } from '../../models';
+import { BlockService } from '../block/block.service';
+import { BlockValuesExtended } from '../block/types';
+import { ProjectConfigurationSettings } from './dto/ProjectConfigurationSettings';
+import { UpdateProjectConfigurationSettingsArgs } from './dto/UpdateProjectConfigurationSettingsArgs';
+import { ProjectConfigurationSettingsExistError } from './errors/ProjectConfigurationSettingsExistError';
 
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME =
-  "Project Configuration Settings";
+  'Project Configuration Settings';
 const DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION =
-  "This block is used to store project configuration settings.";
+  'This block is used to store project configuration settings.';
 
 export const DEFAULT_PROJECT_CONFIGURATION_SETTINGS: Omit<
   BlockValuesExtended<ProjectConfigurationSettings>,
-  "id"
+  'id'
 > = {
-  baseDirectory: "/",
+  baseDirectory: '/',
   blockType: EnumBlockType.ProjectConfigurationSettings,
   description: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_DESCRIPTION,
-  displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME,
+  displayName: DEFAULT_PROJECT_CONFIGURATION_SETTINGS_NAME
 };
 
 @Injectable()
@@ -34,27 +34,28 @@ export class ProjectConfigurationSettingsService {
     userId: string
   ): Promise<ProjectConfigurationSettings> {
     const existingProjectConfigurationSettings = await this.findOne({
-      where: { id: resourceId },
+      where: { id: resourceId }
     });
 
     if (!isEmpty(existingProjectConfigurationSettings)) {
       throw new ProjectConfigurationSettingsExistError();
     }
 
-    const projectConfigurationSettings =
-      this.blockService.create<ProjectConfigurationSettings>(
-        {
-          data: {
-            resource: {
-              connect: {
-                id: resourceId,
-              },
-            },
-            ...DEFAULT_PROJECT_CONFIGURATION_SETTINGS,
+    const projectConfigurationSettings = this.blockService.create<
+      ProjectConfigurationSettings
+    >(
+      {
+        data: {
+          resource: {
+            connect: {
+              id: resourceId
+            }
           },
-        },
-        userId
-      );
+          ...DEFAULT_PROJECT_CONFIGURATION_SETTINGS
+        }
+      },
+      userId
+    );
     return projectConfigurationSettings;
   }
 
@@ -63,31 +64,34 @@ export class ProjectConfigurationSettingsService {
     user: User
   ): Promise<ProjectConfigurationSettings> {
     const projectConfigurationSettings = await this.findOne({
-      where: args.where,
+      where: args.where
     });
 
     return this.blockService.update<ProjectConfigurationSettings>(
       {
         ...args,
         where: { id: projectConfigurationSettings.id },
-        ...projectConfigurationSettings,
+        ...projectConfigurationSettings
       },
       user
     );
   }
 
   async findOne(args: FindOneArgs): Promise<ProjectConfigurationSettings> {
-    const [projectConfigurationSettings] =
-      await this.blockService.findManyByBlockType<ProjectConfigurationSettings>(
-        {
-          where: {
-            resource: {
-              id: args.where.id,
-            },
-          },
-        },
-        EnumBlockType.ProjectConfigurationSettings
-      );
+    const [
+      projectConfigurationSettings
+    ] = await this.blockService.findManyByBlockType<
+      ProjectConfigurationSettings
+    >(
+      {
+        where: {
+          resource: {
+            id: args.where.id
+          }
+        }
+      },
+      EnumBlockType.ProjectConfigurationSettings
+    );
     return projectConfigurationSettings;
   }
 }

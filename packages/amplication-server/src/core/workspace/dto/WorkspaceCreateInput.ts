@@ -1,11 +1,11 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class WorkspaceCreateInput {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   name!: string;
 }

@@ -1,21 +1,21 @@
-import { Field, ObjectType } from "@nestjs/graphql";
+import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class ServerSettings {
   @Field(() => Boolean, {
-    nullable: false,
+    nullable: false
   })
   generateGraphQL!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false,
+    nullable: false
   })
   generateRestApi!: boolean;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   serverPath!: string;
 }

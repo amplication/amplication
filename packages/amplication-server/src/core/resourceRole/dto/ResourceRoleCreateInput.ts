@@ -1,27 +1,27 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { WhereParentIdInput } from "../../../dto";
+import { Field, InputType } from '@nestjs/graphql';
+import { WhereParentIdInput } from '../../../dto';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class ResourceRoleCreateInput {
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   description!: string;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: false
   })
   displayName!: string;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false,
+    nullable: false
   })
   resource!: WhereParentIdInput;
 }

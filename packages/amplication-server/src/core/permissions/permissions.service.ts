@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "@amplication/prisma-db";
-import { User } from "../../models";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@amplication/prisma-db';
+import { User } from '../../models';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
 
 @Injectable()
 export class PermissionsService {
@@ -21,11 +21,11 @@ export class PermissionsService {
           deletedAt: null,
           project: {
             workspace: {
-              id: workspace.id,
-            },
-          },
-        },
-      },
+              id: workspace.id
+            }
+          }
+        }
+      }
     };
 
     if (originType === AuthorizableOriginParameter.WorkspaceId) {
@@ -37,9 +37,9 @@ export class PermissionsService {
         where: {
           id: originId,
           workspace: {
-            id: workspace.id,
-          },
-        },
+            id: workspace.id
+          }
+        }
       });
       return matching === 1;
     }
@@ -47,8 +47,8 @@ export class PermissionsService {
     if (originType === AuthorizableOriginParameter.GitRepositoryId) {
       const matching = await this.prisma.gitRepository.count({
         where: {
-          id: originId,
-        },
+          id: originId
+        }
       });
       return matching === 1;
     }
@@ -59,9 +59,9 @@ export class PermissionsService {
           deletedAt: null,
           id: originId,
           workspace: {
-            id: workspace.id,
-          },
-        },
+            id: workspace.id
+          }
+        }
       });
       return matching === 1;
     }
@@ -73,10 +73,10 @@ export class PermissionsService {
           id: originId,
           project: {
             workspace: {
-              id: workspace.id,
-            },
-          },
-        },
+              id: workspace.id
+            }
+          }
+        }
       });
       return matching === 1;
     }
@@ -86,9 +86,9 @@ export class PermissionsService {
         where: {
           id: originId,
           workspace: {
-            id: workspace.id,
-          },
-        },
+            id: workspace.id
+          }
+        }
       });
       return matching === 1;
     }
@@ -96,8 +96,8 @@ export class PermissionsService {
       const matching = await this.prisma.apiToken.count({
         where: {
           id: originId,
-          userId: user.id,
-        },
+          userId: user.id
+        }
       });
       return matching === 1;
     }
@@ -114,12 +114,12 @@ export class PermissionsService {
                     resource: {
                       deletedAt: null,
                       project: {
-                        workspaceId: workspace.id,
-                      },
-                    },
-                  },
-                },
-              },
+                        workspaceId: workspace.id
+                      }
+                    }
+                  }
+                }
+              }
             },
             {
               id: originId,
@@ -128,14 +128,14 @@ export class PermissionsService {
                   resource: {
                     deletedAt: null,
                     project: {
-                      workspaceId: workspace.id,
-                    },
-                  },
-                },
-              },
-            },
-          ],
-        },
+                      workspaceId: workspace.id
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
       });
       return matching === 1;
     }
@@ -147,11 +147,11 @@ export class PermissionsService {
             resource: {
               deletedAt: null,
               project: {
-                workspaceId: workspace.id,
-              },
-            },
-          },
-        },
+                workspaceId: workspace.id
+              }
+            }
+          }
+        }
       });
       return matching === 1;
     }
@@ -164,12 +164,12 @@ export class PermissionsService {
               resource: {
                 deletedAt: null,
                 project: {
-                  workspaceId: workspace.id,
-                },
-              },
-            },
-          },
-        },
+                  workspaceId: workspace.id
+                }
+              }
+            }
+          }
+        }
       });
       return matching === 1;
     }
@@ -183,13 +183,13 @@ export class PermissionsService {
                 resource: {
                   deletedAt: null,
                   project: {
-                    workspaceId: workspace.id,
-                  },
-                },
-              },
-            },
-          },
-        },
+                    workspaceId: workspace.id
+                  }
+                }
+              }
+            }
+          }
+        }
       });
       return matching === 1;
     }
@@ -225,9 +225,9 @@ export class PermissionsService {
           id: originId,
           project: {
             deletedAt: null,
-            workspaceId: workspace.id,
-          },
-        },
+            workspaceId: workspace.id
+          }
+        }
       });
       return matching === 1;
     }

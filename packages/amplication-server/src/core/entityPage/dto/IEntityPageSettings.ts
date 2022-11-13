@@ -1,15 +1,15 @@
-import { InterfaceType, Field, InputType } from "@nestjs/graphql";
+import { InterfaceType, Field, InputType } from '@nestjs/graphql';
 
 @InterfaceType({ isAbstract: true })
 @InputType({ isAbstract: true })
 export abstract class IEntityPageSettings {
   @Field(() => Boolean, {
-    nullable: false,
+    nullable: false
   })
   allowCreation!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false,
+    nullable: false
   })
   allowDeletion!: boolean;
 }

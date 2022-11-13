@@ -1,7 +1,7 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { GitOrganization } from "./GitOrganization";
+import { Field, ObjectType } from '@nestjs/graphql';
+import { GitOrganization } from './GitOrganization';
 @ObjectType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class GitRepository {
   @Field(() => String, { nullable: false })

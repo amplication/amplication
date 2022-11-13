@@ -72,17 +72,15 @@ const EXAMPLE_LIST_ENTITY_FIELD: EntityField = {
 };
 
 describe("createFieldClassProperty", () => {
-  const cases: Array<
-    [
-      string,
-      EntityField,
-      boolean,
-      boolean,
-      boolean,
-      EntityDtoTypeEnum,
-      namedTypes.ClassProperty
-    ]
-  > = [
+  const cases: Array<[
+    string,
+    EntityField,
+    boolean,
+    boolean,
+    boolean,
+    EntityDtoTypeEnum,
+    namedTypes.ClassProperty
+  ]> = [
     [
       "id field (not input)",
       EXAMPLE_ID_FIELD,
@@ -230,17 +228,15 @@ describe("createFieldClassProperty", () => {
 });
 
 describe("createFieldValueTypeFromPrismaField", () => {
-  const cases: Array<
-    [
-      string,
-      EntityField,
-      ScalarField | ObjectField,
-      EntityDtoTypeEnum,
-      boolean,
-      boolean,
-      TSTypeKind[]
-    ]
-  > = [
+  const cases: Array<[
+    string,
+    EntityField,
+    ScalarField | ObjectField,
+    EntityDtoTypeEnum,
+    boolean,
+    boolean,
+    TSTypeKind[]
+  ]> = [
     [
       "scalar type",
       EXAMPLE_ID_FIELD,

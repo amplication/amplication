@@ -1,9 +1,9 @@
-import { registerEnumType } from "@nestjs/graphql";
+import { registerEnumType } from '@nestjs/graphql';
 
 export enum EnumRoleLevel {
-  Workspace = "Workspace",
-  Project = "Project",
+  Workspace = 'Workspace',
+  Project = 'Project'
 }
 registerEnumType(EnumRoleLevel, {
-  name: "EnumRoleLevel",
+  name: 'EnumRoleLevel'
 });

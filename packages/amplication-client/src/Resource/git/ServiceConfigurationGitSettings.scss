@@ -29,7 +29,7 @@
     align-items: flex-start;
     margin: 8px 0;
     border-radius: 8px;
-    transition-timing-function: ease-in(0.35); //todo: need to complete
+    transition-timing-function: ease-in(0.35); //todo: need to complete 
   }
 
   &__gitSettingsFromProject {
@@ -46,7 +46,7 @@
   }
 
   &__defaultSettings {
-    @include regular-14;
+    @include regular-14; 
     padding: 12px 0px;
     display: flex;
     width: 100%;

@@ -71,8 +71,11 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
 
   const handleCreateServiceClick = () => {
     if (!serviceSettingsFields) return;
-    const { generateAdminUI, generateGraphQL, generateRestApi } =
-      serviceSettingsFields.current;
+    const {
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+    } = serviceSettingsFields.current;
 
     const isResourceWithEntities =
       serviceSettingsFields.current.resourceType === "sample";

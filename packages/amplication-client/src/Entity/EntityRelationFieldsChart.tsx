@@ -45,7 +45,7 @@ export const EntityRelationFieldsChart = ({
   };
 
   const relatedFieldIsMissing = isEmpty(field.properties.relatedFieldId);
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const {currentWorkspace, currentProject} = useContext(AppContext); 
 
   return (
     <Formik
@@ -61,17 +61,13 @@ export const EntityRelationFieldsChart = ({
           key={field.id}
         >
           <div className={`${CLASS_NAME}__entity`}>
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}
-            >
+            <Link to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}>
               <Icon icon="entity_outline" />
               {entityName}
             </Link>
           </div>
           <div className={`${CLASS_NAME}__field`}>
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}
-            >
+            <Link to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}>
               {field.displayName}
             </Link>
           </div>

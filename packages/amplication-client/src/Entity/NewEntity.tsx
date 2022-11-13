@@ -54,8 +54,7 @@ const keyMap = {
 
 const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const { trackEvent } = useTracking();
-  const { addEntity, currentWorkspace, currentProject } =
-    useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
 
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
@@ -117,6 +116,8 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
           },
         },
       }).catch(console.error);
+      
+
     },
     [createEntity, resourceId]
   );

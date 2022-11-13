@@ -1,125 +1,125 @@
-import { Test, TestingModule } from "@nestjs/testing";
+import { Test, TestingModule } from '@nestjs/testing';
 import {
   Account,
   Workspace,
   User,
   UserRole,
   PrismaService,
-  Project,
-} from "@amplication/prisma-db";
-import { JwtService } from "@nestjs/jwt";
-import { Role } from "../../enums/Role";
-import { AccountService } from "../account/account.service";
-import { PasswordService } from "../account/password.service";
-import { UserService } from "../user/user.service";
-import { AuthService, AuthUser } from "./auth.service";
-import { WorkspaceService } from "../workspace/workspace.service";
-import { EnumTokenType } from "./dto";
-import { ProjectService } from "../project/project.service";
-const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
+  Project
+} from '@amplication/prisma-db';
+import { JwtService } from '@nestjs/jwt';
+import { Role } from '../../enums/Role';
+import { AccountService } from '../account/account.service';
+import { PasswordService } from '../account/password.service';
+import { UserService } from '../user/user.service';
+import { AuthService, AuthUser } from './auth.service';
+import { WorkspaceService } from '../workspace/workspace.service';
+import { EnumTokenType } from './dto';
+import { ProjectService } from '../project/project.service';
+const EXAMPLE_TOKEN = 'EXAMPLE TOKEN';
 
 const EXAMPLE_ACCOUNT: Account = {
-  id: "alice",
-  email: "alice@example.com",
-  password: "PASSWORD",
-  firstName: "Alice",
-  lastName: "Appleseed",
+  id: 'alice',
+  email: 'alice@example.com',
+  password: 'PASSWORD',
+  firstName: 'Alice',
+  lastName: 'Appleseed',
   createdAt: new Date(),
   updatedAt: new Date(),
   currentUserId: null,
-  githubId: null,
+  githubId: null
 };
 
 const EXAMPLE_PROJECT: Project = {
-  id: "exampleId",
-  name: "Example name",
-  workspaceId: "ExampleWorkspaceId",
+  id: 'exampleId',
+  name: 'Example name',
+  workspaceId: 'ExampleWorkspaceId',
   createdAt: new Date(),
   updatedAt: new Date(),
-  deletedAt: undefined,
+  deletedAt: undefined
 };
 
-const EXAMPLE_HASHED_PASSWORD = "HASHED PASSWORD";
-const EXAMPLE_NEW_PASSWORD = "NEW PASSWORD";
-const EXAMPLE_NEW_HASHED_PASSWORD = "NEW HASHED PASSWORD";
+const EXAMPLE_HASHED_PASSWORD = 'HASHED PASSWORD';
+const EXAMPLE_NEW_PASSWORD = 'NEW PASSWORD';
+const EXAMPLE_NEW_HASHED_PASSWORD = 'NEW HASHED PASSWORD';
 
-const EXAMPLE_WORKSPACE_ID = "EXAMPLE_WORKSPACE_ID";
+const EXAMPLE_WORKSPACE_ID = 'EXAMPLE_WORKSPACE_ID';
 
 const EXAMPLE_USER: User = {
-  id: "exampleUser",
+  id: 'exampleUser',
   createdAt: new Date(),
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
   workspaceId: EXAMPLE_WORKSPACE_ID,
   isOwner: true,
-  deletedAt: null,
+  deletedAt: null
 };
 
 const EXAMPLE_WORKSPACE: Workspace & { users: User[] } = {
   id: EXAMPLE_WORKSPACE_ID,
-  name: "Example Workspace",
+  name: 'Example Workspace',
   createdAt: new Date(),
   updatedAt: new Date(),
-  users: [EXAMPLE_USER],
+  users: [EXAMPLE_USER]
 };
 
 const EXAMPLE_OTHER_WORKSPACE: Workspace = {
-  id: "exampleOtherWorkspace",
-  name: "Example Other Workspace",
+  id: 'exampleOtherWorkspace',
+  name: 'Example Other Workspace',
   createdAt: new Date(),
-  updatedAt: new Date(),
+  updatedAt: new Date()
 };
 
 const EXAMPLE_USER_ROLE: UserRole = {
-  id: "admin",
+  id: 'admin',
   role: Role.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
-  userId: EXAMPLE_USER.id,
+  userId: EXAMPLE_USER.id
 };
 
 const EXAMPLE_OTHER_USER: User = {
-  id: "exampleOtherUser",
+  id: 'exampleOtherUser',
   createdAt: new Date(),
   updatedAt: new Date(),
   accountId: EXAMPLE_ACCOUNT.id,
   workspaceId: EXAMPLE_WORKSPACE.id,
   isOwner: true,
-  deletedAt: null,
+  deletedAt: null
 };
 
 const EXAMPLE_OTHER_USER_ROLE: UserRole = {
-  id: "otherAdmin",
+  id: 'otherAdmin',
   role: Role.Admin,
   createdAt: new Date(),
   updatedAt: new Date(),
-  userId: EXAMPLE_OTHER_USER.id,
+  userId: EXAMPLE_OTHER_USER.id
 };
 
 const EXAMPLE_AUTH_USER: AuthUser = {
   ...EXAMPLE_USER,
   userRoles: [EXAMPLE_USER_ROLE],
   workspace: EXAMPLE_WORKSPACE,
-  account: EXAMPLE_ACCOUNT,
+  account: EXAMPLE_ACCOUNT
 };
 
 const EXAMPLE_OTHER_AUTH_USER: AuthUser = {
   ...EXAMPLE_OTHER_USER,
   userRoles: [EXAMPLE_OTHER_USER_ROLE],
   workspace: EXAMPLE_OTHER_WORKSPACE,
-  account: EXAMPLE_ACCOUNT,
+  account: EXAMPLE_ACCOUNT
 };
 
 const EXAMPLE_ACCOUNT_WITH_CURRENT_USER: Account & { currentUser: User } = {
   ...EXAMPLE_ACCOUNT,
-  currentUser: EXAMPLE_USER,
+  currentUser: EXAMPLE_USER
 };
 
 const EXAMPLE_ACCOUNT_WITH_CURRENT_USER_WITH_ROLES_AND_WORKSPACE: Account & {
   currentUser: AuthUser;
 } = {
   ...EXAMPLE_ACCOUNT,
-  currentUser: EXAMPLE_AUTH_USER,
+  currentUser: EXAMPLE_AUTH_USER
 };
 
 const signMock = jest.fn(() => EXAMPLE_TOKEN);
@@ -134,7 +134,7 @@ const prismaAccountFindOneMock = jest.fn(() => {
 
 const setPasswordMock = jest.fn();
 
-const hashPasswordMock = jest.fn((password) => {
+const hashPasswordMock = jest.fn(password => {
   switch (password) {
     case EXAMPLE_ACCOUNT.password:
       return EXAMPLE_HASHED_PASSWORD;
@@ -150,12 +150,12 @@ const findUsersMock = jest.fn(() => [EXAMPLE_OTHER_AUTH_USER]);
 
 const createWorkspaceMock = jest.fn(() => ({
   ...EXAMPLE_WORKSPACE,
-  users: [EXAMPLE_AUTH_USER],
+  users: [EXAMPLE_AUTH_USER]
 }));
 
 const prismaCreateProjectMock = jest.fn(() => EXAMPLE_PROJECT);
 
-describe("AuthService", () => {
+describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(async () => {
@@ -177,70 +177,70 @@ describe("AuthService", () => {
           useClass: jest.fn(() => ({
             createAccount: createAccountMock,
             setCurrentUser: setCurrentUserMock,
-            setPassword: setPasswordMock,
-          })),
+            setPassword: setPasswordMock
+          }))
         },
         {
           provide: PasswordService,
           useClass: jest.fn(() => ({
             hashPassword: hashPasswordMock,
-            validatePassword: validatePasswordMock,
-          })),
+            validatePassword: validatePasswordMock
+          }))
         },
         {
           provide: UserService,
           useClass: jest.fn(() => ({
-            findUsers: findUsersMock,
-          })),
+            findUsers: findUsersMock
+          }))
         },
         {
           provide: WorkspaceService,
           useClass: jest.fn(() => ({
-            createWorkspace: createWorkspaceMock,
-          })),
+            createWorkspace: createWorkspaceMock
+          }))
         },
         {
           provide: JwtService,
           useClass: jest.fn(() => ({
-            sign: signMock,
-          })),
+            sign: signMock
+          }))
         },
         {
           provide: ProjectService,
           useClass: jest.fn(() => ({
-            createProject: jest.fn(),
-          })),
+            createProject: jest.fn()
+          }))
         },
         {
           provide: PrismaService,
           useClass: jest.fn(() => ({
             account: {
-              findUnique: prismaAccountFindOneMock,
+              findUnique: prismaAccountFindOneMock
             },
             project: {
-              create: prismaCreateProjectMock,
-            },
-          })),
+              create: prismaCreateProjectMock
+            }
+          }))
         },
-        AuthService,
+        AuthService
       ],
-      imports: [],
+      imports: []
     }).compile();
 
     service = module.get<AuthService>(AuthService);
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it("sign ups for correct data", async () => {
+  it('sign ups for correct data', async () => {
     const result = await service.signup({
       email: EXAMPLE_ACCOUNT.email,
       password: EXAMPLE_ACCOUNT.password,
       firstName: EXAMPLE_ACCOUNT.firstName,
       lastName: EXAMPLE_ACCOUNT.lastName,
-      workspaceName: EXAMPLE_WORKSPACE.name,
+      workspaceName: EXAMPLE_WORKSPACE.name
     });
     expect(result).toBe(EXAMPLE_TOKEN);
     expect(createAccountMock).toHaveBeenCalledTimes(1);
@@ -249,8 +249,8 @@ describe("AuthService", () => {
         email: EXAMPLE_ACCOUNT.email,
         password: EXAMPLE_HASHED_PASSWORD,
         firstName: EXAMPLE_ACCOUNT.firstName,
-        lastName: EXAMPLE_ACCOUNT.lastName,
-      },
+        lastName: EXAMPLE_ACCOUNT.lastName
+      }
     });
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
@@ -262,17 +262,17 @@ describe("AuthService", () => {
     expect(createWorkspaceMock).toHaveBeenCalledTimes(1);
     expect(createWorkspaceMock).toHaveBeenCalledWith(EXAMPLE_ACCOUNT.id, {
       data: {
-        name: EXAMPLE_WORKSPACE.name,
+        name: EXAMPLE_WORKSPACE.name
       },
       include: {
         users: {
           include: {
             account: true,
             userRoles: true,
-            workspace: true,
-          },
-        },
-      },
+            workspace: true
+          }
+        }
+      }
     });
     expect(signMock).toHaveBeenCalledTimes(1);
     expect(signMock).toHaveBeenCalledWith({
@@ -280,11 +280,11 @@ describe("AuthService", () => {
       workspaceId: EXAMPLE_WORKSPACE.id,
       roles: [EXAMPLE_USER_ROLE.role],
       userId: EXAMPLE_USER.id,
-      type: EnumTokenType.User,
+      type: EnumTokenType.User
     });
   });
 
-  it("login for existing user", async () => {
+  it('login for existing user', async () => {
     const result = await service.login(
       EXAMPLE_ACCOUNT.email,
       EXAMPLE_ACCOUNT.password
@@ -293,13 +293,13 @@ describe("AuthService", () => {
     expect(prismaAccountFindOneMock).toHaveBeenCalledTimes(1);
     expect(prismaAccountFindOneMock).toHaveBeenCalledWith({
       where: {
-        email: EXAMPLE_ACCOUNT.email,
+        email: EXAMPLE_ACCOUNT.email
       },
       include: {
         currentUser: {
-          include: { account: true, workspace: true, userRoles: true },
-        },
-      },
+          include: { account: true, workspace: true, userRoles: true }
+        }
+      }
     });
     expect(validatePasswordMock).toHaveBeenCalledTimes(1);
     expect(validatePasswordMock).toHaveBeenCalledWith(
@@ -312,11 +312,11 @@ describe("AuthService", () => {
       workspaceId: EXAMPLE_WORKSPACE.id,
       roles: [EXAMPLE_USER_ROLE.role],
       userId: EXAMPLE_USER.id,
-      type: EnumTokenType.User,
+      type: EnumTokenType.User
     });
   });
 
-  it("sets current workspace for existing user and existing workspace", async () => {
+  it('sets current workspace for existing user and existing workspace', async () => {
     const result = await service.setCurrentWorkspace(
       EXAMPLE_ACCOUNT.id,
       EXAMPLE_OTHER_WORKSPACE.id
@@ -326,18 +326,18 @@ describe("AuthService", () => {
     expect(findUsersMock).toHaveBeenCalledWith({
       where: {
         workspace: {
-          id: EXAMPLE_OTHER_WORKSPACE.id,
+          id: EXAMPLE_OTHER_WORKSPACE.id
         },
         account: {
-          id: EXAMPLE_ACCOUNT.id,
-        },
+          id: EXAMPLE_ACCOUNT.id
+        }
       },
       include: {
         account: true,
         workspace: true,
-        userRoles: true,
+        userRoles: true
       },
-      take: 1,
+      take: 1
     });
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
@@ -350,11 +350,11 @@ describe("AuthService", () => {
       workspaceId: EXAMPLE_OTHER_WORKSPACE.id,
       roles: [EXAMPLE_USER_ROLE.role],
       userId: EXAMPLE_OTHER_AUTH_USER.id,
-      type: EnumTokenType.User,
+      type: EnumTokenType.User
     });
   });
 
-  it("changes password for existing account", async () => {
+  it('changes password for existing account', async () => {
     await service.changePassword(
       EXAMPLE_ACCOUNT,
       EXAMPLE_ACCOUNT.password,

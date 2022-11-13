@@ -1,4 +1,4 @@
-import { Build, PrismaService } from "@amplication/prisma-db";
+import { Build, PrismaService } from '@amplication/prisma-db';
 
 export const previousBuild = async (
   prisma: PrismaService,
@@ -14,9 +14,9 @@ export const previousBuild = async (
         resourceId,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         NOT: { id: newBuildId },
-        createdAt: { lt: buildDate },
+        createdAt: { lt: buildDate }
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' }
     })
   ).shift();
   return oldBuild || null;

@@ -78,22 +78,22 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
           </div>
         </div>
       ) : (
-        <div className={`${moduleClass}__wrapper`}>
-          <div className={`${moduleClass}__description`}>
-            <ResourceCircleBadge
-              type={models.EnumResourceType.MessageBroker}
-              size="large"
-            />
-            <div className={`${moduleClass}__description_top`}>
-              <h2>Message Broker Creation Wizard</h2>
-            </div>
-            <div className={`${moduleClass}__description_bottom`}>
-              <h3>
-                Create topics and connect your services to the message broker
-              </h3>
+          <div className={`${moduleClass}__wrapper`}>
+            <div className={`${moduleClass}__description`}>
+              <ResourceCircleBadge
+                type={models.EnumResourceType.MessageBroker}
+                size="large"
+              />
+              <div className={`${moduleClass}__description_top`}>
+                <h2>Message Broker Creation Wizard</h2>
+              </div>
+              <div className={`${moduleClass}__description_bottom`}>
+                <h3>
+                  Create topics and connect your services to the message broker
+                </h3>
+              </div>
             </div>
           </div>
-        </div>
       )}
       <div className={`${moduleClass}__footer`}>
         <Button

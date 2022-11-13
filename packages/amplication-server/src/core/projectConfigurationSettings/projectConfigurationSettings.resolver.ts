@@ -1,22 +1,22 @@
-import { UseGuards } from "@nestjs/common";
-import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
-import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
-import { UserEntity } from "../../decorators/user.decorator";
-import { FindOneArgs } from "../../dto";
-import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { User } from "../../models";
-import { ProjectConfigurationSettings } from "./dto/ProjectConfigurationSettings";
-import { UpdateProjectConfigurationSettingsArgs } from "./dto/UpdateProjectConfigurationSettingsArgs";
-import { ProjectConfigurationSettingsService } from "./projectConfigurationSettings.service";
+import { UseGuards } from '@nestjs/common';
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
+import { UserEntity } from '../../decorators/user.decorator';
+import { FindOneArgs } from '../../dto';
+import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { GqlAuthGuard } from '../../guards/gql-auth.guard';
+import { User } from '../../models';
+import { ProjectConfigurationSettings } from './dto/ProjectConfigurationSettings';
+import { UpdateProjectConfigurationSettingsArgs } from './dto/UpdateProjectConfigurationSettingsArgs';
+import { ProjectConfigurationSettingsService } from './projectConfigurationSettings.service';
 
-@Resolver((of) => ProjectConfigurationSettings)
+@Resolver(of => ProjectConfigurationSettings)
 @UseGuards(GqlAuthGuard)
 export class ProjectConfigurationSettingsResolver {
   constructor(private readonly service: ProjectConfigurationSettingsService) {}
 
   @Mutation(() => ProjectConfigurationSettings, { nullable: true })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async updateProjectConfigurationSettings(
     @Args() args: UpdateProjectConfigurationSettingsArgs,
     @UserEntity() user: User
@@ -25,7 +25,7 @@ export class ProjectConfigurationSettingsResolver {
   }
 
   @Query(() => ProjectConfigurationSettings, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
   async projectConfigurationSettings(
     @Args() args: FindOneArgs
   ): Promise<ProjectConfigurationSettings> {

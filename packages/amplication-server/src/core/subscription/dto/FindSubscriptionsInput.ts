@@ -1,15 +1,15 @@
-import { InputType, Field } from "@nestjs/graphql";
-import { WhereUniqueInput } from "../../../dto/WhereUniqueInput";
-import { EnumSubscriptionStatusFilter } from "./EnumSubscriptionStatusFilter";
+import { InputType, Field } from '@nestjs/graphql';
+import { WhereUniqueInput } from '../../../dto/WhereUniqueInput';
+import { EnumSubscriptionStatusFilter } from './EnumSubscriptionStatusFilter';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class FindSubscriptionsInput {
   workspace!: WhereUniqueInput;
 
   @Field(() => EnumSubscriptionStatusFilter, {
-    nullable: true,
+    nullable: true
   })
   status?: EnumSubscriptionStatusFilter | null;
 }

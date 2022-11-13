@@ -1,6 +1,6 @@
-import { ApolloClient, gql, NormalizedCacheObject } from "@apollo/client/core";
+import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
 
-import * as models from "../models";
+import * as models from '../models';
 
 const CREATE_RESOURCE = gql`
   mutation createService($data: ResourceCreateInput!) {
@@ -43,7 +43,7 @@ export async function createService(
   });
 
   if (!data) {
-    throw new Error("no data");
+    throw new Error('no data');
   }
 
   return data.createService;

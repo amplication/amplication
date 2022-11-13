@@ -1,4 +1,4 @@
-import { ModuleMetadata, Type } from "@nestjs/common";
+import { ModuleMetadata, Type } from '@nestjs/common';
 
 export interface SegmentAnalyticsOptions {
   segmentWriteKey: string;
@@ -11,7 +11,7 @@ export interface SegmentAnalyticsOptionsFactory {
 }
 
 export interface SegmentAnalyticsAsyncOptions
-  extends Pick<ModuleMetadata, "imports"> {
+  extends Pick<ModuleMetadata, 'imports'> {
   inject?: any[];
   useExisting?: Type<SegmentAnalyticsOptionsFactory>;
   useClass?: Type<SegmentAnalyticsOptionsFactory>;

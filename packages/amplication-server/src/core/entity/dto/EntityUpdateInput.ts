@@ -1,26 +1,26 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class EntityUpdateInput {
   @Field(() => String, {
-    nullable: true,
+    nullable: true
   })
   name?: string | null;
 
   @Field(() => String, {
-    nullable: true,
+    nullable: true
   })
   displayName?: string | null;
 
   @Field(() => String, {
-    nullable: true,
+    nullable: true
   })
   pluralDisplayName?: string | null;
 
   @Field(() => String, {
-    nullable: true,
+    nullable: true
   })
   description?: string | null;
 }

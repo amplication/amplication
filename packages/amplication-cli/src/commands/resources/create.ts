@@ -1,15 +1,15 @@
-import cli from "cli-ux";
-import { flags } from "@oclif/command";
-import { ConfiguredCommand } from "../../configured-command";
-import chalk from "chalk";
-import { createService } from "../../api";
-import { format } from "../../flags/format-flag";
-import { RESOURCE_COLUMNS } from "./index";
-import { AMP_CURRENT_RESOURCE } from "../../properties";
-import { EnumResourceType } from "../../models";
+import cli from 'cli-ux';
+import { flags } from '@oclif/command';
+import { ConfiguredCommand } from '../../configured-command';
+import chalk from 'chalk';
+import { createService } from '../../api';
+import { format } from '../../flags/format-flag';
+import { RESOURCE_COLUMNS } from './index';
+import { AMP_CURRENT_RESOURCE } from '../../properties';
+import { EnumResourceType } from '../../models';
 
 export default class ResourcesCreate extends ConfiguredCommand {
-  static description = "create a new resource";
+  static description = 'create a new resource';
 
   static examples = [
     'amp resources:create "my cool resource" "my resource description" --set-current',
@@ -18,27 +18,27 @@ export default class ResourcesCreate extends ConfiguredCommand {
   static flags = {
     ...cli.table.flags(),
     format: format(),
-    ["set-current"]: flags.boolean({
+    ['set-current']: flags.boolean({
       default: false,
-      description: "set the newly created resource as the current resource",
+      description: 'set the newly created resource as the current resource',
     }),
   };
 
   static args = [
     {
-      name: "name",
+      name: 'name',
       required: true,
-      description: "name of resource to create",
+      description: 'name of resource to create',
     },
     {
-      name: "description",
+      name: 'description',
       required: false,
-      description: "description of resource to create",
+      description: 'description of resource to create',
     },
     {
-      name: "projectId",
+      name: 'projectId',
       required: true,
-      description: "project id of the created resource",
+      description: 'project id of the created resource',
     },
   ];
 
@@ -54,12 +54,12 @@ export default class ResourcesCreate extends ConfiguredCommand {
     const data = await createService(
       this.client,
       name,
-      description || "",
+      description || '',
       EnumResourceType.Service, //TODO change to get input from the user
       projectId
     );
 
-    if (flags["set-current"] === true) {
+    if (flags['set-current'] === true) {
       this.setConfig(AMP_CURRENT_RESOURCE, data.id);
       this.log(`Property updated - ${AMP_CURRENT_RESOURCE}=${data.id}`);
     }

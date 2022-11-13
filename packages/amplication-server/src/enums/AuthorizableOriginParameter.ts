@@ -21,5 +21,5 @@ export enum AuthorizableOriginParameter {
   GitOrganizationId,
   GitRepositoryId,
   InvitationId,
-  ProjectId,
+  ProjectId
 }

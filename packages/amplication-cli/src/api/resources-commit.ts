@@ -1,6 +1,6 @@
-import { ApolloClient, gql, NormalizedCacheObject } from "@apollo/client/core";
+import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
 
-import * as models from "../models";
+import * as models from '../models';
 
 const COMMIT_CHANGES = gql`
   mutation commit($message: String!, $resourceId: String!) {
@@ -32,7 +32,7 @@ export async function commitChanges(
   });
 
   if (!data) {
-    throw new Error("no data");
+    throw new Error('no data');
   }
 
   return data.commit;

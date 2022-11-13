@@ -1,17 +1,17 @@
-import { Field, InputType } from "@nestjs/graphql";
-import { WhereUniqueInput, DateTimeFilter, StringFilter } from "../../../dto";
+import { Field, InputType } from '@nestjs/graphql';
+import { WhereUniqueInput, DateTimeFilter, StringFilter } from '../../../dto';
 
 @InputType({
-  isAbstract: true,
+  isAbstract: true
 })
 export class CommitWhereInput {
   @Field(() => StringFilter, {
-    nullable: true,
+    nullable: true
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true,
+    nullable: true
   })
   createdAt?: DateTimeFilter | null;
 
@@ -19,12 +19,12 @@ export class CommitWhereInput {
   project?: WhereUniqueInput;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true,
+    nullable: true
   })
   user?: WhereUniqueInput | null;
 
   @Field(() => StringFilter, {
-    nullable: true,
+    nullable: true
   })
   message?: StringFilter | null;
 }
