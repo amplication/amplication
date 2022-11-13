@@ -41,6 +41,8 @@ spec:
                             value: null # provided in parameters
                           - name: BUILD_MANAGER_URL
                             value: http://amplication-build-manager
+                          - name: REMOTE_NEV
+                            value: true
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs
