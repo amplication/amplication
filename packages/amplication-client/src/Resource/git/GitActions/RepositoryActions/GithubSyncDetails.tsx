@@ -26,12 +26,10 @@ function GithubSyncDetails({
 }: Props) {
   const { gitRepositoryUrl } = useContext(AppContext);
 
-  const [
-    disconnectGitRepository,
-    { error: disconnectErrorUpdate },
-  ] = useMutation(DISCONNECT_GIT_REPOSITORY, {
-    variables: { resourceId: resourceWithRepository.id },
-  });
+  const [disconnectGitRepository, { error: disconnectErrorUpdate }] =
+    useMutation(DISCONNECT_GIT_REPOSITORY, {
+      variables: { resourceId: resourceWithRepository.id },
+    });
 
   const handleDisconnectGitRepository = useCallback(() => {
     disconnectGitRepository({

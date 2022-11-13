@@ -1,4 +1,4 @@
-import { TextField,Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { Form, Formik } from "formik";
@@ -68,11 +68,14 @@ const InviteMember = () => {
 
   return (
     <div className={CLASS_NAME}>
-      <Formik 
+      <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: models.InviteUserInput) => validate(values, FORM_SCHEMA)}
+        validate={(values: models.InviteUserInput) =>
+          validate(values, FORM_SCHEMA)
+        }
         enableReinitialize
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+      >
         {(formik) => {
           const handlers = {
             SUBMIT: formik.submitForm,

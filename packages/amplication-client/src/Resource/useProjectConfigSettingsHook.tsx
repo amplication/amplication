@@ -36,15 +36,13 @@ const useProjectConfigSettingsHook = () => {
     skip: !currentResource?.id,
   });
 
-  const [
-    updateResourceSettings,
-    { error: ProjectConfigurationUpdateError },
-  ] = useMutation<TData>(UPDATE_PROJECT_CONFIG_SETTINGS, {
-    onCompleted: (data) => {
-      refetch();
-      addBlock(data.updateProjectConfigurationSettings.id);
-    },
-  });
+  const [updateResourceSettings, { error: ProjectConfigurationUpdateError }] =
+    useMutation<TData>(UPDATE_PROJECT_CONFIG_SETTINGS, {
+      onCompleted: (data) => {
+        refetch();
+        addBlock(data.updateProjectConfigurationSettings.id);
+      },
+    });
 
   const handleSubmit = useCallback(
     (data: models.ProjectConfigurationSettings) => {

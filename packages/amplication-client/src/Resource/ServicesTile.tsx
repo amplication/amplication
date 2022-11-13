@@ -23,12 +23,15 @@ function ServicesTile({ resourceId }: Props) {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const getResourceVars = { variables: { where: { id: resourceId } } };
-  const { data, loading, refetch } = useQuery<{ messageBrokerConnectedServices: Resource[] }>(
-    GET_MESSAGE_BROKER_CONNECTED_SERVICES, getResourceVars);
+  const { data, loading, refetch } = useQuery<{
+    messageBrokerConnectedServices: Resource[];
+  }>(GET_MESSAGE_BROKER_CONNECTED_SERVICES, getResourceVars);
   const { trackEvent } = useTracking();
 
   // eslint-disable-next-line
-  useEffect(() => { refetch(getResourceVars) }, []);
+  useEffect(() => {
+    refetch(getResourceVars);
+  }, []);
 
   const handleClick = useCallback(() => {
     trackEvent({
@@ -49,7 +52,9 @@ function ServicesTile({ resourceId }: Props) {
         ) : (
           <>
             {data?.messageBrokerConnectedServices.length}
-            {data && data?.messageBrokerConnectedServices.length > 1 ? " services" : " service"}
+            {data && data?.messageBrokerConnectedServices.length > 1
+              ? " services"
+              : " service"}
           </>
         )
       }
