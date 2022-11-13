@@ -1,8 +1,8 @@
-import { ObjectType, Field } from '@nestjs/graphql';
-import { EnumGitOrganizationType } from '../enums/EnumGitOrganizationType';
+import { ObjectType, Field } from "@nestjs/graphql";
+import { EnumGitOrganizationType } from "../enums/EnumGitOrganizationType";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class RemoteGitOrganization {
   @Field(() => String)

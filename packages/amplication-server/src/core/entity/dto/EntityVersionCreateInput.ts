@@ -1,17 +1,17 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { WhereParentIdInput } from '../../../dto';
+import { Field, InputType } from "@nestjs/graphql";
+import { WhereParentIdInput } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityVersionCreateInput {
   @Field(() => WhereParentIdInput, {
-    nullable: false
+    nullable: false,
   })
   commit!: WhereParentIdInput;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false
+    nullable: false,
   })
   entity!: WhereParentIdInput;
 }

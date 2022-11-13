@@ -1,4 +1,4 @@
-import { BlockCreateInput } from './BlockCreateInput';
+import { BlockCreateInput } from "./BlockCreateInput";
 
 export class CreateBlockArgs {
   data!: BlockCreateInput;

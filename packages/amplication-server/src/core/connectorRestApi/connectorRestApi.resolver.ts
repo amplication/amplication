@@ -1,21 +1,21 @@
-import { Resolver } from '@nestjs/graphql';
-import { ConnectorRestApiService } from './connectorRestApi.service';
+import { Resolver } from "@nestjs/graphql";
+import { ConnectorRestApiService } from "./connectorRestApi.service";
 import {
   ConnectorRestApi,
   FindManyConnectorRestApiArgs,
-  CreateConnectorRestApiArgs
-} from './dto/';
-import { BlockTypeResolver } from '../block/blockType.resolver';
-import { UpdateBlockArgs } from '../block/dto/UpdateBlockArgs';
+  CreateConnectorRestApiArgs,
+} from "./dto/";
+import { BlockTypeResolver } from "../block/blockType.resolver";
+import { UpdateBlockArgs } from "../block/dto/UpdateBlockArgs";
 
 @Resolver(() => ConnectorRestApi)
 export class ConnectorRestApiResolver extends BlockTypeResolver(
   ConnectorRestApi,
-  'ConnectorRestApis',
+  "ConnectorRestApis",
   FindManyConnectorRestApiArgs,
-  'createConnectorRestApi',
+  "createConnectorRestApi",
   CreateConnectorRestApiArgs,
-  'updateConnectorRestApi',
+  "updateConnectorRestApi",
   UpdateBlockArgs
 ) {
   constructor(private readonly service: ConnectorRestApiService) {

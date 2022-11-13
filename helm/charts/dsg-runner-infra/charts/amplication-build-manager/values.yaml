@@ -11,7 +11,7 @@ autoscaling:
 image:
   pullPolicy: Always
   repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-build-manager
-  tag: dsg-separation-2
+  tag: next
   imagePullSecrets: []
 
 podAnnotations:

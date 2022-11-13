@@ -1,12 +1,12 @@
-import { registerEnumType } from '@nestjs/graphql';
+import { registerEnumType } from "@nestjs/graphql";
 
 export enum EnumActionStepStatus {
-  Waiting = 'Waiting',
-  Running = 'Running',
-  Failed = 'Failed',
-  Success = 'Success'
+  Waiting = "Waiting",
+  Running = "Running",
+  Failed = "Failed",
+  Success = "Success",
 }
 
 registerEnumType(EnumActionStepStatus, {
-  name: 'EnumActionStepStatus'
+  name: "EnumActionStepStatus",
 });

@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import { DSGResourceData, Module } from "@amplication/code-gen-types";
 import { createDataServiceImpl } from "./create-data-service-impl";
 import { defaultLogger } from "./server/logging";
-// import axios from "axios";
+import axios from "axios";
 
 const [, , source, destination] = process.argv;
 if (!source) {
@@ -28,16 +28,28 @@ export default async function generateCode(
     const resourceData: DSGResourceData = JSON.parse(file);
     const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
-    // await axios.put(process.env.STATUS_UPDATE_URL || "", {
-    //   buildId: process.env.BUILD_ID,
-    //   status: "Success",
-    // });
+    await axios.post(
+      new URL(
+        "build-runner/code-generation-success",
+        process.env.BUILD_MANAGER_URL
+      ).href,
+      {
+        resourceId: process.env.RESOURCE_ID,
+        buildId: process.env.BUILD_ID,
+      }
+    );
   } catch (err) {
     console.error(err);
-    // await axios.put(process.env.STATUS_UPDATE_URL || "", {
-    //   buildId: process.env.BUILD_ID,
-    //   status: "Failed",
-    // });
+    await axios.post(
+      new URL(
+        "build-runner/code-generation-failure",
+        process.env.BUILD_MANAGER_URL
+      ).href,
+      {
+        resourceId: process.env.RESOURCE_ID,
+        buildId: process.env.BUILD_ID,
+      }
+    );
   }
 }
 

@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { EntityOrderByInput } from './EntityOrderByInput';
-import { EntityWhereInput } from './EntityWhereInput';
+import { ArgsType, Field, Int } from "@nestjs/graphql";
+import { EntityOrderByInput } from "./EntityOrderByInput";
+import { EntityWhereInput } from "./EntityWhereInput";
 
 @ArgsType()
 export class FindManyEntityArgs {

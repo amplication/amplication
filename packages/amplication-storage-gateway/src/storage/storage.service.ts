@@ -6,7 +6,6 @@ import { sync } from "glob";
 import { join } from "path";
 import {
   BUILD_ARTIFACTS_BASE_FOLDER,
-  BUILD_ARTIFACTS_CODE_FOLDER,
   DEFAULT_BUILDS_FOLDER,
 } from "../constants";
 import { FileMeta } from "./dto/FileMeta";
@@ -17,32 +16,24 @@ type FilesDictionary = { [name: string]: FileMeta };
 @Injectable()
 export class StorageService {
   private buildsFolder: string;
-  private buildOutputFolder: string;
+
   constructor(
     configService: ConfigService<
       {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         BUILD_ARTIFACTS_BASE_FOLDER: string;
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        BUILD_ARTIFACTS_CODE_FOLDER: string;
       },
       true
     >
   ) {
     const buildsFolder = configService.get<string>(BUILD_ARTIFACTS_BASE_FOLDER);
     this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
-    this.buildOutputFolder = configService.get(BUILD_ARTIFACTS_CODE_FOLDER);
   }
 
   getBuildFilesList(resourceId: string, buildId: string, relativePath = "") {
     const results: FilesDictionary = {};
 
-    const cwd = join(
-      this.buildsFolder,
-      buildId,
-      this.buildOutputFolder,
-      relativePath
-    );
+    const cwd = join(this.buildsFolder, resourceId, buildId, relativePath);
 
     console.log(`Current working directory is ${cwd}`);
 
@@ -85,10 +76,7 @@ export class StorageService {
   }
 
   fileContent(resourceId: string, buildId: string, path = ""): string {
-    const filePath = join(
-      join(this.buildsFolder, buildId, this.buildOutputFolder),
-      path
-    );
+    const filePath = join(this.buildsFolder, resourceId, buildId, path);
     return readFileSync(filePath).toString();
   }
 
