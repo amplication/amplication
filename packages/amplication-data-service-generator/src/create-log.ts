@@ -2,7 +2,7 @@ import axios from "axios";
 import { LogEntry } from "winston";
 
 export const createLog = async (log: LogEntry): Promise<void> => {
-  if (!process.env.REMOTE_ENV) {
+  if (process.env.REMOTE_ENV !== "true") {
     return;
   }
 
