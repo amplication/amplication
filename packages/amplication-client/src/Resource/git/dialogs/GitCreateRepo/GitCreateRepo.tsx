@@ -33,7 +33,10 @@ export default function GitCreateRepo({
   onCompleted,
   gitOrganizationName,
 }: Props) {
-  const initialValues: CreateGitRepositoryInput = { name: "", public: true };
+  const initialValues: Partial<CreateGitRepositoryInput> = {
+    name: "",
+    public: true,
+  };
   const { trackEvent } = useTracking();
 
   const [triggerCreation, { loading, error }] = useMutation(
