@@ -59,7 +59,7 @@ jobs:
         run: npx nx workspace-lint
 
       - name: Format Check
-        run: npx prettier --check .
+        run: npm run check-format
 
       - name: Lint
         run: npx nx affected --target=lint --parallel=3

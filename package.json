@@ -9,7 +9,8 @@
     "setup:dev": "ts-node ./script/setup.ts",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
     "db:migrate:deploy": "nx run-many --target=db:migrate:deploy",
-    "format": "npx nx format --write"
+    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\"",
+    "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\""
   },
   "dependencies": {
     "@amplication/react-compound-timer": "^2.1.0",
