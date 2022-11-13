@@ -201,7 +201,7 @@ const EntityField = () => {
         <RelatedFieldDialog
           isOpen={lookupPendingData !== null}
           onDismiss={hideRelatedFieldDialog}
-          onSubmit={handleRelatedFieldFormSubmit}
+          onSubmit={handleRelatedFieldFormSubmit as any} // TODO: address after Nx React migration
           relatedEntityId={lookupPendingData?.properties?.relatedEntityId}
           allowMultipleSelection={
             !lookupPendingData?.properties?.allowMultipleSelection

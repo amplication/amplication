@@ -109,7 +109,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
               </div>
               <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
                 <SelectMenu
-                  css={undefined}
                   title={
                     <p
                       className={`${CLASS_NAME}__breadcrumbs__resource__title`}

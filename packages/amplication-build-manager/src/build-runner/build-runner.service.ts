@@ -28,7 +28,7 @@ export class BuildRunnerService {
     await fs.writeFile(savePath, JSON.stringify(dsgResourceData));
   }
 
-  async copyFromJobToArtifact(buildId: string) {
+  async copyFromJobToArtifact(resourceId: string, buildId: string) {
     const jobPath = join(
       this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
       buildId,
@@ -37,8 +37,8 @@ export class BuildRunnerService {
 
     const artifactPath = join(
       this.configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
+      resourceId,
       buildId,
-      this.configService.get(Env.BUILD_ARTIFACTS_CODE_FOLDER)
     );
 
     await copy(jobPath, artifactPath);

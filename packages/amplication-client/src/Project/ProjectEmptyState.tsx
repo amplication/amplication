@@ -3,7 +3,7 @@ import "./ProjectEmptyState.scss";
 import ProjectSideBar from "./ProjectSideBar";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 
-const ProjectEmptyState: React.FC<{}> = () => {
+const ProjectEmptyState: React.FC<unknown> = () => {
   const moduleClass = "project-empty-state";
   return (
     <div className={moduleClass}>

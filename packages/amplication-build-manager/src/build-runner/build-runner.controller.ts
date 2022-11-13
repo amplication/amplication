@@ -1,16 +1,16 @@
-import { Body, Controller, Put } from "@nestjs/common";
+import { Controller, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
 import { QueueService } from "../queue/queue.service";
 import { BuildRunnerService } from "./build-runner.service";
-import { ActionStepStatus } from "./dto/ActionStepStatus";
-import { CompleteCodeGenerationStep } from "./dto/CompleteCodeGenerationStep";
 import { EnvironmentVariables } from "@amplication/kafka";
 import { EventPattern, Payload } from "@nestjs/microservices";
 import { KafkaMessage } from "kafkajs";
 import { plainToInstance } from "class-transformer";
-import { CreatePRRequest } from "./dto/CreatePRRequest";
+import { CodeGenerationRequest } from "./dto/CodeGenerationRequest";
 import axios from "axios";
+import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
+import { CodeGenerationFailure } from "./dto/CodeGenerationFailure";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -20,21 +20,39 @@ export class BuildRunnerController {
     private readonly queueService: QueueService
   ) {}
 
-  @Put("complete-code-generation-step")
-  async completeCodeGenerationStep(
-    @Body() dto: CompleteCodeGenerationStep
+  @Post("code-generation-success")
+  async onCodeGenerationSuccess(
+    @Payload() dto: CodeGenerationSuccess
   ): Promise<void> {
-    if (dto.status === ActionStepStatus.Success) {
-      await this.buildRunnerService.copyFromJobToArtifact(dto.buildId);
+    try {
+      await this.buildRunnerService.copyFromJobToArtifact(
+        dto.resourceId,
+        dto.buildId
+      );
       this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
         JSON.stringify({ buildId: dto.buildId })
       );
-    } else {
+    } catch (error) {
+      console.error(error);
       this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
-        JSON.stringify({ buildId: dto.buildId })
+        JSON.stringify({ buildId: dto.buildId, error })
       );
+    }
+  }
+
+  @Post("code-generation-failure")
+  async onCodeGenerationFailure(
+    @Payload() dto: CodeGenerationFailure
+  ): Promise<void> {
+    try {
+      this.queueService.emitMessage(
+        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        JSON.stringify({ buildId: dto.buildId, error: dto.error })
+      );
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -42,14 +60,24 @@ export class BuildRunnerController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
   )
   async onCreatePRRequest(@Payload() message: KafkaMessage): Promise<void> {
-    const args = plainToInstance(CreatePRRequest, message.value);
-    await this.buildRunnerService.saveDsgResourceData(
-      args.buildId,
-      args.dsgResourceData
-    );
-    const url = this.configService.get(Env.DSG_RUNNER_URL);
-    await axios.post(url, {
-      buildId: args.buildId,
-    });
+    let args: CodeGenerationRequest;
+    try {
+      args = plainToInstance(CodeGenerationRequest, message.value);
+      await this.buildRunnerService.saveDsgResourceData(
+        args.buildId,
+        args.dsgResourceData
+      );
+      const url = this.configService.get(Env.DSG_RUNNER_URL);
+      await axios.post(url, {
+        resourceId: args.resourceId,
+        buildId: args.buildId,
+      });
+    } catch (error) {
+      console.error(error);
+      this.queueService.emitMessage(
+        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        JSON.stringify({ buildId: args?.buildId, error })
+      );
+    }
   }
 }

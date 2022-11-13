@@ -18,7 +18,7 @@ function PrivateRoute({ component, children, ...rest }: Props) {
           ? React.createElement(component, props)
           : children;
         return authenticated ? (
-          childNode
+          <>{childNode}</>
         ) : (
           <Redirect
             to={{
