@@ -123,6 +123,9 @@ amplication-git-pull-service:
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  autoscaling:
+    minReplicas: 4
+    maxReplicas: 12
   config:
     env:
       KAFKA_BROKERS: 'b-1.amplicationuseast1sta.n74l10.c22.kafka.us-east-1.amazonaws.com:9092,b-2.amplicationuseast1sta.n74l10.c22.kafka.us-east-1.amazonaws.com:9092'
