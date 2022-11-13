@@ -11,3 +11,4 @@ helm
 .amplication
 /generated
 /build
+__snapshots__
