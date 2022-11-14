@@ -5,7 +5,7 @@ import {
   Modal,
   Snackbar,
 } from "@amplication/design-system";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { match, useHistory } from "react-router-dom";
 import { useTracking } from "../../util/analytics";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
@@ -37,10 +37,13 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
 
-  const handleErrorCreateMessageBroker = () => {
+  const errorMessage = formatError(errorCreateMessageBroker);
+
+  useEffect(() => {
+    if (!errorCreateMessageBroker) return;
+
     trackEvent({ eventName: AnalyticsEventNames.MessageBrokerErrorCreate });
-    return formatError(errorCreateMessageBroker);
-  };
+  }, [errorCreateMessageBroker]);
 
   const createStarterResource = useCallback(
     (data: models.ResourceCreateInput, eventName: string) => {
@@ -121,7 +124,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
       </div>
       <Snackbar
         open={Boolean(errorCreateMessageBroker)}
-        message={handleErrorCreateMessageBroker()}
+        message={errorMessage}
       />
     </Modal>
   );
