@@ -28,6 +28,7 @@ export enum AnalyticsEventNames {
   SupportCommunityClick = "supportCommunityClick",
   SupportFeatureRequestClick = "supportFeatureRequestClick",
   SupportIssueClick = "supportIssueClick",
+  MenuItemClick = "menuItemClick",
   ThemeSet = "setTheme",
 
   // tiles

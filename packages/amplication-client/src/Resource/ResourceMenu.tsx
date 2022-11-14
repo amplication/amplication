@@ -3,6 +3,8 @@ import React, { useContext } from "react";
 import { AppContext } from "../context/appContext";
 import MenuItem from "../Layout/MenuItem";
 import { EnumResourceType } from "../models";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { resourceThemeMap } from "./constants";
 import "./ResourceMenu.scss";
 import {
@@ -18,6 +20,13 @@ const CLASS_NAME = "resource-menu";
 const ResourceMenu: React.FC<{}> = () => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
+
+  const { trackEvent } = useTracking();
+  const handleMenuClick = (title: string) => {
+    trackEvent({
+      eventName: `${AnalyticsEventNames.MenuItemClick} - ${title}`,
+    });
+  };
 
   return (
     <div className={CLASS_NAME}>
@@ -54,6 +63,7 @@ const ResourceMenu: React.FC<{}> = () => {
                   menuParams.to
                 )}
                 icon={menuParams.icon}
+                onClick={() => handleMenuClick(menuParams.title)}
               />
             );
           })}
