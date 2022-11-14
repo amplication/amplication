@@ -3,7 +3,7 @@ import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 import { AnalyticsEventNames } from "./analytics-events.types";
 
 export interface Event {
-  eventName: AnalyticsEventNames;
+  eventName: AnalyticsEventNames | string;
   [key: string]: unknown;
 }
 

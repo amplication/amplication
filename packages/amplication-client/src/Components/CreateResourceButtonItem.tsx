@@ -3,6 +3,7 @@ import React, { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CreateResourceButtonItemType } from "./CreateResourceButton";
 import ResourceCircleBadge from "./ResourceCircleBadge";
 
@@ -18,7 +19,7 @@ const CreateResourceButtonItem = ({ item }: props) => {
 
   const handleClick = useCallback(() => {
     trackEvent({
-      eventName: `createResourceClick-${item.type}`,
+      eventName: `${AnalyticsEventNames.ResourceCreate}-${item.type}`,
     });
   }, [trackEvent, item]);
 

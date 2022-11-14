@@ -52,6 +52,7 @@ export enum AnalyticsEventNames {
   ResourceBuild = "buildResource",
   ResourceDelete = "deleteResource",
   ResourceCardClick = "resourceCardClick",
+  ResourceCreate = "createResourceClick",
 
   // entity
   EntityCreate = "createEntity",
@@ -66,6 +67,7 @@ export enum AnalyticsEventNames {
   MessageBrokerTopicsTileClick = "messageBrokerTopicsTileClick",
   MessageBrokerErrorCreate = "messageBrokerErrorCreate",
   MessageBrokerCreateClick = "createMessageBrokerClick",
+  MessagePatternTypeClick = "messagePatternTypeClick",
   BackToProjectsClick = "backToProjectsClick",
 
   // topic

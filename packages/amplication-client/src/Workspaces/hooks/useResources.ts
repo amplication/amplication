@@ -91,7 +91,7 @@ const useResources = (
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: string,
+    eventName: AnalyticsEventNames,
     addEntity: (id: string) => void
   ) => {
     trackEvent({
@@ -114,7 +114,7 @@ const useResources = (
 
   const createMessageBroker = (
     data: models.ResourceCreateInput,
-    eventName: string
+    eventName: AnalyticsEventNames
   ) => {
     trackEvent({
       eventName: eventName,

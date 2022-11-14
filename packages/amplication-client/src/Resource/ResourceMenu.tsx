@@ -24,7 +24,8 @@ const ResourceMenu: React.FC<{}> = () => {
   const { trackEvent } = useTracking();
   const handleMenuClick = (title: string) => {
     trackEvent({
-      eventName: `${AnalyticsEventNames.MenuItemClick} - ${title}`,
+      eventName: AnalyticsEventNames.MenuItemClick,
+      menuItem: title,
     });
   };
 
