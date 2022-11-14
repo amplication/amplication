@@ -1,4 +1,4 @@
-import { Resource } from "@amplication/code-gen-types/dist/models";
+import { Resource } from "@amplication/code-gen-types/models";
 import { Dialog } from "@amplication/design-system";
 import React from "react";
 import { EnumGitProvider } from "../../../models";

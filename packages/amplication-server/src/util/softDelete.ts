@@ -9,5 +9,5 @@ export function revertDeletedItemName(
   currentValue: string,
   id: string
 ): string {
-  return currentValue.replace(`__${id}_`, '');
+  return currentValue.replace(`__${id}_`, "");
 }

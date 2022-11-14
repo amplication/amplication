@@ -1,7 +1,7 @@
-import { InputType } from '@nestjs/graphql';
-import { BlockTypeWhereInput } from '../../block/dto';
+import { InputType } from "@nestjs/graphql";
+import { BlockTypeWhereInput } from "../../block/dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class PluginOrderWhereInput extends BlockTypeWhereInput {}

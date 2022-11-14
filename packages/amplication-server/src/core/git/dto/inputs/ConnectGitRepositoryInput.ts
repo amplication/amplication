@@ -1,7 +1,7 @@
-import { ArgsType, Field, InputType } from '@nestjs/graphql';
+import { ArgsType, Field, InputType } from "@nestjs/graphql";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 @ArgsType()
 export class ConnectGitRepositoryInput {

@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { GitRepo } from "../../../../../models";
+import { RemoteGitRepository } from "../../../../../models";
 import { Icon } from "@amplication/design-system";
 import "./GitRepoItem.scss";
 import { Button } from "../../../../../Components/Button";
@@ -7,13 +7,13 @@ import { Button } from "../../../../../Components/Button";
 const CLASS_NAME = "git-repo-item";
 
 type Props = {
-  repo: GitRepo;
-  onSelectRepo: (repo: GitRepo) => void;
+  repo: RemoteGitRepository;
+  onSelectRepo: (repo: RemoteGitRepository) => void;
 };
 
 function GitRepoItem({ repo, onSelectRepo }: Props) {
   const handleRepoSelected = useCallback(
-    (data: GitRepo) => {
+    (data: RemoteGitRepository) => {
       onSelectRepo(data);
     },
     [onSelectRepo]

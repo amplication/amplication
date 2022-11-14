@@ -1,11 +1,13 @@
 import React, { useCallback, useContext } from "react";
-import {
-  SelectMenu as PrimerSelectMenu,
+
+import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
+import type {
   SelectMenuProps,
   SelectMenuModalProps as PrimerSelectMenuModalProps,
   SelectMenuItemProps as PrimerSelectMenuItemProps,
   SelectMenuListProps as PrimerSelectMenuListProps,
-} from "@primer/react";
+} from "@primer/react/deprecated";
+
 import classNames from "classnames";
 import SearchField, {
   Props as SearchFieldProps,
@@ -15,18 +17,16 @@ import { Button, EnumButtonStyle } from "../Button/Button";
 
 import "./SelectMenu.scss";
 
-interface ButtonProps {
+export interface Props extends Omit<SelectMenuProps, "title"> {
   buttonStyle?: EnumButtonStyle;
   disabled?: boolean;
-  title: string | Element;
+  title: string | React.ReactNode;
   icon?: string;
   openIcon?: string;
   buttonClassName?: string;
 }
 
-export type Props = SelectMenuProps & ButtonProps;
-
-const SelectButton: React.FC<ButtonProps> = ({
+const SelectButton: React.FC<Props> = ({
   disabled,
   buttonStyle,
   title,
@@ -41,7 +41,7 @@ const SelectButton: React.FC<ButtonProps> = ({
       {...(disabled ? { disabled } : { as: "summary" })}
       className={className}
       buttonStyle={buttonStyle}
-      icon={openIcon ? (menuContext.open ? openIcon : icon) : icon}
+      icon={openIcon ? ((menuContext as any).open ? openIcon : icon) : icon}
       iconSize={"xsmall"}
     >
       {title}
@@ -94,8 +94,10 @@ export const SelectMenu = ({
 
 export type SelectMenuModalProps = PrimerSelectMenuModalProps;
 
-export const SelectMenuModal = (props: SelectMenuModalProps) => {
+export const SelectMenuModal: React.FC<SelectMenuModalProps> = (props) => {
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <PrimerSelectMenu.Modal
       className={classNames("select-menu__modal", props.className)}
       {...props}
@@ -118,7 +120,7 @@ export const SelectMenuItem = ({
   ...rest
 }: SelectMenuItemProps) => {
   const handleClick = useCallback(
-    (e) => {
+    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       if (onSelectionChange) {
         onSelectionChange(itemData);
         if (!closeAfterSelectionChange) {

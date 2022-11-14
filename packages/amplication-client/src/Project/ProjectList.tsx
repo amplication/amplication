@@ -11,10 +11,7 @@ type Props = {
   workspaceId: string;
 };
 
-export const ProjectList = ({
-  projects,
-  workspaceId,
-}: Props) => {
+export const ProjectList = ({ projects, workspaceId }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__items`}>

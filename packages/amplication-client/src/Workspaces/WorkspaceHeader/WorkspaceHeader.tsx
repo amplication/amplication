@@ -25,6 +25,7 @@ const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const WorkspaceHeader: React.FC<{}> = () => {
   const {
     currentWorkspace,
@@ -54,7 +55,10 @@ const WorkspaceHeader: React.FC<{}> = () => {
       (isResourceRoute && currentResource) ||
       (isResourceRoute && currentProjectConfiguration)
     )
-      return currentResource?.resourceType ===  models.EnumResourceType.ProjectConfiguration ?  PROJECT_CONFIGURATION_RESOURCE_NAME : currentResource?.name 
+      return currentResource?.resourceType ===
+        models.EnumResourceType.ProjectConfiguration
+        ? PROJECT_CONFIGURATION_RESOURCE_NAME
+        : currentResource?.name;
 
     if (isCommitsRoute) return "Commits";
 
@@ -105,7 +109,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
               </div>
               <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
                 <SelectMenu
-                  css={undefined}
                   title={
                     <p
                       className={`${CLASS_NAME}__breadcrumbs__resource__title`}

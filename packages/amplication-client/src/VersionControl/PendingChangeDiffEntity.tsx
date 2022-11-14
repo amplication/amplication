@@ -1,11 +1,16 @@
 import React, { useMemo } from "react";
 import YAML from "yaml";
 import { gql, useQuery } from "@apollo/client";
-import omitDeep from "deepdash-es/omitDeep";
-import ReactDiffViewer, { DiffMethod } from "react-diff-viewer";
+import ReactDiffViewer, {
+  DiffMethod,
+} from "@amplication/react-diff-viewer-continued";
 import * as models from "../models";
 import "./PendingChangeDiff.scss";
 import { CircularProgress } from "@amplication/design-system";
+
+// This must be here unless we get rid of deepdash as it does not support ES imports
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const omitDeep = require("deepdash/omitDeep");
 
 export enum EnumCompareType {
   Pending = "Pending",
@@ -67,39 +72,38 @@ const PendingChangeDiffEntity = ({
   compareType = EnumCompareType.Pending,
   splitView,
 }: Props) => {
-  const { data: dataOtherVersion, loading: loadingOtherVersion } = useQuery<
-    TData
-  >(GET_ENTITY_VERSION, {
-    variables: {
-      id: change.originId,
-      whereVersion:
-        compareType === EnumCompareType.Pending
-          ? {
-              not: CURRENT_VERSION_NUMBER,
-            }
-          : {
-              equals: change.versionNumber > 1 ? change.versionNumber - 1 : -1,
-            },
-    },
-    fetchPolicy: "no-cache",
-  });
+  const { data: dataOtherVersion, loading: loadingOtherVersion } =
+    useQuery<TData>(GET_ENTITY_VERSION, {
+      variables: {
+        id: change.originId,
+        whereVersion:
+          compareType === EnumCompareType.Pending
+            ? {
+                not: CURRENT_VERSION_NUMBER,
+              }
+            : {
+                equals:
+                  change.versionNumber > 1 ? change.versionNumber - 1 : -1,
+              },
+      },
+      fetchPolicy: "no-cache",
+    });
 
-  const { data: dataCurrentVersion, loading: loadingCurrentVersion } = useQuery<
-    TData
-  >(GET_ENTITY_VERSION, {
-    variables: {
-      id: change.originId,
-      whereVersion:
-        compareType === EnumCompareType.Pending
-          ? {
-              equals: CURRENT_VERSION_NUMBER,
-            }
-          : {
-              equals: change.versionNumber,
-            },
-    },
-    fetchPolicy: "no-cache",
-  });
+  const { data: dataCurrentVersion, loading: loadingCurrentVersion } =
+    useQuery<TData>(GET_ENTITY_VERSION, {
+      variables: {
+        id: change.originId,
+        whereVersion:
+          compareType === EnumCompareType.Pending
+            ? {
+                equals: CURRENT_VERSION_NUMBER,
+              }
+            : {
+                equals: change.versionNumber,
+              },
+      },
+      fetchPolicy: "no-cache",
+    });
 
   const newValue = useMemo(() => {
     return getEntityVersionYAML(dataCurrentVersion);

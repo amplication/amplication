@@ -7,15 +7,9 @@ type Props = {
   workspaceId: string;
 };
 
-export const ProjectListItem = ({
-  project,
-  workspaceId,
-}: Props) => {
+export const ProjectListItem = ({ project, workspaceId }: Props) => {
   return (
-    <InnerTabLink
-      icon="file"
-      to={`/${workspaceId}/${project.id}`}
-    >
+    <InnerTabLink icon="file" to={`/${workspaceId}/${project.id}`}>
       {project.name}
     </InnerTabLink>
   );

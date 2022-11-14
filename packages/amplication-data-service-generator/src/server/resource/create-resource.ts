@@ -11,10 +11,11 @@ import {
 } from "./service/create-service";
 import { createControllerModules } from "./controller/create-controller";
 import { createModules } from "./module/create-module";
-import { createControllerSpecModule } from "./test/create-controller-spec";
+import { createEntityControllerSpec } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 import { builders } from "ast-types";
 import DsgContext from "../../dsg-context";
+import { createLog } from "../../create-log";
 
 export async function createResourcesModules(
   entities: Entity[],
@@ -36,7 +37,7 @@ async function createResourceModules(
 
   validateEntityName(entity);
 
-  logger.info(`Creating ${entityType}...`);
+  await createLog({ level: "info", message: `Creating ${entityType}...` });
   const entityName = camelCase(entityType);
   const resource = camelCase(plural(entityName));
   const serviceId = createServiceId(entityType);
@@ -87,21 +88,22 @@ async function createResourceModules(
   );
 
   const testModule =
-    controllerModule &&
-    (await createControllerSpecModule(
-      resource,
-      entity,
-      entityType,
-      serviceModule.path,
-      controllerModule.path,
-      controllerBaseModule.path
-    ));
+    (controllerModule &&
+      (await createEntityControllerSpec(
+        resource,
+        entity,
+        entityType,
+        serviceModule.path,
+        controllerModule.path,
+        controllerBaseModule.path
+      ))) ||
+    [];
 
   return [
     ...serviceModules,
     ...controllerModules,
     ...resolverModules,
     ...resourceModules,
-    ...(testModule ? [testModule] : []),
+    ...testModule,
   ];
 }

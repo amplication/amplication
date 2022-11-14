@@ -4,7 +4,7 @@ import { useTracking } from "../../util/analytics";
 
 const AuthResourceWithGitCallback = () => {
   const { trackEvent } = useTracking();
-  const [completeAuthWithGit] = useMutation<Boolean>(CREATE_GIT_ORGANIZATION, {
+  const [completeAuthWithGit] = useMutation<boolean>(CREATE_GIT_ORGANIZATION, {
     onCompleted: (data) => {
       window.opener.postMessage({ completed: true });
       // close the popup

@@ -1,77 +1,77 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Entity } from '../models/Entity'; // eslint-disable-line import/no-cycle
-import { EntityField } from '../models/EntityField'; // eslint-disable-line import/no-cycle
-import { Commit } from '../models/Commit'; // eslint-disable-line import/no-cycle
-import { EntityPermission } from './EntityPermission'; // eslint-disable-line import/no-cycle
+import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { Entity } from "../models/Entity";
+import { EntityField } from "../models/EntityField";
+import { Commit } from "../models/Commit";
+import { EntityPermission } from "./EntityPermission";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityVersion {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   entityId: string;
 
   @Field(() => Entity, {
-    nullable: false
+    nullable: false,
   })
   entity?: Entity;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: false,
   })
   versionNumber!: number;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   pluralDisplayName!: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   description?: string;
 
   commitId?: string | null;
 
   @Field(() => Commit, {
-    nullable: true
+    nullable: true,
   })
   commit?: Commit;
 
   @Field(() => [EntityField], {
-    nullable: false
+    nullable: false,
   })
   fields?: EntityField[] | null;
 
   @Field(() => [EntityPermission], {
-    nullable: true
+    nullable: true,
   })
   permissions?: EntityPermission[] | null;
 }

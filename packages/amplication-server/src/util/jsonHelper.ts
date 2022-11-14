@@ -1,5 +1,5 @@
-import { JsonObject, JsonValue } from 'type-fest';
-import { readFile, writeFile } from 'fs';
+import type { JsonObject, JsonValue } from "type-fest";
+import { readFile, writeFile } from "fs";
 
 export class JsonHelper {
   private static instance: JsonHelper;
@@ -15,7 +15,7 @@ export class JsonHelper {
   private packageJson: Promise<JsonObject>;
 
   private constructor(private path: string) {
-    this.packageJson = JsonHelper.read(path).catch(reason => {
+    this.packageJson = JsonHelper.read(path).catch((reason) => {
       return null;
     });
   }
@@ -80,7 +80,7 @@ export class JsonHelper {
       const data = new Uint8Array(
         Buffer.from(JSON.stringify(packageJson, null, space))
       );
-      writeFile(path, data, err => {
+      writeFile(path, data, (err) => {
         if (err) {
           reject(err);
         }

@@ -1,7 +1,10 @@
 import React, { useCallback, useContext } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 
 import * as models from "../models";
 import { formatError } from "../util/error";
@@ -17,12 +20,19 @@ type TData = {
   updateWorkspace: models.Workspace;
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["name"],
   properties: {
     name: {
       type: "string",
       minLength: 2,
+    },
+  },
+  errorMessage: {
+    properties: {
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };
@@ -34,9 +44,8 @@ function WorkspaceForm() {
 
   const { trackEvent } = useTracking();
 
-  const [updateWorkspace, { error: updateError }] = useMutation<TData>(
-    UPDATE_WORKSPACE
-  );
+  const [updateWorkspace, { error: updateError }] =
+    useMutation<TData>(UPDATE_WORKSPACE);
 
   const handleSubmit = useCallback(
     (newData) => {
@@ -60,7 +69,10 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <PageContent pageTitle="Workspace settings" sideContent={<ProjectSideBar />}>
+    <PageContent
+      pageTitle="Workspace settings"
+      sideContent={<ProjectSideBar />}
+    >
       <div className={CLASS_NAME}>
         <h2>Workspace Settings</h2>
         {currentWorkspace && (

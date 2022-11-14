@@ -1,9 +1,9 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { EnumEntityAction } from '../../../enums/EnumEntityAction';
-import { EnumEntityPermissionType } from '../../../enums/EnumEntityPermissionType';
+import { Field, InputType } from "@nestjs/graphql";
+import { EnumEntityAction } from "../../../enums/EnumEntityAction";
+import { EnumEntityPermissionType } from "../../../enums/EnumEntityPermissionType";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityUpdatePermissionInput {
   @Field(() => EnumEntityAction, { nullable: false })
