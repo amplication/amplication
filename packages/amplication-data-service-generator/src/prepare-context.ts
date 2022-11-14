@@ -198,7 +198,8 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             );
           }
 
-          const relatedFieldProperties = relatedField.properties as types.Lookup;
+          const relatedFieldProperties =
+            relatedField.properties as types.Lookup;
 
           const isOneToOne =
             !fieldProperties.allowMultipleSelection &&

@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { Profile, Strategy, StrategyOptions } from 'passport-github2';
-import { AuthService, AuthUser } from './auth.service';
-import { getEmail } from './github.util';
+import { Injectable } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { Profile, Strategy, StrategyOptions } from "passport-github2";
+import { AuthService, AuthUser } from "./auth.service";
+import { getEmail } from "./github.util";
 
 @Injectable()
 export class GitHubStrategy extends PassportStrategy(Strategy) {
@@ -23,15 +23,15 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.getAuthUser({
       account: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [{ githubId: profile.id }, { email: email }]
-      }
+        OR: [{ githubId: profile.id }, { email: email }],
+      },
     });
     if (!user) {
       return done(
         null,
         await this.authService.createGitHubUser(profile, email),
         {
-          isNew: true
+          isNew: true,
         }
       );
     }
@@ -40,7 +40,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
         null,
         await this.authService.updateGitHubUser(user, profile),
         {
-          isNew: false
+          isNew: false,
         }
       );
     }

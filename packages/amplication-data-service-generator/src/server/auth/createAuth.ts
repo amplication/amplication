@@ -1,5 +1,5 @@
 import {
-  CreateAuthModulesParams,
+  CreateServerAuthParams,
   EventNames,
   Module,
 } from "@amplication/code-gen-types";
@@ -12,13 +12,13 @@ import { createTokenService } from "./token/createTokenService";
 export function createAuthModules(): Module[] {
   return pluginWrapper(
     createAuthModulesInternal,
-    EventNames.CreateAuthModules,
+    EventNames.CreateServerAuth,
     {}
   );
 }
 
 async function createAuthModulesInternal(
-  eventParams: CreateAuthModulesParams
+  eventParams: CreateServerAuthParams
 ): Promise<Module[]> {
   const { appInfo, serverDirectories } = DsgContext.getInstance;
   const authDir = `${serverDirectories.srcDirectory}/auth`;

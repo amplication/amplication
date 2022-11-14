@@ -104,9 +104,8 @@ type Props = {
 };
 
 const CommandPalette = ({ trigger }: Props) => {
-  const { currentWorkspace, currentProject, currentResource } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
 
   const projectBaseUrl = useMemo(
     () => `/${currentWorkspace?.id}/${currentProject?.id}`,
@@ -123,7 +122,9 @@ const CommandPalette = ({ trigger }: Props) => {
   });
   const commands = useMemo(
     () =>
-      data ? getCommands(data, history, currentResource, projectBaseUrl) : [],
+      data
+        ? getCommands(data, history, currentResource as any, projectBaseUrl)
+        : [],
     [data, history, currentResource, projectBaseUrl]
   );
 

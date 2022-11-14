@@ -4,7 +4,10 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import * as models from "../models";
 import { GET_USER } from "../Components/UserBadge";
 import { Form, Formik } from "formik";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import FormikAutoSave from "../util/formikAutoSave";
 import { Snackbar, TextField } from "@amplication/design-system";
 import { useTracking } from "../util/analytics";
@@ -16,42 +19,49 @@ type TData = {
   };
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["firstName", "lastName"],
   properties: {
     firstName: {
       type: "string",
-      minLength: 2
+      minLength: 2,
     },
     lastName: {
       type: "string",
-      minLength: 2
-    }
-  }
+      minLength: 2,
+    },
+  },
+  errorMessage: {
+    properties: {
+      firstName: AT_LEAST_TWO_CHARARCTERS,
+      lastName: AT_LEAST_TWO_CHARARCTERS,
+    },
+  },
 };
 
 const ProfileForm = () => {
   const { data, error, refetch } = useQuery<TData>(GET_USER);
 
-  const [updateAccount, { error: updateError }] = useMutation<TData>(
-    UPDATE_ACCOUNT
-  );
+  const [updateAccount, { error: updateError }] =
+    useMutation<TData>(UPDATE_ACCOUNT);
 
   const { trackEvent } = useTracking();
 
   const handleSubmit = useCallback(
-    newData => {
+    (newData) => {
       const { firstName, lastName } = newData;
       trackEvent({
-        eventName: "updateAccountInfo"
+        eventName: "updateAccountInfo",
       });
       updateAccount({
         variables: {
           data: {
             firstName,
-            lastName
-          }
-        }
+            lastName,
+          },
+        },
       })
         .then(() => refetch())
         .catch(console.error);
@@ -67,14 +77,15 @@ const ProfileForm = () => {
         initialValues={data.me.account}
         validate={(values: models.Account) => validate(values, FORM_SCHEMA)}
         enableReinitialize
-        onSubmit={handleSubmit}>
-        {formik => {
+        onSubmit={handleSubmit}
+      >
+        {(formik) => {
           return (
             <Form>
               <FormikAutoSave debounceMS={1000} />
-              <TextField name='email' label='Email' disabled />
-              <TextField name='firstName' label='First Name' />
-              <TextField name='lastName' label='Last Name' />
+              <TextField name="email" label="Email" disabled />
+              <TextField name="firstName" label="First Name" />
+              <TextField name="lastName" label="Last Name" />
             </Form>
           );
         }}

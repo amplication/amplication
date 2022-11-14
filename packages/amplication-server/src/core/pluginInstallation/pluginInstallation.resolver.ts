@@ -24,11 +24,11 @@ import { PluginOrderService } from './pluginOrder.service';
 @Resolver(() => PluginInstallation)
 export class PluginInstallationResolver extends BlockTypeResolver(
   PluginInstallation,
-  'PluginInstallations',
+  "PluginInstallations",
   FindManyPluginInstallationArgs,
-  'createPluginInstallation',
+  "createPluginInstallation",
   CreatePluginInstallationArgs,
-  'updatePluginInstallation',
+  "updatePluginInstallation",
   UpdatePluginInstallationArgs
 ) {
   constructor(
@@ -39,9 +39,9 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   }
 
   @Mutation(() => PluginOrder, {
-    nullable: true
+    nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
   async setPluginOrder(
     @Args() args: SetPluginOrderArgs,
     @UserEntity() user: User
@@ -50,9 +50,9 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   }
 
   @Query(() => PluginOrder, {
-    nullable: false
+    nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async pluginOrder(@Args() args: FindOneArgs): Promise<PluginOrder> {
     return this.pluginOrderService.findByResourceId(args);
   }

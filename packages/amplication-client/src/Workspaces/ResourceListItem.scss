@@ -16,7 +16,7 @@
     @include body1;
     color: var(--black100);
   }
-  
+
   &__description {
     @include body2;
     color: var(--black80);
@@ -41,6 +41,20 @@
     }
     &__not-yet {
       color: var(--black80);
+    }
+  }
+
+  &__github-repo {
+    color: var(--black20);
+    @include regular-12;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--icon-spacing);
+
+    &--not-connected {
+      color: var(--black40);
     }
   }
 }

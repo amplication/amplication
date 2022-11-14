@@ -5,21 +5,21 @@ import { IBlock } from '../../../models';
 
 @ObjectType({
   isAbstract: true,
-  implements: [IBlock]
+  implements: [IBlock],
 })
 export class PluginInstallation extends IBlock {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   pluginId!: string;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   enabled!: boolean;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   npm!: string;
 

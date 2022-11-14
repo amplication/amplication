@@ -4,21 +4,21 @@ import { JsonValue } from 'type-fest';
 import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class PluginInstallationCreateInput extends BlockCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   pluginId!: string;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   enabled: boolean;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   npm!: string;
 

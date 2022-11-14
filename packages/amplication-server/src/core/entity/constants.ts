@@ -1,93 +1,94 @@
-import { JsonObject } from 'type-fest';
-import { EnumDataType } from '../../enums/EnumDataType';
-import { EntityField, Entity } from '../../models';
-import { EnumEntityAction } from '../../enums/EnumEntityAction';
-import { EnumEntityPermissionType } from '../../enums/EnumEntityPermissionType';
-import { Prisma } from '@amplication/prisma-db';
+import type { JsonObject } from "type-fest";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { EntityField, Entity } from "../../models";
+import { EnumEntityAction } from "../../enums/EnumEntityAction";
+import { EnumEntityPermissionType } from "../../enums/EnumEntityPermissionType";
+import { Prisma } from "@amplication/prisma-db";
 
 export const CURRENT_VERSION_NUMBER = 0;
 
 type EntityFieldData = Omit<
   EntityField,
-  | 'id'
-  | 'createdAt'
-  | 'updatedAt'
-  | 'permanentId'
-  | 'properties'
-  | 'entityVersionId'
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "permanentId"
+  | "properties"
+  | "entityVersionId"
 > & { properties: JsonObject };
 
-export const USER_ENTITY_NAME = 'User';
-export const USER_ENTITY_FIELDS = ['password', 'username'];
+export const USER_ENTITY_NAME = "User";
+export const USER_ENTITY_FIELDS = ["password", "username"];
 
-export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVersionInput[] = [
-  {
-    action: EnumEntityAction.Create,
-    type: EnumEntityPermissionType.AllRoles
-  },
-  {
-    action: EnumEntityAction.Update,
-    type: EnumEntityPermissionType.AllRoles
-  },
-  {
-    action: EnumEntityAction.View,
-    type: EnumEntityPermissionType.AllRoles
-  },
-  {
-    action: EnumEntityAction.Delete,
-    type: EnumEntityPermissionType.AllRoles
-  },
-  {
-    action: EnumEntityAction.Search,
-    type: EnumEntityPermissionType.AllRoles
-  }
-];
+export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVersionInput[] =
+  [
+    {
+      action: EnumEntityAction.Create,
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Update,
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.View,
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Delete,
+      type: EnumEntityPermissionType.AllRoles,
+    },
+    {
+      action: EnumEntityAction.Search,
+      type: EnumEntityPermissionType.AllRoles,
+    },
+  ];
 
 export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
   EnumDataType.Id,
   EnumDataType.Username,
   EnumDataType.Password,
-  EnumDataType.Roles
+  EnumDataType.Roles,
 ]);
 
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
   {
     dataType: EnumDataType.Id,
-    name: 'id',
-    displayName: 'ID',
-    description: 'An automatically created unique identifier of the entity',
+    name: "id",
+    displayName: "ID",
+    description: "An automatically created unique identifier of the entity",
     unique: true,
     required: true,
     searchable: true,
-    properties: {}
+    properties: {},
   },
   {
     dataType: EnumDataType.CreatedAt,
-    name: 'createdAt',
-    displayName: 'Created At',
+    name: "createdAt",
+    displayName: "Created At",
     description:
-      'An automatically created field of the time the entity created at',
+      "An automatically created field of the time the entity created at",
     unique: false,
     required: true,
     searchable: false,
-    properties: {}
+    properties: {},
   },
   {
     dataType: EnumDataType.UpdatedAt,
-    name: 'updatedAt',
-    displayName: 'Updated At',
+    name: "updatedAt",
+    displayName: "Updated At",
     description:
-      'An automatically created field of the last time the entity updated at',
+      "An automatically created field of the last time the entity updated at",
     unique: false,
     required: true,
     searchable: false,
-    properties: {}
-  }
+    properties: {},
+  },
 ];
 
 type EntityData = Omit<
   Entity,
-  'id' | 'createdAt' | 'updatedAt' | 'resource' | 'resourceId' | 'fields'
+  "id" | "createdAt" | "updatedAt" | "resource" | "resourceId" | "fields"
 > & {
   fields: EntityFieldData[];
 };
@@ -97,113 +98,113 @@ export const DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH = 256;
 export const DEFAULT_ENTITIES: EntityData[] = [
   {
     name: USER_ENTITY_NAME,
-    displayName: 'User',
-    pluralDisplayName: 'Users',
+    displayName: "User",
+    pluralDisplayName: "Users",
     description:
-      'An automatically created entity to manage users in the service',
+      "An automatically created entity to manage users in the service",
     fields: [
       ...INITIAL_ENTITY_FIELDS,
       {
         dataType: EnumDataType.SingleLineText,
-        name: 'firstName',
-        displayName: 'First Name',
+        name: "firstName",
+        displayName: "First Name",
         description:
-          'An automatically created field of the first name of the user',
+          "An automatically created field of the first name of the user",
         required: false,
         unique: false,
         searchable: true,
         properties: {
-          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
-        }
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
+        },
       },
       {
         dataType: EnumDataType.SingleLineText,
-        name: 'lastName',
-        displayName: 'Last Name',
+        name: "lastName",
+        displayName: "Last Name",
         description:
-          'An automatically created field of the last name of the user',
+          "An automatically created field of the last name of the user",
         unique: false,
         required: false,
         searchable: true,
         properties: {
-          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
-        }
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
+        },
       },
       {
         dataType: EnumDataType.Username,
-        name: 'username',
-        displayName: 'Username',
+        name: "username",
+        displayName: "Username",
         description:
-          'An automatically created field of the username of the user',
+          "An automatically created field of the username of the user",
         unique: false,
         required: true,
         searchable: true,
         properties: {
-          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
-        }
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
+        },
       },
       {
         dataType: EnumDataType.Password,
-        name: 'password',
-        displayName: 'Password',
+        name: "password",
+        displayName: "Password",
         description:
-          'An automatically created field of the password of the user',
+          "An automatically created field of the password of the user",
         unique: false,
         required: true,
         searchable: false,
         properties: {
-          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH
-        }
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
+        },
       },
       {
         dataType: EnumDataType.Roles,
-        name: 'roles',
-        displayName: 'Roles',
-        description: 'An automatically created field of the roles of the user',
+        name: "roles",
+        displayName: "Roles",
+        description: "An automatically created field of the roles of the user",
         unique: false,
         required: true,
         searchable: false,
-        properties: {}
-      }
-    ]
-  }
+        properties: {},
+      },
+    ],
+  },
 ];
 
 export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
   [key in EnumDataType]: JsonObject;
 } = {
   [EnumDataType.SingleLineText]: {
-    maxLength: 1000
+    maxLength: 1000,
   },
   [EnumDataType.MultiLineText]: {
-    maxLength: 1000
+    maxLength: 1000,
   },
   [EnumDataType.Email]: {},
   [EnumDataType.WholeNumber]: {
     minimumValue: -999999999,
-    maximumValue: 999999999
+    maximumValue: 999999999,
   },
   [EnumDataType.DecimalNumber]: {
     minimumValue: -999999999,
     maximumValue: 999999999,
-    precision: 2
+    precision: 2,
   },
   [EnumDataType.DateTime]: {
-    timeZone: 'localTime',
-    dateOnly: false
+    timeZone: "localTime",
+    dateOnly: false,
   },
   [EnumDataType.Lookup]: {
-    relatedEntityId: '',
+    relatedEntityId: "",
     allowMultipleSelection: false,
-    relatedFieldId: ''
+    relatedFieldId: "",
   },
   [EnumDataType.Boolean]: {},
   [EnumDataType.Json]: {},
   [EnumDataType.OptionSet]: {
-    options: [{ label: 'Option 1', value: 'Option1' }]
+    options: [{ label: "Option 1", value: "Option1" }],
   },
   [EnumDataType.MultiSelectOptionSet]: {
-    options: [{ label: 'Option 1', value: 'Option1' }]
+    options: [{ label: "Option 1", value: "Option1" }],
   },
   [EnumDataType.GeographicLocation]: {},
   [EnumDataType.CreatedAt]: {},
@@ -211,5 +212,5 @@ export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
   [EnumDataType.Id]: {},
   [EnumDataType.Username]: {},
   [EnumDataType.Password]: {},
-  [EnumDataType.Roles]: {}
+  [EnumDataType.Roles]: {},
 };

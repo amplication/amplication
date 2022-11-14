@@ -8,6 +8,10 @@ import { EnumMessagePatternConnectionOptions } from "@amplication/code-gen-types
 
 jest.setTimeout(100000);
 
+jest.mock("./create-log", () => ({
+  createLog: jest.fn(),
+}));
+
 describe("createDataService", () => {
   test("creates resource as expected", async () => {
     const gitPullTopic: Topic = { id: "topicId", name: "git.pull" };

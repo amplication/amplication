@@ -1,6 +1,10 @@
 <p align="center">
+<a href="https://amplication.com/#gh-light-mode-only">
 <img width="300" src="https://raw.githubusercontent.com/amplication/amplication/master/light.svg#gh-light-mode-only">
+</a>
+<a href="https://amplication.com/#gh-dark-mode-only">
 <img width="300" src="https://raw.githubusercontent.com/amplication/amplication/master/dark.svg#gh-dark-mode-only">
+</a>
 </p>
 
 <p align="center">
@@ -38,16 +42,15 @@ Amplication provides the following features:
 
 - Production-ready APIs
 - Data Model
-- Role Based Access Control
-- Microservice Support
-- Continuous Github Sync
+- Role Based Access Control (RBAC)
+- Microservices Support
+- Continuous GitHub Sync
 - TypeScript and Node.js Source Code
 - Plugin System
 - Monorepo or Polyrepo
 - Custom Code
-- Ready-to-deploy-app
 - Admin UI
-- Amplication console & CLI
+- Amplication Console & CLI
 
 # Getting Started
 
@@ -55,14 +58,12 @@ You can get started with Amplication immediately on the Amplication Cloud.
 
 Alternatively you can set up a local development environment.
 
-
-
-See [Amplication website](http://amplication.com/) or [Amplication docs](http://docs.amplication.com/) for more details.
+See the [Amplication Website](http://amplication.com/) or [Amplication Docs](http://docs.amplication.com/) for more details.
 
 ## Tutorials 
 
-- Todo Application using Amplication and Angular. [Click here to access](https://docs.amplication.com/docs/tutorials/angular-todos/)
-- Todo Application using Amplication and React. [Click here to access](https://docs.amplication.com/docs/tutorials/react-todos/)
+- [Todo Application using Amplication and Angular](https://docs.amplication.com/docs/tutorials/angular-todos/)
+- [Todo Application using Amplication and React](https://docs.amplication.com/docs/tutorials/react-todos/)
 
 ## Amplication Cloud (SaaS)
 
@@ -72,43 +73,63 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
 ### System Requirements
 
-:bulb: Before you begin, make sure you have all the below installed:
+:bulb: Before you begin, make sure you have the following installed:
 
 - [Node.js v16 or above](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/desktop/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
+- [ts-node](https://www.npmjs.com/package/ts-node#installation)
 
 
-### Initializing all the packages
+### Getting Started With Local Development
 
-Amplication is using a monorepo with multiple packages. To initialize all the packages on a local development environment, including running a docker image for the DB and seeding the DB.
+Amplication is using a monorepo (powered by [Nx Workspaces](https://nx.dev/)) with multiple apps and libraries.
 
-1. Execute the following commands in the project root folder:
+Follow these simple instructions to set up a local development environment.
 
-```jsx
-npm install
+1. Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/amplication/amplication.git
+cd amplication
+```
+
+2. Run the [setup script](https://github.com/amplication/amplication/blob/master/script/setup.ts), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
+
+```bash
 npm run setup:dev
 ```
-This will install all the required dependencies, run the necessary scripts and init a Docker-based Postgres server.
 
-2. Go to `.../packages/amplication-server` and execute the following command:
+3. Spin up all required infrastructure (Postgres, Kafka, etc.) using Docker Compose:
+```bash
+# To be able to view logs
+npm run docker:dev
 
-```jsx
-npm run start
+# Or, if you prefer to run it at the background
+npm run docker:dev -- -d
 ```
 
-3. Go to `.../packages/amplication-client` and execute the following command:
-
-```jsx
-npm run start
+4. Apply database migrations:
+```bash
+npm run db:migrate:deploy
 ```
 
+5. To start developing, run the `serve` target of the desired app:
+```bash
+# This will serve the Amplication Server in development mode
+npx nx serve amplication-server
 
+# This will serve the Amplication Client in development mode
+npx nx serve amplication-client
+```
 
+That's it, you are good to go! Happy hacking! 👾
+
+You can always find more information in each app/library's respective README.md file.
 
 ### Setting Up Amplication Manually
 
-You can use a manual step-by-step approach to set up Amplication in a local development environment. To do that, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
+You can use a manual step-by-step approach to set up Amplication in a local development environment. To do so, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
 
 #### Setting up [Amplication Server](https://github.com/amplication/amplication/blob/master/packages/amplication-server/README.md)
 
@@ -120,24 +141,24 @@ The server exposes a GraphQL API for all actions. The server is built with the f
 Amplication Client is the front end of the platform that provides you with an easy-to-drive UI for building your next low-code application.
 The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
 
-# Version 1.0.0
+# Version 1
 
-Amplication is currently in its version 1.0.  This is the first major release of Amplication with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the README file. 
+Amplication is currently in version 1. This is the first major release of Amplication with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the [Features](#features) section.
 
 ## Support
 
-Ask your questions and participate in discussions on Amplication-related and web-dev topics at Amplication Discord channel. 
+Ask your questions and participate in discussions regarding Amplication-related and web-dev topics at the Amplication Discord server. 
 
 <a href="https://discord.gg/Z2CG3rUFnu"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
-## Create a bug report
+## Create a Bug Report
 
-If you see an error message or run into an issue, please [create bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=). This effort is valued and it will help all Amplication users.
+If you see an error message or run into an issue, please [create bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+). This effort is valued and helps all Amplication users.
 
 
-## Submit a feature request
+## Submit a Feature Request
 
-If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=).
+If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
 
 If a similar feature request already exists, don't forget to leave a "+1".
 If you add some more information such as your thoughts and vision about the feature, your comments will be embraced warmly :)
@@ -145,7 +166,7 @@ If you add some more information such as your thoughts and vision about the feat
 
 # Contributing
 
-Amplication is an open-source project. We are committed to a fully transparent development process and appreciate highly any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Amplication community.
+Amplication is an open-source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the Amplication community.
 
 # Useful Links
 
@@ -159,7 +180,7 @@ Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Co
 
 # Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to these wonderful people ([:hugs:](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->

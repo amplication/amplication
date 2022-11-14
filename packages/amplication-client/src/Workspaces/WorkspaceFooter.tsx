@@ -18,7 +18,7 @@ type TDataCommit = {
 
 const CLASS_NAME = "workspace-footer";
 
-const WorkspaceFooter: React.FC<{}> = () => {
+const WorkspaceFooter: React.FC<unknown> = () => {
   const {
     currentWorkspace,
     currentProject,

@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { EnvironmentCreateInput } from './EnvironmentCreateInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { EnvironmentCreateInput } from "./EnvironmentCreateInput";
 
 @ArgsType()
 export class CreateEnvironmentArgs {

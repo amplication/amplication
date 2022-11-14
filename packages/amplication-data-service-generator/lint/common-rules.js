@@ -32,6 +32,10 @@ module.exports = {
       selector: "typeLike",
       format: ["PascalCase"],
     },
+    {
+      selector: "objectLiteralProperty",
+      format: null,
+    },
     { selector: "enumMember", format: ["PascalCase"] },
   ],
   "@typescript-eslint/no-unused-vars": ["error", { args: "none" }],

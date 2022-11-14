@@ -1,4 +1,4 @@
-import { isEqualWith, IsEqualCustomizer } from 'lodash';
+import { isEqualWith, IsEqualCustomizer } from "lodash";
 
 export class DiffService {
   /**
@@ -31,7 +31,7 @@ export class DiffService {
     ignoredProperties: string[]
   ): IsEqualCustomizer {
     return (value, other, indexOrKey) =>
-      (typeof indexOrKey === 'string' &&
+      (typeof indexOrKey === "string" &&
         ignoredProperties.includes(indexOrKey)) ||
       undefined;
   }

@@ -8,7 +8,7 @@ export type Props = {
   children?: React.ReactNode;
 };
 
-export const FormHeader = ({ title, children }: Props) => {
+export const FormHeader: React.FC<Props> = ({ title, children }) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__strip`}>

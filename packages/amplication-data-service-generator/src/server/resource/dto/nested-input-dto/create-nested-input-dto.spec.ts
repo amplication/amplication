@@ -23,8 +23,10 @@ const checkProperty = (
   expectedNestedMutationOptions: NestedMutationOptions
 ) => {
   expect(
-    ((dtoClass.body.body[propertyPosition] as namedTypes.ClassProperty)
-      .key as namedTypes.Identifier).name
+    (
+      (dtoClass.body.body[propertyPosition] as namedTypes.ClassProperty)
+        .key as namedTypes.Identifier
+    ).name
   ).toBe(expectedNestedMutationOptions);
 };
 

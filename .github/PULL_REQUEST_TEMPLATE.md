@@ -15,7 +15,7 @@ Make sure that:
 
 -->
 
-Issue Number: N/A
+Close #[issue-number]
 
 ## PR Details
 

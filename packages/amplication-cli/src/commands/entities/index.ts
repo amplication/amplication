@@ -1,9 +1,9 @@
-import cli, { Table } from 'cli-ux';
+import cli, { Table } from "cli-ux";
 
-import { ConfiguredCommand } from '../../configured-command';
-import { getEntities } from '../../api';
-import { resource } from '../../flags/resource-flag';
-import { format } from '../../flags/format-flag';
+import { ConfiguredCommand } from "../../configured-command";
+import { getEntities } from "../../api";
+import { resource } from "../../flags/resource-flag";
+import { format } from "../../flags/format-flag";
 
 export const ENTITY_COLUMNS: Table.table.Columns<any> = {
   id: {},
@@ -21,12 +21,12 @@ export const ENTITY_COLUMNS: Table.table.Columns<any> = {
 };
 
 export default class EntitiesIndex extends ConfiguredCommand {
-  static description = 'list entities for an resource';
+  static description = "list entities for a resource";
 
   static examples = [
-    'amp entities',
-    'amp entities -r ckm1w4vy857869go3nsw4mk2ay',
-    'amp entities --format=table',
+    "amp entities",
+    "amp entities -r ckm1w4vy857869go3nsw4mk2ay",
+    "amp entities --format=table",
   ];
 
   static flags = {
@@ -39,10 +39,10 @@ export default class EntitiesIndex extends ConfiguredCommand {
     const { flags } = this.parse(EntitiesIndex);
 
     const resourceIdFlag = flags.resource;
-    let resourceId = '';
+    let resourceId = "";
 
     if (!resourceIdFlag) {
-      resourceId = await cli.prompt('resource', { required: true });
+      resourceId = await cli.prompt("resource", { required: true });
     }
 
     const data = await getEntities(

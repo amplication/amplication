@@ -102,9 +102,6 @@ const LastCommit = ({ projectId }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Secondary}
               disabled={generating}
-              eventData={{
-                eventName: "LastCommitViewCode",
-              }}
             >
               Go to view code
             </Button>

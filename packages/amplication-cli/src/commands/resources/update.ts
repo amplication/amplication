@@ -1,14 +1,14 @@
-import cli from 'cli-ux';
-import { flags } from '@oclif/command';
-import { ConfiguredCommand } from '../../configured-command';
-import chalk from 'chalk';
-import { updateResource } from '../../api';
-import { format } from '../../flags/format-flag';
-import { resource } from '../../flags/resource-flag';
-import { RESOURCE_COLUMNS } from './index';
+import cli from "cli-ux";
+import { flags } from "@oclif/command";
+import { ConfiguredCommand } from "../../configured-command";
+import chalk from "chalk";
+import { updateResource } from "../../api";
+import { format } from "../../flags/format-flag";
+import { resource } from "../../flags/resource-flag";
+import { RESOURCE_COLUMNS } from "./index";
 
 export default class ResourcesUpdate extends ConfiguredCommand {
-  static description = 'update an resource';
+  static description = "update a resource";
 
   static examples = [
     'amp resources:update --name="my new name"',
@@ -23,11 +23,11 @@ export default class ResourcesUpdate extends ConfiguredCommand {
 
     name: flags.string({
       required: false,
-      description: 'name of the resource',
+      description: "name of the resource",
     }),
     description: flags.string({
       required: false,
-      description: 'description of the resource',
+      description: "description of the resource",
     }),
   };
 

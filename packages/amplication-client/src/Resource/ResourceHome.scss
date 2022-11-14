@@ -8,7 +8,6 @@ $app-icon-large-font-size: 70px;
 $circle-badge-border: 2px;
 
 .resource-home {
-
   &__header {
     @include flexFullRowWithSpacing;
     @include pageTitle;

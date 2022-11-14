@@ -1,6 +1,0 @@
-services:
-  scheduler:
-    build:
-      context: ..
-    volumes:
-      - ./config.json:/etc/scheduler/config

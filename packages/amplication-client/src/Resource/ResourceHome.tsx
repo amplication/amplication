@@ -1,4 +1,4 @@
-import { EnumResourceType } from "@amplication/code-gen-types/dist/models";
+import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { CircleBadge } from "@amplication/design-system";
 import { gql } from "@apollo/client";
 import React, { useContext } from "react";
@@ -72,10 +72,12 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
             {currentResource?.resourceType === EnumResourceType.Service && (
               <RolesTile resourceId={resourceId} />
             )}
-            {currentResource?.resourceType === EnumResourceType.MessageBroker && (
+            {currentResource?.resourceType ===
+              EnumResourceType.MessageBroker && (
               <TopicsTile resourceId={resourceId} />
             )}
-            {currentResource?.resourceType === EnumResourceType.MessageBroker && (
+            {currentResource?.resourceType ===
+              EnumResourceType.MessageBroker && (
               <ServicesTile resourceId={resourceId} />
             )}
             <DocsTile />

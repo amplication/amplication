@@ -1,8 +1,10 @@
 import { namedTypes } from "ast-types";
-import { JsonValue } from "type-fest";
+
 import {
   Entity,
   EntityField,
+  Module,
+  NamedClassDeclaration,
   PrismaClientGenerator,
   PrismaDataSource,
 } from "./code-gen-types";
@@ -28,7 +30,7 @@ export interface CreateEntityServiceParams extends EventParams {
   template: namedTypes.File;
 }
 export interface CreateEntityControllerParams extends EventParams {
-  templatePath: string;
+  template: namedTypes.File;
   entityName: string;
   entityServiceModule: string;
   templateMapping: { [key: string]: any };
@@ -36,7 +38,7 @@ export interface CreateEntityControllerParams extends EventParams {
   serviceId: namedTypes.Identifier;
 }
 export interface CreateEntityControllerBaseParams extends EventParams {
-  baseTemplatePath: string;
+  template: namedTypes.File;
   entity: Entity;
   entityName: string;
   entityType: string;
@@ -45,11 +47,22 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
-export interface CreateAuthModulesParams extends EventParams {
+export interface CreateEntityControllerSpecParams extends EventParams {
+  entity: Entity;
+  entityType: string;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  entityServiceModulePath: string;
+  entityControllerModulePath: string;
+  entityControllerBaseModulePath: string;
+  controllerId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+}
+export interface CreateServerAuthParams extends EventParams {
   srcDir: string;
 }
 
-export interface CreateAdminModulesParams extends EventParams {}
+export interface CreateAdminUIParams extends EventParams {}
 export interface CreateServerParams extends EventParams {}
 
 export type VariableDictionary = {
@@ -86,5 +99,64 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
 export interface CreateMessageBrokerServiceParams extends EventParams {}
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
 export interface CreateServerPackageJsonParams extends EventParams {
-  updateValues: { [key: string]: JsonValue };
+  updateProperties: { [key: string]: any }[];
+}
+
+export interface CreateAdminUIPackageJsonParams extends EventParams {
+  updateProperties: { [key: string]: any }[];
+}
+
+export interface CreateServerAppModuleParams extends EventParams {
+  modulesFiles: Module[];
+}
+
+export interface CreateEntityModuleParams extends EventParams {
+  entityName: string;
+  entityType: string;
+  entityServiceModule: string;
+  entityControllerModule: string | undefined;
+  entityResolverModule: string | undefined;
+  moduleBaseId: namedTypes.Identifier;
+}
+
+export interface CreateEntityModuleBaseParams extends EventParams {
+  entityName: string;
+  moduleBaseId: namedTypes.Identifier;
+}
+
+export interface CreateEntityResolverParams extends EventParams {
+  template: namedTypes.File;
+  entityName: string;
+  entityServiceModule: string;
+  serviceId: namedTypes.Identifier;
+  resolverBaseId: namedTypes.Identifier;
+  templateMapping: { [key: string]: any };
+}
+
+export interface CreateEntityResolverBaseParams extends EventParams {
+  template: namedTypes.File;
+  entityName: string;
+  entityType: string;
+  entityServiceModule: string;
+  entity: Entity;
+  serviceId: namedTypes.Identifier;
+  resolverBaseId: namedTypes.Identifier;
+  createArgs: NamedClassDeclaration | undefined;
+  updateArgs: NamedClassDeclaration | undefined;
+  createMutationId: namedTypes.Identifier;
+  updateMutationId: namedTypes.Identifier;
+  templateMapping: { [key: string]: any };
+}
+export interface CreateSwaggerParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
+}
+
+export interface CreateSeedParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
 }

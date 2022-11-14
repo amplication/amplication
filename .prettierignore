@@ -1,3 +1,14 @@
 node_modules/
 package-lock.json
 *.md
+# Add files here to ignore them from prettier formatting
+
+/dist
+/coverage
+/**/models.ts
+helm
+.github
+.amplication
+/generated
+/build
+__snapshots__

@@ -4,11 +4,11 @@ import { JsonValue } from 'type-fest';
 import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class PluginInstallationUpdateInput extends BlockUpdateInput {
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   enabled!: boolean;
 

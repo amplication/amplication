@@ -5,7 +5,7 @@ spec:
     spec:
       initContainers:
         - name: "{{ .Values.name }}-migrate"
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}@{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if .Values.autoscaling.enabled }}
           resources:
             limits:
@@ -16,7 +16,7 @@ spec:
               memory: {{ .Values.maxMemory }}
           {{- end }}
           command: ["/bin/sh"]
-          args: ["-c", "npm run migrate:up", ";", "exit"]
+          args: ["-c", "npx prisma migrate deploy", ";", "exit"]
           env:
           - name: POSTGRESQL_URL
             valueFrom:

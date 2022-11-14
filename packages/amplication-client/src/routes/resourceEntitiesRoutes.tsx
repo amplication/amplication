@@ -11,8 +11,7 @@ const resourceEntitiesRoutes = [
     isAnalytics: true,
   },
   {
-    path:
-      "/:workspace/:project/:resource/entities/permissions",
+    path: "/:workspace/:project/:resource/entities/permissions",
     Component: lazy(() => import("../Permissions/PermissionsForm")),
     moduleName: "",
     routeTrackType: "",
@@ -28,8 +27,7 @@ const resourceEntitiesRoutes = [
     exactPath: false,
     routes: [
       {
-        path:
-          "/:workspace/:project/:resource/entities/fields/:fieldId",
+        path: "/:workspace/:project/:resource/entities/fields/:fieldId",
         Component: lazy(() => import("../Entity/EntityField")),
         moduleName: "",
         routeTrackType: "",

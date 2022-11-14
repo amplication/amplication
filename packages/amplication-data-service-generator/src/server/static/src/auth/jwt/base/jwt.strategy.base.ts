@@ -7,7 +7,8 @@ import { UserInfo } from "../../UserInfo";
 
 export class JwtStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(
     protected readonly userService: UserService,
     protected readonly secretOrKey: string
@@ -27,6 +28,13 @@ export class JwtStrategyBase
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    if (
+      !Array.isArray(user.roles) ||
+      typeof user.roles !== "object" ||
+      user.roles === null
+    ) {
+      throw new Error("User roles is not a valid value");
+    }
+    return { ...user, roles: user.roles as string[] };
   }
 }
