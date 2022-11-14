@@ -1,5 +1,5 @@
-import { SchemaValidationResult } from '../dto/schemaValidationResult';
-import Ajv from 'ajv';
+import { SchemaValidationResult } from "../dto/schemaValidationResult";
+import Ajv from "ajv";
 
 export class JsonSchemaValidationService {
   public async validateSchema(

@@ -224,6 +224,14 @@ export class BuildService {
       buildId: build.id,
     });
 
+    const resource = await this.resourceService.findOne({
+      where: { id: resourceId },
+    });
+    if (resource.resourceType !== EnumResourceType.Service) {
+      logger.info("Code generation is supported only for services");
+      return;
+    }
+
     logger.info(JOB_STARTED_LOG);
     await this.generate(build, user);
 

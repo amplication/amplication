@@ -1,14 +1,14 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Int, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class PluginOrderItem {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   pluginId!: string;
 
   @Field(() => Int, {
-    nullable: false
+    nullable: false,
   })
   order!: number;
 }

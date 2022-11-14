@@ -1,3 +1,3 @@
-export { Environment } from './Environment';
-export { CreateEnvironmentArgs } from './CreateEnvironmentArgs';
-export { FindManyEnvironmentArgs } from './FindManyEnvironmentArgs';
+export { Environment } from "./Environment";
+export { CreateEnvironmentArgs } from "./CreateEnvironmentArgs";
+export { FindManyEnvironmentArgs } from "./FindManyEnvironmentArgs";

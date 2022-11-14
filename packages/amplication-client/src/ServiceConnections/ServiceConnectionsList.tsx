@@ -23,9 +23,8 @@ type Props = {
 
 export const ServiceConnectionsList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
-    const { currentWorkspace, currentProject, resources } = useContext(
-      AppContext
-    );
+    const { currentWorkspace, currentProject, resources } =
+      useContext(AppContext);
 
     const history = useHistory();
 
@@ -43,16 +42,14 @@ export const ServiceConnectionsList = React.memo(
           (resource) =>
             resource.resourceType === models.EnumResourceType.MessageBroker
         )
-        .map(
-          (resource): MessageBrokerListItem => {
-            return {
-              resource,
-              connection: data?.ServiceTopicsList.find(
-                (connection) => connection.messageBrokerId === resource.id
-              ),
-            };
-          }
-        );
+        .map((resource): MessageBrokerListItem => {
+          return {
+            resource,
+            connection: data?.ServiceTopicsList.find(
+              (connection) => connection.messageBrokerId === resource.id
+            ),
+          };
+        });
     }, [resources, data?.ServiceTopicsList]);
 
     useEffect(() => {

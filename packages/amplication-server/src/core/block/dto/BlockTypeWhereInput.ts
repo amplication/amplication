@@ -1,43 +1,43 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { ResourceWhereInput } from '../../resource/dto';
-import { WhereUniqueInput, DateTimeFilter, StringFilter } from '../../../dto';
+import { Field, InputType } from "@nestjs/graphql";
+import { ResourceWhereInput } from "../../resource/dto";
+import { WhereUniqueInput, DateTimeFilter, StringFilter } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class BlockTypeWhereInput {
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => ResourceWhereInput, {
-    nullable: true
+    nullable: true,
   })
   resource?: ResourceWhereInput | null;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true
+    nullable: true,
   })
   parentBlock?: WhereUniqueInput | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   displayName?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   description?: StringFilter | null;
 

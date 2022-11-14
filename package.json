@@ -3,8 +3,8 @@
   "version": "1.0.3",
   "scripts": {
     "postinstall": "nx run-many --target=install",
-    "format:check": "npx nx format:check",
-    "format:write": "npx nx format:write",
+    "format:check": "npx nx format:check --all",
+    "format:write": "npx nx format:write --all",
     "build": "nx run-many --target=build",
     "setup:dev": "ts-node ./script/setup.ts",
     "clean": "nx clear-cache",
