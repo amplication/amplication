@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import diff from "jest-diff";
+import { diff } from "jest-diff";
 import generateGraphQLSchema from "./generate-graphql-schema";
 
 const SCHEMA_PATH = path.join(__dirname, "..", "src", "schema.graphql");
