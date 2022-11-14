@@ -186,7 +186,7 @@ const BuildNewVersion = ({
 export default BuildNewVersion;
 
 const CREATE_BUILD = gql`
-  mutation($resourceId: String!, $version: String!, $message: String!) {
+  mutation ($resourceId: String!, $version: String!, $message: String!) {
     createBuild(
       data: {
         resource: { connect: { id: $resourceId } }

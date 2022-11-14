@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { ConnectGitRepositoryInput } from '../inputs/ConnectGitRepositoryInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { ConnectGitRepositoryInput } from "../inputs/ConnectGitRepositoryInput";
 
 @ArgsType()
 export class ConnectGitRepositoryArgs {

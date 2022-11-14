@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command';
+import { flags } from "@oclif/command";
 
 function getField(params: any): string | undefined {
   const envField = process.env.AMP_CURRENT_FIELD;
@@ -10,7 +10,7 @@ function getField(params: any): string | undefined {
   return undefined;
 }
 export const field = flags.build({
-  char: 'i',
-  description: 'ID of the field',
+  char: "i",
+  description: "ID of the field",
   default: getField,
 });
