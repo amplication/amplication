@@ -10,7 +10,8 @@ import { KafkaMessage } from "kafkajs";
 import { ResultMessage } from "../queue/dto/ResultMessage";
 import { StatusEnum } from "../queue/dto/StatusEnum";
 import { EnvironmentVariables } from "@amplication/kafka";
-import { SendPullRequestResponse } from "./dto/sendPullRequestResponse";
+import { CreatePRSuccess } from "./dto/CreatePRSuccess";
+import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
 import { Env } from "../../env";
 import { EnumActionStepStatus } from "../action/dto";
@@ -73,16 +74,24 @@ export class BuildController {
     EnvironmentVariables.instance.get(Env.CREATE_PR_SUCCESS_TOPIC, true)
   )
   async onPullRequestCreated(@Payload() message: KafkaMessage): Promise<void> {
-    const args = plainToInstance(SendPullRequestResponse, message.value);
-    await this.buildService.onCreatePRSuccess({ response: args });
+    try {
+      const args = plainToInstance(CreatePRSuccess, message.value);
+      await this.buildService.onCreatePRSuccess(args);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   @EventPattern(
     EnvironmentVariables.instance.get(Env.CREATE_PR_FAILURE_TOPIC, true)
   )
   async onCreatePRFailure(@Payload() message: KafkaMessage): Promise<void> {
-    // const args = plainToInstance(SendPullRequestResponse, message.value);
-    // await this.buildService.onCreatePRFailure(args);
+    try {
+      const args = plainToInstance(CreatePRFailure, message.value);
+      await this.buildService.onCreatePRFailure(args);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   @EventPattern(EnvironmentVariables.instance.get(Env.DSG_LOG_TOPIC, true))
