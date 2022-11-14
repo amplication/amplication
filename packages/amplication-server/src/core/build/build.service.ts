@@ -390,13 +390,11 @@ export class BuildService {
   }
 
   public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
-
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
 
     try {
-
       await this.resourceService.reportSyncMessage(
         build.resourceId,
         "Sync Completed Successfully"
@@ -421,9 +419,7 @@ export class BuildService {
   public async onCreatePRFailure(response: CreatePRFailure): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find(
-      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
-    );
+    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
 
     await this.resourceService.reportSyncMessage(
       build.resourceId,
