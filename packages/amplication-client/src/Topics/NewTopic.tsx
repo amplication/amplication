@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { isEmpty } from "lodash";
@@ -10,7 +10,7 @@ import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
 import "./NewTopic.scss";
 import { AppContext } from "../context/appContext";
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 const INITIAL_VALUES: Partial<models.Topic> = {
@@ -105,10 +105,12 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
     [createTopic, resourceId, onTopicAdd, addEntity, trackEvent]
   );
 
-  const handleCreateTopicFailed = () => {
+  const errorMessage = formatError(error);
+  useEffect(() => {
+    if (!error) return;
+
     trackEvent({ eventName: AnalyticsEventNames.TopicCreateFailed });
-    return formatError(error);
-  };
+  }, [error]);
 
   return (
     <div className={CLASS_NAME}>
@@ -146,7 +148,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
           </Form>
         )}
       </Formik>
-      <Snackbar open={Boolean(error)} message={handleCreateTopicFailed()} />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 };

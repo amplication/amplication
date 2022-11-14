@@ -29,18 +29,12 @@ const Topic = () => {
   });
 
   const { trackEvent } = useTracking();
-  const handleTrackEventForUpdateTopic = (updateProperty: string) => {
-    switch (updateProperty) {
-      case "name":
-        trackEvent({ eventName: AnalyticsEventNames.TopicNameEdit });
-        break;
-      case "displayName":
-        trackEvent({ eventName: AnalyticsEventNames.TopicDisplayNameEdit });
-        break;
-      case "description":
-        trackEvent({ eventName: AnalyticsEventNames.TopicDescriptionEdit });
-        break;
-    }
+  const topicTrackEvents = {
+    name: () => trackEvent({ eventName: AnalyticsEventNames.TopicNameEdit }),
+    displayName: () =>
+      trackEvent({ eventName: AnalyticsEventNames.TopicDisplayNameEdit }),
+    description: () =>
+      trackEvent({ eventName: AnalyticsEventNames.TopicDescriptionEdit }),
   };
 
   const handleSubmit = useCallback(
@@ -53,7 +47,7 @@ const Topic = () => {
           data,
         },
       }).catch(console.error);
-      handleTrackEventForUpdateTopic(data.updateTopic);
+      topicTrackEvents[data.updateTopic]();
     },
     [updateTopic, topicId]
   );
