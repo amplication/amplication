@@ -146,21 +146,21 @@ const EntityFieldForm = ({
                   <ToggleField
                     name="unique"
                     label="Unique Field"
-                    disabled={isDisabled}
+                    disabled={isDisabled || isSystemData }
                   />
                 </div>
                 <div>
                   <ToggleField
                     name="required"
                     label="Required Field"
-                    disabled={isDisabled}
+                    disabled={isDisabled || isSystemData }
                   />
                 </div>
                 <div>
                   <ToggleField
                     name="searchable"
                     label="Searchable"
-                    disabled={isDisabled}
+                    disabled={isDisabled || isSystemData }
                   />
                 </div>
                 {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
