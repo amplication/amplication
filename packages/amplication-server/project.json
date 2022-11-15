@@ -70,14 +70,6 @@
         }
       }
     },
-    "db:migrate:deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "prisma migrate deploy",
-        "cwd": "packages/amplication-prisma-db",
-        "envFile": "packages/amplication-server/.env"
-      }
-    },
     "graphql:schema:generate": {
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/**/*.ts"],
