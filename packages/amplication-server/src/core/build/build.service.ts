@@ -42,7 +42,8 @@ import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { SendPullRequestResponse } from "./dto/sendPullRequestResponse";
+import { CreatePRSuccess } from "./dto/CreatePRSuccess";
+import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
 
 export const HOST_VAR = "HOST";
@@ -388,20 +389,12 @@ export class BuildService {
     return this.getFileURL(disk, tarFilePath);
   }
 
-  public async onCreatePRSuccess({
-    response,
-  }: {
-    response: SendPullRequestResponse;
-  }): Promise<void> {
+  public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
 
     try {
-      if (response.errorMessage) {
-        throw Error(response.errorMessage);
-      }
-
       await this.resourceService.reportSyncMessage(
         build.resourceId,
         "Sync Completed Successfully"
@@ -421,6 +414,21 @@ export class BuildService {
         `Error: ${error}`
       );
     }
+  }
+
+  public async onCreatePRFailure(response: CreatePRFailure): Promise<void> {
+    const build = await this.findOne({ where: { id: response.buildId } });
+    const steps = await this.actionService.getSteps(build.actionId);
+    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
+
+    await this.resourceService.reportSyncMessage(
+      build.resourceId,
+      `Error: ${response.errorMessage}`
+    );
+
+    await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+    await this.actionService.logInfo(step, response.errorMessage);
+    await this.actionService.complete(step, EnumActionStepStatus.Failed);
   }
 
   async saveToGitHub(buildId: string): Promise<void> {
