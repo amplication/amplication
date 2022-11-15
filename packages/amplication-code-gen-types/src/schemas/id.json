@@ -8,7 +8,7 @@
   "properties": {
     "idType": {
       "type": "string",
-      "enum": ["CUID", "UUID", "integer incremental"],
+      "enum": ["CUID", "UUID", "AUTO_INCREMENT"],
       "default": "CUID"
     }
   }

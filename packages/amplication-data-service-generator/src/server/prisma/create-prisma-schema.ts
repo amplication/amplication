@@ -303,7 +303,7 @@ export function createPrismaFields(
       ];
     }
     case EnumDataType.Id: {
-      if (field.properties?.idType === "integer incremental") {
+      if (field.properties?.idType === "AUTO_INCREMENT") {
         return [
           PrismaSchemaDSL.createScalarField(
             name,
