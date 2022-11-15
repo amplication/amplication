@@ -1,4 +1,3 @@
-import React from "react";
 import { capitalCase } from "capital-case";
 import { ToggleField, TextField } from "@amplication/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
@@ -7,7 +6,15 @@ import RelatedEntityFieldField from "./RelatedEntityFieldField";
 import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
 import { Schema } from "@amplication/code-gen-types";
 import OptionSet from "../Entity/OptionSet";
-import { JSONSchema7 } from "json-schema";
+
+type Props = {
+  propertyName: string;
+  propertySchema: Schema;
+  isDisabled?: boolean;
+  resourceId: string;
+  entityDisplayName: string;
+  isSystemData?: boolean;
+};
 
 export const SchemaField = ({
   propertyName,
@@ -15,13 +22,8 @@ export const SchemaField = ({
   isDisabled,
   resourceId,
   entityDisplayName,
-}: {
-  propertyName: string;
-  propertySchema: Schema;
-  isDisabled?: boolean;
-  resourceId: string;
-  entityDisplayName: string;
-}) => {
+  isSystemData,
+}: Props) => {
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
 
@@ -63,22 +65,28 @@ export const SchemaField = ({
       );
     }
     case "array": {
-      if (!propertySchema.items) {
-        throw new Error("Array schema must define items");
-      }
-
-      switch ((propertySchema.items as JSONSchema7).type) {
-        case "object": {
-          return (
-            <OptionSet label={label} name={fieldName} isDisabled={isDisabled} />
-          );
+      if (
+        typeof propertySchema.items === "object" &&
+        !(propertySchema.items instanceof Array)
+      ) {
+        switch (propertySchema.items.type) {
+          case "object": {
+            return (
+              <OptionSet
+                label={label}
+                name={fieldName}
+                isDisabled={isDisabled}
+              />
+            );
+          }
+          default: {
+            throw new Error(
+              `Unexpected propertySchema.items.type: ${propertySchema.type}`
+            );
+          }
         }
-        default: {
-          throw new Error(
-            `Unexpected propertySchema.items.type: ${propertySchema.type}`
-          );
-        }
       }
+      throw new Error("Array schema must define items");
     }
     default: {
       switch (propertySchema?.$ref) {

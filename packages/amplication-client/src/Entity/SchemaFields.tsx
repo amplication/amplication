@@ -1,4 +1,3 @@
-import React from "react";
 import { SchemaField } from "./SchemaField";
 import { Schema } from "@amplication/code-gen-types";
 
@@ -23,24 +22,26 @@ export const SchemaFields = ({
     throw new Error(`Unexpected type ${schema.type}`);
   }
 
-  return (
-    <div>
-      {Object.entries(schema.properties).map(([name, property]) => {
-        if (!property) {
-          throw new Error(`Missing property: ${name}`);
-        }
-        return (
-          <div key={name}>
+  if (schema?.properties) {
+    return (
+      <div>
+        {Object.entries(schema.properties).map(([name, property]) => {
+          if (!property) {
+            throw new Error(`Missing property: ${name}`);
+          }
+          return (
             <SchemaField
+              key={name}
               propertyName={name}
               propertySchema={property as Schema}
               isDisabled={isDisabled}
               resourceId={resourceId}
               entityDisplayName={entityDisplayName}
             />
-          </div>
-        );
-      })}
-    </div>
-  );
+          );
+        })}
+      </div>
+    );
+  }
+  return null;
 };

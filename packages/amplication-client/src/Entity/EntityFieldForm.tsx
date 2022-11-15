@@ -36,6 +36,7 @@ type Props = {
   defaultValues?: Partial<models.EntityField>;
   resourceId: string;
   entityDisplayName: string;
+  isSystemData?: boolean;
 };
 
 const FORM_SCHEMA = {
@@ -72,6 +73,7 @@ const EntityFieldForm = ({
   isDisabled,
   resourceId,
   entityDisplayName,
+  isSystemData,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -129,38 +131,45 @@ const EntityFieldForm = ({
             <DisplayNameField
               name="displayName"
               label="Display Name"
-              disabled={isDisabled}
+              disabled={isDisabled || isSystemData}
               required
             />
             <NameField name="name" disabled={isDisabled} required />
             <OptionalDescriptionField
               name="description"
               label="Description"
-              disabled={isDisabled}
+              disabled={isDisabled || isSystemData}
             />
-            <div>
-              <ToggleField
-                name="unique"
-                label="Unique Field"
-                disabled={isDisabled}
-              />
-            </div>
-            <div>
-              <ToggleField
-                name="required"
-                label="Required Field"
-                disabled={isDisabled}
-              />
-            </div>
-            <div>
-              <ToggleField
-                name="searchable"
-                label="Searchable"
-                disabled={isDisabled}
-              />
-            </div>
-            {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
-              <DataTypeSelectField label="Data Type" disabled={isDisabled} />
+            {schema.title !== "Id" && (
+              <>
+                <div>
+                  <ToggleField
+                    name="unique"
+                    label="Unique Field"
+                    disabled={isDisabled}
+                  />
+                </div>
+                <div>
+                  <ToggleField
+                    name="required"
+                    label="Required Field"
+                    disabled={isDisabled}
+                  />
+                </div>
+                <div>
+                  <ToggleField
+                    name="searchable"
+                    label="Searchable"
+                    disabled={isDisabled}
+                  />
+                </div>
+                {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
+                  <DataTypeSelectField
+                    label="Data Type"
+                    disabled={isDisabled || isSystemData}
+                  />
+                )}
+              </>
             )}
             <SchemaFields
               schema={schema}

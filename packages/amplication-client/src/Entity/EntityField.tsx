@@ -188,6 +188,11 @@ const EntityField = () => {
           </div>
           <EntityFieldForm
             isDisabled={
+              defaultValues &&
+              SYSTEM_DATA_TYPES.has(defaultValues.dataType) &&
+              defaultValues.dataType !== models.EnumDataType.Id
+            }
+            isSystemData={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
             }
             onSubmit={handleSubmit}
