@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext } from "react";
-import { gql, useMutation, Reference } from "@apollo/client";
+import { gql, useMutation, Reference, useQuery } from "@apollo/client";
 import * as models from "../models";
 import { ConfirmationDialog } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -30,8 +30,17 @@ export const DeleteEntityField = ({
   onDelete,
   onError,
 }: Props) => {
+  const { dataType, properties } = entityField;
+  const { relatedFieldId, relatedEntityId } = properties;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const { addEntity } = useContext(AppContext);
+  const { data } = useQuery(GET_ENTITY_WITH_SPECIFIC_FIELDS, {
+    variables: {
+      entityId: relatedEntityId,
+      fieldId: relatedFieldId,
+    },
+    skip: dataType !== models.EnumDataType.Lookup,
+  });
 
   const [deleteEntityField, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY_FIELD,
@@ -41,7 +50,6 @@ export const DeleteEntityField = ({
         const deletedFieldId = data.deleteEntityField.id;
 
         if (entityField.dataType === models.EnumDataType.Lookup) {
-          const relatedEntityId = entityField.properties.relatedEntityId;
           cache.evict({
             id: cache.identify({ id: relatedEntityId, __typename: "Entity" }),
           });
@@ -91,10 +99,17 @@ export const DeleteEntityField = ({
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Delete ${entityField.displayName}`}
+        title={`Deleting '${entityField.displayName}'`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message="Are you sure you want to delete this entity field?"
+        message={
+          <span>
+            Are you sure you want to delete this entity field?
+            <br />
+            {dataType === models.EnumDataType.Lookup &&
+              `This will also delete the related field (${data?.entity?.fields[0]?.displayName}) of entity (${data?.entity?.displayName})`}
+          </span>
+        }
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
@@ -120,6 +135,30 @@ const DELETE_ENTITY_FIELD = gql`
   mutation deleteEntityField($entityFieldId: String!) {
     deleteEntityField(where: { id: $entityFieldId }) {
       id
+    }
+  }
+`;
+
+const GET_ENTITY_WITH_SPECIFIC_FIELDS = gql`
+  query entity($entityId: String!, $fieldId: String!) {
+    entity(where: { id: $entityId }) {
+      id
+      name
+      displayName
+      pluralDisplayName
+      fields(where: { permanentId: { equals: $fieldId } }) {
+        id
+        createdAt
+        updatedAt
+        name
+        displayName
+        dataType
+        properties
+        required
+        unique
+        searchable
+        description
+      }
     }
   }
 `;
