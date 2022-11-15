@@ -74,7 +74,6 @@ import {
 } from "./dto";
 import { ReservedNameError } from "../resource/ReservedNameError";
 
-
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
   "entityFields" | "entityPermissions" | "entity"
