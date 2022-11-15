@@ -74,6 +74,7 @@ import {
 } from "./dto";
 import { ReservedNameError } from "../resource/ReservedNameError";
 
+
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
   "entityFields" | "entityPermissions" | "entity"
@@ -1801,7 +1802,10 @@ export class EntityService {
     validateFieldName(data.name);
 
     // Validate the field's dataType is not a system data type
-    if (isSystemDataType(data.dataType as EnumDataType)) {
+    if (
+      isSystemDataType(data.dataType as EnumDataType) &&
+      data.dataType !== "Id"
+    ) {
       throw new DataConflictError(
         `The data type ${data.dataType} cannot be used for non-system fields`
       );
@@ -2057,7 +2061,10 @@ export class EntityService {
       include: { entityVersion: true },
     });
 
-    if (isSystemDataType(field.dataType as EnumDataType)) {
+    if (
+      isSystemDataType(field.dataType as EnumDataType) &&
+      field.dataType !== "Id"
+    ) {
       throw new ConflictException(
         `Cannot update entity field ${field.name} because fields with data type ${field.dataType} cannot be updated`
       );
@@ -2152,7 +2159,10 @@ export class EntityService {
       throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
     }
 
-    if (isSystemDataType(field.dataType as EnumDataType)) {
+    if (
+      isSystemDataType(field.dataType as EnumDataType) &&
+      field.dataType !== "Id"
+    ) {
       throw new ConflictException(
         `Cannot delete entity field ${field.dataType} because fields with the data type ${field.dataType} cannot be deleted`
       );

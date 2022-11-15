@@ -21,6 +21,10 @@ export const CUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.CUID
 );
 
+export const INCREMENTAL_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
+  PrismaSchemaDSL.AUTO_INCREMENT
+);
+
 export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.NOW
 );
@@ -299,6 +303,20 @@ export function createPrismaFields(
       ];
     }
     case EnumDataType.Id: {
+      if (field.properties?.idType === "integer incremental") {
+        return [
+          PrismaSchemaDSL.createScalarField(
+            name,
+            PrismaSchemaDSL.ScalarType.Int,
+            false,
+            field.required,
+            false,
+            true,
+            false,
+            INCREMENTAL_CALL_EXPRESSION
+          ),
+        ];
+      }
       return [
         PrismaSchemaDSL.createScalarField(
           name,
