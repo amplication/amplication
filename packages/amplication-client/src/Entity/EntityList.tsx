@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 
@@ -125,6 +125,12 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               entity={entity}
               resourceId={resource}
               onError={setError}
+              relatedEntities={data.entities.filter(
+                (dataEntity) =>
+                  dataEntity.fields.some(
+                    (field) => field.properties.relatedEntityId === entity.id
+                  ) && dataEntity.id !== entity.id
+              )}
             />
           ))}
         </div>
@@ -166,6 +172,11 @@ export const GET_ENTITIES = gql`
           firstName
           lastName
         }
+      }
+      fields(where: { dataType: { equals: Lookup } }) {
+        permanentId
+        displayName
+        properties
       }
       versions(take: 1, orderBy: { versionNumber: Desc }) {
         versionNumber

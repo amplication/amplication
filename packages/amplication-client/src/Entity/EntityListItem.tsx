@@ -26,6 +26,7 @@ type Props = {
   entity: models.Entity;
   onDelete?: () => void;
   onError: (error: Error) => void;
+  relatedEntities: models.Entity[];
 };
 
 const CLASS_NAME = "entity-list-item";
@@ -35,6 +36,7 @@ export const EntityListItem = ({
   resourceId,
   onDelete,
   onError,
+  relatedEntities,
 }: Props) => {
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
@@ -103,7 +105,22 @@ export const EntityListItem = ({
         title={`Delete ${entity.displayName}`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message="Are you sure you want to delete this entity?"
+        message={
+          <span>
+            Are you sure you want to delete this entity?
+            <br />
+            {relatedEntities.length > 0 &&
+              `This will also delete the related fields inside:
+              ${relatedEntities.map(
+                (relentedEntity) =>
+                  `${relentedEntity.displayName}: ${relentedEntity.fields
+                    .filter(
+                      (field) => field.properties.relatedEntityId === entity.id
+                    )
+                    .map((field) => field.displayName)}`
+              )}`}
+          </span>
+        }
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
