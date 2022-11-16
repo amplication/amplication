@@ -143,7 +143,7 @@
     "zlib": "^1.0.5"
   },
   "devDependencies": {
-    "@craco/craco": "^6.4.5",
+    "@craco/craco": "^7.0.0",
     "@graphql-codegen/cli": "2.6.3",
     "@graphql-codegen/typescript": "2.4.1",
     "@nestjs/cli": "^8.2.8",
