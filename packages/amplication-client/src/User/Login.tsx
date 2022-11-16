@@ -3,7 +3,7 @@ import { Location } from "history";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
-import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
+import { REACT_APP_GITHUB_AUTH_ENABLED } from "../env";
 import { setToken } from "../authentication/authentication";
 import { formatError } from "../util/error";
 import {
@@ -108,7 +108,7 @@ const Login = () => {
         <Form childrenAsBlocks>
           {urlError && <ErrorMessage errorMessage={urlError} />}
 
-          {REACT_APP_GITHUB_CLIENT_ID ? (
+          {REACT_APP_GITHUB_AUTH_ENABLED ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
                 Welcome to {content.name}. Please use your GitHub account to
