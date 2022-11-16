@@ -1,4 +1,4 @@
-import MonacoEditor from "@monaco-editor/react";
+import { JsonEditor } from "@amplication/design-system";
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import { StorageBaseAxios } from "./StorageBaseAxios";
 
@@ -12,16 +12,6 @@ type Props = {
 const UNSUPPORTED_EXTENSIONS = ["png", "ico"];
 const UNSUPPORTED_EXTENSION_MESSAGE = "Preview is not available";
 
-export function setEditorTheme(monaco: any) {
-  monaco.editor.defineTheme("vs-dark-amp", {
-    base: "vs-dark",
-    inherit: true,
-    rules: [],
-    colors: {
-      "editor.background": "#15192c",
-    },
-  });
-}
 
 const CodeViewEditor = ({ resourceId, buildId, filePath, fileName }: Props) => {
   const [content, setContent] = useState<string>("");
@@ -50,13 +40,10 @@ const CodeViewEditor = ({ resourceId, buildId, filePath, fileName }: Props) => {
   return !filePath ? (
     <div />
   ) : (
-    <MonacoEditor
-      beforeMount={setEditorTheme}
-      height="100%"
+    <JsonEditor
       value={content}
       options={{ readOnly: true }}
       path={filePath}
-      theme={"vs-dark-amp"}
     />
   );
 };

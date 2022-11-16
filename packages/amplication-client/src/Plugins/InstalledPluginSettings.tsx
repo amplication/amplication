@@ -1,6 +1,9 @@
-import { HorizontalRule, Snackbar } from "@amplication/design-system";
-import MonacoEditor, { Monaco } from "@monaco-editor/react";
-import classNames from "classnames";
+import {
+  HorizontalRule,
+  JsonEditor,
+  Snackbar,
+} from "@amplication/design-system";
+import { isValidJSON } from "@amplication/design-system/components/JsonEditor/JsonEditor";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import React, {
   useCallback,
@@ -14,7 +17,6 @@ import { match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
-import { setEditorTheme } from "../Resource/code-view/CodeViewEditor";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import usePlugins from "./hooks/usePlugins";
@@ -28,15 +30,18 @@ type Props = AppRouteProps & {
   }>;
 };
 
+const generatedKey = () => Math.random().toString(36).slice(2, 7);
+
 const InstalledPluginSettings: React.FC<Props> = ({
   match,
   moduleClass,
 }: Props) => {
-  const { resource, plugin: pluginInstallationId } = match.params;
-  const { currentProject, currentWorkspace } = useContext(AppContext);
-  const [isValid, setIsValid] = useState<boolean>(true);
-  const [initialValue, setInitialValue] = useState<any>("");
-  const [isDirty, setIsDirty] = useState<boolean>(false);
+  const { plugin: pluginInstallationId } = match.params;
+  const { currentProject, currentWorkspace, currentResource } =
+    useContext(AppContext);
+  const editorRef: React.MutableRefObject<string | null> = useRef();
+  const [isValid, setIsValid] = useState<boolean>(false);
+  const [resetKey, setResetKey] = useState<string>();
 
   const {
     pluginInstallation,
@@ -44,9 +49,11 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginCatalog,
     updatePluginInstallation,
     updateError,
-  } = usePlugins(resource, pluginInstallationId);
+  } = usePlugins(currentResource.id, pluginInstallationId);
 
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  useEffect(() => {
+    editorRef.current = JSON.stringify(pluginInstallation?.PluginInstallation.settings);
+  }, [pluginInstallation?.PluginInstallation.settings]);
 
   const plugin = useMemo(() => {
     return (
@@ -55,38 +62,30 @@ const InstalledPluginSettings: React.FC<Props> = ({
     );
   }, [pluginInstallation, pluginCatalog]);
 
-  function handleEditorDidMount(
-    editor: monaco.editor.IStandaloneCodeEditor,
-    monaco: Monaco
-  ) {
-    editorRef.current = editor;
-  }
-
-  function handleEditorChange(value: string | undefined) {
-    setIsDirty(true);
-  }
-
-  function handleEditorValidation(markers: monaco.editor.IMarker[]) {
-    setIsValid(markers.length === 0);
-  }
+  const onEditorChange = (
+    value: string | undefined,
+    ev: monaco.editor.IModelContentChangedEvent
+  ) => {
+    const validateChange = isValidJSON(value);
+    editorRef.current = validateChange ? value : undefined 
+    setIsValid(!validateChange);
+  };
 
   const handleResetClick = useCallback(() => {
-    setInitialValue(plugin?.versions[0].settings);
-    setIsDirty(true);
-  }, [setInitialValue, plugin]);
+    setResetKey(generatedKey());
+  }, []);
 
   const handleSaveClick = useCallback(() => {
     if (!pluginInstallation) return;
 
     const { enabled, version, id } = pluginInstallation.PluginInstallation;
-    const currentValue = editorRef.current?.getValue() || "{}";
 
     updatePluginInstallation({
       variables: {
         data: {
           enabled,
           version,
-          settings: JSON.parse(currentValue),
+          settings: JSON.stringify(editorRef.current || "{}"),
         },
         where: {
           id: id,
@@ -95,18 +94,13 @@ const InstalledPluginSettings: React.FC<Props> = ({
     }).catch(console.error);
   }, [updatePluginInstallation, pluginInstallation]);
 
-  useEffect(() => {
-    setInitialValue(pluginInstallation?.PluginInstallation.settings);
-    setIsDirty(false);
-  }, [pluginInstallation]);
-
   const errorMessage = formatError(updateError);
 
   return (
     <div className={moduleClass}>
       <div className={`${moduleClass}__row`}>
         <BackNavigation
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/plugins/installed`}
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource.id}/plugins/installed`}
           label="Back to Plugins"
         />
       </div>
@@ -124,25 +118,12 @@ const InstalledPluginSettings: React.FC<Props> = ({
             </span>
           </div>
           <HorizontalRule />
-          <div
-            className={classNames(`${moduleClass}__editor`, {
-              [`${moduleClass}__editor--invalid`]: !isValid,
-            })}
-          >
-            {pluginInstallation && (
-              <MonacoEditor
-                beforeMount={setEditorTheme}
-                onMount={handleEditorDidMount}
-                onValidate={handleEditorValidation}
-                onChange={handleEditorChange}
-                height="100%"
-                value={JSON.stringify(initialValue, null, "\t")}
-                defaultLanguage="json"
-                options={{ readOnly: false, minimap: { enabled: false } }}
-                theme={"vs-dark-amp"}
-              />
-            )}
-          </div>
+          <JsonEditor
+            defaultValue={pluginInstallation?.PluginInstallation.settings}
+            value={{test: 23}}
+            resetKey={resetKey}
+            onChange={onEditorChange}
+          />
           <div className={`${moduleClass}__row`}>
             <Button
               className={`${moduleClass}__reset`}
@@ -155,7 +136,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
               className={`${moduleClass}__save`}
               buttonStyle={EnumButtonStyle.Primary}
               onClick={handleSaveClick}
-              disabled={!isValid || !isDirty}
+              disabled={isValid}
             >
               Save
             </Button>
