@@ -1,7 +1,7 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 export class AuthorizeResourceWithGitResult {
-  @Field({ description: '', nullable: false })
+  @Field({ description: "", nullable: false })
   url: string;
 }

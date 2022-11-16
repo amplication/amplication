@@ -1,26 +1,26 @@
 import {
   Injectable,
   NotFoundException,
-  ConflictException
-} from '@nestjs/common';
-import { JsonObject } from 'type-fest';
-import { pick, head, last } from 'lodash';
+  ConflictException,
+} from "@nestjs/common";
+import type { JsonObject } from "type-fest";
+import { pick, head, last } from "lodash";
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
   Prisma,
-  PrismaService
-} from '@amplication/prisma-db';
-import { DiffService } from '../../services/diff.service';
+  PrismaService,
+} from "@amplication/prisma-db";
+import { DiffService } from "../../services/diff.service";
 import {
   Block,
   BlockVersion,
   IBlock,
   BlockInputOutput,
   User,
-  Resource
-} from '../../models';
-import { revertDeletedItemName } from '../../util/softDelete';
+  Resource,
+} from "../../models";
+import { revertDeletedItemName } from "../../util/softDelete";
 import {
   CreateBlockArgs,
   UpdateBlockArgs,
@@ -28,24 +28,24 @@ import {
   FindManyBlockTypeArgs,
   CreateBlockVersionArgs,
   FindManyBlockVersionArgs,
-  LockBlockArgs
-} from './dto';
-import { FindOneArgs } from '../../dto';
-import { EnumBlockType } from '../../enums/EnumBlockType';
+  LockBlockArgs,
+} from "./dto";
+import { FindOneArgs } from "../../dto";
+import { EnumBlockType } from "../../enums/EnumBlockType";
 import {
   EnumPendingChangeOriginType,
   EnumPendingChangeAction,
-  PendingChange
-} from '../resource/dto';
+  PendingChange,
+} from "../resource/dto";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
 const NON_COMPARABLE_PROPERTIES = [
-  'id',
-  'createdAt',
-  'updatedAt',
-  'versionNumber',
-  'commitId'
+  "id",
+  "createdAt",
+  "updatedAt",
+  "versionNumber",
+  "commitId",
 ];
 
 export type BlockPendingChange = {
@@ -74,7 +74,7 @@ export class BlockService {
     [key in EnumBlockType]: Set<EnumBlockType | null>;
   } = {
     [EnumBlockType.ConnectorRestApiCall]: new Set([
-      EnumBlockType.ConnectorRestApi
+      EnumBlockType.ConnectorRestApi,
     ]),
     [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.Flow, null]),
     [EnumBlockType.ServiceSettings]: ALLOW_NO_PARENT_ONLY,
@@ -93,7 +93,7 @@ export class BlockService {
     [EnumBlockType.EntityPage]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Document]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.PluginInstallation]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.PluginOrder]: ALLOW_NO_PARENT_ONLY
+    [EnumBlockType.PluginOrder]: ALLOW_NO_PARENT_ONLY,
   };
 
   private async resolveParentBlock(
@@ -103,8 +103,8 @@ export class BlockService {
     const matchingBlocks = await this.prisma.block.findMany({
       where: {
         id: blockId,
-        resourceId
-      }
+        resourceId,
+      },
     });
     if (matchingBlocks.length === 0) {
       throw new NotFoundException(`Can't find parent block with ID ${blockId}`);
@@ -114,15 +114,15 @@ export class BlockService {
 
       return block;
     }
-    throw new Error('Unexpected length of matchingBlocks');
+    throw new Error("Unexpected length of matchingBlocks");
   }
 
   async block(args: FindOneArgs): Promise<Block | null> {
     const block = await this.prisma.block.findFirst({
       where: {
-        id: args.where.id
+        id: args.where.id,
         //deletedAt: null
-      }
+      },
     });
 
     if (!block) {
@@ -136,7 +136,7 @@ export class BlockService {
    */
   async create<T extends IBlock>(
     args: CreateBlockArgs & {
-      data: CreateBlockArgs['data'] & { blockType: keyof typeof EnumBlockType };
+      data: CreateBlockArgs["data"] & { blockType: keyof typeof EnumBlockType };
     },
     userId: string
   ): Promise<T> {
@@ -184,9 +184,9 @@ export class BlockService {
       lockedAt: new Date(),
       lockedByUser: {
         connect: {
-          id: userId
-        }
-      }
+          id: userId,
+        },
+      },
     };
 
     const versionData = {
@@ -195,9 +195,9 @@ export class BlockService {
       versionNumber: CURRENT_VERSION_NUMBER,
       inputParameters: { params: inputParameters },
       outputParameters: {
-        params: outputParameters
+        params: outputParameters,
       },
-      settings
+      settings,
     };
 
     // Create first entry on BlockVersion by default when new block is created
@@ -206,17 +206,17 @@ export class BlockService {
         ...versionData,
         commit: undefined,
         block: {
-          create: blockData
-        }
+          create: blockData,
+        },
       },
       include: {
         block: {
           include: {
             resource: true,
-            parentBlock: true
-          }
-        }
-      }
+            parentBlock: true,
+          },
+        },
+      },
     });
 
     const block: IBlock = {
@@ -230,13 +230,13 @@ export class BlockService {
       parentBlock: version.block.parentBlock || null,
       versionNumber: versionData.versionNumber,
       inputParameters: inputParameters,
-      outputParameters: outputParameters
+      outputParameters: outputParameters,
     };
 
-    return ({
+    return {
       ...block,
-      ...settings
-    } as unknown) as T;
+      ...settings,
+    } as unknown as T;
   }
 
   private versionToIBlock<T>(
@@ -255,7 +255,7 @@ export class BlockService {
       blockType,
       lockedAt,
       lockedByUserId,
-      resourceId
+      resourceId,
     } = version.block;
     const block: IBlock = {
       id,
@@ -269,18 +269,22 @@ export class BlockService {
       lockedAt,
       lockedByUserId,
       versionNumber: version.versionNumber,
-      inputParameters: ((version.inputParameters as unknown) as {
-        params: BlockInputOutput[];
-      }).params,
-      outputParameters: ((version.outputParameters as unknown) as {
-        params: BlockInputOutput[];
-      }).params
+      inputParameters: (
+        version.inputParameters as unknown as {
+          params: BlockInputOutput[];
+        }
+      ).params,
+      outputParameters: (
+        version.outputParameters as unknown as {
+          params: BlockInputOutput[];
+        }
+      ).params,
     };
     const settings = version.settings as JsonObject;
-    return ({
+    return {
       ...block,
-      ...settings
-    } as unknown) as T;
+      ...settings,
+    } as unknown as T;
   }
 
   async findOne<T extends IBlock>(args: FindOneArgs): Promise<T | null> {
@@ -289,16 +293,16 @@ export class BlockService {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         blockId_versionNumber: {
           blockId: args.where.id,
-          versionNumber: CURRENT_VERSION_NUMBER
-        }
+          versionNumber: CURRENT_VERSION_NUMBER,
+        },
       },
       include: {
         block: {
           include: {
-            parentBlock: true
-          }
-        }
-      }
+            parentBlock: true,
+          },
+        },
+      },
     });
 
     if (!version) {
@@ -328,18 +332,18 @@ export class BlockService {
       ...args,
       where: {
         ...args.where,
-        blockType: { equals: blockType }
+        blockType: { equals: blockType },
       },
       include: {
         versions: {
           where: {
-            versionNumber: CURRENT_VERSION_NUMBER
-          }
+            versionNumber: CURRENT_VERSION_NUMBER,
+          },
         },
-        parentBlock: true
-      }
+        parentBlock: true,
+      },
     });
-    return (await blocks).map(block => {
+    return (await blocks).map((block) => {
       const [version] = block.versions;
       return this.versionToIBlock({ ...version, block });
     });
@@ -349,11 +353,11 @@ export class BlockService {
     const blockId = args.data.block.connect.id;
     const versions = await this.prisma.blockVersion.findMany({
       where: {
-        block: { id: blockId }
+        block: { id: blockId },
       },
       orderBy: {
-        versionNumber: Prisma.SortOrder.asc
-      }
+        versionNumber: Prisma.SortOrder.asc,
+      },
     });
     const currentVersion = head(versions); // Version 0
     const lastVersion = last(versions);
@@ -376,16 +380,16 @@ export class BlockService {
         settings: currentVersion.settings,
         commit: {
           connect: {
-            id: args.data.commit.connect.id
-          }
+            id: args.data.commit.connect.id,
+          },
         },
         versionNumber: nextVersionNumber,
         block: {
           connect: {
-            id: blockId
-          }
-        }
-      }
+            id: blockId,
+          },
+        },
+      },
     });
   }
 
@@ -414,8 +418,8 @@ export class BlockService {
 
     return this.prisma.block.findUnique({
       where: {
-        id: block.parentBlockId
-      }
+        id: block.parentBlockId,
+      },
     });
   }
 
@@ -438,26 +442,26 @@ export class BlockService {
           block: {
             update: {
               displayName,
-              description
-            }
+              description,
+            },
           },
           displayName,
-          description
+          description,
         },
         where: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           blockId_versionNumber: {
             blockId: args.where.id,
-            versionNumber: CURRENT_VERSION_NUMBER
-          }
+            versionNumber: CURRENT_VERSION_NUMBER,
+          },
         },
         include: {
           block: {
             include: {
-              parentBlock: true
-            }
-          }
-        }
+              parentBlock: true,
+            },
+          },
+        },
       });
 
       return this.versionToIBlock<T>(version);
@@ -473,8 +477,8 @@ export class BlockService {
 
     const block = await this.block({
       where: {
-        id: blockId
-      }
+        id: blockId,
+      },
     });
 
     if (block.lockedByUserId === user.id) {
@@ -489,30 +493,30 @@ export class BlockService {
 
     return this.prisma.block.update({
       where: {
-        id: blockId
+        id: blockId,
       },
       data: {
         lockedByUser: {
           connect: {
-            id: user.id
-          }
+            id: user.id,
+          },
         },
-        lockedAt: new Date()
-      }
+        lockedAt: new Date(),
+      },
     });
   }
 
   async releaseLock(blockId: string): Promise<Block | null> {
     return this.prisma.block.update({
       where: {
-        id: blockId
+        id: blockId,
       },
       data: {
         lockedByUser: {
-          disconnect: true
+          disconnect: true,
         },
-        lockedAt: null
-      }
+        lockedAt: null,
+      },
     });
   }
 
@@ -562,11 +566,11 @@ export class BlockService {
   async hasPendingChanges(blockId: string): Promise<boolean> {
     const blockVersions = await this.prisma.blockVersion.findMany({
       where: {
-        blockId
+        blockId,
       },
       orderBy: {
-        versionNumber: Prisma.SortOrder.asc
-      }
+        versionNumber: Prisma.SortOrder.asc,
+      },
     });
 
     // If there's only one version, lastVersion will be undefined
@@ -599,24 +603,24 @@ export class BlockService {
         lockedByUserId: userId,
         resource: {
           project: {
-            id: projectId
-          }
-        }
+            id: projectId,
+          },
+        },
       },
       include: {
         lockedByUser: true,
         resource: true,
         versions: {
           orderBy: {
-            versionNumber: Prisma.SortOrder.desc
+            versionNumber: Prisma.SortOrder.desc,
           },
           /**find the first two versions to decide whether it is an update or a create */
-          take: 2
-        }
-      }
+          take: 2,
+        },
+      },
     });
 
-    return changedBlocks.map(block => {
+    return changedBlocks.map((block) => {
       const [lastVersion] = block.versions;
       const action = block.deletedAt
         ? EnumPendingChangeAction.Delete
@@ -624,7 +628,8 @@ export class BlockService {
         ? EnumPendingChangeAction.Update
         : EnumPendingChangeAction.Create;
 
-      block.versions = undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
+      block.versions =
+        undefined; /**remove the versions data - it will only be returned if explicitly asked by gql */
 
       //prepare name fields for display
       if (action === EnumPendingChangeAction.Delete) {
@@ -637,7 +642,7 @@ export class BlockService {
         originType: EnumPendingChangeOriginType.Block,
         versionNumber: lastVersion.versionNumber + 1,
         origin: block,
-        resource: block.resource
+        resource: block.resource,
       };
     });
   }
@@ -647,22 +652,22 @@ export class BlockService {
       where: {
         versions: {
           some: {
-            commitId: commitId
-          }
-        }
+            commitId: commitId,
+          },
+        },
       },
       include: {
         lockedByUser: true,
         resource: true,
         versions: {
           where: {
-            commitId: commitId
-          }
-        }
-      }
+            commitId: commitId,
+          },
+        },
+      },
     });
 
-    return changedBlocks.map(block => {
+    return changedBlocks.map((block) => {
       const [changedVersion] = block.versions;
       const action = changedVersion.deleted
         ? EnumPendingChangeAction.Delete
@@ -681,7 +686,7 @@ export class BlockService {
         originType: EnumPendingChangeOriginType.Block,
         versionNumber: changedVersion.versionNumber,
         origin: block,
-        resource: block.resource
+        resource: block.resource,
       };
     });
   }
@@ -689,14 +694,14 @@ export class BlockService {
   async discardPendingChanges(blockId: string, userId: string): Promise<Block> {
     const blockVersions = await this.prisma.blockVersion.findMany({
       where: {
-        block: { id: blockId }
+        block: { id: blockId },
       },
       orderBy: {
-        versionNumber: Prisma.SortOrder.asc
+        versionNumber: Prisma.SortOrder.asc,
       },
       include: {
-        block: true
-      }
+        block: true,
+      },
     });
 
     const firstBlockVersion = head(blockVersions);
@@ -722,8 +727,8 @@ export class BlockService {
   ): Promise<void> {
     const sourceVersion = await this.prisma.blockVersion.findUnique({
       where: {
-        id: sourceVersionId
-      }
+        id: sourceVersionId,
+      },
     });
 
     if (!sourceVersion) {
@@ -732,20 +737,20 @@ export class BlockService {
 
     let targetVersion = await this.prisma.blockVersion.findUnique({
       where: {
-        id: targetVersionId
-      }
+        id: targetVersionId,
+      },
     });
 
     if (!targetVersion) {
       throw new Error(`Can't find target (Block Version ${targetVersionId})`);
     }
 
-    const names = pick(sourceVersion, ['displayName', 'description']);
+    const names = pick(sourceVersion, ["displayName", "description"]);
 
     //update the target version with its fields, and the its parent block
     targetVersion = await this.prisma.blockVersion.update({
       where: {
-        id: targetVersionId
+        id: targetVersionId,
       },
       data: {
         //when the source target is flagged as deleted (commit on DELETE action), do not update the parent block
@@ -754,14 +759,14 @@ export class BlockService {
           : {
               update: {
                 ...names,
-                deletedAt: null
-              }
+                deletedAt: null,
+              },
             },
         ...names,
         settings: sourceVersion.settings,
         inputParameters: sourceVersion.inputParameters,
-        outputParameters: sourceVersion.outputParameters
-      }
+        outputParameters: sourceVersion.outputParameters,
+      },
     });
   }
 }

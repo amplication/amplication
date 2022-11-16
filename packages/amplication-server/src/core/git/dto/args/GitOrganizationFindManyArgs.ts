@@ -1,6 +1,6 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { Type } from 'class-transformer';
-import { GitOrganizationWhereInput } from '../inputs/GitOrganizationWhereInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { Type } from "class-transformer";
+import { GitOrganizationWhereInput } from "../inputs/GitOrganizationWhereInput";
 
 @ArgsType()
 class GitOrganizationFindManyArgs {

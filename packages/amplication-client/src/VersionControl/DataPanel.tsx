@@ -28,7 +28,7 @@ const DataPanel: React.FC<Props> = ({
   account,
   relatedDataId,
   relatedDataName,
-  description
+  description,
 }) => {
   return (
     <div className={CLASS_NAME}>
@@ -37,17 +37,16 @@ const DataPanel: React.FC<Props> = ({
           {dataType} <TruncatedId id={id} />
           {relatedDataId && relatedDataName && (
             <span className={`${CLASS_NAME}__related-data-id`}>
-                {relatedDataName}{" "}
-              <TruncatedId id={relatedDataId} />
+              {relatedDataName} <TruncatedId id={relatedDataId} />
             </span>
           )}
         </p>
 
         <UserAndTime account={account} time={createdAt} />
       </div>
-      {description && <span className={`${CLASS_NAME}__description`}>
-        {description}
-      </span>}
+      {description && (
+        <span className={`${CLASS_NAME}__description`}>{description}</span>
+      )}
       <hr className={`${CLASS_NAME}__divider`} />
     </div>
   );

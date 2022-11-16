@@ -1,16 +1,16 @@
-import { ConfiguredCommand } from '../../configured-command';
-import { allowedProperties } from '../../properties';
+import { ConfiguredCommand } from "../../configured-command";
+import { allowedProperties } from "../../properties";
 
 export default class ConfigUnset extends ConfiguredCommand {
-  static description = 'unset a property value';
+  static description = "unset a property value";
 
-  static examples = ['amp config:unset AMP_CURRENT_RESOURCE'];
+  static examples = ["amp config:unset AMP_CURRENT_RESOURCE"];
 
   static args = [
     {
-      name: 'property',
+      name: "property",
       required: true,
-      description: 'name of property',
+      description: "name of property",
     },
   ];
 

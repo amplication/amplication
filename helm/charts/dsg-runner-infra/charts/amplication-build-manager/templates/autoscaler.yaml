@@ -1,0 +1,5 @@
+# {{- define "amplication-build-manager.autoscaling" -}}
+# {{- end }}
+# {{- if .Values.autoscaling.enabled }}
+# {{ include "base.autoscaling" (list . "amplication-build-manager.autoscaling") -}}
+# {{- end }}

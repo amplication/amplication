@@ -18,6 +18,7 @@ do
     echo "REPO_NAME: $REPO_NAME"
     tag_list="$(aws ecr describe-images --repository-name=$REPO_NAME --region us-east-1 --image-ids=imageTag=$IMAGE_TAG_ANCHOR 2> /dev/null )"
     image_tags=$(echo $tag_list | jq -r '.imageDetails[0].imageTags' 2>&1)
+    image_digest=$(echo $tag_list | jq -r '.imageDetails[0].imageDigest')
     echo "tag_list: $tag_list"
     echo "image_tags: $image_tags"
     
@@ -33,7 +34,8 @@ do
         fi
     done <<< "$image_tags"
     
-    FOUND_TAG=$(cat found_tag)
+    # FOUND_TAG=$(cat found_tag)
+    FOUND_TAG=$image_digest
     if [ -z "$FOUND_TAG" ]
     then
       FOUND_TAG=$IMAGE_TAG_ANCHOR

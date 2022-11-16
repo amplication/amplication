@@ -65,11 +65,7 @@ const TopicForm = ({ onSubmit, defaultValues }: Props) => {
     >
       <Form childrenAsBlocks>
         <FormikAutoSave debounceMS={1000} />
-        <DisplayNameField
-          name="displayName"
-          label="Display Name"
-          required
-        />
+        <DisplayNameField name="displayName" label="Display Name" required />
         <TopicNameField label="Name" name="name" />
         <TextField name="description" label="Description" textarea rows={3} />
       </Form>

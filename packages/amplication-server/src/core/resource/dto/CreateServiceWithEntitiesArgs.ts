@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { ResourceCreateWithEntitiesInput } from './ResourceCreateWithEntitiesInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { ResourceCreateWithEntitiesInput } from "./ResourceCreateWithEntitiesInput";
 
 @ArgsType()
 export class CreateServiceWithEntitiesArgs {

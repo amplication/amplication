@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { BlockVersionOrderByInput } from './BlockVersionOrderByInput';
-import { BlockVersionWhereInput } from './BlockVersionWhereInput';
+import { ArgsType, Field, Int } from "@nestjs/graphql";
+import { BlockVersionOrderByInput } from "./BlockVersionOrderByInput";
+import { BlockVersionWhereInput } from "./BlockVersionWhereInput";
 
 @ArgsType()
 export class FindManyBlockVersionArgs {

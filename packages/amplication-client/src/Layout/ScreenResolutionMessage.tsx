@@ -1,7 +1,7 @@
 import React from "react";
 import "./ScreenResolutionMessage.scss";
 import { isMobile } from "react-device-detect";
-import useWindowSize from "@rooks/use-window-size";
+import { useWindowSize } from "rooks";
 import classNames from "classnames";
 import { ReactComponent as MobileImage } from "../assets/images/mobile-message-white.svg";
 

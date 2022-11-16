@@ -14,7 +14,7 @@ export const MultiStateToggleField = (props: Props) => {
   const { setValue } = helpers;
 
   const handleOnChange = useCallback(
-    (option) => {
+    (option: string) => {
       setValue(option);
     },
     [setValue]

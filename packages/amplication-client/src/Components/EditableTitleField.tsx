@@ -1,9 +1,9 @@
 import React from "react";
-import { TextField, Props } from "@amplication/design-system";
+import { TextField, TextFieldProps } from "@amplication/design-system";
 import classNames from "classnames";
 import "./EditableTitleField.scss";
 
-type EditableTitleFieldProps = Props & {
+type EditableTitleFieldProps = TextFieldProps & {
   secondary?: boolean;
 };
 

@@ -22,10 +22,10 @@ amplication-client:
     hostname: app-amit.amplication-dev.com
   config:
     env:
-      REACT_APP_SERVER_URI: "https://server-amit.amplication-dev.com"
-      REACT_APP_DATA_SOURCE: "https://server-amit.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-amit.amplication-dev.com/github"
-      REACT_APP_STORAGE_GATEWAY_URL: https://server-amit.amplication-dev.com
+      NX_REACT_APP_SERVER_URI: "https://server-amit.amplication-dev.com"
+      NX_REACT_APP_DATA_SOURCE: "https://server-amit.amplication-dev.com/graphql"
+      NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-amit.amplication-dev.com/github"
+      NX_REACT_APP_STORAGE_GATEWAY_URL: https://server-amit.amplication-dev.com
 
 amplication-server:
   ingress:
@@ -37,7 +37,7 @@ amplication-server:
 
       #KAFKA
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-amit-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
@@ -76,7 +76,7 @@ amplication-git-push-webhook-service:
     hostname: webhook-amit.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-amit-cp-kafka-headless:9092'
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
@@ -95,7 +95,7 @@ amplication-git-pull-service:
       GITHUB_APP_CLIENT_ID: "Iv1.a8ac08d4d3788314"
       GIT_DEFAULT_ORIGIN_NAME: origin
 
-      KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-amit-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
@@ -104,7 +104,7 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-amit-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
@@ -116,6 +116,6 @@ amplication-storage-gateway:
     hostname: server-amit.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-amit-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-amit-cp-kafka-headless:9092'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "215215"

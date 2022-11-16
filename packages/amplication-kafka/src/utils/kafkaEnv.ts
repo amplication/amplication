@@ -8,18 +8,23 @@ export class KafkaEnvironmentVariables {
       this.envSuffix = `_${envSuffix}`;
     }
   }
+
   getBrokers() {
-    return EnvironmentVariables.instance.getJson(
+    const commaSepBrokers = EnvironmentVariables.instance.get(
       `${KAFKA_BROKERS}${this.envSuffix}`,
       true
     );
+    const brokers = commaSepBrokers.split(",");
+    return brokers;
   }
+
   getGroupId() {
     return EnvironmentVariables.instance.get(
       `${KAFKA_GROUP_ID}${this.envSuffix}`,
       false
     );
   }
+
   getClientId() {
     return EnvironmentVariables.instance.get(
       `${KAFKA_CLIENT_ID}${this.envSuffix}`,

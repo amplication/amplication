@@ -1,7 +1,7 @@
-import cli, { Table } from 'cli-ux';
-import { ConfiguredCommand } from '../../configured-command';
-import { getResources } from '../../api';
-import { format as formatFlag } from '../../flags/format-flag';
+import cli, { Table } from "cli-ux";
+import { ConfiguredCommand } from "../../configured-command";
+import { getResources } from "../../api";
+import { format as formatFlag } from "../../flags/format-flag";
 
 export const RESOURCE_COLUMNS: Table.table.Columns<any> = {
   id: {},
@@ -31,12 +31,12 @@ export const RESOURCE_COLUMNS: Table.table.Columns<any> = {
 };
 
 export default class ResourcesIndex extends ConfiguredCommand {
-  static description = 'list all resources';
+  static description = "list all resources";
 
   static examples = [
-    'amp resources',
-    'amp resources --format=table',
-    'amp resources --format=table --columns=id,name',
+    "amp resources",
+    "amp resources --format=table",
+    "amp resources --format=table --columns=id,name",
   ];
 
   static flags = {

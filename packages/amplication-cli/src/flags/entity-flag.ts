@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command';
+import { flags } from "@oclif/command";
 
 function getEntity(params: any): string | undefined {
   const envEntity = process.env.AMP_CURRENT_ENTITY;
@@ -10,7 +10,7 @@ function getEntity(params: any): string | undefined {
   return undefined;
 }
 export const entity = flags.build({
-  char: 'e',
-  description: 'ID of the entity',
+  char: "e",
+  description: "ID of the entity",
   default: getEntity,
 });
