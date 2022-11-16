@@ -958,7 +958,7 @@ import { Profile } from \\"../profile/Profile\\";
 export type User = {
   username: string;
   roles: JsonValue;
-  id: string;
+  id: number;
   name: string;
   bio: string;
   email: string;
@@ -1090,8 +1090,8 @@ export type UserUpdateManyWithoutUsersInput = {
   set?: Array<UserWhereUniqueInput>;
 };
 ",
-  "admin-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
-import { IntFilter } from \\"../../util/IntFilter\\";
+  "admin-ui/src/api/user/UserWhereInput.ts": "import { IntFilter } from \\"../../util/IntFilter\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationListRelationFilter } from \\"../organization/OrganizationListRelationFilter\\";
@@ -1100,7 +1100,7 @@ import { JsonFilter } from \\"../../util/JsonFilter\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserWhereInput = {
-  id?: StringFilter;
+  id?: IntFilter;
   name?: StringFilter;
   bio?: StringFilter;
   age?: IntFilter;
@@ -1115,7 +1115,7 @@ export type UserWhereInput = {
 };
 ",
   "admin-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
-  id: string;
+  id: number;
 };
 ",
   "admin-ui/src/auth-provider/ra-auth-http.ts": "import { gql } from \\"@apollo/client/core\\";
@@ -3037,7 +3037,7 @@ model User {
   username           String              @unique
   password           String
   roles              Json
-  id                 String              @id @default(cuid())
+  id                 Int                 @id @default(autoincrement())
   name               String
   bio                String
   email              String
@@ -3045,7 +3045,7 @@ model User {
   birthDate          DateTime
   score              Float
   manager            User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
-  managerId          String?
+  managerId          Int?
   employees          User[]              @relation(name: \\"employees\\")
   organizations      Organization[]
   interests          EnumUserInterests[]
@@ -3058,7 +3058,7 @@ model User {
 }
 
 model Profile {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
@@ -10606,11 +10606,11 @@ class User {
 
   @ApiProperty({
     required: true,
-    type: String,
+    type: Number,
   })
-  @IsString()
-  @Field(() => String)
-  id!: string;
+  @IsInt()
+  @Field(() => Number)
+  id!: number;
 
   @ApiProperty({
     required: true,
@@ -11584,10 +11584,10 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
+import { IntFilter } from \\"../../util/IntFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
-import { IntFilter } from \\"../../util/IntFilter\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationListRelationFilter } from \\"../../organization/base/OrganizationListRelationFilter\\";
@@ -11599,14 +11599,14 @@ import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUnique
 class UserWhereInput {
   @ApiProperty({
     required: false,
-    type: StringFilter,
+    type: IntFilter,
   })
-  @Type(() => StringFilter)
+  @Type(() => IntFilter)
   @IsOptional()
-  @Field(() => StringFilter, {
+  @Field(() => IntFilter, {
     nullable: true,
   })
-  id?: StringFilter;
+  id?: IntFilter;
 
   @ApiProperty({
     required: false,
@@ -11747,16 +11747,16 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString } from \\"class-validator\\";
+import { IsInt } from \\"class-validator\\";
 @InputType()
 class UserWhereUniqueInput {
   @ApiProperty({
     required: true,
-    type: String,
+    type: Number,
   })
-  @IsString()
-  @Field(() => String)
-  id!: string;
+  @IsInt()
+  @Field(() => Number)
+  id!: number;
 }
 export { UserWhereUniqueInput };
 ",

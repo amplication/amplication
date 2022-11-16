@@ -678,6 +678,12 @@ export enum EnumEntityPermissionType {
   Public = 'Public'
 }
 
+export enum IdType {
+  Uuid = 'Uuid',
+  Cuid = 'Cuid',
+  AutoIncrement = 'AutoIncrement'
+}
+
 export enum EnumGitOrganizationType {
   Organization = 'Organization',
   User = 'User'

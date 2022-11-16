@@ -21,6 +21,10 @@ export const CUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.CUID
 );
 
+export const UUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
+  PrismaSchemaDSL.UUID
+);
+
 export const INCREMENTAL_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
   PrismaSchemaDSL.AUTO_INCREMENT
 );
@@ -260,7 +264,8 @@ export function createPrismaFields(
         (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
       );
 
-      const { idType } = (relatedEntityFiledId?.properties as types.Id) || {};
+      const { idType } =
+        (relatedEntityFiledId?.properties as types.Id) || "CUID";
 
       return [
         PrismaSchemaDSL.createObjectField(
@@ -311,30 +316,26 @@ export function createPrismaFields(
       ];
     }
     case EnumDataType.Id: {
-      if (field.properties?.idType === "AUTO_INCREMENT") {
-        return [
-          PrismaSchemaDSL.createScalarField(
-            name,
-            PrismaSchemaDSL.ScalarType.Int,
-            false,
-            field.required,
-            false,
-            true,
-            false,
-            INCREMENTAL_CALL_EXPRESSION
-          ),
-        ];
-      }
+      const { idType } = (properties as types.Id) || "CUID";
+      const isAutoIncremental = idType === "AUTO_INCREMENT";
+      const isUUID = idType === "UUID";
+
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
+          isAutoIncremental
+            ? PrismaSchemaDSL.ScalarType.Int
+            : PrismaSchemaDSL.ScalarType.String,
           false,
           field.required,
           false,
           true,
           false,
-          CUID_CALL_EXPRESSION
+          isAutoIncremental
+            ? INCREMENTAL_CALL_EXPRESSION
+            : isUUID
+            ? UUID_CALL_EXPRESSION
+            : CUID_CALL_EXPRESSION
         ),
       ];
     }
