@@ -2158,10 +2158,7 @@ export class EntityService {
       throw new NotFoundException(`Cannot find entity field ${args.where.id}`);
     }
 
-    if (
-      isSystemDataType(field.dataType as EnumDataType) &&
-      field.dataType !== "Id"
-    ) {
+    if (isSystemDataType(field.dataType as EnumDataType)) {
       throw new ConflictException(
         `Cannot delete entity field ${field.dataType} because fields with the data type ${field.dataType} cannot be deleted`
       );
