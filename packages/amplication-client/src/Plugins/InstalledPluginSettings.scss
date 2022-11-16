@@ -25,18 +25,6 @@
     @include regular-14;
   }
 
-  &__editor {
-    margin-bottom: var(--default-spacing);
-    flex: 1;
-    border: $border-black10;
-    border-radius: var(--default-border-radius);
-    overflow: hidden;
-
-    &--invalid {
-      border-color: var(--negative);
-    }
-  }
-
   &__save {
     margin-left: auto;
   }

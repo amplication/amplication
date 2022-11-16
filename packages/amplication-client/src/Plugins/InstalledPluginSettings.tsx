@@ -52,7 +52,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
   } = usePlugins(currentResource.id, pluginInstallationId);
 
   useEffect(() => {
-    editorRef.current = JSON.stringify(pluginInstallation?.PluginInstallation.settings);
+    editorRef.current = JSON.stringify(
+      pluginInstallation?.PluginInstallation.settings
+    );
   }, [pluginInstallation?.PluginInstallation.settings]);
 
   const plugin = useMemo(() => {
@@ -67,7 +69,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
     ev: monaco.editor.IModelContentChangedEvent
   ) => {
     const validateChange = isValidJSON(value);
-    editorRef.current = validateChange ? value : undefined 
+    editorRef.current = validateChange ? value : undefined;
     setIsValid(!validateChange);
   };
 
@@ -120,7 +122,6 @@ const InstalledPluginSettings: React.FC<Props> = ({
           <HorizontalRule />
           <JsonEditor
             defaultValue={pluginInstallation?.PluginInstallation.settings}
-            value={{test: 23}}
             resetKey={resetKey}
             onChange={onEditorChange}
           />
