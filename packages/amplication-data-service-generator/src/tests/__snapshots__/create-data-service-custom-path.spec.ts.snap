@@ -3373,7 +3373,7 @@ export interface IAuthStrategy {
 }
 ",
   "test/src/auth/ITokenService.ts": "export interface ITokenPayload {
-  id: string;
+  id: string | number;
   username: string;
   password: string;
 }
@@ -3398,8 +3398,8 @@ import { User } from \\"../user/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
-  @Field(() => String)
-  id!: string;
+  @Field(() => String || Number)
+  id!: string | number;
   @Field(() => String)
   username!: string;
   @Field(() => [String])
