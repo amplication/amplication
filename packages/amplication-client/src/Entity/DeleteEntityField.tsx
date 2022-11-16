@@ -99,7 +99,7 @@ export const DeleteEntityField = ({
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Deleting '${entityField.displayName}'`}
+        title={`Delete '${entityField.displayName}'`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
         message={
@@ -107,7 +107,7 @@ export const DeleteEntityField = ({
             Are you sure you want to delete this entity field?
             <br />
             {dataType === models.EnumDataType.Lookup &&
-              `This will also delete the related field (${data?.entity?.fields[0]?.displayName}) of entity (${data?.entity?.displayName})`}
+              `This will also delete the related field (${data?.entity?.fields[0]?.displayName}) of entity '${data?.entity?.displayName}'`}
           </span>
         }
         onConfirm={handleConfirmDelete}
