@@ -5,11 +5,11 @@ job:
 
 dsgJobsPv:
   name: dsg-jobs-prod-dsg
-  volumeHandle: fs-0d4fb7d4e763c5fd0::fsap-0ed941c62eddef61c
+  volumeHandle: fs-0a7a7689ae63f95d7::fsap-066c07e365a055af2
 
 buildArtifactsPv:
   name: build-artifacts-prod-dsg
-  volumeHandle: fs-0a7a7689ae63f95d7::fsap-066c07e365a055af2
+  volumeHandle: fs-0d4fb7d4e763c5fd0::fsap-0ed941c62eddef61c
 
 amplication-build-manager:
   config:
