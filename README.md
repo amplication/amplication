@@ -127,6 +127,10 @@ That's it, you are good to go! Happy hacking! 👾
 
 You can always find more information in each app/library's respective README.md file.
 
+#### Configure GitHub Authentication 
+
+[GitHub Authentication for local development](https://github.com/amplication/amplication/blob/master/docs/auth/README.md)
+
 ### Setting Up Amplication Manually
 
 You can use a manual step-by-step approach to set up Amplication in a local development environment. To do so, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
