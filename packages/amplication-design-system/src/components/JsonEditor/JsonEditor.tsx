@@ -55,17 +55,17 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   onChange,
   className,
   resetKey,
-  path
+  path,
 }) => {
   const [isValid, setIsValid] = useState<boolean>(true);
   const [editorValue, setEditorValue] = useState<string | undefined>(
     value ? JSON.stringify(value) : JSON.stringify(defaultValue)
   );
-  
-  useEffect(() => { 
+
+  useEffect(() => {
     if (!resetKey) return;
 
-    setEditorValue(JSON.stringify(defaultValue))
+    setEditorValue(JSON.stringify(defaultValue));
   }, [resetKey, defaultValue]);
 
   const handleBeforeMount = (monaco: Monaco) => {

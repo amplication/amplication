@@ -38,9 +38,8 @@ function PluginsCatalogItem({
   isDraggable,
 }: Props) {
   const { name, description } = plugin || {};
-  const { currentWorkspace, currentProject, currentResource } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
 
   const handlePromote = useCallback(() => {
     order &&

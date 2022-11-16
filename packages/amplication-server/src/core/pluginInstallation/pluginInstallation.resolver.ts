@@ -4,22 +4,22 @@ import {
   Parent,
   Query,
   ResolveField,
-  Resolver
-} from '@nestjs/graphql';
-import { PluginInstallationService } from './pluginInstallation.service';
-import { FindManyPluginInstallationArgs } from './dto/FindManyPluginInstallationArgs';
-import { BlockTypeResolver } from '../block/blockType.resolver';
-import { PluginInstallation } from './dto/PluginInstallation';
-import { CreatePluginInstallationArgs } from './dto/CreatePluginInstallationArgs';
-import { UpdatePluginInstallationArgs } from './dto/UpdatePluginInstallationArgs';
-import { PluginOrder } from './dto/PluginOrder';
-import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
-import { SetPluginOrderArgs } from './dto/SetPluginOrderArgs';
-import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
-import { UserEntity } from '../../decorators/user.decorator';
-import { User } from '../../models';
-import { FindOneArgs } from '../../dto';
-import { PluginOrderService } from './pluginOrder.service';
+  Resolver,
+} from "@nestjs/graphql";
+import { PluginInstallationService } from "./pluginInstallation.service";
+import { FindManyPluginInstallationArgs } from "./dto/FindManyPluginInstallationArgs";
+import { BlockTypeResolver } from "../block/blockType.resolver";
+import { PluginInstallation } from "./dto/PluginInstallation";
+import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
+import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
+import { PluginOrder } from "./dto/PluginOrder";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { UserEntity } from "../../decorators/user.decorator";
+import { User } from "../../models";
+import { FindOneArgs } from "../../dto";
+import { PluginOrderService } from "./pluginOrder.service";
 
 @Resolver(() => PluginInstallation)
 export class PluginInstallationResolver extends BlockTypeResolver(
@@ -61,6 +61,6 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   async version(
     @Parent() pluginInstallation: PluginInstallation
   ): Promise<string> {
-    return pluginInstallation.version || 'latest';
+    return pluginInstallation.version || "latest";
   }
 }

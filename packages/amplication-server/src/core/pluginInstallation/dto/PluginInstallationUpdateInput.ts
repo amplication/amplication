@@ -1,7 +1,7 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { GraphQLJSONObject } from 'graphql-type-json';
-import type { JsonValue } from 'type-fest';
-import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
+import { Field, InputType } from "@nestjs/graphql";
+import { GraphQLJSONObject } from "graphql-type-json";
+import type { JsonValue } from "type-fest";
+import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
 
 @InputType({
   isAbstract: true,
@@ -13,12 +13,12 @@ export class PluginInstallationUpdateInput extends BlockUpdateInput {
   enabled!: boolean;
 
   @Field(() => GraphQLJSONObject, {
-    nullable: true
+    nullable: true,
   })
   settings?: JsonValue;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   version!: string;
 

@@ -12,7 +12,6 @@ type Props = {
 const UNSUPPORTED_EXTENSIONS = ["png", "ico"];
 const UNSUPPORTED_EXTENSION_MESSAGE = "Preview is not available";
 
-
 const CodeViewEditor = ({ resourceId, buildId, filePath, fileName }: Props) => {
   const [content, setContent] = useState<string>("");
 
@@ -40,11 +39,7 @@ const CodeViewEditor = ({ resourceId, buildId, filePath, fileName }: Props) => {
   return !filePath ? (
     <div />
   ) : (
-    <JsonEditor
-      value={content}
-      options={{ readOnly: true }}
-      path={filePath}
-    />
+    <JsonEditor value={content} options={{ readOnly: true }} path={filePath} />
   );
 };
 
