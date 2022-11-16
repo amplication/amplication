@@ -256,6 +256,12 @@ export function createPrismaFields(
 
       const scalarRelationFieldName = `${name}Id`;
 
+      const relatedEntityFiledId = relatedEntity.fields?.find(
+        (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
+      );
+
+      const { idType } = (relatedEntityFiledId?.properties as types.Id) || {};
+
       return [
         PrismaSchemaDSL.createObjectField(
           name,
@@ -271,7 +277,9 @@ export function createPrismaFields(
         // Prisma Scalar Relation Field
         PrismaSchemaDSL.createScalarField(
           scalarRelationFieldName,
-          PrismaSchemaDSL.ScalarType.String,
+          idType === "AUTO_INCREMENT"
+            ? PrismaSchemaDSL.ScalarType.Int
+            : PrismaSchemaDSL.ScalarType.String,
           false,
           field.required,
           !field.properties.allowMultipleSelection &&
