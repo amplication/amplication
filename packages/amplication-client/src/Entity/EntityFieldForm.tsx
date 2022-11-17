@@ -36,7 +36,7 @@ type Props = {
   defaultValues?: Partial<models.EntityField>;
   resourceId: string;
   entityDisplayName: string;
-  isSystemData?: boolean;
+  isSystemDataType?: boolean;
 };
 
 const FORM_SCHEMA = {
@@ -73,7 +73,7 @@ const EntityFieldForm = ({
   isDisabled,
   resourceId,
   entityDisplayName,
-  isSystemData,
+  isSystemDataType,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -131,14 +131,18 @@ const EntityFieldForm = ({
             <DisplayNameField
               name="displayName"
               label="Display Name"
-              disabled={isDisabled || isSystemData}
+              disabled={isDisabled || isSystemDataType}
               required
             />
-            <NameField name="name" disabled={isDisabled} required />
+            <NameField
+              name="name"
+              disabled={isDisabled || isSystemDataType}
+              required
+            />
             <OptionalDescriptionField
               name="description"
               label="Description"
-              disabled={isDisabled || isSystemData}
+              disabled={isDisabled || isSystemDataType}
             />
             {schema.title !== "Id" && (
               <>
@@ -146,27 +150,27 @@ const EntityFieldForm = ({
                   <ToggleField
                     name="unique"
                     label="Unique Field"
-                    disabled={isDisabled || isSystemData}
+                    disabled={isDisabled || isSystemDataType}
                   />
                 </div>
                 <div>
                   <ToggleField
                     name="required"
                     label="Required Field"
-                    disabled={isDisabled || isSystemData}
+                    disabled={isDisabled || isSystemDataType}
                   />
                 </div>
                 <div>
                   <ToggleField
                     name="searchable"
                     label="Searchable"
-                    disabled={isDisabled || isSystemData}
+                    disabled={isDisabled || isSystemDataType}
                   />
                 </div>
                 {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
                   <DataTypeSelectField
                     label="Data Type"
-                    disabled={isDisabled || isSystemData}
+                    disabled={isDisabled || isSystemDataType}
                   />
                 )}
               </>

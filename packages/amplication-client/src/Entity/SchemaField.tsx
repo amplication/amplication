@@ -22,7 +22,6 @@ export const SchemaField = ({
   isDisabled,
   resourceId,
   entityDisplayName,
-  isSystemData,
 }: Props) => {
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);

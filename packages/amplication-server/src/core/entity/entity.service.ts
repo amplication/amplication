@@ -1803,7 +1803,7 @@ export class EntityService {
     // Validate the field's dataType is not a system data type
     if (
       isSystemDataType(data.dataType as EnumDataType) &&
-      data.dataType !== "Id"
+      data.dataType !== EnumDataType.Id
     ) {
       throw new DataConflictError(
         `The data type ${data.dataType} cannot be used for non-system fields`
@@ -2062,7 +2062,7 @@ export class EntityService {
 
     if (
       isSystemDataType(field.dataType as EnumDataType) &&
-      field.dataType !== "Id"
+      field.dataType !== EnumDataType.Id
     ) {
       throw new ConflictException(
         `Cannot update entity field ${field.name} because fields with data type ${field.dataType} cannot be updated`
