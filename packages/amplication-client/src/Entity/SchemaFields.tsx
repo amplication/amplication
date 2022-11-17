@@ -3,9 +3,9 @@ import { Schema } from "@amplication/code-gen-types";
 
 type Props = {
   schema: Schema;
-  isDisabled?: boolean;
-  resourceId: string;
   entityDisplayName: string;
+  resourceId: string;
+  isDisabled?: boolean;
 };
 
 export const SchemaFields = ({
@@ -22,26 +22,24 @@ export const SchemaFields = ({
     throw new Error(`Unexpected type ${schema.type}`);
   }
 
-  if (schema?.properties) {
-    return (
-      <div>
-        {Object.entries(schema.properties).map(([name, property]) => {
-          if (!property) {
-            throw new Error(`Missing property: ${name}`);
-          }
-          return (
-            <SchemaField
-              key={name}
-              propertyName={name}
-              propertySchema={property as Schema}
-              isDisabled={isDisabled}
-              resourceId={resourceId}
-              entityDisplayName={entityDisplayName}
-            />
-          );
-        })}
-      </div>
-    );
-  }
+  return (
+    <div>
+      {Object.entries(schema.properties).map(([name, property]) => {
+        if (!property) {
+          throw new Error(`Missing property: ${name}`);
+        }
+        return (
+          <SchemaField
+            key={name}
+            propertyName={name}
+            propertySchema={property as Schema}
+            isDisabled={isDisabled}
+            resourceId={resourceId}
+            entityDisplayName={entityDisplayName}
+          />
+        );
+      })}
+    </div>
+  );
   return null;
 };

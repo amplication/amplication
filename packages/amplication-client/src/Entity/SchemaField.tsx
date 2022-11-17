@@ -6,6 +6,7 @@ import RelatedEntityFieldField from "./RelatedEntityFieldField";
 import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
 import { Schema } from "@amplication/code-gen-types";
 import OptionSet from "../Entity/OptionSet";
+import { JSONSchema7 } from "json-schema";
 
 type Props = {
   propertyName: string;
@@ -64,28 +65,22 @@ export const SchemaField = ({
       );
     }
     case "array": {
-      if (
-        typeof propertySchema.items === "object" &&
-        !(propertySchema.items instanceof Array)
-      ) {
-        switch (propertySchema.items.type) {
-          case "object": {
-            return (
-              <OptionSet
-                label={label}
-                name={fieldName}
-                isDisabled={isDisabled}
-              />
-            );
-          }
-          default: {
-            throw new Error(
-              `Unexpected propertySchema.items.type: ${propertySchema.type}`
-            );
-          }
+      if (!propertySchema.items) {
+        throw new Error("Array schema must define items");
+      }
+
+      switch ((propertySchema.items as JSONSchema7).type) {
+        case "object": {
+          return (
+            <OptionSet label={label} name={fieldName} isDisabled={isDisabled} />
+          );
+        }
+        default: {
+          throw new Error(
+            `Unexpected propertySchema.items.type: ${propertySchema.type}`
+          );
         }
       }
-      throw new Error("Array schema must define items");
     }
     default: {
       switch (propertySchema?.$ref) {

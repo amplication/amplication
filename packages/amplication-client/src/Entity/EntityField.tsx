@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useContext, useState } from "react";
+import { useCallback, useMemo, useContext, useState } from "react";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { types } from "@amplication/code-gen-types";
@@ -190,6 +190,7 @@ const EntityField = () => {
             isSystemDataType={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
             }
+            isIdDataType={defaultValues.dataType === models.EnumDataType.Id}
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
             resourceId={resource}
