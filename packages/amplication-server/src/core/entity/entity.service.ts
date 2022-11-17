@@ -11,7 +11,7 @@ import { Prisma, PrismaService } from "@amplication/prisma-db";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { camelCase } from "camel-case";
 import difference from "@extra-set/difference";
-import { isEmpty, pick, last, head, omit } from "lodash";
+import { isEmpty, pick, last, head, omit, isEqual } from "lodash";
 import {
   Entity,
   EntityField,
@@ -1810,6 +1810,12 @@ export class EntityService {
       );
     }
 
+    if (data.dataType === EnumDataType.Id && !isMutableIdFields(data)) {
+      throw new DataConflictError(
+        `The data type ${data.dataType} cannot be used for non-system fields`
+      );
+    }
+
     if (isUserEntity(entity)) {
       // Make sure the field's name is not reserved
       if (isReservedUserEntityFieldName(data.name)) {
@@ -2069,6 +2075,12 @@ export class EntityService {
       );
     }
 
+    if (field.dataType === EnumDataType.Id && !isMutableIdFields(args.data)) {
+      throw new DataConflictError(
+        `The data type ${field.dataType} cannot be used for non-system fields`
+      );
+    }
+
     // Delete related field in case field data type is changed from lookup
     const shouldDeleteRelated =
       field.dataType === EnumDataType.Lookup &&
@@ -2236,6 +2248,33 @@ function isReservedUserEntityFieldName(name: string): boolean {
 
 function isUserEntity(entity: Entity): boolean {
   return entity.name === USER_ENTITY_NAME;
+}
+
+function isMutableIdFields(data: any): boolean {
+  const idTypeData = {
+    name: "id",
+    displayName: "ID",
+    dataType: "Id",
+    properties: { idType: "UUID" },
+    required: true,
+    unique: true,
+    searchable: true,
+    description: "An automatically created unique identifier of the entity",
+    createdAt: undefined,
+    updatedAt: undefined,
+  };
+  const idTypeDataWithoutProperties = omit(idTypeData, [
+    "properties",
+    "createdAt",
+    "updatedAt",
+  ]);
+  const dataWithoutProperties = omit(data, [
+    "properties",
+    "createdAt",
+    "updatedAt",
+  ]);
+
+  return isEqual(dataWithoutProperties, idTypeDataWithoutProperties);
 }
 
 export function createEntityNamesWhereInput(
