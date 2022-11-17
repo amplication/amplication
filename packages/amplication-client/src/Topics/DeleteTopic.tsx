@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import * as models from "../models";
 import { ConfirmationDialog } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import useServiceConnection from "../ServiceConnections/hooks/useServiceConnection";
+import useTopic from "./hooks/useTopic";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -18,7 +18,7 @@ const CLASS_NAME = "delete-entity-field";
 export const DeleteTopic = ({ topic, onDelete, onError }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
-  const { deleteTopic } = useServiceConnection(topic.id); // move this logic to topic hooks
+  const { deleteTopic } = useTopic(topic.id);
 
   const handleDelete = useCallback(
     (event) => {

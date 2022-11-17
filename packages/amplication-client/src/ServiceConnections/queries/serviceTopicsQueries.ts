@@ -50,11 +50,3 @@ export const CREATE_SERVICE_MESSAGE_BROKER_CONNECTION = gql`
     }
   }
 `;
-
-export const DELETE_TOPIC_FIELD = gql`
-  mutation deleteTopic($where: WhereUniqueInput!) {
-    deleteTopic(where: $where) {
-      id
-    }
-  }
-`;

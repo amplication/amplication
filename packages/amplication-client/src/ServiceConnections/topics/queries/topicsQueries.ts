@@ -13,3 +13,11 @@ export const topicsOfBroker = gql`
     }
   }
 `;
+
+export const DELETE_TOPIC_FIELD = gql`
+  mutation deleteTopic($where: WhereUniqueInput!) {
+    deleteTopic(where: $where) {
+      id
+    }
+  }
+`;
