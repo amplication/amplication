@@ -419,6 +419,19 @@ export class EntityService {
         throw new ConflictException(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
       }
 
+      const relatedEntityFields = await this.prisma.entityField.findMany({
+        where: {
+          dataType: EnumDataType.Lookup,
+          properties: { path: ["relatedEntityId"], equals: args.where.id },
+          entityVersion: { versionNumber: CURRENT_VERSION_NUMBER },
+        },
+        include: { entityVersion: true },
+      });
+
+      for (const relatedEntityField of relatedEntityFields) {
+        await this.deleteField({ where: { id: relatedEntityField.id } }, user);
+      }
+
       return this.prisma.entity.update({
         where: args.where,
         data: {
