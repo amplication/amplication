@@ -22,6 +22,7 @@ type TData = {
 };
 
 type Props = {
+  resourceId: string;
   topicIndex: number;
   change: models.PendingChange;
   linkToOrigin?: boolean;
@@ -37,11 +38,11 @@ const ACTION_TO_LABEL: {
   [models.EnumPendingChangeAction.Update]: 'U',
 };
 
-const PendingChange = ({ topicIndex, change, linkToOrigin = false }: Props) => {
+const PendingChange = ({ resourceId, topicIndex, change, linkToOrigin = false }: Props) => {
   const { data: topicsData } = useQuery<TData>(GET_TOPICS, {
     variables: {
       where: {
-        resource: { id: 'cl9kzud3f24405wul5cj4u55f' },
+        resource: { id: resourceId },
         displayName: undefined,
       },
       orderBy: {
