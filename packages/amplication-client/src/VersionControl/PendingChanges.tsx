@@ -18,6 +18,7 @@ import './PendingChanges.scss';
 import { AppContext } from '../context/appContext';
 import ResourceCircleBadge from '../Components/ResourceCircleBadge';
 import usePendingChanges from '../Workspaces/hooks/usePendingChanges';
+import { useRouteMatch } from "react-router-dom";
 
 const CLASS_NAME = 'pending-changes';
 
@@ -26,6 +27,12 @@ type Props = {
 };
 
 const PendingChanges = ({ projectId }: Props) => {
+  const match = useRouteMatch<{
+    resource: string;
+    topicId: string;
+  }>("/:workspace/:project/:resource/topics/:topicId");
+
+  const { resource } = match?.params ?? {};
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
   const { currentWorkspace, currentProject, pendingChanges } =
     useContext(AppContext);
@@ -87,6 +94,7 @@ const PendingChanges = ({ projectId }: Props) => {
                 </div>
                 {group.changes.map((change, index) => (
                   <PendingChange
+                    resourceId={resource}
                     topicIndex={index}
                     key={change.originId}
                     change={change}
