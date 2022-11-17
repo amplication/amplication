@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { WorkspaceOrderByInput } from './WorkspaceOrderByInput';
-import { WorkspaceWhereInput } from './WorkspaceWhereInput';
+import { ArgsType, Field, Int } from "@nestjs/graphql";
+import { WorkspaceOrderByInput } from "./WorkspaceOrderByInput";
+import { WorkspaceWhereInput } from "./WorkspaceWhereInput";
 
 @ArgsType()
 export class FindManyWorkspaceArgs {

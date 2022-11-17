@@ -12,6 +12,7 @@
     "hashicorp.terraform",
     "sleistner.vscode-fileutils",
     "eamodio.gitlens",
-    "nrwl.angular-console"
+    "nrwl.angular-console",
+    "firsttris.vscode-jest-runner"
   ]
 }

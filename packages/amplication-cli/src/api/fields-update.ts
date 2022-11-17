@@ -1,6 +1,6 @@
-import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
+import { ApolloClient, gql, NormalizedCacheObject } from "@apollo/client/core";
 
-import * as models from '../models';
+import * as models from "../models";
 
 const UPDATE_ENTITY_FIELD = gql`
   mutation updateEntityField(
@@ -49,7 +49,7 @@ export async function updateField(
   });
 
   if (!fieldData) {
-    throw new Error('no data');
+    throw new Error("no data");
   }
 
   return fieldData.updateEntityField;

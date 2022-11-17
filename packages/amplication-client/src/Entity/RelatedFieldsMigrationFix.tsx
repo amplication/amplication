@@ -35,12 +35,7 @@ export const RelatedFieldsMigrationFix = ({ match }: Props) => {
   const resourceId = match.params.resource;
   const { addEntity } = useContext(AppContext);
   const pageTitle = "Fix Entity Relations";
-  useNavigationTabs(
-    resourceId,
-    NAVIGATION_KEY,
-    match.url,
-    pageTitle
-  );
+  useNavigationTabs(resourceId, NAVIGATION_KEY, match.url, pageTitle);
 
   const { data, loading, error, refetch } = useQuery<TData>(GET_LOOKUP_FIELDS, {
     variables: {

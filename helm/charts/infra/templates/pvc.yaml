@@ -1,3 +1,11 @@
-{{ include "base.pvc" (list . "infra.pvc") -}}
-{{- define "infra.pvc" -}}
-{{- end }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.global.pvc.name }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: {{ .Values.global.pvc.storageName }}
+  resources:
+    requests:
+      storage: {{ .Values.global.pvc.storageRequest }}

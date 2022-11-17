@@ -1,37 +1,37 @@
-import { SortOrder } from '../../../enums/SortOrder';
-import { InputType, Field } from '@nestjs/graphql';
+import { SortOrder } from "../../../enums/SortOrder";
+import { InputType, Field } from "@nestjs/graphql";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class BuildOrderByInput {
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   id?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   userId?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   status?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   version?: SortOrder | null | undefined;
 
   @Field(() => SortOrder, {
-    nullable: true
+    nullable: true,
   })
   message?: SortOrder | null | undefined;
 }

@@ -4,26 +4,26 @@ import {
   Query,
   Resolver,
   Parent,
-  ResolveField
-} from '@nestjs/graphql';
-import { UseFilters, UseGuards } from '@nestjs/common';
+  ResolveField,
+} from "@nestjs/graphql";
+import { UseFilters, UseGuards } from "@nestjs/common";
 import {
   Entity,
   EntityField,
   EntityVersion,
   EntityPermission,
   EntityPermissionField,
-  User
-} from '../../models';
-import { FindOneArgs } from '../../dto';
-import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
-import { InjectContextValue } from '../../decorators/injectContextValue.decorator';
-import { UserEntity } from '../../decorators/user.decorator';
-import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
-import { InjectableOriginParameter } from '../../enums/InjectableOriginParameter';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
-import { UserService } from '../user/user.service';
+  User,
+} from "../../models";
+import { FindOneArgs } from "../../dto";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
+import { UserEntity } from "../../decorators/user.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { UserService } from "../user/user.service";
 import {
   CreateOneEntityArgs,
   FindManyEntityArgs,
@@ -41,9 +41,9 @@ import {
   CreateOneEntityFieldArgs,
   CreateOneEntityFieldByDisplayNameArgs,
   UpdateOneEntityFieldArgs,
-  CreateDefaultRelatedFieldArgs
-} from './dto';
-import { EntityService } from './entity.service';
+  CreateDefaultRelatedFieldArgs,
+} from "./dto";
+import { EntityService } from "./entity.service";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -55,27 +55,27 @@ export class EntityResolver {
   ) {}
 
   @Query(() => Entity, {
-    nullable: true
+    nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, "where.id")
   async entity(@Args() args: FindOneEntityArgs): Promise<Entity | null> {
     return this.entityService.entity(args);
   }
 
   @Query(() => [Entity], {
-    nullable: false
+    nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resource.id")
   async entities(@Args() args: FindManyEntityArgs): Promise<Entity[]> {
     return this.entityService.entities(args);
   }
 
   @Mutation(() => Entity, {
-    nullable: false
+    nullable: false,
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    'data.resource.connect.id'
+    "data.resource.connect.id"
   )
   async createOneEntity(
     @UserEntity() user: User,
@@ -85,9 +85,9 @@ export class EntityResolver {
   }
 
   @Mutation(() => Entity, {
-    nullable: true
+    nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, "where.id")
   async deleteEntity(
     @UserEntity() user: User,
     @Args() args: DeleteOneEntityArgs
@@ -96,9 +96,9 @@ export class EntityResolver {
   }
 
   @Mutation(() => Entity, {
-    nullable: true
+    nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, "where.id")
   async updateEntity(
     @UserEntity() user: User,
     @Args() args: UpdateOneEntityArgs
@@ -107,10 +107,10 @@ export class EntityResolver {
   }
 
   @Mutation(() => Entity, {
-    nullable: true
+    nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
-  @InjectContextValue(InjectableOriginParameter.UserId, 'userId')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, "where.id")
+  @InjectContextValue(InjectableOriginParameter.UserId, "userId")
   async lockEntity(
     @UserEntity() user: User,
     @Args() args: LockEntityArgs
@@ -142,8 +142,8 @@ export class EntityResolver {
       ...args,
       where: {
         ...args.where,
-        entity: { id: entity.id }
-      }
+        entity: { id: entity.id },
+      },
     });
   }
 
@@ -152,8 +152,8 @@ export class EntityResolver {
     if (entity.lockedByUserId) {
       return this.userService.findUser({
         where: {
-          id: entity.lockedByUserId
-        }
+          id: entity.lockedByUserId,
+        },
       });
     } else {
       return null;
@@ -161,7 +161,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityPermission, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, "where.id")
   async updateEntityPermission(
     @UserEntity() user: User,
     @Args() args: UpdateEntityPermissionArgs
@@ -172,7 +172,7 @@ export class EntityResolver {
   @Mutation(() => EntityPermission, { nullable: false })
   @AuthorizeContext(
     AuthorizableOriginParameter.EntityId,
-    'data.entity.connect.id'
+    "data.entity.connect.id"
   )
   async updateEntityPermissionRoles(
     @UserEntity() user: User,
@@ -184,7 +184,7 @@ export class EntityResolver {
   @Mutation(() => EntityPermissionField, { nullable: false })
   @AuthorizeContext(
     AuthorizableOriginParameter.EntityId,
-    'data.entity.connect.id'
+    "data.entity.connect.id"
   )
   async addEntityPermissionField(
     @UserEntity() user: User,
@@ -194,7 +194,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityPermissionField, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityId, 'where.entityId')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityId, "where.entityId")
   async deleteEntityPermissionField(
     @UserEntity() user: User,
     @Args() args: DeleteEntityPermissionFieldArgs
@@ -205,7 +205,7 @@ export class EntityResolver {
   @Mutation(() => EntityPermissionField, { nullable: false })
   @AuthorizeContext(
     AuthorizableOriginParameter.EntityPermissionFieldId,
-    'data.permissionField.connect.id'
+    "data.permissionField.connect.id"
   )
   async updateEntityPermissionFieldRoles(
     @UserEntity() user: User,
@@ -217,7 +217,7 @@ export class EntityResolver {
   @Mutation(() => EntityField, { nullable: false })
   @AuthorizeContext(
     AuthorizableOriginParameter.EntityId,
-    'data.entity.connect.id'
+    "data.entity.connect.id"
   )
   async createEntityField(
     @UserEntity() user: User,
@@ -229,7 +229,7 @@ export class EntityResolver {
   @Mutation(() => EntityField, { nullable: false })
   @AuthorizeContext(
     AuthorizableOriginParameter.EntityId,
-    'data.entity.connect.id'
+    "data.entity.connect.id"
   )
   async createEntityFieldByDisplayName(
     @UserEntity() user: User,
@@ -239,7 +239,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityField, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, "where.id")
   async deleteEntityField(
     @UserEntity() user: User,
     @Args() args: FindOneArgs
@@ -248,7 +248,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityField, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, "where.id")
   async updateEntityField(
     @UserEntity() user: User,
     @Args() args: UpdateOneEntityFieldArgs
@@ -257,7 +257,7 @@ export class EntityResolver {
   }
 
   @Mutation(() => EntityField, { nullable: false })
-  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.EntityFieldId, "where.id")
   async createDefaultRelatedField(
     @UserEntity() user: User,
     @Args() args: CreateDefaultRelatedFieldArgs

@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
-import { sendServerLoadEvent } from './util/sendServerLoadEvent';
-import { createNestjsKafkaConfig } from '@amplication/kafka';
-import { MicroserviceOptions } from '@nestjs/microservices';
+import { NestFactory } from "@nestjs/core";
+import { ValidationPipe } from "@nestjs/common";
+import { AppModule } from "./app.module";
+import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
+import { createNestjsKafkaConfig } from "@amplication/kafka";
+import { MicroserviceOptions } from "@nestjs/microservices";
 
 async function bootstrap() {
   /**
@@ -16,7 +16,7 @@ async function bootstrap() {
    */
   if (
     !process.env.DISABLE_EVENT_TRACKING ||
-    process.env.DISABLE_EVENT_TRACKING == '0'
+    process.env.DISABLE_EVENT_TRACKING == "0"
   ) {
     sendServerLoadEvent();
   }
@@ -25,9 +25,9 @@ async function bootstrap() {
    * Cloud Tracing @see https://cloud.google.com/trace/docs
    */
   if (process.env.ENABLE_CLOUD_TRACING) {
-    const traceAgent = await import('@google-cloud/trace-agent');
+    const traceAgent = await import("@google-cloud/trace-agent");
     traceAgent.start();
-    console.info('Cloud tracing is enabled');
+    console.info("Cloud tracing is enabled");
   }
 
   const app = await NestFactory.create(AppModule, {});
@@ -37,8 +37,8 @@ async function bootstrap() {
 
   if (process.env.ENABLE_SHUTDOWN_HOOKS) {
     // Remove listeners created by Prisma
-    process.removeAllListeners('SIGTERM');
-    process.removeAllListeners('SIGINT');
+    process.removeAllListeners("SIGTERM");
+    process.removeAllListeners("SIGINT");
     app.enableShutdownHooks();
   }
 
@@ -46,14 +46,14 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   // Cors
-  if (process.env.CORS_ENABLE === '1') {
+  if (process.env.CORS_ENABLE === "1") {
     app.enableCors();
   }
 
   await app.listen(process.env.PORT || 3000);
 }
 
-bootstrap().catch(error => {
+bootstrap().catch((error) => {
   console.error(error);
   process.exit(1);
 });
