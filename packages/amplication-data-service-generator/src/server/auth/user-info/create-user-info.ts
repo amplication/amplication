@@ -23,9 +23,6 @@ export async function createUserInfo(): Promise<Module> {
 
   const { idType } = idField.properties as types.Id;
 
-  const templatePath = require.resolve("./user-info.template.ts");
-  const file = await readFile(templatePath);
-
   const number = {
     class: "Number",
     type: "number",
@@ -36,21 +33,30 @@ export async function createUserInfo(): Promise<Module> {
     type: "string",
   };
 
+  const idTypeMap = {
+    AUTO_INCREMENT: "autoIncrement",
+    UUID: "uuid",
+    CUID: "cuid",
+  };
+
   const idTypClassOptions: { [key: string]: () => namedTypes.Identifier } = {
-    AUTO_INCREMENT: () => builders.identifier(number.class),
-    UUID: () => builders.identifier(string.class),
-    CUID: () => builders.identifier(string.class),
+    autoIncrement: () => builders.identifier(number.class),
+    uuid: () => builders.identifier(string.class),
+    cuid: () => builders.identifier(string.class),
   };
 
   const idTypeTSOptions: { [key: string]: () => namedTypes.Identifier } = {
-    AUTO_INCREMENT: () => builders.identifier(number.type),
-    UUID: () => builders.identifier(string.type),
-    CUID: () => builders.identifier(string.type),
+    autoIncrement: () => builders.identifier(number.type),
+    uuid: () => builders.identifier(string.type),
+    cuid: () => builders.identifier(string.type),
   };
 
+  const templatePath = require.resolve("./user-info.template.ts");
+  const file = await readFile(templatePath);
+
   interpolate(file, {
-    USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType](),
-    USER_ID_CLASS: idTypClassOptions[idType](),
+    USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idTypeMap[idType]](),
+    USER_ID_CLASS: idTypClassOptions[idTypeMap[idType]](),
   });
   removeTSClassDeclares(file);
 
