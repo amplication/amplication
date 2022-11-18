@@ -1,5 +1,7 @@
+declare class ID_TYPE {}
+
 export interface ITokenPayload {
-  id: string | number;
+  id: ID_TYPE;
   username: string;
   password: string;
 }

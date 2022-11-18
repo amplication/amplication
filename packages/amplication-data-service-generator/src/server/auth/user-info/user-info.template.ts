@@ -1,12 +1,13 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from "../user/user";
+import { User } from "../user/base/user";
+
+declare class USER_ID_TYPE_ANNOTATION {}
+declare class USER_ID_CLASS {}
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
-  @Field(() => String || Number)
-  id!: string | number;
+  @Field(() => USER_ID_CLASS)
+  id!: USER_ID_TYPE_ANNOTATION;
   @Field(() => String)
   username!: string;
   @Field(() => [String])
