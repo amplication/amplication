@@ -3373,7 +3373,7 @@ export interface IAuthStrategy {
 }
 ",
   "server/src/auth/ITokenService.ts": "export interface ITokenPayload {
-  id: string | number;
+  id: number;
   username: string;
   password: string;
 }
@@ -3392,14 +3392,12 @@ export class LoginArgs {
 }
 ",
   "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { User } from \\"../user/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
-  @Field(() => String || Number)
-  id!: string | number;
+  @Field(() => Number)
+  id!: number;
   @Field(() => String)
   username!: string;
   @Field(() => [String])
