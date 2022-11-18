@@ -36,25 +36,21 @@ export async function createUserInfo(): Promise<Module> {
     type: "string",
   };
 
-  let astIdClass: namedTypes.Identifier;
-  let astIdType: namedTypes.Identifier;
+  const idTypClassOptions: { [key: string]: () => namedTypes.Identifier } = {
+    AUTO_INCREMENT: () => builders.identifier(number.class),
+    UUID: () => builders.identifier(string.class),
+    CUID: () => builders.identifier(string.class),
+  };
 
-  switch (idType) {
-    case "AUTO_INCREMENT":
-      astIdClass = builders.identifier(number.class);
-      astIdType = builders.identifier(number.type);
-      break;
-    case "UUID" || "CUID":
-      astIdClass = builders.identifier(string.class);
-      astIdType = builders.identifier(string.type);
-      break;
-    default:
-      throw new Error("Invalid id type");
-  }
+  const idTypeTSOptions: { [key: string]: () => namedTypes.Identifier } = {
+    AUTO_INCREMENT: () => builders.identifier(number.type),
+    UUID: () => builders.identifier(string.type),
+    CUID: () => builders.identifier(string.type),
+  };
 
   interpolate(file, {
-    USER_ID_TYPE_ANNOTATION: astIdType,
-    USER_ID_CLASS: astIdClass,
+    USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType](),
+    USER_ID_CLASS: idTypClassOptions[idType](),
   });
   removeTSClassDeclares(file);
 

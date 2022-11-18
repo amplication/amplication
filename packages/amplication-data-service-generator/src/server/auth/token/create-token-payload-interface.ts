@@ -26,21 +26,14 @@ export async function createTokenPayload(): Promise<Module> {
   const templatePath = require.resolve("./token-payload-interface.template.ts");
   const file = await readFile(templatePath);
 
-  let astIdType: namedTypes.Identifier;
-
-  switch (idType) {
-    case "AUTO_INCREMENT":
-      astIdType = builders.identifier("number");
-      break;
-    case "UUID" || "CUID":
-      astIdType = builders.identifier("string");
-      break;
-    default:
-      throw new Error("Invalid id type");
-  }
+  const idTypeTSOptions: { [key: string]: () => namedTypes.Identifier } = {
+    AUTO_INCREMENT: () => builders.identifier("number"),
+    UUID: () => builders.identifier("string"),
+    CUID: () => builders.identifier("string"),
+  };
 
   interpolate(file, {
-    ID_TYPE: astIdType,
+    ID_TYPE: idTypeTSOptions[idType](),
   });
   removeTSClassDeclares(file);
 
