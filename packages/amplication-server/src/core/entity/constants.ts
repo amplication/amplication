@@ -59,20 +59,11 @@ export const INITIAL_ID_TYPE_FIELDS: EntityFieldData = {
   unique: true,
   required: true,
   searchable: true,
-  properties: { idType: "UUID" },
+  properties: { idType: "CUID" },
 };
 
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
-  {
-    dataType: EnumDataType.Id,
-    name: "id",
-    displayName: "ID",
-    description: "An automatically created unique identifier of the entity",
-    unique: true,
-    required: true,
-    searchable: true,
-    properties: { idType: "UUID" },
-  },
+  INITIAL_ID_TYPE_FIELDS,
   {
     dataType: EnumDataType.CreatedAt,
     name: "createdAt",
