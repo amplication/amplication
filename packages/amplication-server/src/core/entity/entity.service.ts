@@ -39,6 +39,7 @@ import {
   DEFAULT_PERMISSIONS,
   SYSTEM_DATA_TYPES,
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
+  INITIAL_ID_TYPE_FIELDS,
 } from "./constants";
 import {
   prepareDeletedItemName,
@@ -134,6 +135,10 @@ const RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE =
 
 const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
   "When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null";
+
+const UPDATED_AT = "updatedAt";
+const CREATED_AT = "createdAt";
+const PROPERTIES = "properties";
 
 const BASE_FIELD: Pick<
   EntityField,
@@ -1810,9 +1815,12 @@ export class EntityService {
       );
     }
 
-    if (data.dataType === EnumDataType.Id && !isMutableIdFields(data)) {
+    if (
+      data.dataType === EnumDataType.Id &&
+      isBasePropertyIdFieldPayloadChanged(data)
+    ) {
       throw new DataConflictError(
-        `The data type ${data.dataType} cannot be used for non-system fields`
+        "The base properties of the ID field cannot be edited"
       );
     }
 
@@ -2075,9 +2083,12 @@ export class EntityService {
       );
     }
 
-    if (field.dataType === EnumDataType.Id && !isMutableIdFields(args.data)) {
+    if (
+      field.dataType === EnumDataType.Id &&
+      isBasePropertyIdFieldPayloadChanged(args.data)
+    ) {
       throw new DataConflictError(
-        `The data type ${field.dataType} cannot be used for non-system fields`
+        "The base properties of the ID field cannot be edited"
       );
     }
 
@@ -2250,31 +2261,35 @@ function isUserEntity(entity: Entity): boolean {
   return entity.name === USER_ENTITY_NAME;
 }
 
-function isMutableIdFields(data: any): boolean {
+/**
+ * @param data the payload from the request
+ * @return (boolean) true if the base properties of the ID field are changed,
+ * meaning that the base properties of the ID field from the payload are different
+ * from the base properties of the ID field from the initial state (INITIAL_ID_TYPE_FIELDS)
+ */
+function isBasePropertyIdFieldPayloadChanged(
+  data:
+    | CreateOneEntityFieldArgs
+    | UpdateOneEntityFieldArgs
+    | EntityFieldUpdateInput
+): boolean {
   const idTypeData = {
-    name: "id",
-    displayName: "ID",
-    dataType: "Id",
-    properties: { idType: "UUID" },
-    required: true,
-    unique: true,
-    searchable: true,
-    description: "An automatically created unique identifier of the entity",
+    ...INITIAL_ID_TYPE_FIELDS,
     createdAt: undefined,
     updatedAt: undefined,
   };
   const idTypeDataWithoutProperties = omit(idTypeData, [
-    "properties",
-    "createdAt",
-    "updatedAt",
+    PROPERTIES,
+    CREATED_AT,
+    UPDATED_AT,
   ]);
   const dataWithoutProperties = omit(data, [
-    "properties",
-    "createdAt",
-    "updatedAt",
+    PROPERTIES,
+    CREATED_AT,
+    UPDATED_AT,
   ]);
 
-  return isEqual(dataWithoutProperties, idTypeDataWithoutProperties);
+  return !isEqual(dataWithoutProperties, idTypeDataWithoutProperties);
 }
 
 export function createEntityNamesWhereInput(

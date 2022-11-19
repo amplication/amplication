@@ -51,6 +51,17 @@ export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
   EnumDataType.Roles,
 ]);
 
+export const INITIAL_ID_TYPE_FIELDS: EntityFieldData = {
+  dataType: EnumDataType.Id,
+  name: "id",
+  displayName: "ID",
+  description: "An automatically created unique identifier of the entity",
+  unique: true,
+  required: true,
+  searchable: true,
+  properties: { idType: "UUID" },
+};
+
 export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
   {
     dataType: EnumDataType.Id,
@@ -60,7 +71,7 @@ export const INITIAL_ENTITY_FIELDS: EntityFieldData[] = [
     unique: true,
     required: true,
     searchable: true,
-    properties: {},
+    properties: { idType: "UUID" },
   },
   {
     dataType: EnumDataType.CreatedAt,
