@@ -3431,7 +3431,9 @@ export class LoginArgs {
 }
 ",
   "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-import { User } from \\"../user/base/user\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { User } from \\"../user/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {

@@ -1,5 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { User } from "../user/base/user";
+// @ts-ignore
+// eslint-disable-next-line
+import { User } from "../user/user";
 
 declare class USER_ID_TYPE_ANNOTATION {}
 declare class USER_ID_CLASS {}
