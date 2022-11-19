@@ -41,7 +41,7 @@ const USER: Entity = {
       displayName: "Id",
       dataType: EnumDataType.Id,
       properties: {
-        idType: "AUTO_INCREMENT",
+        idType: "UUID",
       },
       required: true,
       unique: false,

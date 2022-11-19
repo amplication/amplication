@@ -958,7 +958,7 @@ import { Profile } from \\"../profile/Profile\\";
 export type User = {
   username: string;
   roles: JsonValue;
-  id: number;
+  id: string;
   name: string;
   bio: string;
   email: string;
@@ -1090,8 +1090,8 @@ export type UserUpdateManyWithoutUsersInput = {
   set?: Array<UserWhereUniqueInput>;
 };
 ",
-  "admin-ui/src/api/user/UserWhereInput.ts": "import { IntFilter } from \\"../../util/IntFilter\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
+  "admin-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationListRelationFilter } from \\"../organization/OrganizationListRelationFilter\\";
@@ -1100,7 +1100,7 @@ import { JsonFilter } from \\"../../util/JsonFilter\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserWhereInput = {
-  id?: IntFilter;
+  id?: StringFilter;
   name?: StringFilter;
   bio?: StringFilter;
   age?: IntFilter;
@@ -1115,7 +1115,7 @@ export type UserWhereInput = {
 };
 ",
   "admin-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
-  id: number;
+  id: string;
 };
 ",
   "admin-ui/src/auth-provider/ra-auth-http.ts": "import { gql } from \\"@apollo/client/core\\";
@@ -3037,7 +3037,7 @@ model User {
   username           String              @unique
   password           String
   roles              Json
-  id                 Int                 @id @default(autoincrement())
+  id                 String              @id @default(uuid())
   name               String
   bio                String
   email              String
@@ -3045,7 +3045,7 @@ model User {
   birthDate          DateTime
   score              Float
   manager            User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
-  managerId          Int?
+  managerId          String?
   employees          User[]              @relation(name: \\"employees\\")
   organizations      Organization[]
   interests          EnumUserInterests[]
@@ -3373,7 +3373,7 @@ export interface IAuthStrategy {
 }
 ",
   "server/src/auth/ITokenService.ts": "export interface ITokenPayload {
-  id: number;
+  id: string;
   username: string;
   password: string;
 }
@@ -3396,8 +3396,8 @@ import { User } from \\"../user/base/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
-  @Field(() => Number)
-  id!: number;
+  @Field(() => String)
+  id!: string;
   @Field(() => String)
   username!: string;
   @Field(() => [String])
@@ -12182,11 +12182,11 @@ class User {
 
   @ApiProperty({
     required: true,
-    type: Number,
+    type: String,
   })
-  @IsInt()
-  @Field(() => Number)
-  id!: number;
+  @IsString()
+  @Field(() => String)
+  id!: string;
 
   @ApiProperty({
     required: true,
@@ -13160,10 +13160,10 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IntFilter } from \\"../../util/IntFilter\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional, ValidateNested, IsEnum } from \\"class-validator\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
+import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { OrganizationListRelationFilter } from \\"../../organization/base/OrganizationListRelationFilter\\";
@@ -13175,14 +13175,14 @@ import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUnique
 class UserWhereInput {
   @ApiProperty({
     required: false,
-    type: IntFilter,
+    type: StringFilter,
   })
-  @Type(() => IntFilter)
+  @Type(() => StringFilter)
   @IsOptional()
-  @Field(() => IntFilter, {
+  @Field(() => StringFilter, {
     nullable: true,
   })
-  id?: IntFilter;
+  id?: StringFilter;
 
   @ApiProperty({
     required: false,
@@ -13323,16 +13323,16 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsInt } from \\"class-validator\\";
+import { IsString } from \\"class-validator\\";
 @InputType()
 class UserWhereUniqueInput {
   @ApiProperty({
     required: true,
-    type: Number,
+    type: String,
   })
-  @IsInt()
-  @Field(() => Number)
-  id!: number;
+  @IsString()
+  @Field(() => String)
+  id!: string;
 }
 export { UserWhereUniqueInput };
 ",
@@ -13359,7 +13359,7 @@ const existingId = \\"existingId\\";
 const CREATE_INPUT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
-  id: 42,
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
@@ -13372,7 +13372,7 @@ const CREATE_INPUT = {
 const CREATE_RESULT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
-  id: 42,
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
@@ -13386,7 +13386,7 @@ const FIND_MANY_RESULT = [
   {
     username: \\"exampleUsername\\",
     password: \\"examplePassword\\",
-    id: 42,
+    id: \\"exampleId\\",
     name: \\"exampleName\\",
     bio: \\"exampleBio\\",
     email: \\"exampleEmail\\",
@@ -13400,7 +13400,7 @@ const FIND_MANY_RESULT = [
 const FIND_ONE_RESULT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
-  id: 42,
+  id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
   email: \\"exampleEmail\\",
