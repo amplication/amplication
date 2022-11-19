@@ -23,23 +23,18 @@ export async function createTokenPayload(): Promise<Module> {
 
   const { idType } = idField.properties as types.Id;
 
-  const idTypeMap = {
-    AUTO_INCREMENT: "autoIncrement",
-    UUID: "uuid",
-    CUID: "cuid",
-  };
-
+  /* eslint-disable @typescript-eslint/naming-convention */
   const idTypeTSOptions: { [key: string]: () => namedTypes.Identifier } = {
-    autoIncrement: () => builders.identifier("number"),
-    uuid: () => builders.identifier("string"),
-    cuid: () => builders.identifier("string"),
+    AUTO_INCREMENT: () => builders.identifier("number"),
+    UUID: () => builders.identifier("string"),
+    CUID: () => builders.identifier("string"),
   };
 
   const templatePath = require.resolve("./token-payload-interface.template.ts");
   const file = await readFile(templatePath);
 
   interpolate(file, {
-    ID_TYPE: idTypeTSOptions[idTypeMap[idType]](),
+    ID_TYPE: idTypeTSOptions[idType](),
   });
   removeTSClassDeclares(file);
 
