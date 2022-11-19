@@ -6,17 +6,22 @@ import { readFile } from "../../../util/module";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
+import { USER_ENTITY_NAME } from "../../user-entity";
 
 export async function createUserInfo(): Promise<Module> {
   const { entities, serverDirectories } = DsgContext.getInstance;
   const authDir = `${serverDirectories.srcDirectory}/auth`;
-  const userEntity = entities.find((e) => e.name === "User");
+  const userEntity = entities.find(
+    (entity) => entity.name === USER_ENTITY_NAME
+  );
 
   if (!userEntity) {
     throw new Error("User entity not found");
   }
 
-  const idField = userEntity.fields.find((f) => f.dataType === EnumDataType.Id);
+  const idField = userEntity.fields.find(
+    (field) => field.dataType === EnumDataType.Id
+  );
   if (!idField) {
     throw new Error("User entity must have an id field");
   }
