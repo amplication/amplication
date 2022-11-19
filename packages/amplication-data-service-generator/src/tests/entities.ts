@@ -41,7 +41,7 @@ const USER: Entity = {
       displayName: "Id",
       dataType: EnumDataType.Id,
       properties: {
-        idType: "UUID",
+        idType: "CUID",
       },
       required: true,
       unique: false,

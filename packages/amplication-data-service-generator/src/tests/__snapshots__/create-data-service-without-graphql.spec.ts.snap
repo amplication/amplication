@@ -3037,7 +3037,7 @@ model User {
   username           String              @unique
   password           String
   roles              Json
-  id                 String              @id @default(uuid())
+  id                 String              @id @default(cuid())
   name               String
   bio                String
   email              String

@@ -42,7 +42,7 @@ export async function createUserInfo(): Promise<Module> {
   const idTypClassOptions: { [key: string]: () => namedTypes.Identifier } = {
     AUTO_INCREMENT: () => builders.identifier(number.class),
     UUID: () => builders.identifier(string.class),
-    cuid: () => builders.identifier(string.class),
+    CUID: () => builders.identifier(string.class),
   };
 
   /* eslint-disable @typescript-eslint/naming-convention */
