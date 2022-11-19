@@ -10,7 +10,6 @@ type Props = {
 
 export const SchemaFields = ({
   schema,
-  isDisabled,
   resourceId,
   entityDisplayName,
 }: Props) => {
@@ -29,17 +28,16 @@ export const SchemaFields = ({
           throw new Error(`Missing property: ${name}`);
         }
         return (
-          <SchemaField
-            key={name}
-            propertyName={name}
-            propertySchema={property as Schema}
-            isDisabled={isDisabled}
-            resourceId={resourceId}
-            entityDisplayName={entityDisplayName}
-          />
+          <div key={name}>
+            <SchemaField
+              propertyName={name}
+              propertySchema={property as Schema}
+              resourceId={resourceId}
+              entityDisplayName={entityDisplayName}
+            />
+          </div>
         );
       })}
     </div>
   );
-  return null;
 };

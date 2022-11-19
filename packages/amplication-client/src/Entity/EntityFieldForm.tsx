@@ -36,7 +36,6 @@ type Props = {
   resourceId: string;
   entityDisplayName: string;
   isSystemDataType?: boolean;
-  isIdDataType?: boolean;
 };
 
 const FORM_SCHEMA = {
@@ -73,7 +72,6 @@ const EntityFieldForm = ({
   resourceId,
   entityDisplayName,
   isSystemDataType,
-  isIdDataType,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -171,7 +169,6 @@ const EntityFieldForm = ({
 
             <SchemaFields
               schema={schema}
-              isDisabled={isSystemDataType && !isIdDataType}
               resourceId={resourceId}
               entityDisplayName={entityDisplayName}
             />

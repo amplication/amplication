@@ -190,7 +190,6 @@ const EntityField = () => {
             isSystemDataType={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
             }
-            isIdDataType={defaultValues.dataType === models.EnumDataType.Id}
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
             resourceId={resource}

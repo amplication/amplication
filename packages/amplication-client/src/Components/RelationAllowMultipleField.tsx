@@ -8,11 +8,7 @@ type Props = {
   entityDisplayName: string;
 };
 
-const RelationAllowMultiple = ({
-  fieldName,
-  isDisabled,
-  entityDisplayName,
-}: Props) => {
+const RelationAllowMultiple = ({ fieldName, entityDisplayName }: Props) => {
   const formik = useFormikContext<{
     id: string;
     displayName: string;
@@ -34,7 +30,6 @@ const RelationAllowMultiple = ({
   return (
     <>
       <RadioButtonField
-        disabled={isDisabled}
         name="relationAllowMultiple-field"
         value="true"
         checked={formik.values.properties.allowMultipleSelection}
@@ -42,7 +37,6 @@ const RelationAllowMultiple = ({
         onChange={handleChange}
       />
       <RadioButtonField
-        disabled={isDisabled}
         name="relationAllowMultiple-field"
         value="false"
         checked={!formik.values.properties.allowMultipleSelection}
