@@ -53,7 +53,8 @@ export default function TopicsList({
                 }
                 onMessagePatternTypeChange={(pattern) => {
                   trackEvent({
-                    eventName: `${AnalyticsEventNames.MessagePatternTypeClick}-${pattern}`,
+                    eventName: AnalyticsEventNames.MessagePatternTypeClick,
+                    pattern,
                   });
                   replace(i, { type: pattern, topicId: topic.id });
                 }}
