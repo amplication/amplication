@@ -2268,10 +2268,7 @@ function isUserEntity(entity: Entity): boolean {
  * from the base properties of the ID field from the initial state (INITIAL_ID_TYPE_FIELDS)
  */
 function isBasePropertyIdFieldPayloadChanged(
-  data:
-    | CreateOneEntityFieldArgs
-    | UpdateOneEntityFieldArgs
-    | EntityFieldUpdateInput
+  data: EntityFieldUpdateInput
 ): boolean {
   const idTypeData = {
     ...INITIAL_ID_TYPE_FIELDS,
