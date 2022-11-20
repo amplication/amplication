@@ -2,7 +2,7 @@ import { Reference, useMutation } from "@apollo/client";
 import { useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
-import { DELETE_TOPIC_FIELD } from "../../ServiceConnections/topics/queries/topicsQueries";
+import { DELETE_TOPIC } from "../../ServiceConnections/topics/queries/topicsQueries";
 type TData = {
   deleteTopic: models.Topic;
 };
@@ -11,7 +11,7 @@ const useTopic = (topicId: string) => {
   const { addBlock } = useContext(AppContext);
 
   const [deleteTopic, { error: deleteTopicError }] = useMutation<TData>(
-    DELETE_TOPIC_FIELD,
+    DELETE_TOPIC,
     {
       update(cache, { data }) {
         if (!data || data === undefined) return;

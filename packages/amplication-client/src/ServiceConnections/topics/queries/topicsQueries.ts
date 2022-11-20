@@ -14,7 +14,7 @@ export const topicsOfBroker = gql`
   }
 `;
 
-export const DELETE_TOPIC_FIELD = gql`
+export const DELETE_TOPIC = gql`
   mutation deleteTopic($where: WhereUniqueInput!) {
     deleteTopic(where: $where) {
       id

@@ -13,7 +13,7 @@ type Props = {
   onDelete?: () => void;
 };
 
-const CLASS_NAME = "delete-entity-field";
+const CLASS_NAME = "delete-topic";
 
 export const DeleteTopic = ({ topic, onDelete }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
