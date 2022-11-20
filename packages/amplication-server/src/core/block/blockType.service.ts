@@ -53,6 +53,6 @@ export abstract class BlockTypeService<
   }
 
   async delete(args: DeleteArgs, @UserEntity() user: User): Promise<T> {
-    return await this.blockService.delete(args);
+    return await this.blockService.delete(args, user);
   }
 }

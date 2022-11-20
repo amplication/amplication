@@ -20,7 +20,10 @@ import {
   User,
   Resource,
 } from "../../models";
-import { revertDeletedItemName } from "../../util/softDelete";
+import {
+  prepareDeletedItemName,
+  revertDeletedItemName,
+} from "../../util/softDelete";
 import {
   CreateBlockArgs,
   UpdateBlockArgs,
@@ -469,7 +472,10 @@ export class BlockService {
     });
   }
 
-  async delete<T extends IBlock>(args: DeleteBlockArgs): Promise<T | null> {
+  async delete<T extends IBlock>(
+    args: DeleteBlockArgs,
+    user: User
+  ): Promise<T | null> {
     const blockVersion = await this.prisma.blockVersion.findUnique({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -491,12 +497,29 @@ export class BlockService {
       throw new Error(`Block ${args.where.id} is not exist`);
     }
 
-    await this.prisma.block.delete({
-      where: {
-        id: blockVersion.blockId,
-      },
+    await this.useLocking(args.where.id, user, async (block) => {
+      return this.prisma.block.update({
+        where: args.where,
+        data: {
+          displayName: prepareDeletedItemName(block.displayName, block.id),
+          deletedAt: new Date(),
+          versions: {
+            update: {
+              where: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                blockId_versionNumber: {
+                  blockId: args.where.id,
+                  versionNumber: CURRENT_VERSION_NUMBER,
+                },
+              },
+              data: {
+                deleted: true,
+              },
+            },
+          },
+        },
+      });
     });
-
     return this.versionToIBlock<T>(blockVersion);
   }
 
