@@ -23,7 +23,7 @@ export class TopicService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly serviceTopics: ServiceTopicsService
+    protected readonly serviceTopicsService: ServiceTopicsService
   ) {
     super(blockService);
   }
@@ -44,7 +44,7 @@ export class TopicService extends BlockTypeService<
     @UserEntity() user: User
   ): Promise<Topic> {
     const topicId = args.where.id;
-    await this.serviceTopics.removeTopicFromAllServices(topicId, user);
+    await this.serviceTopicsService.removeTopicFromAllServices(topicId, user);
     return super.delete(args, user);
   }
 }
