@@ -1,4 +1,4 @@
-import { JsonEditor } from "@amplication/design-system";
+import { CodeEditor } from "@amplication/design-system";
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import { StorageBaseAxios } from "./StorageBaseAxios";
 
@@ -39,7 +39,7 @@ const CodeViewEditor = ({ resourceId, buildId, filePath, fileName }: Props) => {
   return !filePath ? (
     <div />
   ) : (
-    <JsonEditor value={content} options={{ readOnly: true }} path={filePath} />
+    <CodeEditor value={content} options={{ readOnly: true }} path={filePath} />
   );
 };
 

@@ -159,5 +159,5 @@ export {
 export { Loader } from "./components/Loader/Loader";
 export type { Props as LoaderProps } from "./components/Loader/Loader";
 
-export { JsonEditor } from "./components/JsonEditor/JsonEditor";
-export type { JsonEditorProps } from "./components/JsonEditor/JsonEditor";
+export { CodeEditor } from "./components/CodeEditor/CodeEditor";
+export type { CodeEditorProps } from "./components/CodeEditor/CodeEditor";

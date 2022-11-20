@@ -1,9 +1,9 @@
 import {
   HorizontalRule,
-  JsonEditor,
+  CodeEditor,
   Snackbar,
 } from "@amplication/design-system";
-import { isValidJSON } from "@amplication/design-system/components/JsonEditor/JsonEditor";
+import { isValidJSON } from "@amplication/design-system/components/CodeEditor/CodeEditor";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import React, {
   useCallback,
@@ -120,7 +120,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
             </span>
           </div>
           <HorizontalRule />
-          <JsonEditor
+          <CodeEditor
             defaultValue={pluginInstallation?.PluginInstallation.settings}
             resetKey={resetKey}
             onChange={onEditorChange}

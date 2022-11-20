@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MonacoEditor, { EditorProps, Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-import "./JsonEditor.scss";
+import "./CodeEditor.scss";
 
 export const isValidJSON = (str: string) => {
   try {
@@ -11,7 +11,7 @@ export const isValidJSON = (str: string) => {
   }
 };
 
-export interface JsonEditorProps {
+export interface CodeEditorProps {
   width?: string;
   height?: string;
   value?: string | { [key: string]: any };
@@ -38,7 +38,7 @@ const setEditorTheme = (monaco: Monaco) => {
   });
 };
 
-export const JsonEditor: React.FC<JsonEditorProps> = ({
+export const CodeEditor: React.FC<CodeEditorProps> = ({
   width = "100%",
   height = "100%",
   value = null,
