@@ -52,7 +52,9 @@ export enum AnalyticsEventNames {
   ResourceBuild = "buildResource",
   ResourceDelete = "deleteResource",
   ResourceCardClick = "resourceCardClick",
-  ResourceCreate = "createResourceClick",
+  MessageBrokerCreate = "createResourceClick-MessageBroker",
+  ProjectConfigurationCreate = "createResourceClick-ProjectConfiguration",
+  ServiceCreate = "createResourceClick-Service",
 
   // entity
   EntityCreate = "createEntity",
@@ -97,4 +99,7 @@ export enum AnalyticsEventNames {
   GithubOpenPullRequest = "openGithubPullRequest",
   GitHubRepositorySync = "selectGitRepository",
   GithubRepoSync = "selectGithubRepo",
+  CreateService = "CreateService",
+  CreateMessageBroker = "CreateMessageBroker",
+  CreateProjectConfiguration = "CreateProjectConfiguration"
 }

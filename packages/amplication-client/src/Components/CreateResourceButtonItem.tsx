@@ -1,4 +1,5 @@
 import { SelectMenuItem } from "@amplication/design-system";
+import { EnumResourceType } from "@amplication/prisma-db";
 import React, { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
@@ -17,10 +18,26 @@ const CreateResourceButtonItem = ({ item }: props) => {
 
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
+  const handleCreateResourceByType = {
+    Service: () => {
+      trackEvent({
+        eventName: AnalyticsEventNames.CreateService,
+      });
+    },
+    MessageBroker: () => {
+      trackEvent({
+        eventName: AnalyticsEventNames.CreateMessageBroker,
+      });
+    },
+    ProjectConfiguration: () => {
+      trackEvent({
+        eventName: AnalyticsEventNames.CreateProjectConfiguration,
+      });
+    },
+  };
+
   const handleClick = useCallback(() => {
-    trackEvent({
-      eventName: `${AnalyticsEventNames.ResourceCreate}-${item.type}`,
-    });
+    handleCreateResourceByType[item.type]();
   }, [trackEvent, item]);
 
   const handleSelectItem = useCallback(() => {
