@@ -87,7 +87,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
         data: {
           enabled,
           version,
-          settings: JSON.stringify(editorRef.current || "{}"),
+          settings: JSON.parse(editorRef.current),
         },
         where: {
           id: id,
