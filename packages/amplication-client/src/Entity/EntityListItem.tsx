@@ -102,23 +102,27 @@ export const EntityListItem = ({
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Delete ${entity.displayName}`}
+        title={`Delete '${entity.displayName}' ?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
         message={
           <span>
             Are you sure you want to delete this entity?
             <br />
-            {relatedEntities.length > 0 &&
-              `This will also delete the related fields inside:
-              ${relatedEntities.map(
-                (relentedEntity) =>
-                  `${relentedEntity.displayName}: ${relentedEntity.fields
-                    .filter(
-                      (field) => field.properties.relatedEntityId === entity.id
-                    )
-                    .map((field) => field.displayName)}`
-              )}`}
+            {relatedEntities.length > 0 && (
+              <>
+                This will also delete the related fields:
+                <br />
+                {relatedEntities.map((relentedEntity) => {
+                  return relentedEntity.fields.map((field) => (
+                    <>
+                      <br />∙ {field.displayName} ({relentedEntity.displayName}{" "}
+                      entity)
+                    </>
+                  ));
+                })}
+              </>
+            )}
           </span>
         }
         onConfirm={handleConfirmDelete}
