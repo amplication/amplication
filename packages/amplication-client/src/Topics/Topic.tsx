@@ -49,10 +49,8 @@ const Topic = () => {
   );
 
   const hasError = Boolean(error) || Boolean(updateError);
-  const errorMessage = formatError(error) || formatError(updateError);
-  const [error2, setError] = useState<Error>();
 
-  if (error2) console.log({ error2 });
+  const errorMessage = formatError(error) || formatError(updateError);
 
   const handleDeleteField = useCallback(() => {
     history.push(
@@ -65,11 +63,7 @@ const Topic = () => {
       <div className={`${CLASS_NAME}__header`}>
         <h3>Topic Settings</h3>
         {data?.Topic && (
-          <DeleteTopic
-            topic={data?.Topic}
-            onError={setError}
-            onDelete={handleDeleteField}
-          />
+          <DeleteTopic topic={data?.Topic} onDelete={handleDeleteField} />
         )}
       </div>
 

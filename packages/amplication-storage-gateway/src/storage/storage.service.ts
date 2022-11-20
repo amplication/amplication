@@ -33,12 +33,7 @@ export class StorageService {
   getBuildFilesList(resourceId: string, buildId: string, relativePath = "") {
     const results: FilesDictionary = {};
 
-    const cwd = join(
-      this.buildsFolder,
-      resourceId,
-      buildId,
-      relativePath
-    );
+    const cwd = join(this.buildsFolder, resourceId, buildId, relativePath);
 
     console.log(`Current working directory is ${cwd}`);
 
@@ -81,12 +76,7 @@ export class StorageService {
   }
 
   fileContent(resourceId: string, buildId: string, path = ""): string {
-    const filePath = join(
-      this.buildsFolder, 
-      resourceId, 
-      buildId,
-      path
-    );
+    const filePath = join(this.buildsFolder, resourceId, buildId, path);
     return readFileSync(filePath).toString();
   }
 

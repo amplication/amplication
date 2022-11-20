@@ -28,16 +28,28 @@ export default async function generateCode(
     const resourceData: DSGResourceData = JSON.parse(file);
     const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
-    await axios.post(new URL('build-runner/code-generation-success', process.env.BUILD_MANAGER_URL).href, {
-      resourceId: process.env.RESOURCE_ID,
-      buildId: process.env.BUILD_ID,
-    });
+    await axios.post(
+      new URL(
+        "build-runner/code-generation-success",
+        process.env.BUILD_MANAGER_URL
+      ).href,
+      {
+        resourceId: process.env.RESOURCE_ID,
+        buildId: process.env.BUILD_ID,
+      }
+    );
   } catch (err) {
     console.error(err);
-    await axios.post(new URL('build-runner/code-generation-failure', process.env.BUILD_MANAGER_URL).href, {
-      resourceId: process.env.RESOURCE_ID,
-      buildId: process.env.BUILD_ID,
-    });
+    await axios.post(
+      new URL(
+        "build-runner/code-generation-failure",
+        process.env.BUILD_MANAGER_URL
+      ).href,
+      {
+        resourceId: process.env.RESOURCE_ID,
+        buildId: process.env.BUILD_ID,
+      }
+    );
   }
 }
 

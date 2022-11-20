@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from "react";
 import * as models from "../models";
-import { ConfirmationDialog } from "@amplication/design-system";
+import { ConfirmationDialog, Snackbar } from "@amplication/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import useTopic from "./hooks/useTopic";
+import { formatError } from "../util/error";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -10,15 +11,16 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 type Props = {
   topic: models.Topic;
   onDelete?: () => void;
-  onError: (error: Error) => void;
 };
 
 const CLASS_NAME = "delete-entity-field";
 
-export const DeleteTopic = ({ topic, onDelete, onError }: Props) => {
+export const DeleteTopic = ({ topic, onDelete }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
-  const { deleteTopic } = useTopic(topic.id);
+  const { deleteTopic, deleteTopicError } = useTopic(topic.id);
+  const hasError = Boolean(deleteTopicError);
+  const errorMessage = formatError(deleteTopicError);
 
   const handleDelete = useCallback(
     (event) => {
@@ -41,8 +43,8 @@ export const DeleteTopic = ({ topic, onDelete, onError }: Props) => {
           id: topic.id,
         },
       },
-    }).catch(onError);
-  }, [deleteTopic, onError, topic]);
+    }).catch();
+  }, [deleteTopic, topic]);
 
   return (
     <>
@@ -65,6 +67,7 @@ export const DeleteTopic = ({ topic, onDelete, onError }: Props) => {
           {"Delete"}
         </Button>
       </div>
+      <Snackbar open={hasError} message={errorMessage} />
     </>
   );
 };

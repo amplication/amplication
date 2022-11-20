@@ -3,7 +3,9 @@
 # ------------------------------------------------------
 
 type Auth {
-  """JWT Bearer token"""
+  """
+  JWT Bearer token
+  """
   token: String!
 }
 
@@ -29,7 +31,8 @@ type PluginOrderItem {
 }
 
 type AuthorizeResourceWithGitResult {
-  """"""
+  """
+  """
   url: String!
 }
 
@@ -39,37 +42,96 @@ type Query {
   workspace(where: WhereUniqueInput!): Workspace
   currentWorkspace: Workspace
   workspaceMembers: [WorkspaceMember!]
-  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
+  projects(
+    where: ProjectWhereInput
+    orderBy: ProjectOrderByInput
+    skip: Int
+    take: Int
+  ): [Project!]!
   project(where: WhereUniqueInput!): Project
   pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
   resource(where: WhereUniqueInput!): Resource
-  resources(where: ResourceWhereInput, orderBy: [ResourceOrderByInput!], skip: Int, take: Int): [Resource!]!
+  resources(
+    where: ResourceWhereInput
+    orderBy: [ResourceOrderByInput!]
+    skip: Int
+    take: Int
+  ): [Resource!]!
   messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
   entity(where: WhereUniqueInput!): Entity
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  entities(
+    where: EntityWhereInput
+    orderBy: EntityOrderByInput
+    skip: Int
+    take: Int
+  ): [Entity!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  blocks(
+    where: BlockWhereInput
+    orderBy: BlockOrderByInput
+    skip: Int
+    take: Int
+  ): [Block!]!
   block(where: WhereUniqueInput!): Block!
   ServiceTopics(where: WhereUniqueInput!): ServiceTopics
-  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  ServiceTopicsList(
+    where: ServiceTopicsWhereInput
+    orderBy: ServiceTopicsOrderByInput
+    skip: Int
+    take: Int
+  ): [ServiceTopics!]!
+  builds(
+    where: BuildWhereInput
+    orderBy: BuildOrderByInput
+    take: Int
+    skip: Int
+  ): [Build!]!
   build(where: WhereUniqueInput!): Build!
   resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
-  resourceRoles(where: ResourceRoleWhereInput, orderBy: ResourceRoleOrderByInput, skip: Int, take: Int): [ResourceRole!]!
+  resourceRoles(
+    where: ResourceRoleWhereInput
+    orderBy: ResourceRoleOrderByInput
+    skip: Int
+    take: Int
+  ): [ResourceRole!]!
   action(where: WhereUniqueInput!): Action!
   commit(where: CommitWhereUniqueInput!): Commit
-  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  commits(
+    where: CommitWhereInput
+    orderBy: CommitOrderByInput
+    cursor: CommitWhereUniqueInput
+    take: Int
+    skip: Int
+  ): [Commit!]
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
-  PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
+  PluginInstallations(
+    where: PluginInstallationWhereInput
+    orderBy: PluginInstallationOrderByInput
+    skip: Int
+    take: Int
+  ): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
   Topic(where: WhereUniqueInput!): Topic
-  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
-  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
+  Topics(
+    where: TopicWhereInput
+    orderBy: TopicOrderByInput
+    skip: Int
+    take: Int
+  ): [Topic!]!
+  projectConfigurationSettings(
+    where: WhereUniqueInput!
+  ): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
-  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  remoteGitRepositories(
+    where: RemoteGitRepositoriesWhereUniqueInput!
+  ): RemoteGitRepos!
+  gitOrganizations(
+    where: GitOrganizationWhereInput
+    skip: Float
+    take: Float
+  ): [GitOrganization!]!
 }
 
 type Account {
@@ -117,9 +179,19 @@ type Resource {
   gitRepositoryId: String
   name: String!
   description: String!
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  entities(
+    where: EntityWhereInput
+    orderBy: EntityOrderByInput
+    skip: Int
+    take: Int
+  ): [Entity!]!
   environments: [Environment!]!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  builds(
+    where: BuildWhereInput
+    orderBy: BuildOrderByInput
+    take: Int
+    skip: Int
+  ): [Build!]!
   githubLastMessage: String
   githubLastSync: DateTime
   resourceType: EnumResourceType!
@@ -164,8 +236,18 @@ type Entity {
   displayName: String!
   pluralDisplayName: String!
   description: String
-  versions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
-  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
+  versions(
+    where: EntityVersionWhereInput
+    orderBy: EntityVersionOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityVersion!]
+  fields(
+    where: EntityFieldWhereInput
+    orderBy: EntityFieldOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityField!]
   permissions: [EntityPermission!]
   lockedByUserId: String
   lockedByUser: User
@@ -184,7 +266,12 @@ type EntityVersion {
   pluralDisplayName: String!
   description: String
   commit: Commit
-  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  fields(
+    where: EntityFieldWhereInput
+    orderBy: EntityFieldOrderByInput
+    skip: Int
+    take: Int
+  ): [EntityField!]!
   permissions: [EntityPermission!]
 }
 
@@ -194,7 +281,12 @@ type Commit {
   userId: String!
   user: User
   message: String!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
+  builds(
+    where: BuildWhereInput
+    orderBy: BuildOrderByInput
+    take: Int
+    skip: Int
+  ): [Build!]
   changes: [PendingChange!]
 }
 
@@ -280,7 +372,10 @@ type ActionLog {
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
-scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+scalar JSONObject
+  @specifiedBy(
+    url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf"
+  )
 
 enum EnumActionLogLevel {
   Error
@@ -382,7 +477,12 @@ type Block {
   versionNumber: Float
   lockedByUserId: String
   lockedAt: DateTime
-  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]
+  versions(
+    where: BlockVersionWhereInput
+    orderBy: BlockVersionOrderByInput
+    skip: Int
+    take: Int
+  ): [BlockVersion!]
   lockedByUser: [User!]!
 }
 
@@ -1064,7 +1164,10 @@ input GitOrganizationWhereInput {
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
-  updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  updateWorkspace(
+    data: WorkspaceUpdateInput!
+    where: WhereUniqueInput!
+  ): Workspace
   createWorkspace(data: WorkspaceCreateInput!): Workspace
   inviteUser(data: InviteUserInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
@@ -1083,32 +1186,78 @@ type Mutation {
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
-  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
-  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
-  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
-  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
-  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
-  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
+  updateEntityPermission(
+    data: EntityUpdatePermissionInput!
+    where: WhereUniqueInput!
+  ): EntityPermission!
+  updateEntityPermissionRoles(
+    data: EntityUpdatePermissionRolesInput!
+  ): EntityPermission!
+  addEntityPermissionField(
+    data: EntityAddPermissionFieldInput!
+  ): EntityPermissionField!
+  deleteEntityPermissionField(
+    where: EntityPermissionFieldWhereUniqueInput!
+  ): EntityPermissionField!
+  updateEntityPermissionFieldRoles(
+    data: EntityUpdatePermissionFieldRolesInput!
+  ): EntityPermissionField!
+  createEntityField(
+    data: EntityFieldCreateInput!
+    relatedFieldName: String
+    relatedFieldDisplayName: String
+  ): EntityField!
+  createEntityFieldByDisplayName(
+    data: EntityFieldCreateByDisplayNameInput!
+  ): EntityField!
   deleteEntityField(where: WhereUniqueInput!): EntityField!
-  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
+  updateEntityField(
+    data: EntityFieldUpdateInput!
+    where: WhereUniqueInput!
+    relatedFieldName: String
+    relatedFieldDisplayName: String
+  ): EntityField!
+  createDefaultRelatedField(
+    where: WhereUniqueInput!
+    relatedFieldName: String
+    relatedFieldDisplayName: String
+  ): EntityField!
+  updateServiceSettings(
+    data: ServiceSettingsUpdateInput!
+    where: WhereUniqueInput!
+  ): ServiceSettings
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
-  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
+  updateServiceTopics(
+    data: ServiceTopicsUpdateInput!
+    where: WhereUniqueInput!
+  ): ServiceTopics!
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
   createBuild(data: BuildCreateInput!): Build!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
-  updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
-  createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
-  updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
+  updateResourceRole(
+    data: ResourceRoleUpdateInput!
+    where: WhereUniqueInput!
+  ): ResourceRole
+  createPluginInstallation(
+    data: PluginInstallationCreateInput!
+  ): PluginInstallation!
+  updatePluginInstallation(
+    data: PluginInstallationUpdateInput!
+    where: WhereUniqueInput!
+  ): PluginInstallation!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
-  setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  setPluginOrder(
+    data: PluginSetOrderInput!
+    where: WhereUniqueInput!
+  ): PluginOrder
   createTopic(data: TopicCreateInput!): Topic!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   deleteTopic(where: WhereUniqueInput!): Topic!
-  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
+  updateProjectConfigurationSettings(
+    data: ProjectConfigurationSettingsUpdateInput!
+    where: WhereUniqueInput!
+  ): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1121,9 +1270,14 @@ type Mutation {
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   deleteGitRepository(gitRepositoryId: String!): Resource!
-  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  deleteGitOrganization(
+    gitOrganizationId: String!
+    gitProvider: EnumGitProvider!
+  ): Boolean!
   disconnectResourceGitRepository(resourceId: String!): Resource!
-  getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  getGitResourceInstallationUrl(
+    data: GitGetInstallationUrlInput!
+  ): AuthorizeResourceWithGitResult!
 }
 
 input UpdateAccountInput {

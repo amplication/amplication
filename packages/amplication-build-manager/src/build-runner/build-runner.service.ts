@@ -38,7 +38,7 @@ export class BuildRunnerService {
     const artifactPath = join(
       this.configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
       resourceId,
-      buildId,
+      buildId
     );
 
     await copy(jobPath, artifactPath);

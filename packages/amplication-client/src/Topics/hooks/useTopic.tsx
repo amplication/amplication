@@ -10,29 +10,33 @@ type TData = {
 const useTopic = (topicId: string) => {
   const { addBlock } = useContext(AppContext);
 
-  const [deleteTopic] = useMutation<TData>(DELETE_TOPIC_FIELD, {
-    update(cache, { data }) {
-      if (!data || data === undefined) return;
-      const deletedTopicId = data.deleteTopic.id;
-      cache.modify({
-        fields: {
-          Topics(existingTopicRefs, { readField }) {
-            return existingTopicRefs.filter(
-              (topicRef: Reference) =>
-                deletedTopicId !== readField("id", topicRef)
-            );
+  const [deleteTopic, { error: deleteTopicError }] = useMutation<TData>(
+    DELETE_TOPIC_FIELD,
+    {
+      update(cache, { data }) {
+        if (!data || data === undefined) return;
+        const deletedTopicId = data.deleteTopic.id;
+        cache.modify({
+          fields: {
+            Topics(existingTopicRefs, { readField }) {
+              return existingTopicRefs.filter(
+                (topicRef: Reference) =>
+                  deletedTopicId !== readField("id", topicRef)
+              );
+            },
           },
-        },
-      });
-    },
+        });
+      },
 
-    onCompleted: (data) => {
-      addBlock(data.deleteTopic.id);
-    },
-  });
+      onCompleted: (data) => {
+        addBlock(data.deleteTopic.id);
+      },
+    }
+  );
 
   return {
     deleteTopic,
+    deleteTopicError,
   };
 };
 
