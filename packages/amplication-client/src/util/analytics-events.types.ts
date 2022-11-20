@@ -101,5 +101,5 @@ export enum AnalyticsEventNames {
   GithubRepoSync = "selectGithubRepo",
   CreateService = "CreateService",
   CreateMessageBroker = "CreateMessageBroker",
-  CreateProjectConfiguration = "CreateProjectConfiguration"
+  CreateProjectConfiguration = "CreateProjectConfiguration",
 }
