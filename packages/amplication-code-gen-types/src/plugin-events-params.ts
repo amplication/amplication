@@ -1,7 +1,6 @@
 import { namedTypes } from "ast-types";
 
 import {
-  DTOs,
   Entity,
   EntityField,
   Module,

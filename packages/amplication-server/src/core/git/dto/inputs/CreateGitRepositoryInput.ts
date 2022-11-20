@@ -1,37 +1,37 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { EnumGitOrganizationType } from '../enums/EnumGitOrganizationType';
-import { EnumGitProvider } from '../enums/EnumGitProvider';
+import { Field, InputType } from "@nestjs/graphql";
+import { EnumGitOrganizationType } from "../enums/EnumGitOrganizationType";
+import { EnumGitProvider } from "../enums/EnumGitProvider";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class CreateGitRepositoryInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   public!: boolean;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   resourceId!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   gitOrganizationId!: string;
 
   @Field(() => EnumGitProvider, {
-    nullable: false
+    nullable: false,
   })
   gitProvider!: EnumGitProvider;
 
   @Field(() => EnumGitOrganizationType, {
-    nullable: false
+    nullable: false,
   })
   gitOrganizationType!: EnumGitOrganizationType;
 }

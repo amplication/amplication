@@ -58,8 +58,8 @@ jobs:
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
 
-      # - name: Nx Format Check
-      #   run: npx nx format:check
+      - name: Nx Format Check
+        run: npm run format:check
 
       - name: Lint
         run: npx nx affected --target=lint --parallel=3
@@ -114,19 +114,29 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials (Management Account)
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Login to Amazon ECR
-        id: login-ecr
+      - name: Login to Amazon ECR (Management Account)
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "439403303254"
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: AWS Assume Role (Old Account)
+        uses: youyo/awscredswrap@v1
+        with:
+          role_arn: "arn:aws:iam::407256539111:role/ECRFullAccessRole"
+          duration_seconds: 3600
+          role_session_name: "old-account-ecr-access"
+
+      - name: Login to Amazon ECR (Old Account)
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "407256539111"
 
       # https://github.com/docker/metadata-action
       - name: Docker Metadata

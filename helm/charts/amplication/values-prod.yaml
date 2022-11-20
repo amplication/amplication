@@ -1,8 +1,11 @@
 global:
   pvc:
     name: prod-efs-claim
+    storageRequest: 5Gi
+    storageName: efs-sc
   pv:
     name: efs-pv-prod
+    storageCapacity: 5Gi
     handle: fs-0d4fb7d4e763c5fd0::fsap-0ed941c62eddef61c
 
 cp-helm-charts:
@@ -56,6 +59,17 @@ amplication-server:
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
+
+      CODE_GENERATION_REQUEST_TOPIC: build.internal.code-generation.request.1
+      CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.1
+      CODE_GENERATION_FAILURE_TOPIC: build.internal.code-generation.failure.1
+      
+      DSG_LOG_TOPIC: build.internal.dsg-log.1
+
+      DSG_RUNNER_URL: http://webhook-eventsource-svc.prod-dsg.svc.cluster.local:12000/example
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
 
@@ -124,8 +138,8 @@ amplication-git-pull-service:
 
 amplication-git-pull-request-service:
   autoscaling:
-    minReplicas: 2
-    maxReplicas: 10
+    minReplicas: 5
+    maxReplicas: 24
   replicaCount: 3
   pvc:
     name: prod-efs-claim
@@ -135,11 +149,13 @@ amplication-git-pull-request-service:
       KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
-      
 
-      #EFS
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
+
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
@@ -152,8 +168,8 @@ amplication-storage-gateway:
       #KAFKA
       KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
 
-      #EFS
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"

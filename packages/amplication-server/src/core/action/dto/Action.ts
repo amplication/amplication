@@ -1,22 +1,22 @@
-import { ObjectType, Field } from '@nestjs/graphql';
-import { ActionStep } from './ActionStep';
+import { ObjectType, Field } from "@nestjs/graphql";
+import { ActionStep } from "./ActionStep";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class Action {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => [ActionStep], {
-    nullable: true
+    nullable: true,
   })
   steps?: ActionStep[] | null | undefined;
 }

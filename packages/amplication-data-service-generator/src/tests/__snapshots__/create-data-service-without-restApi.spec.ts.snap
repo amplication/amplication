@@ -3735,7 +3735,8 @@ import { UserInfo } from \\"../../UserInfo\\";
 
 export class BasicStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(protected readonly authService: AuthService) {
     super();
   }
@@ -10153,7 +10154,8 @@ const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
 
 @Injectable()
 export class ServeStaticOptionsService
-  implements ServeStaticModuleOptionsFactory {
+  implements ServeStaticModuleOptionsFactory
+{
   private readonly logger = new Logger(ServeStaticOptionsService.name);
 
   constructor(private readonly configService: ConfigService) {}
@@ -10174,7 +10176,7 @@ export class ServeStaticOptionsService
   }
 }
 ",
-  "server/src/swagger.ts": "import { DocumentBuilder } from \\"@nestjs/swagger\\";
+  "server/src/swagger.ts": "import { DocumentBuilder, SwaggerCustomOptions } from \\"@nestjs/swagger\\";
 
 export const swaggerPath = \\"api\\";
 
@@ -10187,7 +10189,7 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .addBasicAuth()
   .build();
 
-export const swaggerSetupOptions = {
+export const swaggerSetupOptions: SwaggerCustomOptions = {
   swaggerOptions: {
     persistAuthorization: true,
   },

@@ -35,11 +35,6 @@
     }
   },
   "targetDefaults": {
-    "format:check": {
-      "options": {
-        "exclude": ["**/helm/**/*"]
-      }
-    },
     "test": {
       "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
     },

@@ -1,13 +1,13 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { BlockUpdateInput } from '../../block/dto/BlockUpdateInput';
-import { PluginOrderItem } from './PluginOrderItem';
+import { Field, InputType } from "@nestjs/graphql";
+import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
+import { PluginOrderItem } from "./PluginOrderItem";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class PluginOrderUpdateInput extends BlockUpdateInput {
   @Field(() => [PluginOrderItem], {
-    nullable: false
+    nullable: false,
   })
   order!: PluginOrderItem[];
 }

@@ -194,12 +194,14 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
 });
 
 describe("createPrismaFields", () => {
-  const cases: Array<[
-    string,
-    EnumDataType,
-    EntityField["properties"],
-    PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField
-  ]> = [
+  const cases: Array<
+    [
+      string,
+      EnumDataType,
+      EntityField["properties"],
+      PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField
+    ]
+  > = [
     [
       "SingleLineText",
       EnumDataType.SingleLineText,
@@ -435,16 +437,9 @@ describe("createPrismaFields", () => {
 });
 
 describe("createRelationName", () => {
-  const cases: Array<[
-    string,
-    Entity,
-    EntityField,
-    Entity,
-    EntityField,
-    boolean,
-    boolean,
-    string
-  ]> = [
+  const cases: Array<
+    [string, Entity, EntityField, Entity, EntityField, boolean, boolean, string]
+  > = [
     [
       "Unique field",
       { ...EXAMPLE_ENTITY },

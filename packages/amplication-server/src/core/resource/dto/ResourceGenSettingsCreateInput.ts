@@ -1,21 +1,21 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ResourceGenSettingsCreateInput {
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   generateAdminUI!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   generateGraphQL!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   generateRestApi!: boolean;
 }

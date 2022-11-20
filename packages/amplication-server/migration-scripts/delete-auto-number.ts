@@ -1,13 +1,13 @@
 // 2020-10-20 Script to remove all fields with data type "Auto Number"
 
-import { PrismaClient, EnumDataType } from '@amplication/prisma-db';
+import { PrismaClient, EnumDataType } from "@amplication/prisma-db";
 
 async function main() {
   const client = new PrismaClient();
   await client.entityField.deleteMany({
     where: {
-      dataType: EnumDataType.AutoNumber
-    }
+      dataType: EnumDataType.AutoNumber,
+    },
   });
   await client.$disconnect();
 }
