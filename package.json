@@ -11,10 +11,11 @@
     "graphql-codegen": "graphql-codegen",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
     "db:migrate:deploy": "nx run-many --target=db:migrate:deploy",
+    "prepare": "husky install",
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.ts": [
+    "*": [
       "npx nx format:write",
       "git add"
     ]
