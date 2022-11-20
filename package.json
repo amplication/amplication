@@ -1,6 +1,6 @@
 {
   "name": "amplication",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "scripts": {
     "postinstall": "nx run-many --target=install",
     "format:check": "npx nx format:check --all",
