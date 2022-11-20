@@ -17,6 +17,7 @@ import PageContent from "../Layout/PageContent";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./EntityList.scss";
 import { AppRouteProps } from "../routes/routesUtil";
+import { pluralize } from "../util/pluralize";
 
 type TData = {
   entities: models.Entity[];
@@ -94,10 +95,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           onDismiss={handleNewEntityClick}
           title="New Entity"
         >
-          <NewEntity 
-            resourceId={resource} 
-            onSuccess={handleNewEntityClick} 
-          />
+          <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
         </Dialog>
         <div className={`${CLASS_NAME}__header`}>
           <SearchField
@@ -115,7 +113,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           </Button>
         </div>
         <div className={`${CLASS_NAME}__title`}>
-          {data?.entities.length} Entities
+          {data?.entities.length}{" "}
+          {pluralize(data?.entities.length, "Entity", "Entities")}
         </div>
         {loading && <CircularProgress centerToParent />}
 

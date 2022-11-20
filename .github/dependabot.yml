@@ -2,16 +2,17 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    target-branch: "next"
     schedule:
       interval: "daily"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-    open-pull-requests-limit: 5
-    target-branch: dependabot
+    open-pull-requests-limit: 0
 
   - package-ecosystem: "docker"
     directory: "/"
+    target-branch: "next"
     schedule:
       interval: "daily"
     ignore:

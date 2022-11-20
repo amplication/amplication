@@ -1,13 +1,13 @@
-import { UseGuards, UseFilters } from '@nestjs/common';
-import { Args, Resolver, Query, Parent, ResolveField } from '@nestjs/graphql';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { Action } from './dto/Action';
-import { ActionStep } from './dto/ActionStep';
-import { FindOneActionArgs } from './dto/FindOneActionArgs';
-import { ActionService } from './action.service';
-import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
-import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
+import { UseGuards, UseFilters } from "@nestjs/common";
+import { Args, Resolver, Query, Parent, ResolveField } from "@nestjs/graphql";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Action } from "./dto/Action";
+import { ActionStep } from "./dto/ActionStep";
+import { FindOneActionArgs } from "./dto/FindOneActionArgs";
+import { ActionService } from "./action.service";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 
 @Resolver(() => Action)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -16,7 +16,7 @@ export class ActionResolver {
   constructor(private readonly service: ActionService) {}
 
   @Query(() => Action)
-  @AuthorizeContext(AuthorizableOriginParameter.ActionId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ActionId, "where.id")
   async action(@Args() args: FindOneActionArgs): Promise<Action> {
     return this.service.findOne(args);
   }

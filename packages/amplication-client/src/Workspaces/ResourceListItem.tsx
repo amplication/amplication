@@ -12,9 +12,11 @@ import {
   Panel,
   HorizontalRule,
   EnumHorizontalRuleStyle,
+  Icon,
 } from "@amplication/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
+import classNames from "classnames";
 
 type Props = {
   resource: models.Resource;
@@ -26,10 +28,9 @@ const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 function ResourceListItem({ resource, onDelete }: Props) {
-  const { currentWorkspace, currentProject, setResource } = useContext(
-    AppContext
-  );
-  const { id, name, description } = resource;
+  const { currentWorkspace, currentProject, setResource } =
+    useContext(AppContext);
+  const { id, name, description, gitRepository } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const handleDelete = useCallback(
@@ -56,6 +57,10 @@ function ResourceListItem({ resource, onDelete }: Props) {
   }, [resource, setResource]);
 
   const lastBuild = resource.builds[0];
+
+  const gitHubRepo = gitRepository
+    ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
+    : undefined;
 
   return (
     <>
@@ -92,33 +97,43 @@ function ResourceListItem({ resource, onDelete }: Props) {
           <div className={`${CLASS_NAME}__row`}>
             <span className={`${CLASS_NAME}__description`}>{description}</span>
           </div>
-          {resource.resourceType !==
-            models.EnumResourceType.ProjectConfiguration && (
-            <>
-              <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-              <div className={`${CLASS_NAME}__row`}>
-                <div className={`${CLASS_NAME}__recently-used`}>
-                  <span className={`${CLASS_NAME}__last-build`}>
-                    <span className={`${CLASS_NAME}__last-build__title`}>
-                      Last commit:{" "}
-                    </span>
-                    {lastBuild ? (
-                      <UserAndTime
-                        account={lastBuild.commit.user?.account || {}}
-                        time={lastBuild.createdAt}
-                      />
-                    ) : (
-                      <span className={`${CLASS_NAME}__last-build__not-yet`}>
-                        No commit yet
-                      </span>
-                    )}
+          <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
+          <div className={`${CLASS_NAME}__row`}>
+            <div className={`${CLASS_NAME}__github`}>
+              <span
+                className={classNames(`${CLASS_NAME}__github-repo`, {
+                  [`${CLASS_NAME}__github-repo--not-connected`]: !gitHubRepo,
+                })}
+              >
+                <Icon
+                  icon="github"
+                  size="small"
+                  className={`${CLASS_NAME}__github-repo__icon${
+                    !gitHubRepo ? "-not-connected" : ""
+                  }`}
+                />
+                <span>{gitHubRepo ? gitHubRepo : "Not connected"}</span>
+              </span>
+            </div>
+            <span className="spacer" />
+            <div className={`${CLASS_NAME}__recently-used`}>
+              <span className={`${CLASS_NAME}__last-build`}>
+                <span className={`${CLASS_NAME}__last-build__title`}>
+                  Last commit:{" "}
+                </span>
+                {lastBuild ? (
+                  <UserAndTime
+                    account={lastBuild.commit.user?.account || {}}
+                    time={lastBuild.createdAt}
+                  />
+                ) : (
+                  <span className={`${CLASS_NAME}__last-build__not-yet`}>
+                    No commit yet
                   </span>
-                </div>
-
-                <span className="spacer" />
-              </div>
-            </>
-          )}
+                )}
+              </span>
+            </div>
+          </div>
         </Panel>
       </NavLink>
     </>

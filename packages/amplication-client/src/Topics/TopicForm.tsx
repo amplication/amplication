@@ -8,6 +8,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
 import TopicNameField from "../Components/TopicNameField";
+import { DisplayNameField } from "../Components/DisplayNameField";
 
 type Props = {
   onSubmit: (values: models.Topic) => void;
@@ -64,12 +65,8 @@ const TopicForm = ({ onSubmit, defaultValues }: Props) => {
     >
       <Form childrenAsBlocks>
         <FormikAutoSave debounceMS={1000} />
-        <TopicNameField
-          name="displayName"
-          label="Display Name"
-          minLength={1}
-        />
-        <TopicNameField name="name" />
+        <DisplayNameField name="displayName" label="Display Name" required />
+        <TopicNameField label="Name" name="name" />
         <TextField name="description" label="Description" textarea rows={3} />
       </Form>
     </Formik>

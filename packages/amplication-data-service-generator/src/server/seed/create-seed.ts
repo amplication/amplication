@@ -1,9 +1,11 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
 import {
+  CreateSeedParams,
   Entity,
   EntityField,
   EnumDataType,
+  EventNames,
   Module,
   types,
 } from "@amplication/code-gen-types";
@@ -27,6 +29,7 @@ import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
 import { createEnumName } from "../prisma/create-prisma-schema";
 import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 
 const seedTemplatePath = require.resolve("./seed.template.ts");
 
@@ -36,7 +39,6 @@ const ADMIN_ROLE = "user";
 const DEFAULT_ADDRESS = "(32.085300, 34.781769)";
 const DEFAULT_EMAIL = "example@example.com";
 const DATE_ID = builders.identifier("Date");
-const ROLES_PROPERTY_NAME = "roles";
 export const DEFAULT_EMPTY_STRING_LITERAL = builders.stringLiteral("");
 export const DEFAULT_ADDRESS_LITERAL = builders.stringLiteral(DEFAULT_ADDRESS);
 export const DEFAULT_BOOLEAN_LITERAL = builders.booleanLiteral(false);
@@ -64,43 +66,62 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
   builders.objectProperty(
     builders.identifier(USER_ROLES_FIELD.name),
-    builders.objectExpression([
-      builders.objectProperty(
-        builders.identifier(ROLES_PROPERTY_NAME),
-        builders.arrayExpression([builders.stringLiteral(ADMIN_ROLE)])
-      ),
-    ])
+    builders.arrayExpression([builders.stringLiteral(ADMIN_ROLE)])
   ),
 ];
 
-export async function createSeedModule(userEntity: Entity): Promise<Module> {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { DTOs, serverDirectories } = DsgContext.getInstance;
-  const MODULE_PATH = `${serverDirectories.scriptsDirectory}/seed.ts`;
-  const file = await readFile(seedTemplatePath);
-  const customProperties = createUserObjectCustomProperties(userEntity);
+export async function createSeed(): Promise<Module[]> {
+  const { serverDirectories, entities } = DsgContext.getInstance;
 
-  interpolate(file, {
-    DATA: builders.objectExpression([
-      ...DEFAULT_AUTH_PROPERTIES,
-      ...customProperties,
-    ]),
+  const fileDir = serverDirectories.scriptsDirectory;
+  const outputFileName = "seed.ts";
+
+  const userEntity = entities.find((entity) => entity.name === "User");
+  const customProperties = createUserObjectCustomProperties(
+    userEntity as Entity
+  );
+
+  const template = await readFile(seedTemplatePath);
+  const seedingProperties = [...DEFAULT_AUTH_PROPERTIES, ...customProperties];
+  const templateMapping = {
+    DATA: builders.objectExpression(seedingProperties),
+  };
+
+  return pluginWrapper(createSeedInternal, EventNames.CreateSeed, {
+    template,
+    templateMapping,
+    fileDir,
+    outputFileName,
   });
+}
 
-  removeTSVariableDeclares(file);
+async function createSeedInternal({
+  template,
+  templateMapping,
+  fileDir,
+  outputFileName,
+}: CreateSeedParams): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
+
+  interpolate(template, templateMapping);
+
+  removeTSVariableDeclares(template);
 
   const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
-    file,
-    getImportableDTOs(MODULE_PATH, dtoNameToPath)
+    template,
+    getImportableDTOs(`${fileDir}/${outputFileName}`, dtoNameToPath)
   );
 
-  addImports(file, dtoImports);
+  addImports(template, dtoImports);
 
-  return {
-    path: MODULE_PATH,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: `${fileDir}/${outputFileName}`,
+      code: print(template).code,
+    },
+  ];
 }
 
 export function createUserObjectCustomProperties(

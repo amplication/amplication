@@ -26,6 +26,7 @@ type TData = {
 
 const CLASS_NAME = "generation-settings-form";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
   const { currentResource, addBlock } = useContext(AppContext);
   const { data, error } = useQuery<{

@@ -1,10 +1,10 @@
-import cli, { Table } from 'cli-ux';
-import { flags } from '@oclif/command';
-import { ConfiguredCommand } from '../../configured-command';
-import { commitChanges } from '../../api';
-import { format } from '../../flags/format-flag';
-import { resource } from '../../flags/resource-flag';
-import * as models from '../../models';
+import cli, { Table } from "cli-ux";
+import { flags } from "@oclif/command";
+import { ConfiguredCommand } from "../../configured-command";
+import { commitChanges } from "../../api";
+import { format } from "../../flags/format-flag";
+import { resource } from "../../flags/resource-flag";
+import * as models from "../../models";
 
 export const COMMIT_COLUMNS: Table.table.Columns<models.Commit> = {
   id: {},
@@ -19,7 +19,7 @@ export const COMMIT_COLUMNS: Table.table.Columns<models.Commit> = {
 };
 
 export default class ResourcesCommit extends ConfiguredCommand {
-  static description = 'commit the pending changes in the resource';
+  static description = "commit the pending changes in the resource";
 
   static examples = ['amp resources:commit --message "adding customer entity"'];
 
@@ -30,7 +30,7 @@ export default class ResourcesCommit extends ConfiguredCommand {
 
     message: flags.string({
       required: true,
-      description: 'commit message',
+      description: "commit message",
     }),
   };
 

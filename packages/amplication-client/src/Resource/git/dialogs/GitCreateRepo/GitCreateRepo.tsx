@@ -1,4 +1,4 @@
-import { Resource } from "@amplication/code-gen-types/dist/models";
+import { Resource } from "@amplication/code-gen-types/models";
 import {
   Button,
   CircularProgress,
@@ -19,6 +19,7 @@ type Props = {
   gitProvider: EnumGitProvider;
   resource: Resource;
   gitOrganizationId: string;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   onCompleted: Function;
   gitOrganizationName: string;
 };
@@ -32,7 +33,10 @@ export default function GitCreateRepo({
   onCompleted,
   gitOrganizationName,
 }: Props) {
-  const initialValues: CreateGitRepositoryInput = { name: "", public: true };
+  const initialValues: Partial<CreateGitRepositoryInput> = {
+    name: "",
+    public: true,
+  };
   const { trackEvent } = useTracking();
 
   const [triggerCreation, { loading, error }] = useMutation(

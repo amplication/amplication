@@ -10,6 +10,7 @@ import "./WorkspaceFooter.scss";
 import * as models from "../models";
 import { useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
+import { PUSH_TO_GITHUB_STEP_NAME } from "../VersionControl/BuildSteps";
 
 type TDataCommit = {
   commits: models.Commit[];
@@ -17,7 +18,7 @@ type TDataCommit = {
 
 const CLASS_NAME = "workspace-footer";
 
-const WorkspaceFooter: React.FC<{}> = () => {
+const WorkspaceFooter: React.FC<unknown> = () => {
   const {
     currentWorkspace,
     currentProject,
@@ -75,6 +76,21 @@ const WorkspaceFooter: React.FC<{}> = () => {
     />
   );
 
+  const githubUrl = useMemo(() => {
+    if (!lastResourceBuild?.action?.steps?.length) {
+      return gitRepositoryUrl;
+    }
+    const stepGithub = lastResourceBuild?.action.steps.find(
+      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+    );
+
+    const log = stepGithub?.logs?.find(
+      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+    );
+    // if there is "lastResourceBuild" link to the last PR
+    return lastResourceBuild ? log?.meta?.githubUrl : gitRepositoryUrl;
+  }, [gitRepositoryUrl, lastResourceBuild]);
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
@@ -88,7 +104,7 @@ const WorkspaceFooter: React.FC<{}> = () => {
             <GitRepoDetails />
             <a
               className={`${CLASS_NAME}__gh-link`}
-              href={gitRepositoryUrl}
+              href={githubUrl}
               target="github"
             >
               Open With GitHub

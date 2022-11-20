@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 if (require.main === module) {
   clean().catch((error) => {
@@ -10,19 +10,19 @@ if (require.main === module) {
 }
 
 async function clean() {
-  console.info('Dropping all tables in the database...');
+  console.info("Dropping all tables in the database...");
   const prisma = new PrismaClient();
   const tables = await getTables(prisma);
   const types = await getTypes(prisma);
   await dropTables(prisma, tables);
   await dropTypes(prisma, types);
-  console.info('Cleaned database successfully');
+  console.info("Cleaned database successfully");
   await prisma.$disconnect();
 }
 
 async function dropTables(
   prisma: PrismaClient,
-  tables: string[],
+  tables: string[]
 ): Promise<void> {
   for (const table of tables) {
     await prisma.$executeRaw(`DROP TABLE public."${table}" CASCADE;`);

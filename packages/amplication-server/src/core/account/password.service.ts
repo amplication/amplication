@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { hash, compare } from 'bcrypt';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from "@nestjs/common";
+import { hash, compare } from "bcrypt";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class PasswordService {
   get bcryptSaltRounds(): string | number {
     const saltOrRounds = this.configService.get<number>(
-      'BCRYPT_SALT_OR_ROUNDS'
+      "BCRYPT_SALT_OR_ROUNDS"
     );
 
     if (saltOrRounds === undefined) {
-      throw new Error('saltOrRound is not defined');
+      throw new Error("saltOrRound is not defined");
     }
 
     return Number.isInteger(Number(saltOrRounds))
@@ -30,6 +30,6 @@ export class PasswordService {
 
   /** @todo generate random password */
   generatePassword(): string {
-    return 'generateRandomPassword';
+    return "generateRandomPassword";
   }
 }

@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import {
   StorageOptionsFactory,
   StorageModuleOptions,
-  StorageDiskConfig
-} from '@codebrew/nestjs-storage';
-import { LocalDiskService } from './local.disk.service';
-import { GCSDiskService } from './gcs.disk.service';
-import { ConfigService } from '@nestjs/config';
+  StorageDiskConfig,
+} from "@codebrew/nestjs-storage";
+import { LocalDiskService } from "./local.disk.service";
+import { GCSDiskService } from "./gcs.disk.service";
+import { ConfigService } from "@nestjs/config";
 
-export const DEFAULT_DISK_VAR = 'DEFAULT_DISK';
+export const DEFAULT_DISK_VAR = "DEFAULT_DISK";
 
 export class UnknownDefaultDisk extends Error {
   constructor(disk: string) {
@@ -26,7 +26,7 @@ export class StorageOptionsService implements StorageOptionsFactory {
   createStorageOptions(): StorageModuleOptions {
     const disks: Record<string, StorageDiskConfig> = {
       local: this.localDiskService.getDisk(),
-      gcs: this.gcsDiskService.getDisk()
+      gcs: this.gcsDiskService.getDisk(),
     };
     const defaultDisk = this.configService.get(DEFAULT_DISK_VAR);
     if (!disks[defaultDisk]) {
@@ -34,7 +34,7 @@ export class StorageOptionsService implements StorageOptionsFactory {
     }
     return {
       default: defaultDisk,
-      disks
+      disks,
     };
   }
 }

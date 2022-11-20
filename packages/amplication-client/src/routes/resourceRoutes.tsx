@@ -4,8 +4,7 @@ import resourceSettingsRoutes from "./resourceSettingsRoutes";
 
 const resourceRoutes = [
   {
-    path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities",
     Component: lazy(() => import("../Entity/EntityList")),
     moduleName: "",
     routeTrackType: "",
@@ -13,8 +12,7 @@ const resourceRoutes = [
     routes: resourceEntitiesRoutes,
   },
   {
-    path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/builds/:build([A-Za-z0-9-]{20,})",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/builds/:build([A-Za-z0-9-]{20,})",
     Component: lazy(() => import("../VersionControl/BuildPage")),
     moduleName: "",
     routeTrackType: "",
@@ -22,8 +20,7 @@ const resourceRoutes = [
     isAnalytics: true,
   },
   {
-    path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/changes/:commit([A-Za-z0-9-]{20,})",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/changes/:commit([A-Za-z0-9-]{20,})",
     Component: lazy(() => import("../VersionControl/ChangesPage")),
     moduleName: "ChangesPage",
     moduleClass: "changes-page",
@@ -72,7 +69,7 @@ const resourceRoutes = [
     Component: lazy(() => import("../MessageBrokerServices/ServicesPage")),
     moduleName: "",
     routeTrackType: "",
-    exactPath: false
+    exactPath: false,
   },
   {
     path: "/:workspace/:project/:resource/service-connections",
@@ -84,8 +81,7 @@ const resourceRoutes = [
     exactPath: false,
     routes: [
       {
-        path:
-          "/:workspace/:project/:resource/service-connections/:connectedResourceId",
+        path: "/:workspace/:project/:resource/service-connections/:connectedResourceId",
         Component: lazy(() => import("../ServiceConnections/ServiceTopics")),
         moduleName: "",
         routeTrackType: "",
@@ -96,16 +92,14 @@ const resourceRoutes = [
     ],
   },
   {
-    path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/commits",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/commits",
     Component: lazy(() => import("../VersionControl/CommitList")),
     moduleName: "",
     routeTrackType: "",
     exactPath: false,
     routes: [
       {
-        path:
-          "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/commits/builds/:buildId",
+        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/commits/builds/:buildId",
         Component: lazy(() => import("../VersionControl/BuildPage")),
         moduleName: "",
         routeTrackType: "",
@@ -125,8 +119,7 @@ const resourceRoutes = [
     isAnalytics: true,
   },
   {
-    path:
-      "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings",
     Component: lazy(
       () => import("../Resource/resourceSettings/ResourceSettingsPage")
     ),

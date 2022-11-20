@@ -1,8 +1,8 @@
-import { DriverType, GoogleGcsStorageDisk } from '@codebrew/nestjs-storage';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { DriverType, GoogleGcsStorageDisk } from "@codebrew/nestjs-storage";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
-export const GCS_BUCKET_VAR = 'GCS_BUCKET';
+export const GCS_BUCKET_VAR = "GCS_BUCKET";
 
 @Injectable()
 export class GCSDiskService {
@@ -16,8 +16,8 @@ export class GCSDiskService {
       driver: DriverType.GCS,
       config: {
         bucket,
-        keyFilename: ''
-      }
+        keyFilename: "",
+      },
     };
   }
 }

@@ -1,13 +1,12 @@
 @use "sass:math";
 @import "../../style/index.scss";
 
-
 .create-message-broker {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
-  
+
   &__wrapper {
     display: flex;
     flex: 1;

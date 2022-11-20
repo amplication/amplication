@@ -18,7 +18,7 @@ import {
   TRUE_LITERAL,
 } from "../create-field-class-property";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
-import { GRAPHQL_JSON_OBJECT_ID } from "../graphql-type-json.util";
+import { GRAPHQL_JSON_ID } from "../graphql-type-json.util";
 import { createCreateNestedManyWithoutInputID } from "../nested-input-dto/create-nested";
 import { createUpdateManyWithoutInputID } from "../nested-input-dto/update-nested";
 import { EntityDtoTypeEnum } from "../entity-dto-type-enum";
@@ -106,7 +106,7 @@ function createGraphQLFieldType(
     return STRING_ID;
   }
   if (prismaField.type === ScalarType.Json) {
-    return GRAPHQL_JSON_OBJECT_ID;
+    return GRAPHQL_JSON_ID;
   }
   if (isEnum) {
     const enumId = builders.identifier(createEnumName(field, entity));

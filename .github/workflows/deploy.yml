@@ -10,6 +10,7 @@ on:
         options:
           - staging
           - prod
+          - next
           - shimi
           - mor
           - amit
@@ -35,8 +36,8 @@ jobs:
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_OLD_ACCOUNT }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_OLD_ACCOUNT }}
           aws-region: us-east-1
       - name: set branch-name
         run: |
@@ -78,8 +79,8 @@ jobs:
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_OLD_ACCOUNT }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_OLD_ACCOUNT }}
           aws-region: us-east-1
       - name: set branch-name
         run: |
@@ -156,6 +157,13 @@ jobs:
         run: |
           kubectl delete job amplication-server-migrate -n $NAMESPACE --ignore-not-found
           kubectl delete job amplication-git-pull-service-migrate -n $NAMESPACE --ignore-not-found
+      - name: Deploy DSG runner infrastructure
+        id: deploy-app-dsg
+        working-directory: ./helm/charts/dsg-runner-infra
+        run: |
+          helm upgrade -i dsg-runner-infra . --namespace $TARGET_ENV-dsg --create-namespace -f values/$TARGET_ENV.yaml
+        env:
+          TARGET_ENV: ${{ github.event.inputs.target-env }}
       - name: deploy app
         id: deploy-app
         run: |

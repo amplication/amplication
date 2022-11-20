@@ -7,7 +7,7 @@
   &__menu {
     margin-left: 0 !important;
     box-sizing: border-box;
-    padding: 0px 12px;
+    padding: 0px 6px;
     gap: 8px;
     width: 248px;
     height: 28px;
@@ -15,30 +15,29 @@
     border: $border-black20;
     border-radius: var(--small-border-radius);
 
-    .amp-button.amp-button--text {
+    .amp-button {
       height: 28px;
-    }
-
-    &__hr {
-      background-color: var(--black2);
-      border-bottom: none;
       width: 100%;
-      display: flex;
-      border-top: $border-black10;
+      justify-content: space-between;
+      padding-left: 2px;
 
-      hr {
-        border: none;
-        border-top: $border-black10;
-        margin-left: var(--default-spacing-small);
-        margin-right: var(--default-spacing-small);
-        background-color: var(--black2);
-        display: flex;
-        width: 100%;
+      .menu-item-content__text {
+        max-width: 180px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
+
     &__add-icon {
       position: absolute;
       margin-right: var(--double-spacing);
     }
+  }
+  &__hr {
+    border: none;
+    border-top: $border-black5;
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
   }
 }

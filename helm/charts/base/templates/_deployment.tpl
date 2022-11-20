@@ -27,7 +27,7 @@ spec:
       containers:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}@{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if .Values.autoscaling.enabled }}
           resources:
             requests:
@@ -52,6 +52,20 @@ spec:
           {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
+          {{- if hasKey .Values "healthCheck"}}
+          readinessProbe:
+            httpGet:
+                path: {{ .Values.healthCheck.readiness.path }}
+                port: {{ .Values.healthCheck.readiness.port }}
+            initialDelaySeconds: {{ .Values.healthCheck.readiness.initialDelaySeconds | default 5 }}
+            periodSeconds:  {{ .Values.healthCheck.readiness.periodSeconds | default 5 }}
+          livenessProbe:
+            httpGet:
+                path: {{ .Values.healthCheck.liveness.path }}
+                port: {{ .Values.healthCheck.liveness.port }}
+            initialDelaySeconds: {{ .Values.healthCheck.liveness.initialDelaySeconds | default 60 }}
+            periodSeconds:  {{ .Values.healthCheck.liveness.periodSeconds | default 60 }}
+          {{- end}}
           {{- if  hasKey .Values "service" }}
           ports:
             - containerPort: {{ .Values.service.port.target }}

@@ -1,22 +1,22 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { EntityFieldWhereInput } from './EntityFieldWhereInput';
+import { Field, InputType } from "@nestjs/graphql";
+import { EntityFieldWhereInput } from "./EntityFieldWhereInput";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityFieldFilter {
   @Field(() => EntityFieldWhereInput, {
-    nullable: true
+    nullable: true,
   })
   every?: EntityFieldWhereInput | null;
 
   @Field(() => EntityFieldWhereInput, {
-    nullable: true
+    nullable: true,
   })
   some?: EntityFieldWhereInput | null;
 
   @Field(() => EntityFieldWhereInput, {
-    nullable: true
+    nullable: true,
   })
   none?: EntityFieldWhereInput | null;
 }

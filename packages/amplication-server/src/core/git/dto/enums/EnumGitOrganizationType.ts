@@ -1,10 +1,10 @@
-import { registerEnumType } from '@nestjs/graphql';
+import { registerEnumType } from "@nestjs/graphql";
 
 export enum EnumGitOrganizationType {
-  User = 'User',
-  Organization = 'Organization'
+  User = "User",
+  Organization = "Organization",
 }
 
 registerEnumType(EnumGitOrganizationType, {
-  name: 'EnumGitOrganizationType'
+  name: "EnumGitOrganizationType",
 });

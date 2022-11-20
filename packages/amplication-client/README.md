@@ -7,64 +7,59 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 If you need help or have a question, go to our [Discord channel](https://discord.gg/Z2CG3rUFnu), we are here to help.
 
-### Installation
+## Setup
 
-:bulb: Before you begin, make sure you have all the below installed:
+Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, follow the [Getting Started With Local Development](/README.md#getting-started-with-local-development) section to do that in a few quick steps.
 
-- [Node.js v14 or above](https://nodejs.org/en/download/)
-- [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
-- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
+## Useful Targets
 
-#### One time server setup
+Targets can be run using Nx Workspaces. You can read more about targets in the [Nx Documentation](https://nx.dev/reference/project-configuration).
 
-Before starting the client you need to setup the server and database. You can follow the [instructions here](https://github.com/amplication/amplication/blob/master/packages/amplication-server/README.md#one-time-set-up).
+You can find a full list of targets in the [project.json](/Users/arielweinberger/Development/amplication/amplication/packages/amplication-client/project.json) file.
 
-After that you have to build dependencies of the client:
+### `serve`
 
-```
-npm run build -- --scope @amplication/client --include-dependencies
+Runs the app in development mode.
 
-```
-
-## Available Scripts
-
-In the project directory, after you setup the server and client dependencies, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br />
 Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
-### `npm test`
+```
+npx nx serve amplication-client
+```
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `test`
 
-### `npm run build`
+Executes tests.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+npx nx test amplication-client
+```
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### `lint`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Performs a linting check using ESLint.
 
-### `npm run eject`
+```
+npx nx lint amplication-client
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### `build`
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Builds the app. The distributable is expored to the `dist` folder in the repository's root folder.<br />
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+npx nx build amplication-client 
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+To build the app for production pass the optional `--production` paramater
+
+```
+npx nx build amplication-client --production
+```
 
 ## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
@@ -32,7 +32,6 @@ const BuildPage = ({ match }: Props) => {
     return truncateId(build);
   }, [build]);
 
-  const [error, setError] = useState<Error>();
   const { currentProject, currentWorkspace } = useContext(AppContext);
 
   const [getCommit, { data: commitData }] = useLazyQuery<{
@@ -63,8 +62,7 @@ const BuildPage = ({ match }: Props) => {
     };
   }, [data]);
 
-  const errorMessage =
-    formatError(errorLoading) || (error && formatError(error));
+  const errorMessage = formatError(errorLoading);
 
   return (
     <>
@@ -88,7 +86,7 @@ const BuildPage = ({ match }: Props) => {
               />
             )}
             <div className={`${CLASS_NAME}__build-details`}>
-              <BuildSteps build={data.build} onError={setError} />
+              <BuildSteps build={data.build} />
               <aside className="log-container">
                 <ActionLog
                   action={actionLog?.action}
@@ -100,7 +98,7 @@ const BuildPage = ({ match }: Props) => {
           </>
         )}
       </PageContent>
-      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
+      <Snackbar open={Boolean(errorLoading)} message={errorMessage} />
     </>
   );
 };

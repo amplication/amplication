@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress } from "@amplication/design-system";
+import { CircularProgress, EnumIconPosition } from "@amplication/design-system";
 import React from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
@@ -48,7 +48,7 @@ function WorkspaceSelectorList({
               type="button"
               icon="plus"
               className={`${CLASS_NAME}__button`}
-              iconPosition="left"
+              iconPosition={EnumIconPosition.Left}
               onClick={onNewWorkspaceClick}
             >
               Create new workspace

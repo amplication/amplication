@@ -9,8 +9,9 @@ import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
-import { BuildStatusIcon } from "./BuildStatusIcon";
-import { GET_LAST_COMMIT } from "./hooks/commitQueries";
+import { GET_LAST_COMMIT_BUILDS } from "./hooks/commitQueries";
+import { useCommitStatus } from "./hooks/useCommitStatus";
+import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 
 type TData = {
   commits: models.Commit[];
@@ -30,7 +31,7 @@ const LastCommit = ({ projectId }: Props) => {
     pendingChangesIsError,
   } = useContext(AppContext);
 
-  const { data, loading, refetch } = useQuery<TData>(GET_LAST_COMMIT, {
+  const { data, loading, refetch } = useQuery<TData>(GET_LAST_COMMIT_BUILDS, {
     variables: {
       projectId,
     },
@@ -50,12 +51,7 @@ const LastCommit = ({ projectId }: Props) => {
     return last;
   }, [loading, data]);
 
-  const build = useMemo(() => {
-    if (!lastCommit) return null;
-    const [last] = lastCommit.builds || [];
-    return last;
-  }, [lastCommit]);
-
+  const { commitStatus } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
 
   const ClickableCommitId = (
@@ -81,7 +77,7 @@ const LastCommit = ({ projectId }: Props) => {
       <div className={`${CLASS_NAME}__content`}>
         <p className={`${CLASS_NAME}__title`}>
           Last Commit
-          {build && <BuildStatusIcon buildStatus={build.status} />}
+          <CommitBuildsStatusIcon commitBuildStatus={commitStatus} />
         </p>
 
         <div className={`${CLASS_NAME}__status`}>
@@ -98,7 +94,7 @@ const LastCommit = ({ projectId }: Props) => {
             {formatTimeToNow(lastCommit?.createdAt)}
           </span>
         </div>
-        {build && (
+        {lastCommit && (
           <Link
             to={`/${currentWorkspace?.id}/${currentProject?.id}/code-view`}
             className={`${CLASS_NAME}__view-code`}
@@ -106,9 +102,6 @@ const LastCommit = ({ projectId }: Props) => {
             <Button
               buttonStyle={EnumButtonStyle.Secondary}
               disabled={generating}
-              eventData={{
-                eventName: "LastCommitViewCode",
-              }}
             >
               Go to view code
             </Button>

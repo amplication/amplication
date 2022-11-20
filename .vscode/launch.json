@@ -51,6 +51,50 @@
       "cwd": "${workspaceFolder}/packages/amplication-data-service-generator/generated",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Server",
+      "args": ["${workspaceFolder}/packages/amplication-server/src/main.ts"],
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}/packages/amplication-server"
+    },
+    {
+      "name": "Launch DSG",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [],
+      "args": [
+        "${workspaceFolder}/packages/amplication-data-service-generator/src/index.ts"
+      ],
+      "env": {
+        "STATUS_UPDATE_URL": "https://2a08-77-252-192-146.eu.ngrok.io/generated-apps/update-action-step-status"
+      }
+    },
+    {
+      "type": "node",
+      "name": "Debug DSG",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "generate-code",
+        "--",
+        "/home/eugene/dsg-jobs/cl89zpn4p2454380vv8jw4thr81/input.json",
+        "/home/eugene/dsg-jobs/cl89zpn4p2454380vv8jw4thr81/output"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "STATUS_UPDATE_URL": "https://2a08-77-252-192-146.eu.ngrok.io/generated-apps/update-action-step-status"
+      }
     }
   ]
 }

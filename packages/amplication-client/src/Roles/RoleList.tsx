@@ -13,6 +13,7 @@ import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
 import "./RoleList.scss";
 import { AppContext } from "../context/appContext";
+import { pluralize } from "../util/pluralize";
 
 type TData = {
   resourceRoles: models.ResourceRole[];
@@ -89,7 +90,8 @@ export const RoleList = React.memo(
           onChange={handleSearchChange}
         />
         <div className={`${CLASS_NAME}__header`}>
-          {data?.resourceRoles.length} Roles
+          {data?.resourceRoles.length}{" "}
+          {pluralize(data?.resourceRoles.length, "Role", "Roles")}
         </div>
         {loading && <CircularProgress centerToParent />}
         <div className={`${CLASS_NAME}__list`}>

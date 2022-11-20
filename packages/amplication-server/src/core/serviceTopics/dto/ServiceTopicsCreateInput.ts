@@ -1,19 +1,19 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { JsonValue } from 'type-fest';
-import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
-import { MessagePatternCreateInput } from './messagePattern/MessagePatternCreateInput';
+import { Field, InputType } from "@nestjs/graphql";
+import type { JsonValue } from "type-fest";
+import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
+import { MessagePatternCreateInput } from "./messagePattern/MessagePatternCreateInput";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ServiceTopicsCreateInput extends BlockCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   messageBrokerId!: string;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   enabled!: boolean;
 

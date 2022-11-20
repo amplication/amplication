@@ -1,6 +1,6 @@
-import { Field, ArgsType, Int } from '@nestjs/graphql';
-import { EnvironmentOrderByInput } from './EnvironmentOrderByInput';
-import { EnvironmentWhereInput } from './EnvironmentWhereInput';
+import { Field, ArgsType, Int } from "@nestjs/graphql";
+import { EnvironmentOrderByInput } from "./EnvironmentOrderByInput";
+import { EnvironmentWhereInput } from "./EnvironmentWhereInput";
 
 @ArgsType()
 export class FindManyEnvironmentArgs {

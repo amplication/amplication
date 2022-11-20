@@ -1,18 +1,18 @@
-import { mock } from 'jest-mock-extended';
+import { mock } from "jest-mock-extended";
 import {
   GithubConfig,
   GithubFactory,
   GitProvider,
-} from '@amplication/git-service';
-import { CommitsService } from '../core/commit/commits.service';
-import { AmplicationLogger } from '@amplication/nest-logger-module';
+} from "@amplication/git-utils";
+import { CommitsService } from "../core/commit/commits.service";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 
 //TODO: Add environments to GitHub workflow tests
-const APP_ID = '230968';
-const APP_PEM = '';
+const APP_ID = "230968";
+const APP_PEM = "";
 const INSTALLATION_ID = 28672211;
-const OWNER = 'matan-test-org';
-const REPO = 'integration-test';
+const OWNER = "matan-test-org";
+const REPO = "integration-test";
 
 let githubFactory: GithubFactory;
 let client: GitProvider;
@@ -66,27 +66,27 @@ afterAll(async () => {
   await client.deleteRepository();
 });
 
-describe.skip('add commit repository', () => {
-  test('first commit create pull request and branch', async () => {
-    const inputBuild = 'build-id';
-    const inputCommit = 'commit-id';
+describe.skip("add commit repository", () => {
+  test("first commit create pull request and branch", async () => {
+    const inputBuild = "build-id";
+    const inputCommit = "commit-id";
 
     const { buildId, commit, pullRequest, pullRequestComment } =
       await commitService.addCommitToRepository(
         INSTALLATION_ID.toString(),
         {
           buildId: inputBuild,
-          resourceId: 'resource-id',
-          resourceName: '',
+          resourceId: "resource-id",
+          resourceName: "",
           commitId: inputCommit,
           owner: OWNER,
           repo: REPO,
         },
-        'test-1',
+        "test-1",
         [
           {
-            path: 'src/test',
-            content: 'test',
+            path: "src/test",
+            content: "test",
           },
         ]
       );
@@ -105,25 +105,25 @@ describe.skip('add commit repository', () => {
     expect(pullRequestComment.url).toBeTruthy();
   });
 
-  test('second commit add commit to branch and add new comment', async () => {
-    const inputBuild = 'build-id';
-    const inputCommit = 'commit-id';
+  test("second commit add commit to branch and add new comment", async () => {
+    const inputBuild = "build-id";
+    const inputCommit = "commit-id";
 
     const firstCommit = await commitService.addCommitToRepository(
       INSTALLATION_ID.toString(),
       {
         buildId: inputBuild,
-        resourceId: 'resource-id',
-        resourceName: '',
+        resourceId: "resource-id",
+        resourceName: "",
         commitId: inputCommit,
         owner: OWNER,
         repo: REPO,
       },
-      'test-1',
+      "test-1",
       [
         {
-          path: 'src/test',
-          content: 'test',
+          path: "src/test",
+          content: "test",
         },
       ]
     );
@@ -132,17 +132,17 @@ describe.skip('add commit repository', () => {
       INSTALLATION_ID.toString(),
       {
         buildId: inputBuild,
-        resourceId: 'resource-id',
-        resourceName: '',
+        resourceId: "resource-id",
+        resourceName: "",
         commitId: inputCommit,
         owner: OWNER,
         repo: REPO,
       },
-      'test-1',
+      "test-1",
       [
         {
-          path: 'src/test',
-          content: 'test2',
+          path: "src/test",
+          content: "test2",
         },
       ]
     );

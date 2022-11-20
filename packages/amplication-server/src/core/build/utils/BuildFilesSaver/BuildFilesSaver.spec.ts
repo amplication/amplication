@@ -1,22 +1,22 @@
-import { mock } from 'jest-mock-extended';
-import { BuildFilesSaver } from './BuildFilesSaver';
-import { ConfigService } from '@nestjs/config';
-import fsExtra from 'fs-extra';
-import { tmpdir } from 'os';
-import { join } from 'path';
+import { mock } from "jest-mock-extended";
+import { BuildFilesSaver } from "./BuildFilesSaver";
+import { ConfigService } from "@nestjs/config";
+import fsExtra from "fs-extra";
+import { tmpdir } from "os";
+import { join } from "path";
 
 const logger = {
   debug: jest.fn(),
   log: jest.fn(),
   info: jest.fn(),
   error: jest.fn(),
-  format: Symbol('EXAMPLE_LOGGER_FORMAT')
+  format: Symbol("EXAMPLE_LOGGER_FORMAT"),
 };
 
-const RESOURCE_ID_MOCK = 'resourceId';
-const BUILD_ID_MOCK = 'buildId';
-describe('Testing the BuildFilesSaver service', () => {
-  const outputFileSpy = jest.spyOn(fsExtra, 'outputFile');
+const RESOURCE_ID_MOCK = "resourceId";
+const BUILD_ID_MOCK = "buildId";
+describe("Testing the BuildFilesSaver service", () => {
+  const outputFileSpy = jest.spyOn(fsExtra, "outputFile");
 
   let buildFilesSaver: BuildFilesSaver;
   const configService = mock<ConfigService>();
@@ -29,16 +29,16 @@ describe('Testing the BuildFilesSaver service', () => {
     //@ts-ignore
     buildFilesSaver = new BuildFilesSaver(configService, logger);
   });
-  it('should save an resource files to a build folder', async () => {
+  it("should save a resource files to a build folder", async () => {
     await buildFilesSaver.saveFiles(relativePath, [
       {
-        code: 'code',
-        path: 'index.ts'
-      }
+        code: "code",
+        path: "index.ts",
+      },
     ]);
     expect(outputFileSpy).toBeCalledWith(
-      join(tmpdir(), relativePath, 'index.ts'),
-      'code'
+      join(tmpdir(), relativePath, "index.ts"),
+      "code"
     );
     expect(outputFileSpy).toBeCalledTimes(1);
   });
