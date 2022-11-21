@@ -13,6 +13,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { USER_ENTITY } from "./constants";
 import "./EntityListItem.scss";
 import { AppContext } from "../context/appContext";
+import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -107,21 +108,11 @@ export const EntityListItem = ({
         dismissButton={DISMISS_BUTTON}
         message={
           <span>
-            Are you sure you want to delete this entity?
+            <span className={`${CLASS_NAME}__alert-bold`}>Are you sure</span>{" "}
+            you want to delete this entity?
             <br />
             {relatedEntities.length > 0 && (
-              <>
-                This will also delete the related fields:
-                <br />
-                {relatedEntities.map((relentedEntity) => {
-                  return relentedEntity.fields.map((field) => (
-                    <>
-                      <br />∙ {field.displayName} ({relentedEntity.displayName}{" "}
-                      entity)
-                    </>
-                  ));
-                })}
-              </>
+              <ConfirmationDialogFieldList relatedEntities={relatedEntities} />
             )}
           </span>
         }
