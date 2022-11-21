@@ -29,13 +29,6 @@ const Topic = () => {
   });
 
   const { trackEvent } = useTracking();
-  const topicTrackEvents = {
-    name: () => trackEvent({ eventName: AnalyticsEventNames.TopicNameEdit }),
-    displayName: () =>
-      trackEvent({ eventName: AnalyticsEventNames.TopicDisplayNameEdit }),
-    description: () =>
-      trackEvent({ eventName: AnalyticsEventNames.TopicDescriptionEdit }),
-  };
 
   const handleSubmit = useCallback(
     (data) => {
@@ -47,7 +40,18 @@ const Topic = () => {
           data,
         },
       }).catch(console.error);
-      topicTrackEvents[data.updateTopic]();
+      trackEvent({
+        eventName: AnalyticsEventNames.TopicNameEdit,
+        topicName: data.name,
+      });
+      trackEvent({
+        eventName: AnalyticsEventNames.TopicDisplayNameEdit,
+        topicDisplayName: data.displayName,
+      });
+      trackEvent({
+        eventName: AnalyticsEventNames.TopicDescriptionEdit,
+        topicDescription: data.description,
+      });
     },
     [updateTopic, topicId]
   );
