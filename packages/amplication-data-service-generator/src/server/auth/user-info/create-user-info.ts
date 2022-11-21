@@ -39,25 +39,29 @@ export async function createUserInfo(): Promise<Module> {
   };
 
   /* eslint-disable @typescript-eslint/naming-convention */
-  const idTypClassOptions: { [key: string]: () => namedTypes.Identifier } = {
-    AUTO_INCREMENT: () => builders.identifier(number.class),
-    UUID: () => builders.identifier(string.class),
-    CUID: () => builders.identifier(string.class),
+  const idTypClassOptions: {
+    [key in types.Id["idType"]]: namedTypes.Identifier;
+  } = {
+    AUTO_INCREMENT: builders.identifier(number.class),
+    UUID: builders.identifier(string.class),
+    CUID: builders.identifier(string.class),
   };
 
   /* eslint-disable @typescript-eslint/naming-convention */
-  const idTypeTSOptions: { [key: string]: () => namedTypes.Identifier } = {
-    AUTO_INCREMENT: () => builders.identifier(number.type),
-    UUID: () => builders.identifier(string.type),
-    CUID: () => builders.identifier(string.type),
+  const idTypeTSOptions: {
+    [key in types.Id["idType"]]: namedTypes.Identifier;
+  } = {
+    AUTO_INCREMENT: builders.identifier(number.type),
+    UUID: builders.identifier(string.type),
+    CUID: builders.identifier(string.type),
   };
 
   const templatePath = require.resolve("./user-info.template.ts");
   const file = await readFile(templatePath);
 
   interpolate(file, {
-    USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType](),
-    USER_ID_CLASS: idTypClassOptions[idType](),
+    USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],
+    USER_ID_CLASS: idTypClassOptions[idType],
   });
   removeTSClassDeclares(file);
 
