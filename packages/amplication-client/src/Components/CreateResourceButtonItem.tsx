@@ -18,26 +18,16 @@ const CreateResourceButtonItem = ({ item }: props) => {
 
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
-  const handleCreateResourceByType = {
-    Service: () => {
-      trackEvent({
-        eventName: AnalyticsEventNames.CreateService,
-      });
-    },
-    MessageBroker: () => {
-      trackEvent({
-        eventName: AnalyticsEventNames.CreateMessageBroker,
-      });
-    },
-    ProjectConfiguration: () => {
-      trackEvent({
-        eventName: AnalyticsEventNames.CreateProjectConfiguration,
-      });
-    },
+  const RESOURCE_TYPE_TO_EVENT_NAME = {
+    Service: AnalyticsEventNames.CreateService,
+    MessageBroker: AnalyticsEventNames.CreateMessageBroker,
+    ProjectConfiguration: AnalyticsEventNames.CreateProjectConfiguration,
   };
 
   const handleClick = useCallback(() => {
-    handleCreateResourceByType[item.type]();
+    trackEvent({
+      eventName: RESOURCE_TYPE_TO_EVENT_NAME[item.type],
+    });
   }, [trackEvent, item]);
 
   const handleSelectItem = useCallback(() => {
