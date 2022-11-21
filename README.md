@@ -62,8 +62,8 @@ See the [Amplication Website](http://amplication.com/) or [Amplication Docs](htt
 
 ## Tutorials 
 
-- [Todo Application using Amplication and Angular](https://docs.amplication.com/docs/tutorials/angular-todos/)
-- [Todo Application using Amplication and React](https://docs.amplication.com/docs/tutorials/react-todos/)
+- [Todo Application using Amplication and Angular](https://docs.amplication.com/tutorials/angular-todos/)
+- [Todo Application using Amplication and React](https://docs.amplication.com/tutorials/react-todos/)
 
 ## Amplication Cloud (SaaS)
 
@@ -170,7 +170,7 @@ Amplication is an open-source project. We are committed to a fully transparent d
 
 # Useful Links
 
-- [Docs](https://docs.amplication.com/docs/)
+- [Docs](https://docs.amplication.com/)
 - [Blog](https://amplication.com/blog)
 - [Twitter](https://twitter.com/amplication)
 - [Discord](https://amplication.com/discord)
