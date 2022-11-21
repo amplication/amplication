@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { FindOneArgs } from '../../dto';
-import { IBlock, User } from '../../models';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { BlockService } from '../block/block.service';
+import { Injectable } from "@nestjs/common";
+import { FindOneArgs } from "../../dto";
+import { IBlock, User } from "../../models";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { BlockService } from "../block/block.service";
 import {
   CreateBlockArgs,
   FindManyBlockTypeArgs,
-  UpdateBlockArgs
-} from '../block/dto';
-import { UserEntity } from '../../decorators/user.decorator';
+  UpdateBlockArgs,
+} from "../block/dto";
+import { UserEntity } from "../../decorators/user.decorator";
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
@@ -34,8 +34,8 @@ export abstract class BlockTypeService<
         ...args,
         data: {
           ...args.data,
-          blockType: this.blockType
-        }
+          blockType: this.blockType,
+        },
       },
       user.id
     );
@@ -44,7 +44,7 @@ export abstract class BlockTypeService<
   async update(args: UpdateArgs, @UserEntity() user: User): Promise<T> {
     return this.blockService.update<T>(
       {
-        ...args
+        ...args,
       },
       user
     );

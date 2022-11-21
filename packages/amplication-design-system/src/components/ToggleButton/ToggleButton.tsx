@@ -9,7 +9,7 @@ export type Props = {
 
 export const ToggleButton = ({ label, selected, onClick }: Props) => {
   const handleInputChange = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       onClick(event.target.checked);
     },
     [onClick]

@@ -1,17 +1,22 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
 
-import omitDeep from "deepdash-es/omitDeep";
-
 import * as models from "../models";
 import { TextField } from "@amplication/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import { Form } from "../Components/Form";
 import FormikAutoSave from "../util/formikAutoSave";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import { USER_ENTITY } from "./constants";
-import { validate } from "../util/formikValidateJsonSchema";
 import { isEqual } from "../util/customValidations";
+
+// This must be here unless we get rid of deepdash as it does not support ES imports
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const omitDeep = require("deepdash/omitDeep");
 
 type EntityInput = Omit<models.Entity, "fields" | "versionNumber">;
 
@@ -33,6 +38,8 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["name", "displayName", "pluralDisplayName"],
   properties: {
@@ -47,6 +54,13 @@ const FORM_SCHEMA = {
     pluralDisplayName: {
       type: "string",
       minLength: 2,
+    },
+  },
+  errorMessage: {
+    properties: {
+      displayName: AT_LEAST_TWO_CHARARCTERS,
+      name: AT_LEAST_TWO_CHARARCTERS,
+      pluralDisplayName: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };

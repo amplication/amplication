@@ -1,6 +1,6 @@
-import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { ServiceTopicsOrderByInput } from './ServiceTopicsOrderByInput';
-import { ServiceTopicsWhereInput } from './ServiceTopicsWhereInput';
+import { ArgsType, Field, Int } from "@nestjs/graphql";
+import { ServiceTopicsOrderByInput } from "./ServiceTopicsOrderByInput";
+import { ServiceTopicsWhereInput } from "./ServiceTopicsWhereInput";
 
 @ArgsType()
 export class FindManyServiceTopicsArgs {

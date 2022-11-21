@@ -1,15 +1,11 @@
 import React, { useMemo } from "react";
 import { LazyLog } from "react-lazylog";
 import { isEmpty, last } from "lodash";
-
 import Timer from "../Components/Timer";
-
 import { differenceInSeconds } from "date-fns";
-
 import chalk from "chalk";
 import * as models from "../models";
 import logsImage from "../assets/images/logs.svg";
-
 import "./ActionLog.scss";
 import {
   CircleIcon,
@@ -28,8 +24,6 @@ const CLASS_NAME = "action-log";
 const SECOND_STRING = "s";
 const LOG_ROW_HEIGHT = 19;
 
-// Make chalk work
-chalk.enabled = true;
 /** @see https://github.com/chalk/chalk#chalklevel */
 chalk.level = 3;
 
@@ -60,9 +54,9 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
         duration: duration,
         messages: step.logs
           ?.map((log) => {
-            return chalk`{${LOG_LEVEL_TO_CHALK[log.level]} ${
+            return `${chalk[LOG_LEVEL_TO_CHALK[log.level]](
               log.createdAt
-            }  {gray (${log.level})} ${log.message} }`;
+            )} ${chalk.gray(`(${log.level}) ${chalk.white(log.message)}`)}`;
           })
           .join("\n"),
       };
@@ -152,6 +146,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
                   extraLines={0}
                   enableSearch={false}
                   text={stepData.messages}
+                  selectableLines={true}
                   height={10} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
                 />
               </div>

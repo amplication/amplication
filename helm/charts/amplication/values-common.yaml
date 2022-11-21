@@ -3,7 +3,7 @@ global:
     name: common-efs-claim
   pv:
     name: efs-pv-common
-    handle: fs-0a87872138ddc7f6d::fsap-0e0ed55af55fbdf11
+    handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b
 
 cp-helm-charts:
   enabled: true
@@ -83,9 +83,9 @@ amplication-client:
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/28d98c3b-f831-4cfd-b71b-577f9f7a5d45
   config:
     env:
-      REACT_APP_DATA_SOURCE: "https://server.staging.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.staging.amplication-dev.com/github"
-      REACT_APP_GITHUB_CLIENT_ID: value
+      NX_REACT_APP_DATA_SOURCE: "https://server.staging.amplication-dev.com/graphql"
+      NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.staging.amplication-dev.com/github"
+      NX_REACT_APP_GITHUB_CLIENT_ID: value
 
 amplication-server:
   image:
@@ -110,7 +110,7 @@ amplication-server:
       HOST: "https://server.staging.amplication-dev.com"
       CLIENT_HOST: "https://app-dev.staging.amplication-dev.com"
 
-      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server
 
@@ -141,7 +141,6 @@ amplication-server:
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
 
-
 amplication-git-push-webhook-service:
   image:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-push-webhook-service
@@ -150,7 +149,7 @@ amplication-git-push-webhook-service:
     hostname: webhook.staging.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-push-webhook
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
       PORT: "3000"
@@ -173,7 +172,7 @@ amplication-git-pull-service:
       GIT_DEFAULT_ORIGIN_NAME: origin
       GITHUB_APP_PRIVATE_KEY: ""
 
-      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-pull
       KAFKA_GROUP_ID: amplication-git-pull-service
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
@@ -183,7 +182,7 @@ amplication-git-pull-request-service:
     repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-git-pull-request-service
   config:
     env:
-      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-pull-request
       KAFKA_GROUP_ID: amplication-git-pull-request-service
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
@@ -199,7 +198,7 @@ amplication-storage-gateway:
     env:
       PORT: "3002"
       CORS_ENABLE: "1"
-      KAFKA_BROKERS: '["amplication-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: storage-queue-client
       KAFKA_GROUP_ID: storage-server-group
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0

@@ -1,5 +1,5 @@
-import { ArgsType } from '@nestjs/graphql';
-import { IsString } from 'class-validator';
+import { ArgsType } from "@nestjs/graphql";
+import { IsString } from "class-validator";
 
 @ArgsType()
 export class CanUserAccessArgs {

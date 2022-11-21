@@ -49,9 +49,11 @@ const ApiTokenList = React.memo(() => {
     setTokenCopied(true);
   };
 
-  const { data, loading, error: errorLoading } = useQuery<TData>(
-    GET_API_TOKENS
-  );
+  const {
+    data,
+    loading,
+    error: errorLoading,
+  } = useQuery<TData>(GET_API_TOKENS);
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));

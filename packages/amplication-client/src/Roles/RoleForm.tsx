@@ -6,7 +6,10 @@ import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import { TextField } from "@amplication/design-system";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";
 
@@ -28,6 +31,8 @@ export const INITIAL_VALUES: Partial<models.ResourceRole> = {
   description: "",
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["displayName", "name"],
   properties: {
@@ -38,6 +43,12 @@ const FORM_SCHEMA = {
     name: {
       type: "string",
       minLength: 2,
+    },
+  },
+  errorMessage: {
+    properties: {
+      displayName: AT_LEAST_TWO_CHARARCTERS,
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };

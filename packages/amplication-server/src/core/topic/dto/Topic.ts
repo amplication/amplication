@@ -1,13 +1,13 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { IBlock } from '../../../models';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { IBlock } from "../../../models";
 
 @ObjectType({
   isAbstract: true,
-  implements: [IBlock]
+  implements: [IBlock],
 })
 export class Topic extends IBlock {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 }

@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { EnumGitProvider } from '../enums/EnumGitProvider';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { EnumGitProvider } from "../enums/EnumGitProvider";
 
 @ArgsType()
 export class DeleteGitOrganizationArgs {

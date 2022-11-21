@@ -1,6 +1,6 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
-import { Button, EnumButtonStyle } from "../Button/Button";
+import { Button, EnumButtonStyle } from "./Button";
 
 export default {
   title: "Button",
