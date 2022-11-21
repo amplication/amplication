@@ -538,7 +538,6 @@ describe("EntityService", () => {
       await service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
     ).toEqual(EXAMPLE_ENTITY);
 
-    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
     expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: EXAMPLE_ENTITY_ID,
@@ -546,7 +545,6 @@ describe("EntityService", () => {
       },
     });
 
-    expect(prismaEntityUpdateMock).toBeCalledTimes(2);
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
   });
 
