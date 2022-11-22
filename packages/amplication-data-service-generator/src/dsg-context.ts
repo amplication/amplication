@@ -10,6 +10,7 @@ import { readPluginStaticModules } from "./read-static-modules";
 
 const contextUtil = {
   skipDefaultBehavior: false,
+  abortGeneration: false,
   importStaticModules: readPluginStaticModules,
 };
 

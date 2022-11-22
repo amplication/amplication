@@ -57,6 +57,7 @@ const pluginWrapper: PluginWrapper = async (
 
   try {
     context.utils.skipDefaultBehavior = false;
+    context.utils.abortGeneration = false;
     if (!context.plugins.hasOwnProperty(event)) return func(args);
 
     const beforePlugins = context.plugins[event]?.before || [];
@@ -91,7 +92,7 @@ const pluginWrapper: PluginWrapper = async (
         error
       )}`,
     });
-    return [];
+    return context.utils.abortGeneration ? process.exit(0) : [];
   }
 };
 
