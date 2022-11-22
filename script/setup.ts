@@ -94,12 +94,6 @@ const clean: Task[] = [
     label: "clearing Nx cache 🧼",
   },
 ];
-const install: Task[] = [
-  {
-    command: "npm install",
-    label: "installing dependencies 🚀",
-  },
-];
 const preparePrisma: Task[] = [
   {
     command:
@@ -125,7 +119,7 @@ const build: Task[] = [
   },
 ];
 
-const tasks: Task[][] = [install, preparePrisma, prepareGraphQL, build];
+const tasks: Task[][] = [preparePrisma, prepareGraphQL, build];
 
 if (require.main === module) {
   const args = argv;

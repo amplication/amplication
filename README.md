@@ -78,8 +78,6 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 - [Node.js v16 or above](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/desktop/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
-- [ts-node](https://www.npmjs.com/package/ts-node#installation)
-
 
 ### Getting Started With Local Development
 
@@ -89,39 +87,43 @@ Follow these simple instructions to set up a local development environment.
 
 1. Clone the repository and install dependencies:
 
-```bash
-git clone https://github.com/amplication/amplication.git
-cd amplication
-```
+  ```bash
+  git clone https://github.com/amplication/amplication.git
+  cd amplication
+  npm install
+  ```
 
 2. Run the [setup script](https://github.com/amplication/amplication/blob/master/script/setup.ts), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
 
-```bash
-npm run setup:dev
-```
+  ```bash
+  npm run setup:dev
+  ```
 
 3. Spin up all required infrastructure (Postgres, Kafka, etc.) using Docker Compose:
-```bash
-# To be able to view logs
-npm run docker:dev
 
-# Or, if you prefer to run it at the background
-npm run docker:dev -- -d
-```
+  ```bash
+  # To be able to view logs
+  npm run docker:dev
+
+  # Or, if you prefer to run it at the background
+  npm run docker:dev -- -d
+  ```
 
 4. Apply database migrations:
-```bash
-npm run db:migrate:deploy
-```
+
+  ```bash
+  npm run db:migrate:deploy
+  ```
 
 5. To start developing, run the `serve` target of the desired app:
-```bash
-# This will serve the Amplication Server in development mode
-npx nx serve amplication-server
 
-# This will serve the Amplication Client in development mode
-npx nx serve amplication-client
-```
+  ```bash
+  # This will serve the Amplication Server in development mode
+  npx nx serve amplication-server
+
+  # This will serve the Amplication Client in development mode
+  npx nx serve amplication-client
+  ```
 
 That's it, you are good to go! Happy hacking! 👾
 
