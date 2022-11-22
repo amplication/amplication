@@ -1,14 +1,11 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Storage, MethodNotSupported } from "@slynova/flydrive";
-import { GoogleCloudStorage } from "@slynova/flydrive-gcs";
 import { StorageService } from "@codebrew/nestjs-storage";
 import { Prisma, PrismaService } from "@amplication/prisma-db";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import * as winston from "winston";
 import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
 import { omit, orderBy } from "lodash";
-import path from "path";
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { ResourceRole, User } from "../../models";
 import { Build } from "./dto/Build";
@@ -28,7 +25,6 @@ import { UserService } from "../user/user.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ActionService } from "../action/action.service";
 import { CommitService } from "../commit/commit.service";
-import { LocalDiskService } from "../storage/local.disk.service";
 import { QueueService } from "../queue/queue.service";
 import { previousBuild } from "./utils";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
@@ -143,11 +139,9 @@ export class BuildService {
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
-    private readonly storageService: StorageService,
     private readonly entityService: EntityService,
     private readonly resourceRoleService: ResourceRoleService,
     private readonly actionService: ActionService,
-    private readonly localDiskService: LocalDiskService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
     private readonly commitService: CommitService,
@@ -160,8 +154,6 @@ export class BuildService {
 
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
   ) {
-    /** @todo move this to storageService config once possible */
-    this.storageService.registerDriver("gcs", GoogleCloudStorage);
     this.host = this.configService.get(HOST_VAR);
     if (!this.host) {
       throw new Error("Missing HOST_VAR in env");
@@ -505,19 +497,6 @@ export class BuildService {
       },
       true
     );
-  }
-
-  /** @todo move */
-  private getFileURL(disk: Storage, filePath: string) {
-    try {
-      return disk.getUrl(filePath);
-    } catch (error) {
-      if (error instanceof MethodNotSupported) {
-        const root = this.localDiskService.getDisk().config.root;
-        return path.join(root, filePath);
-      }
-      throw error;
-    }
   }
 
   private async createLog(

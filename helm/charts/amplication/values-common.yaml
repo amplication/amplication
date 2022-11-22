@@ -114,21 +114,6 @@ amplication-server:
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server
 
-      #GCP - APPS Builder
-      DEFAULT_DISK: gcs
-      LOCAL_DISK_ROOT: /artifacts
-      CONTAINER_BUILDER_DEFAULT: cloud-build
-      GCS_BUCKET: amplication-artifacts
-
-      #GCP - APPS Deployer
-      DEPLOYER_DEFAULT: gcp
-
-      GCP_APPS_PROJECT_ID: amplication-apps
-      GCP_APPS_REGION: us-east1
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
-      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
-      GCP_APPS_DOMAIN: staging.amplication.app
-
       #GitHub App
       GITHUB_APP_APP_ID: "195638"
       GITHUB_APP_CLIENT_ID: "Iv1.7c4ec6671b7c8cd7"
