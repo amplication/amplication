@@ -24,7 +24,7 @@
 <div align="center">
  
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-58-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-59-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
   </div>
@@ -262,6 +262,7 @@ Thanks goes to these wonderful people ([:hugs:](https://allcontributors.org/docs
     <tr>
       <td align="center"><a href="https://github.com/Smartmind12"><img src="https://avatars.githubusercontent.com/u/91927689?v=4?s=100" width="100px;" alt="Utsav Paul"/><br /><sub><b>Utsav Paul</b></sub></a><br /><a href="#maintenance-Smartmind12" title="Maintenance">🚧</a></td>
       <td align="center"><a href="http://santoshb.com.np"><img src="https://avatars.githubusercontent.com/u/23402178?v=4?s=100" width="100px;" alt="Santosh Bhandari"/><br /><sub><b>Santosh Bhandari</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=TheLearneer" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/vincenzodomina"><img src="https://avatars.githubusercontent.com/u/54762917?v=4?s=100" width="100px;" alt="Vincenzo Domina"/><br /><sub><b>Vincenzo Domina</b></sub></a><br /><a href="https://github.com/amplication/amplication/commits?author=vincenzodomina" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
