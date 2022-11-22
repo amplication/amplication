@@ -29,6 +29,7 @@ const useProjectSelector = (
     projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
+  const [createNewProject, setCreateNewProject] = useState<boolean>(false);
   const [currentProjectConfiguration, setCurrentProjectConfiguration] =
     useState<models.Resource>();
   const {
@@ -43,6 +44,9 @@ const useProjectSelector = (
     onError: (error) => {
       // if error push to ? check with @Yuval
     },
+    onCompleted: () => {
+      createNewProject && setCreateNewProject(false);
+    }
   });
 
   const projectRedirect = useCallback(
@@ -63,6 +67,7 @@ const useProjectSelector = (
 
   const onNewProjectCompleted = useCallback(
     (data: models.Project) => {
+      setCreateNewProject(true);
       refetch().then(() => projectRedirect(data.id));
     },
     [projectRedirect, refetch]
@@ -94,7 +99,7 @@ const useProjectSelector = (
   ]);
 
   useEffect(() => {
-    if (!project || !projectsList.length) return;
+    if (!project || !projectsList.length || createNewProject) return;
 
     const selectedProject = projectsList.find(
       (projectDB: models.Project) => projectDB.id === project
