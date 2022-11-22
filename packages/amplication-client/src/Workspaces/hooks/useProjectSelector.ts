@@ -46,7 +46,7 @@ const useProjectSelector = (
     },
     onCompleted: () => {
       createNewProject && setCreateNewProject(false);
-    }
+    },
   });
 
   const projectRedirect = useCallback(
