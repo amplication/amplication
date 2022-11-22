@@ -98,7 +98,12 @@ const useProjectSelector = (
   ]);
 
   useEffect(() => {
-    if (!project || !projectsList.length || projectListData.projects.length !== projectsList.length) return;
+    if (
+      !project ||
+      !projectsList.length ||
+      projectListData.projects.length !== projectsList.length
+    )
+      return;
 
     const selectedProject = projectsList.find(
       (projectDB: models.Project) => projectDB.id === project
