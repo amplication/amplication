@@ -19,7 +19,7 @@ export const MultiStateToggle = ({
   onChange,
 }: Props) => {
   const handleClick = useCallback(
-    (option) => {
+    (option: string) => {
       onChange(option);
     },
     [onChange]
@@ -54,7 +54,7 @@ export const MultiStateToggleItem = ({
   selected,
 }: ItemProps) => {
   const handleClick = useCallback(
-    (event) => {
+    (event: React.MouseEvent<HTMLElement>) => {
       event.stopPropagation();
       onClick(item.value);
     },

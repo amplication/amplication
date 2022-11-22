@@ -1,7 +1,12 @@
 import { builders, namedTypes } from "ast-types";
 import { EnumAuthProviderType } from "../../models";
 import { print } from "recast";
-import { AppInfo, Module } from "@amplication/code-gen-types";
+import {
+  AppInfo,
+  CreateSwaggerParams,
+  EventNames,
+  Module,
+} from "@amplication/code-gen-types";
 import {
   interpolate,
   removeTSIgnoreComments,
@@ -9,20 +14,23 @@ import {
 } from "../../util/ast";
 import { readFile } from "../../util/module";
 import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 
 const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
-export async function createSwagger(): Promise<Module> {
+export async function createSwagger(): Promise<Module[]> {
   const { serverDirectories, appInfo } = DsgContext.getInstance;
-  const MODULE_PATH = `${serverDirectories.srcDirectory}/swagger.ts`;
   const { settings } = appInfo;
   const { authProvider } = settings;
-  const file = await readFile(swaggerTemplatePath);
-  const description = await createDescription(appInfo);
 
-  interpolate(file, {
+  const description = await createDescription(appInfo);
+  const outputFileName = "swagger.ts";
+  const fileDir = serverDirectories.srcDirectory;
+
+  const template = await readFile(swaggerTemplatePath);
+  const templateMapping = {
     TITLE: builders.stringLiteral(appInfo.name),
     DESCRIPTION: builders.stringLiteral(description),
     VERSION: builders.stringLiteral(appInfo.version),
@@ -31,14 +39,32 @@ export async function createSwagger(): Promise<Module> {
         ? "addBasicAuth"
         : "addBearerAuth"
     ),
-  });
-
-  removeTSVariableDeclares(file);
-  removeTSIgnoreComments(file);
-  return {
-    code: print(file).code,
-    path: MODULE_PATH,
   };
+
+  return pluginWrapper(createSwaggerInternal, EventNames.CreateSwagger, {
+    template,
+    templateMapping,
+    fileDir,
+    outputFileName,
+  });
+}
+
+async function createSwaggerInternal({
+  template,
+  templateMapping,
+  fileDir,
+  outputFileName,
+}: CreateSwaggerParams): Promise<Module[]> {
+  interpolate(template, templateMapping);
+
+  removeTSVariableDeclares(template);
+  removeTSIgnoreComments(template);
+  return [
+    {
+      code: print(template).code,
+      path: `${fileDir}/${outputFileName}`,
+    },
+  ];
 }
 
 export async function createDescription(appInfo: AppInfo): Promise<string> {

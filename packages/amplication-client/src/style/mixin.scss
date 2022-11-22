@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @mixin fontMono {
   font-family: "DM Mono", monospace;
 }
@@ -240,15 +242,15 @@ $bullet-size: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba($foreground-color, .5);
+    background-color: rgba($foreground-color, 0.5);
     border-radius: $size * 0.5;
     background-clip: padding-box;
-    border: $size/3 solid transparent;
+    border: math.div($size, 3) solid transparent;
   }
-  
+
   &::-webkit-scrollbar-track {
     background-color: $background-color;
-    margin: -$size/3;
+    margin: math.div(-$size, 3);
   }
 
   &:hover {

@@ -1,7 +1,8 @@
-import { TextField,Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { Form, Formik } from "formik";
+import { validate } from "../util/formikValidateJsonSchema";
 import React, { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -17,7 +18,7 @@ type Values = {
 };
 
 type TData = {
-  inviteUser: models.Invitation;
+  inviteUser: models.InviteUserInput;
 };
 
 const INITIAL_VALUES = {
@@ -25,6 +26,16 @@ const INITIAL_VALUES = {
 };
 
 const CLASS_NAME = "invite-member";
+
+const FORM_SCHEMA = {
+  required: ["email"],
+  properties: {
+    email: {
+      type: "string",
+      minLength: 1,
+    },
+  },
+};
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
@@ -56,7 +67,14 @@ const InviteMember = () => {
 
   return (
     <div className={CLASS_NAME}>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: models.InviteUserInput) =>
+          validate(values, FORM_SCHEMA)
+        }
+        enableReinitialize
+        onSubmit={handleSubmit}
+      >
         {(formik) => {
           const handlers = {
             SUBMIT: formik.submitForm,

@@ -1,39 +1,33 @@
-query User{
-  user(where:{
-    id:"ck7ni0wb40001isjn0guk6een"
-  }){
-    id,
-    userRoles{
+query User {
+  user(where: { id: "ck7ni0wb40001isjn0guk6een" }) {
+    id
+    userRoles {
       role
     }
   }
 }
 
-
-query users{
-  users(first:100){
-    id,
-    userRoles{
+query users {
+  users(first: 100) {
+    id
+    userRoles {
       role
-      
-    },
-    account{
-      email,
-      firstName,
+    }
+    account {
+      email
+      firstName
       lastName
     }
-  
   }
 }
 
-mutation removeRoleFromUser{
-  removeRoleFromUser(data:{
-    role:ADMIN,
-  },where:{
-    id:"ck7ni0wb40001isjn0guk6een"
-  }){
-    id,
-    userRoles{
+mutation removeRoleFromUser {
+  removeRoleFromUser(
+    data: { role: ADMIN }
+    where: { id: "ck7ni0wb40001isjn0guk6een" }
+  ) {
+    id
+    userRoles {
       role
     }
   }

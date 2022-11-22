@@ -54,13 +54,14 @@ function DragPluginsCatalogItem({
     hover(item: models.PluginInstallation, monitor) {
       if (!PluginCatalogItemRef.current) return;
 
-      const dragIndex = item.order;
-      const hoverIndex = pluginInstallation?.order;
+      const dragIndex = (item as any).order;
+      const hoverIndex = (pluginInstallation as any)?.order;
       if (!hoverIndex) return;
 
       if (dragIndex === hoverIndex) return;
 
-      const hoverBoundingRect = PluginCatalogItemRef.current?.getBoundingClientRect();
+      const hoverBoundingRect =
+        PluginCatalogItemRef.current?.getBoundingClientRect();
       const hoverMiddleY =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
@@ -124,7 +125,7 @@ function DragPluginsCatalogItem({
                 onClick={handlePromote}
                 icon="arrow_up"
               />
-              <span>{pluginInstallation.order}</span>
+              <span>{(pluginInstallation as any).order}</span>
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 onClick={handleDemote}

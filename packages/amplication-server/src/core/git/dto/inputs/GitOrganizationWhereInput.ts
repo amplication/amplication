@@ -1,10 +1,10 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { Type } from 'class-transformer';
+import { Field, InputType } from "@nestjs/graphql";
+import { Type } from "class-transformer";
 @InputType()
 class GitOrganizationWhereInput {
   @Type(() => String)
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   id?: string;
 

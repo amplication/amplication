@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { User } from '../../models';
-import { BlockTypeService } from '../block/blockType.service';
-import { CreatePluginInstallationArgs } from './dto/CreatePluginInstallationArgs';
-import { FindManyPluginInstallationArgs } from './dto/FindManyPluginInstallationArgs';
-import { PluginInstallation } from './dto/PluginInstallation';
-import { UpdatePluginInstallationArgs } from './dto/UpdatePluginInstallationArgs';
-import { BlockService } from '../block/block.service';
-import { PluginOrderService } from './pluginOrder.service';
-import { PluginOrder } from './dto/PluginOrder';
-import { SetPluginOrderArgs } from './dto/SetPluginOrderArgs';
-import { PluginOrderItem } from './dto/PluginOrderItem';
+import { Injectable } from "@nestjs/common";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { User } from "../../models";
+import { BlockTypeService } from "../block/blockType.service";
+import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
+import { FindManyPluginInstallationArgs } from "./dto/FindManyPluginInstallationArgs";
+import { PluginInstallation } from "./dto/PluginInstallation";
+import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
+import { BlockService } from "../block/block.service";
+import { PluginOrderService } from "./pluginOrder.service";
+import { PluginOrder } from "./dto/PluginOrder";
+import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
+import { PluginOrderItem } from "./dto/PluginOrderItem";
+import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -50,7 +51,8 @@ export class PluginInstallationService extends BlockTypeService<
   PluginInstallation,
   FindManyPluginInstallationArgs,
   CreatePluginInstallationArgs,
-  UpdatePluginInstallationArgs
+  UpdatePluginInstallationArgs,
+  DeletePluginOrderArgs
 > {
   blockType = EnumBlockType.PluginInstallation;
 
@@ -70,11 +72,11 @@ export class PluginInstallationService extends BlockTypeService<
     await this.setOrder(
       {
         data: {
-          order: -1
+          order: -1,
         },
         where: {
-          id: newPlugin.id
-        }
+          id: newPlugin.id,
+        },
       },
       user
     );
@@ -88,8 +90,8 @@ export class PluginInstallationService extends BlockTypeService<
   ): Promise<PluginInstallation> {
     const installation = await super.findOne({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     args.data.pluginId = installation.pluginId;
@@ -101,35 +103,35 @@ export class PluginInstallationService extends BlockTypeService<
   async setOrder(args: SetPluginOrderArgs, user: User): Promise<PluginOrder> {
     const installation = await super.findOne({
       where: {
-        id: args.where.id
-      }
+        id: args.where.id,
+      },
     });
 
     const [currentOrder] = await this.pluginOrderService.findMany({
       where: {
         resource: {
-          id: installation.resourceId
-        }
-      }
+          id: installation.resourceId,
+        },
+      },
     });
 
     if (!currentOrder) {
       return await this.pluginOrderService.create(
         {
           data: {
-            displayName: 'Plugin Order',
+            displayName: "Plugin Order",
             order: [
               {
                 pluginId: installation.pluginId,
-                order: 1
-              }
+                order: 1,
+              },
             ],
             resource: {
               connect: {
-                id: installation.resourceId
-              }
-            }
-          }
+                id: installation.resourceId,
+              },
+            },
+          },
         },
         user
       );
@@ -142,7 +144,7 @@ export class PluginInstallationService extends BlockTypeService<
         order:
           args.data.order === -1
             ? currentOrder.order.length + 1
-            : args.data.order
+            : args.data.order,
       },
       orderedPluginArr
     );
@@ -150,11 +152,11 @@ export class PluginInstallationService extends BlockTypeService<
     return this.pluginOrderService.update(
       {
         data: {
-          order: sortPluginsArr(newOrderedPlugins)
+          order: sortPluginsArr(newOrderedPlugins),
         },
         where: {
-          id: currentOrder.id
-        }
+          id: currentOrder.id,
+        },
       },
       user
     );

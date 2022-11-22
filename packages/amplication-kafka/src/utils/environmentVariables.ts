@@ -21,12 +21,4 @@ export class EnvironmentVariables {
     }
     return envValue;
   }
-
-  getJson(key: string, strict: true): string[];
-  getJson(key: string, strict: boolean): string[] | undefined;
-  getJson(key: string, strict: boolean): string[] | undefined {
-    const envValue = this.get(key, strict);
-    const jsonObject = JSON.parse(envValue || "");
-    return jsonObject;
-  }
 }

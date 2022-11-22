@@ -3,7 +3,7 @@
 exports[`createDataService creates app as expected 1`] = `
 Object {
   "admin-ui/.env": "PORT=3001
-REACT_APP_SERVER_URL =http://localhost:3000",
+REACT_APP_SERVER_URL=http://localhost:3000",
   "admin-ui/package.json": "{
   \\"name\\": \\"@sample-application/admin\\",
   \\"version\\": \\"0.1.3\\",
@@ -212,7 +212,7 @@ import \\"./login.scss\\";
 
 const CLASS_NAME = \\"login-page\\";
 
-const Login = ({ theme }: { theme?: object }) => {
+const Login = ({ theme }: any) => {
   const [username, setUsername] = useState(\\"\\");
   const [password, setPassword] = useState(\\"\\");
   const login = useLogin();
@@ -1659,6 +1659,7 @@ const httpLink = createHttpLink({
   uri: \`\${process.env.REACT_APP_SERVER_URL}/graphql\`,
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
   return {
@@ -1759,6 +1760,7 @@ export const EmptyTitle = (record: TEmpty): string => {
 import ReactDOM from \\"react-dom\\";
 import \\"./index.css\\";
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
 
@@ -2327,15 +2329,17 @@ export const ProfileTitle = (record: TProfile): string => {
 ",
   "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
-const reportWebVitals = (onPerfEntry?: ReportHandler) => {
+const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
   if (onPerfEntry && onPerfEntry instanceof Function) {
-    import(\\"web-vitals\\").then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(onPerfEntry);
-      getFID(onPerfEntry);
-      getFCP(onPerfEntry);
-      getLCP(onPerfEntry);
-      getTTFB(onPerfEntry);
-    });
+    void import(\\"web-vitals\\").then(
+      ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+        getCLS(onPerfEntry);
+        getFID(onPerfEntry);
+        getFCP(onPerfEntry);
+        getLCP(onPerfEntry);
+        getTTFB(onPerfEntry);
+      }
+    );
   }
 };
 
@@ -2869,7 +2873,7 @@ export class StringNullableFilter {
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
-SERVER_PORT=3000
+PORT=3000
 DB_USER=testUsername
 DB_PASSWORD=1234
 DB_PORT=5433
@@ -2896,7 +2900,7 @@ services:
       args:
         NPM_LOG_LEVEL: notice
     ports:
-      - \${SERVER_PORT}:3000
+      - \${PORT}:3000
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
@@ -2929,12 +2933,9 @@ services:
     healthcheck:
       test:
         - CMD
-        - pg_isready
-        - -q
-        - -d
-        - \${DB_DB_NAME}
-        - -U
-        - \${DB_USER}
+        - sh
+        - -c
+        - pg_isready -q -d \${DB_DB_NAME} -U \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
@@ -3734,7 +3735,8 @@ import { UserInfo } from \\"../../UserInfo\\";
 
 export class BasicStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(protected readonly authService: AuthService) {
     super();
   }
@@ -3850,7 +3852,8 @@ import { UserInfo } from \\"../../UserInfo\\";
 
 export class JwtStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(
     protected readonly userService: UserService,
     protected readonly secretOrKey: string
@@ -11729,7 +11732,8 @@ const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
 
 @Injectable()
 export class ServeStaticOptionsService
-  implements ServeStaticModuleOptionsFactory {
+  implements ServeStaticModuleOptionsFactory
+{
   private readonly logger = new Logger(ServeStaticOptionsService.name);
 
   constructor(private readonly configService: ConfigService) {}
@@ -11750,7 +11754,7 @@ export class ServeStaticOptionsService
   }
 }
 ",
-  "server/src/swagger.ts": "import { DocumentBuilder } from \\"@nestjs/swagger\\";
+  "server/src/swagger.ts": "import { DocumentBuilder, SwaggerCustomOptions } from \\"@nestjs/swagger\\";
 
 export const swaggerPath = \\"api\\";
 
@@ -11763,7 +11767,7 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .addBasicAuth()
   .build();
 
-export const swaggerSetupOptions = {
+export const swaggerSetupOptions: SwaggerCustomOptions = {
   swaggerOptions: {
     persistAuthorization: true,
   },
@@ -11833,8 +11837,6 @@ export const INVALID_CREDENTIALS: Credentials = {
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
 import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.strategy.base\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../../user/user.service\\";
 import { TEST_USER } from \\"../constants\\";
 
@@ -11883,7 +11885,6 @@ describe(\\"Testing the TokenServiceBase\\", () => {
       ).toBe(\\"YWRtaW46YWRtaW4=\\");
     });
     it(\\"should reject when username missing\\", () => {
-      //@ts-ignore
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
         //@ts-ignore
@@ -11893,7 +11894,6 @@ describe(\\"Testing the TokenServiceBase\\", () => {
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
     });
     it(\\"should reject when password missing\\", () => {
-      //@ts-ignore
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
         username: VALID_CREDENTIALS.username,

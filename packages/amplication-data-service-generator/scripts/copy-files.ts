@@ -10,7 +10,14 @@ import normalize from "normalize-path";
 /** The directory of the source code */
 const SRC_DIRECTORY = path.join(__dirname, "..", "src");
 /** The directory of the compiled code */
-const DIST_DIRECTORY = path.join(__dirname, "..", "dist");
+const DIST_DIRECTORY = path.join(
+  __dirname,
+  "../../../",
+  "dist",
+  "packages",
+  "amplication-data-service-generator",
+  "src"
+);
 /*** The directory of the server source code */
 const SERVER_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "server");
 /*** The directory of the admin source code */
@@ -24,7 +31,7 @@ const GLOB_SOURCES: string[] = [
   `${SERVER_SRC_DIRECTORY_GLOB}/**/*.template.(ts|env|json|yml)`,
   `${SERVER_SRC_DIRECTORY_GLOB}/**/*.db.template.(yml)`,
   `${SERVER_SRC_DIRECTORY_GLOB}/static/**`,
-  `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html|env)`,
+  `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html|env|json)`,
   `${ADMIN_SRC_DIRECTORY_GLOB}/static/**`,
 ];
 

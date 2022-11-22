@@ -2,9 +2,9 @@ FROM node:16.16 AS base
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package.json ./
 
-RUN npm ci
+RUN npm install
 
 COPY prisma/schema.prisma ./prisma/
 
@@ -24,7 +24,7 @@ COPY --from=base /app/dist ./dist
 COPY --from=base /app/prisma ./prisma
 COPY --from=base /app/scripts ./scripts
 COPY --from=base /app/src ./src
-COPY --from=base /app/tsconfig* .
+COPY --from=base /app/tsconfig* ./
 
 EXPOSE 3000
 

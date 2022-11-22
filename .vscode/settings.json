@@ -76,5 +76,6 @@
   },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform"
-  }
+  },
+  "prettier.configPath": ".prettierrc"
 }

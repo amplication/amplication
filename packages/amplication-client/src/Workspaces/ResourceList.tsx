@@ -90,12 +90,15 @@ function ResourceList() {
       <div className={`${CLASS_NAME}__title`}>Project Settings</div>
 
       <div className={`${CLASS_NAME}__settings`}>
-        {projectConfigurationResource && (
+        {!loadingResources && projectConfigurationResource && (
           <ResourceListItem resource={projectConfigurationResource} />
         )}
       </div>
       <hr className={`${CLASS_NAME}__separator`} />
-      <div className={`${CLASS_NAME}__title`}>{resources.length} {pluralize(resources.length, 'Resource', 'Resources')}</div>
+      <div className={`${CLASS_NAME}__title`}>
+        {resources.length}{" "}
+        {pluralize(resources.length, "Resource", "Resources")}
+      </div>
       {loadingResources && <CircularProgress centerToParent />}
 
       <div className={`${CLASS_NAME}__content`}>
@@ -105,15 +108,14 @@ function ResourceList() {
             image={EnumImages.AddResource}
           />
         ) : (
-          <>
-            {resources.map((resource) => (
-              <ResourceListItem
-                key={resource.id}
-                resource={resource}
-                onDelete={handleDelete}
-              />
-            ))}
-          </>
+          !loadingResources &&
+          resources.map((resource) => (
+            <ResourceListItem
+              key={resource.id}
+              resource={resource}
+              onDelete={handleDelete}
+            />
+          ))
         )}
       </div>
 

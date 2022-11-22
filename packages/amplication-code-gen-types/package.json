@@ -1,50 +1,13 @@
 {
   "name": "@amplication/code-gen-types",
-  "version": "1.0.2",
+  "version": "1.1.3",
   "description": "This library supplies all the contracts for Amplication Code Generation. The purpose is to make the contracts available for inclusion in plugins.",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "author": {
     "name": "Amplication",
     "email": "contact@amplication.com",
     "url": "https://amplication.com"
   },
-  "scripts": {
-    "build": "run-s build:generate-types build:compile",
-    "check-format": "prettier --check \"**/*.{js,ts,json,gql,md,yaml}\"",
-    "format": "prettier --write \"**/*.{js,ts,json,gql,md,yaml}\"",
-    "build:compile": "tsc",
-    "build:generate-types": "ts-node ./scripts/generate-types",
-    "test": "jest",
-    "prebuild": "rimraf dist"
-  },
-  "devDependencies": {
-    "@types/jest": "26.0.19",
-    "@types/json-schema": "7.0.9",
-    "@types/normalize-path": "3.0.0",
-    "fast-glob": "3.2.10",
-    "jest": "27.0.6",
-    "json-schema-to-typescript": "10.1.5",
-    "normalize-path": "3.0.0",
-    "npm-run-all": "4.1.5",
-    "prettier": "2.1.1",
-    "rimraf": "3.0.2",
-    "ts-jest": "27.0.3",
-    "ts-node": "9.1.1",
-    "type-fest": "0.15.1",
-    "typescript": "4.0.2"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "modulePathIgnorePatterns": [
-      "dist"
-    ]
-  },
-  "keywords": [
-    "amplication",
-    "dsg",
-    "code generation",
-    "low code"
-  ],
   "dependencies": {
     "@nestjs/core": "^9.0.9",
     "ast-types": "^0.14.2",

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention*/
 
-import { PaddleEvent } from './PaddleEvent';
+import { PaddleEvent } from "./PaddleEvent";
 
 export class PaddleCreateSubscriptionEvent extends PaddleEvent {
   status: string;

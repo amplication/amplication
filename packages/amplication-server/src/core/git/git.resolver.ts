@@ -1,27 +1,27 @@
-import { UseFilters, UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query } from '@nestjs/graphql';
-import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
-import { InjectContextValue } from '../../decorators/injectContextValue.decorator';
-import { FindOneArgs } from '../../dto';
-import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
-import { InjectableOriginParameter } from '../../enums/InjectableOriginParameter';
-import { Resource } from '../../models/Resource';
-import { GitOrganization } from '../../models/GitOrganization';
-import { GqlResolverExceptionsFilter } from '../../filters/GqlResolverExceptions.filter';
-import { GqlAuthGuard } from '../../guards/gql-auth.guard';
-import { AuthorizeResourceWithGitResult } from '../resource/dto/AuthorizeResourceWithGitResult';
-import { ConnectGitRepositoryArgs } from './dto/args/ConnectGitRepositoryArgs';
-import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
-import { CreateGitRepositoryArgs } from './dto/args/CreateGitRepositoryArgs';
-import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
-import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
-import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { RemoteGitRepositoriesFindManyArgs } from './dto/args/RemoteGitRepositoriesFindManyArgs';
-import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
-import { RemoteGitRepos } from './dto/objects/RemoteGitRepository';
-import { GitProviderService } from './git.provider.service';
-import { DisconnectGitRepositoryArgs } from './dto/args/DisconnectGitRepositoryArgs';
-import { ConnectToProjectGitRepositoryArgs } from './dto/args/ConnectToProjectGitRepositoryArgs';
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { Args, Mutation, Query } from "@nestjs/graphql";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
+import { FindOneArgs } from "../../dto";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
+import { Resource } from "../../models/Resource";
+import { GitOrganization } from "../../models/GitOrganization";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { AuthorizeResourceWithGitResult } from "../resource/dto/AuthorizeResourceWithGitResult";
+import { ConnectGitRepositoryArgs } from "./dto/args/ConnectGitRepositoryArgs";
+import { CreateGitOrganizationArgs } from "./dto/args/CreateGitOrganizationArgs";
+import { CreateGitRepositoryArgs } from "./dto/args/CreateGitRepositoryArgs";
+import { DeleteGitOrganizationArgs } from "./dto/args/DeleteGitOrganizationArgs";
+import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
+import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
+import { RemoteGitRepositoriesFindManyArgs } from "./dto/args/RemoteGitRepositoriesFindManyArgs";
+import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
+import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
+import { GitProviderService } from "./git.provider.service";
+import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
+import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -30,7 +30,7 @@ export class GitResolver {
   @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
-    'data.gitOrganizationId'
+    "data.gitOrganizationId"
   )
   async createGitRepository(
     @Args() args: CreateGitRepositoryArgs
@@ -39,7 +39,7 @@ export class GitResolver {
   }
 
   @Query(() => GitOrganization)
-  @AuthorizeContext(AuthorizableOriginParameter.GitOrganizationId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.GitOrganizationId, "where.id")
   async gitOrganization(@Args() args: FindOneArgs): Promise<GitOrganization> {
     return this.gitService.getGitOrganization(args);
   }
@@ -47,7 +47,7 @@ export class GitResolver {
   @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
-    'data.gitOrganizationId'
+    "data.gitOrganizationId"
   )
   async connectResourceGitRepository(
     @Args() args: ConnectGitRepositoryArgs
@@ -55,7 +55,7 @@ export class GitResolver {
     return await this.gitService.connectResourceGitRepository(args.data);
   }
   @Mutation(() => Resource)
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'resourceId')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
   async connectResourceToProjectRepository(
     @Args() args: ConnectToProjectGitRepositoryArgs
   ): Promise<Resource> {
@@ -65,7 +65,7 @@ export class GitResolver {
   }
 
   @Mutation(() => GitOrganization)
-  @InjectContextValue(InjectableOriginParameter.WorkspaceId, 'data.workspaceId')
+  @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async createOrganization(
     @Args() args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
@@ -75,7 +75,7 @@ export class GitResolver {
   @Mutation(() => Resource)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitRepositoryId,
-    'gitRepositoryId'
+    "gitRepositoryId"
   )
   async deleteGitRepository(
     @Args() args: DeleteGitRepositoryArgs
@@ -86,7 +86,7 @@ export class GitResolver {
   @Mutation(() => Boolean)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
-    'gitOrganizationId'
+    "gitOrganizationId"
   )
   async deleteGitOrganization(
     @Args() args: DeleteGitOrganizationArgs
@@ -95,7 +95,7 @@ export class GitResolver {
   }
 
   @Mutation(() => Resource)
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'resourceId')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "resourceId")
   async disconnectResourceGitRepository(
     @Args() args: DisconnectGitRepositoryArgs
   ): Promise<Resource> {
@@ -103,19 +103,19 @@ export class GitResolver {
   }
 
   @Mutation(() => AuthorizeResourceWithGitResult)
-  @InjectContextValue(InjectableOriginParameter.WorkspaceId, 'data.workspaceId')
+  @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async getGitResourceInstallationUrl(
     @Args() args: GetGitInstallationUrlArgs
   ): Promise<AuthorizeResourceWithGitResult> {
     return {
-      url: await this.gitService.getGitInstallationUrl(args)
+      url: await this.gitService.getGitInstallationUrl(args),
     };
   }
 
   @Query(() => RemoteGitRepos)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
-    'where.gitOrganizationId'
+    "where.gitOrganizationId"
   )
   async remoteGitRepositories(
     @Args() args: RemoteGitRepositoriesFindManyArgs
@@ -126,7 +126,7 @@ export class GitResolver {
   @Query(() => [GitOrganization])
   @InjectContextValue(
     InjectableOriginParameter.WorkspaceId,
-    'where.workspaceId'
+    "where.workspaceId"
   )
   async gitOrganizations(
     @Args() args: GitOrganizationFindManyArgs

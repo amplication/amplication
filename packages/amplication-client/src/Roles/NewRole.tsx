@@ -8,7 +8,10 @@ import { TextField, Snackbar } from "@amplication/design-system";
 import { formatError } from "../util/error";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import "./NewRole.scss";
 import { AppContext } from "../context/appContext";
 
@@ -23,6 +26,8 @@ type Props = {
   onRoleAdd?: (role: models.ResourceRole) => void;
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["displayName"],
   properties: {
@@ -31,11 +36,16 @@ const FORM_SCHEMA = {
       minLength: 2,
     },
   },
+  errorMessage: {
+    properties: {
+      displayName: AT_LEAST_TWO_CHARARCTERS,
+    },
+  },
 };
 const CLASS_NAME = "new-role";
 
 const NewRole = ({ onRoleAdd, resourceId }: Props) => {
-  const { addEntity } = useContext(AppContext)
+  const { addEntity } = useContext(AppContext);
   const [createRole, { error, loading }] = useMutation(CREATE_ROLE, {
     update(cache, { data }) {
       if (!data) return;
@@ -85,7 +95,7 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
           if (onRoleAdd) {
             onRoleAdd(result.data.createResourceRole);
           }
-          addEntity(result.data.createResourceRole.id)
+          addEntity(result.data.createResourceRole.id);
           actions.resetForm();
           inputRef.current?.focus();
         })

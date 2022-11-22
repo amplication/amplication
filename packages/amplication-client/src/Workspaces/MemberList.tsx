@@ -19,9 +19,12 @@ const CLASS_NAME = "member-list";
 
 function MemberList() {
   const [error, setError] = useState<Error>();
-  const { data, error: errorLoading, loading, refetch } = useQuery<TData>(
-    GET_WORKSPACE_MEMBERS
-  );
+  const {
+    data,
+    error: errorLoading,
+    loading,
+    refetch,
+  } = useQuery<TData>(GET_WORKSPACE_MEMBERS);
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
@@ -38,7 +41,8 @@ function MemberList() {
           <InviteMember />
         </div>
         <div className={`${CLASS_NAME}__title`}>
-          {data?.workspaceMembers.length} {pluralize(data?.workspaceMembers.length, 'Member', 'Members')}
+          {data?.workspaceMembers.length}{" "}
+          {pluralize(data?.workspaceMembers.length, "Member", "Members")}
         </div>
         {loading && <CircularProgress centerToParent />}
 

@@ -1,48 +1,48 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
-import { EnumEntityPageType } from './EnumEntityPageType';
-import { EntityPageSingleRecordSettings } from './EntityPageSingleRecordSettings';
-import { EntityPageListSettings } from './EntityPageListSettings';
-import { JsonValue } from 'type-fest';
-import { ValidateIf, IsNotEmpty } from 'class-validator';
+import { Field, InputType } from "@nestjs/graphql";
+import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
+import { EnumEntityPageType } from "./EnumEntityPageType";
+import { EntityPageSingleRecordSettings } from "./EntityPageSingleRecordSettings";
+import { EntityPageListSettings } from "./EntityPageListSettings";
+import type { JsonValue } from "type-fest";
+import { ValidateIf, IsNotEmpty } from "class-validator";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityPageCreateInput extends BlockCreateInput {
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   entityId!: string | null;
 
   @Field(() => EnumEntityPageType, {
-    nullable: false
+    nullable: false,
   })
   pageType: EnumEntityPageType;
 
-  @ValidateIf(o => o.pageType === EnumEntityPageType.SingleRecord)
+  @ValidateIf((o) => o.pageType === EnumEntityPageType.SingleRecord)
   @IsNotEmpty()
   @Field(() => EntityPageSingleRecordSettings, {
-    nullable: true
+    nullable: true,
   })
   singleRecordSettings?: EntityPageSingleRecordSettings & JsonValue;
 
-  @ValidateIf(o => o.pageType === EnumEntityPageType.List)
+  @ValidateIf((o) => o.pageType === EnumEntityPageType.List)
   @IsNotEmpty()
   @Field(() => EntityPageListSettings, {
-    nullable: true
+    nullable: true,
   })
   listSettings?: EntityPageListSettings & JsonValue;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   showAllFields!: boolean;
 
-  @ValidateIf(o => !o.showAllFields)
+  @ValidateIf((o) => !o.showAllFields)
   @IsNotEmpty()
   @Field(() => [String], {
-    nullable: true
+    nullable: true,
   })
   showFieldList?: string[];
 }

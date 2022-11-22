@@ -1,4 +1,4 @@
 export enum InjectableOriginParameter {
   UserId,
-  WorkspaceId
+  WorkspaceId,
 }
