@@ -1,13 +1,13 @@
-import { ConfigService } from '@nestjs/config';
-import { GoogleSecretsManagerService } from '../../services/googleSecretsManager.service';
-import { StrategyOptions } from 'passport-github2';
-import { Injectable } from '@nestjs/common';
+import { ConfigService } from "@nestjs/config";
+import { GoogleSecretsManagerService } from "../../services/googleSecretsManager.service";
+import { StrategyOptions } from "passport-github2";
+import { Injectable } from "@nestjs/common";
 
-export const GITHUB_CLIENT_ID_VAR = 'GITHUB_CLIENT_ID';
-export const GITHUB_CLIENT_SECRET_VAR = 'GITHUB_CLIENT_SECRET';
-export const GITHUB_SECRET_SECRET_NAME_VAR = 'GITHUB_SECRET_SECRET_NAME';
-export const GITHUB_REDIRECT_URI_VAR = 'GITHUB_REDIRECT_URI';
-export const GITHUB_SCOPE_VAR = 'GITHUB_SCOPE';
+export const GITHUB_CLIENT_ID_VAR = "GITHUB_CLIENT_ID";
+export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
+export const GITHUB_SECRET_SECRET_NAME_VAR = "GITHUB_SECRET_SECRET_NAME";
+export const GITHUB_REDIRECT_URI_VAR = "GITHUB_REDIRECT_URI";
+export const GITHUB_SCOPE_VAR = "GITHUB_SCOPE";
 export const MISSING_CLIENT_SECRET_ERROR = `Must provide either ${GITHUB_CLIENT_SECRET_VAR} or ${GITHUB_SECRET_SECRET_NAME_VAR}`;
 
 @Injectable()
@@ -28,7 +28,7 @@ export class GitHubStrategyConfigService {
       clientID,
       clientSecret,
       callbackURL,
-      scope
+      scope,
     };
   }
   private async getSecret(): Promise<string> {

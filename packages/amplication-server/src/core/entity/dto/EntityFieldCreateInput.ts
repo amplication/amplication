@@ -1,60 +1,60 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
-import { GraphQLJSONObject } from 'graphql-type-json';
-import { JsonObject } from 'type-fest';
-import { EnumDataType } from '../../../enums/EnumDataType';
-import { WhereParentIdInput } from '../../../dto';
+import { Field, InputType, Int } from "@nestjs/graphql";
+import { GraphQLJSONObject } from "graphql-type-json";
+import type { JsonObject } from "type-fest";
+import { EnumDataType } from "../../../enums/EnumDataType";
+import { WhereParentIdInput } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityFieldCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   displayName!: string;
 
   @Field(() => EnumDataType, {
-    nullable: false
+    nullable: false,
   })
   dataType!: keyof typeof EnumDataType;
 
   @Field(() => GraphQLJSONObject, {
-    nullable: false
+    nullable: false,
   })
   properties!: JsonObject;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   required!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   unique!: boolean;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   searchable!: boolean;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   description!: string;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false
+    nullable: false,
   })
   entity!: WhereParentIdInput;
 
   @Field(() => Int, {
-    nullable: true
+    nullable: true,
   })
   position?: number | null;
 }

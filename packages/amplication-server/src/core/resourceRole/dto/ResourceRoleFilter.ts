@@ -1,22 +1,22 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { ResourceRoleWhereInput } from './ResourceRoleWhereInput';
+import { Field, InputType } from "@nestjs/graphql";
+import { ResourceRoleWhereInput } from "./ResourceRoleWhereInput";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ResourceRoleFilter {
   @Field(() => ResourceRoleWhereInput, {
-    nullable: true
+    nullable: true,
   })
   every?: ResourceRoleWhereInput | null;
 
   @Field(() => ResourceRoleWhereInput, {
-    nullable: true
+    nullable: true,
   })
   some?: ResourceRoleWhereInput | null;
 
   @Field(() => ResourceRoleWhereInput, {
-    nullable: true
+    nullable: true,
   })
   none?: ResourceRoleWhereInput | null;
 }

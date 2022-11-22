@@ -1,8 +1,9 @@
 pvc:
   name: efs-claim
-  storageRequest: 1Gi
+  storageRequest: 5Gi
   storageName: efs-sc
 
 pv:
   name: efs-pv-custom
+  storageCapacity: 5Gi
   handle: fs-03a0a5ba30d788595::fsap-08494d4659781878b

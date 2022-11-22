@@ -40,16 +40,14 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
         (resource) =>
           resource.resourceType === models.EnumResourceType.MessageBroker
       )
-      .map(
-        (resource): MessageBrokerListItem => {
-          return {
-            resource,
-            connection: data?.ServiceTopicsList.find(
-              (connection) => connection.messageBrokerId === resource.id
-            ),
-          };
-        }
-      );
+      .map((resource): MessageBrokerListItem => {
+        return {
+          resource,
+          connection: data?.ServiceTopicsList.find(
+            (connection) => connection.messageBrokerId === resource.id
+          ),
+        };
+      });
   }, [resources, data?.ServiceTopicsList]);
 
   const hasServiceTopicList = !isEmpty(messageBrokerList);

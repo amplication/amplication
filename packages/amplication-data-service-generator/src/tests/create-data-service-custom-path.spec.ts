@@ -24,6 +24,10 @@ const newAppInfo: AppInfo = {
 
 jest.setTimeout(100000);
 
+jest.mock("./create-log", () => ({
+  createLog: jest.fn(),
+}));
+
 describe("createDataService", () => {
   test("creates app as expected", async () => {
     const modules = await createDataService({
@@ -33,6 +37,7 @@ describe("createDataService", () => {
       resourceType: EnumResourceType.Service,
       pluginInstallations: installedPlugins,
     });
+
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)

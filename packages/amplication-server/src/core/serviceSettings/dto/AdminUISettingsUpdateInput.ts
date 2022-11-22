@@ -1,16 +1,16 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class AdminUISettingsUpdateInput {
   @Field(() => Boolean, {
-    nullable: true
+    nullable: true,
   })
   generateAdminUI?: boolean;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   adminUIPath?: string;
 }

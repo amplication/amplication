@@ -1,5 +1,6 @@
-import { FormikErrors } from "formik";
 import Ajv from "ajv";
+import ajvErrors from "ajv-errors";
+import { FormikErrors } from "formik";
 import { set } from "lodash";
 
 /**
@@ -21,20 +22,26 @@ import { set } from "lodash";
  *      onSubmit={handleSubmit}
  *    >
  *  */
+
+export const validationErrorMessages = {
+  AT_LEAST_TWO_CHARARCTERS: "Must be at least 2 characters long",
+};
+
 export function validate<T>(
   values: T,
-  validationSchema: object
+  validationSchema: { [key: string]: any }
 ): FormikErrors<T> {
   const errors: FormikErrors<T> = {};
 
   const ajv = new Ajv({ allErrors: true });
+  ajvErrors(ajv);
 
-  let isValid = ajv.validate(validationSchema, values);
+  const isValid = ajv.validate(validationSchema, values);
 
   if (!isValid && ajv.errors) {
     for (const error of ajv.errors) {
-      //remove the first dot from dataPath
-      const fieldName = error.instancePath.substring(1).replaceAll("/", ".");
+      // remove the first dot from dataPath
+      const fieldName = error.dataPath.substring(1).replaceAll("/", ".");
       set(errors, fieldName, error.message);
     }
   }

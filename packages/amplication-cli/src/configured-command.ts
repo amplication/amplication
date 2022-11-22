@@ -1,22 +1,22 @@
-import cli, { Table } from 'cli-ux';
-import fetch from 'cross-fetch';
-import { Command } from '@oclif/command';
-import * as fs from 'fs';
-import * as path from 'path';
-import urlJoin from 'url-join';
+import cli, { Table } from "cli-ux";
+import fetch from "cross-fetch";
+import { Command } from "@oclif/command";
+import * as fs from "fs";
+import * as path from "path";
+import urlJoin from "url-join";
 
 import {
   ApolloClient,
   InMemoryCache,
   createHttpLink,
-} from '@apollo/client/core';
-import { setContext } from '@apollo/client/link/context';
-import { AMP_SERVER_URL, DEFAULT_SERVER_URL } from './properties';
+} from "@apollo/client/core";
+import { setContext } from "@apollo/client/link/context";
+import { AMP_SERVER_URL, DEFAULT_SERVER_URL } from "./properties";
 
 import {
   OUTPUT_FORMAT_STYLED_JSON,
   OUTPUT_FORMAT_TABLE,
-} from './flags/format-flag';
+} from "./flags/format-flag";
 
 export abstract class ConfiguredCommand extends Command {
   client = new ApolloClient({
@@ -27,7 +27,7 @@ export abstract class ConfiguredCommand extends Command {
 
   configChanged = false;
 
-  configFilePath = path.join(this.config.configDir, 'config.json');
+  configFilePath = path.join(this.config.configDir, "config.json");
 
   constructor(...args: [any, any]) {
     super(...args);
@@ -44,7 +44,7 @@ export abstract class ConfiguredCommand extends Command {
       this.setConfig(AMP_SERVER_URL, DEFAULT_SERVER_URL);
     }
 
-    serverUrl = urlJoin(serverUrl, 'graphql');
+    serverUrl = urlJoin(serverUrl, "graphql");
     const httpLink = createHttpLink({
       uri: serverUrl,
       fetch,
@@ -52,12 +52,12 @@ export abstract class ConfiguredCommand extends Command {
 
     const authLink = setContext((_, { headers }) => {
       // get the authentication token from config if it exists
-      const token = this.getConfig('token');
+      const token = this.getConfig("token");
       // return the headers to the context so httpLink can read them
       return {
         headers: {
           ...headers,
-          authorization: token ? `Bearer ${token}` : '',
+          authorization: token ? `Bearer ${token}` : "",
         },
       };
     });

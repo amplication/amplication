@@ -3,7 +3,7 @@
 exports[`createDataService creates resource as expected 1`] = `
 Object {
   "admin-ui/.env": "PORT=3001
-REACT_APP_SERVER_URL =http://localhost:3000",
+REACT_APP_SERVER_URL=http://localhost:3000",
   "admin-ui/package.json": "{
   \\"name\\": \\"@sample-application/admin\\",
   \\"version\\": \\"0.1.3\\",
@@ -3735,7 +3735,8 @@ import { UserInfo } from \\"../../UserInfo\\";
 
 export class BasicStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(protected readonly authService: AuthService) {
     super();
   }
@@ -3851,7 +3852,8 @@ import { UserInfo } from \\"../../UserInfo\\";
 
 export class JwtStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(
     protected readonly userService: UserService,
     protected readonly secretOrKey: string
@@ -12716,7 +12718,8 @@ const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
 
 @Injectable()
 export class ServeStaticOptionsService
-  implements ServeStaticModuleOptionsFactory {
+  implements ServeStaticModuleOptionsFactory
+{
   private readonly logger = new Logger(ServeStaticOptionsService.name);
 
   constructor(private readonly configService: ConfigService) {}
@@ -12737,7 +12740,7 @@ export class ServeStaticOptionsService
   }
 }
 ",
-  "server/src/swagger.ts": "import { DocumentBuilder } from \\"@nestjs/swagger\\";
+  "server/src/swagger.ts": "import { DocumentBuilder, SwaggerCustomOptions } from \\"@nestjs/swagger\\";
 
 export const swaggerPath = \\"api\\";
 
@@ -12750,7 +12753,7 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .addBasicAuth()
   .build();
 
-export const swaggerSetupOptions = {
+export const swaggerSetupOptions: SwaggerCustomOptions = {
   swaggerOptions: {
     persistAuthorization: true,
   },
@@ -12820,8 +12823,6 @@ export const INVALID_CREDENTIALS: Credentials = {
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
 import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.strategy.base\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../../user/user.service\\";
 import { TEST_USER } from \\"../constants\\";
 
@@ -12870,7 +12871,6 @@ describe(\\"Testing the TokenServiceBase\\", () => {
       ).toBe(\\"YWRtaW46YWRtaW4=\\");
     });
     it(\\"should reject when username missing\\", () => {
-      //@ts-ignore
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
         //@ts-ignore
@@ -12880,7 +12880,6 @@ describe(\\"Testing the TokenServiceBase\\", () => {
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
     });
     it(\\"should reject when password missing\\", () => {
-      //@ts-ignore
       const result = tokenServiceBase.createToken({
         id: VALID_ID,
         username: VALID_CREDENTIALS.username,

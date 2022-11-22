@@ -29,7 +29,7 @@ const FORM_SCHEMA = {
       type: "string",
       minLength: 1,
       maxLength: 249,
-    }
+    },
   },
 };
 const CLASS_NAME = "new-topic";

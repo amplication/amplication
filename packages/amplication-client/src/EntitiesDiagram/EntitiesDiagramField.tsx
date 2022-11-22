@@ -57,7 +57,8 @@ export const EntitiesDiagramField = React.memo(
                   [`${CLASS_NAME}__fields__field--selected`]: selected,
                 },
                 {
-                  [`${CLASS_NAME}__fields__field--dragged`]: snapshot.isDragging,
+                  [`${CLASS_NAME}__fields__field--dragged`]:
+                    snapshot.isDragging,
                 }
               )}
               {...provided.dragHandleProps}

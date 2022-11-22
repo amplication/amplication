@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@amplication/prisma-db';
-import cuid from 'cuid';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@amplication/prisma-db";
+import cuid from "cuid";
 
 import {
   Environment,
   CreateEnvironmentArgs,
-  FindManyEnvironmentArgs
-} from './dto';
-import { FindOneArgs } from '../../dto';
+  FindManyEnvironmentArgs,
+} from "./dto";
+import { FindOneArgs } from "../../dto";
 
-export const DEFAULT_ENVIRONMENT_NAME = 'Sandbox environment';
+export const DEFAULT_ENVIRONMENT_NAME = "Sandbox environment";
 
 @Injectable()
 export class EnvironmentService {
@@ -24,25 +24,25 @@ export class EnvironmentService {
       data: {
         resource: {
           connect: {
-            id: resourceId
-          }
+            id: resourceId,
+          },
         },
         address: cuid(),
-        name: DEFAULT_ENVIRONMENT_NAME
-      }
+        name: DEFAULT_ENVIRONMENT_NAME,
+      },
     });
   }
   async getDefaultEnvironment(resourceId: string): Promise<Environment | null> {
     const environments = await this.findMany({
       where: {
         resource: {
-          id: resourceId
+          id: resourceId,
         },
         name: {
-          equals: DEFAULT_ENVIRONMENT_NAME
-        }
+          equals: DEFAULT_ENVIRONMENT_NAME,
+        },
       },
-      take: 1
+      take: 1,
     });
 
     return environments[0];

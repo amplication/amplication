@@ -1,18 +1,18 @@
-import { EnumResourceType } from './EnumResourceType';
-import { Field, InputType } from '@nestjs/graphql';
-import { WhereParentIdInput } from '../../../dto';
+import { EnumResourceType } from "./EnumResourceType";
+import { Field, InputType } from "@nestjs/graphql";
+import { WhereParentIdInput } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ResourceCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   description!: string;
 

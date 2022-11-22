@@ -7,12 +7,12 @@ export type Props = {
   className?: string;
 };
 
-function Page({ children, className }: Props) {
+const Page: React.FC<Props> = ({ children, className }) => {
   return (
     <div className={classNames("amp-page", className)}>
       <main>{children}</main>
     </div>
   );
-}
+};
 
 export default Page;

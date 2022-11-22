@@ -1,28 +1,31 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { PluginInstallationService } from './pluginInstallation.service';
-import { FindManyPluginInstallationArgs } from './dto/FindManyPluginInstallationArgs';
-import { BlockTypeResolver } from '../block/blockType.resolver';
-import { PluginInstallation } from './dto/PluginInstallation';
-import { CreatePluginInstallationArgs } from './dto/CreatePluginInstallationArgs';
-import { UpdatePluginInstallationArgs } from './dto/UpdatePluginInstallationArgs';
-import { PluginOrder } from './dto/PluginOrder';
-import { AuthorizeContext } from '../../decorators/authorizeContext.decorator';
-import { SetPluginOrderArgs } from './dto/SetPluginOrderArgs';
-import { AuthorizableOriginParameter } from '../../enums/AuthorizableOriginParameter';
-import { UserEntity } from '../../decorators/user.decorator';
-import { User } from '../../models';
-import { FindOneArgs } from '../../dto';
-import { PluginOrderService } from './pluginOrder.service';
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { PluginInstallationService } from "./pluginInstallation.service";
+import { FindManyPluginInstallationArgs } from "./dto/FindManyPluginInstallationArgs";
+import { BlockTypeResolver } from "../block/blockType.resolver";
+import { PluginInstallation } from "./dto/PluginInstallation";
+import { CreatePluginInstallationArgs } from "./dto/CreatePluginInstallationArgs";
+import { UpdatePluginInstallationArgs } from "./dto/UpdatePluginInstallationArgs";
+import { PluginOrder } from "./dto/PluginOrder";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { UserEntity } from "../../decorators/user.decorator";
+import { User } from "../../models";
+import { FindOneArgs } from "../../dto";
+import { PluginOrderService } from "./pluginOrder.service";
+import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 
 @Resolver(() => PluginInstallation && PluginOrder)
 export class PluginInstallationResolver extends BlockTypeResolver(
   PluginInstallation,
-  'PluginInstallations',
+  "PluginInstallations",
   FindManyPluginInstallationArgs,
-  'createPluginInstallation',
+  "createPluginInstallation",
   CreatePluginInstallationArgs,
-  'updatePluginInstallation',
-  UpdatePluginInstallationArgs
+  "updatePluginInstallation",
+  UpdatePluginInstallationArgs,
+  "deletePluginInstallation",
+  DeletePluginOrderArgs
 ) {
   constructor(
     private readonly service: PluginInstallationService,
@@ -32,9 +35,9 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   }
 
   @Mutation(() => PluginOrder, {
-    nullable: true
+    nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
   async setPluginOrder(
     @Args() args: SetPluginOrderArgs,
     @UserEntity() user: User
@@ -43,9 +46,9 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   }
 
   @Query(() => PluginOrder, {
-    nullable: false
+    nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
   async pluginOrder(@Args() args: FindOneArgs): Promise<PluginOrder> {
     return this.pluginOrderService.findByResourceId(args);
   }
