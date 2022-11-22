@@ -13,6 +13,7 @@ import { UserEntity } from "../../decorators/user.decorator";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { UseFilters, UseGuards } from "@nestjs/common";
+import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 
 type Constructor<T> = {
   new (...args: any): T;
@@ -23,7 +24,8 @@ export function BlockTypeResolver<
   T extends IBlock,
   FindManyArgs extends FindManyBlockArgs,
   CreateArgs extends CreateBlockArgs,
-  UpdateArgs extends UpdateBlockArgs
+  UpdateArgs extends UpdateBlockArgs,
+  DeleteArgs extends DeleteBlockArgs
 >(
   classRef: Constructor<T>,
   findManyName: string,
@@ -31,13 +33,21 @@ export function BlockTypeResolver<
   createName: string,
   createArgsRef: Constructor<CreateArgs>,
   updateName: string,
-  updateArgsRef: Constructor<UpdateArgs>
+  updateArgsRef: Constructor<UpdateArgs>,
+  deleteName: string,
+  deleteArgsRef: Constructor<DeleteArgs>
 ): any {
   @Resolver({ isAbstract: true })
   @UseFilters(GqlResolverExceptionsFilter)
   @UseGuards(GqlAuthGuard)
   abstract class BaseResolverHost {
-    abstract service: BlockTypeService<T, FindManyArgs, CreateArgs, UpdateArgs>;
+    abstract service: BlockTypeService<
+      T,
+      FindManyArgs,
+      CreateArgs,
+      UpdateArgs,
+      DeleteArgs
+    >;
 
     @Query(() => classRef, {
       name: classRef.name,
@@ -87,6 +97,18 @@ export function BlockTypeResolver<
       @UserEntity() user: User
     ): Promise<T> {
       return this.service.update(args, user);
+    }
+
+    @Mutation(() => classRef, {
+      name: deleteName,
+      nullable: false,
+    })
+    @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
+    async [deleteName](
+      @Args({ type: () => deleteArgsRef }) args: DeleteArgs,
+      @UserEntity() user: User
+    ): Promise<T> {
+      return this.service.delete(args, user);
     }
   }
   return BaseResolverHost;

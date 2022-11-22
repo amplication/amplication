@@ -9,12 +9,14 @@ import {
   UpdateBlockArgs,
 } from "../block/dto";
 import { UserEntity } from "../../decorators/user.decorator";
+import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
   FindManyArgs extends FindManyBlockTypeArgs,
   CreateArgs extends CreateBlockArgs,
-  UpdateArgs extends UpdateBlockArgs
+  UpdateArgs extends UpdateBlockArgs,
+  DeleteArgs extends DeleteBlockArgs
 > {
   abstract blockType: EnumBlockType;
 
@@ -48,5 +50,9 @@ export abstract class BlockTypeService<
       },
       user
     );
+  }
+
+  async delete(args: DeleteArgs, @UserEntity() user: User): Promise<T> {
+    return await this.blockService.delete(args, user);
   }
 }
