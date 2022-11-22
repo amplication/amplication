@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { unsetToken } from "../../authentication/authentication";
@@ -20,6 +20,7 @@ import MenuItem from "../../Layout/MenuItem";
 import * as models from "../../models";
 import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
 import "./WorkspaceHeader.scss";
+import { useAmplicationVersion } from "../hooks/useAmplicationVersion";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -49,7 +50,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
   const isCodeViewRoute = useRouteMatch(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view"
   );
-
+  const [versionAlert, setVersionAlert] = useState(false);
   const getSelectedEntities = useCallback(() => {
     if (
       (isResourceRoute && currentResource) ||
@@ -78,6 +79,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
     history.replace("/login");
   }, [history, apolloClient]);
+  const { version } = useAmplicationVersion();
 
   return (
     <div className={CLASS_NAME}>
@@ -90,6 +92,26 @@ const WorkspaceHeader: React.FC<{}> = () => {
             disableHover
           />
         </div>
+        <Tooltip
+          aria-label="Version number copied successfully"
+          direction="e"
+          noDelay
+          show={versionAlert}
+        >
+          <Button
+            className={`${CLASS_NAME}__version`}
+            buttonStyle={EnumButtonStyle.Clear}
+            onClick={async () => {
+              setVersionAlert(true);
+              await navigator.clipboard.writeText(version);
+            }}
+            onMouseLeave={() => {
+              setVersionAlert(false);
+            }}
+          >
+            {version}
+          </Button>
+        </Tooltip>
       </div>
       <div className={`${CLASS_NAME}__center`}>
         <div className={`${CLASS_NAME}__breadcrumbs`}>
