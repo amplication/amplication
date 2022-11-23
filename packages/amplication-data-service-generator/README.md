@@ -2,6 +2,7 @@
 
 DSG (Data Service Generator) is the component responsible for the generation of source code by Amplication, and allows the integration of plugins into the code generation process.
 
+
 ## Technologies
 
 - [Node.js](https://nodejs.org/): the generated code is human-editable Node.js code.
