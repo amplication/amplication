@@ -74,6 +74,8 @@ export async function createPrismaSchemaInternal({
     prismaClientGenerator,
   ]);
 
+  console.log(schema);
+
   return [
     {
       path: MODULE_PATH,
