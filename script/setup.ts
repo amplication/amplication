@@ -162,7 +162,7 @@ if (require.main === module) {
         "npx nx serve amplication-client"
       );
       logger.info(
-        "Check out the Amplication Docs at https://docs.amplication.com/docs/ 📜"
+        "Check out the Amplication Docs at https://docs.amplication.com/ 📜"
       );
     } catch (error) {
       spinner.fail();

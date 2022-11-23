@@ -37,10 +37,7 @@ function WelcomePage({
         Amplication platform contains production-ready, open-source components
         and packages. We include only those that are popular, documented,
         secured and supported. Read more about our stack{" "}
-        <a
-          href="https://docs.amplication.com/docs/getting-started"
-          target="docs"
-        >
+        <a href="https://docs.amplication.com/getting-started" target="docs">
           here
         </a>
         .

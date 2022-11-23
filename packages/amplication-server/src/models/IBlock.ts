@@ -15,6 +15,9 @@ export abstract class IBlock {
   })
   createdAt!: Date;
 
+  @Field(() => String, {
+    nullable: true,
+  })
   resourceId?: string;
 
   @Field(() => Date, {

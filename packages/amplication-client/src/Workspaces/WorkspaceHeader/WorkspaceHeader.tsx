@@ -197,7 +197,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           <a
             className={`${CLASS_NAME}__links__link`}
             rel="noopener noreferrer"
-            href="https://docs.amplication.com/docs"
+            href="https://docs.amplication.com"
             target="_blank"
           >
             Docs

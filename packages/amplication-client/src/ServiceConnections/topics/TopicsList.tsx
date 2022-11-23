@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { FieldArray } from "formik";
-import React from "react";
+import { keyBy } from "lodash";
+import React, { useMemo } from "react";
 import { EmptyState } from "../../Components/EmptyState";
 import { EnumImages } from "../../Components/SvgThemeImage";
 import {
@@ -33,6 +34,12 @@ export default function TopicsList({
     skip: !messageBrokerId,
   });
 
+  const messagePatternsByTopicId = useMemo(() => {
+    if (!messagePatterns) return {};
+
+    return keyBy(messagePatterns, (pattern) => pattern.topicId);
+  }, [messagePatterns]);
+
   return data ? (
     data.Topics.length ? (
       <FieldArray
@@ -46,7 +53,7 @@ export default function TopicsList({
                 key={i}
                 topic={topic}
                 selectedPatternType={
-                  messagePatterns[i] || {
+                  messagePatternsByTopicId[topic.id] || {
                     type: EnumMessagePatternConnectionOptions.None,
                     topicId: topic.id,
                   }
@@ -65,8 +72,8 @@ export default function TopicsList({
       />
     ) : (
       <EmptyState
-        message="This message broker has no topics"
-        image={EnumImages.CommitEmptyState}
+        message="There are no connected message brokers to show"
+        image={EnumImages.MessageBrokerEmptyState}
       />
     )
   ) : null;
