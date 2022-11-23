@@ -61,20 +61,14 @@ export async function createPrismaSchemaInternal({
     url: new PrismaSchemaDSL.DataSourceURLEnv(dataSource.urlEnv),
   };
 
-  console.log(prismaDataSource);
-
   const prismaClientGenerator = PrismaSchemaDSL.createGenerator(
     clientGenerator.name,
     clientGenerator.provider
   );
 
-  console.log(prismaClientGenerator);
-
   const schema = PrismaSchemaDSL.createSchema(models, enums, prismaDataSource, [
     prismaClientGenerator,
   ]);
-
-  console.log(schema);
 
   return [
     {
