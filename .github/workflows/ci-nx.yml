@@ -48,9 +48,6 @@ jobs:
         with:
           node-version: 16.x
 
-      - name: openssl install
-        run: apt-get install -y openssl
-
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
