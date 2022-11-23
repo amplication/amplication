@@ -8,9 +8,18 @@
     "amplication-code-gen-types"
   ],
   "targets": {
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node ./scripts/update-version.ts",
+        "cwd": "packages/amplication-client"
+      }
+    },
     "build": {
       "executor": "@nrwl/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
@@ -38,7 +47,9 @@
             "output": "/scripts"
           }
         ],
-        "styles": ["packages/amplication-client/src/index.scss"],
+        "styles": [
+          "packages/amplication-client/src/index.scss"
+        ],
         "scripts": [],
         "webpackConfig": "@nrwl/react/plugins/webpack"
       },
@@ -74,6 +85,9 @@
         "open": true,
         "port": 3001
       },
+      "dependsOn": [
+        "prebuild"
+      ],
       "configurations": {
         "development": {
           "buildTarget": "amplication-client:build:development"
@@ -86,14 +100,20 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+      "outputs": [
+        "{options.outputFile}"
+      ],
       "options": {
-        "lintFilePatterns": ["packages/amplication-client/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": [
+          "packages/amplication-client/**/*.{ts,tsx,js,jsx}"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-client"],
+      "outputs": [
+        "coverage/packages/amplication-client"
+      ],
       "options": {
         "jestConfig": "packages/amplication-client/jest.config.ts",
         "passWithNoTests": true
@@ -103,7 +123,9 @@
       "executor": "@nx-tools/nx-docker:build",
       "options": {
         "push": false,
-        "tags": ["amplication/client:latest"]
+        "tags": [
+          "amplication/client:latest"
+        ]
       }
     }
   },
