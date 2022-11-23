@@ -47,6 +47,12 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         with:
           node-version: 16.x
+        
+      - name: apt-get
+        run: apt-get update
+
+      - name: openssl install
+        run: apt-get install -y openssl
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
