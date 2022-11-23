@@ -8,6 +8,7 @@ export {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType,
+  EnumMessagePatternConnectionOptions,
 } from "./models";
 
 export type WorkerResult = {
