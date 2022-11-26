@@ -95,7 +95,7 @@ cd amplication
 ```
 
 2. Run the [setup script](https://github.com/amplication/amplication/blob/master/script/setup.ts), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
-
+tets-ci
 ```bash
 npm run setup:dev
 ```
