@@ -118,7 +118,7 @@ async function createServerInternal(
   }));
 
   await createLog({ level: "info", message: "Creating Prisma schema..." });
-  logger.info("Creating Prisma schema...");
+  logger.info("Creating Prisma schema..2.");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
   await createLog({
