@@ -2873,24 +2873,8 @@ export class StringNullableFilter {
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
-PORT=3000
-DB_USER=testUsername
-DB_PASSWORD=1234
-DB_PORT=5433
-DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
+PORT=3000",
   "test/docker-compose.db.yml": "version: \\"3\\"
-services:
-  db:
-    image: postgres:12
-    ports:
-      - \${DB_PORT}:5432
-    environment:
-      POSTGRES_USER: \${DB_USER}
-      POSTGRES_PASSWORD: \${DB_PASSWORD}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-volumes:
-  postgres: ~
 ",
   "test/docker-compose.yml": "version: \\"3\\"
 services:
@@ -2905,7 +2889,6 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5433
     depends_on:
       - migrate
   migrate:
@@ -2917,30 +2900,9 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432
     depends_on:
       db:
         condition: service_healthy
-  db:
-    image: postgres:12
-    ports:
-      - \${DB_PORT}:5432
-    environment:
-      POSTGRES_USER: \${DB_USER}
-      POSTGRES_PASSWORD: \${DB_PASSWORD}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        - CMD
-        - sh
-        - -c
-        - pg_isready -q -d \${DB_DB_NAME} -U \${DB_USER}
-      timeout: 45s
-      interval: 10s
-      retries: 10
-volumes:
-  postgres: ~
 ",
   "test/nest-cli.json": "{
   \\"sourceRoot\\": \\"src\\",
@@ -3026,7 +2988,7 @@ volumes:
 ",
   "test/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
-  url      = env(\\"DB_URL\\")
+  url      = env(\\"POSTGRESQL_URL\\")
 }
 
 generator client {
@@ -3146,7 +3108,8 @@ enum EnumCustomerCustomerType {
   gold
   bronze
   regular
-}",
+}
+",
   "test/scripts/clean.ts": "/**
  * Clean all the tables and types created by Prisma in the database
  */
