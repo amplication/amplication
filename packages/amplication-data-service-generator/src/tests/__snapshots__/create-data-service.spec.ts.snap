@@ -3149,7 +3149,8 @@ enum EnumCustomerCustomerType {
   gold
   bronze
   regular
-}",
+}
+",
   "server/scripts/clean.ts": "/**
  * Clean all the tables and types created by Prisma in the database
  */
