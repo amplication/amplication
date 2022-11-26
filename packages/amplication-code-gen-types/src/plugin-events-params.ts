@@ -7,10 +7,7 @@ import {
   NamedClassDeclaration,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import {
-  Generator,
-  DataSource,
-} from "prisma-schema-dsl-types";
+import { Generator, DataSource } from "prisma-schema-dsl-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   entityName: string;
