@@ -30,17 +30,7 @@ export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
 const defaultPlugins: {
   categoryPluginIds: string[];
   defaultCategoryPlugin: PluginInstallation;
-}[] = [
-  {
-    categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID],
-    defaultCategoryPlugin: {
-      id: "placeholder-id",
-      pluginId: POSTGRESQL_PLUGIN_ID,
-      npm: POSTGRESQL_NPM,
-      enabled: true,
-    },
-  },
-];
+}[] = [];
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -197,8 +187,7 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             );
           }
 
-          const relatedFieldProperties =
-            relatedField.properties as types.Lookup;
+          const relatedFieldProperties = relatedField.properties as types.Lookup;
 
           const isOneToOne =
             !fieldProperties.allowMultipleSelection &&
