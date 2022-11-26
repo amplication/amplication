@@ -42,8 +42,6 @@ export async function createPrismaSchemaInternal({
   dataSource,
   clientGenerator,
 }: CreatePrismaSchemaParams): Promise<Module[]> {
-  console.log(dataSource, "dataSource");
-  
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.baseDirectory}/prisma/schema.prisma`;
   const fieldNamesCount = countBy(
@@ -61,8 +59,8 @@ export async function createPrismaSchemaInternal({
 
   const prismaDataSource = {
     name: dataSource.name,
-    provider: DataSourceProvider.PostgreSQL,
-    url: new DataSourceURLEnv("DB_URL"),
+    provider: dataSource.provider,
+    url: dataSource.url,
   };
 
   const prismaClientGenerator = PrismaSchemaDSL.createGenerator(
