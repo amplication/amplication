@@ -17,7 +17,6 @@ import { countBy } from "lodash";
 import { getEnumFields } from "../../util/entity";
 import pluginWrapper from "../../plugin-wrapper";
 import DsgContext from "../../dsg-context";
-import { DataSourceProvider, DataSourceURLEnv } from "prisma-schema-dsl-types";
 
 export const CUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
   PrismaSchemaDSLTypes.CUID
