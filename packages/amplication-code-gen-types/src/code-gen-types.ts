@@ -1,7 +1,6 @@
 import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
-import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { DSGResourceData } from "./dsg-resource-data";
 
 export {
@@ -213,20 +212,6 @@ export type ServiceTopics = Omit<
   "patterns"
 > & {
   patterns: Array<models.MessagePattern & { topicName?: string }>;
-};
-
-export declare type PrismaClientGenerator = {
-  name: string;
-  provider: string;
-};
-
-export type DataSourceProvider =
-  keyof typeof PrismaSchemaDSL.DataSourceProvider;
-
-export type PrismaDataSource = {
-  name: string;
-  provider: DataSourceProvider;
-  urlEnv: string;
 };
 
 export type BuildContext = {
