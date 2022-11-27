@@ -3,6 +3,7 @@ import { useCallback, useContext } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useTracking } from "../util/analytics";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   updateProjectConfigurationSettings: models.ProjectConfigurationSettings;
@@ -47,7 +48,7 @@ const useProjectConfigSettingsHook = () => {
     (data: models.ProjectConfigurationSettings) => {
       const { baseDirectory } = data;
       trackEvent({
-        eventName: "updateProjectConfigurationsSettings",
+        eventName: AnalyticsEventNames.ProjectConfigurationsSettingsUpdate,
       });
       updateResourceSettings({
         variables: {
