@@ -5,6 +5,10 @@ import { EnumEntityAction } from "../../enums/EnumEntityAction";
 import { EnumEntityPermissionType } from "../../enums/EnumEntityPermissionType";
 import { Prisma } from "@amplication/prisma-db";
 
+/**
+ * This const is represent the newest version of the entity
+ * The entity version number is going up by seniority (0 -> newest 1 -> older etc...)
+ */
 export const CURRENT_VERSION_NUMBER = 0;
 
 type EntityFieldData = Omit<

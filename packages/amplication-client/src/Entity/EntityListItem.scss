@@ -26,4 +26,7 @@
     @include body2;
     color: var(--black80);
   }
+  &__alert-bold {
+    @include bold;
+  }
 }
