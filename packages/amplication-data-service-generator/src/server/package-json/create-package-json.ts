@@ -10,13 +10,12 @@ import pluginWrapper from "../../plugin-wrapper";
 import { updatePackageJSONs } from "../../update-package-jsons";
 import { paramCase } from "param-case";
 import { promises as fs } from "fs";
-import path from "path";
 
 const PACKAGE_JSON_ENCODING = "utf-8";
 const PACKAGE_JSON_TEMPLATE = "package.template.json";
 const PACKAGE_JSON_FILE_NAME = "package.json";
 
-const filePath = path.resolve(__dirname, PACKAGE_JSON_TEMPLATE);
+const filePath = resolve(__dirname, PACKAGE_JSON_TEMPLATE);
 
 export async function createServerPackageJson(): Promise<Module[]> {
   const fileContent = await fs.readFile(filePath, "utf-8");
