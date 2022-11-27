@@ -2937,9 +2937,12 @@ services:
     healthcheck:
       test:
         - CMD
-        - sh
-        - -c
-        - pg_isready -q -d \${DB_DB_NAME} -U \${DB_USER}
+        - pg_isready
+        - -q
+        - -d
+        - \${DB_DB_NAME}
+        - -U
+        - \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
@@ -3015,7 +3018,7 @@ networks:
     \\"@nestjs/platform-express\\": \\"8.2.3\\",
     \\"@nestjs/serve-static\\": \\"2.2.2\\",
     \\"@nestjs/swagger\\": \\"5.1.5\\",
-    \\"@prisma/client\\": \\"3.15.2\\",
+    \\"@prisma/client\\": \\"4.6.1\\",
     \\"apollo-server-express\\": \\"3.6.1\\",
     \\"bcrypt\\": \\"5.0.1\\",
     \\"class-transformer\\": \\"0.5.1\\",
@@ -3024,7 +3027,7 @@ networks:
     \\"graphql-type-json\\": \\"0.3.2\\",
     \\"nest-access-control\\": \\"2.0.3\\",
     \\"nest-morgan\\": \\"1.0.1\\",
-    \\"nestjs-prisma\\": \\"0.16.0\\",
+    \\"nestjs-prisma\\": \\"0.19.0\\",
     \\"npm-run-all\\": \\"4.1.5\\",
     \\"passport\\": \\"0.6.0\\",
     \\"passport-http\\": \\"0.3.0\\",
@@ -3048,7 +3051,7 @@ networks:
     \\"@types/supertest\\": \\"2.0.11\\",
     \\"jest\\": \\"27.0.6\\",
     \\"jest-mock-extended\\": \\"^2.0.4\\",
-    \\"prisma\\": \\"3.15.2\\",
+    \\"prisma\\": \\"4.6.1\\",
     \\"supertest\\": \\"4.0.2\\",
     \\"ts-jest\\": \\"27.0.3\\",
     \\"type-fest\\": \\"0.11.0\\",
@@ -3183,7 +3186,8 @@ enum EnumCustomerCustomerType {
   gold
   bronze
   regular
-}",
+}
+",
   "server/scripts/clean.ts": "/**
  * Clean all the tables and types created by Prisma in the database
  */
