@@ -12736,7 +12736,7 @@ export class ServeStaticOptionsService
   }
 }
 ",
-  "test/src/swagger.ts": "import { DocumentBuilder } from \\"@nestjs/swagger\\";
+  "test/src/swagger.ts": "import { DocumentBuilder, SwaggerCustomOptions } from \\"@nestjs/swagger\\";
 
 export const swaggerPath = \\"api\\";
 
@@ -12749,7 +12749,7 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .addBasicAuth()
   .build();
 
-export const swaggerSetupOptions = {
+export const swaggerSetupOptions: SwaggerCustomOptions = {
   swaggerOptions: {
     persistAuthorization: true,
   },
