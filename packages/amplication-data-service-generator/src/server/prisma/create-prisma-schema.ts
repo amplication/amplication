@@ -26,9 +26,8 @@ export const UUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
   PrismaSchemaDSLTypes.UUID
 );
 
-export const INCREMENTAL_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
-  PrismaSchemaDSLTypes.AUTO_INCREMENT
-);
+export const INCREMENTAL_CALL_EXPRESSION =
+  new PrismaSchemaDSLTypes.CallExpression(PrismaSchemaDSLTypes.AUTO_INCREMENT);
 
 export const NOW_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
   PrismaSchemaDSLTypes.NOW
