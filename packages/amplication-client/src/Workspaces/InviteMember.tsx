@@ -3,7 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { Form, Formik } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
@@ -12,6 +12,7 @@ import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { GET_WORKSPACE_MEMBERS } from "./MemberList";
 import "./InviteMember.scss";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Values = {
   email: string;
@@ -47,7 +48,7 @@ const InviteMember = () => {
   const [inviteUser, { loading, error }] = useMutation<TData>(INVITE_USER, {
     onCompleted: (data) => {
       trackEvent({
-        eventName: "inviteUser",
+        eventName: AnalyticsEventNames.WorkspaceMemberInvite,
         email: data.inviteUser.email,
       });
     },

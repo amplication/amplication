@@ -36,7 +36,7 @@ const GLOB_SOURCES: string[] = [
 ];
 
 if (require.main === module) {
-  void copyFiles().catch((error) => {
+  void copyFiles().catch((error: any) => {
     console.error(error);
     process.exit(1);
   });
