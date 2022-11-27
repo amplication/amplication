@@ -8,8 +8,6 @@ import DsgContext from "../../dsg-context";
 import { createDefaultGuard } from "./guards/createDefaultGuard";
 import { createTokenServiceTests } from "./token/createTokenSerivceTests";
 import { createTokenService } from "./token/createTokenService";
-import { createUserInfo } from "./user-info/create-user-info";
-import { createTokenPayload } from "./token/create-token-payload-interface";
 
 export function createAuthModules(): Module[] {
   return pluginWrapper(
@@ -35,7 +33,5 @@ async function createAuthModulesInternal(
     defaultGuardFile,
     createTokenService(authDir, authProvider),
     createTokenServiceTests(authTestsDir, authProvider),
-    createUserInfo(),
-    createTokenPayload(),
   ]);
 }

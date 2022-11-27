@@ -1,32 +1,16 @@
 import { Module } from "../../..";
 import DsgContext from "../../../dsg-context";
-import { EnumDataType } from "../../../models";
 import { types } from "@amplication/code-gen-types";
 import { readFile } from "../../../util/module";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { USER_ENTITY_NAME } from "../../user-entity";
+import { getUserIdType } from "../../../util/get-user-id-type";
 
 export async function createTokenPayload(): Promise<Module> {
-  const { entities, serverDirectories } = DsgContext.getInstance;
+  const { serverDirectories } = DsgContext.getInstance;
   const authDir = `${serverDirectories.srcDirectory}/auth`;
-  const userEntity = entities.find(
-    (entity) => entity.name === USER_ENTITY_NAME
-  );
-
-  if (!userEntity) {
-    throw new Error("User entity not found");
-  }
-
-  const idField = userEntity.fields.find(
-    (field) => field.dataType === EnumDataType.Id
-  );
-  if (!idField) {
-    throw new Error("User entity must have an id field");
-  }
-
-  const { idType } = idField.properties as types.Id;
+  const idType = getUserIdType();
 
   /* eslint-disable @typescript-eslint/naming-convention */
   const idTypeTSOptions: {
