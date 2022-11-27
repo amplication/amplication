@@ -3098,7 +3098,7 @@ model User {
 }
 
 model Profile {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
@@ -3435,9 +3435,7 @@ export class LoginArgs {
 }
 ",
   "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from \\"../user/user\\";
+import { User } from \\"../user/base/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
