@@ -1,17 +1,45 @@
 import { Module } from "../../..";
 import DsgContext from "../../../dsg-context";
-import { types } from "@amplication/code-gen-types";
+import {
+  CreateUserInfoParams,
+  EventNames,
+  types,
+} from "@amplication/code-gen-types";
 import { readFile } from "../../../util/module";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
 import { getUserIdType } from "../../../util/get-user-id-type";
+import pluginWrapper from "../../../plugin-wrapper";
 
-export async function createUserInfo(): Promise<Module> {
+const templatePath = require.resolve("./user-info.template.ts");
+
+export async function createUserInfo(): Promise<Module[]> {
+  const template = await readFile(templatePath);
+  const idType = getUserIdType();
+  const templateMapping = prepareTemplateMapping(idType);
+  return pluginWrapper(createUserInfoInternal, EventNames.CreateUserInfo, {
+    template,
+    templateMapping,
+  });
+}
+
+async function createUserInfoInternal({
+  template,
+  templateMapping,
+}: CreateUserInfoParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const authDir = `${serverDirectories.srcDirectory}/auth`;
-  const idType = getUserIdType();
 
+  interpolate(template, templateMapping);
+  removeTSClassDeclares(template);
+
+  const filePath = `${authDir}/UserInfo.ts`;
+
+  return [{ code: print(template).code, path: filePath }];
+}
+
+function prepareTemplateMapping(idType: types.Id["idType"]) {
   const number = {
     class: "Number",
     type: "number",
@@ -21,8 +49,6 @@ export async function createUserInfo(): Promise<Module> {
     class: "String",
     type: "string",
   };
-
-  /* eslint-disable @typescript-eslint/naming-convention */
   const idTypClassOptions: {
     [key in types.Id["idType"]]: namedTypes.Identifier;
   } = {
@@ -39,17 +65,8 @@ export async function createUserInfo(): Promise<Module> {
     UUID: builders.identifier(string.type),
     CUID: builders.identifier(string.type),
   };
-
-  const templatePath = require.resolve("./user-info.template.ts");
-  const file = await readFile(templatePath);
-
-  interpolate(file, {
+  return {
     USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],
     USER_ID_CLASS: idTypClassOptions[idType],
-  });
-  removeTSClassDeclares(file);
-
-  const filePath = `${authDir}/UserInfo.ts`;
-
-  return { code: print(file).code, path: filePath };
+  };
 }

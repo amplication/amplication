@@ -115,7 +115,7 @@ async function createServerInternal(
     ...swagger,
     ...appModule,
     ...seedModule,
-    userInfo,
+    ...userInfo,
     tokenPayloadInterface,
     ...authModules,
     ...messageBrokerModules,
