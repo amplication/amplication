@@ -19,6 +19,7 @@
           "install",
           "prebuild",
           "build",
+          "postbuild",
           "prepare",
           "check-format",
           "format",
@@ -36,10 +37,16 @@
   },
   "targetDefaults": {
     "test": {
-      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
+      "dependsOn": [
+        "db:prisma:generate",
+        "^db:prisma:generate",
+        "^prebuild"
+      ]
     },
     "prebuild": {
-      "dependsOn": ["^prebuild"]
+      "dependsOn": [
+        "^prebuild"
+      ]
     },
     "build": {
       "dependsOn": [
@@ -50,16 +57,30 @@
       ]
     },
     "postbuild": {
-      "dependsOn": ["build", "^postbuild"]
+      "dependsOn": [
+        "build",
+        "^postbuild"
+      ]
     },
     "serve": {
-      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
+      "dependsOn": [
+        "db:prisma:generate",
+        "^db:prisma:generate",
+        "^prebuild"
+      ]
     },
     "lint": {
-      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json"
+      ]
     },
     "docker:build": {
-      "dependsOn": ["prebuild", "build", "postbuild"]
+      "dependsOn": [
+        "prebuild",
+        "build",
+        "postbuild"
+      ]
     }
   },
   "generators": {
