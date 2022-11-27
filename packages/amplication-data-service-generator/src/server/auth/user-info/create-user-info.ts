@@ -15,31 +15,32 @@ import pluginWrapper from "../../../plugin-wrapper";
 const templatePath = require.resolve("./user-info.template.ts");
 
 export async function createUserInfo(): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const authDir = `${serverDirectories.srcDirectory}/auth`;
   const template = await readFile(templatePath);
-  const idType = getUserIdType();
-  const templateMapping = prepareTemplateMapping(idType);
+  const templateMapping = prepareTemplateMapping();
+  const filePath = `${authDir}/UserInfo.ts`;
   return pluginWrapper(createUserInfoInternal, EventNames.CreateUserInfo, {
     template,
     templateMapping,
+    filePath,
   });
 }
 
 async function createUserInfoInternal({
   template,
   templateMapping,
+  filePath,
 }: CreateUserInfoParams): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
-  const authDir = `${serverDirectories.srcDirectory}/auth`;
-
   interpolate(template, templateMapping);
   removeTSClassDeclares(template);
-
-  const filePath = `${authDir}/UserInfo.ts`;
 
   return [{ code: print(template).code, path: filePath }];
 }
 
-function prepareTemplateMapping(idType: types.Id["idType"]) {
+function prepareTemplateMapping() {
+  const idType = getUserIdType();
+
   const number = {
     class: "Number",
     type: "number",
@@ -49,6 +50,7 @@ function prepareTemplateMapping(idType: types.Id["idType"]) {
     class: "String",
     type: "string",
   };
+
   const idTypClassOptions: {
     [key in types.Id["idType"]]: namedTypes.Identifier;
   } = {
@@ -65,6 +67,7 @@ function prepareTemplateMapping(idType: types.Id["idType"]) {
     UUID: builders.identifier(string.type),
     CUID: builders.identifier(string.type),
   };
+
   return {
     USER_ID_TYPE_ANNOTATION: idTypeTSOptions[idType],
     USER_ID_CLASS: idTypClassOptions[idType],

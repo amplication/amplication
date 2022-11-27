@@ -25,7 +25,7 @@ import { createDockerComposeFile } from "./docker-compose/create-docker-compose"
 import pluginWrapper from "../plugin-wrapper";
 import { createLog } from "../create-log";
 import { createUserInfo } from "./auth/user-info/create-user-info";
-import { createTokenPayload } from "./auth/token/create-token-payload-interface";
+import { createTokenPayloadInterface } from "./auth/token/create-token-payload-interface";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -82,7 +82,7 @@ async function createServerInternal(
     message: "Creating Token Payload Interface...",
   });
   logger.info("Token Payload Interface...");
-  const tokenPayloadInterface = await createTokenPayload();
+  const tokenPayloadInterface = await createTokenPayloadInterface();
 
   await createLog({ level: "info", message: "Creating Auth module..." });
   logger.info("Creating Auth module...");
@@ -116,7 +116,7 @@ async function createServerInternal(
     ...appModule,
     ...seedModule,
     ...userInfo,
-    tokenPayloadInterface,
+    ...tokenPayloadInterface,
     ...authModules,
     ...messageBrokerModules,
   ];
