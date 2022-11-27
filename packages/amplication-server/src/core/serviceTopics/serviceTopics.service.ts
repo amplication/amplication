@@ -10,13 +10,19 @@ import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { BlockService } from "../block/block.service";
+import { DeleteServiceTopicsArgs } from "./dto/DeleteServiceTopicsArgs";
+import {
+  EnumMessagePatternConnectionOptions,
+  MessagePatternCreateInput,
+} from "@amplication/code-gen-types/models";
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
   ServiceTopics,
   FindManyServiceTopicsArgs,
   CreateServiceTopicsArgs,
-  UpdateServiceTopicsArgs
+  UpdateServiceTopicsArgs,
+  DeleteServiceTopicsArgs
 > {
   blockType = EnumBlockType.ServiceTopics;
 
@@ -67,6 +73,23 @@ export class ServiceTopicsService extends BlockTypeService<
       args.data.messageBrokerId
     );
 
+    const serviceTopicList = await this.blockService.findManyByBlockType(
+      { where: { resource: { id: args.data.messageBrokerId } } },
+      EnumBlockType.Topic
+    );
+
+    const patterns: MessagePatternCreateInput[] = [];
+
+    serviceTopicList.forEach((topic) => {
+      const pattern = {
+        type: EnumMessagePatternConnectionOptions.None,
+        topicId: topic.id,
+      };
+      patterns.push(pattern);
+    });
+
+    args.data.patterns = patterns;
+
     return super.create(args, user);
   }
 
@@ -84,5 +107,41 @@ export class ServiceTopicsService extends BlockTypeService<
     );
 
     return super.update(args, user);
+  }
+
+  async removeTopicFromAllServices(topicId: string, user: User): Promise<void> {
+    const serviceTopicList =
+      await this.blockService.findManyByBlockType<ServiceTopics>(
+        {},
+        EnumBlockType.ServiceTopics
+      );
+    serviceTopicList.forEach(async (serviceTopics) => {
+      const topicToRemove = serviceTopics.patterns.findIndex(
+        (topic) => topic.topicId === topicId
+      );
+      if (topicToRemove === -1) return;
+
+      serviceTopics.patterns.splice(topicToRemove, 1);
+
+      const updatePatterns: MessagePatternCreateInput[] = [];
+      serviceTopics.patterns.forEach((pattern) => {
+        updatePatterns.push({ type: pattern.type, topicId: pattern.topicId });
+      });
+
+      await this.update(
+        {
+          data: {
+            patterns: updatePatterns,
+            messageBrokerId: serviceTopics.messageBrokerId,
+            enabled: true,
+          },
+          where: {
+            id: serviceTopics.id,
+          },
+        },
+        user
+      );
+    });
+    return;
   }
 }

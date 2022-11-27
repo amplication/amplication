@@ -14,7 +14,6 @@ import { ResourceRole, User } from "../../models";
 import { Build } from "./dto/Build";
 import { CreateBuildArgs } from "./dto/CreateBuildArgs";
 import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
-import { getBuildZipFilePath, getBuildTarGzFilePath } from "./storage";
 import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
 import { EntityService } from "../entity/entity.service";
@@ -29,20 +28,17 @@ import { UserService } from "../user/user.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ActionService } from "../action/action.service";
 import { CommitService } from "../commit/commit.service";
-
-import { createZipFileFromModules } from "./zip";
 import { LocalDiskService } from "../storage/local.disk.service";
-import { createTarGzFileFromModules } from "./tar";
 import { QueueService } from "../queue/queue.service";
 import { previousBuild } from "./utils";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
-
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { SendPullRequestResponse } from "./dto/sendPullRequestResponse";
+import { CreatePRSuccess } from "./dto/CreatePRSuccess";
+import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
 
 export const HOST_VAR = "HOST";
@@ -364,44 +360,12 @@ export class BuildService {
     ];
   }
 
-  /**
-   * Saves given modules for given build as a Zip archive and tarball.
-   * @param build the build to save the modules for
-   * @param modules the modules to save
-   * @returns created tarball URL
-   */
-  private async save(
-    build: Build,
-    modules: CodeGenTypes.Module[]
-  ): Promise<string> {
-    const zipFilePath = getBuildZipFilePath(build.id);
-    const tarFilePath = getBuildTarGzFilePath(build.id);
-    const disk = this.storageService.getDisk();
-    await Promise.all([
-      createZipFileFromModules(modules).then((zip) =>
-        disk.put(zipFilePath, zip)
-      ),
-      createTarGzFileFromModules(modules).then((tar) =>
-        disk.put(tarFilePath, tar)
-      ),
-    ]);
-    return this.getFileURL(disk, tarFilePath);
-  }
-
-  public async onCreatePRSuccess({
-    response,
-  }: {
-    response: SendPullRequestResponse;
-  }): Promise<void> {
+  public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
 
     try {
-      if (response.errorMessage) {
-        throw Error(response.errorMessage);
-      }
-
       await this.resourceService.reportSyncMessage(
         build.resourceId,
         "Sync Completed Successfully"
@@ -421,6 +385,21 @@ export class BuildService {
         `Error: ${error}`
       );
     }
+  }
+
+  public async onCreatePRFailure(response: CreatePRFailure): Promise<void> {
+    const build = await this.findOne({ where: { id: response.buildId } });
+    const steps = await this.actionService.getSteps(build.actionId);
+    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
+
+    await this.resourceService.reportSyncMessage(
+      build.resourceId,
+      `Error: ${response.errorMessage}`
+    );
+
+    await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+    await this.actionService.logInfo(step, response.errorMessage);
+    await this.actionService.complete(step, EnumActionStepStatus.Failed);
   }
 
   async saveToGitHub(buildId: string): Promise<void> {

@@ -18,6 +18,7 @@ export enum EnumImages {
   PluginInstallationEmpty = "--plugin-installation-empty",
   CommitEmptyState = "--image-commit-empty-state",
   CodeViewEmptyState = "--image-code-view-empty-state",
+  MessageBrokerEmptyState = "--image-message-broker-empty-state",
 }
 
 export type Props = {
