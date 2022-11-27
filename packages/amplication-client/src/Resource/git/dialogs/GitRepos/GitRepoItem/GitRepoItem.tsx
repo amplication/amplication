@@ -3,6 +3,7 @@ import { RemoteGitRepository } from "../../../../../models";
 import { Icon } from "@amplication/design-system";
 import "./GitRepoItem.scss";
 import { Button } from "../../../../../Components/Button";
+import { AnalyticsEventNames } from "../../../../../util/analytics-events.types";
 
 const CLASS_NAME = "git-repo-item";
 
@@ -40,7 +41,7 @@ function GitRepoItem({ repo, onSelectRepo }: Props) {
       <div className={`${CLASS_NAME}__action`}>
         <Button
           eventData={{
-            eventName: "selectGithubRepo",
+            eventName: AnalyticsEventNames.GithubRepoSync,
           }}
           onClick={() => {
             handleRepoSelected(repo);

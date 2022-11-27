@@ -50,7 +50,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm install
 
       - name: Nx Version Print
         run: npx nx --version

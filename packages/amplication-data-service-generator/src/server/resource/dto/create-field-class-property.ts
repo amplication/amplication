@@ -5,7 +5,7 @@ import {
   ObjectField,
   ScalarField,
   ScalarType,
-} from "prisma-schema-dsl";
+} from "prisma-schema-dsl-types";
 import { Entity, EntityField } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../util/ast";
 import {
