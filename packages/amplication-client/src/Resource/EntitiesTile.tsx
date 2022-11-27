@@ -10,16 +10,13 @@ import {
 } from "@amplication/design-system";
 
 import { GET_ENTITIES } from "../Entity/EntityList";
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useTracking } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   resourceId: string;
-};
-
-const EVENT_DATA: TrackEvent = {
-  eventName: "entitiesTileClick",
 };
 
 function EntitiesTile({ resourceId }: Props) {
@@ -36,15 +33,12 @@ function EntitiesTile({ resourceId }: Props) {
 
   const { trackEvent } = useTracking();
 
-  const handleClick = useCallback(
-    (event) => {
-      trackEvent(EVENT_DATA);
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities`
-      );
-    },
-    [history, trackEvent, resourceId, currentWorkspace, currentProject]
-  );
+  const handleClick = useCallback(() => {
+    trackEvent({ eventName: AnalyticsEventNames.EntitiesTileClick });
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities`
+    );
+  }, [history, trackEvent, resourceId, currentWorkspace, currentProject]);
 
   return (
     <OverviewSecondaryTile

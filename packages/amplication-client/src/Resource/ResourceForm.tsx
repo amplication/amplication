@@ -5,6 +5,7 @@ import React, { useCallback } from "react";
 import { match } from "react-router-dom";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
 import {
@@ -74,7 +75,7 @@ function ResourceForm({ match }: Props) {
     (data) => {
       const { name, description } = data;
       trackEvent({
-        eventName: "updateResourceInfo",
+        eventName: AnalyticsEventNames.ResourceInfoUpdate,
       });
       updateResource({
         variables: {

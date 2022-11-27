@@ -11,7 +11,9 @@ import {
 } from "../../models";
 import { topicsOfBroker } from "./queries/topicsQueries";
 import ServiceTopicPanel from "./ServiceTopicPanel";
+import { useTracking } from "../../util/analytics";
 import "./TopicsList.scss";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 type Props = {
   messageBrokerId: string;
@@ -26,6 +28,7 @@ export default function TopicsList({
   enabled,
   messagePatterns,
 }: Props) {
+  const { trackEvent } = useTracking();
   const { data } = useQuery<TData>(topicsOfBroker, {
     variables: { messageBrokerId },
     skip: !messageBrokerId,
@@ -56,6 +59,10 @@ export default function TopicsList({
                   }
                 }
                 onMessagePatternTypeChange={(pattern) => {
+                  trackEvent({
+                    eventName: AnalyticsEventNames.MessagePatternTypeClick,
+                    pattern,
+                  });
                   replace(i, { type: pattern, topicId: topic.id });
                 }}
               />
