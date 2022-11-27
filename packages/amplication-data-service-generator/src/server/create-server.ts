@@ -1,5 +1,4 @@
 import * as path from "path";
-import { paramCase } from "param-case";
 import {
   Module,
   EventNames,
@@ -38,7 +37,6 @@ async function createServerInternal(
 ): Promise<Module[]> {
   const {
     serverDirectories,
-    appInfo,
     roles,
     entities,
     DTOs: dtos,
@@ -59,14 +57,7 @@ async function createServerInternal(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
   );
-  const packageJsonModule = await createServerPackageJson({
-    updateProperties: [
-      {
-        name: `@${paramCase(appInfo.name)}/server`,
-        version: appInfo.version,
-      },
-    ],
-  });
+  const packageJsonModule = await createServerPackageJson();
 
   await createLog({ level: "info", message: "Creating resources..." });
   logger.info("Creating resources...");
