@@ -8,6 +8,7 @@ import {
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
+import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import React, { useCallback } from "react";
 import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
@@ -46,7 +47,7 @@ export default function GitCreateRepo({
         onCompleted();
 
         trackEvent({
-          eventName: "createGitRepo",
+          eventName: AnalyticsEventNames.GitHubRepositoryCreate,
         });
       },
     }

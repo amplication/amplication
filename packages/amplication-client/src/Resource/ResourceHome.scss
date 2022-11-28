@@ -2,7 +2,7 @@
 
 @import "../style/index.scss";
 
-$info-panel-height: 140px;
+$info-panel-height: 180px;
 $application-badge-size-large: 100px;
 $app-icon-large-font-size: 70px;
 $circle-badge-border: 2px;
@@ -11,7 +11,7 @@ $circle-badge-border: 2px;
   &__header {
     @include flexFullRowWithSpacing;
     @include pageTitle;
-    color: var(--static-white);
+    color: var(--black5);
     border-radius: var(--default-border-radius);
     position: relative;
     z-index: 0;

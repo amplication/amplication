@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-comment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: ${{ github.event.issue.pull_request }}
     outputs:
       trigger-comment: ${{ steps.check.outputs.triggered }}
@@ -18,7 +18,7 @@ jobs:
           prefix_only: 'true'
 
   create_branch:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [check-comment]
     if: ${{ needs.check-comment.outputs.trigger-comment == 'true' }}
     steps:

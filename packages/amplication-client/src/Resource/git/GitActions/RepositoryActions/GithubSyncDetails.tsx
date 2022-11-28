@@ -1,7 +1,8 @@
 import { Snackbar } from "@amplication/design-system";
 import { useMutation } from "@apollo/client";
 import classNames from "classnames";
-import React, { useCallback, useContext } from "react";
+import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
+import { useCallback, useContext } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import { AppContext } from "../../../../context/appContext";
 import { Resource } from "../../../../models";
@@ -61,7 +62,7 @@ function GithubSyncDetails({
             <Button
               buttonStyle={EnumButtonStyle.Primary}
               eventData={{
-                eventName: "changeGithubRepo",
+                eventName: AnalyticsEventNames.GithubRepositoryChange,
               }}
               onClick={handleDisconnectGitRepository}
             >

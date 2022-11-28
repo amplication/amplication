@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const AuthResourceWithGitCallback = () => {
   const { trackEvent } = useTracking();
@@ -19,7 +20,7 @@ const AuthResourceWithGitCallback = () => {
     const installationId = urlParams.get("installation_id");
     if (window.opener) {
       trackEvent({
-        eventName: "completeAuthResourceWithGitHub",
+        eventName: AnalyticsEventNames.GitHubAuthResourceComplete,
       });
       completeAuthWithGit({
         variables: {

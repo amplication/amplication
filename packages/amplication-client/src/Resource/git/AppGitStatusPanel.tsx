@@ -13,6 +13,7 @@ import "./AppGitStatusPanel.scss";
 import { format } from "date-fns";
 import { AppContext } from "../../context/appContext";
 import GitRepoDetails from "./GitRepoDetails";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 type Props = {
   resource: models.Resource | null;
@@ -69,7 +70,7 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
                 buttonStyle={EnumButtonStyle.Text}
                 icon="external_link"
                 eventData={{
-                  eventName: "openGithubCodeView",
+                  eventName: AnalyticsEventNames.GithubCodeViewClick,
                 }}
               />
             </a>

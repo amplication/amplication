@@ -1,8 +1,10 @@
 import { SelectMenuItem } from "@amplication/design-system";
+import { EnumResourceType } from "@amplication/prisma-db";
 import React, { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CreateResourceButtonItemType } from "./CreateResourceButton";
 import ResourceCircleBadge from "./ResourceCircleBadge";
 
@@ -16,9 +18,15 @@ const CreateResourceButtonItem = ({ item }: props) => {
 
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
+  const RESOURCE_TYPE_TO_EVENT_NAME = {
+    Service: AnalyticsEventNames.CreateService,
+    MessageBroker: AnalyticsEventNames.CreateMessageBroker,
+    ProjectConfiguration: AnalyticsEventNames.CreateProjectConfiguration,
+  };
+
   const handleClick = useCallback(() => {
     trackEvent({
-      eventName: `createResourceClick-${item.type}`,
+      eventName: RESOURCE_TYPE_TO_EVENT_NAME[item.type],
     });
   }, [trackEvent, item]);
 
