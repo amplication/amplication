@@ -6,7 +6,6 @@ import { MorganModule } from "nest-morgan";
 import { Request } from "express";
 import { CoreModule } from "./core/core.module";
 import { InjectContextInterceptor } from "./interceptors/inject-context.interceptor";
-import { RootStorageModule } from "./core/storage/root-storage.module";
 import { SegmentAnalyticsModule } from "./services/segmentAnalytics/segmentAnalytics.module";
 import { SegmentAnalyticsOptionsService } from "./services/segmentAnalytics/segmentAnalyticsOptionsService";
 import { SendGridModule } from "@ntegral/nestjs-sendgrid";
@@ -49,8 +48,6 @@ import { SERVICE_NAME } from "./constants";
       },
       inject: [ConfigService],
     }),
-
-    RootStorageModule,
 
     MorganModule,
     SegmentAnalyticsModule.registerAsync({
