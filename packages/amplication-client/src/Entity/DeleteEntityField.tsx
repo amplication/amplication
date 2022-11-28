@@ -34,7 +34,7 @@ export const DeleteEntityField = ({
   const { relatedFieldId, relatedEntityId } = properties;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const { addEntity } = useContext(AppContext);
-  const { data } = useQuery(GET_ENTITY_WITH_SPECIFIC_FIELDS, {
+  const { data: relatedFieldData } = useQuery(GET_ENTITY_WITH_SPECIFIC_FIELD, {
     variables: {
       entityId: relatedEntityId,
       fieldId: relatedFieldId,
@@ -107,7 +107,7 @@ export const DeleteEntityField = ({
             Are you sure you want to delete this entity field?
             <br />
             {dataType === models.EnumDataType.Lookup &&
-              `This will also delete the related field (${data?.entity?.fields[0]?.displayName}) of entity '${data?.entity?.displayName}'`}
+              `This will also delete the related field (${relatedFieldData?.entity?.fields[0]?.displayName}) of entity '${relatedFieldData?.entity?.displayName}'`}
           </span>
         }
         onConfirm={handleConfirmDelete}
@@ -139,7 +139,7 @@ const DELETE_ENTITY_FIELD = gql`
   }
 `;
 
-const GET_ENTITY_WITH_SPECIFIC_FIELDS = gql`
+const GET_ENTITY_WITH_SPECIFIC_FIELD = gql`
   query entity($entityId: String!, $fieldId: String!) {
     entity(where: { id: $entityId }) {
       id
