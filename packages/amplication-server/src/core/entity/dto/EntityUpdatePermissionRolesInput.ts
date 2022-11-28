@@ -1,26 +1,26 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { EnumEntityAction } from 'src/enums/EnumEntityAction';
-import { WhereParentIdInput, WhereUniqueInput } from 'src/dto';
+import { Field, InputType } from "@nestjs/graphql";
+import { EnumEntityAction } from "../../../enums/EnumEntityAction";
+import { WhereParentIdInput, WhereUniqueInput } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityUpdatePermissionRolesInput {
   @Field(() => EnumEntityAction, { nullable: false })
   action!: EnumEntityAction;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false
+    nullable: false,
   })
   entity!: WhereParentIdInput;
 
   @Field(() => [WhereUniqueInput], {
-    nullable: true
+    nullable: true,
   })
   deleteRoles?: WhereUniqueInput[];
 
   @Field(() => [WhereUniqueInput], {
-    nullable: true
+    nullable: true,
   })
   addRoles?: WhereUniqueInput[];
 }

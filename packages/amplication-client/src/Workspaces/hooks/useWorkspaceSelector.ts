@@ -17,6 +17,7 @@ import { setToken, unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
 import { CreateWorkspaceType, DType, TData, TSetData } from "./workspace";
 import { useTracking } from "react-tracking";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const useWorkspaceSelector = (authenticated: boolean) => {
   const apolloClient = useApolloClient();
@@ -43,9 +44,8 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     data && refetch && refetch();
   }, [refetch, data]);
 
-  const [setServerCurrentWorkspace, { data: setCurrentData }] = useMutation<
-    TSetData
-  >(SET_CURRENT_WORKSPACE);
+  const [setServerCurrentWorkspace, { data: setCurrentData }] =
+    useMutation<TSetData>(SET_CURRENT_WORKSPACE);
 
   const [
     createNewWorkspace,
@@ -53,7 +53,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   ] = useMutation<DType>(CREATE_WORKSPACE, {
     onCompleted: (data) => {
       trackEvent({
-        eventName: "createWorkspace",
+        eventName: AnalyticsEventNames.WorkspaceCreate,
         workspaceName: data.createWorkspace.name,
       });
       handleSetCurrentWorkspace(data.createWorkspace.id);
@@ -105,7 +105,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
       history.push("/login");
 
     authenticated && !currentWorkspace && getCurrentWorkspace();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated]);
 
   useEffect(() => {
@@ -121,7 +120,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     data &&
       data.currentWorkspace.id === workspace &&
       setCurrentWorkspace(data.currentWorkspace);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated, data, history, loadingCurrentWorkspace, workspace]);
 
   useEffect(() => {

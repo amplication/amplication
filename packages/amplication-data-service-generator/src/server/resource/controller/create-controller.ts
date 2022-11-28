@@ -1,6 +1,6 @@
 import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
-import { ASTNode, builders, namedTypes } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import {
   Entity,
@@ -8,6 +8,9 @@ import {
   Module,
   NamedClassDeclaration,
   DTOs,
+  EventNames,
+  CreateEntityControllerParams,
+  CreateEntityControllerBaseParams,
 } from "@amplication/code-gen-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
@@ -27,16 +30,17 @@ import {
 import { isToManyRelationField } from "../../../util/field";
 import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
-import {
-  createServiceId,
-  createFieldFindManyFunctionId,
-} from "../service/create-service";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
+import {
+  createFieldFindManyFunctionId,
+  createServiceId,
+} from "../service/create-service";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
@@ -58,14 +62,17 @@ export async function createControllerModules(
   entityName: string,
   entityType: string,
   entityServiceModule: string,
-  entity: Entity,
-  srcDirectory: string
+  entity: Entity
 ): Promise<Module[]> {
-  const context = DsgContext.getInstance;
-  const { settings } = context.appInfo;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { appInfo, DTOs } = DsgContext.getInstance;
+  const { settings } = appInfo;
   const { authProvider } = settings;
-  const entityDTOs = context.DTOs[entity.name];
+  const entityDTOs = DTOs[entity.name];
   const entityDTO = entityDTOs.entity;
+
+  const template = await readFile(controllerTemplatePath);
+  const templateBase = await readFile(controllerBaseTemplatePath);
 
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
@@ -76,7 +83,7 @@ export async function createControllerModules(
   const updateEntityId = builders.identifier("update");
   const deleteEntityId = builders.identifier("delete");
 
-  const mapping = {
+  const templateMapping = {
     RESOURCE: builders.stringLiteral(resource),
     CONTROLLER: controllerId,
     CONTROLLER_BASE: controllerBaseId,
@@ -112,152 +119,185 @@ export async function createControllerModules(
 
     SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
   };
+
   return [
-    await createControllerModule(
-      controllerTemplatePath,
-      entityName,
-      entityType,
-      entityServiceModule,
-      entity,
-      context.DTOs,
-      mapping,
-      controllerBaseId,
-      serviceId,
-      false,
-      srcDirectory
-    ),
-    await createControllerModule(
-      controllerBaseTemplatePath,
-      entityName,
-      entityType,
-      entityServiceModule,
-      entity,
-      context.DTOs,
-      mapping,
-      controllerBaseId,
-      serviceId,
-      true,
-      srcDirectory
-    ),
+    ...(await pluginWrapper(
+      createControllerModule,
+      EventNames.CreateEntityController,
+      {
+        template,
+        entityName,
+        entityServiceModule,
+        templateMapping,
+        controllerBaseId,
+        serviceId,
+      }
+    )),
+    ...(await pluginWrapper(
+      createControllerBaseModule,
+      EventNames.CreateEntityControllerBase,
+      {
+        template: templateBase,
+        entityName,
+        entityType,
+        entityServiceModule,
+        entity,
+        templateMapping,
+        controllerBaseId,
+        serviceId,
+      }
+    )),
   ];
 }
 
-async function createControllerModule(
-  templatePath: string,
-  entityName: string,
-  entityType: string,
-  entityServiceModule: string,
-  entity: Entity,
-  dtos: DTOs,
-  mapping: { [key: string]: ASTNode | undefined },
-  controllerBaseId: namedTypes.Identifier,
-  serviceId: namedTypes.Identifier,
-  isBaseClass: boolean,
-  srcDirectory: string
-): Promise<Module> {
-  const modulePath = `${srcDirectory}/${entityName}/${entityName}.controller.ts`;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
-  const file = await readFile(templatePath);
+async function createControllerModule({
+  template,
+  entityName,
+  entityServiceModule,
+  templateMapping,
+  controllerBaseId,
+  serviceId,
+}: CreateEntityControllerParams): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.controller.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
 
-  const entityDTOs = dtos[entity.name];
-
-  interpolate(file, mapping);
+  interpolate(template, templateMapping);
 
   const serviceImport = importNames(
     [serviceId],
-    relativeImportPath(
-      isBaseClass ? moduleBasePath : modulePath,
-      entityServiceModule
-    )
+    relativeImportPath(modulePath, entityServiceModule)
   );
+  addImports(template, [
+    serviceImport,
+    importNames(
+      [controllerBaseId],
+      relativeImportPath(modulePath, moduleBasePath)
+    ),
+  ]);
 
-  if (isBaseClass) {
-    const classDeclaration = getClassDeclarationById(file, controllerBaseId);
-    const toManyRelationFields = entity.fields.filter(isToManyRelationField);
-    const toManyRelationMethods = (
-      await Promise.all(
-        toManyRelationFields.map((field) =>
-          createToManyRelationMethods(
-            field,
-            entity,
-            entityType,
-            entityDTOs.whereUniqueInput,
-            dtos,
-            serviceId
-          )
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
+
+  return [
+    {
+      path: modulePath,
+      code: print(template).code,
+    },
+  ];
+}
+
+async function createControllerBaseModule({
+  template,
+  entityName,
+  entityType,
+  entityServiceModule,
+  entity,
+  templateMapping,
+  controllerBaseId,
+  serviceId,
+}: CreateEntityControllerBaseParams): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs, serverDirectories } = DsgContext.getInstance;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
+
+  const entityDTOs = DTOs[entity.name];
+
+  interpolate(template, templateMapping);
+
+  const classDeclaration = getClassDeclarationById(template, controllerBaseId);
+  const toManyRelationFields = entity.fields.filter(isToManyRelationField);
+  const toManyRelationMethods = (
+    await Promise.all(
+      toManyRelationFields.map((field) =>
+        createToManyRelationMethods(
+          field,
+          entity,
+          entityType,
+          entityDTOs.whereUniqueInput,
+          DTOs,
+          serviceId
         )
       )
-    ).flat();
+    )
+  ).flat();
 
-    const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
-      {
-        methodId: mapping["CREATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-        action: EnumEntityAction.Create,
-        entity: entity,
-      },
-      {
-        methodId: mapping["FIND_MANY_ENTITY_FUNCTION"] as namedTypes.Identifier,
-        action: EnumEntityAction.Search,
-        entity: entity,
-      },
-      {
-        methodId: mapping["FIND_ONE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-        action: EnumEntityAction.View,
-        entity: entity,
-      },
-      {
-        methodId: mapping["UPDATE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-        action: EnumEntityAction.Update,
-        entity: entity,
-      },
-      {
-        methodId: mapping["DELETE_ENTITY_FUNCTION"] as namedTypes.Identifier,
-        action: EnumEntityAction.Delete,
-        entity: entity,
-      },
-    ];
+  const serviceImport = importNames(
+    [serviceId],
+    relativeImportPath(moduleBasePath, entityServiceModule)
+  );
 
-    methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
-      setEndpointPermissions(classDeclaration, methodId, action, entity);
-    });
+  const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+    {
+      methodId: templateMapping[
+        "CREATE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.Create,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping[
+        "FIND_MANY_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.Search,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping[
+        "FIND_ONE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.View,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping[
+        "UPDATE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping[
+        "DELETE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.Delete,
+      entity: entity,
+    },
+  ];
 
-    classDeclaration.body.body.push(...toManyRelationMethods);
+  methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+    setEndpointPermissions(classDeclaration, methodId, action, entity);
+  });
 
-    const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
-    const dtoImports = importContainedIdentifiers(
-      file,
-      getImportableDTOs(moduleBasePath, dtoNameToPath)
-    );
-    const identifiersImports = importContainedIdentifiers(
-      file,
-      IMPORTABLE_IDENTIFIERS_NAMES
-    );
-    addImports(file, [serviceImport, ...identifiersImports, ...dtoImports]);
-  }
+  classDeclaration.body.body.push(...toManyRelationMethods);
 
-  if (!isBaseClass) {
-    addImports(file, [
-      serviceImport,
-      importNames(
-        [controllerBaseId],
-        relativeImportPath(modulePath, moduleBasePath)
-      ),
-    ]);
-  }
+  const dtoNameToPath = getDTONameToPath(DTOs);
+  const dtoImports = importContainedIdentifiers(
+    template,
+    getImportableDTOs(moduleBasePath, dtoNameToPath)
+  );
+  const identifiersImports = importContainedIdentifiers(
+    template,
+    IMPORTABLE_IDENTIFIERS_NAMES
+  );
+  addImports(template, [serviceImport, ...identifiersImports, ...dtoImports]);
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
-  removeTSInterfaceDeclares(file);
-  removeTSClassDeclares(file);
-  if (isBaseClass) {
-    addAutoGenerationComment(file);
-  }
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
+  addAutoGenerationComment(template);
 
-  return {
-    path: isBaseClass ? moduleBasePath : modulePath,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: moduleBasePath,
+      code: print(template).code,
+    },
+  ];
 }
 
 export function createControllerId(entityType: string): namedTypes.Identifier {

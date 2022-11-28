@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React from "react";
 import "./Label.scss";
 export type LabelTypes = "normal" | "error";
@@ -17,4 +16,3 @@ export function Label({ text, ...props }: Props) {
     </span>
   );
 }
-//`${CLASS_NAME}__${props.type || "normal"}`

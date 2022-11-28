@@ -2,18 +2,30 @@
 
 .project-list {
   display: flex;
-  flex-grow: 1;
-  flex-basis: 0px;
-  @include scrollbars(16px, var(--black60), transparent);
-  overflow: auto;
-  
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
   &__items {
+    overflow-y: auto;
+    @include scrollbars(16px, var(--black60), transparent);
     flex: 1;
   }
 
   .amp-button {
+    height: 36px;
+    padding: 8px;
+    margin-top: var(--default-spacing-small);
+    justify-content: flex-start;
+    gap: 8px;
+
+    &:hover {
+      color: var(--black100);
+      background-color: var(--black10);
+    }
+
     .amp-button__icon {
-      margin: 0 var(--default-spacing-small);
+      margin: 0;
     }
   }
 }

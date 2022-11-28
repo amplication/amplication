@@ -1,12 +1,12 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { WhereParentIdInput } from 'src/dto';
+import { Field, InputType } from "@nestjs/graphql";
+import { WhereParentIdInput } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ApiTokenCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 

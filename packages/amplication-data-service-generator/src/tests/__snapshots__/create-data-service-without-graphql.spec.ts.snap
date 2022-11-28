@@ -3,7 +3,88 @@
 exports[`createDataService creates app as expected 1`] = `
 Object {
   "admin-ui/.env": "PORT=3001
-REACT_APP_SERVER_URL =http://localhost:3000",
+REACT_APP_SERVER_URL=http://localhost:3000",
+  "admin-ui/package.json": "{
+  \\"name\\": \\"@sample-application/admin\\",
+  \\"version\\": \\"0.1.3\\",
+  \\"private\\": true,
+  \\"dependencies\\": {
+    \\"@apollo/client\\": \\"3.6.9\\",
+    \\"@material-ui/core\\": \\"4.12.4\\",
+    \\"graphql\\": \\"15.6.1\\",
+    \\"lodash\\": \\"4.17.21\\",
+    \\"pluralize\\": \\"8.0.0\\",
+    \\"ra-data-graphql-amplication\\": \\"0.0.13\\",
+    \\"react\\": \\"16.14.0\\",
+    \\"react-admin\\": \\"3.19.11\\",
+    \\"react-dom\\": \\"16.14.0\\",
+    \\"react-scripts\\": \\"5.0.0\\",
+    \\"sass\\": \\"^1.39.0\\",
+    \\"web-vitals\\": \\"1.1.2\\"
+  },
+  \\"scripts\\": {
+    \\"start\\": \\"react-scripts start\\",
+    \\"build\\": \\"react-scripts build\\",
+    \\"test\\": \\"react-scripts test\\",
+    \\"eject\\": \\"react-scripts eject\\",
+    \\"docker:build\\": \\"docker build .\\"
+  },
+  \\"eslintConfig\\": {
+    \\"extends\\": [
+      \\"react-app\\",
+      \\"react-app/jest\\"
+    ]
+  },
+  \\"browserslist\\": {
+    \\"production\\": [
+      \\">0.2%\\",
+      \\"not dead\\",
+      \\"not op_mini all\\"
+    ],
+    \\"development\\": [
+      \\"last 1 chrome version\\",
+      \\"last 1 firefox version\\",
+      \\"last 1 safari version\\"
+    ]
+  },
+  \\"devDependencies\\": {
+    \\"@testing-library/jest-dom\\": \\"5.14.1\\",
+    \\"@testing-library/react\\": \\"11.2.7\\",
+    \\"@testing-library/user-event\\": \\"13.2.0\\",
+    \\"@types/jest\\": \\"26.0.16\\",
+    \\"@types/lodash\\": \\"4.14.178\\",
+    \\"@types/node\\": \\"12.20.16\\",
+    \\"@types/react\\": \\"16.14.11\\",
+    \\"@types/react-dom\\": \\"17.0.0\\",
+    \\"type-fest\\": \\"0.13.1\\",
+    \\"typescript\\": \\"4.2.4\\"
+  }
+}",
+  "admin-ui/public/manifest.json": "{
+  \\"short_name\\": \\"Sample Application\\",
+  \\"name\\": \\"Sample Application\\",
+  \\"icons\\": [
+    {
+      \\"src\\": \\"favicon.ico\\",
+      \\"sizes\\": \\"64x64 32x32 24x24 16x16\\",
+      \\"type\\": \\"image/x-icon\\"
+    },
+    {
+      \\"src\\": \\"logo192.png\\",
+      \\"type\\": \\"image/png\\",
+      \\"sizes\\": \\"192x192\\"
+    },
+    {
+      \\"src\\": \\"logo512.png\\",
+      \\"type\\": \\"image/png\\",
+      \\"sizes\\": \\"512x512\\"
+    }
+  ],
+  \\"start_url\\": \\".\\",
+  \\"display\\": \\"standalone\\",
+  \\"theme_color\\": \\"#000000\\",
+  \\"background_color\\": \\"#ffffff\\"
+}",
   "admin-ui/src/App.tsx": "import React, { useEffect, useState } from \\"react\\";
 import { Admin, DataProvider, Resource } from \\"react-admin\\";
 import buildGraphQLProvider from \\"./data-provider/graphqlDataProvider\\";
@@ -131,7 +212,7 @@ import \\"./login.scss\\";
 
 const CLASS_NAME = \\"login-page\\";
 
-const Login = ({ theme }: { theme?: object }) => {
+const Login = ({ theme }: any) => {
   const [username, setUsername] = useState(\\"\\");
   const [password, setPassword] = useState(\\"\\");
   const login = useLogin();
@@ -227,7 +308,7 @@ const Login = ({ theme }: { theme?: object }) => {
         </div>
         <div className={\`\${CLASS_NAME}__read-more\`}>
           <span>Read </span>
-          <a href=\\"https://docs.amplication.com/docs/api\\" target=\\"docs\\">
+          <a href=\\"https://docs.amplication.com/api\\" target=\\"docs\\">
             Amplication docs
           </a>
           <span> to learn more</span>
@@ -870,13 +951,13 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { Organization } from \\"../organization/Organization\\";
-import { JsonValue } from \\"type-fest\\";
+  "admin-ui/src/api/user/User.ts": "import { JsonValue } from \\"type-fest\\";
+import { Organization } from \\"../organization/Organization\\";
 import { Profile } from \\"../profile/Profile\\";
 
 export type User = {
   username: string;
-  roles: Array<string>;
+  roles: JsonValue;
   id: string;
   name: string;
   bio: string;
@@ -895,16 +976,16 @@ export type User = {
   profile?: Profile | null;
 };
 ",
-  "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from \\"../../types\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
-import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserCreateInput = {
   username: string;
   password: string;
-  roles: Array<string>;
+  roles: InputJsonValue;
   name: string;
   bio: string;
   email: string;
@@ -974,16 +1055,16 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from \\"../../types\\";
+import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
-import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserUpdateInput = {
   username?: string;
   password?: string;
-  roles?: Array<string>;
+  roles?: InputJsonValue;
   name?: string;
   bio?: string;
   email?: string;
@@ -1578,6 +1659,7 @@ const httpLink = createHttpLink({
   uri: \`\${process.env.REACT_APP_SERVER_URL}/graphql\`,
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
   return {
@@ -1678,6 +1760,7 @@ export const EmptyTitle = (record: TEmpty): string => {
 import ReactDOM from \\"react-dom\\";
 import \\"./index.css\\";
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
 
@@ -2246,15 +2329,17 @@ export const ProfileTitle = (record: TProfile): string => {
 ",
   "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
 
-const reportWebVitals = (onPerfEntry?: ReportHandler) => {
+const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
   if (onPerfEntry && onPerfEntry instanceof Function) {
-    import(\\"web-vitals\\").then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(onPerfEntry);
-      getFID(onPerfEntry);
-      getFCP(onPerfEntry);
-      getLCP(onPerfEntry);
-      getTTFB(onPerfEntry);
-    });
+    void import(\\"web-vitals\\").then(
+      ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+        getCLS(onPerfEntry);
+        getFID(onPerfEntry);
+        getFCP(onPerfEntry);
+        getLCP(onPerfEntry);
+        getTTFB(onPerfEntry);
+      }
+    );
   }
 };
 
@@ -2762,24 +2847,46 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
-  "server/.env": "POSTGRESQL_USER=testUsername
-POSTGRESQL_PASSWORD=1234
-POSTGRESQL_PORT=5433
-POSTGRESQL_URL=postgres://testUsername:1234@localhost:5433/db-name
-BCRYPT_SALT=10
+  "admin-ui/tsconfig.json": "{
+  \\"compilerOptions\\": {
+    \\"target\\": \\"es5\\",
+    \\"lib\\": [\\"dom\\", \\"dom.iterable\\", \\"esnext\\"],
+    \\"allowJs\\": true,
+    \\"skipLibCheck\\": true,
+    \\"esModuleInterop\\": true,
+    \\"allowSyntheticDefaultImports\\": true,
+    \\"forceConsistentCasingInFileNames\\": true,
+    \\"noFallthroughCasesInSwitch\\": true,
+    \\"module\\": \\"esnext\\",
+    \\"moduleResolution\\": \\"node\\",
+    \\"resolveJsonModule\\": true,
+    \\"isolatedModules\\": true,
+    \\"noEmit\\": true,
+    \\"jsx\\": \\"react-jsx\\",
+    \\"strict\\": true
+  },
+  \\"include\\": [\\"src\\"],
+  \\"exclude\\": [\\"./node_modules\\"]
+}
+",
+  "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
-SERVER_PORT = 3000",
+PORT=3000
+DB_USER=testUsername
+DB_PASSWORD=1234
+DB_PORT=5433
+DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
   "server/docker-compose.db.yml": "version: \\"3\\"
 services:
   db:
     image: postgres:12
     ports:
-      - \\"\${POSTGRESQL_PORT}:5432\\"
+      - \${DB_PORT}:5432
     environment:
-      POSTGRES_USER: \${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
 volumes:
@@ -2793,12 +2900,12 @@ services:
       args:
         NPM_LOG_LEVEL: notice
     ports:
-      - \\"\${SERVER_PORT}:3000\\"
+      - \${PORT}:3000
     environment:
-      POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5433\\"
-      BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
-      JWT_SECRET_KEY: \\"\${JWT_SECRET_KEY}\\"
-      JWT_EXPIRATION: \\"\${JWT_EXPIRATION}\\"
+      BCRYPT_SALT: \${BCRYPT_SALT}
+      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
+      JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5433
     depends_on:
       - migrate
   migrate:
@@ -2809,39 +2916,120 @@ services:
     command: npm run db:init
     working_dir: /app/server
     environment:
-      POSTGRESQL_URL: \\"postgres://\${POSTGRESQL_USER}:\${POSTGRESQL_PASSWORD}@db:5432\\"
-      BCRYPT_SALT: \\"\${BCRYPT_SALT}\\"
+      BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432
     depends_on:
       db:
         condition: service_healthy
   db:
     image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
     environment:
-      POSTGRES_USER: \${POSTGRESQL_USER}
-      POSTGRES_PASSWORD: \${POSTGRESQL_PASSWORD}
-      ports: \${POSTGRESQL_PORT}:5432
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
       test:
-        [
-          \\"CMD\\",
-          \\"pg_isready\\",
-          \\"-q\\",
-          \\"-d\\",
-          \\"\${POSTGRESQL_DB_NAME}\\",
-          \\"-U\\",
-          \\"\${POSTGRESQL_USER}\\",
-        ]
+        - CMD
+        - pg_isready
+        - -q
+        - -d
+        - \${DB_DB_NAME}
+        - -U
+        - \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
 volumes:
   postgres: ~
 ",
+  "server/nest-cli.json": "{
+  \\"sourceRoot\\": \\"src\\",
+  \\"compilerOptions\\": {
+    \\"assets\\": [\\"swagger\\"]
+  }
+}
+",
+  "server/package.json": "{
+  \\"name\\": \\"@sample-application/server\\",
+  \\"version\\": \\"0.1.3\\",
+  \\"private\\": true,
+  \\"scripts\\": {
+    \\"start\\": \\"nest start\\",
+    \\"start:watch\\": \\"nest start --watch\\",
+    \\"start:debug\\": \\"nest start --debug --watch\\",
+    \\"build\\": \\"nest build\\",
+    \\"test\\": \\"jest\\",
+    \\"seed\\": \\"ts-node scripts/seed.ts\\",
+    \\"db:migrate-save\\": \\"prisma migrate dev\\",
+    \\"db:migrate-up\\": \\"prisma migrate deploy\\",
+    \\"db:clean\\": \\"ts-node scripts/clean.ts\\",
+    \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
+    \\"prisma:generate\\": \\"prisma generate\\",
+    \\"docker:db\\": \\"docker-compose -f docker-compose.db.yml up -d\\",
+    \\"docker:build\\": \\"docker build .\\",
+    \\"compose:up\\": \\"docker-compose up -d\\",
+    \\"compose:down\\": \\"docker-compose down --volumes\\"
+  },
+  \\"dependencies\\": {
+    \\"@nestjs/common\\": \\"8.2.3\\",
+    \\"@nestjs/config\\": \\"1.1.5\\",
+    \\"@nestjs/core\\": \\"8.2.3\\",
+    \\"@nestjs/graphql\\": \\"9.1.2\\",
+    \\"@nestjs/jwt\\": \\"8.0.0\\",
+    \\"@nestjs/passport\\": \\"8.2.2\\",
+    \\"@nestjs/platform-express\\": \\"8.2.3\\",
+    \\"@nestjs/serve-static\\": \\"2.2.2\\",
+    \\"@nestjs/swagger\\": \\"5.1.5\\",
+    \\"@prisma/client\\": \\"4.6.1\\",
+    \\"apollo-server-express\\": \\"3.6.1\\",
+    \\"bcrypt\\": \\"5.0.1\\",
+    \\"class-transformer\\": \\"0.5.1\\",
+    \\"class-validator\\": \\"0.13.2\\",
+    \\"graphql\\": \\"15.7.2\\",
+    \\"graphql-type-json\\": \\"0.3.2\\",
+    \\"nest-access-control\\": \\"2.0.3\\",
+    \\"nest-morgan\\": \\"1.0.1\\",
+    \\"nestjs-prisma\\": \\"0.19.0\\",
+    \\"npm-run-all\\": \\"4.1.5\\",
+    \\"passport\\": \\"0.6.0\\",
+    \\"passport-http\\": \\"0.3.0\\",
+    \\"passport-jwt\\": \\"4.0.0\\",
+    \\"reflect-metadata\\": \\"0.1.13\\",
+    \\"swagger-ui-express\\": \\"4.3.0\\",
+    \\"ts-node\\": \\"9.1.1\\"
+  },
+  \\"devDependencies\\": {
+    \\"@nestjs/cli\\": \\"8.2.5\\",
+    \\"@nestjs/testing\\": \\"8.2.3\\",
+    \\"@types/bcrypt\\": \\"5.0.0\\",
+    \\"@types/express\\": \\"4.17.9\\",
+    \\"@types/graphql-type-json\\": \\"0.3.2\\",
+    \\"@types/jest\\": \\"26.0.19\\",
+    \\"@types/normalize-path\\": \\"3.0.0\\",
+    \\"@types/passport-http\\": \\"0.3.9\\",
+    \\"@types/passport-jwt\\": \\"3.0.6\\",
+    \\"@types/supertest\\": \\"2.0.11\\",
+    \\"jest\\": \\"27.0.6\\",
+    \\"jest-mock-extended\\": \\"^2.0.4\\",
+    \\"prisma\\": \\"4.6.1\\",
+    \\"supertest\\": \\"4.0.2\\",
+    \\"ts-jest\\": \\"27.0.3\\",
+    \\"type-fest\\": \\"0.11.0\\",
+    \\"typescript\\": \\"4.2.3\\"
+  },
+  \\"jest\\": {
+    \\"preset\\": \\"ts-jest\\",
+    \\"testEnvironment\\": \\"node\\",
+    \\"modulePathIgnorePatterns\\": [\\"<rootDir>/dist/\\"]
+  }
+}
+",
   "server/prisma/schema.prisma": "datasource postgres {
   provider = \\"postgresql\\"
-  url      = env(\\"POSTGRESQL_URL\\")
+  url      = env(\\"DB_URL\\")
 }
 
 generator client {
@@ -2851,7 +3039,7 @@ generator client {
 model User {
   username           String              @unique
   password           String
-  roles              String[]
+  roles              Json
   id                 String              @id @default(cuid())
   name               String
   bio                String
@@ -2873,7 +3061,7 @@ model User {
 }
 
 model Profile {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
@@ -2961,7 +3149,8 @@ enum EnumCustomerCustomerType {
   gold
   bronze
   regular
-}",
+}
+",
   "server/scripts/clean.ts": "/**
  * Clean all the tables and types created by Prisma in the database
  */
@@ -3080,7 +3269,10 @@ async function seed(bcryptSalt: Salt) {
     priority: EnumUserPriority.High,
     isCurious: false,
     location: \\"(32.085300, 34.781769)\\",
-    extendedProperties: false,
+
+    extendedProperties: {
+      foo: \\"bar\\",
+    },
   };
   await client.user.upsert({
     where: { username: data.username },
@@ -3184,8 +3376,14 @@ export interface IAuthStrategy {
   validate: (...any: any) => Promise<UserInfo>;
 }
 ",
-  "server/src/auth/ITokenService.ts": "export interface ITokenService {
-  createToken: (username: string, password: string) => Promise<string>;
+  "server/src/auth/ITokenService.ts": "export interface ITokenPayload {
+  id: string;
+  username: string;
+  password: string;
+}
+
+export interface ITokenService {
+  createToken: ({ id, username, password }: ITokenPayload) => Promise<string>;
 }
 ",
   "server/src/auth/LoginArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
@@ -3198,12 +3396,12 @@ export class LoginArgs {
 }
 ",
   "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from \\"../user/user\\";
+import { User } from \\"../user/base/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
+  @Field(() => String)
+  id!: string;
   @Field(() => String)
   username!: string;
   @Field(() => [String])
@@ -3346,6 +3544,7 @@ import { PasswordService } from \\"./password.service\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { TokenService } from \\"./token.service\\";
+import { VALID_ID } from \\"../tests/auth/constants\\";
 
 const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
@@ -3359,7 +3558,7 @@ const USER: any = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   firstName: \\"ofek\\",
-  id: \\"1\\",
+  id: VALID_ID,
   lastName: \\"gabay\\",
   roles: [\\"admin\\"],
   updatedAt: new Date(),
@@ -3427,6 +3626,7 @@ describe(\\"AuthService\\", () => {
       ).resolves.toEqual({
         username: USER.username,
         roles: USER.roles,
+        id: USER.id,
       });
     });
 
@@ -3447,6 +3647,7 @@ describe(\\"AuthService\\", () => {
         username: USER.username,
         roles: USER.roles,
         accessToken: SIGN_TOKEN,
+        id: USER.id,
       });
     });
   });
@@ -3477,8 +3678,9 @@ export class AuthService {
       where: { username },
     });
     if (user && (await this.passwordService.compare(password, user.password))) {
-      const { roles } = user;
-      return { username, roles };
+      const { id, roles } = user;
+      const roleList = roles as string[];
+      return { id, username, roles: roleList };
     }
     return null;
   }
@@ -3492,7 +3694,11 @@ export class AuthService {
       throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
     }
     //@ts-ignore
-    const accessToken = await this.tokenService.createToken(username, password);
+    const accessToken = await this.tokenService.createToken({
+      id: user.id,
+      username,
+      password,
+    });
     return {
       accessToken,
       ...user,
@@ -3500,10 +3706,9 @@ export class AuthService {
   }
 }
 ",
-  "server/src/auth/base/token.service.base.ts": "/* eslint-disable import/no-unresolved */
-import { Injectable } from \\"@nestjs/common\\";
+  "server/src/auth/base/token.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from \\"../constants\\";
-import { ITokenService } from \\"../ITokenService\\";
+import { ITokenService, ITokenPayload } from \\"../ITokenService\\";
 /**
  * TokenServiceBase is a basic http implementation of ITokenService
  */
@@ -3511,11 +3716,10 @@ import { ITokenService } from \\"../ITokenService\\";
 export class TokenServiceBase implements ITokenService {
   /**
    *
-   * @param username
-   * @param password
+   * @object { username: String, password: String }
    * @returns a base64 string of the username and password
    */
-  createToken(username: string, password: string): Promise<string> {
+  createToken({ username, password }: ITokenPayload): Promise<string> {
     if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
     if (!password) return Promise.reject(INVALID_PASSWORD_ERROR);
     return Promise.resolve(
@@ -3533,7 +3737,8 @@ import { UserInfo } from \\"../../UserInfo\\";
 
 export class BasicStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(protected readonly authService: AuthService) {
     super();
   }
@@ -3644,14 +3849,13 @@ export const UserRoles = createParamDecorator(
 import { PassportStrategy } from \\"@nestjs/passport\\";
 import { ExtractJwt, Strategy } from \\"passport-jwt\\";
 import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../../user/user.service\\";
+import { UserService } from \\"../../../user/user.service\\";
 import { UserInfo } from \\"../../UserInfo\\";
 
 export class JwtStrategyBase
   extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
+  implements IAuthStrategy
+{
   constructor(
     protected readonly userService: UserService,
     protected readonly secretOrKey: string
@@ -3671,14 +3875,19 @@ export class JwtStrategyBase
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    if (
+      !Array.isArray(user.roles) ||
+      typeof user.roles !== \\"object\\" ||
+      user.roles === null
+    ) {
+      throw new Error(\\"User roles is not a valid value\\");
+    }
+    return { ...user, roles: user.roles as string[] };
   }
 }
 ",
   "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
 import { JWT_SECRET_KEY } from \\"../../constants\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../user/user.service\\";
 import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
 @Injectable()
@@ -3894,7 +4103,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -3916,7 +4125,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4122,7 +4331,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4313,7 +4522,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4367,7 +4576,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4389,7 +4598,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4446,7 +4655,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4613,7 +4822,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4807,7 +5016,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5015,7 +5224,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5041,7 +5250,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5063,7 +5272,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5087,7 +5296,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5111,7 +5320,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5138,7 +5347,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5183,7 +5392,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5202,12 +5411,20 @@ class UpdateCustomerArgs {
 export { UpdateCustomerArgs };
 ",
   "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { CustomerController } from \\"../customer.controller\\";
 import { CustomerService } from \\"../customer.service\\";
 
@@ -5304,6 +5521,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Customer\\", () => {
   let app: INestApplication;
 
@@ -5322,6 +5554,10 @@ describe(\\"Customer\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -5378,6 +5614,29 @@ describe(\\"Customer\\", () => {
       });
   });
 
+  test(\\"POST /customers existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/customers\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/customers\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -5390,7 +5649,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5810,7 +6069,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5839,7 +6098,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6050,7 +6309,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6072,7 +6331,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6115,7 +6374,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6129,7 +6388,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6183,7 +6442,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6205,7 +6464,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6262,7 +6521,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6312,7 +6571,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6326,7 +6585,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6380,7 +6639,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6400,12 +6659,20 @@ class EmptyWhereUniqueInput {
 export { EmptyWhereUniqueInput };
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { EmptyController } from \\"../empty.controller\\";
 import { EmptyService } from \\"../empty.service\\";
 
@@ -6466,6 +6733,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Empty\\", () => {
   let app: INestApplication;
 
@@ -6484,6 +6766,10 @@ describe(\\"Empty\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -6537,6 +6823,28 @@ describe(\\"Empty\\", () => {
       });
   });
 
+  test(\\"POST /empties existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/empties\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/empties\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -6549,7 +6857,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6723,7 +7031,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6752,7 +7060,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6854,6 +7162,551 @@ export class NotFoundException extends common.NotFoundException {
   message!: string;
 }
 ",
+  "server/src/filters/HttpExceptions.filter.ts": "import {
+  ArgumentsHost,
+  Catch,
+  HttpException,
+  HttpServer,
+  HttpStatus,
+} from \\"@nestjs/common\\";
+import { BaseExceptionFilter } from \\"@nestjs/core\\";
+import {
+  // @ts-ignore
+  Prisma,
+} from \\"@prisma/client\\";
+import { Response } from \\"express\\";
+
+export type ErrorCodesStatusMapping = {
+  [key: string]: number;
+};
+
+/**
+ * {@link PrismaClientExceptionFilter} handling {@link Prisma.PrismaClientKnownRequestError} exceptions.
+ */
+@Catch(Prisma?.PrismaClientKnownRequestError)
+export class HttpExceptionFilter extends BaseExceptionFilter {
+  /**
+   * default error codes mapping
+   *
+   * Error codes definition for Prisma Client (Query Engine)
+   * @see https://www.prisma.io/docs/reference/api-reference/error-reference#prisma-client-query-engine
+   */
+  private errorCodesStatusMapping: ErrorCodesStatusMapping = {
+    P2000: HttpStatus.BAD_REQUEST,
+    P2002: HttpStatus.CONFLICT,
+    P2025: HttpStatus.NOT_FOUND,
+  };
+
+  /**
+   * @param applicationRef
+   */
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(applicationRef?: HttpServer) {
+    super(applicationRef);
+  }
+
+  /**
+   * @param exception
+   * @param host
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
+    const statusCode = this.errorCodesStatusMapping[exception.code];
+    let message;
+    if (host.getType() === \\"http\\") {
+      // for http requests (REST)
+      // Todo : Add all other exception types and also add mapping
+      const ctx = host.switchToHttp();
+      const response = ctx.getResponse<Response>();
+      if (exception.code === \\"P2002\\") {
+        // Handling Unique Key Constraint Violation Error
+        const fields = (exception.meta as { target: string[] }).target;
+        message = \`Another record with the requested (\${fields.join(
+          \\", \\"
+        )}) already exists\`;
+      } else {
+        message =
+          \`[\${exception.code}]: \` +
+          this.exceptionShortMessage(exception.message);
+      }
+      if (!Object.keys(this.errorCodesStatusMapping).includes(exception.code)) {
+        return super.catch(exception, host);
+      }
+      const errorResponse = {
+        message: message,
+        statusCode: statusCode,
+      };
+      response.status(statusCode).send(errorResponse);
+    }
+    return new HttpException({ statusCode, message }, statusCode);
+  }
+
+  /**
+   * @param exception
+   * @returns short message for the exception
+   */
+  exceptionShortMessage(message: string): string {
+    const shortMessage = message.substring(message.indexOf(\\"→\\"));
+    return shortMessage
+      .substring(shortMessage.indexOf(\\"\\\\n\\"))
+      .replace(/\\\\n/g, \\"\\")
+      .trim();
+  }
+}
+",
+  "server/src/grants.json": "[
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"User\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Profile\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Organization\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Customer\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"create:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"delete:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"update:any\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"user\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"admin\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  },
+  {
+    \\"role\\": \\"areaManager\\",
+    \\"resource\\": \\"Empty\\",
+    \\"action\\": \\"read:own\\",
+    \\"attributes\\": \\"*\\"
+  }
+]",
   "server/src/health/base/health.controller.base.ts": "import { Get, HttpStatus, Res } from \\"@nestjs/common\\";
 import { Response } from \\"express\\";
 import { HealthService } from \\"../health.service\\";
@@ -7023,8 +7876,9 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
 }
 ",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
-import { NestFactory } from \\"@nestjs/core\\";
+import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
+import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
@@ -7064,6 +7918,9 @@ async function main() {
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
+
   void app.listen(PORT);
 
   return app;
@@ -7078,7 +7935,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7100,7 +7957,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7122,7 +7979,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7143,7 +8000,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7166,7 +8023,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7247,7 +8104,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7297,7 +8154,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7351,7 +8208,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7373,7 +8230,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7430,7 +8287,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7507,7 +8364,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7563,7 +8420,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7654,7 +8511,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7680,7 +8537,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7699,12 +8556,20 @@ class UpdateOrderArgs {
 export { UpdateOrderArgs };
 ",
   "server/src/order/base/order.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { OrderController } from \\"../order.controller\\";
 import { OrderService } from \\"../order.service\\";
 
@@ -7765,6 +8630,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Order\\", () => {
   let app: INestApplication;
 
@@ -7783,6 +8663,10 @@ describe(\\"Order\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -7836,6 +8720,28 @@ describe(\\"Order\\", () => {
       });
   });
 
+  test(\\"POST /orders existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/orders\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/orders\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -7848,7 +8754,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8054,7 +8960,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8083,7 +8989,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8183,7 +9089,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8205,7 +9111,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8232,7 +9138,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8277,7 +9183,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8299,7 +9205,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8379,7 +9285,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8444,7 +9350,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8498,7 +9404,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8520,7 +9426,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8577,7 +9483,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8636,7 +9542,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8704,7 +9610,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8807,7 +9713,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8833,7 +9739,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8858,7 +9764,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8885,7 +9791,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8924,12 +9830,20 @@ class UserUpdateManyWithoutOrganizationsInput {
 export { UserUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { OrganizationController } from \\"../organization.controller\\";
 import { OrganizationService } from \\"../organization.service\\";
 
@@ -8994,6 +9908,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Organization\\", () => {
   let app: INestApplication;
 
@@ -9012,6 +9941,10 @@ describe(\\"Organization\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -9065,6 +9998,28 @@ describe(\\"Organization\\", () => {
       });
   });
 
+  test(\\"POST /organizations existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/organizations\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/organizations\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -9077,7 +10032,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9619,7 +10574,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9648,7 +10603,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9828,7 +10783,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9850,7 +10805,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9872,7 +10827,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9933,7 +10888,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9973,7 +10928,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10027,7 +10982,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10049,7 +11004,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10106,7 +11061,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10174,7 +11129,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10217,7 +11172,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10295,7 +11250,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10321,7 +11276,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10340,12 +11295,20 @@ class UpdateProfileArgs {
 export { UpdateProfileArgs };
 ",
   "server/src/profile/base/profile.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { ProfileController } from \\"../profile.controller\\";
 import { ProfileService } from \\"../profile.service\\";
 
@@ -10410,6 +11373,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Profile\\", () => {
   let app: INestApplication;
 
@@ -10428,6 +11406,10 @@ describe(\\"Profile\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -10481,6 +11463,28 @@ describe(\\"Profile\\", () => {
       });
   });
 
+  test(\\"POST /profiles existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/profiles\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/profiles\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -10493,7 +11497,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10718,7 +11722,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10747,7 +11751,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10938,7 +11942,8 @@ const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
 
 @Injectable()
 export class ServeStaticOptionsService
-  implements ServeStaticModuleOptionsFactory {
+  implements ServeStaticModuleOptionsFactory
+{
   private readonly logger = new Logger(ServeStaticOptionsService.name);
 
   constructor(private readonly configService: ConfigService) {}
@@ -10959,7 +11964,7 @@ export class ServeStaticOptionsService
   }
 }
 ",
-  "server/src/swagger.ts": "import { DocumentBuilder } from \\"@nestjs/swagger\\";
+  "server/src/swagger.ts": "import { DocumentBuilder, SwaggerCustomOptions } from \\"@nestjs/swagger\\";
 
 export const swaggerPath = \\"api\\";
 
@@ -10972,7 +11977,7 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .addBasicAuth()
   .build();
 
-export const swaggerSetupOptions = {
+export const swaggerSetupOptions: SwaggerCustomOptions = {
   swaggerOptions: {
     persistAuthorization: true,
   },
@@ -11022,7 +12027,13 @@ describe(\\"Testing the basicStrategyBase.validate()\\", () => {
   "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
 import { UserInfo } from \\"../../auth/UserInfo\\";
 
-export const TEST_USER: UserInfo = { roles: [\\"User\\"], username: \\"ofek\\" };
+export const VALID_ID = \\"1\\";
+
+export const TEST_USER: UserInfo = {
+  id: \\"cl7qmjh4h0000tothyjqapgj5\\",
+  roles: [\\"User\\"],
+  username: \\"ofek\\",
+};
 export const SIGN_TOKEN = \\"SIGN_TOKEN\\";
 export const VALID_CREDENTIALS: Credentials = {
   username: \\"Valid User\\",
@@ -11036,8 +12047,6 @@ export const INVALID_CREDENTIALS: Credentials = {
   "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
 import { mock } from \\"jest-mock-extended\\";
 import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.strategy.base\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from \\"../../../user/user.service\\";
 import { TEST_USER } from \\"../constants\\";
 
@@ -11054,6 +12063,7 @@ describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
       .mockReturnValue(Promise.resolve(null));
     //ACT
     const result = jwtStrategy.validate({
+      id: TEST_USER.id,
       username: TEST_USER.username,
       roles: TEST_USER.roles,
     });
@@ -11062,14 +12072,12 @@ describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
   });
 });
 ",
-  "server/src/tests/auth/token.service.spec.ts": "/* eslint-disable import/no-unresolved */
-//@ts-ignore
-import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
+  "server/src/tests/auth/token.service.spec.ts": "import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
 import {
   INVALID_USERNAME_ERROR,
   INVALID_PASSWORD_ERROR,
-  //@ts-ignore
 } from \\"../../auth/constants\\";
+import { SIGN_TOKEN, VALID_CREDENTIALS, VALID_ID } from \\"./constants\\";
 
 describe(\\"Testing the TokenServiceBase\\", () => {
   let tokenServiceBase: TokenServiceBase;
@@ -11078,18 +12086,30 @@ describe(\\"Testing the TokenServiceBase\\", () => {
   });
   describe(\\"Testing the BasicTokenService.createToken()\\", () => {
     it(\\"should create valid token for given username and password\\", async () => {
-      expect(await tokenServiceBase.createToken(\\"admin\\", \\"admin\\")).toBe(
-        \\"YWRtaW46YWRtaW4=\\"
-      );
+      expect(
+        await tokenServiceBase.createToken({
+          id: VALID_ID,
+          username: \\"admin\\",
+          password: \\"admin\\",
+        })
+      ).toBe(\\"YWRtaW46YWRtaW4=\\");
     });
     it(\\"should reject when username missing\\", () => {
-      //@ts-ignore
-      const result = tokenServiceBase.createToken(null, \\"admin\\");
+      const result = tokenServiceBase.createToken({
+        id: VALID_ID,
+        //@ts-ignore
+        username: null,
+        password: VALID_CREDENTIALS.password,
+      });
       return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
     });
     it(\\"should reject when password missing\\", () => {
-      //@ts-ignore
-      const result = tokenServiceBase.createToken(\\"admin\\", null);
+      const result = tokenServiceBase.createToken({
+        id: VALID_ID,
+        username: VALID_CREDENTIALS.username,
+        //@ts-ignore
+        password: null,
+      });
       return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
     });
   });
@@ -11143,7 +12163,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11165,7 +12185,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11187,7 +12207,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11209,7 +12229,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11232,7 +12252,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11259,7 +12279,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11304,7 +12324,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11329,7 +12349,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11338,6 +12358,7 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
+  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
@@ -11345,15 +12366,14 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { JsonValue } from \\"type-fest\\";
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { JsonValue } from \\"type-fest\\";
 import { Profile } from \\"../../profile/base/Profile\\";
 @ObjectType()
 class User {
@@ -11367,13 +12387,10 @@ class User {
 
   @ApiProperty({
     required: true,
-    type: [String],
   })
-  @IsString({
-    each: true,
-  })
-  @Field(() => [String])
-  roles!: Array<string>;
+  @IsJSON()
+  @Field(() => GraphQLJSON)
+  roles!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -11502,7 +12519,7 @@ class User {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   extendedProperties!: JsonValue;
 
   @ApiProperty({
@@ -11523,7 +12540,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11532,6 +12549,7 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
+  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
@@ -11539,17 +12557,16 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 @InputType()
 class UserCreateInput {
@@ -11571,13 +12588,10 @@ class UserCreateInput {
 
   @ApiProperty({
     required: true,
-    type: [String],
   })
-  @IsString({
-    each: true,
-  })
-  @Field(() => [String])
-  roles!: Array<string>;
+  @IsJSON()
+  @Field(() => GraphQLJSON)
+  roles!: InputJsonValue;
 
   @ApiProperty({
     required: true,
@@ -11705,7 +12719,7 @@ class UserCreateInput {
     required: true,
   })
   @IsJSON()
-  @Field(() => GraphQLJSONObject)
+  @Field(() => GraphQLJSON)
   extendedProperties!: InputJsonValue;
 
   @ApiProperty({
@@ -11729,7 +12743,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11756,7 +12770,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11810,7 +12824,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11832,7 +12846,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11889,7 +12903,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -12065,7 +13079,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -12075,23 +13089,23 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
   IsOptional,
+  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
   ValidateNested,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
-import { GraphQLJSONObject } from \\"graphql-type-json\\";
-import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 @InputType()
 class UserUpdateInput {
@@ -12119,16 +13133,13 @@ class UserUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: [String],
   })
-  @IsString({
-    each: true,
-  })
+  @IsJSON()
   @IsOptional()
-  @Field(() => [String], {
+  @Field(() => GraphQLJSON, {
     nullable: true,
   })
-  roles?: Array<string>;
+  roles?: InputJsonValue;
 
   @ApiProperty({
     required: false,
@@ -12284,7 +13295,7 @@ class UserUpdateInput {
   })
   @IsJSON()
   @IsOptional()
-  @Field(() => GraphQLJSONObject, {
+  @Field(() => GraphQLJSON, {
     nullable: true,
   })
   extendedProperties?: InputJsonValue;
@@ -12310,7 +13321,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -12355,7 +13366,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -12518,7 +13529,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -12538,12 +13549,20 @@ class UserWhereUniqueInput {
 export { UserWhereUniqueInput };
 ",
   "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus, ExecutionContext } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { UserController } from \\"../user.controller\\";
 import { UserService } from \\"../user.service\\";
 
@@ -12552,7 +13571,6 @@ const existingId = \\"existingId\\";
 const CREATE_INPUT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -12566,7 +13584,6 @@ const CREATE_INPUT = {
 const CREATE_RESULT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -12581,7 +13598,6 @@ const FIND_MANY_RESULT = [
   {
     username: \\"exampleUsername\\",
     password: \\"examplePassword\\",
-    roles: [\\"exampleRoles\\"],
     id: \\"exampleId\\",
     name: \\"exampleName\\",
     bio: \\"exampleBio\\",
@@ -12596,7 +13612,6 @@ const FIND_MANY_RESULT = [
 const FIND_ONE_RESULT = {
   username: \\"exampleUsername\\",
   password: \\"examplePassword\\",
-  roles: [\\"exampleRoles\\"],
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -12640,6 +13655,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"User\\", () => {
   let app: INestApplication;
 
@@ -12658,6 +13688,10 @@ describe(\\"User\\", () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -12708,6 +13742,27 @@ describe(\\"User\\", () => {
       });
   });
 
+  test(\\"POST /users existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/users\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/users\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -12720,7 +13775,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13260,7 +14315,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13289,7 +14344,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -14480,6 +15535,32 @@ export class StringNullableFilter {
   })
   @Type(() => String)
   not?: string;
+}
+",
+  "server/tsconfig.build.json": "{
+  \\"extends\\": \\"./tsconfig.json\\",
+  \\"exclude\\": [\\"node_modules\\", \\"prisma\\", \\"test\\", \\"dist\\", \\"**/*spec.ts\\", \\"admin\\"]
+}
+",
+  "server/tsconfig.json": "{
+  \\"compilerOptions\\": {
+    \\"module\\": \\"commonjs\\",
+    \\"declaration\\": false,
+    \\"removeComments\\": true,
+    \\"emitDecoratorMetadata\\": true,
+    \\"experimentalDecorators\\": true,
+    \\"target\\": \\"es2017\\",
+    \\"lib\\": [\\"ES2020\\"],
+    \\"sourceMap\\": true,
+    \\"outDir\\": \\"./dist\\",
+    \\"incremental\\": true,
+    \\"esModuleInterop\\": true,
+    \\"allowSyntheticDefaultImports\\": true,
+    \\"resolveJsonModule\\": true,
+    \\"skipLibCheck\\": true,
+    \\"strict\\": true
+  },
+  \\"include\\": [\\"src\\"]
 }
 ",
 }

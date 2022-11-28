@@ -1,44 +1,44 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { Account } from './Account'; // eslint-disable-line import/no-cycle
-import { Workspace } from './Workspace'; // eslint-disable-line import/no-cycle
-import { UserRole } from './UserRole'; // eslint-disable-line import/no-cycle
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Account } from "./Account";
+import { Workspace } from "./Workspace";
+import { UserRole } from "./UserRole";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class User {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   @Field(() => Account, {
-    nullable: true
+    nullable: true,
   })
   account?: Account;
 
   @Field(() => Workspace, {
-    nullable: true
+    nullable: true,
   })
   workspace?: Workspace;
 
   @Field(() => [UserRole], {
-    nullable: true
+    nullable: true,
   })
   userRoles?: UserRole[] | null;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   isOwner: boolean;
 }

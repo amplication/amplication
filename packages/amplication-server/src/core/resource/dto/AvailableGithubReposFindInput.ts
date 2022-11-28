@@ -1,12 +1,12 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { WhereUniqueInput } from 'src/dto/';
+import { Field, InputType } from "@nestjs/graphql";
+import { WhereUniqueInput } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class AvailableGithubReposFindInput {
   @Field(() => WhereUniqueInput, {
-    nullable: false
+    nullable: false,
   })
   resource!: WhereUniqueInput;
 }

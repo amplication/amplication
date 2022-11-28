@@ -1,41 +1,45 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { DateTimeFilter, StringFilter, WhereUniqueInput } from 'src/dto';
+import { Field, InputType } from "@nestjs/graphql";
+import { DateTimeFilter, StringFilter } from "../../../dto";
+import { ProjectWhereInput } from "../../project/dto/ProjectWhereInput";
+import { EnumResourceTypeFilter } from "./EnumResourceTypeFilter";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ResourceWhereInput {
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   id?: string | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   name?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   description?: StringFilter | null;
 
-  @Field(() => WhereUniqueInput, {
-    nullable: true,
-    description: undefined
-  })
-  project?: WhereUniqueInput | null;
+  @Field(() => ProjectWhereInput, { nullable: true })
+  project?: ProjectWhereInput | null;
 
   @Field(() => String, { nullable: true })
   projectId?: string | null;
+
+  @Field(() => EnumResourceTypeFilter, {
+    nullable: true,
+  })
+  resourceType?: EnumResourceTypeFilter | null;
 }

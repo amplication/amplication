@@ -1,5 +1,5 @@
-import { EnumActionStepStatus } from './EnumActionStepStatus';
-import { WhereUniqueInput } from 'src/dto';
+import { EnumActionStepStatus } from "./EnumActionStepStatus";
+import { WhereUniqueInput } from "../../../dto";
 
 export class CompleteStepArgs {
   status: EnumActionStepStatus;

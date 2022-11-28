@@ -1,0 +1,32 @@
+@import "../style/index.scss";
+
+.service-connections-list {
+  .search-field {
+    margin-left: 0;
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__header {
+    margin-bottom: var(--default-spacing);
+    @include bold-14;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--default-spacing-small);
+
+    &__item {
+      &__name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .new-topic {
+    margin: var(--default-spacing-small) 0;
+  }
+}

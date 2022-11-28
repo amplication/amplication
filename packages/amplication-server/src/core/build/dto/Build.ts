@@ -1,22 +1,22 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { Commit, Resource } from 'src/models'; // eslint-disable-line import/no-cycle
-import { BlockVersion } from 'src/models/BlockVersion'; // eslint-disable-line import/no-cycle
-import { EntityVersion } from 'src/models/EntityVersion'; // eslint-disable-line import/no-cycle
-import { User } from 'src/models/User'; // eslint-disable-line import/no-cycle
-import { Action } from '../../action/dto/Action'; // eslint-disable-line import/no-cycle
-import { EnumBuildStatus } from './EnumBuildStatus';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Commit, Resource } from "../../../models";
+import { BlockVersion } from "../../../models/BlockVersion";
+import { EntityVersion } from "../../../models/EntityVersion";
+import { User } from "../../../models/User";
+import { Action } from "../../action/dto/Action";
+import { EnumBuildStatus } from "./EnumBuildStatus";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class Build {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
@@ -30,12 +30,12 @@ export class Build {
   createdBy?: User;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   userId!: string;
 
   @Field(() => EnumBuildStatus, {
-    nullable: true
+    nullable: true,
   })
   status?: keyof typeof EnumBuildStatus;
 
@@ -47,7 +47,7 @@ export class Build {
   entityVersions?: EntityVersion[] | null | undefined;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   version: string;
 
@@ -58,7 +58,7 @@ export class Build {
   actionId: string;
 
   @Field(() => Action, {
-    nullable: true
+    nullable: true,
   })
   action?: Action;
 

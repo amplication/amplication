@@ -1,15 +1,16 @@
 import { camelCase } from "camel-case";
 import { DTOs } from "@amplication/code-gen-types";
+import DsgContext from "../dsg-context";
 
-export function createDTONameToPath(
-  dtos: DTOs,
-  apiDirectory: string
-): Record<string, string> {
+export function createDTONameToPath(dtos: DTOs): Record<string, string> {
+  const { clientDirectories } = DsgContext.getInstance;
   return Object.fromEntries(
     Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>
       Object.values(entityDTOs).map((dto) => [
         dto.id.name,
-        `${apiDirectory}/${camelCase(entityName)}/${dto.id.name}.ts`,
+        `${clientDirectories.apiDirectory}/${camelCase(entityName)}/${
+          dto.id.name
+        }.ts`,
       ])
     )
   );

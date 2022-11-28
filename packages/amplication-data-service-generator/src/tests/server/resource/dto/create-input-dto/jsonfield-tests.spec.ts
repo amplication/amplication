@@ -20,19 +20,19 @@ describe("Testing the <Entity>CreateInput class with json field", () => {
     entity.fields = [falseJsonFiled];
     const code = printTypescript(createCreateInput(entity));
     expect(code).toMatchInlineSnapshot(`
-"@InputType()
-class ClassNameCreateInput {
-  @ApiProperty({
-    required: false,
-  })
-  @IsJSON()
-  @IsOptional()
-  @Field(() => GraphQLJSONObject, {
-    nullable: true,
-  })
-  JsonFieldName?: InputJsonValue;
-}
-"
-`);
+      "@InputType()
+      class ClassNameCreateInput {
+        @ApiProperty({
+          required: false,
+        })
+        @IsJSON()
+        @IsOptional()
+        @Field(() => GraphQLJSON, {
+          nullable: true,
+        })
+        JsonFieldName?: InputJsonValue;
+      }
+      "
+    `);
   });
 });

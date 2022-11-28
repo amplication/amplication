@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Test, TestingModule } from '@nestjs/testing';
-import Ajv from 'ajv';
-import { SchemaValidationResult } from 'src/dto/schemaValidationResult';
-import { JsonSchemaValidationService } from './jsonSchemaValidation.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import Ajv from "ajv";
+import { SchemaValidationResult } from "../dto/schemaValidationResult";
+import { JsonSchemaValidationService } from "./jsonSchemaValidation.service";
 
-jest.mock('ajv');
+jest.mock("ajv");
 
-describe('JsonSchemaValidationService', () => {
+describe("JsonSchemaValidationService", () => {
   let service: JsonSchemaValidationService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [JsonSchemaValidationService],
-      imports: []
+      imports: [],
     }).compile();
 
     service = module.get<JsonSchemaValidationService>(
@@ -21,13 +21,13 @@ describe('JsonSchemaValidationService', () => {
     );
   });
 
-  it('should validate a schema', async () => {
+  it("should validate a schema", async () => {
     Ajv.prototype.validate.mockImplementation(() => {
       return true;
     });
     const args = {
       schema: {},
-      data: {}
+      data: {},
     };
     expect(await service.validateSchema(args.schema, args.data)).toEqual(
       new SchemaValidationResult(true)
@@ -36,19 +36,19 @@ describe('JsonSchemaValidationService', () => {
     expect(Ajv.prototype.validate).toBeCalledWith(args.schema, args.data);
   });
 
-  it('should not validate a schema', async () => {
+  it("should not validate a schema", async () => {
     Ajv.prototype.validate.mockImplementation(() => {
       return false;
     });
     Ajv.prototype.errorsText.mockImplementation(() => {
-      return 'Error: Invalid';
+      return "Error: Invalid";
     });
     const args = {
       schema: {},
-      data: {}
+      data: {},
     };
     expect(await service.validateSchema(args.schema, args.data)).toEqual(
-      new SchemaValidationResult(false, 'Error: Invalid')
+      new SchemaValidationResult(false, "Error: Invalid")
     );
     expect(Ajv.prototype.validate).toBeCalledTimes(1);
     expect(Ajv.prototype.validate).toBeCalledWith(args.schema, args.data);

@@ -1,11 +1,11 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class CommitWhereUniqueInput {
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   id?: string | null | undefined;
 }

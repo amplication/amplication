@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { WhereUniqueInput } from '../dto/WhereUniqueInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { WhereUniqueInput } from "../dto/WhereUniqueInput";
 
 @ArgsType()
 export class FindOneArgs {

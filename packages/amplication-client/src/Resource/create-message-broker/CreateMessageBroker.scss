@@ -1,0 +1,109 @@
+@use "sass:math";
+@import "../../style/index.scss";
+
+.create-message-broker {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
+  &__wrapper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--black2);
+  }
+
+  &__description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 450px;
+
+    .circle-badge i {
+      color: var(--black5);
+      font-size: 20px;
+    }
+  }
+
+  &__description_top {
+    margin-top: 24px;
+  }
+
+  &__description_bottom {
+    margin-top: 8px;
+  }
+
+  h2 {
+    @include title-24;
+    text-align: center;
+    margin: 0;
+  }
+
+  h3 {
+    @include regular-14;
+    text-align: center;
+    margin: 0;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    background: var(--black10);
+  }
+
+  .amp-icon--size-small {
+    font-size: 12px;
+  }
+
+  &__processing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    height: 100%;
+    background: var(--white);
+
+    &__message_title_container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    &__title {
+      font-weight: 600;
+      font-size: 24px;
+      text-align: center;
+      color: var(--black100);
+    }
+
+    &__message {
+      font-size: 18px;
+      line-height: 28px;
+      color: var(--black80);
+      margin-top: 4px;
+      color: var(--black100);
+    }
+
+    &__tagline {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      font-size: 10px;
+      line-height: 15px;
+      color: var(--black80);
+    }
+
+    .svg-theme-image {
+      width: 250px;
+      height: 250px;
+    }
+  }
+}

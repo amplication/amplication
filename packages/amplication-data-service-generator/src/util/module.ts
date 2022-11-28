@@ -10,11 +10,9 @@ export type Variables = { [variable: string]: string | null | undefined };
 
 const JSON_EXT = ".json";
 
-export const readCode = memoize(
-  (path: string): Promise<string> => {
-    return fs.promises.readFile(path, "utf-8");
-  }
-);
+export const readCode = memoize((path: string): Promise<string> => {
+  return fs.promises.readFile(path, "utf-8");
+});
 
 const readFile = async (path: string): Promise<namedTypes.File> => {
   const code = await readCode(path);
@@ -25,6 +23,10 @@ export { readFile };
 
 export const formatCode = (code: string): string => {
   return prettier.format(code, { parser: "typescript" });
+};
+
+export const formatJson = (code: string): string => {
+  return prettier.format(code, { parser: "json" });
 };
 
 /**

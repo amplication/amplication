@@ -19,7 +19,11 @@ function RouteWithAnalytics(props: Props) {
       render={(props) => {
         return (
           <RouteWithAnalyticsContent>
-            {component ? React.createElement(component, { ...props, pageTitle }) : children}
+            <>
+              {component
+                ? React.createElement(component, { ...props, pageTitle })
+                : children}
+            </>
           </RouteWithAnalyticsContent>
         );
       }}
@@ -33,7 +37,7 @@ function RouteWithAnalyticsContent({
   children: React.ReactNode;
 }) {
   usePageTracking();
-  // eslint-disable-next-line react/jsx-no-useless-fragment
+
   return <>{children}</>;
 }
 

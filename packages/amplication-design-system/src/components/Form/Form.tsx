@@ -16,6 +16,7 @@ export type Props = FormikFormProps & {
   childrenAsBlocks?: boolean;
   formStyle?: EnumFormStyle;
   formHeaderContent?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export const Form = ({

@@ -1,0 +1,46 @@
+@import "../style/index.scss";
+
+.service-topics {
+  height: 100%;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
+
+    &__top {
+      display: flex;
+      align-items: center;
+      gap: var(--default-spacing-small);
+      margin-bottom: 12px;
+
+      &__title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+
+    &__description {
+      font-weight: 400;
+      font-size: 14px;
+      color: white;
+    }
+
+    .toggle-field {
+      margin-left: auto;
+      margin-bottom: 0;
+    }
+  }
+
+  &__list {
+    flex: 1;
+  }
+  .amp-form {
+    > .amp-horizontal-rule {
+      margin: 24px 0;
+    }
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}

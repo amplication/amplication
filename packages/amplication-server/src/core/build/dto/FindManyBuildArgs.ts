@@ -1,6 +1,6 @@
-import { Field, ArgsType, Int } from '@nestjs/graphql';
-import { BuildOrderByInput } from './BuildOrderByInput';
-import { BuildWhereInput } from './BuildWhereInput';
+import { Field, ArgsType, Int } from "@nestjs/graphql";
+import { BuildOrderByInput } from "./BuildOrderByInput";
+import { BuildWhereInput } from "./BuildWhereInput";
 
 @ArgsType()
 export class FindManyBuildArgs {

@@ -1,20 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BlockService } from 'src/core/block/block.service';
-import { ConnectorRestApiService } from './connectorRestApi.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { BlockService } from "../block/block.service";
+import { ConnectorRestApiService } from "./connectorRestApi.service";
 import {
   ConnectorRestApi,
-  EnumConnectorRestApiAuthenticationType
-} from './dto';
-import { EnumBlockType } from 'src/enums/EnumBlockType';
-import { User } from 'src/models';
+  EnumConnectorRestApiAuthenticationType,
+} from "./dto";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { User } from "../../models";
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
-const EXAMPLE_NAME = 'Example Connector REST API';
-const EXAMPLE_RESOURCE_ID = 'ExampleResource';
+const EXAMPLE_NAME = "Example Connector REST API";
+const EXAMPLE_RESOURCE_ID = "ExampleResource";
 
-const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
+const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
@@ -24,13 +24,13 @@ const EXAMPLE_USER: User = {
     id: EXAMPLE_WORKSPACE_ID,
     createdAt: new Date(),
     updatedAt: new Date(),
-    name: 'example_workspace_name'
+    name: "example_workspace_name",
   },
-  isOwner: true
+  isOwner: true,
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApi = {
-  id: 'ExampleConnectorRestApi',
+  id: "ExampleConnectorRestApi",
   updatedAt: new Date(),
   createdAt: new Date(),
   blockType: EnumBlockType.ConnectorRestApi,
@@ -42,7 +42,8 @@ const EXAMPLE_CONNECTOR_REST_API_CALL: ConnectorRestApi = {
   versionNumber: 0,
   authenticationType: EnumConnectorRestApiAuthenticationType.None,
   privateKeyAuthenticationSettings: null,
-  httpBasicAuthenticationSettings: null
+  httpBasicAuthenticationSettings: null,
+  resourceId: EXAMPLE_RESOURCE_ID,
 };
 
 const EXAMPLE_CONNECTOR_REST_API_CALLS = [EXAMPLE_CONNECTOR_REST_API_CALL];
@@ -52,7 +53,7 @@ const findOneMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 const findManyByBlockTypeMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALLS);
 const updateMock = jest.fn(() => EXAMPLE_CONNECTOR_REST_API_CALL);
 
-describe('ConnectorRestApiService', () => {
+describe("ConnectorRestApiService", () => {
   let service: ConnectorRestApiService;
 
   beforeEach(async () => {
@@ -68,38 +69,38 @@ describe('ConnectorRestApiService', () => {
             create: createMock,
             findOne: findOneMock,
             findManyByBlockType: findManyByBlockTypeMock,
-            update: updateMock
-          }))
+            update: updateMock,
+          })),
         },
-        ConnectorRestApiService
+        ConnectorRestApiService,
       ],
-      imports: []
+      imports: [],
     }).compile();
 
     service = module.get<ConnectorRestApiService>(ConnectorRestApiService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should find one', async () => {
+  it("should find one", async () => {
     expect(
       await service.findOne({
-        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id }
+        where: { id: EXAMPLE_CONNECTOR_REST_API_CALL.id },
       })
     ).toBe(EXAMPLE_CONNECTOR_REST_API_CALL);
     expect(findOneMock).toBeCalledTimes(1);
   });
 
-  it('should find many', async () => {
+  it("should find many", async () => {
     expect(await service.findMany({})).toEqual(
       EXAMPLE_CONNECTOR_REST_API_CALLS
     );
     expect(findManyByBlockTypeMock).toBeCalledTimes(1);
   });
 
-  it('should create', async () => {
+  it("should create", async () => {
     expect(
       await service.create(
         {
@@ -112,10 +113,10 @@ describe('ConnectorRestApiService', () => {
             httpBasicAuthenticationSettings: null,
             resource: {
               connect: {
-                id: EXAMPLE_RESOURCE_ID
-              }
-            }
-          }
+                id: EXAMPLE_RESOURCE_ID,
+              },
+            },
+          },
         },
         EXAMPLE_USER
       )
@@ -123,16 +124,16 @@ describe('ConnectorRestApiService', () => {
     expect(createMock).toBeCalledTimes(1);
   });
 
-  it('should update', async () => {
+  it("should update", async () => {
     expect(
       await service.update(
         {
           data: {
-            displayName: EXAMPLE_NAME
+            displayName: EXAMPLE_NAME,
           },
           where: {
-            id: EXAMPLE_CONNECTOR_REST_API_CALL.id
-          }
+            id: EXAMPLE_CONNECTOR_REST_API_CALL.id,
+          },
         },
         EXAMPLE_USER
       )

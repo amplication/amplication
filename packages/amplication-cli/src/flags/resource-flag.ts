@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command';
+import { flags } from "@oclif/command";
 
 function getResource(params: any): string | undefined {
   const envResource = process.env.AMP_CURRENT_RESOURCE;
@@ -10,7 +10,7 @@ function getResource(params: any): string | undefined {
   return undefined;
 }
 export const resource = flags.build({
-  char: 'r',
-  description: 'resource to run command against',
+  char: "r",
+  description: "resource to run command against",
   default: getResource,
 });

@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { EntityPermissionFieldWhereUniqueInput } from './EntityPermissionFieldWhereUniqueInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { EntityPermissionFieldWhereUniqueInput } from "./EntityPermissionFieldWhereUniqueInput";
 
 @ArgsType()
 export class DeleteEntityPermissionFieldArgs {

@@ -1,13 +1,15 @@
 import { EnumPanelStyle, Icon, Panel } from "@amplication/design-system";
-import React, { useCallback, useContext, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useContext, useMemo } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { ClickableId } from "../Components/ClickableId";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import { Build } from "../models";
-import { BuildStatusIcons } from "./BuildStatusIcons";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import "./CommitResourceListItem.scss";
 import useCommits from "./hooks/useCommits";
+import useBuildWatchStatus from "./useBuildWatchStatus";
 
 const CLASS_NAME = "commit-resource-list-item";
 
@@ -18,7 +20,7 @@ type Props = {
 const CommitResourceListItem = ({ build }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const { commitChangesByResource } = useCommits();
-
+  const { data } = useBuildWatchStatus(build);
   const handleBuildLinkClick = useCallback((event) => {
     event.stopPropagation();
   }, []);
@@ -31,54 +33,54 @@ const CommitResourceListItem = ({ build }: Props) => {
   }, [build.commitId, build.resourceId, commitChangesByResource]);
 
   return (
-    <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
-      <div className={`${CLASS_NAME}__row`}>
-        {build && build.resource && (
-          <>
+    <NavLink
+      to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
+    >
+      {build && build.resource && (
+        <Panel
+          className={CLASS_NAME}
+          clickable
+          panelStyle={EnumPanelStyle.Bordered}
+        >
+          <div className={`${CLASS_NAME}__row`}>
+            <ResourceCircleBadge type={build.resource.resourceType} />
+
             <div className={`${CLASS_NAME}__title`}>
-              {build.resource && (
-                <ResourceCircleBadge type={build.resource.resourceType} />
-              )}
-              <p>{build.resource?.name}</p>
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}`}
               >
+                {build.resource.name}
                 <Icon icon="link" size="xsmall" />
               </Link>
             </div>
 
+            <span className="spacer" />
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
+              className={`${CLASS_NAME}__changes-count`}
+            >
+              {resourceChangesCount && resourceChangesCount > 0
+                ? resourceChangesCount
+                : 0}{" "}
+              changes
+            </Link>
+          </div>
+          <hr className={`${CLASS_NAME}__divider`} />
+          <div className={`${CLASS_NAME}__row`}>
+            <CommitBuildsStatusIcon commitBuildStatus={data.build.status} />
             <ClickableId
               label="Build ID"
               to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
               id={build.id}
               onClick={handleBuildLinkClick}
               eventData={{
-                eventName: "commitListBuildIdClick",
+                eventName: AnalyticsEventNames.CommitListBuildIdClick,
               }}
             />
-          </>
-        )}
-      </div>
-      <hr className={`${CLASS_NAME}__divider`} />
-      <div className={`${CLASS_NAME}__row`}>
-        <Link
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
-          className={`${CLASS_NAME}__changes-count`}
-        >
-          {resourceChangesCount && resourceChangesCount > 0
-            ? resourceChangesCount
-            : 0}{" "}
-          changes
-        </Link>
-
-        <Link
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
-        >
-          view log
-        </Link>
-        <BuildStatusIcons build={build} />
-      </div>
-    </Panel>
+          </div>
+        </Panel>
+      )}
+    </NavLink>
   );
 };
 

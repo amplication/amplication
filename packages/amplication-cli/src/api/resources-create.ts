@@ -1,10 +1,10 @@
-import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
+import { ApolloClient, gql, NormalizedCacheObject } from "@apollo/client/core";
 
-import * as models from '../models';
+import * as models from "../models";
 
 const CREATE_RESOURCE = gql`
-  mutation createResource($data: ResourceCreateInput!) {
-    createResource(data: $data) {
+  mutation createService($data: ResourceCreateInput!) {
+    createService(data: $data) {
       id
       name
       description
@@ -20,7 +20,7 @@ const CREATE_RESOURCE = gql`
     }
   }
 `;
-export async function createResource(
+export async function createService(
   client: ApolloClient<NormalizedCacheObject>,
   name: string,
   description: string,
@@ -28,8 +28,8 @@ export async function createResource(
   projectId: string
 ): Promise<models.Resource> {
   const { data } = await client.mutate<
-    { createResource: models.Resource },
-    models.MutationCreateResourceArgs
+    { createService: models.Resource },
+    models.MutationCreateServiceArgs
   >({
     mutation: CREATE_RESOURCE,
     variables: {
@@ -43,8 +43,8 @@ export async function createResource(
   });
 
   if (!data) {
-    throw new Error('no data');
+    throw new Error("no data");
   }
 
-  return data.createResource;
+  return data.createService;
 }

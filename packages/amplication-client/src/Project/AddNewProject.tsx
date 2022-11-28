@@ -11,7 +11,8 @@ import NewProject from "./NewProject";
 const CLASS_NAME = "add-new-project";
 
 const AddNewProject = () => {
-  const [projectDialogStatus, setProjectDialogStatus] = useState<boolean>(false);
+  const [projectDialogStatus, setProjectDialogStatus] =
+    useState<boolean>(false);
 
   const handleNewProjectClick = useCallback(() => {
     setProjectDialogStatus(!projectDialogStatus);
@@ -27,7 +28,7 @@ const AddNewProject = () => {
         className="new-entity-dialog"
         isOpen={projectDialogStatus}
         onDismiss={handleNewProjectClick}
-        title="New Project"
+        title="Create new project"
       >
         <NewProject onProjectCreated={handleProjectCreated} />
       </Dialog>
@@ -37,7 +38,7 @@ const AddNewProject = () => {
         buttonStyle={EnumButtonStyle.Text}
         icon="plus"
         iconPosition={EnumIconPosition.Left}
-        iconSize="xsmall"
+        iconSize="small"
       >
         <span className={`${CLASS_NAME}__label`}>Add New Project</span>
       </Button>

@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { ApiTokenCreateInput } from './ApiTokenCreateInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { ApiTokenCreateInput } from "./ApiTokenCreateInput";
 
 @ArgsType()
 export class CreateApiTokenArgs {

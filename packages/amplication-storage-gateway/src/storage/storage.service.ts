@@ -1,9 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { readFileSync } from "fs";
+import { utimes, open } from "fs/promises";
 import { sync } from "glob";
 import { join } from "path";
-import { BASE_BUILDS_FOLDER, DEFAULT_BUILDS_FOLDER } from "../constants";
+import {
+  BUILD_ARTIFACTS_BASE_FOLDER,
+  DEFAULT_BUILDS_FOLDER,
+} from "../constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 
@@ -12,31 +16,24 @@ type FilesDictionary = { [name: string]: FileMeta };
 @Injectable()
 export class StorageService {
   private buildsFolder: string;
-  constructor(configService: ConfigService) {
-    const buildsFolder = configService.get<string>(BASE_BUILDS_FOLDER);
+
+  constructor(
+    configService: ConfigService<
+      {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        BUILD_ARTIFACTS_BASE_FOLDER: string;
+      },
+      true
+    >
+  ) {
+    const buildsFolder = configService.get<string>(BUILD_ARTIFACTS_BASE_FOLDER);
     this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
   }
 
-  private static buildFolder(
-    buildsFolder: string,
-    resourceId: string,
-    buildId: string
-  ) {
-    return join(buildsFolder, resourceId, buildId);
-  }
-
-  getBuildFilesList(
-    resourceId: string,
-    buildId: string,
-    relativePath: string = ""
-  ) {
+  getBuildFilesList(resourceId: string, buildId: string, relativePath = "") {
     const results: FilesDictionary = {};
 
-    const cwd = `${StorageService.buildFolder(
-      this.buildsFolder,
-      resourceId,
-      buildId
-    )}/${relativePath || ""}`;
+    const cwd = join(this.buildsFolder, resourceId, buildId, relativePath);
 
     console.log(`Current working directory is ${cwd}`);
 
@@ -78,11 +75,23 @@ export class StorageService {
     });
   }
 
-  fileContent(resourceId: string, buildId: string, path: string = ""): string {
-    const filePath = join(
-      StorageService.buildFolder(this.buildsFolder, resourceId, buildId),
-      path
-    );
+  fileContent(resourceId: string, buildId: string, path = ""): string {
+    const filePath = join(this.buildsFolder, resourceId, buildId, path);
     return readFileSync(filePath).toString();
+  }
+
+  async touch() {
+    const filename = "file.txt";
+    const time = new Date();
+
+    await utimes(`${this.buildsFolder}/${filename}`, time, time).catch(
+      async function (err) {
+        if ("ENOENT" !== err.code) {
+          throw err;
+        }
+        const fh = await open(filename, "a");
+        await fh.close();
+      }
+    );
   }
 }

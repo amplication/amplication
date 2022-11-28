@@ -1,14 +1,18 @@
+import { Snackbar, TextField } from "@amplication/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
 import { match } from "react-router-dom";
-import { validate } from "../util/formikValidateJsonSchema";
-
-import { Snackbar, TextField } from "@amplication/design-system";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
+import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import "./ResourceForm.scss";
 import { GET_RESOURCE } from "./ResourceHome";
@@ -21,6 +25,8 @@ type TData = {
   updateResource: models.Resource;
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["name"],
   properties: {
@@ -30,6 +36,11 @@ const FORM_SCHEMA = {
     },
     description: {
       type: "string",
+    },
+  },
+  errorMessage: {
+    properties: {
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };
@@ -50,14 +61,21 @@ function ResourceForm({ match }: Props) {
   const { trackEvent } = useTracking();
 
   const [updateResource, { error: updateError }] = useMutation<TData>(
-    UPDATE_RESOURCE
+    UPDATE_RESOURCE,
+    {
+      refetchQueries: [
+        {
+          query: GET_PROJECTS,
+        },
+      ],
+    }
   );
 
   const handleSubmit = useCallback(
     (data) => {
       const { name, description } = data;
       trackEvent({
-        eventName: "updateResourceInfo",
+        eventName: AnalyticsEventNames.ResourceInfoUpdate,
       });
       updateResource({
         variables: {

@@ -1,11 +1,11 @@
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
-import { UseGuards, UseFilters } from '@nestjs/common';
-import { UserEntity } from 'src/decorators/user.decorator';
-import { Account, User, Workspace } from 'src/models';
-import { UpdateAccountInput } from './dto/update-account.input';
-import { AccountService } from './account.service';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Resolver, Mutation, Query, Args } from "@nestjs/graphql";
+import { UseGuards, UseFilters } from "@nestjs/common";
+import { UserEntity } from "../../decorators/user.decorator";
+import { Account, User, Workspace } from "../../models";
+import { UpdateAccountInput } from "./dto/update-account.input";
+import { AccountService } from "./account.service";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 
 @Resolver(() => Account)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -21,11 +21,11 @@ export class AccountResolver {
   @Mutation(() => Account)
   async updateAccount(
     @UserEntity() user: User,
-    @Args('data') newAccountData: UpdateAccountInput
+    @Args("data") newAccountData: UpdateAccountInput
   ): Promise<Account> {
     return this.accountService.updateAccount({
       where: { id: user.account.id },
-      data: newAccountData
+      data: newAccountData,
     });
   }
 

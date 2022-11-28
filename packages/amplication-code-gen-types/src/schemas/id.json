@@ -4,5 +4,12 @@
   "title": "id",
   "type": "object",
   "additionalProperties": false,
-  "properties": {}
+  "required": ["idType"],
+  "properties": {
+    "idType": {
+      "type": "string",
+      "enum": ["CUID", "UUID", "AUTO_INCREMENT"],
+      "default": "CUID"
+    }
+  }
 }

@@ -1,27 +1,27 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { gql } from 'apollo-server-express';
+import { Test, TestingModule } from "@nestjs/testing";
+import { gql } from "apollo-server-express";
 import {
   ApolloServerTestClient,
-  createTestClient
-} from 'apollo-server-testing';
-import { INestApplication } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
-import { ConfigService } from '@nestjs/config';
-import { User, Account } from 'src/models';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { mockGqlAuthGuardCanActivate } from '../../../test/gql-auth-mock';
-import { AccountResolver } from './account.resolver';
-import { PrismaService } from '@amplication/prisma-db';
-import { AccountService } from './account.service';
+  createTestClient,
+} from "apollo-server-testing";
+import { INestApplication } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { ConfigService } from "@nestjs/config";
+import { User, Account } from "../../models";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { AccountResolver } from "./account.resolver";
+import { PrismaService } from "@amplication/prisma-db";
+import { AccountService } from "./account.service";
 
-const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_USER_ID = "exampleUserId";
 
-const EXAMPLE_ACCOUNT_ID = 'exampleAccountId';
-const EXAMPLE_EMAIL = 'exampleEmail';
-const EXAMPLE_FIRST_NAME = 'exampleFirstName';
-const EXAMPLE_LAST_NAME = 'exampleLastName';
-const EXAMPLE_PASSWORD = 'examplePassword';
+const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
+const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_FIRST_NAME = "exampleFirstName";
+const EXAMPLE_LAST_NAME = "exampleLastName";
+const EXAMPLE_PASSWORD = "examplePassword";
 
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
@@ -30,13 +30,13 @@ const EXAMPLE_ACCOUNT: Account = {
   email: EXAMPLE_EMAIL,
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
-  password: EXAMPLE_PASSWORD
+  password: EXAMPLE_PASSWORD,
 };
 
 const EXAMPLE_UPDATED_ACCOUNT = {
   ...EXAMPLE_ACCOUNT,
-  firstName: 'Example Updated First Name',
-  lastName: 'Example Updated Last Name'
+  firstName: "Example Updated First Name",
+  lastName: "Example Updated Last Name",
 };
 
 const EXAMPLE_USER: User = {
@@ -44,11 +44,11 @@ const EXAMPLE_USER: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   account: EXAMPLE_ACCOUNT,
-  isOwner: true
+  isOwner: true,
 };
 
 const UPDATE_ACCOUNT_MUTATION = gql`
-  mutation($data: UpdateAccountInput!) {
+  mutation ($data: UpdateAccountInput!) {
     updateAccount(data: $data) {
       id
       createdAt
@@ -81,7 +81,7 @@ const GET_ACCOUNT_QUERY = gql`
   }
 `;
 
-describe('AccountResolver', () => {
+describe("AccountResolver", () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -93,27 +93,27 @@ describe('AccountResolver', () => {
         {
           provide: AccountService,
           useClass: jest.fn(() => ({
-            updateAccount: updateAccountMock
-          }))
+            updateAccount: updateAccountMock,
+          })),
         },
         {
           provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn()
-          }))
+            error: jest.fn(),
+          })),
         },
         {
           provide: PrismaService,
-          useClass: jest.fn(() => ({}))
+          useClass: jest.fn(() => ({})),
         },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: jest.fn()
-          }))
-        }
+            get: jest.fn(),
+          })),
+        },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })]
+      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -125,9 +125,9 @@ describe('AccountResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should get current account', async () => {
+  it("should get current account", async () => {
     const res = await apolloClient.query({
-      query: GET_ACCOUNT_QUERY
+      query: GET_ACCOUNT_QUERY,
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -138,34 +138,34 @@ describe('AccountResolver', () => {
         email: EXAMPLE_ACCOUNT.email,
         firstName: EXAMPLE_ACCOUNT.firstName,
         lastName: EXAMPLE_ACCOUNT.lastName,
-        password: EXAMPLE_ACCOUNT.password
-      }
+        password: EXAMPLE_ACCOUNT.password,
+      },
     });
   });
 
-  it('should update an account', async () => {
+  it("should update an account", async () => {
     const variables = {
       data: {
         firstName: EXAMPLE_UPDATED_ACCOUNT.firstName,
-        lastName: EXAMPLE_UPDATED_ACCOUNT.lastName
-      }
+        lastName: EXAMPLE_UPDATED_ACCOUNT.lastName,
+      },
     };
     const res = await apolloClient.query({
       query: UPDATE_ACCOUNT_MUTATION,
-      variables
+      variables,
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       updateAccount: {
         ...EXAMPLE_UPDATED_ACCOUNT,
         createdAt: EXAMPLE_ACCOUNT.createdAt.toISOString(),
-        updatedAt: EXAMPLE_ACCOUNT.updatedAt.toISOString()
-      }
+        updatedAt: EXAMPLE_ACCOUNT.updatedAt.toISOString(),
+      },
     });
     expect(updateAccountMock).toBeCalledTimes(1);
     expect(updateAccountMock).toBeCalledWith({
       where: { id: EXAMPLE_ACCOUNT_ID },
-      data: variables.data
+      data: variables.data,
     });
   });
 });

@@ -1,48 +1,48 @@
-import { ArgumentsHost, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { TestingModule, Test } from '@nestjs/testing';
-import { Prisma } from '@amplication/prisma-db';
-import { ApolloError } from 'apollo-server-express';
-import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
-import { AmplicationError } from '../errors/AmplicationError';
+import { ArgumentsHost, NotFoundException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { TestingModule, Test } from "@nestjs/testing";
+import { Prisma } from "@amplication/prisma-db";
+import { ApolloError } from "apollo-server-express";
+import { AmplicationError } from "../errors/AmplicationError";
 import {
   createRequestData,
   GqlResolverExceptionsFilter,
   InternalServerError,
   PRISMA_CODE_UNIQUE_KEY_VIOLATION,
   RequestData,
-  UniqueKeyException
-} from './GqlResolverExceptions.filter';
+  UniqueKeyException,
+} from "./GqlResolverExceptions.filter";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
 const errorMock = jest.fn();
 const infoMock = jest.fn();
-const configServiceGetMock = jest.fn(() => 'production');
+const configServiceGetMock = jest.fn(() => "production");
 const prepareRequestDataMock = jest.fn(() => null);
 
-const EXAMPLE_ERROR_MESSAGE = 'Example Error Message';
-const EXAMPLE_FIELDS = ['exampleField', 'exampleOtherField'];
+const EXAMPLE_ERROR_MESSAGE = "Example Error Message";
+const EXAMPLE_FIELDS = ["exampleField", "exampleOtherField"];
 const EXAMPLE_PRISMA_UNKNOWN_ERROR = new Prisma.PrismaClientKnownRequestError(
-  'Example Prisma unknown error message',
-  'UNKNOWN_CODE',
+  "Example Prisma unknown error message",
+  "UNKNOWN_CODE",
   Prisma.prismaVersion.client
 );
 const EXAMPLE_ERROR = new Error(EXAMPLE_ERROR_MESSAGE);
-const EXAMPLE_QUERY = 'EXAMPLE_QUERY';
-const EXAMPLE_HOSTNAME = 'EXAMPLE_HOSTNAME';
-const EXAMPLE_IP = 'EXAMPLE_IP';
-const EXAMPLE_USER_ID = 'EXAMPLE_USER_ID';
+const EXAMPLE_QUERY = "EXAMPLE_QUERY";
+const EXAMPLE_HOSTNAME = "EXAMPLE_HOSTNAME";
+const EXAMPLE_IP = "EXAMPLE_IP";
+const EXAMPLE_USER_ID = "EXAMPLE_USER_ID";
 const EXAMPLE_REQUEST = {
   hostname: EXAMPLE_HOSTNAME,
-  ip: EXAMPLE_IP
+  ip: EXAMPLE_IP,
 };
 const EXAMPLE_BODY = {
-  query: EXAMPLE_QUERY
+  query: EXAMPLE_QUERY,
 };
 const EXAMPLE_USER = {
-  id: EXAMPLE_USER_ID
+  id: EXAMPLE_USER_ID,
 };
 
-describe('GqlResolverExceptionsFilter', () => {
+describe("GqlResolverExceptionsFilter", () => {
   let filter: GqlResolverExceptionsFilter;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -50,19 +50,19 @@ describe('GqlResolverExceptionsFilter', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: configServiceGetMock
-          }
+            get: configServiceGetMock,
+          },
         },
         {
           provide: AMPLICATION_LOGGER_PROVIDER,
           useValue: {
             error: errorMock,
-            info: infoMock
-          }
+            info: infoMock,
+          },
         },
-        GqlResolverExceptionsFilter
+        GqlResolverExceptionsFilter,
       ],
-      imports: null
+      imports: null,
     }).compile();
 
     filter = module.get<GqlResolverExceptionsFilter>(
@@ -73,15 +73,17 @@ describe('GqlResolverExceptionsFilter', () => {
 
     jest.clearAllMocks();
   });
-  const cases: Array<[
-    string,
-    Error,
-    Error,
-    [string, { requestData: RequestData | null }] | [Error] | null,
-    [string, { requestData: RequestData | null }] | null
-  ]> = [
+  const cases: Array<
     [
-      'PrismaClientKnownRequestError unique key',
+      string,
+      Error,
+      Error,
+      [string, { requestData: RequestData | null }] | [Error] | null,
+      [string, { requestData: RequestData | null }] | null
+    ]
+  > = [
+    [
+      "PrismaClientKnownRequestError unique key",
       new Prisma.PrismaClientKnownRequestError(
         EXAMPLE_ERROR_MESSAGE,
         PRISMA_CODE_UNIQUE_KEY_VIOLATION,
@@ -90,32 +92,32 @@ describe('GqlResolverExceptionsFilter', () => {
       ),
       new UniqueKeyException(EXAMPLE_FIELDS),
       null,
-      [new UniqueKeyException(EXAMPLE_FIELDS).message, { requestData: null }]
+      [new UniqueKeyException(EXAMPLE_FIELDS).message, { requestData: null }],
     ],
     [
-      'PrismaClientKnownRequestError unknown',
+      "PrismaClientKnownRequestError unknown",
       EXAMPLE_PRISMA_UNKNOWN_ERROR,
       new InternalServerError(),
       [EXAMPLE_PRISMA_UNKNOWN_ERROR],
-      null
+      null,
     ],
     [
-      'AmplicationError',
+      "AmplicationError",
       new AmplicationError(EXAMPLE_ERROR_MESSAGE),
       new ApolloError(EXAMPLE_ERROR_MESSAGE),
       null,
-      [EXAMPLE_ERROR_MESSAGE, { requestData: null }]
+      [EXAMPLE_ERROR_MESSAGE, { requestData: null }],
     ],
     [
-      'HttpException',
+      "HttpException",
       new NotFoundException(EXAMPLE_ERROR_MESSAGE),
       new ApolloError(EXAMPLE_ERROR_MESSAGE),
       null,
-      [EXAMPLE_ERROR_MESSAGE, { requestData: null }]
+      [EXAMPLE_ERROR_MESSAGE, { requestData: null }],
     ],
-    ['Error', EXAMPLE_ERROR, new InternalServerError(), [EXAMPLE_ERROR], null]
+    ["Error", EXAMPLE_ERROR, new InternalServerError(), [EXAMPLE_ERROR], null],
   ];
-  test.each(cases)('%s', (name, exception, expected, errorArgs, infoArgs) => {
+  test.each(cases)("%s", (name, exception, expected, errorArgs, infoArgs) => {
     const host = {} as ArgumentsHost;
     expect(filter.catch(exception, host)).toEqual(expected);
     if (errorArgs) {
@@ -129,50 +131,50 @@ describe('GqlResolverExceptionsFilter', () => {
   });
 });
 
-describe('createRequestData', () => {
+describe("createRequestData", () => {
   const cases: Array<[string, any, RequestData]> = [
     [
-      'with user and body',
+      "with user and body",
       { ...EXAMPLE_REQUEST, body: EXAMPLE_BODY, user: EXAMPLE_USER },
       {
         query: EXAMPLE_QUERY,
         hostname: EXAMPLE_HOSTNAME,
         ip: EXAMPLE_IP,
-        userId: EXAMPLE_USER_ID
-      }
+        userId: EXAMPLE_USER_ID,
+      },
     ],
     [
-      'without body',
+      "without body",
       { ...EXAMPLE_REQUEST, user: EXAMPLE_USER },
       {
         query: undefined,
         hostname: EXAMPLE_HOSTNAME,
         ip: EXAMPLE_IP,
-        userId: EXAMPLE_USER_ID
-      }
+        userId: EXAMPLE_USER_ID,
+      },
     ],
     [
-      'without user',
+      "without user",
       { ...EXAMPLE_REQUEST, body: EXAMPLE_BODY },
       {
         query: EXAMPLE_QUERY,
         hostname: EXAMPLE_HOSTNAME,
         ip: EXAMPLE_IP,
-        userId: undefined
-      }
+        userId: undefined,
+      },
     ],
     [
-      'without user any body',
+      "without user any body",
       EXAMPLE_REQUEST,
       {
         hostname: EXAMPLE_HOSTNAME,
         ip: EXAMPLE_IP,
         query: undefined,
-        userId: undefined
-      }
-    ]
+        userId: undefined,
+      },
+    ],
   ];
-  test.each(cases)('%s', (name, req, expected) => {
+  test.each(cases)("%s", (name, req, expected) => {
     expect(createRequestData(req)).toEqual(expected);
   });
 });

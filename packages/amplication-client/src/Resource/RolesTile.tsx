@@ -10,16 +10,13 @@ import {
 } from "@amplication/design-system";
 
 import { GET_ROLES } from "../Roles/RoleList";
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useTracking } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   resourceId: string;
-};
-
-const EVENT_DATA: TrackEvent = {
-  eventName: "rolesTileClick",
 };
 
 function RolesTile({ resourceId }: Props) {
@@ -34,15 +31,12 @@ function RolesTile({ resourceId }: Props) {
   });
   const { trackEvent } = useTracking();
 
-  const handleClick = useCallback(
-    (event) => {
-      trackEvent(EVENT_DATA);
-      history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles`
-      );
-    },
-    [history, trackEvent, resourceId, currentWorkspace, currentProject]
-  );
+  const handleClick = useCallback(() => {
+    trackEvent({ eventName: AnalyticsEventNames.RolesTileClick });
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles`
+    );
+  }, [history, trackEvent, resourceId, currentWorkspace, currentProject]);
 
   return (
     <OverviewSecondaryTile

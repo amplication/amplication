@@ -1,27 +1,27 @@
-import { Module } from '@nestjs/common';
-import { ExceptionFiltersModule } from 'src/filters/exceptionFilters.module';
-import { AccountModule } from './account/account.module';
-import { WorkspaceModule } from './workspace/workspace.module';
-import { ResourceModule } from './resource/resource.module';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { EntityModule } from './entity/entity.module';
-import { PermissionsModule } from './permissions/permissions.module';
-import { ConnectorRestApiModule } from './connectorRestApi/connectorRestApi.module';
-import { ConnectorRestApiCallModule } from './connectorRestApiCall/connectorRestApiCall.module';
-import { EntityPageModule } from './entityPage/entityPage.module';
-import { ResourceRoleModule } from './resourceRole/resourceRole.module';
-import { BuildModule } from './build/build.module';
-import { ActionModule } from './action/action.module';
-import { EnvironmentModule } from './environment/environment.module';
-import { CommitModule } from './commit/commit.module';
-import { MailModule } from './mail/mail.module';
-import { ServiceSettingsModule } from './serviceSettings/serviceSettings.module';
-import { SubscriptionModule } from './subscription/subscription.module';
-import { GitModule } from '@amplication/git-service';
-import { GitProviderModule } from './git/git.provider.module';
-import { ProjectModule } from './project/project.module';
-import { HealthModule } from './health/health.module';
+import { Module } from "@nestjs/common";
+import { ExceptionFiltersModule } from "../filters/exceptionFilters.module";
+import { AccountModule } from "./account/account.module";
+import { WorkspaceModule } from "./workspace/workspace.module";
+import { ResourceModule } from "./resource/resource.module";
+import { UserModule } from "./user/user.module";
+import { AuthModule } from "./auth/auth.module";
+import { EntityModule } from "./entity/entity.module";
+import { PermissionsModule } from "./permissions/permissions.module";
+import { ResourceRoleModule } from "./resourceRole/resourceRole.module";
+import { BuildModule } from "./build/build.module";
+import { ActionModule } from "./action/action.module";
+import { EnvironmentModule } from "./environment/environment.module";
+import { CommitModule } from "./commit/commit.module";
+import { MailModule } from "./mail/mail.module";
+import { ServiceSettingsModule } from "./serviceSettings/serviceSettings.module";
+import { SubscriptionModule } from "./subscription/subscription.module";
+import { GitModule } from "@amplication/git-utils";
+import { GitProviderModule } from "./git/git.provider.module";
+import { ProjectModule } from "./project/project.module";
+import { HealthModule } from "./health/health.module";
+import { PluginInstallationModule } from "./pluginInstallation/pluginInstallation.module";
+import { TopicModule } from "./topic/topic.module";
+import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
 
 @Module({
   imports: [
@@ -33,9 +33,6 @@ import { HealthModule } from './health/health.module';
     EntityModule,
     PermissionsModule,
     ExceptionFiltersModule,
-    ConnectorRestApiModule,
-    ConnectorRestApiCallModule,
-    EntityPageModule,
     ResourceRoleModule,
     BuildModule,
     ActionModule,
@@ -48,7 +45,10 @@ import { HealthModule } from './health/health.module';
     MailModule,
     SubscriptionModule,
     ProjectModule,
-    HealthModule
+    HealthModule,
+    PluginInstallationModule,
+    TopicModule,
+    ServiceTopicsModule,
   ],
   exports: [
     AccountModule,
@@ -58,9 +58,6 @@ import { HealthModule } from './health/health.module';
     AuthModule,
     EntityModule,
     PermissionsModule,
-    ConnectorRestApiModule,
-    ConnectorRestApiCallModule,
-    EntityPageModule,
     ResourceRoleModule,
     BuildModule,
     ActionModule,
@@ -73,7 +70,10 @@ import { HealthModule } from './health/health.module';
     GitModule,
     MailModule,
     SubscriptionModule,
-    ProjectModule
-  ]
+    ProjectModule,
+    PluginInstallationModule,
+    TopicModule,
+    ServiceTopicsModule,
+  ],
 })
 export class CoreModule {}

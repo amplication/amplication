@@ -1,5 +1,5 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { EnumGitProvider } from '../enums/EnumGitProvider';
+import { Field, InputType } from "@nestjs/graphql";
+import { EnumGitProvider } from "../enums/EnumGitProvider";
 
 @InputType()
 export class RemoteGitRepositoriesWhereUniqueInput {
@@ -8,4 +8,10 @@ export class RemoteGitRepositoriesWhereUniqueInput {
 
   @Field(() => EnumGitProvider, { nullable: false })
   gitProvider!: EnumGitProvider;
+
+  @Field(() => Number, { nullable: false })
+  limit!: number;
+
+  @Field(() => Number, { nullable: false })
+  page!: number;
 }

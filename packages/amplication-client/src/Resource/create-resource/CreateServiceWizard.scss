@@ -61,7 +61,7 @@ $max-width: 700px;
     text-align: center;
   }
 
-  h3 {  
+  h3 {
     @include regular-14;
     text-align: center;
     margin: 0px;
@@ -110,6 +110,12 @@ $max-width: 700px;
       color: var(--black80);
       margin-top: 4px;
       color: var(--black100);
+    }
+
+    &__loader {
+      .amp-loader {
+        background: var(--white);
+      }
     }
 
     &__tagline {

@@ -8,8 +8,12 @@ import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewProject.scss";
 
@@ -19,12 +23,19 @@ const INITIAL_VALUES: CreateProjectType = {
   name: "",
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["name"],
   properties: {
     name: {
       type: "string",
       minLength: 2,
+    },
+  },
+  errorMessage: {
+    properties: {
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };
@@ -50,7 +61,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
     {
       onCompleted: (data) => {
         trackEvent({
-          eventName: "createProject",
+          eventName: AnalyticsEventNames.ProjectCreate,
           projectName: data.createProject.name,
         });
         onProjectCreated();
@@ -75,7 +86,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
     <div className={CLASS_NAME}>
       <SvgThemeImage image={EnumImages.Entities} />
       <div className={`${CLASS_NAME}__instructions`}>
-        Give your new project a name
+        Give your new project a descriptive name
       </div>
       <Formik
         initialValues={INITIAL_VALUES}
@@ -100,11 +111,13 @@ const NewProject = ({ onProjectCreated }: Props) => {
                 autoComplete="off"
               />
               <Button
+                className={CLASS_NAME}
+                style={{ backgroundColor: "#7950ED", color: "#FFFFFF" }}
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 disabled={!formik.isValid || loading}
               >
-                Create Project
+                Create new project
               </Button>
             </Form>
           );

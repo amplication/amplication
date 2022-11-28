@@ -39,8 +39,8 @@ const useCommits = () => {
       const changesByResource = groupBy(
         commits[commitIdx]?.changes,
         (originChange) => {
-          if (!originChange.origin.resource) return;
-          return originChange.origin.resource.id;
+          if (!originChange.resource) return;
+          return originChange.resource.id;
         }
       );
       return Object.entries(changesByResource).map(([resourceId, changes]) => {

@@ -1,51 +1,51 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { gql } from 'apollo-server-express';
+import { Test, TestingModule } from "@nestjs/testing";
+import { gql } from "apollo-server-express";
 import {
   ApolloServerTestClient,
-  createTestClient
-} from 'apollo-server-testing';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { INestApplication } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
-import { AMPLICATION_LOGGER_PROVIDER } from '@amplication/nest-logger-module';
-import { ConfigService } from '@nestjs/config';
-import { BuildResolver } from './build.resolver';
-import { BuildService } from './build.service';
-import { ActionService } from '../action/action.service';
-import { UserService } from '../user/user.service';
-import { Build } from './dto/Build';
-import { Commit, Resource, User } from 'src/models/';
-import { Action } from '../action/dto';
-import { EnumBuildStatus } from './dto/EnumBuildStatus';
-import { CommitService } from '../commit/commit.service';
-import { EnumResourceType } from '@amplication/code-gen-types/dist/models';
-import { ResourceService } from '../resource/resource.service';
+  createTestClient,
+} from "apollo-server-testing";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { INestApplication } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
+import { ConfigService } from "@nestjs/config";
+import { BuildResolver } from "./build.resolver";
+import { BuildService } from "./build.service";
+import { ActionService } from "../action/action.service";
+import { UserService } from "../user/user.service";
+import { Build } from "./dto/Build";
+import { Commit, Resource, User } from "../../models";
+import { Action } from "../action/dto";
+import { EnumBuildStatus } from "./dto/EnumBuildStatus";
+import { CommitService } from "../commit/commit.service";
+import { EnumResourceType } from "@amplication/code-gen-types/models";
+import { ResourceService } from "../resource/resource.service";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
-const EXAMPLE_BUILD_ID = 'exampleBuildId';
-const EXAMPLE_COMMIT_ID = 'exampleCommitId';
-const EXAMPLE_RESOURCE_ID = 'exampleResourceId';
-const EXAMPLE_USER_ID = 'exampleUserId';
-const EXAMPLE_VERSION = 'exampleVersion';
-const EXAMPLE_ACTION_ID = 'exampleActionId';
-const EXAMPLE_MESSAGE = 'exampleMessage';
+const EXAMPLE_BUILD_ID = "exampleBuildId";
+const EXAMPLE_COMMIT_ID = "exampleCommitId";
+const EXAMPLE_RESOURCE_ID = "exampleResourceId";
+const EXAMPLE_USER_ID = "exampleUserId";
+const EXAMPLE_VERSION = "exampleVersion";
+const EXAMPLE_ACTION_ID = "exampleActionId";
+const EXAMPLE_MESSAGE = "exampleMessage";
 
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
-  isOwner: true
+  isOwner: true,
 };
 
 const EXAMPLE_ACTION: Action = {
   id: EXAMPLE_ACTION_ID,
-  createdAt: new Date()
+  createdAt: new Date(),
 };
 
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
-  message: EXAMPLE_MESSAGE
+  message: EXAMPLE_MESSAGE,
 };
 
 const EXAMPLE_BUILD: Build = {
@@ -55,7 +55,7 @@ const EXAMPLE_BUILD: Build = {
   version: EXAMPLE_VERSION,
   actionId: EXAMPLE_ACTION_ID,
   createdAt: new Date(),
-  commitId: EXAMPLE_COMMIT_ID
+  commitId: EXAMPLE_COMMIT_ID,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -63,10 +63,10 @@ const EXAMPLE_RESOURCE: Resource = {
   resourceType: EnumResourceType.Service,
   createdAt: new Date(),
   updatedAt: new Date(),
-  name: 'exampleName',
-  description: 'exampleDescription',
+  name: "exampleName",
+  description: "exampleDescription",
   builds: [EXAMPLE_BUILD],
-  gitRepositoryOverride: false
+  gitRepositoryOverride: false,
 };
 
 const FIND_MANY_BUILDS_QUERY = gql`
@@ -84,7 +84,7 @@ const FIND_MANY_BUILDS_QUERY = gql`
 `;
 
 const FIND_ONE_BUILD_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     build(where: { id: $id }) {
       id
       resourceId
@@ -98,7 +98,7 @@ const FIND_ONE_BUILD_QUERY = gql`
 `;
 
 const FIND_USER_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     build(where: { id: $id }) {
       createdBy {
         id
@@ -111,7 +111,7 @@ const FIND_USER_QUERY = gql`
 `;
 
 const FIND_ACTION_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     build(where: { id: $id }) {
       action {
         id
@@ -122,7 +122,7 @@ const FIND_ACTION_QUERY = gql`
 `;
 
 const ARCHIVE_URI_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     build(where: { id: $id }) {
       archiveURI
     }
@@ -130,7 +130,7 @@ const ARCHIVE_URI_QUERY = gql`
 `;
 
 const BUILD_STATUS_QUERY = gql`
-  query($id: String!) {
+  query ($id: String!) {
     build(where: { id: $id }) {
       status
     }
@@ -138,7 +138,7 @@ const BUILD_STATUS_QUERY = gql`
 `;
 
 const CREATE_BUILD_MUTATION = gql`
-  mutation($resourceId: String!, $commitId: String!, $message: String!) {
+  mutation ($resourceId: String!, $commitId: String!, $message: String!) {
     createBuild(
       data: {
         resource: { connect: { id: $resourceId } }
@@ -171,7 +171,7 @@ const buildServiceCalcBuildStatusMock = jest.fn(() => {
 
 const mockCanActivate = jest.fn(() => true);
 
-describe('BuildResolver', () => {
+describe("BuildResolver", () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 
@@ -186,47 +186,47 @@ describe('BuildResolver', () => {
             findMany: buildServiceFindManyMock,
             findOne: buildServiceFindOneMock,
             calcBuildStatus: buildServiceCalcBuildStatusMock,
-            create: buildServiceCreateMock
-          }))
+            create: buildServiceCreateMock,
+          })),
         },
         {
           provide: UserService,
           useClass: jest.fn(() => ({
-            findUser: userServiceFindUserMock
-          }))
+            findUser: userServiceFindUserMock,
+          })),
         },
         {
           provide: ActionService,
           useClass: jest.fn(() => ({
-            findOne: actionServiceFindOneMock
-          }))
+            findOne: actionServiceFindOneMock,
+          })),
         },
         {
           provide: CommitService,
           useClass: jest.fn(() => ({
-            findOne: commitServiceFindOneMock
-          }))
+            findOne: commitServiceFindOneMock,
+          })),
         },
         {
           provide: ResourceService,
           useClass: jest.fn(() => ({
-            findOne: resourceServiceFindOneMock
-          }))
+            findOne: resourceServiceFindOneMock,
+          })),
         },
         {
           provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
-            error: jest.fn()
-          }))
+            error: jest.fn(),
+          })),
         },
         {
           provide: ConfigService,
           useClass: jest.fn(() => ({
-            get: jest.fn()
-          }))
-        }
+            get: jest.fn(),
+          })),
+        },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })]
+      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -238,46 +238,46 @@ describe('BuildResolver', () => {
     apolloClient = createTestClient(graphqlModule.apolloServer);
   });
 
-  it('should find many builds', async () => {
+  it("should find many builds", async () => {
     const res = await apolloClient.query({
       query: FIND_MANY_BUILDS_QUERY,
-      variables: {}
+      variables: {},
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       builds: [
         {
           ...EXAMPLE_BUILD,
-          createdAt: EXAMPLE_BUILD.createdAt.toISOString()
-        }
-      ]
+          createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
+        },
+      ],
     });
     expect(buildServiceFindManyMock).toBeCalledTimes(1);
     expect(buildServiceFindManyMock).toBeCalledWith({});
   });
 
-  it('should find one build', async () => {
+  it("should find one build", async () => {
     const res = await apolloClient.query({
       query: FIND_ONE_BUILD_QUERY,
-      variables: { id: EXAMPLE_BUILD_ID }
+      variables: { id: EXAMPLE_BUILD_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       build: {
         ...EXAMPLE_BUILD,
-        createdAt: EXAMPLE_BUILD.createdAt.toISOString()
-      }
+        createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
+      },
     });
     expect(buildServiceFindOneMock).toBeCalledTimes(1);
     expect(buildServiceFindOneMock).toBeCalledWith({
-      where: { id: EXAMPLE_BUILD_ID }
+      where: { id: EXAMPLE_BUILD_ID },
     });
   });
 
-  it('should find a builds creating user', async () => {
+  it("should find a builds creating user", async () => {
     const res = await apolloClient.query({
       query: FIND_USER_QUERY,
-      variables: { id: EXAMPLE_BUILD_ID }
+      variables: { id: EXAMPLE_BUILD_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
@@ -286,86 +286,86 @@ describe('BuildResolver', () => {
           ...EXAMPLE_USER,
           createdAt: EXAMPLE_USER.createdAt.toISOString(),
           updatedAt: EXAMPLE_USER.updatedAt.toISOString(),
-          isOwner: true
-        }
-      }
+          isOwner: true,
+        },
+      },
     });
     expect(userServiceFindUserMock).toBeCalledTimes(1);
     expect(userServiceFindUserMock).toBeCalledWith({
-      where: { id: EXAMPLE_USER_ID }
+      where: { id: EXAMPLE_USER_ID },
     });
   });
 
-  it('should find a builds action', async () => {
+  it("should find a builds action", async () => {
     const res = await apolloClient.query({
       query: FIND_ACTION_QUERY,
-      variables: { id: EXAMPLE_BUILD_ID }
+      variables: { id: EXAMPLE_BUILD_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       build: {
         action: {
           ...EXAMPLE_ACTION,
-          createdAt: EXAMPLE_ACTION.createdAt.toISOString()
-        }
-      }
+          createdAt: EXAMPLE_ACTION.createdAt.toISOString(),
+        },
+      },
     });
     expect(actionServiceFindOneMock).toBeCalledTimes(1);
     expect(actionServiceFindOneMock).toBeCalledWith({
-      where: { id: EXAMPLE_ACTION_ID }
+      where: { id: EXAMPLE_ACTION_ID },
     });
   });
 
-  it('should return the build archive URI', async () => {
+  it("should return the build archive URI", async () => {
     const res = await apolloClient.query({
       query: ARCHIVE_URI_QUERY,
-      variables: { id: EXAMPLE_BUILD_ID }
+      variables: { id: EXAMPLE_BUILD_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       build: {
-        archiveURI: `/generated-apps/${EXAMPLE_BUILD_ID}.zip`
-      }
+        archiveURI: `/generated-apps/${EXAMPLE_BUILD_ID}.zip`,
+      },
     });
   });
 
-  it('should get a build status', async () => {
+  it("should get a build status", async () => {
     const res = await apolloClient.query({
       query: BUILD_STATUS_QUERY,
-      variables: { id: EXAMPLE_BUILD_ID }
+      variables: { id: EXAMPLE_BUILD_ID },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       build: {
-        status: EnumBuildStatus.Completed
-      }
+        status: EnumBuildStatus.Completed,
+      },
     });
     expect(buildServiceCalcBuildStatusMock).toBeCalledTimes(1);
     expect(buildServiceCalcBuildStatusMock).toBeCalledWith(EXAMPLE_BUILD_ID);
   });
 
-  it('should create a build', async () => {
+  it("should create a build", async () => {
     const args = {
       data: {
         resource: { connect: { id: EXAMPLE_RESOURCE_ID } },
         commit: { connect: { id: EXAMPLE_COMMIT_ID } },
-        message: EXAMPLE_MESSAGE
-      }
+        message: EXAMPLE_MESSAGE,
+      },
     };
     const res = await apolloClient.mutate({
       mutation: CREATE_BUILD_MUTATION,
       variables: {
         resourceId: EXAMPLE_RESOURCE_ID,
         commitId: EXAMPLE_COMMIT_ID,
-        message: EXAMPLE_MESSAGE
-      }
+        message: EXAMPLE_MESSAGE,
+      },
     });
     expect(res.errors).toBeUndefined();
     expect(res.data).toEqual({
       createBuild: {
         ...EXAMPLE_BUILD,
-        createdAt: EXAMPLE_BUILD.createdAt.toISOString()
-      }
+        createdAt: EXAMPLE_BUILD.createdAt.toISOString(),
+      },
     });
     expect(buildServiceCreateMock).toBeCalledTimes(1);
     expect(buildServiceCreateMock).toBeCalledWith(args);

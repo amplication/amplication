@@ -1,3 +1,4 @@
+import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
@@ -7,31 +8,48 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
+  CreatePrismaSchemaParams,
+  EventNames,
+  Module,
 } from "@amplication/code-gen-types";
 import { countBy } from "lodash";
 
 import { getEnumFields } from "../../util/entity";
+import pluginWrapper from "../../plugin-wrapper";
+import DsgContext from "../../dsg-context";
 
-export const CLIENT_GENERATOR = PrismaSchemaDSL.createGenerator(
-  "client",
-  "prisma-client-js"
+export const CUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
+  PrismaSchemaDSLTypes.CUID
 );
 
-export const DATA_SOURCE = {
-  name: "postgres",
-  provider: PrismaSchemaDSL.DataSourceProvider.PostgreSQL,
-  url: new PrismaSchemaDSL.DataSourceURLEnv("POSTGRESQL_URL"),
-};
-
-export const CUID_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
-  PrismaSchemaDSL.CUID
+export const UUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
+  PrismaSchemaDSLTypes.UUID
 );
 
-export const NOW_CALL_EXPRESSION = new PrismaSchemaDSL.CallExpression(
-  PrismaSchemaDSL.NOW
+export const INCREMENTAL_CALL_EXPRESSION =
+  new PrismaSchemaDSLTypes.CallExpression(PrismaSchemaDSLTypes.AUTO_INCREMENT);
+
+export const NOW_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
+  PrismaSchemaDSLTypes.NOW
 );
 
-export async function createPrismaSchema(entities: Entity[]): Promise<string> {
+export async function createPrismaSchema(
+  eventParams: CreatePrismaSchemaParams
+): Promise<Module[]> {
+  return await pluginWrapper(
+    createPrismaSchemaInternal,
+    EventNames.CreatePrismaSchema,
+    eventParams
+  );
+}
+
+export async function createPrismaSchemaInternal({
+  entities,
+  dataSource,
+  clientGenerator,
+}: CreatePrismaSchemaParams): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const MODULE_PATH = `${serverDirectories.baseDirectory}/prisma/schema.prisma`;
   const fieldNamesCount = countBy(
     entities.flatMap((entity) => entity.fields),
     "name"
@@ -45,17 +63,33 @@ export async function createPrismaSchema(entities: Entity[]): Promise<string> {
     return enumFields.map((field) => createPrismaEnum(field, entity));
   });
 
-  const schema = PrismaSchemaDSL.createSchema(models, enums, DATA_SOURCE, [
-    CLIENT_GENERATOR,
+  const prismaDataSource = {
+    name: dataSource.name,
+    provider: dataSource.provider,
+    url: dataSource.url,
+  };
+
+  const prismaClientGenerator = PrismaSchemaDSL.createGenerator(
+    clientGenerator.name,
+    clientGenerator.provider
+  );
+
+  const schema = PrismaSchemaDSL.createSchema(models, enums, prismaDataSource, [
+    prismaClientGenerator,
   ]);
 
-  return PrismaSchemaDSL.print(schema);
+  return [
+    {
+      path: MODULE_PATH,
+      code: await PrismaSchemaDSL.print(schema),
+    },
+  ];
 }
 
 export function createPrismaEnum(
   field: EntityField,
   entity: Entity
-): PrismaSchemaDSL.Enum {
+): PrismaSchemaDSLTypes.Enum {
   const { options } = field.properties as types.OptionSet;
   return PrismaSchemaDSL.createEnum(
     createEnumName(field, entity),
@@ -70,7 +104,7 @@ export function createEnumName(field: EntityField, entity: Entity): string {
 export function createPrismaModel(
   entity: Entity,
   fieldNamesCount: Record<string, number>
-): PrismaSchemaDSL.Model {
+): PrismaSchemaDSLTypes.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
     entity.fields.flatMap((field) =>
@@ -83,16 +117,16 @@ export function createPrismaFields(
   entity: Entity,
   fieldNamesCount: Record<string, number> = {}
 ):
-  | [PrismaSchemaDSL.ScalarField]
-  | [PrismaSchemaDSL.ObjectField]
-  | [PrismaSchemaDSL.ObjectField, PrismaSchemaDSL.ScalarField] {
+  | [PrismaSchemaDSLTypes.ScalarField]
+  | [PrismaSchemaDSLTypes.ObjectField]
+  | [PrismaSchemaDSLTypes.ObjectField, PrismaSchemaDSLTypes.ScalarField] {
   const { dataType, name, properties } = field;
   switch (dataType) {
     case EnumDataType.SingleLineText: {
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
+          PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           field.unique
@@ -103,7 +137,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
+          PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           field.unique
@@ -114,7 +148,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
+          PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           field.unique
@@ -125,7 +159,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.Int,
+          PrismaSchemaDSLTypes.ScalarType.Int,
           false,
           field.required,
           field.unique
@@ -136,7 +170,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.DateTime,
+          PrismaSchemaDSLTypes.ScalarType.DateTime,
           false,
           field.required,
           field.unique
@@ -147,7 +181,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.Float,
+          PrismaSchemaDSLTypes.ScalarType.Float,
           false,
           field.required,
           field.unique
@@ -158,7 +192,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.Boolean,
+          PrismaSchemaDSLTypes.ScalarType.Boolean,
           false,
           field.required,
           field.unique
@@ -169,7 +203,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
+          PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           field.unique
@@ -180,7 +214,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.Json,
+          PrismaSchemaDSLTypes.ScalarType.Json,
           false,
           field.required,
           field.unique
@@ -226,6 +260,13 @@ export function createPrismaFields(
 
       const scalarRelationFieldName = `${name}Id`;
 
+      const relatedEntityFiledId = relatedEntity.fields?.find(
+        (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
+      );
+
+      const { idType } =
+        (relatedEntityFiledId?.properties as types.Id) || "CUID";
+
       return [
         PrismaSchemaDSL.createObjectField(
           name,
@@ -241,7 +282,9 @@ export function createPrismaFields(
         // Prisma Scalar Relation Field
         PrismaSchemaDSL.createScalarField(
           scalarRelationFieldName,
-          PrismaSchemaDSL.ScalarType.String,
+          idType === "AUTO_INCREMENT"
+            ? PrismaSchemaDSLTypes.ScalarType.Int
+            : PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           !field.properties.allowMultipleSelection &&
@@ -273,16 +316,26 @@ export function createPrismaFields(
       ];
     }
     case EnumDataType.Id: {
+      const { idType } = (properties as types.Id) || "CUID";
+      const isAutoIncremental = idType === "AUTO_INCREMENT";
+      const isUUID = idType === "UUID";
+
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
+          isAutoIncremental
+            ? PrismaSchemaDSLTypes.ScalarType.Int
+            : PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           false,
           true,
           false,
-          CUID_CALL_EXPRESSION
+          isAutoIncremental
+            ? INCREMENTAL_CALL_EXPRESSION
+            : isUUID
+            ? UUID_CALL_EXPRESSION
+            : CUID_CALL_EXPRESSION
         ),
       ];
     }
@@ -290,7 +343,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.DateTime,
+          PrismaSchemaDSLTypes.ScalarType.DateTime,
           false,
           field.required,
           false,
@@ -304,7 +357,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.DateTime,
+          PrismaSchemaDSLTypes.ScalarType.DateTime,
           false,
           field.required,
           false,
@@ -317,8 +370,8 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
-          true,
+          PrismaSchemaDSLTypes.ScalarType.Json,
+          false,
           true
         ),
       ];
@@ -327,7 +380,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
+          PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           true
@@ -338,7 +391,7 @@ export function createPrismaFields(
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSL.ScalarType.String,
+          PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required
         ),

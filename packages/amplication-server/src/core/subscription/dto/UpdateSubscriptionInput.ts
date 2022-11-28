@@ -1,8 +1,8 @@
 import {
   EnumSubscriptionPlan,
   EnumSubscriptionStatus,
-  SubscriptionData
-} from './index';
+  SubscriptionData,
+} from "./index";
 
 export class UpdateSubscriptionInput {
   workspaceId: string;

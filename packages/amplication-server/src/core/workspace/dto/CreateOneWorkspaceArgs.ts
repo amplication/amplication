@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { WorkspaceCreateInput } from './WorkspaceCreateInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { WorkspaceCreateInput } from "./WorkspaceCreateInput";
 
 @ArgsType()
 export class CreateOneWorkspaceArgs {

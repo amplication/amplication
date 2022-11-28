@@ -7,6 +7,7 @@ const httpLink = createHttpLink({
   uri: `${process.env.REACT_APP_SERVER_URL}/graphql`,
 });
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
   return {

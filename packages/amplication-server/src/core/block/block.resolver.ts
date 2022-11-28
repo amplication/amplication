@@ -1,14 +1,14 @@
-import { UseFilters, UseGuards } from '@nestjs/common';
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { FindOneArgs } from 'src/dto';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { Block, BlockVersion, User } from 'src/models';
-import { UserService } from '../user/user.service';
-import { BlockService } from './block.service';
-import { FindManyBlockArgs, FindManyBlockVersionArgs } from './dto';
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { FindOneArgs } from "../../dto";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Block, BlockVersion, User } from "../../models";
+import { UserService } from "../user/user.service";
+import { BlockService } from "./block.service";
+import { FindManyBlockArgs, FindManyBlockVersionArgs } from "./dto";
 
 /** @todo add FieldResolver to return the settings, inputs, and outputs from the current version */
 
@@ -22,17 +22,17 @@ export class BlockResolver {
   ) {}
 
   @Query(() => [Block], {
-    nullable: false
+    nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, 'where.resource.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.resource.id")
   async blocks(@Args() args: FindManyBlockArgs): Promise<Block[]> {
     return this.blockService.findMany(args);
   }
 
   @Query(() => Block, {
-    nullable: false
+    nullable: false,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
   async block(@Args() args: FindOneArgs): Promise<Block> {
     return this.blockService.block(args);
   }
@@ -52,8 +52,8 @@ export class BlockResolver {
       ...args,
       where: {
         ...args.where,
-        block: { id: entity.id }
-      }
+        block: { id: entity.id },
+      },
     });
   }
 
@@ -62,8 +62,8 @@ export class BlockResolver {
     if (block.lockedByUserId) {
       return this.userService.findUser({
         where: {
-          id: block.lockedByUserId
-        }
+          id: block.lockedByUserId,
+        },
       });
     } else {
       return null;

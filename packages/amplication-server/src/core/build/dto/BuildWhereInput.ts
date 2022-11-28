@@ -1,17 +1,17 @@
-import { InputType, Field } from '@nestjs/graphql';
-import { WhereUniqueInput, DateTimeFilter, StringFilter } from 'src/dto';
+import { InputType, Field } from "@nestjs/graphql";
+import { WhereUniqueInput, DateTimeFilter, StringFilter } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class BuildWhereInput {
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   id?: StringFilter | null | undefined;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: DateTimeFilter | null | undefined;
 
@@ -19,22 +19,22 @@ export class BuildWhereInput {
   resource?: WhereUniqueInput;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true
+    nullable: true,
   })
   createdBy?: WhereUniqueInput | null | undefined;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   version?: StringFilter | null;
 
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   message?: StringFilter | null;
 
   @Field(() => WhereUniqueInput, {
-    nullable: true
+    nullable: true,
   })
   commit?: WhereUniqueInput;
 }

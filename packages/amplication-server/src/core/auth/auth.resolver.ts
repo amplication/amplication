@@ -1,24 +1,24 @@
-import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
-import { UseGuards, UseFilters } from '@nestjs/common';
-import { Auth, User, Account } from 'src/models';
+import { Resolver, Mutation, Query, Args } from "@nestjs/graphql";
+import { UseGuards, UseFilters } from "@nestjs/common";
+import { Auth, User, Account } from "../../models";
 import {
   LoginArgs,
   SignupArgs,
   ChangePasswordArgs,
   SetCurrentWorkspaceArgs,
   CreateApiTokenArgs,
-  ApiToken
-} from './dto';
+  ApiToken,
+} from "./dto";
 
-import { CompleteInvitationArgs } from '../workspace/dto';
+import { CompleteInvitationArgs } from "../workspace/dto";
 
-import { AuthService } from './auth.service';
-import { GqlResolverExceptionsFilter } from 'src/filters/GqlResolverExceptions.filter';
-import { UserEntity } from 'src/decorators/user.decorator';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
-import { FindOneArgs } from 'src/dto';
-import { AuthorizeContext } from 'src/decorators/authorizeContext.decorator';
-import { AuthorizableOriginParameter } from 'src/enums/AuthorizableOriginParameter';
+import { AuthService } from "./auth.service";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { UserEntity } from "../../decorators/user.decorator";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { FindOneArgs } from "../../dto";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 @Resolver(() => Auth)
 @UseFilters(GqlResolverExceptionsFilter)
 export class AuthResolver {
@@ -53,8 +53,8 @@ export class AuthResolver {
   ): Promise<ApiToken> {
     args.data.user = {
       connect: {
-        id: user.id
-      }
+        id: user.id,
+      },
     };
     return this.authService.createApiToken(args);
   }
@@ -80,7 +80,7 @@ export class AuthResolver {
 
   @Mutation(() => ApiToken)
   @UseGuards(GqlAuthGuard)
-  @AuthorizeContext(AuthorizableOriginParameter.ApiTokenId, 'where.id')
+  @AuthorizeContext(AuthorizableOriginParameter.ApiTokenId, "where.id")
   async deleteApiToken(
     @UserEntity() user: User,
     @Args() args: FindOneArgs
@@ -95,7 +95,7 @@ export class AuthResolver {
     @Args() args: SetCurrentWorkspaceArgs
   ): Promise<Auth> {
     if (!user.account) {
-      throw new Error('User has no account');
+      throw new Error("User has no account");
     }
     const token = await this.authService.setCurrentWorkspace(
       user.account.id,
@@ -111,7 +111,7 @@ export class AuthResolver {
     @Args() args: CompleteInvitationArgs
   ): Promise<Auth> {
     if (!user.account) {
-      throw new Error('User has no account');
+      throw new Error("User has no account");
     }
     const token = await this.authService.completeInvitation(user, args);
     return { token };

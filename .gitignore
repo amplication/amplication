@@ -1,13 +1,64 @@
 node_modules/
-terraform/envs/production/.terraform.lock.hcl
-terraform/envs/dev/.terraform.lock.hcl
 lerna-debug.log
-terraform/envs/*/.terraform.lock.hcl
 .DS_Store
 .idea/
-secrets/
+helm/**/secrets/
 lib/
 *.tgz
 values-secret*
 dist/
 packages/.server-id
+.amplication/storage/
+.env.local
+
+## Nx
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+nx-cloud.env
+
+# compiled output
+/dist
+/tmp
+/out-tsc
+
+# dependencies
+node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+infra/tilt/.temp/**
+!infra/tilt/.temp/.gitkeep
+.temp
+
+# Next.js
+.next
+.env.local
+
+src/schema.graphql

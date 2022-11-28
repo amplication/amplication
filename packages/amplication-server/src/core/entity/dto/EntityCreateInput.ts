@@ -1,32 +1,32 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { WhereParentIdInput } from 'src/dto';
+import { Field, InputType } from "@nestjs/graphql";
+import { WhereParentIdInput } from "../../../dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   displayName!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   pluralDisplayName!: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   description?: string;
 
   @Field(() => WhereParentIdInput, {
-    nullable: false
+    nullable: false,
   })
   resource!: WhereParentIdInput;
 }

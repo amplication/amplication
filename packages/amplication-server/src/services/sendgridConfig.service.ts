@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { GoogleSecretsManagerService } from 'src/services/googleSecretsManager.service';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from "@nestjs/common";
+import { GoogleSecretsManagerService } from "./googleSecretsManager.service";
+import { ConfigService } from "@nestjs/config";
 import {
   SendGridOptionsFactory,
-  SendGridModuleOptions
-} from '@ntegral/nestjs-sendgrid';
+  SendGridModuleOptions,
+} from "@ntegral/nestjs-sendgrid";
 
-export const SENDGRID_API_KEY_SECRET_VAR = 'SENDGRID_API_KEY_SECRET';
-export const SENDGRID_API_KEY_SECRET_NAME_VAR = 'SENDGRID_API_KEY_SECRET_NAME';
+export const SENDGRID_API_KEY_SECRET_VAR = "SENDGRID_API_KEY_SECRET";
+export const SENDGRID_API_KEY_SECRET_NAME_VAR = "SENDGRID_API_KEY_SECRET_NAME";
 
 export const MISSING_CLIENT_SECRET_ERROR = `Must provide either ${SENDGRID_API_KEY_SECRET_VAR} or ${SENDGRID_API_KEY_SECRET_NAME_VAR}`;
 
@@ -20,7 +20,7 @@ export class SendgridConfigService implements SendGridOptionsFactory {
 
   async createSendGridOptions(): Promise<SendGridModuleOptions> {
     return {
-      apiKey: await this.getSecret()
+      apiKey: await this.getSecret(),
     };
   }
 
@@ -32,7 +32,7 @@ export class SendgridConfigService implements SendGridOptionsFactory {
     const secretName = this.configService.get(SENDGRID_API_KEY_SECRET_NAME_VAR);
     if (!secretName) {
       console.error(MISSING_CLIENT_SECRET_ERROR);
-      return '';
+      return "";
     }
     return this.getSecretFromManager(secretName);
   }

@@ -1,32 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { isEmpty } from 'lodash';
+import { Injectable } from "@nestjs/common";
+import { isEmpty } from "lodash";
 import {
   EnumResourceType,
   Prisma,
-  PrismaService
-} from '@amplication/prisma-db';
-import { FindOneArgs } from 'src/dto';
-import { AmplicationError } from 'src/errors/AmplicationError';
-import { Resource } from 'src/models/Resource';
-import { GitOrganization } from 'src/models/GitOrganization';
-import { CreateGitOrganizationArgs } from './dto/args/CreateGitOrganizationArgs';
-import { DeleteGitOrganizationArgs } from './dto/args/DeleteGitOrganizationArgs';
-import { DeleteGitRepositoryArgs } from './dto/args/DeleteGitRepositoryArgs';
-import { GetGitInstallationUrlArgs } from './dto/args/GetGitInstallationUrlArgs';
-import { GitOrganizationFindManyArgs } from './dto/args/GitOrganizationFindManyArgs';
-import { ConnectGitRepositoryInput } from './dto/inputs/ConnectGitRepositoryInput';
-import { CreateGitRepositoryInput } from './dto/inputs/CreateGitRepositoryInput';
-import { RemoteGitRepositoriesWhereUniqueInput } from './dto/inputs/RemoteGitRepositoriesWhereUniqueInput';
-import { RemoteGitRepository } from './dto/objects/RemoteGitRepository';
-import { GitService, EnumGitOrganizationType } from '@amplication/git-service';
+  PrismaService,
+} from "@amplication/prisma-db";
+import { FindOneArgs } from "../../dto";
+import { AmplicationError } from "../../errors/AmplicationError";
+import { Resource } from "../../models/Resource";
+import { GitOrganization } from "../../models/GitOrganization";
+import { CreateGitOrganizationArgs } from "./dto/args/CreateGitOrganizationArgs";
+import { DeleteGitOrganizationArgs } from "./dto/args/DeleteGitOrganizationArgs";
+import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
+import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
+import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
+import { ConnectGitRepositoryInput } from "./dto/inputs/ConnectGitRepositoryInput";
+import { CreateGitRepositoryInput } from "./dto/inputs/CreateGitRepositoryInput";
+import { RemoteGitRepositoriesWhereUniqueInput } from "./dto/inputs/RemoteGitRepositoriesWhereUniqueInput";
+import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
+import { GitService, EnumGitOrganizationType } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
-  ResourceService
-} from '../resource/resource.service';
+  ResourceService,
+} from "../resource/resource.service";
 
 const GIT_REPOSITORY_EXIST =
-  'Git Repository already connected to an other Resource';
-const INVALID_GIT_REPOSITORY_ID = 'Git Repository does not exist';
+  "Git Repository already connected to an other Resource";
+const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
 
 @Injectable()
 export class GitProviderService {
@@ -38,13 +38,15 @@ export class GitProviderService {
 
   async getReposOfOrganization(
     args: RemoteGitRepositoriesWhereUniqueInput
-  ): Promise<RemoteGitRepository[]> {
+  ): Promise<RemoteGitRepos> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
     return await this.gitService.getReposOfOrganization(
       args.gitProvider,
-      installationId
+      installationId,
+      args.limit,
+      args.page
     );
   }
 
@@ -53,8 +55,8 @@ export class GitProviderService {
   ): Promise<Resource> {
     const organization = await this.getGitOrganization({
       where: {
-        id: args.gitOrganizationId
-      }
+        id: args.gitOrganizationId,
+      },
     });
 
     const remoteRepository = await this.gitService.createGitRepository(
@@ -75,15 +77,15 @@ export class GitProviderService {
     return await this.connectResourceGitRepository({
       name: remoteRepository.name,
       gitOrganizationId: args.gitOrganizationId,
-      resourceId: args.resourceId
+      resourceId: args.resourceId,
     });
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
     const gitRepository = await this.prisma.gitRepository.findUnique({
       where: {
-        id: args.gitRepositoryId
-      }
+        id: args.gitRepositoryId,
+      },
     });
 
     if (isEmpty(gitRepository)) {
@@ -92,8 +94,8 @@ export class GitProviderService {
 
     await this.prisma.gitRepository.delete({
       where: {
-        id: args.gitRepositoryId
-      }
+        id: args.gitRepositoryId,
+      },
     });
 
     return true;
@@ -102,11 +104,11 @@ export class GitProviderService {
   async disconnectResourceGitRepository(resourceId: string): Promise<Resource> {
     const resource = await this.prisma.resource.findUnique({
       where: {
-        id: resourceId
+        id: resourceId,
       },
       include: {
-        gitRepository: true
-      }
+        gitRepository: true,
+      },
     });
 
     if (isEmpty(resource)) throw new AmplicationError(INVALID_RESOURCE_ID);
@@ -119,28 +121,28 @@ export class GitProviderService {
 
     await this.prisma.gitRepository.update({
       where: {
-        id: resource.gitRepositoryId
+        id: resource.gitRepositoryId,
       },
       data: {
         resources: {
-          disconnect: resourcesToDisconnect
-        }
-      }
+          disconnect: resourcesToDisconnect,
+        },
+      },
     });
 
     const countResourcesConnected = await this.prisma.gitRepository
       .findUnique({
         where: {
-          id: resource.gitRepositoryId
-        }
+          id: resource.gitRepositoryId,
+        },
       })
       .resources();
 
     if (countResourcesConnected.length === 0) {
       await this.prisma.gitRepository.delete({
         where: {
-          id: resource.gitRepositoryId
-        }
+          id: resource.gitRepositoryId,
+        },
       });
     }
 
@@ -152,8 +154,8 @@ export class GitProviderService {
   ): Promise<Resource> {
     const resource = await this.prisma.resource.findUnique({
       where: {
-        id: resourceId
-      }
+        id: resourceId,
+      },
     });
 
     if (isEmpty(resource)) throw new AmplicationError(INVALID_RESOURCE_ID);
@@ -166,8 +168,8 @@ export class GitProviderService {
       .findFirst({
         where: {
           projectId: resource.projectId,
-          resourceType: EnumResourceType.ProjectConfiguration
-        }
+          resourceType: EnumResourceType.ProjectConfiguration,
+        },
       })
       .gitRepository();
 
@@ -176,15 +178,15 @@ export class GitProviderService {
     }
     const resourceWithProjectRepository = await this.prisma.resource.update({
       where: {
-        id: resourceId
+        id: resourceId,
       },
       data: {
         gitRepository: {
           connect: {
-            id: projectConfigurationRepository.id
-          }
-        }
-      }
+            id: projectConfigurationRepository.id,
+          },
+        },
+      },
     });
     return resourceWithProjectRepository;
   }
@@ -192,10 +194,10 @@ export class GitProviderService {
   async connectResourceGitRepository({
     resourceId,
     name,
-    gitOrganizationId
+    gitOrganizationId,
   }: ConnectGitRepositoryInput): Promise<Resource> {
     const gitRepository = await this.prisma.gitRepository.findFirst({
-      where: { resources: { some: { id: resourceId } } }
+      where: { resources: { some: { id: resourceId } } },
     });
 
     if (gitRepository) {
@@ -204,8 +206,8 @@ export class GitProviderService {
 
     const resource = await this.resourceService.resource({
       where: {
-        id: resourceId
-      }
+        id: resourceId,
+      },
     });
 
     const resourcesToConnect = await this.getInheritProjectResources(
@@ -218,14 +220,14 @@ export class GitProviderService {
       data: {
         name: name,
         resources: { connect: resourcesToConnect },
-        gitOrganization: { connect: { id: gitOrganizationId } }
-      }
+        gitOrganization: { connect: { id: gitOrganizationId } },
+      },
     });
 
     return await this.prisma.resource.findUnique({
       where: {
-        id: resourceId
-      }
+        id: resourceId,
+      },
     });
   }
 
@@ -234,29 +236,30 @@ export class GitProviderService {
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
 
-    const gitRemoteOrganization = await this.gitService.getGitRemoteOrganization(
-      installationId,
-      gitProvider
-    );
+    const gitRemoteOrganization =
+      await this.gitService.getGitRemoteOrganization(
+        installationId,
+        gitProvider
+      );
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {
         installationId: installationId,
-        provider: gitProvider
-      }
+        provider: gitProvider,
+      },
     });
 
     if (gitOrganization) {
       return await this.prisma.gitOrganization.update({
         where: {
-          id: gitOrganization.id
+          id: gitOrganization.id,
         },
         data: {
           provider: gitProvider,
           installationId: installationId,
           name: gitRemoteOrganization.name,
-          type: gitRemoteOrganization.type
-        }
+          type: gitRemoteOrganization.type,
+        },
       });
     }
 
@@ -264,14 +267,14 @@ export class GitProviderService {
       data: {
         workspace: {
           connect: {
-            id: args.data.workspaceId
-          }
+            id: args.data.workspaceId,
+          },
         },
         installationId: installationId,
         name: gitRemoteOrganization.name,
         provider: gitProvider,
-        type: gitRemoteOrganization.type
-      }
+        type: gitRemoteOrganization.type,
+      },
     });
   }
 
@@ -315,8 +318,8 @@ export class GitProviderService {
       if (isDelete) {
         await this.prisma.gitOrganization.delete({
           where: {
-            id: gitOrganizationId
-          }
+            id: gitOrganizationId,
+          },
         });
       } else {
         throw new AmplicationError(
@@ -333,8 +336,8 @@ export class GitProviderService {
     return (
       await this.prisma.gitOrganization.findUnique({
         where: {
-          id: gitOrganizationId
-        }
+          id: gitOrganizationId,
+        },
       })
     ).installationId;
   }
@@ -353,21 +356,21 @@ export class GitProviderService {
           OR: [
             {
               projectId: projectId,
-              gitRepositoryOverride: false
+              gitRepositoryOverride: false,
             },
             {
-              id: resourceId
-            }
-          ]
-        }
+              id: resourceId,
+            },
+          ],
+        },
       });
 
-      resourcesToConnect = resources.map(r => ({ id: r.id }));
+      resourcesToConnect = resources.map((r) => ({ id: r.id }));
     } else {
       resourcesToConnect = [
         {
-          id: resourceId
-        }
+          id: resourceId,
+        },
       ];
     }
     return resourcesToConnect;

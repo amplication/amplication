@@ -1,21 +1,16 @@
 {
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "include": [],
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": false,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "es2017",
-    "lib": ["ES2020"],
-    "sourceMap": true,
-    "baseUrl": "./",
-    "outDir": "./dist",
-    "incremental": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true
+    "resolveJsonModule": true
   },
-  "include": ["src"]
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
 }

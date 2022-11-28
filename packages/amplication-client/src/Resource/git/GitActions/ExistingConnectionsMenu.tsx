@@ -62,9 +62,7 @@ export default function ExistingConnectionsMenu({
                   />
                 </SelectMenuItem>
               ))}
-              <div className={`select-menu_item ${CLASS_NAME}__hr`}>
-                <hr />
-              </div>
+              <hr className={`${CLASS_NAME}__hr`} />
               <SelectMenuItem onSelectionChange={onAddGitOrganization}>
                 <span>Add another organization</span>
                 <Icon
