@@ -20,7 +20,7 @@ env:
 jobs:
   ci:
     name: Continuous Integration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       affected: ${{ steps.set-affected.outputs.affected }}
     steps:
@@ -81,7 +81,7 @@ jobs:
   dockerize:
     if: ${{ needs.ci.outputs.affected != '[]' }}
     name: Dockerize
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: ci
     strategy:
       matrix:

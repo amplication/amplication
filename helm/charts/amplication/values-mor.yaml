@@ -24,7 +24,7 @@ amplication-client:
     env:
       NX_REACT_APP_DATA_SOURCE: "https://server-custom.amplication-dev.com/graphql"
       NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-custom.amplication-dev.com/github"
-      NX_REACT_APP_GITHUB_CLIENT_ID: value
+      NX_REACT_APP_GITHUB_AUTH_ENABLED: value
 
 amplication-server:
   ingress:

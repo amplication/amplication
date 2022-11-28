@@ -40,7 +40,9 @@ const USER: Entity = {
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
-      properties: {},
+      properties: {
+        idType: "CUID",
+      },
       required: true,
       unique: false,
       searchable: true,
@@ -279,7 +281,9 @@ const PROFILE: Entity = {
       name: "id",
       displayName: "Id",
       dataType: EnumDataType.Id,
-      properties: {},
+      properties: {
+        idType: "UUID",
+      },
       required: true,
       unique: false,
       searchable: true,

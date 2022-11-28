@@ -22,6 +22,13 @@ export const CUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
   PrismaSchemaDSLTypes.CUID
 );
 
+export const UUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
+  PrismaSchemaDSLTypes.UUID
+);
+
+export const INCREMENTAL_CALL_EXPRESSION =
+  new PrismaSchemaDSLTypes.CallExpression(PrismaSchemaDSLTypes.AUTO_INCREMENT);
+
 export const NOW_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
   PrismaSchemaDSLTypes.NOW
 );
@@ -253,6 +260,13 @@ export function createPrismaFields(
 
       const scalarRelationFieldName = `${name}Id`;
 
+      const relatedEntityFiledId = relatedEntity.fields?.find(
+        (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
+      );
+
+      const { idType } =
+        (relatedEntityFiledId?.properties as types.Id) || "CUID";
+
       return [
         PrismaSchemaDSL.createObjectField(
           name,
@@ -268,7 +282,9 @@ export function createPrismaFields(
         // Prisma Scalar Relation Field
         PrismaSchemaDSL.createScalarField(
           scalarRelationFieldName,
-          PrismaSchemaDSLTypes.ScalarType.String,
+          idType === "AUTO_INCREMENT"
+            ? PrismaSchemaDSLTypes.ScalarType.Int
+            : PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           !field.properties.allowMultipleSelection &&
@@ -300,16 +316,26 @@ export function createPrismaFields(
       ];
     }
     case EnumDataType.Id: {
+      const { idType } = (properties as types.Id) || "CUID";
+      const isAutoIncremental = idType === "AUTO_INCREMENT";
+      const isUUID = idType === "UUID";
+
       return [
         PrismaSchemaDSL.createScalarField(
           name,
-          PrismaSchemaDSLTypes.ScalarType.String,
+          isAutoIncremental
+            ? PrismaSchemaDSLTypes.ScalarType.Int
+            : PrismaSchemaDSLTypes.ScalarType.String,
           false,
           field.required,
           false,
           true,
           false,
-          CUID_CALL_EXPRESSION
+          isAutoIncremental
+            ? INCREMENTAL_CALL_EXPRESSION
+            : isUUID
+            ? UUID_CALL_EXPRESSION
+            : CUID_CALL_EXPRESSION
         ),
       ];
     }

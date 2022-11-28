@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useContext, useState } from "react";
+import { useCallback, useMemo, useContext, useState } from "react";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { types } from "@amplication/code-gen-types";
@@ -188,7 +188,7 @@ const EntityField = () => {
             )}
           </div>
           <EntityFieldForm
-            isDisabled={
+            isSystemDataType={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
             }
             onSubmit={handleSubmit}
