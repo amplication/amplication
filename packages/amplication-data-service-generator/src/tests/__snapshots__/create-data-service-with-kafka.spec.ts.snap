@@ -8347,6 +8347,25 @@ export const generateKafkaClientOptions = (): KafkaOptions => {
   };
 };
 ",
+  "server/src/kafka/kafka.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { ClientsModule } from \\"@nestjs/microservices\\";
+import { generateKafkaClientOptions } from \\"./generateKafkaClientOptions\\";
+import { KafkaService } from \\"./kafka.service\\";
+
+@Module({
+  imports: [
+    ClientsModule.register([
+      {
+        name: \\"KAFKA_CLIENT\\",
+        ...generateKafkaClientOptions(),
+      },
+    ]),
+  ],
+  providers: [KafkaService],
+  exports: [KafkaService, ClientsModule],
+})
+export class KafkaModule {}
+",
   "server/src/kafka/kafka.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { KafkaServiceBase } from \\"./base/kafka.service.base\\";
 
