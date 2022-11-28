@@ -67,6 +67,7 @@
     "ajv-errors": "^1.0.1",
     "analytics-node": "^4.0.1",
     "apollo-server-express": "^3.10.2",
+    "assert": "^2.0.0",
     "ast-types": "^0.14.2",
     "bcrypt": "^5.0.1",
     "chalk": "^5.1.2",
