@@ -35,7 +35,9 @@ export interface PrintResultType {
 
 export interface ContextUtil {
   skipDefaultBehavior: boolean;
-  abortGeneration: boolean;
+  abortGeneration: (msg: string) => void;
+  abortMessage?: string;
+  abort: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
 export interface DsgContext extends DSGResourceData {

@@ -57,7 +57,7 @@ const pluginWrapper: PluginWrapper = async (
 
   try {
     context.utils.skipDefaultBehavior = false;
-    context.utils.abortGeneration = false;
+    context.utils.abort = false;
     if (!context.plugins.hasOwnProperty(event)) return func(args);
 
     const beforePlugins = context.plugins[event]?.before || [];
@@ -93,7 +93,13 @@ const pluginWrapper: PluginWrapper = async (
         error
       )}`,
     });
-    return context.utils.abortGeneration ? process.exit(0) : [];
+
+    if (context.utils.abort) {
+      context.logger.error(context.utils.abortMessage);
+      throw Error();
+    }
+
+    return [];
   }
 };
 

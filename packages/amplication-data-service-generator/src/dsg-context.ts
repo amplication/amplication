@@ -10,7 +10,12 @@ import { readPluginStaticModules } from "./read-static-modules";
 
 const contextUtil = {
   skipDefaultBehavior: false,
-  abortGeneration: false,
+  abortGeneration: (msg: string) => {
+    DsgContext.utils.abortMessage = msg;
+    DsgContext.utils.abort = true;
+  },
+  abort: false,
+  abortMessage: '',
   importStaticModules: readPluginStaticModules,
 };
 
