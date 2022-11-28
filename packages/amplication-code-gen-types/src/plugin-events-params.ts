@@ -57,6 +57,17 @@ export interface CreateEntityControllerSpecParams extends EventParams {
   controllerId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
+
+export interface CreateUserInfoParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  filePath: string;
+}
+export interface CreateTokenPayloadInterfaceParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  filePath: string;
+}
 export interface CreateServerAuthParams extends EventParams {
   srcDir: string;
 }

@@ -1,15 +1,44 @@
 import { Module } from "../../..";
 import DsgContext from "../../../dsg-context";
-import { types } from "@amplication/code-gen-types";
+import {
+  CreateTokenPayloadInterfaceParams,
+  EventNames,
+  types,
+} from "@amplication/code-gen-types";
 import { readFile } from "../../../util/module";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
 import { getUserIdType } from "../../../util/get-user-id-type";
+import pluginWrapper from "../../../plugin-wrapper";
 
-export async function createTokenPayload(): Promise<Module> {
+const templatePath = require.resolve("./token-payload-interface.template.ts");
+
+export async function createTokenPayloadInterface(): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const authDir = `${serverDirectories.srcDirectory}/auth`;
+  const template = await readFile(templatePath);
+  const templateMapping = prepareTemplateMapping();
+  const filePath = `${authDir}/ITokenService.ts`;
+  return pluginWrapper(
+    createTokenPayloadInterfaceInternal,
+    EventNames.CreateTokenPayloadInterface,
+    { template, templateMapping, filePath }
+  );
+}
+
+async function createTokenPayloadInterfaceInternal({
+  template,
+  templateMapping,
+  filePath,
+}: CreateTokenPayloadInterfaceParams): Promise<Module[]> {
+  interpolate(template, templateMapping);
+  removeTSClassDeclares(template);
+
+  return [{ code: print(template).code, path: filePath }];
+}
+
+function prepareTemplateMapping() {
   const idType = getUserIdType();
 
   /* eslint-disable @typescript-eslint/naming-convention */
@@ -21,15 +50,5 @@ export async function createTokenPayload(): Promise<Module> {
     CUID: builders.identifier("string"),
   };
 
-  const templatePath = require.resolve("./token-payload-interface.template.ts");
-  const file = await readFile(templatePath);
-
-  interpolate(file, {
-    ID_TYPE: idTypeTSOptions[idType],
-  });
-  removeTSClassDeclares(file);
-
-  const filePath = `${authDir}/ITokenService.ts`;
-
-  return { code: print(file).code, path: filePath };
+  return { ID_TYPE: idTypeTSOptions[idType] };
 }
