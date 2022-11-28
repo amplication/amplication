@@ -1,5 +1,4 @@
 import { SelectMenuItem } from "@amplication/design-system";
-import { EnumResourceType } from "@amplication/prisma-db";
 import React, { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
