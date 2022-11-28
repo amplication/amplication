@@ -10,7 +10,7 @@ env:
 jobs:
   ci:
     name: Continuous Integration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       affected: ${{ steps.set-affected.outputs.affected }}
     steps:
@@ -68,7 +68,7 @@ jobs:
           echo ::set-output name=affected::"$(npx nx print-affected --all --type=app | jq -c .projects)"
   dockerize:
     name: Dockerize
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: ci
     strategy:
       matrix:

@@ -315,6 +315,9 @@ const prismaEntityVersionUpdateMock = jest.fn(() => {
 const prismaEntityFieldFindManyMock = jest.fn(() => {
   return [EXAMPLE_ENTITY_FIELD];
 });
+const prismaEntityFieldDeleteMock = jest.fn(() => {
+  return;
+});
 
 const prismaEntityFieldFindFirstMock = jest.fn(
   (args: Prisma.EntityFieldFindUniqueArgs) => {
@@ -369,6 +372,7 @@ describe("EntityService", () => {
               create: prismaEntityFieldCreateMock,
               update: prismaEntityFieldUpdateMock,
               findMany: prismaEntityFieldFindManyMock,
+              delete: prismaEntityFieldDeleteMock,
             },
             entityPermission: {
               findMany: prismaEntityPermissionFindManyMock,
@@ -534,7 +538,6 @@ describe("EntityService", () => {
       await service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
     ).toEqual(EXAMPLE_ENTITY);
 
-    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
     expect(prismaEntityFindFirstMock).toBeCalledWith({
       where: {
         id: EXAMPLE_ENTITY_ID,
@@ -542,7 +545,6 @@ describe("EntityService", () => {
       },
     });
 
-    expect(prismaEntityUpdateMock).toBeCalledTimes(2);
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
   });
 

@@ -8,7 +8,7 @@ const CLASS_NAME = "confirmation-dialog";
 export type Props = {
   isOpen: boolean;
   title: string;
-  message: string;
+  message: string | React.ReactNode;
   confirmButton: {
     label?: string;
     icon?: string;
