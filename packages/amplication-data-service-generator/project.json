@@ -36,7 +36,7 @@
       ],
       "outputs": ["{projectRoot}/node_modules"],
       "options": {
-        "commands": ["npm ci"],
+        "commands": ["npm ci", "ts-node ./scripts/update-version.ts"],
         "parallel": false,
         "cwd": "packages/amplication-data-service-generator"
       }

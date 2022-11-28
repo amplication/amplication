@@ -43,6 +43,13 @@ async function createServerInternal(
     logger,
   } = DsgContext.getInstance;
 
+  const dsgVersion = require("../../package.json").version;
+  logger.info(`running DSG version ${dsgVersion}`);
+  await createLog({
+    level: "info",
+    message: `running DSG version ${dsgVersion}`,
+  });
+
   await createLog({
     level: "info",
     message: `Server path: ${serverDirectories.baseDirectory}`,
