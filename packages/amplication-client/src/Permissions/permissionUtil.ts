@@ -6,14 +6,14 @@ export function preparePermissionsByAction(
   availableActions: PermissionAction[],
   permissions?: models.EntityPermission[] | null
 ): PermissionByActionName {
-  let defaultGroups = Object.fromEntries(
+  const defaultGroups = Object.fromEntries(
     availableActions.map((action) => [
       action.action.toString(),
       getDefaultEntityPermission(action.action),
     ])
   );
 
-  let groupedValues = keyBy(permissions, (permission) => permission.action);
+  const groupedValues = keyBy(permissions, (permission) => permission.action);
 
   return {
     ...defaultGroups,

@@ -28,8 +28,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
   });
 
   useEffect(() => {
-    if (!pendingChangesData || !pendingChangesData.pendingChanges.length)
-      return;
+    if (!pendingChangesData) return;
 
     setPendingChanges(pendingChangesData.pendingChanges);
     setPendingChangesMap(

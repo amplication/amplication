@@ -7,6 +7,10 @@ import { installedPlugins } from "./pluginInstallation";
 
 jest.setTimeout(100000);
 
+jest.mock("./create-log", () => ({
+  createLog: jest.fn(),
+}));
+
 describe("createDataService", () => {
   test("creates resource as expected", async () => {
     const modules = await createDataService({

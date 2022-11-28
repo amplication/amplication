@@ -4,7 +4,6 @@ import { plural } from "pluralize";
 import { Module, EventNames } from "@amplication/code-gen-types";
 import { formatCode } from "../util/module";
 import { readStaticModules } from "../read-static-modules";
-import { updatePackageJSONs } from "../update-package-jsons";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
@@ -21,6 +20,8 @@ import { createRolesModule } from "./create-roles-module";
 import { createDotEnvModule } from "./create-dotenv";
 import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
+import { createAdminUIPackageJson } from "./package-json/create-package-json";
+import { createLog } from "../create-log";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -30,7 +31,7 @@ const API_PATHNAME = "/api";
 export function createAdminModules(): Promise<Module[]> {
   return pluginWrapper(
     createAdminModulesInternal,
-    EventNames.CreateAdminModules,
+    EventNames.CreateAdminUI,
     {}
   );
 }
@@ -47,20 +48,30 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   } = DsgContext.getInstance;
 
   logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
+  await createLog({
+    level: "info",
+    message: `Admin path: ${clientDirectories.baseDirectory}`,
+  });
+
   logger.info("Creating admin...");
+  await createLog({ level: "info", message: "Creating admin..." });
+
   logger.info("Copying static modules...");
-  const rawStaticModules = await readStaticModules(
+  await createLog({ level: "info", message: "Copying static modules..." });
+
+  const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     clientDirectories.baseDirectory
   );
-  const staticModules = updatePackageJSONs(
-    rawStaticModules,
-    clientDirectories.baseDirectory,
-    {
-      name: `@${paramCase(appInfo.name)}/admin`,
-      version: appInfo.version,
-    }
-  );
+
+  const packageJson = await createAdminUIPackageJson({
+    updateProperties: [
+      {
+        name: `@${paramCase(appInfo.name)}/admin`,
+        version: appInfo.version,
+      },
+    ],
+  });
 
   /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
    * currently the files were manually copied to /admin/static/src/util
@@ -124,6 +135,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   }));
   return [
     ...staticModules,
+    ...packageJson,
     ...publicFilesModules,
     ...formattedModules,
     dotEnvModule,

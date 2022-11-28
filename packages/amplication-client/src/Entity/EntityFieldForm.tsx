@@ -23,15 +23,19 @@ export type Values = {
   required: boolean;
   searchable: boolean;
   description: string | null;
-  properties: Object;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  properties: {
+    relatedEntityId?: string;
+    allowMultipleSelection?: string;
+  };
 };
 
 type Props = {
   onSubmit: (values: Values) => void;
-  isDisabled?: boolean;
   defaultValues?: Partial<models.EntityField>;
   resourceId: string;
   entityDisplayName: string;
+  isSystemDataType?: boolean;
 };
 
 const FORM_SCHEMA = {
@@ -65,9 +69,9 @@ export const INITIAL_VALUES: Values = {
 const EntityFieldForm = ({
   onSubmit,
   defaultValues = {},
-  isDisabled,
   resourceId,
   entityDisplayName,
+  isSystemDataType,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -96,16 +100,18 @@ const EntityFieldForm = ({
         );
         //validate the field dynamic properties
         const schema = getSchemaForDataType(values.dataType);
+        // eslint-disable-next-line @typescript-eslint/ban-types
         const propertiesError = validate<Object>(values.properties, schema);
 
         // Ignore related field ID error
         if ("relatedFieldId" in propertiesError) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           delete propertiesError.relatedFieldId;
         }
 
         if (!isEmpty(propertiesError)) {
-          errors.properties = propertiesError;
+          errors.properties = propertiesError as any; // TODO: remove eslint rules and fix this
         }
 
         return errors;
@@ -118,47 +124,51 @@ const EntityFieldForm = ({
 
         return (
           <Form childrenAsBlocks onKeyDown={onKeyDown}>
-            {!isDisabled && <FormikAutoSave debounceMS={1000} />}
+            <FormikAutoSave debounceMS={1000} />
 
             <DisplayNameField
               name="displayName"
               label="Display Name"
-              disabled={isDisabled}
+              disabled={isSystemDataType}
               required
             />
-            <NameField name="name" disabled={isDisabled} required />
+            <NameField name="name" disabled={isSystemDataType} required />
             <OptionalDescriptionField
               name="description"
               label="Description"
-              disabled={isDisabled}
+              disabled={isSystemDataType}
             />
+
             <div>
               <ToggleField
                 name="unique"
                 label="Unique Field"
-                disabled={isDisabled}
+                disabled={isSystemDataType}
               />
             </div>
             <div>
               <ToggleField
                 name="required"
                 label="Required Field"
-                disabled={isDisabled}
+                disabled={isSystemDataType}
               />
             </div>
             <div>
               <ToggleField
                 name="searchable"
                 label="Searchable"
-                disabled={isDisabled}
+                disabled={isSystemDataType}
               />
             </div>
             {!SYSTEM_DATA_TYPES.has(formik.values.dataType) && (
-              <DataTypeSelectField label="Data Type" disabled={isDisabled} />
+              <DataTypeSelectField
+                label="Data Type"
+                disabled={isSystemDataType}
+              />
             )}
+
             <SchemaFields
               schema={schema}
-              isDisabled={isDisabled}
               resourceId={resourceId}
               entityDisplayName={entityDisplayName}
             />

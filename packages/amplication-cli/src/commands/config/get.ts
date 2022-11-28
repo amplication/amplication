@@ -1,20 +1,20 @@
-import { ConfiguredCommand } from '../../configured-command';
-import { allowedProperties } from '../../properties';
+import { ConfiguredCommand } from "../../configured-command";
+import { allowedProperties } from "../../properties";
 
 export default class ConfigGet extends ConfiguredCommand {
-  static description = 'get a property value';
+  static description = "get a property value";
 
   static examples = [
-    'amp config:get AMP_CURRENT_RESOURCE',
-    'amp config:get AMP_SERVER_URL',
-    'amp config:get AMP_OUTPUT_FORMAT',
+    "amp config:get AMP_CURRENT_RESOURCE",
+    "amp config:get AMP_SERVER_URL",
+    "amp config:get AMP_OUTPUT_FORMAT",
   ];
 
   static args = [
     {
-      name: 'property',
+      name: "property",
       required: true,
-      description: 'name of property',
+      description: "name of property",
     },
   ];
 

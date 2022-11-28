@@ -95,10 +95,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           onDismiss={handleNewEntityClick}
           title="New Entity"
         >
-          <NewEntity 
-            resourceId={resource} 
-            onSuccess={handleNewEntityClick} 
-          />
+          <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
         </Dialog>
         <div className={`${CLASS_NAME}__header`}>
           <SearchField
@@ -116,7 +113,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           </Button>
         </div>
         <div className={`${CLASS_NAME}__title`}>
-          {data?.entities.length} {pluralize(data?.entities.length, 'Entity', 'Entities')}
+          {data?.entities.length}{" "}
+          {pluralize(data?.entities.length, "Entity", "Entities")}
         </div>
         {loading && <CircularProgress centerToParent />}
 
@@ -127,6 +125,12 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               entity={entity}
               resourceId={resource}
               onError={setError}
+              relatedEntities={data.entities.filter(
+                (dataEntity) =>
+                  dataEntity.fields.some(
+                    (field) => field.properties.relatedEntityId === entity.id
+                  ) && dataEntity.id !== entity.id
+              )}
             />
           ))}
         </div>
@@ -168,6 +172,11 @@ export const GET_ENTITIES = gql`
           firstName
           lastName
         }
+      }
+      fields(where: { dataType: { equals: Lookup } }) {
+        permanentId
+        displayName
+        properties
       }
       versions(take: 1, orderBy: { versionNumber: Desc }) {
         versionNumber

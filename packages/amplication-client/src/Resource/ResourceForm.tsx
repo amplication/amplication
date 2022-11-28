@@ -5,9 +5,13 @@ import React, { useCallback } from "react";
 import { match } from "react-router-dom";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
-import { validate } from "../util/formikValidateJsonSchema";
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import "./ResourceForm.scss";
@@ -21,6 +25,8 @@ type TData = {
   updateResource: models.Resource;
 };
 
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+
 const FORM_SCHEMA = {
   required: ["name"],
   properties: {
@@ -30,6 +36,11 @@ const FORM_SCHEMA = {
     },
     description: {
       type: "string",
+    },
+  },
+  errorMessage: {
+    properties: {
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };
@@ -64,7 +75,7 @@ function ResourceForm({ match }: Props) {
     (data) => {
       const { name, description } = data;
       trackEvent({
-        eventName: "updateResourceInfo",
+        eventName: AnalyticsEventNames.ResourceInfoUpdate,
       });
       updateResource({
         variables: {

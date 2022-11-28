@@ -74,8 +74,8 @@ function ApplicationAuthSettingForm({ match }: Props) {
                   <h3>Authentication Providers</h3>
                 </div>
                 <p className={`${CLASS_NAME}__description`}>
-                  Select the authentication method to be used in the generated
-                  resource.
+                  Select the authentication method you want to use in the
+                  generated app.
                 </p>
 
                 <div className={`${CLASS_NAME}__space`}>

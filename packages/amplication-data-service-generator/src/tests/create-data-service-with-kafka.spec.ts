@@ -4,9 +4,13 @@ import entities from "./entities";
 import roles from "./roles";
 import { EnumResourceType } from "../models";
 import { DSGResourceData, Topic } from "@amplication/code-gen-types";
-import { EnumMessagePatternConnectionOptions } from "@amplication/code-gen-types/dist/models";
+import { EnumMessagePatternConnectionOptions } from "@amplication/code-gen-types";
 
 jest.setTimeout(100000);
+
+jest.mock("./create-log", () => ({
+  createLog: jest.fn(),
+}));
 
 describe("createDataService", () => {
   test("creates resource as expected", async () => {

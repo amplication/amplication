@@ -3,7 +3,6 @@ import { paramCase } from "param-case";
 import {
   Module,
   EventNames,
-  Entity,
   CreateServerParams,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../read-static-modules";
@@ -15,16 +14,18 @@ import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
 import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
-import { createSeedModule } from "./seed/create-seed";
+import { createSeed } from "./seed/create-seed";
 import DsgContext from "../dsg-context";
 import { ENV_VARIABLES } from "./constants";
 import { createAuthModules } from "./auth/createAuth";
-import { createPackageJson } from "./package-json/create-package-json";
+import { createServerPackageJson } from "./package-json/create-package-json";
 import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
 import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
-import { USER_ENTITY_NAME } from "./user-entity";
+import { createLog } from "../create-log";
+import { createUserInfo } from "./auth/user-info/create-user-info";
+import { createTokenPayload } from "./auth/token/create-token-payload-interface";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -43,40 +44,66 @@ async function createServerInternal(
     DTOs: dtos,
     logger,
   } = DsgContext.getInstance;
+
+  await createLog({
+    level: "info",
+    message: `Server path: ${serverDirectories.baseDirectory}`,
+  });
   logger.info(`Server path: ${serverDirectories.baseDirectory}`);
+  await createLog({ level: "info", message: "Creating server..." });
   logger.info("Creating server...");
+  await createLog({ level: "info", message: "Copying static modules..." });
   logger.info("Copying static modules...");
 
   const staticModules = await readStaticModules(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
   );
-  const packageJsonModule = await createPackageJson({
-    updateValues: {
-      name: `@${paramCase(appInfo.name)}/server`,
-      version: appInfo.version,
-    },
+  const packageJsonModule = await createServerPackageJson({
+    updateProperties: [
+      {
+        name: `@${paramCase(appInfo.name)}/server`,
+        version: appInfo.version,
+      },
+    ],
   });
 
+  await createLog({ level: "info", message: "Creating resources..." });
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
 
+  await createLog({ level: "info", message: "Creating User Info..." });
+  logger.info("Creating User Info...");
+  const userInfo = await createUserInfo();
+
+  await createLog({
+    level: "info",
+    message: "Creating Token Payload Interface...",
+  });
+  logger.info("Token Payload Interface...");
+  const tokenPayloadInterface = await createTokenPayload();
+
+  await createLog({ level: "info", message: "Creating Auth module..." });
   logger.info("Creating Auth module...");
   const authModules = await createAuthModules();
 
+  await createLog({ level: "info", message: "Creating swagger..." });
   logger.info("Creating swagger...");
-  const swaggerModule = await createSwagger();
+  const swagger = await createSwagger();
 
-  const userEntity = entities.find(
-    (entity) => entity.name === USER_ENTITY_NAME
-  );
+  await createLog({ level: "info", message: "Creating seed script..." });
   logger.info("Creating seed script...");
-  const seedModule = await createSeedModule(userEntity as Entity);
+  const seedModule = await createSeed();
 
+  await createLog({
+    level: "info",
+    message: "Creating Message broker modules...",
+  });
   logger.info("Creating Message broker modules...");
   const messageBrokerModules = await createMessageBroker({});
 
+  await createLog({ level: "info", message: "Creating application module..." });
   logger.info("Creating application module...");
   const appModule = await createAppModule({
     modulesFiles: [...resourcesModules, ...staticModules],
@@ -85,13 +112,16 @@ async function createServerInternal(
   const createdModules = [
     ...resourcesModules,
     ...dtoModules,
-    swaggerModule,
+    ...swagger,
     ...appModule,
-    seedModule,
+    ...seedModule,
+    userInfo,
+    tokenPayloadInterface,
     ...authModules,
     ...messageBrokerModules,
   ];
 
+  await createLog({ level: "info", message: "Formatting code..." });
   logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
@@ -102,9 +132,14 @@ async function createServerInternal(
     code: formatJson(module.code),
   }));
 
+  await createLog({ level: "info", message: "Creating Prisma schema..." });
   logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
+  await createLog({
+    level: "info",
+    message: "Creating access control grants...",
+  });
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);
   const dotEnvModule = await createDotEnvModule({

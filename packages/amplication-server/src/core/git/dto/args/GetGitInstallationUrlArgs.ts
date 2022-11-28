@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { GitGetInstallationUrlInput } from '../inputs/GitGetInstallationUrlInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { GitGetInstallationUrlInput } from "../inputs/GitGetInstallationUrlInput";
 
 @ArgsType()
 export class GetGitInstallationUrlArgs {

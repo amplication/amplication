@@ -1,5 +1,5 @@
-import { ArgsType, Field } from '@nestjs/graphql';
-import { ConnectorRestApiCallCreateInput } from './ConnectorRestApiCallCreateInput';
+import { ArgsType, Field } from "@nestjs/graphql";
+import { ConnectorRestApiCallCreateInput } from "./ConnectorRestApiCallCreateInput";
 
 @ArgsType()
 export class CreateConnectorRestApiCallArgs {

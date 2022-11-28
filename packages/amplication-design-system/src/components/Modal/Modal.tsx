@@ -7,6 +7,7 @@ interface Props {
   open: boolean;
   fullScreen: boolean;
   css?: string;
+  children?: React.ReactNode;
 }
 
 const Transition = React.forwardRef(function Transition(

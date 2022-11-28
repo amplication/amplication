@@ -2,7 +2,6 @@ import React, { useContext, useMemo } from "react";
 import { Icon, SkeletonWrapper } from "@amplication/design-system";
 import { isEmpty } from "lodash";
 import { GET_LAST_COMMIT_BUILDS } from "../VersionControl/hooks/commitQueries";
-
 import { ClickableId } from "../Components/ClickableId";
 import { AppContext } from "../context/appContext";
 import GitRepoDetails from "../Resource/git/GitRepoDetails";
@@ -11,6 +10,7 @@ import * as models from "../models";
 import { useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { PUSH_TO_GITHUB_STEP_NAME } from "../VersionControl/BuildSteps";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TDataCommit = {
   commits: models.Commit[];
@@ -18,7 +18,7 @@ type TDataCommit = {
 
 const CLASS_NAME = "workspace-footer";
 
-const WorkspaceFooter: React.FC<{}> = () => {
+const WorkspaceFooter: React.FC<unknown> = () => {
   const {
     currentWorkspace,
     currentProject,
@@ -60,7 +60,7 @@ const WorkspaceFooter: React.FC<{}> = () => {
       id={lastCommit.id}
       label="Commit ID"
       eventData={{
-        eventName: "lastCommitIdClick",
+        eventName: AnalyticsEventNames.LastCommitIdClick,
       }}
     />
   );
@@ -71,7 +71,7 @@ const WorkspaceFooter: React.FC<{}> = () => {
       to={`/${currentWorkspace?.id}/${currentProject?.id}/${lastResourceBuild.resourceId}/builds/${lastResourceBuild.id}`}
       id={lastResourceBuild.id}
       eventData={{
-        eventName: "lastBuildIdClick",
+        eventName: AnalyticsEventNames.LastBuildIdClick,
       }}
     />
   );

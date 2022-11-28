@@ -1,8 +1,10 @@
-import React, { useCallback, useContext } from "react";
+import { useCallback, useContext } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
-import { validate } from "../util/formikValidateJsonSchema";
-
+import {
+  validate,
+  validationErrorMessages,
+} from "../util/formikValidateJsonSchema";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
@@ -12,10 +14,13 @@ import "./WorkspaceForm.scss";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import ProjectSideBar from "../Project/ProjectSideBar";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   updateWorkspace: models.Workspace;
 };
+
+const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name"],
@@ -23,6 +28,11 @@ const FORM_SCHEMA = {
     name: {
       type: "string",
       minLength: 2,
+    },
+  },
+  errorMessage: {
+    properties: {
+      name: AT_LEAST_TWO_CHARARCTERS,
     },
   },
 };
@@ -34,15 +44,14 @@ function WorkspaceForm() {
 
   const { trackEvent } = useTracking();
 
-  const [updateWorkspace, { error: updateError }] = useMutation<TData>(
-    UPDATE_WORKSPACE
-  );
+  const [updateWorkspace, { error: updateError }] =
+    useMutation<TData>(UPDATE_WORKSPACE);
 
   const handleSubmit = useCallback(
     (newData) => {
       const { name } = newData;
       trackEvent({
-        eventName: "updateWorkspaceInfo",
+        eventName: AnalyticsEventNames.WorkspaceInfoUpdate,
       });
       currentWorkspace &&
         updateWorkspace({
@@ -60,7 +69,10 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <PageContent pageTitle="Workspace settings" sideContent={<ProjectSideBar />}>
+    <PageContent
+      pageTitle="Workspace settings"
+      sideContent={<ProjectSideBar />}
+    >
       <div className={CLASS_NAME}>
         <h2>Workspace Settings</h2>
         {currentWorkspace && (

@@ -31,7 +31,7 @@ export const DeleteEntityField = ({
   onError,
 }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const { addEntity, } = useContext(AppContext);
+  const { addEntity } = useContext(AppContext);
 
   const [deleteEntityField, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY_FIELD,

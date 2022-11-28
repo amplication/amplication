@@ -1,46 +1,46 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from "@nestjs/graphql";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ApiToken {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   name!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   userId!: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   token?: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   previewChars!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   lastAccessAt!: Date;
 }

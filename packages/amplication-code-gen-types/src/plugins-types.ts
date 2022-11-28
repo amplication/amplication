@@ -59,8 +59,9 @@ export type PluginMap = {
 export enum EventNames {
   CreateEntityController = "CreateEntityController",
   CreateEntityControllerBase = "CreateEntityControllerBase",
-  CreateAuthModules = "createAuthModules",
-  CreateAdminModules = "createAdminModules",
+  CreateEntityControllerSpec = "CreateEntityControllerSpec",
+  CreateServerAuth = "CreateServerAuth",
+  CreateAdminUI = "CreateAdminUI",
   CreateServer = "CreateServer",
   CreateServerAppModule = "CreateServerAppModule",
   CreateServerDotEnv = "CreateServerDotEnv",
@@ -75,7 +76,14 @@ export enum EventNames {
   CreateServerDockerCompose = "CreateServerDockerCompose",
   CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
   CreatePrismaSchema = "CreatePrismaSchema",
-  CreatePackageJson = "CreatePackageJson",
+  CreateServerPackageJson = "CreateServerPackageJson",
+  CreateAdminUIPackageJson = "CreateAdminUIPackageJson",
+  CreateEntityModule = "CreateEntityModule",
+  CreateEntityModuleBase = "CreateEntityModuleBase",
+  CreateEntityResolver = "CreateEntityResolver",
+  CreateEntityResolverBase = "CreateEntityResolverBase",
+  CreateSwagger = "CreateSwagger",
+  CreateSeed = "CreateSeed",
 }
 
 export interface AmplicationPlugin {

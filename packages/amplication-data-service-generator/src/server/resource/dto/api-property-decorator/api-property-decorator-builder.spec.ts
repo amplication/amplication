@@ -43,10 +43,9 @@ describe("Testing the generation of the ApiProperty decorator", () => {
     it("should be require:true", () => {
       const { decorator } = getScopeDecorator(false);
 
-      const requiredProperty = (getDecoratorBody(
-        decorator
-      )[0] as namedTypes.ObjectExpression)
-        .properties[0] as namedTypes.ObjectProperty;
+      const requiredProperty = (
+        getDecoratorBody(decorator)[0] as namedTypes.ObjectExpression
+      ).properties[0] as namedTypes.ObjectProperty;
       expect((requiredProperty.value as namedTypes.BooleanLiteral).value).toBe(
         true
       );
@@ -83,8 +82,10 @@ describe("Testing the generation of the ApiProperty decorator", () => {
     it("should have type property", () => {
       const decorator = getScopeDecorator();
       expect(
-        (getObjectProperty(getDecoratorBody(decorator))
-          .key as namedTypes.Identifier).name
+        (
+          getObjectProperty(getDecoratorBody(decorator))
+            .key as namedTypes.Identifier
+        ).name
       ).toBe(TYPE);
     });
   });
@@ -97,8 +98,10 @@ describe("Testing the generation of the ApiProperty decorator", () => {
 });
 
 const getDecoratorTitle = (decorator: namedTypes.Decorator) => {
-  return ((decorator.expression as namedTypes.CallExpression)
-    .callee as namedTypes.Identifier).name;
+  return (
+    (decorator.expression as namedTypes.CallExpression)
+      .callee as namedTypes.Identifier
+  ).name;
 };
 const getDecoratorBody = (decorator: namedTypes.Decorator) => {
   return (decorator.expression as namedTypes.CallExpression)

@@ -1,14 +1,14 @@
-import cli from 'cli-ux';
-import { flags } from '@oclif/command';
-import { ConfiguredCommand } from '../../configured-command';
-import chalk from 'chalk';
-import { updateEntity } from '../../api';
-import { format } from '../../flags/format-flag';
-import { entity } from '../../flags/entity-flag';
-import { ENTITY_COLUMNS } from './index';
+import cli from "cli-ux";
+import { flags } from "@oclif/command";
+import { ConfiguredCommand } from "../../configured-command";
+import chalk from "chalk";
+import { updateEntity } from "../../api";
+import { format } from "../../flags/format-flag";
+import { entity } from "../../flags/entity-flag";
+import { ENTITY_COLUMNS } from "./index";
 
 export default class EntitiesUpdate extends ConfiguredCommand {
-  static description = 'update an entity';
+  static description = "update an entity";
 
   static examples = [
     'amp entities:update --name="my new entity name"',
@@ -24,19 +24,19 @@ export default class EntitiesUpdate extends ConfiguredCommand {
 
     name: flags.string({
       required: false,
-      description: 'name of the entity',
+      description: "name of the entity",
     }),
     displayName: flags.string({
       required: false,
-      description: 'display name of the entity',
+      description: "display name of the entity",
     }),
     pluralDisplayName: flags.string({
       required: false,
-      description: 'plural display name of the entity',
+      description: "plural display name of the entity",
     }),
     description: flags.string({
       required: false,
-      description: 'description of the entity',
+      description: "description of the entity",
     }),
   };
 

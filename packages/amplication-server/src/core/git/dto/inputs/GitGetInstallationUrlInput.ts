@@ -1,8 +1,8 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { EnumGitProvider } from '../enums/EnumGitProvider';
+import { Field, InputType } from "@nestjs/graphql";
+import { EnumGitProvider } from "../enums/EnumGitProvider";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class GitGetInstallationUrlInput {
   workspaceId!: string;

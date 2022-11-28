@@ -87,12 +87,12 @@ const initialContext: AppContextInterface = {
   errorCreateMessageBroker: undefined,
 };
 
-export const AppContext = React.createContext<AppContextInterface>(
-  initialContext
-);
+export const AppContext =
+  React.createContext<AppContextInterface>(initialContext);
 
 export const AppContextProvider: React.FC<{
   newVal: AppContextInterface;
+  children: React.ReactNode;
 }> = ({ children, newVal }) => (
   <AppContext.Provider value={{ ...initialContext, ...newVal }}>
     {children}

@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { FindOneArgs } from '../../dto';
-import { IBlock, User } from '../../models';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { BlockService } from '../block/block.service';
+import { Injectable } from "@nestjs/common";
+import { FindOneArgs } from "../../dto";
+import { IBlock, User } from "../../models";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { BlockService } from "../block/block.service";
 import {
   CreateBlockArgs,
   FindManyBlockTypeArgs,
-  UpdateBlockArgs
-} from '../block/dto';
-import { UserEntity } from '../../decorators/user.decorator';
+  UpdateBlockArgs,
+} from "../block/dto";
+import { UserEntity } from "../../decorators/user.decorator";
+import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
   FindManyArgs extends FindManyBlockTypeArgs,
   CreateArgs extends CreateBlockArgs,
-  UpdateArgs extends UpdateBlockArgs
+  UpdateArgs extends UpdateBlockArgs,
+  DeleteArgs extends DeleteBlockArgs
 > {
   abstract blockType: EnumBlockType;
 
@@ -34,8 +36,8 @@ export abstract class BlockTypeService<
         ...args,
         data: {
           ...args.data,
-          blockType: this.blockType
-        }
+          blockType: this.blockType,
+        },
       },
       user.id
     );
@@ -44,9 +46,13 @@ export abstract class BlockTypeService<
   async update(args: UpdateArgs, @UserEntity() user: User): Promise<T> {
     return this.blockService.update<T>(
       {
-        ...args
+        ...args,
       },
       user
     );
+  }
+
+  async delete(args: DeleteArgs, @UserEntity() user: User): Promise<T> {
+    return await this.blockService.delete(args, user);
   }
 }

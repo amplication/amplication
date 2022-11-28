@@ -1,4 +1,5 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
 import {
   createPrismaFields,
   CUID_CALL_EXPRESSION,
@@ -114,7 +115,7 @@ const EXAMPLE_LOOKUP_ENTITY: Entity = {
 
 const DATA_SOURCE_CODE = `datasource ${DATA_SOURCE.name} {
   provider = "${DATA_SOURCE.provider}"
-  url      = env("${DATA_SOURCE.urlEnv}")
+  url      = env("${DATA_SOURCE.url}")
 }`;
 
 const HEADER = [DATA_SOURCE_CODE, GENERATOR_CODE].join("\n\n");
@@ -194,19 +195,21 @@ model ${EXAMPLE_LOOKUP_ENTITY_NAME} {
 });
 
 describe("createPrismaFields", () => {
-  const cases: Array<[
-    string,
-    EnumDataType,
-    EntityField["properties"],
-    PrismaSchemaDSL.ScalarField | PrismaSchemaDSL.ObjectField
-  ]> = [
+  const cases: Array<
+    [
+      string,
+      EnumDataType,
+      EntityField["properties"],
+      PrismaSchemaDSLTypes.ScalarField | PrismaSchemaDSLTypes.ObjectField
+    ]
+  > = [
     [
       "SingleLineText",
       EnumDataType.SingleLineText,
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.String,
+        PrismaSchemaDSLTypes.ScalarType.String,
         false,
         true
       ),
@@ -217,7 +220,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.String,
+        PrismaSchemaDSLTypes.ScalarType.String,
         false,
         true
       ),
@@ -228,7 +231,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.String,
+        PrismaSchemaDSLTypes.ScalarType.String,
         false,
         true
       ),
@@ -239,7 +242,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.Int,
+        PrismaSchemaDSLTypes.ScalarType.Int,
         false,
         true
       ),
@@ -250,7 +253,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.DateTime,
+        PrismaSchemaDSLTypes.ScalarType.DateTime,
         false,
         true
       ),
@@ -261,7 +264,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.Float,
+        PrismaSchemaDSLTypes.ScalarType.Float,
         false,
         true
       ),
@@ -272,7 +275,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.Boolean,
+        PrismaSchemaDSLTypes.ScalarType.Boolean,
         false,
         true
       ),
@@ -283,7 +286,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.String,
+        PrismaSchemaDSLTypes.ScalarType.String,
         false,
         true
       ),
@@ -294,7 +297,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.Json,
+        PrismaSchemaDSLTypes.ScalarType.Json,
         false,
         true
       ),
@@ -345,7 +348,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.String,
+        PrismaSchemaDSLTypes.ScalarType.String,
         false,
         true,
         false,
@@ -360,7 +363,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.DateTime,
+        PrismaSchemaDSLTypes.ScalarType.DateTime,
         false,
         true,
         false,
@@ -375,7 +378,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.DateTime,
+        PrismaSchemaDSLTypes.ScalarType.DateTime,
         false,
         true,
         false,
@@ -389,7 +392,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.Json,
+        PrismaSchemaDSLTypes.ScalarType.Json,
         false,
         true
       ),
@@ -400,7 +403,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.String,
+        PrismaSchemaDSLTypes.ScalarType.String,
         false,
         true,
         true
@@ -412,7 +415,7 @@ describe("createPrismaFields", () => {
       {},
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
-        PrismaSchemaDSL.ScalarType.String,
+        PrismaSchemaDSLTypes.ScalarType.String,
         false,
         true
       ),
@@ -435,16 +438,9 @@ describe("createPrismaFields", () => {
 });
 
 describe("createRelationName", () => {
-  const cases: Array<[
-    string,
-    Entity,
-    EntityField,
-    Entity,
-    EntityField,
-    boolean,
-    boolean,
-    string
-  ]> = [
+  const cases: Array<
+    [string, Entity, EntityField, Entity, EntityField, boolean, boolean, string]
+  > = [
     [
       "Unique field",
       { ...EXAMPLE_ENTITY },

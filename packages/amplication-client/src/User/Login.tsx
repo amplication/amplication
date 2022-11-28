@@ -20,6 +20,7 @@ import { GitHubLoginButton } from "./GitHubLoginButton";
 import WelcomePage from "../Layout/WelcomePage";
 import { ErrorMessage } from "../Components/ErrorMessage";
 import "./Login.scss";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Values = {
   email: string;
@@ -72,8 +73,7 @@ const Login = () => {
 
   const urlError = useMemo(() => {
     const params = queryString.parse(location.search);
-    console.log("params", params);
-    console.log("params.error", params.error);
+
     return params.error;
   }, [location.search]);
 
@@ -83,13 +83,14 @@ const Login = () => {
       //save the invitation token in local storage to be validated by
       //<CompleteInvitation/> after signup or sign in
       //we user local storage since github-passport does not support dynamic callback
-      setInvitationToken(params.invitation);
+      setInvitationToken(params.invitation as string);
     }
   }, [setInvitationToken, location.search]);
 
   useEffect(() => {
     if (data) {
       setToken(data.login.token);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       let { from } = location.state || { from: { pathname: "/" } };
       if (from === "login") {
@@ -141,7 +142,7 @@ const Login = () => {
               <Button
                 type="submit"
                 eventData={{
-                  eventName: "signInWithUserName",
+                  eventName: AnalyticsEventNames.SignInWithUserName,
                 }}
               >
                 Continue

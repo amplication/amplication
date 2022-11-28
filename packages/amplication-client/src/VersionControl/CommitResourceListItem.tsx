@@ -1,10 +1,11 @@
 import { EnumPanelStyle, Icon, Panel } from "@amplication/design-system";
-import React, { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { ClickableId } from "../Components/ClickableId";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import { Build } from "../models";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import "./CommitResourceListItem.scss";
 import useCommits from "./hooks/useCommits";
@@ -73,7 +74,7 @@ const CommitResourceListItem = ({ build }: Props) => {
               id={build.id}
               onClick={handleBuildLinkClick}
               eventData={{
-                eventName: "commitListBuildIdClick",
+                eventName: AnalyticsEventNames.CommitListBuildIdClick,
               }}
             />
           </div>

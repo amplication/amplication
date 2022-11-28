@@ -29,17 +29,23 @@ const useProjectSelector = (
     projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
-  const [
-    currentProjectConfiguration,
-    setCurrentProjectConfiguration,
-  ] = useState<models.Resource>();
-  const { data: projectListData, loading: loadingList, refetch } = useQuery<{
+  const [createNewProject, setCreateNewProject] = useState<boolean>(false);
+  const [currentProjectConfiguration, setCurrentProjectConfiguration] =
+    useState<models.Resource>();
+  const {
+    data: projectListData,
+    loading: loadingList,
+    refetch,
+  } = useQuery<{
     projects: models.Project[];
   }>(GET_PROJECTS, {
     skip:
       !workspace || (currentWorkspace && currentWorkspace?.id !== workspace),
     onError: (error) => {
       // if error push to ? check with @Yuval
+    },
+    onCompleted: () => {
+      createNewProject && setCreateNewProject(false);
     },
   });
 
@@ -52,9 +58,8 @@ const useProjectSelector = (
     [currentWorkspace?.id, history, workspace]
   );
 
-  const [setNewProject] = useMutation<models.ProjectCreateInput>(
-    CREATE_PROJECT
-  );
+  const [setNewProject] =
+    useMutation<models.ProjectCreateInput>(CREATE_PROJECT);
 
   const createProject = (data: models.ProjectCreateInput) => {
     setNewProject({ variables: data });
@@ -62,6 +67,7 @@ const useProjectSelector = (
 
   const onNewProjectCompleted = useCallback(
     (data: models.Project) => {
+      setCreateNewProject(true);
       refetch().then(() => projectRedirect(data.id));
     },
     [projectRedirect, refetch]
@@ -83,8 +89,6 @@ const useProjectSelector = (
           isFromSignup ? "/create-resource" : ""
         }`
       );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentWorkspace?.id,
     history,
@@ -95,7 +99,7 @@ const useProjectSelector = (
   ]);
 
   useEffect(() => {
-    if (!project || !projectsList.length) return;
+    if (!project || !projectsList.length || createNewProject) return;
 
     const selectedProject = projectsList.find(
       (projectDB: models.Project) => projectDB.id === project

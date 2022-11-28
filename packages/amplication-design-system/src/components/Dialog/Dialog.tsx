@@ -21,17 +21,18 @@ type DialogProps = {
   /** The display style of the dialog */
   dialogStyle?: EnumDialogStyle;
   title: string;
+  children?: React.ReactNode;
 };
 export type Props = DialogProps & PrimerDialogProps;
 
-export const Dialog = ({
+export const Dialog: React.FC<Props> = ({
   isOpen,
   onDismiss,
   children,
   title,
   className,
   dialogStyle = EnumDialogStyle.Default,
-}: Props) => {
+}) => {
   //colors.primer.canvas.backdrop
   const theme = {
     colors: {
@@ -44,6 +45,8 @@ export const Dialog = ({
   };
 
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <ThemeProvider theme={theme}>
       <PrimerDialog
         isOpen={isOpen}

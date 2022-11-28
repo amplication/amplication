@@ -4,7 +4,7 @@ import {
   ObjectField,
   ScalarField,
   ScalarType,
-} from "prisma-schema-dsl";
+} from "prisma-schema-dsl-types";
 import { createEnumName } from "../../../prisma/create-prisma-schema";
 import { Entity, EntityField } from "@amplication/code-gen-types";
 import { isRelationField, isToManyRelationField } from "../../../../util/field";

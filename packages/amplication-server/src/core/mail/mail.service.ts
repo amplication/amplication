@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { InjectSendGrid, SendGridService } from '@ntegral/nestjs-sendgrid';
-import { ConfigService } from '@nestjs/config';
-import { SendInvitationArgs } from './dto/SendInvitationArgs';
-import { SendDeploymentArgs } from './dto/SendDeploymentArgs';
+import { Injectable } from "@nestjs/common";
+import { InjectSendGrid, SendGridService } from "@ntegral/nestjs-sendgrid";
+import { ConfigService } from "@nestjs/config";
+import { SendInvitationArgs } from "./dto/SendInvitationArgs";
+import { SendDeploymentArgs } from "./dto/SendDeploymentArgs";
 
-const SENDGRID_FROM_ADDRESS_VAR = 'SENDGRID_FROM_ADDRESS';
-const SENDGRID_INVITATION_TEMPLATE_ID_VAR = 'SENDGRID_INVITATION_TEMPLATE_ID';
+const SENDGRID_FROM_ADDRESS_VAR = "SENDGRID_FROM_ADDRESS";
+const SENDGRID_INVITATION_TEMPLATE_ID_VAR = "SENDGRID_INVITATION_TEMPLATE_ID";
 
 const SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR =
-  'SENDGRID_INVITATION_TEMPLATE_ID';
+  "SENDGRID_INVITATION_TEMPLATE_ID";
 
-const SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR = 'SENDGRID_INVITATION_TEMPLATE_ID';
+const SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR = "SENDGRID_INVITATION_TEMPLATE_ID";
 
-export const HOST_VAR = 'CLIENT_HOST';
+export const HOST_VAR = "CLIENT_HOST";
 // set deployment notification to false until Novu notification implementation
 const IS_EMAIL_DEPLOYMENT_NOTIFICATION = false;
 
@@ -43,8 +43,8 @@ export class MailService {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         inviter_name: args.invitedByUserFullName,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        invitation_url: inviteUrl
-      }
+        invitation_url: inviteUrl,
+      },
     };
     await this.client.send(msg);
     return true;
@@ -72,8 +72,8 @@ export class MailService {
         from,
         templateId,
         dynamicTemplateData: {
-          url: args.url
-        }
+          url: args.url,
+        },
       };
       await this.client.send(msg);
     }
