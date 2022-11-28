@@ -1,6 +1,5 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { StorageService } from "@codebrew/nestjs-storage";
 import { Prisma, PrismaService } from "@amplication/prisma-db";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import * as winston from "winston";
