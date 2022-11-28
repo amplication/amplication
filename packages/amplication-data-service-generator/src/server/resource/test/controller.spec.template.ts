@@ -162,6 +162,24 @@ describe(TEST_NAME, () => {
       .expect(FIND_ONE_EXPECTED_RESULT);
   });
 
+  test(`POST ${CREATE_PATHNAME} existing resource`, async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(CREATE_PATHNAME)
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect(CREATE_EXPECTED_RESULT)
+      .then(function () {
+        agent
+          .post(CREATE_PATHNAME)
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
