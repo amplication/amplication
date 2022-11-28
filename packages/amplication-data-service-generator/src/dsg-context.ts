@@ -15,7 +15,7 @@ const contextUtil = {
     DsgContext.utils.abort = true;
   },
   abort: false,
-  abortMessage: '',
+  abortMessage: "",
   importStaticModules: readPluginStaticModules,
 };
 
