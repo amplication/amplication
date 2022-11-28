@@ -96,6 +96,7 @@ function PluginsCatalogItem({
               <Button
                 className={`${CLASS_NAME}__install`}
                 buttonStyle={EnumButtonStyle.Secondary}
+                disabled
               >
                 Settings
               </Button>
