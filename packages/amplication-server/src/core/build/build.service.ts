@@ -4,8 +4,6 @@ import { Storage, MethodNotSupported } from "@slynova/flydrive";
 import { GoogleCloudStorage } from "@slynova/flydrive-gcs";
 import { StorageService } from "@codebrew/nestjs-storage";
 import { Prisma, PrismaService } from "@amplication/prisma-db";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import * as winston from "winston";
 import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
 import { omit, orderBy } from "lodash";
 import path from "path";
@@ -40,6 +38,12 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+  CreateLogger,
+  Transports,
+} from "@amplication/nest-logger-module";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -97,7 +101,7 @@ export const ACTION_INCLUDE = {
   },
 };
 
-export const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+export const ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
 } = {
   error: EnumActionLogLevel.Error,
@@ -106,7 +110,7 @@ export const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   debug: EnumActionLogLevel.Debug,
 };
 
-const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
+const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
 
 export function createInitialStepData(
   version: string,
@@ -158,7 +162,8 @@ export class BuildService {
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
 
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {
     /** @todo move this to storageService config once possible */
     this.storageService.registerDriver("gcs", GoogleCloudStorage);
@@ -342,14 +347,14 @@ export class BuildService {
   private createDataServiceLogger(
     build: Build,
     step: ActionStep
-  ): [winston.Logger, Array<Promise<void>>] {
-    const transport = new winston.transports.Console();
+  ): [AmplicationLogger, Array<Promise<void>>] {
+    const transport = new Transports.Console();
     const logPromises: Array<Promise<void>> = [];
     transport.on("logged", (info) => {
       logPromises.push(this.createLog(step, info));
     });
     return [
-      winston.createLogger({
+      CreateLogger({
         format: this.logger.format,
         transports: [transport],
         defaultMeta: {
@@ -524,9 +529,9 @@ export class BuildService {
     step: ActionStep,
     info: { message: string }
   ): Promise<void> {
-    const { message, ...winstonMeta } = info;
-    const level = WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[info[LEVEL]];
-    const meta = omit(winstonMeta, WINSTON_META_KEYS_TO_OMIT);
+    const { message, ...metaInfo } = info;
+    const level = ACTION_LOG_LEVEL[info[LEVEL]];
+    const meta = omit(metaInfo, META_KEYS_TO_OMIT);
 
     await this.actionService.log(step, level, message, meta);
   }

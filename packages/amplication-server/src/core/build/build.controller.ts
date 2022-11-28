@@ -1,8 +1,5 @@
 import { Controller } from "@nestjs/common";
-import {
-  BuildService,
-  WINSTON_LEVEL_TO_ACTION_LOG_LEVEL,
-} from "./build.service";
+import { BuildService, ACTION_LOG_LEVEL } from "./build.service";
 import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
 import { plainToInstance } from "class-transformer";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
@@ -100,7 +97,7 @@ export class BuildController {
     const step = await this.buildService.getGenerateCodeStep(logEntry.buildId);
     await this.actionService.logByStepId(
       step.id,
-      WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[logEntry.level],
+      ACTION_LOG_LEVEL[logEntry.level],
       logEntry.message
     );
   }
