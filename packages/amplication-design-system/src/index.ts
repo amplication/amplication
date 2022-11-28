@@ -158,3 +158,6 @@ export {
 
 export { Loader } from "./components/Loader/Loader";
 export type { Props as LoaderProps } from "./components/Loader/Loader";
+
+export { CodeEditor } from "./components/CodeEditor/CodeEditor";
+export type { CodeEditorProps } from "./components/CodeEditor/CodeEditor";

@@ -933,6 +933,8 @@ type PluginInstallation implements IBlock {
   pluginId: String!
   enabled: Boolean!
   npm: String!
+  settings: JSONObject
+  version: String!
 }
 
 input PluginInstallationWhereInput {
@@ -1387,12 +1389,16 @@ input PluginInstallationCreateInput {
   pluginId: String!
   enabled: Boolean!
   npm: String!
+  settings: JSONObject
+  version: String!
 }
 
 input PluginInstallationUpdateInput {
   displayName: String
   description: String
   enabled: Boolean!
+  settings: JSONObject
+  version: String!
 }
 
 input PluginSetOrderInput {
