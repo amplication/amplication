@@ -1,15 +1,17 @@
 import {
-  PrismaDataSource,
-  PrismaClientGenerator,
-} from "@amplication/code-gen-types";
+  Generator,
+  DataSourceProvider,
+  DataSource,
+  DataSourceURLEnv,
+} from "prisma-schema-dsl-types";
 
-export const CLIENT_GENERATOR: PrismaClientGenerator = {
+export const CLIENT_GENERATOR: Generator = {
   name: "client",
   provider: "prisma-client-js",
 };
 
-export const DATA_SOURCE: PrismaDataSource = {
+export const DATA_SOURCE: DataSource = {
   name: "postgres",
-  provider: "PostgreSQL",
-  urlEnv: "POSTGRESQL_URL",
+  provider: DataSourceProvider.PostgreSQL,
+  url: new DataSourceURLEnv("DB_URL"),
 };

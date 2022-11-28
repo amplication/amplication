@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from "react";
+import { useContext, useCallback } from "react";
 import { Formik, Form } from "formik";
 import { GlobalHotKeys } from "react-hotkeys";
 import { gql, useMutation } from "@apollo/client";
@@ -11,6 +11,7 @@ import "./Commit.scss";
 import { AppContext } from "../context/appContext";
 import { GET_COMMITS, GET_LAST_COMMIT } from "./hooks/commitQueries";
 import { SortOrder } from "../models";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TCommit = {
   message: string;
@@ -124,7 +125,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
-                  eventName: "commit",
+                  eventName: AnalyticsEventNames.CommitCreate,
                 }}
                 disabled={loading}
               >

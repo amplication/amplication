@@ -10,6 +10,7 @@ import {
   EnumHorizontalRuleStyle,
 } from "@amplication/design-system";
 import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
+import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import React, { useCallback, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
@@ -69,7 +70,7 @@ function GitRepos({
         },
       }).catch(console.error);
       trackEvent({
-        eventName: "selectGitRepo",
+        eventName: AnalyticsEventNames.GitHubRepositorySync,
       });
       onGitRepositoryConnected();
     },
