@@ -25,6 +25,7 @@ import pluginWrapper from "../plugin-wrapper";
 import { createLog } from "../create-log";
 import { createUserInfo } from "./auth/user-info/create-user-info";
 import { createTokenPayloadInterface } from "./auth/token/create-token-payload-interface";
+import { createAuthConstants } from "./auth/create-constants/create-constants";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -75,6 +76,13 @@ async function createServerInternal(
   logger.info("Token Payload Interface...");
   const tokenPayloadInterface = await createTokenPayloadInterface();
 
+  await createLog({
+    level: "info",
+    message: "Creating Auth Constants...",
+  });
+  logger.info("Creating Auth Constants...");
+  const authConstants = await createAuthConstants();
+
   await createLog({ level: "info", message: "Creating Auth module..." });
   logger.info("Creating Auth module...");
   const authModules = await createAuthModules();
@@ -108,6 +116,7 @@ async function createServerInternal(
     ...seedModule,
     ...userInfo,
     ...tokenPayloadInterface,
+    authConstants,
     ...authModules,
     ...messageBrokerModules,
   ];
