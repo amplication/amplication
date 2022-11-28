@@ -150,4 +150,4 @@ amplication-storage-gateway:
       BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
       BUILD_ARTIFACTS_CODE_FOLDER: code
       GITHUB_APP_APP_ID: "174833"
-
+      

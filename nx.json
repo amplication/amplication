@@ -19,6 +19,7 @@
           "install",
           "prebuild",
           "build",
+          "postbuild",
           "prepare",
           "check-format",
           "format",

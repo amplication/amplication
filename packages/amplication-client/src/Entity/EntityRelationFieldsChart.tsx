@@ -10,6 +10,7 @@ import { Form } from "../Components/Form";
 import * as models from "../models";
 import "./EntityRelationFieldsChart.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 export type FormValues = {
   fieldId: string;
@@ -133,7 +134,7 @@ export const EntityRelationFieldsChart = ({
               buttonStyle={EnumButtonStyle.Clear}
               type="submit"
               eventData={{
-                eventName: "fixRelatedEntity",
+                eventName: AnalyticsEventNames.RelatedEntityFix,
                 fieldId: field.id,
               }}
             >

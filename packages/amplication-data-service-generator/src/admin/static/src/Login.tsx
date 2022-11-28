@@ -104,7 +104,7 @@ const Login = ({ theme }: any) => {
         </div>
         <div className={`${CLASS_NAME}__read-more`}>
           <span>Read </span>
-          <a href="https://docs.amplication.com/docs/api" target="docs">
+          <a href="https://docs.amplication.com/api" target="docs">
             Amplication docs
           </a>
           <span> to learn more</span>

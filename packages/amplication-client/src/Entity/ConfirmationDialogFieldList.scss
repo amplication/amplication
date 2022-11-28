@@ -1,0 +1,7 @@
+@import "../style/index.scss";
+
+.confirmation-dialog-field-list {
+  &__field-name {
+    color: var(--warning-default);
+  }
+}

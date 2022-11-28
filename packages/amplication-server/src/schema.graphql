@@ -751,6 +751,7 @@ input ResourceOrderByInput {
 type ServiceSettings implements IBlock {
   id: String!
   createdAt: DateTime!
+  resourceId: String
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
@@ -774,6 +775,7 @@ type ServiceSettings implements IBlock {
 interface IBlock {
   id: String!
   createdAt: DateTime!
+  resourceId: String
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
@@ -842,6 +844,7 @@ input BlockOrderByInput {
 type ServiceTopics implements IBlock {
   id: String!
   createdAt: DateTime!
+  resourceId: String
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
@@ -916,6 +919,7 @@ input CommitOrderByInput {
 type PluginInstallation implements IBlock {
   id: String!
   createdAt: DateTime!
+  resourceId: String
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
@@ -955,6 +959,7 @@ input PluginInstallationOrderByInput {
 type PluginOrder implements IBlock {
   id: String!
   createdAt: DateTime!
+  resourceId: String
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
@@ -971,6 +976,7 @@ type PluginOrder implements IBlock {
 type Topic implements IBlock {
   id: String!
   createdAt: DateTime!
+  resourceId: String
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
@@ -1006,6 +1012,7 @@ input TopicOrderByInput {
 type ProjectConfigurationSettings implements IBlock {
   id: String!
   createdAt: DateTime!
+  resourceId: String
   updatedAt: DateTime!
   parentBlock: Block
   displayName: String!
@@ -1090,17 +1097,37 @@ type Mutation {
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
-  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
+  updateServiceTopics(
+    data: ServiceTopicsUpdateInput!
+    where: WhereUniqueInput!
+  ): ServiceTopics!
+  deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
   createBuild(data: BuildCreateInput!): Build!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
-  updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
-  createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
-  updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
-  setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  updateResourceRole(
+    data: ResourceRoleUpdateInput!
+    where: WhereUniqueInput!
+  ): ResourceRole
+  createPluginInstallation(
+    data: PluginInstallationCreateInput!
+  ): PluginInstallation!
+  updatePluginInstallation(
+    data: PluginInstallationUpdateInput!
+    where: WhereUniqueInput!
+  ): PluginInstallation!
+  deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
+  setPluginOrder(
+    data: PluginSetOrderInput!
+    where: WhereUniqueInput!
+  ): PluginOrder
   createTopic(data: TopicCreateInput!): Topic!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
-  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
+  deleteTopic(where: WhereUniqueInput!): Topic!
+  updateProjectConfigurationSettings(
+    data: ProjectConfigurationSettingsUpdateInput!
+    where: WhereUniqueInput!
+  ): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!

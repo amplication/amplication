@@ -13,6 +13,10 @@
 
   .select-field__container {
     font-size: var(--normal-font-size);
+
+    input {
+      color: white !important;
+    }
   }
   /**@todo: convert all class selector for component child elements to "& &__child" */
   .select-field__control {
