@@ -10,7 +10,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "nestjs-prisma";
-import { Prisma, PluginVersion } from "@prisma/client";
+import { Prisma, PluginVersion } from "@amplication/prisma-clients/amplication-plugin-api";
 
 export class PluginVersionServiceBase {
   constructor(protected readonly prisma: PrismaService) {}

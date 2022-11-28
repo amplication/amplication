@@ -5,6 +5,7 @@ datasource postgres {
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../../node_modules/@amplication/prisma-clients/amplication-plugin-api"
 }
 
 model User {
