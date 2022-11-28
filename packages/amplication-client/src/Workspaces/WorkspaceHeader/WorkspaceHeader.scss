@@ -14,9 +14,18 @@ $select-menu-max-width: 300px;
   background: var(--black2);
   border-bottom: $border-black5;
 
+  &__version {
+    color: var(--dark-secondary-turquoise) !important;
+    margin-left: var(--user-badge-spacing);
+    padding: var(--default-spacing-small);
+    min-width: auto;
+  }
+
   &__left,
   &__right {
     flex: 1;
+    display: flex;
+    align-items: center;
   }
 
   &__logo {

@@ -8,6 +8,13 @@
     "amplication-code-gen-types"
   ],
   "targets": {
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node ./scripts/update-version.ts",
+        "cwd": "packages/amplication-client"
+      }
+    },
     "build": {
       "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
@@ -74,6 +81,7 @@
         "open": true,
         "port": 3001
       },
+      "dependsOn": ["prebuild"],
       "configurations": {
         "development": {
           "buildTarget": "amplication-client:build:development"

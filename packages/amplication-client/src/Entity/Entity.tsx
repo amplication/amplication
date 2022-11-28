@@ -17,6 +17,7 @@ import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 
 import "./Entity.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   match: match<{ resource: string; entityId: string; fieldId: string }>;
@@ -47,7 +48,7 @@ const Entity = ({ match }: Props) => {
     {
       onCompleted: (data) => {
         trackEvent({
-          eventName: "updateEntity",
+          eventName: AnalyticsEventNames.EntityUpdate,
           entityName: data.updateEntity.displayName,
         });
         addEntity(data.updateEntity.id);

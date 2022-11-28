@@ -119,3 +119,4 @@ amplication-storage-gateway:
       KAFKA_BROKERS: 'amplication-amit-cp-kafka-headless:9092'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "215215"
+      

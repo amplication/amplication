@@ -8,6 +8,7 @@ import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import {
   validate,
@@ -60,7 +61,7 @@ const NewProject = ({ onProjectCreated }: Props) => {
     {
       onCompleted: (data) => {
         trackEvent({
-          eventName: "createProject",
+          eventName: AnalyticsEventNames.ProjectCreate,
           projectName: data.createProject.name,
         });
         onProjectCreated();

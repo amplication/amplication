@@ -1,14 +1,15 @@
-import React, { useCallback, useContext, useState } from "react";
+import { useCallback, useContext } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Snackbar, HorizontalRule } from "@amplication/design-system";
-import "./Topic.scss";
-
+import { AppContext } from "../context/appContext";
 import { formatError } from "../util/error";
 import TopicForm from "./TopicForm";
 import * as models from "../models";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { DeleteTopic } from "./DeleteTopic";
-import { AppContext } from "../context/appContext";
+import { Snackbar, HorizontalRule } from "@amplication/design-system";
+import "./Topic.scss";
 
 type TData = {
   Topic: models.Topic;
@@ -21,7 +22,7 @@ const Topic = () => {
     resource: string;
     topicId: string;
   }>("/:workspace/:project/:resource/topics/:topicId");
-
+  const [updateTopic, { error: updateError }] = useMutation(UPDATE_TOPIC);
   const { topicId, resource } = match?.params ?? {};
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const history = useHistory();
@@ -32,7 +33,7 @@ const Topic = () => {
     },
   });
 
-  const [updateTopic, { error: updateError }] = useMutation(UPDATE_TOPIC);
+  const { trackEvent } = useTracking();
 
   const handleSubmit = useCallback(
     (data) => {
@@ -44,6 +45,18 @@ const Topic = () => {
           data,
         },
       }).catch(console.error);
+      trackEvent({
+        eventName: AnalyticsEventNames.TopicNameEdit,
+        topicName: data.name,
+      });
+      trackEvent({
+        eventName: AnalyticsEventNames.TopicDisplayNameEdit,
+        topicDisplayName: data.displayName,
+      });
+      trackEvent({
+        eventName: AnalyticsEventNames.TopicDescriptionEdit,
+        topicDescription: data.description,
+      });
     },
     [updateTopic, topicId]
   );
