@@ -68,4 +68,4 @@ export const setResourceUrlLink = (
   project: string,
   resource: string,
   iconUrl: string
-) => `/${workspace}/${project}/${resource}${iconUrl}`;
+): string => `/${workspace}/${project}/${resource}${iconUrl}`;

@@ -1,11 +1,10 @@
-import React, { useCallback, useContext } from "react";
+import { useCallback, useContext } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { Formik, Form } from "formik";
 import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
@@ -15,6 +14,7 @@ import "./WorkspaceForm.scss";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
 import ProjectSideBar from "../Project/ProjectSideBar";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   updateWorkspace: models.Workspace;
@@ -51,7 +51,7 @@ function WorkspaceForm() {
     (newData) => {
       const { name } = newData;
       trackEvent({
-        eventName: "updateWorkspaceInfo",
+        eventName: AnalyticsEventNames.WorkspaceInfoUpdate,
       });
       currentWorkspace &&
         updateWorkspace({

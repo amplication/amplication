@@ -20,7 +20,10 @@ import {
   User,
   Resource,
 } from "../../models";
-import { revertDeletedItemName } from "../../util/softDelete";
+import {
+  prepareDeletedItemName,
+  revertDeletedItemName,
+} from "../../util/softDelete";
 import {
   CreateBlockArgs,
   UpdateBlockArgs,
@@ -37,6 +40,7 @@ import {
   EnumPendingChangeAction,
   PendingChange,
 } from "../resource/dto";
+import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -466,6 +470,57 @@ export class BlockService {
 
       return this.versionToIBlock<T>(version);
     });
+  }
+
+  async delete<T extends IBlock>(
+    args: DeleteBlockArgs,
+    user: User
+  ): Promise<T | null> {
+    const blockVersion = await this.prisma.blockVersion.findUnique({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        blockId_versionNumber: {
+          blockId: args.where.id,
+          versionNumber: CURRENT_VERSION_NUMBER,
+        },
+      },
+      include: {
+        block: {
+          include: {
+            parentBlock: true,
+          },
+        },
+      },
+    });
+
+    if (!blockVersion) {
+      throw new Error(`Block ${args.where.id} is not exist`);
+    }
+
+    await this.useLocking(args.where.id, user, async (block) => {
+      return this.prisma.block.update({
+        where: args.where,
+        data: {
+          displayName: prepareDeletedItemName(block.displayName, block.id),
+          deletedAt: new Date(),
+          versions: {
+            update: {
+              where: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                blockId_versionNumber: {
+                  blockId: args.where.id,
+                  versionNumber: CURRENT_VERSION_NUMBER,
+                },
+              },
+              data: {
+                deleted: true,
+              },
+            },
+          },
+        },
+      });
+    });
+    return this.versionToIBlock<T>(blockVersion);
   }
 
   // Tries to acquire a lock on the given block for the given user.

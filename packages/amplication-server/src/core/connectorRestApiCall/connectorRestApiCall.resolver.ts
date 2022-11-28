@@ -7,6 +7,7 @@ import {
 } from "./dto/";
 import { BlockTypeResolver } from "../block/blockType.resolver";
 import { UpdateBlockArgs } from "../block/dto/UpdateBlockArgs";
+import { DeleteBlockArgs } from "../block/dto/DeleteBlockArgs";
 
 @Resolver(() => ConnectorRestApiCall)
 export class ConnectorRestApiCallResolver extends BlockTypeResolver(
@@ -16,7 +17,9 @@ export class ConnectorRestApiCallResolver extends BlockTypeResolver(
   "createConnectorRestApiCall",
   CreateConnectorRestApiCallArgs,
   "updateConnectorRestApiCall",
-  UpdateBlockArgs
+  UpdateBlockArgs,
+  "deleteConnectorRestApiCall",
+  DeleteBlockArgs
 ) {
   constructor(private readonly service: ConnectorRestApiCallService) {
     super();

@@ -13,6 +13,7 @@ import { UserEntity } from "../../decorators/user.decorator";
 import { User } from "../../models";
 import { FindOneArgs } from "../../dto";
 import { PluginOrderService } from "./pluginOrder.service";
+import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 
 @Resolver(() => PluginInstallation && PluginOrder)
 export class PluginInstallationResolver extends BlockTypeResolver(
@@ -22,7 +23,9 @@ export class PluginInstallationResolver extends BlockTypeResolver(
   "createPluginInstallation",
   CreatePluginInstallationArgs,
   "updatePluginInstallation",
-  UpdatePluginInstallationArgs
+  UpdatePluginInstallationArgs,
+  "deletePluginInstallation",
+  DeletePluginOrderArgs
 ) {
   constructor(
     private readonly service: PluginInstallationService,

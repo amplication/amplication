@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { isEmpty } from "lodash";
 
 import * as models from "../models";
@@ -10,6 +10,7 @@ import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 
 import "./BuildSteps.scss";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 const CLASS_NAME = "build-steps";
 
@@ -100,7 +101,7 @@ const BuildSteps = ({ build }: Props) => {
                   models.EnumActionStepStatus.Success
                 }
                 eventData={{
-                  eventName: "openGithubPullRequest",
+                  eventName: AnalyticsEventNames.GithubOpenPullRequest,
                 }}
               />
             </a>

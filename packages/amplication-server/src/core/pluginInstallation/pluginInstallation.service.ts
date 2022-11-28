@@ -11,6 +11,7 @@ import { PluginOrderService } from "./pluginOrder.service";
 import { PluginOrder } from "./dto/PluginOrder";
 import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
 import { PluginOrderItem } from "./dto/PluginOrderItem";
+import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -50,7 +51,8 @@ export class PluginInstallationService extends BlockTypeService<
   PluginInstallation,
   FindManyPluginInstallationArgs,
   CreatePluginInstallationArgs,
-  UpdatePluginInstallationArgs
+  UpdatePluginInstallationArgs,
+  DeletePluginOrderArgs
 > {
   blockType = EnumBlockType.PluginInstallation;
 

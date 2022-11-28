@@ -13,6 +13,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { USER_ENTITY } from "./constants";
 import "./EntityListItem.scss";
 import { AppContext } from "../context/appContext";
+import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -26,6 +27,7 @@ type Props = {
   entity: models.Entity;
   onDelete?: () => void;
   onError: (error: Error) => void;
+  relatedEntities: models.Entity[];
 };
 
 const CLASS_NAME = "entity-list-item";
@@ -35,6 +37,7 @@ export const EntityListItem = ({
   resourceId,
   onDelete,
   onError,
+  relatedEntities,
 }: Props) => {
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
@@ -100,10 +103,19 @@ export const EntityListItem = ({
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Delete ${entity.displayName}`}
+        title={`Delete '${entity.displayName}' ?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message="Are you sure you want to delete this entity?"
+        message={
+          <span>
+            <span className={`${CLASS_NAME}__alert-bold`}>Are you sure</span>{" "}
+            you want to delete this entity?
+            <br />
+            {relatedEntities.length > 0 && (
+              <ConfirmationDialogFieldList relatedEntities={relatedEntities} />
+            )}
+          </span>
+        }
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />

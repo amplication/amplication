@@ -1,4 +1,3 @@
-import React from "react";
 import { capitalCase } from "capital-case";
 import { ToggleField, TextField } from "@amplication/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
@@ -9,19 +8,21 @@ import { Schema } from "@amplication/code-gen-types";
 import OptionSet from "../Entity/OptionSet";
 import { JSONSchema7 } from "json-schema";
 
-export const SchemaField = ({
-  propertyName,
-  propertySchema,
-  isDisabled,
-  resourceId,
-  entityDisplayName,
-}: {
+type Props = {
   propertyName: string;
   propertySchema: Schema;
   isDisabled?: boolean;
   resourceId: string;
   entityDisplayName: string;
-}) => {
+  isSystemData?: boolean;
+};
+
+export const SchemaField = ({
+  propertyName,
+  propertySchema,
+  resourceId,
+  entityDisplayName,
+}: Props) => {
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
 
@@ -31,7 +32,6 @@ export const SchemaField = ({
         <EnumSelectField
           label={label}
           name={fieldName}
-          disabled={isDisabled}
           options={propertySchema.enum as string[]}
         />
       );
@@ -44,23 +44,14 @@ export const SchemaField = ({
 
   switch (propertySchema.type) {
     case "string": {
-      return <TextField name={fieldName} label={label} disabled={isDisabled} />;
+      return <TextField name={fieldName} label={label} />;
     }
     case "integer":
     case "number": {
-      return (
-        <TextField
-          type="number"
-          name={fieldName}
-          label={label}
-          disabled={isDisabled}
-        />
-      );
+      return <TextField type="number" name={fieldName} label={label} />;
     }
     case "boolean": {
-      return (
-        <ToggleField name={fieldName} label={label} disabled={isDisabled} />
-      );
+      return <ToggleField name={fieldName} label={label} />;
     }
     case "array": {
       if (!propertySchema.items) {
@@ -69,9 +60,7 @@ export const SchemaField = ({
 
       switch ((propertySchema.items as JSONSchema7).type) {
         case "object": {
-          return (
-            <OptionSet label={label} name={fieldName} isDisabled={isDisabled} />
-          );
+          return <OptionSet label={label} name={fieldName} />;
         }
         default: {
           throw new Error(
@@ -87,7 +76,6 @@ export const SchemaField = ({
             <EntitySelectField
               label={label}
               name={fieldName}
-              disabled={isDisabled}
               resourceId={resourceId}
             />
           );
@@ -101,7 +89,6 @@ export const SchemaField = ({
           return (
             <RelationAllowMultipleField
               fieldName={fieldName}
-              isDisabled={isDisabled}
               entityDisplayName={entityDisplayName}
             />
           );
