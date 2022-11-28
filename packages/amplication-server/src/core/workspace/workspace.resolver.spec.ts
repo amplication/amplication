@@ -7,7 +7,6 @@ import {
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { WorkspaceService } from "./workspace.service";
@@ -17,6 +16,7 @@ import { Invitation } from "./dto/Invitation";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "@amplication/prisma-db";
 import { ProjectService } from "../project/project.service";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -164,7 +164,7 @@ describe("WorkspaceResolver", () => {
           })),
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

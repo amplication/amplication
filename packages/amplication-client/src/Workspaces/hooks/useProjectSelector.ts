@@ -29,7 +29,6 @@ const useProjectSelector = (
     projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
-  const [createNewProject, setCreateNewProject] = useState<boolean>(false);
   const [currentProjectConfiguration, setCurrentProjectConfiguration] =
     useState<models.Resource>();
   const {
@@ -43,9 +42,6 @@ const useProjectSelector = (
       !workspace || (currentWorkspace && currentWorkspace?.id !== workspace),
     onError: (error) => {
       // if error push to ? check with @Yuval
-    },
-    onCompleted: () => {
-      createNewProject && setCreateNewProject(false);
     },
   });
 
@@ -67,7 +63,6 @@ const useProjectSelector = (
 
   const onNewProjectCompleted = useCallback(
     (data: models.Project) => {
-      setCreateNewProject(true);
       refetch().then(() => projectRedirect(data.id));
     },
     [projectRedirect, refetch]
@@ -76,7 +71,11 @@ const useProjectSelector = (
   useEffect(() => {
     if (loadingList || !projectListData) return;
 
-    setProjectList(projectListData.projects);
+    const sortedProjects = [...projectListData.projects].sort((a, b) => {
+      return Date.parse(b.createdAt) - Date.parse(a.createdAt);
+    });
+
+    setProjectList(sortedProjects);
   }, [projectListData, loadingList]);
 
   useEffect(() => {
@@ -99,11 +98,17 @@ const useProjectSelector = (
   ]);
 
   useEffect(() => {
-    if (!project || !projectsList.length || createNewProject) return;
+    if (
+      !project ||
+      !projectsList.length ||
+      projectListData.projects.length !== projectsList.length
+    )
+      return;
 
     const selectedProject = projectsList.find(
       (projectDB: models.Project) => projectDB.id === project
     );
+
     if (!selectedProject) projectRedirect(projectsList[0].id);
 
     setCurrentProject(selectedProject);

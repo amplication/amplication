@@ -6,7 +6,6 @@ import { MorganModule } from "nest-morgan";
 import { Request } from "express";
 import { CoreModule } from "./core/core.module";
 import { InjectContextInterceptor } from "./interceptors/inject-context.interceptor";
-import { RootWinstonModule } from "./services/root-winston.module";
 import { SegmentAnalyticsModule } from "./services/segmentAnalytics/segmentAnalytics.module";
 import { SegmentAnalyticsOptionsService } from "./services/segmentAnalytics/segmentAnalyticsOptionsService";
 import { SendGridModule } from "@ntegral/nestjs-sendgrid";
@@ -15,6 +14,8 @@ import { GoogleSecretsManagerModule } from "./services/googleSecretsManager.modu
 import { GoogleSecretsManagerService } from "./services/googleSecretsManager.service";
 import { HealthModule } from "./core/health/health.module";
 import { join } from "path";
+import { AmplicationLoggerModule } from "@amplication/nest-logger-module";
+import { SERVICE_NAME } from "./constants";
 
 @Module({
   imports: [
@@ -28,7 +29,9 @@ import { join } from "path";
       useClass: SendgridConfigService,
     }),
 
-    RootWinstonModule,
+    AmplicationLoggerModule.register({
+      metadata: { service: SERVICE_NAME },
+    }),
 
     GraphQLModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
