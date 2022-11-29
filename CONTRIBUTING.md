@@ -44,7 +44,7 @@ If you don't feel ready to make a code contribution yet, no problem! You can als
 
 ## Open to community
 
-You can check all the issues that are open for community contributions and make contributions. Check [here](https://github.com/amplication/amplication/issues?q=is%3Aopen+is%3Aissue+label%3A%22open+to+community%22).
+You can check all the issues that are open for community contributions. Check [here](https://github.com/amplication/amplication/issues?q=is%3Aopen+is%3Aissue+label%3A%22open+to+community%22).
 
 ## Good first issues
 
