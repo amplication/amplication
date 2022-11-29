@@ -40,7 +40,7 @@ const setEditorTheme = (monaco: Monaco) => {
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
   width = "100%",
-  height = "100%",
+  height = "100vh",
   value = null,
   defaultValue = null,
   defaultLanguage = "json",
@@ -61,6 +61,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const [editorValue, setEditorValue] = useState<string | undefined>(
     value ? JSON.stringify(value) : JSON.stringify(defaultValue)
   );
+
+  useEffect(() => {
+    if (defaultValue && !value) setEditorValue(JSON.stringify(defaultValue));
+
+    value && setEditorValue(JSON.stringify(value));
+  }, [value, defaultValue]);
 
   useEffect(() => {
     if (!resetKey) return;
