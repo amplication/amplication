@@ -44,10 +44,10 @@ async function createServerInternal(
   } = DsgContext.getInstance;
 
   const dsgVersion = (await import("../../package.json")).version;
-  logger.info(`running DSG version ${dsgVersion}`);
+  logger.info(`Running DSG Version: ${dsgVersion}`);
   await createLog({
     level: "info",
-    message: `running DSG version ${dsgVersion}`,
+    message: `Running DSG Version: ${dsgVersion}`,
   });
 
   await createLog({
