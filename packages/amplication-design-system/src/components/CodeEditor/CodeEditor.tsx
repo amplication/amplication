@@ -101,8 +101,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     onChange && onChange(value, ev);
   };
 
-  console.log("editorValue", editorValue);
-
   return (
     <div
       className={`json-editor${className || ""}${
