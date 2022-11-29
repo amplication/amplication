@@ -40,11 +40,11 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-service:build"
+        "buildTarget": "amplication-storage-gateway:build"
       },
       "configurations": {
         "production": {
-          "buildTarget": "amplication-git-pull-service:build:production"
+          "buildTarget": "amplication-storage-gateway:build:production"
         }
       }
     },
