@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { FieldArray } from "formik";
 import { keyBy } from "lodash";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { EmptyState } from "../../Components/EmptyState";
 import { EnumImages } from "../../Components/SvgThemeImage";
 import {
@@ -29,10 +29,14 @@ export default function TopicsList({
   messagePatterns,
 }: Props) {
   const { trackEvent } = useTracking();
-  const { data } = useQuery<TData>(topicsOfBroker, {
+  const { data, refetch } = useQuery<TData>(topicsOfBroker, {
     variables: { messageBrokerId },
     skip: !messageBrokerId,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [refetch, messageBrokerId]);
 
   const messagePatternsByTopicId = useMemo(() => {
     if (!messagePatterns) return {};
