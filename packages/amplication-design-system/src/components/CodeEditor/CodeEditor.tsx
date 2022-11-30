@@ -55,7 +55,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   options = {
     selectOnLineNumbers: true,
     readOnly: false,
-    minimap: { enabled: false },
   },
   beforeMount,
   onMount,
@@ -65,7 +64,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   resetKey,
   path,
 }) => {
-  console.log(typeof value, value);
   const [isValid, setIsValid] = useState<boolean>(true);
   const [editorValue, setEditorValue] = useState<string | undefined>(
     value
@@ -99,6 +97,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   };
 
   const handleOnValidate = (markers: monaco.editor.IMarker[]) => {
+    if (options?.readOnly) return;
+
     setIsValid(markers.length === 0);
 
     onValidate && onValidate(markers);
@@ -128,7 +128,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         onChange={handleOnChange}
         {...(editorValue ? { value: editorValue } : {})}
         defaultLanguage={defaultLanguage}
-        options={options}
+        options={{
+          ...options,
+          minimap: { enabled: false },
+        }}
         path={path}
         theme={"vs-dark-amp"}
       />
