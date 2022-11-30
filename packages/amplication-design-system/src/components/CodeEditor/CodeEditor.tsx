@@ -38,16 +38,23 @@ const setEditorTheme = (monaco: Monaco) => {
   });
 };
 
+const setCodeValue = (val: string | { [key: string]: any }) => {
+  if (!val) return "";
+
+  if (Object.prototype.toString.call(val) === "[object String]") return val;
+
+  return JSON.stringify(val);
+};
+
 export const CodeEditor: React.FC<CodeEditorProps> = ({
   width = "100%",
   height = "100vh",
-  value = null,
-  defaultValue = null,
+  value = "",
+  defaultValue = "",
   defaultLanguage = "json",
   options = {
     selectOnLineNumbers: true,
     readOnly: false,
-    minimap: { enabled: false },
   },
   beforeMount,
   onMount,
@@ -59,13 +66,16 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 }) => {
   const [isValid, setIsValid] = useState<boolean>(true);
   const [editorValue, setEditorValue] = useState<string | undefined>(
-    value ? JSON.stringify(value) : JSON.stringify(defaultValue)
+    value
+      ? (setCodeValue(value) as string)
+      : (setCodeValue(defaultValue) as string)
   );
 
   useEffect(() => {
-    if (defaultValue && !value) setEditorValue(JSON.stringify(defaultValue));
+    if (defaultValue && !value)
+      setEditorValue(setCodeValue(defaultValue) as string);
 
-    value && setEditorValue(JSON.stringify(value));
+    value && setEditorValue(setCodeValue(value) as string);
   }, [value, defaultValue]);
 
   useEffect(() => {
@@ -87,6 +97,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   };
 
   const handleOnValidate = (markers: monaco.editor.IMarker[]) => {
+    if (options?.readOnly) return;
+
     setIsValid(markers.length === 0);
 
     onValidate && onValidate(markers);
@@ -116,7 +128,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         onChange={handleOnChange}
         {...(editorValue ? { value: editorValue } : {})}
         defaultLanguage={defaultLanguage}
-        options={options}
+        options={{
+          ...options,
+          minimap: { enabled: false },
+        }}
         path={path}
         theme={"vs-dark-amp"}
       />
