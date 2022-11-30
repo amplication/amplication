@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
@@ -90,7 +91,7 @@ const useResources = (
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: string,
+    eventName: AnalyticsEventNames,
     addEntity: (id: string) => void
   ) => {
     trackEvent({
@@ -113,7 +114,7 @@ const useResources = (
 
   const createMessageBroker = (
     data: models.ResourceCreateInput,
-    eventName: string
+    eventName: AnalyticsEventNames
   ) => {
     trackEvent({
       eventName: eventName,
@@ -184,7 +185,7 @@ const useResources = (
   const setResource = useCallback(
     (resource: models.Resource) => {
       trackEvent({
-        eventName: "resourceCardClick",
+        eventName: AnalyticsEventNames.ResourceCardClick,
       });
       setCurrentResource(resource);
       currentWorkspace &&

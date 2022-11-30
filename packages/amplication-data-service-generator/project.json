@@ -55,9 +55,9 @@
     },
     "postbuild": {
       "executor": "nx:run-commands",
+      "outputs": ["dist/packages/amplication-data-service-generator"],
       "options": {
-        "commands": ["ts-node scripts/copy-files.ts"],
-        "parallel": false,
+        "command": "ts-node scripts/copy-files.ts",
         "cwd": "packages/amplication-data-service-generator"
       }
     },

@@ -12,6 +12,7 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { Snackbar, TextField } from "@amplication/design-system";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   me: {
@@ -53,7 +54,7 @@ const ProfileForm = () => {
     (newData) => {
       const { firstName, lastName } = newData;
       trackEvent({
-        eventName: "updateAccountInfo",
+        eventName: AnalyticsEventNames.AccountInfoUpdate,
       });
       updateAccount({
         variables: {

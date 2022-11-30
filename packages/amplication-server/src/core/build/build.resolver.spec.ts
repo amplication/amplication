@@ -7,7 +7,6 @@ import {
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
 import { BuildResolver } from "./build.resolver";
 import { BuildService } from "./build.service";
@@ -20,6 +19,7 @@ import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { CommitService } from "../commit/commit.service";
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { ResourceService } from "../resource/resource.service";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -214,7 +214,7 @@ describe("BuildResolver", () => {
           })),
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

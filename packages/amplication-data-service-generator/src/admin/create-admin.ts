@@ -64,14 +64,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     clientDirectories.baseDirectory
   );
 
-  const packageJson = await createAdminUIPackageJson({
-    updateProperties: [
-      {
-        name: `@${paramCase(appInfo.name)}/admin`,
-        version: appInfo.version,
-      },
-    ],
-  });
+  const packageJson = await createAdminUIPackageJson();
 
   /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
    * currently the files were manually copied to /admin/static/src/util

@@ -8,11 +8,11 @@ import {
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
 import { ResourceRoleService } from "./resourceRole.service";
 import { ResourceRoleResolver } from "./resourceRole.resolver";
 import { ResourceRole } from "../../models";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
 const EXAMPLE_RESOURCE_ROLE_ID = "EXAMPLE_APP_ROLE_ID";
 const EXAMPLE_NAME = "EXAMPLE_NAME";
@@ -144,7 +144,7 @@ describe("ResourceRoleResolver", () => {
           })),
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

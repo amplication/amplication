@@ -3,7 +3,6 @@ import { Formik, Form } from "formik";
 import semver, { ReleaseType } from "semver";
 import { useHistory } from "react-router-dom";
 import { GlobalHotKeys } from "react-hotkeys";
-
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
 import {
@@ -17,6 +16,7 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./BuildNewVersion.scss";
 import { validate } from "../util/formikValidateJsonSchema";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type BuildType = {
   message: string;
@@ -169,7 +169,7 @@ const BuildNewVersion = ({
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
-                  eventName: "buildResource",
+                  eventName: AnalyticsEventNames.ResourceBuild,
                 }}
               >
                 Build New Version

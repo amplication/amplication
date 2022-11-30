@@ -9,6 +9,7 @@ import {
   Resource,
 } from "../../models";
 import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./AuthResourceWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
@@ -71,7 +72,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   }, []);
   const handleAuthWithGitClick = useCallback(() => {
     trackEvent({
-      eventName: "startAuthResourceWithGitHub",
+      eventName: AnalyticsEventNames.GitHubAuthResourceStart,
     });
     authWithGit({
       variables: {

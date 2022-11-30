@@ -71,7 +71,11 @@ const useProjectSelector = (
   useEffect(() => {
     if (loadingList || !projectListData) return;
 
-    setProjectList(projectListData.projects);
+    const sortedProjects = [...projectListData.projects].sort((a, b) => {
+      return Date.parse(b.createdAt) - Date.parse(a.createdAt);
+    });
+
+    setProjectList(sortedProjects);
   }, [projectListData, loadingList]);
 
   useEffect(() => {
@@ -94,11 +98,17 @@ const useProjectSelector = (
   ]);
 
   useEffect(() => {
-    if (!project || !projectsList.length) return;
+    if (
+      !project ||
+      !projectsList.length ||
+      projectListData.projects.length !== projectsList.length
+    )
+      return;
 
     const selectedProject = projectsList.find(
       (projectDB: models.Project) => projectDB.id === project
     );
+
     if (!selectedProject) projectRedirect(projectsList[0].id);
 
     setCurrentProject(selectedProject);

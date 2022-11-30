@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { isEmpty } from "lodash";
@@ -10,6 +10,8 @@ import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
 import "./NewTopic.scss";
 import { AppContext } from "../context/appContext";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 const INITIAL_VALUES: Partial<models.Topic> = {
   name: "",
@@ -42,7 +44,9 @@ const prepareName = (displayName: string) => {
 };
 
 const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
+  const { trackEvent } = useTracking();
   const { addEntity } = useContext(AppContext);
+
   const [createTopic, { error, loading }] = useMutation(CREATE_TOPIC, {
     update(cache, { data }) {
       if (!data) return;
@@ -77,6 +81,7 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
 
   const handleSubmit = useCallback(
     (data, actions) => {
+      trackEvent({ eventName: AnalyticsEventNames.TopicCreate });
       setAutoFocus(true);
       createTopic({
         variables: {
@@ -97,10 +102,15 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
         })
         .catch(console.error);
     },
-    [createTopic, resourceId, onTopicAdd, addEntity]
+    [createTopic, resourceId, onTopicAdd, addEntity, trackEvent]
   );
 
   const errorMessage = formatError(error);
+  useEffect(() => {
+    if (!error) return;
+
+    trackEvent({ eventName: AnalyticsEventNames.TopicCreateFailed });
+  }, [error]);
 
   return (
     <div className={CLASS_NAME}>

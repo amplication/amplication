@@ -6,24 +6,27 @@ import {
   Res,
   Req,
   UseFilters,
-  Logger,
   Inject,
 } from "@nestjs/common";
 import { MorganInterceptor } from "nest-morgan";
 import { Response } from "express";
 import { AuthService, AuthUser } from "./auth.service";
 import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { GitHubAuthGuard } from "./github.guard";
 import { GitHubRequest } from "./types";
 import { stringifyUrl } from "query-string";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from "@amplication/nest-logger-module";
 
 @Controller("/")
 export class AuthController {
   private host: string;
   constructor(
     private readonly authService: AuthService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {
     this.host = process.env.CLIENT_HOST || "http://localhost:3001";
   }

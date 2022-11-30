@@ -13,6 +13,7 @@ import {
   DISCONNECT_GIT_REPOSITORY,
   UPDATE_RESOURCE,
 } from "../../Workspaces/queries/resourcesQueries";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const CLASS_NAME = "service-configuration-github-settings";
 
@@ -84,7 +85,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
   const handleToggleChange = useCallback(
     (gitRepositoryOverride) => {
       trackEvent({
-        eventName: "updateResourceInfo",
+        eventName: AnalyticsEventNames.ResourceInfoUpdate,
       });
       updateResourceOverrideStatus({
         variables: {

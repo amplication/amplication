@@ -3098,7 +3098,7 @@ model User {
 }
 
 model Profile {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
@@ -3230,7 +3230,8 @@ async function dropTypes(prisma: PrismaClient, types: string[]) {
 async function getTables(prisma: PrismaClient): Promise<string[]> {
   const results: Array<{
     tablename: string;
-  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
+  }> =
+    await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
   return results.map((result) => result.tablename);
 }
 
@@ -3435,9 +3436,7 @@ export class LoginArgs {
 }
 ",
   "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from \\"../user/user\\";
+import { User } from \\"../user/base/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
@@ -5655,6 +5654,29 @@ describe(\\"Customer\\", () => {
       });
   });
 
+  test(\\"POST /customers existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/customers\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/customers\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -7095,6 +7117,28 @@ describe(\\"Empty\\", () => {
       });
   });
 
+  test(\\"POST /empties existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/empties\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/empties\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -7535,6 +7579,99 @@ export class NotFoundException extends common.NotFoundException {
   statusCode!: number;
   @ApiProperty()
   message!: string;
+}
+",
+  "server/src/filters/HttpExceptions.filter.ts": "import {
+  ArgumentsHost,
+  Catch,
+  HttpException,
+  HttpServer,
+  HttpStatus,
+} from \\"@nestjs/common\\";
+import { BaseExceptionFilter } from \\"@nestjs/core\\";
+import {
+  // @ts-ignore
+  Prisma,
+} from \\"@prisma/client\\";
+import { Response } from \\"express\\";
+
+export type ErrorCodesStatusMapping = {
+  [key: string]: number;
+};
+
+/**
+ * {@link PrismaClientExceptionFilter} handling {@link Prisma.PrismaClientKnownRequestError} exceptions.
+ */
+@Catch(Prisma?.PrismaClientKnownRequestError)
+export class HttpExceptionFilter extends BaseExceptionFilter {
+  /**
+   * default error codes mapping
+   *
+   * Error codes definition for Prisma Client (Query Engine)
+   * @see https://www.prisma.io/docs/reference/api-reference/error-reference#prisma-client-query-engine
+   */
+  private errorCodesStatusMapping: ErrorCodesStatusMapping = {
+    P2000: HttpStatus.BAD_REQUEST,
+    P2002: HttpStatus.CONFLICT,
+    P2025: HttpStatus.NOT_FOUND,
+  };
+
+  /**
+   * @param applicationRef
+   */
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(applicationRef?: HttpServer) {
+    super(applicationRef);
+  }
+
+  /**
+   * @param exception
+   * @param host
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
+    const statusCode = this.errorCodesStatusMapping[exception.code];
+    let message;
+    if (host.getType() === \\"http\\") {
+      // for http requests (REST)
+      // Todo : Add all other exception types and also add mapping
+      const ctx = host.switchToHttp();
+      const response = ctx.getResponse<Response>();
+      if (exception.code === \\"P2002\\") {
+        // Handling Unique Key Constraint Violation Error
+        const fields = (exception.meta as { target: string[] }).target;
+        message = \`Another record with the requested (\${fields.join(
+          \\", \\"
+        )}) already exists\`;
+      } else {
+        message =
+          \`[\${exception.code}]: \` +
+          this.exceptionShortMessage(exception.message);
+      }
+      if (!Object.keys(this.errorCodesStatusMapping).includes(exception.code)) {
+        return super.catch(exception, host);
+      }
+      const errorResponse = {
+        message: message,
+        statusCode: statusCode,
+      };
+      response.status(statusCode).send(errorResponse);
+    }
+    return new HttpException({ statusCode, message }, statusCode);
+  }
+
+  /**
+   * @param exception
+   * @returns short message for the exception
+   */
+  exceptionShortMessage(message: string): string {
+    const shortMessage = message.substring(message.indexOf(\\"→\\"));
+    return shortMessage
+      .substring(shortMessage.indexOf(\\"\\\\n\\"))
+      .replace(/\\\\n/g, \\"\\")
+      .trim();
+  }
 }
 ",
   "server/src/grants.json": "[
@@ -8241,8 +8378,9 @@ export class KafkaService extends KafkaServiceBase {}
 }
 ",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
-import { NestFactory } from \\"@nestjs/core\\";
+import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
+import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
@@ -8281,6 +8419,9 @@ async function main() {
   });
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
 
   void app.listen(PORT);
 
@@ -9078,6 +9219,28 @@ describe(\\"Order\\", () => {
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"POST /orders existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/orders\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/orders\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
       });
   });
 
@@ -10502,6 +10665,28 @@ describe(\\"Organization\\", () => {
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"POST /organizations existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/organizations\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/organizations\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
       });
   });
 
@@ -12180,6 +12365,28 @@ describe(\\"Profile\\", () => {
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"POST /profiles existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/profiles\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/profiles\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
       });
   });
 
@@ -14641,6 +14848,27 @@ describe(\\"User\\", () => {
       .expect({
         ...FIND_ONE_RESULT,
         birthDate: FIND_ONE_RESULT.birthDate.toISOString(),
+      });
+  });
+
+  test(\\"POST /users existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/users\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/users\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
       });
   });
 

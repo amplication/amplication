@@ -73,13 +73,6 @@ amplication-server:
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
 
-      #GCP - APPS Builder
-      GCS_BUCKET: amplication-production-artifacts
-
-      GCP_APPS_PROJECT_ID: amplication-production-apps
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-production-apps-state-bucket
-      GCP_APPS_DOMAIN: amplication.app
-
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
       GITHUB_APP_CLIENT_ID: "Iv1.3f1573355389c9e5"

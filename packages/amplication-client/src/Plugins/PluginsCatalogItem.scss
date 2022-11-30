@@ -1,6 +1,5 @@
 @import "../style/index.scss";
 
-$logo-size: 44px;
 $order-badge-size: 14px;
 $install-width: 86px;
 $button-padding: 5px 12px;
@@ -21,24 +20,13 @@ $button-padding: 5px 12px;
     }
   }
 
+  .toggle-field {
+    margin-right: auto;
+  }
   &__enabled {
     flex: 1;
   }
 
-  &__logo {
-    width: $logo-size;
-    height: $logo-size;
-    background-color: var(--black40);
-    border-radius: var(--default-border-radius);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    img {
-      max-height: 100%;
-      max-width: 100%;
-    }
-  }
   &__main {
     padding-top: var(--default-spacing-small);
     padding-bottom: var(--default-spacing-small);
