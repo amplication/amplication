@@ -17,6 +17,7 @@ import { countBy } from "lodash";
 import { getEnumFields } from "../../util/entity";
 import pluginWrapper from "../../plugin-wrapper";
 import DsgContext from "../../dsg-context";
+import { DataSourceProvider } from "prisma-schema-dsl-types";
 
 export const CUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
   PrismaSchemaDSLTypes.CUID
@@ -48,7 +49,7 @@ export async function createPrismaSchemaInternal({
     "name"
   );
   const models = entities.map((entity) =>
-    createPrismaModel(entity, fieldNamesCount)
+    createPrismaModel(entity, fieldNamesCount, dataSource.provider)
   );
 
   const enums = entities.flatMap((entity) => {
@@ -96,19 +97,21 @@ export function createEnumName(field: EntityField, entity: Entity): string {
 
 export function createPrismaModel(
   entity: Entity,
-  fieldNamesCount: Record<string, number>
+  fieldNamesCount: Record<string, number>,
+  provider: DataSourceProvider
 ): PrismaSchemaDSLTypes.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
     entity.fields.flatMap((field) =>
-      createPrismaFields(field, entity, fieldNamesCount)
+      createPrismaFields(field, entity, fieldNamesCount, provider)
     )
   );
 }
 export function createPrismaFields(
   field: EntityField,
   entity: Entity,
-  fieldNamesCount: Record<string, number> = {}
+  fieldNamesCount: Record<string, number> = {},
+  provider: DataSourceProvider = DataSourceProvider.PostgreSQL
 ):
   | [PrismaSchemaDSLTypes.ScalarField]
   | [PrismaSchemaDSLTypes.ObjectField]
@@ -221,12 +224,24 @@ export function createPrismaFields(
         allowMultipleSelection,
         isOneToOneWithoutForeignKey,
       } = properties as LookupResolvedProperties;
+
       const hasAnotherRelation = entity.fields.some(
         (entityField) =>
           entityField.id !== field.id &&
           entityField.dataType === EnumDataType.Lookup &&
           entityField.properties.relatedEntity.name === relatedEntity.name
       );
+
+      const mongoHasManyToManyRelation =
+        provider === DataSourceProvider.MongoDB &&
+        relatedEntity.fields.some(
+          (entityField) =>
+            entityField.id !== field.id &&
+            entityField.dataType === EnumDataType.Lookup &&
+            entityField.permanentId === field.properties?.relatedFieldId &&
+            allowMultipleSelection &&
+            entityField.properties?.allowMultipleSelection
+        );
 
       const relationName = !hasAnotherRelation
         ? null
@@ -239,7 +254,10 @@ export function createPrismaFields(
             fieldNamesCount[relatedField.name] === 1
           );
 
-      if (allowMultipleSelection || isOneToOneWithoutForeignKey) {
+      if (
+        (allowMultipleSelection && !mongoHasManyToManyRelation) ||
+        isOneToOneWithoutForeignKey
+      ) {
         return [
           PrismaSchemaDSL.createObjectField(
             name,
@@ -251,14 +269,16 @@ export function createPrismaFields(
         ];
       }
 
-      const scalarRelationFieldName = `${name}Id`;
+      const scalarRelationFieldName = !mongoHasManyToManyRelation
+        ? `${name}Id`
+        : `${name}Ids`;
 
       return [
         PrismaSchemaDSL.createObjectField(
           name,
           relatedEntity.name,
-          false,
-          field.required,
+          mongoHasManyToManyRelation,
+          mongoHasManyToManyRelation || field.required,
           relationName,
           [scalarRelationFieldName],
           [
@@ -269,8 +289,8 @@ export function createPrismaFields(
         PrismaSchemaDSL.createScalarField(
           scalarRelationFieldName,
           PrismaSchemaDSLTypes.ScalarType.String,
-          false,
-          field.required,
+          mongoHasManyToManyRelation,
+          mongoHasManyToManyRelation || field.required,
           !field.properties.allowMultipleSelection &&
             !relatedField?.properties.allowMultipleSelection &&
             !isOneToOneWithoutForeignKey
