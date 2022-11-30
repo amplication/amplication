@@ -48,7 +48,7 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-plugin-api:build-nx",
+        "buildTarget": "amplication-plugin-api:build",
         "inspect": true,
         "port": 9229
       },
