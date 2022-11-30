@@ -21,31 +21,6 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
-      "inputs": ["{projectRoot}/**/*"],
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/amplication-plugin-api",
-        "main": "packages/amplication-plugin-api/src/main.ts",
-        "tsConfig": "packages/amplication-plugin-api/tsconfig.app.json",
-        "webpackConfig": "packages/amplication-plugin-api/webpack.config.js",
-        "assets": [
-          {
-            "glob": "prisma",
-            "input": "packages/amplication-plugin-api",
-            "output": "prisma"
-          }
-        ]
-      },
-      "configurations": {
-        "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false
-        }
-      }
-    },
-    "build-nx": {
       "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {

@@ -9,7 +9,7 @@ https://docs.amplication.com/docs/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from "nestjs-prisma";
+import { PrismaService } from "../../prisma/prisma.service";
 import { Prisma, User } from "@amplication/prisma-clients/amplication-plugin-api";
 import { PasswordService } from "../../auth/password.service";
 import { transformStringFieldUpdateInput } from "../../prisma.util";
