@@ -13,7 +13,7 @@ import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsJSON } from "class-validator";
 import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
+import type { JsonValue } from "type-fest";
 @ObjectType()
 class User {
   @ApiProperty({

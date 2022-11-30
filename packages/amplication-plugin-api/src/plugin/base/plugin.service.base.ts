@@ -11,6 +11,8 @@ https://docs.amplication.com/docs/how-to/custom-code
   */
 import { PrismaService } from "../../prisma/prisma.service";
 import { Prisma, Plugin } from "@amplication/prisma-clients/amplication-plugin-api";
+import { PluginFindManyArgs } from "./PluginFindManyArgs";
+import { PluginFindUniqueArgs } from "./PluginFindUniqueArgs";
 
 export class PluginServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -18,7 +20,7 @@ export class PluginServiceBase {
   async count<T extends Prisma.PluginFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginFindManyArgs>
   ): Promise<number> {
-    return this.prisma.plugin.count(args);
+    return this.prisma.plugin.count(args as PluginFindManyArgs);
   }
 
   async findMany<T extends Prisma.PluginFindManyArgs>(
@@ -29,7 +31,7 @@ export class PluginServiceBase {
   async findOne<T extends Prisma.PluginFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginFindUniqueArgs>
   ): Promise<Plugin | null> {
-    return this.prisma.plugin.findUnique(args);
+    return this.prisma.plugin.findUnique(args as PluginFindUniqueArgs);
   }
   async create<T extends Prisma.PluginCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginCreateArgs>
