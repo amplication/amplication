@@ -52,15 +52,15 @@ const Commit = ({ projectId, noChanges }: Props) => {
       setPendingChangesError(true);
       resetPendingChanges();
     },
-    onCompleted: (commit) => {
+    onCompleted: (response) => {
       setCommitRunning(false);
       setPendingChangesError(false);
       resetPendingChanges();
-      addChange(commit.commit.id);
+      addChange(response.commit.id);
       const path = commitPath(
         currentWorkspace?.id,
         currentProject?.id,
-        commit.commit.id
+        response.commit.id
       );
       return history.push(path);
     },
