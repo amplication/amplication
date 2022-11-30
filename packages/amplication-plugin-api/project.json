@@ -45,16 +45,41 @@
         }
       }
     },
+    "build-nx": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/amplication-plugin-api",
+        "main": "packages/amplication-plugin-api/src/main.ts",
+        "tsConfig": "packages/amplication-plugin-api/tsconfig.app.json",
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "packages/amplication-plugin-api/src/environments/environment.ts",
+              "with": "packages/amplication-plugin-api/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-plugin-api:build",
+        "buildTarget": "amplication-plugin-api:build-nx",
         "inspect": true,
         "port": 9229
       },
       "configurations": {
         "production": {
-          "buildTarget": "amplication-plugin-api:build:production"
+          "buildTarget": "amplication-plugin-api:build-nx:production"
         }
       }
     },
