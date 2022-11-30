@@ -1,10 +1,10 @@
-import { join, dirname } from "path";
-import { mkdir, readFile, writeFile } from "fs/promises";
-
 import { DSGResourceData, Module } from "@amplication/code-gen-types";
-import { createDataServiceImpl } from "./create-data-service-impl";
-import { defaultLogger } from "./server/logging";
 import axios from "axios";
+import { mkdir, readFile, writeFile } from "fs/promises";
+import { dirname, join } from "path";
+import { createDataServiceImpl } from "./create-data-service-impl";
+import { dynamicPluginInstallation } from "./dynamic-plugin-installation";
+import { defaultLogger } from "./server/logging";
 
 const [, , source, destination] = process.argv;
 if (!source) {
@@ -19,13 +19,21 @@ generateCode(source, destination).catch((err) => {
   process.exit(1);
 });
 
+async function readInputJson(filePath: string): Promise<DSGResourceData> {
+  const file = await readFile(filePath, "utf8");
+  const resourceData: DSGResourceData = JSON.parse(file);
+  return resourceData;
+}
 export default async function generateCode(
   source: string,
   destination: string
 ): Promise<void> {
   try {
-    const file = await readFile(source, "utf8");
-    const resourceData: DSGResourceData = JSON.parse(file);
+    const resourceData = await readInputJson(source);
+    const { pluginInstallations } = resourceData;
+
+    await dynamicPluginInstallation(pluginInstallations);
+
     const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
