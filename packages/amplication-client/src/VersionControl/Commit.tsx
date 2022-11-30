@@ -1,17 +1,18 @@
-import { useContext, useCallback } from "react";
-import { Formik, Form } from "formik";
-import { GlobalHotKeys } from "react-hotkeys";
+import { Snackbar, TextField } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { formatError } from "../util/error";
-
-import { TextField, Snackbar } from "@amplication/design-system";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { Form, Formik } from "formik";
+import { useCallback, useContext } from "react";
+import { GlobalHotKeys } from "react-hotkeys";
+import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import "./Commit.scss";
 import { AppContext } from "../context/appContext";
-import { GET_COMMITS, GET_LAST_COMMIT } from "./hooks/commitQueries";
-import { SortOrder } from "../models";
+import { SortOrder, type Commit as CommitType } from "../models";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { formatError } from "../util/error";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import { commitPath } from "../util/paths";
+import "./Commit.scss";
+import { GET_COMMITS, GET_LAST_COMMIT } from "./hooks/commitQueries";
 
 type TCommit = {
   message: string;
@@ -31,24 +32,37 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
+type TData = {
+  commit: CommitType;
+};
+
 const Commit = ({ projectId, noChanges }: Props) => {
+  const history = useHistory();
   const {
     setCommitRunning,
     resetPendingChanges,
     setPendingChangesError,
     addChange,
+    currentWorkspace,
+    currentProject,
   } = useContext(AppContext);
-  const [commit, { error, loading }] = useMutation(COMMIT_CHANGES, {
+  const [commit, { error, loading }] = useMutation<TData>(COMMIT_CHANGES, {
     onError: () => {
       setCommitRunning(false);
       setPendingChangesError(true);
       resetPendingChanges();
     },
-    onCompleted: (commit) => {
+    onCompleted: (response) => {
       setCommitRunning(false);
       setPendingChangesError(false);
       resetPendingChanges();
-      addChange(commit.id);
+      addChange(response.commit.id);
+      const path = commitPath(
+        currentWorkspace?.id,
+        currentProject?.id,
+        response.commit.id
+      );
+      return history.push(path);
     },
     refetchQueries: [
       {
