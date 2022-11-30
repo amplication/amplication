@@ -27,6 +27,7 @@ import {
   CreateEntityControllerSpecParams,
   CreateUserInfoParams,
   CreateTokenPayloadInterfaceParams,
+  CreateAdminUIPackageJsonParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -51,7 +52,7 @@ export type Events = {
   [EventNames.CreateMessageBrokerService]?: PluginEventType<CreateMessageBrokerServiceParams>;
   [EventNames.CreateMessageBrokerServiceBase]?: PluginEventType<CreateMessageBrokerServiceBaseParams>;
   [EventNames.CreateServerPackageJson]?: PluginEventType<CreateServerPackageJsonParams>;
-  [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIParams>;
+  [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIPackageJsonParams>;
   [EventNames.CreateServerAppModule]?: PluginEventType<CreateServerAppModuleParams>;
   [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;
   [EventNames.CreateEntityResolver]?: PluginEventType<CreateEntityResolverParams>;
