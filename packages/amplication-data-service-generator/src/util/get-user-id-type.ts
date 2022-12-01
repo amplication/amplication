@@ -1,5 +1,4 @@
 import { types } from "@amplication/code-gen-types";
-import { isNull, isUndefined } from "lodash";
 import DsgContext from "../dsg-context";
 import { EnumDataType } from "../models";
 import { USER_ENTITY_NAME } from "../server/user-entity";
