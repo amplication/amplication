@@ -20,9 +20,6 @@ export const getUserIdType = () => {
     throw new Error("User entity must have an id field");
   }
 
-  let { idType } = idField.properties as types.Id;
-  if (!idType) {
-    idType = "CUID";
-  }
-  return idType;
+  const { idType } = idField.properties as types.Id;
+  return idType ?? "CUID";
 };
