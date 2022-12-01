@@ -65,7 +65,6 @@ const PLUGINS: Plugin[] = [
       },
     ],
   },
-
   {
     id: "db-postgres",
     description:
