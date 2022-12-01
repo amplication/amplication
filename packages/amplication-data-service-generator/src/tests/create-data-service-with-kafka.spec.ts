@@ -4,7 +4,7 @@ import entities from "./entities";
 import roles from "./roles";
 import { EnumResourceType } from "../models";
 import { DSGResourceData, Topic } from "@amplication/code-gen-types";
-import { EnumMessagePatternConnectionOptions } from "@amplication/code-gen-types/dist/models";
+import { EnumMessagePatternConnectionOptions } from "@amplication/code-gen-types";
 
 jest.setTimeout(100000);
 
@@ -58,6 +58,7 @@ describe("createDataService", () => {
           npm: "@amplication/plugin-broker-kafka",
           enabled: true,
           pluginId: "broker-kafka",
+          version: "latest",
         },
       ],
     };

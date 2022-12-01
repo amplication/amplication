@@ -1,20 +1,13 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Storage, MethodNotSupported } from "@slynova/flydrive";
-import { GoogleCloudStorage } from "@slynova/flydrive-gcs";
-import { StorageService } from "@codebrew/nestjs-storage";
 import { Prisma, PrismaService } from "@amplication/prisma-db";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import * as winston from "winston";
 import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
 import { omit, orderBy } from "lodash";
-import path from "path";
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { ResourceRole, User } from "../../models";
 import { Build } from "./dto/Build";
 import { CreateBuildArgs } from "./dto/CreateBuildArgs";
 import { FindManyBuildArgs } from "./dto/FindManyBuildArgs";
-import { getBuildZipFilePath, getBuildTarGzFilePath } from "./storage";
 import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { FindOneBuildArgs } from "./dto/FindOneBuildArgs";
 import { EntityService } from "../entity/entity.service";
@@ -29,15 +22,10 @@ import { UserService } from "../user/user.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ActionService } from "../action/action.service";
 import { CommitService } from "../commit/commit.service";
-
-import { createZipFileFromModules } from "./zip";
-import { LocalDiskService } from "../storage/local.disk.service";
-import { createTarGzFileFromModules } from "./tar";
 import { QueueService } from "../queue/queue.service";
 import { previousBuild } from "./utils";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
-
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
@@ -45,6 +33,12 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+  CreateLogger,
+  Transports,
+} from "@amplication/nest-logger-module";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -102,7 +96,7 @@ export const ACTION_INCLUDE = {
   },
 };
 
-export const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
+export const ACTION_LOG_LEVEL: {
   [level: string]: EnumActionLogLevel;
 } = {
   error: EnumActionLogLevel.Error,
@@ -111,7 +105,7 @@ export const WINSTON_LEVEL_TO_ACTION_LOG_LEVEL: {
   debug: EnumActionLogLevel.Debug,
 };
 
-const WINSTON_META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
+const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
 
 export function createInitialStepData(
   version: string,
@@ -148,11 +142,9 @@ export class BuildService {
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
-    private readonly storageService: StorageService,
     private readonly entityService: EntityService,
     private readonly resourceRoleService: ResourceRoleService,
     private readonly actionService: ActionService,
-    private readonly localDiskService: LocalDiskService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
     private readonly commitService: CommitService,
@@ -163,10 +155,9 @@ export class BuildService {
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
 
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: winston.Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {
-    /** @todo move this to storageService config once possible */
-    this.storageService.registerDriver("gcs", GoogleCloudStorage);
     this.host = this.configService.get(HOST_VAR);
     if (!this.host) {
       throw new Error("Missing HOST_VAR in env");
@@ -347,14 +338,14 @@ export class BuildService {
   private createDataServiceLogger(
     build: Build,
     step: ActionStep
-  ): [winston.Logger, Array<Promise<void>>] {
-    const transport = new winston.transports.Console();
+  ): [AmplicationLogger, Array<Promise<void>>] {
+    const transport = new Transports.Console();
     const logPromises: Array<Promise<void>> = [];
     transport.on("logged", (info) => {
       logPromises.push(this.createLog(step, info));
     });
     return [
-      winston.createLogger({
+      CreateLogger({
         format: this.logger.format,
         transports: [transport],
         defaultMeta: {
@@ -363,30 +354,6 @@ export class BuildService {
       }),
       logPromises,
     ];
-  }
-
-  /**
-   * Saves given modules for given build as a Zip archive and tarball.
-   * @param build the build to save the modules for
-   * @param modules the modules to save
-   * @returns created tarball URL
-   */
-  private async save(
-    build: Build,
-    modules: CodeGenTypes.Module[]
-  ): Promise<string> {
-    const zipFilePath = getBuildZipFilePath(build.id);
-    const tarFilePath = getBuildTarGzFilePath(build.id);
-    const disk = this.storageService.getDisk();
-    await Promise.all([
-      createZipFileFromModules(modules).then((zip) =>
-        disk.put(zipFilePath, zip)
-      ),
-      createTarGzFileFromModules(modules).then((tar) =>
-        disk.put(tarFilePath, tar)
-      ),
-    ]);
-    return this.getFileURL(disk, tarFilePath);
   }
 
   public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
@@ -536,26 +503,13 @@ export class BuildService {
     );
   }
 
-  /** @todo move */
-  private getFileURL(disk: Storage, filePath: string) {
-    try {
-      return disk.getUrl(filePath);
-    } catch (error) {
-      if (error instanceof MethodNotSupported) {
-        const root = this.localDiskService.getDisk().config.root;
-        return path.join(root, filePath);
-      }
-      throw error;
-    }
-  }
-
   private async createLog(
     step: ActionStep,
     info: { message: string }
   ): Promise<void> {
-    const { message, ...winstonMeta } = info;
-    const level = WINSTON_LEVEL_TO_ACTION_LOG_LEVEL[info[LEVEL]];
-    const meta = omit(winstonMeta, WINSTON_META_KEYS_TO_OMIT);
+    const { message, ...metaInfo } = info;
+    const level = ACTION_LOG_LEVEL[info[LEVEL]];
+    const meta = omit(metaInfo, META_KEYS_TO_OMIT);
 
     await this.actionService.log(step, level, message, meta);
   }

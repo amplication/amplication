@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useContext, useState } from "react";
+import { useCallback, useMemo, useContext, useState } from "react";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { types } from "@amplication/code-gen-types";
@@ -17,6 +17,7 @@ import {
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityField.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   entity: models.Entity;
@@ -86,7 +87,7 @@ const EntityField = () => {
       onCompleted: (data) => {
         entity && addEntity(entity);
         trackEvent({
-          eventName: "updateEntityField",
+          eventName: AnalyticsEventNames.EntityFieldUpdate,
           entityFieldName: data.updateEntityField.displayName,
           dataType: data.updateEntityField.dataType,
         });
@@ -187,7 +188,7 @@ const EntityField = () => {
             )}
           </div>
           <EntityFieldForm
-            isDisabled={
+            isSystemDataType={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
             }
             onSubmit={handleSubmit}

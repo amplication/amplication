@@ -2,9 +2,10 @@ import { Credentials } from "../../auth/Credentials";
 import { UserInfo } from "../../auth/UserInfo";
 
 export const VALID_ID = "1";
+declare class ID_TYPE {}
 
 export const TEST_USER: UserInfo = {
-  id: "cl7qmjh4h0000tothyjqapgj5",
+  id: ID_TYPE,
   roles: ["User"],
   username: "ofek",
 };

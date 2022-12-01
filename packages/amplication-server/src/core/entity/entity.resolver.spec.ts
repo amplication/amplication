@@ -11,7 +11,6 @@ import { EntityService } from "./entity.service";
 import { INestApplication } from "@nestjs/common";
 import { UserService } from "../user/user.service";
 import { GraphQLModule } from "@nestjs/graphql";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
 import { Entity } from "../../models/Entity";
 import { User } from "../../models/User";
@@ -25,6 +24,7 @@ import { EntityPermission } from "../../models/EntityPermission";
 import { EntityVersion } from "../../models/EntityVersion";
 import { Commit, EntityPermissionField } from "../../models";
 import { EntityVersionResolver } from "./entityVersion.resolver";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
 const EXAMPLE_ID = "exampleId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -654,7 +654,7 @@ describe("EntityResolver", () => {
           })),
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

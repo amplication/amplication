@@ -35,6 +35,9 @@ export interface PrintResultType {
 
 export interface ContextUtil {
   skipDefaultBehavior: boolean;
+  abortGeneration: (msg: string) => void;
+  abortMessage?: string;
+  abort: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
 export interface DsgContext extends DSGResourceData {
@@ -60,6 +63,8 @@ export enum EventNames {
   CreateEntityController = "CreateEntityController",
   CreateEntityControllerBase = "CreateEntityControllerBase",
   CreateEntityControllerSpec = "CreateEntityControllerSpec",
+  CreateUserInfo = "CreateUserInfo",
+  CreateTokenPayloadInterface = "CreateTokenPayloadInterface",
   CreateServerAuth = "CreateServerAuth",
   CreateAdminUI = "CreateAdminUI",
   CreateServer = "CreateServer",

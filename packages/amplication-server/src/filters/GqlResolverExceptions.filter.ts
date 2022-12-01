@@ -3,17 +3,19 @@
 // @UseFilters(GqlResolverExceptionsFilter)
 // export class AuthResolver {
 // It logs the exception with context information like IP, Host, UserId
-// It uses Winston directly to log the error
+// It uses nest logger module to log
 
 import { Catch, ArgumentsHost, Inject, HttpException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GqlExceptionFilter, GqlArgumentsHost } from "@nestjs/graphql";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import { Logger } from "winston";
 import { Prisma } from "@amplication/prisma-db";
 import { ApolloError } from "apollo-server-express";
 import { Request } from "express";
 import { AmplicationError } from "../errors/AmplicationError";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from "@amplication/nest-logger-module";
 
 export type RequestData = {
   query: string;
@@ -51,7 +53,8 @@ export function createRequestData(req: Request): RequestData {
 @Catch()
 export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
   constructor(
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger,
     private readonly configService: ConfigService
   ) {}
 

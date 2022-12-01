@@ -1,8 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { JsonValue } from "type-fest";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import { Logger } from "winston";
 import { Prisma, PrismaService } from "@amplication/prisma-db";
 import {
   Action,
@@ -12,6 +10,10 @@ import {
 } from "./dto/";
 import { StepNameEmptyError } from "./errors/StepNameEmptyError";
 import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from "@amplication/nest-logger-module";
 
 export const SELECT_ID = { id: true };
 
@@ -19,7 +21,8 @@ export const SELECT_ID = { id: true };
 export class ActionService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {}
 
   async findOne(args: FindOneActionArgs): Promise<Action | null> {

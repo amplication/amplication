@@ -57,6 +57,7 @@ const pluginWrapper: PluginWrapper = async (
 
   try {
     context.utils.skipDefaultBehavior = false;
+    context.utils.abort = false;
     if (!context.plugins.hasOwnProperty(event)) return func(args);
 
     const beforePlugins = context.plugins[event]?.before || [];
@@ -83,14 +84,21 @@ const pluginWrapper: PluginWrapper = async (
     return finalModules;
   } catch (error) {
     context.logger.error(`failed to execute plugin event ${event}`, {
-      errorMessage: JSON.stringify(error),
+      errorMessage: JSON.stringify((error as Error).message),
     });
+    context.logger.error((error as Error).stack);
     await createLog({
       level: "error",
       message: `failed to execute plugin event: ${event}. Error message: ${JSON.stringify(
         error
       )}`,
     });
+
+    if (context.utils.abort) {
+      context.logger.error(context.utils.abortMessage);
+      throw Error();
+    }
+
     return [];
   }
 };
