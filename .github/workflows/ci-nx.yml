@@ -77,7 +77,9 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo ::set-output name=affected::"$(npx nx print-affected --type=app | jq -c .projects)"
+          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app | jq -c .projects)
+          echo affected projects: $AFFECTED_PROJECTS
+          echo "affected=$AFFECTED_PROJECTS" >> $GITHUB_OUTPUT
 
   dockerize:
     if: ${{ needs.ci.outputs.affected != '[]' }}
