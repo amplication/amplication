@@ -2,13 +2,13 @@ name: Continuous Integration (Nx - Affected)
 
 on:
   workflow_dispatch:
-  push:
-    paths-ignore:
-      - "**/*.md"
-      - ".all-contributorsrc"
+    inputs:
+      nx-base:
+        type: string
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs.
+        required: true
+        default: next
   pull_request_target:
-    branches: ["next", "master"]
-    types: [opened, reopened]
     paths-ignore:
       - "**/*.md"
       - ".all-contributorsrc"
@@ -30,7 +30,7 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: ${{ github.base_ref || 'next' }}
+          main-branch-name: ${{ github.base_ref || github.event.inputs.nx-base }}
 
       - name: Cache node modules
         id: cache
@@ -55,6 +55,14 @@ jobs:
       - name: Nx Version Print
         run: npx nx --version
 
+      - name: Debug
+        id: debug
+        run: |
+          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app | jq -c .projects)
+          echo affected projects: $AFFECTED_PROJECTS
+          echo github.base_ref ${{ github.base_ref }}
+          echo github.event.inputs.nx-base ${{ github.event.inputs.nx-base }}
+
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
 
@@ -76,7 +84,9 @@ jobs:
       - name: Set Affected
         id: set-affected
         run: |
-          echo ::set-output name=affected::"$(npx nx print-affected --type=app | jq -c .projects)"
+          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app | jq -c .projects)
+          echo affected projects: $AFFECTED_PROJECTS
+          echo ::set-output name=affected::"$AFFECTED_PROJECTS"
 
   dockerize:
     if: ${{ needs.ci.outputs.affected != '[]' }}
@@ -92,7 +102,7 @@ jobs:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: next
+          main-branch-name: ${{ github.base_ref || github.event.inputs.nx-base }}
 
       - name: Cache node modules
         id: cache
