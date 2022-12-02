@@ -9,7 +9,7 @@ export const LEVEL = process.env.LOG_LEVEL || "info";
 export interface LoggerMetadata {
   service: string;
 }
-
+// comment
 export const developmentFormat = logformFormat.combine(
   logformFormat.errors({ stack: true }),
   logformFormat.timestamp(),
