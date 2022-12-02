@@ -62,7 +62,6 @@ jobs:
           echo affected projects: $AFFECTED_PROJECTS
           echo github.base_ref ${{ github.base_ref }}
           echo github.event.inputs.nx-base ${{ github.event.inputs.nx-base }}
-          echo test
 
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
