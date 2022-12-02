@@ -61,7 +61,7 @@ jobs:
           export AFFECTED_PROJECTS=$(npx nx print-affected --type=app | jq -c .projects)
           echo affected projects: $AFFECTED_PROJECTS
           echo github.base_ref ${{ github.base_ref }}
-          echo github.event.inputs.nx-base ${{ github.event.inputs.nx-base }}
+          printenv | grep NX_
 
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
