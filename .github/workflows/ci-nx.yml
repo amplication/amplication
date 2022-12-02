@@ -62,6 +62,7 @@ jobs:
           echo affected projects: $AFFECTED_PROJECTS
           echo github.base_ref ${{ github.base_ref }}
           printenv | grep NX_
+          echo ciao
 
       - name: Nx Workspace Lint
         run: npx nx workspace-lint
