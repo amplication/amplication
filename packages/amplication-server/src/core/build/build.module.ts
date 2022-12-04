@@ -19,9 +19,6 @@ import { CommitModule } from "../commit/commit.module";
 import { TopicModule } from "../topic/topic.module";
 import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
 import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
-import { ProjectModule } from "../project/project.module";
-import { WorkspaceModule } from "../workspace/workspace.module";
-import { SubscriptionModule } from "../subscription/subscription.module";
 
 @Module({
   imports: [
@@ -41,9 +38,6 @@ import { SubscriptionModule } from "../subscription/subscription.module";
     forwardRef(() => CommitModule),
     TopicModule,
     ServiceTopicsModule,
-    forwardRef(() => ProjectModule),
-    forwardRef(() => WorkspaceModule),
-    forwardRef(() => SubscriptionModule),
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

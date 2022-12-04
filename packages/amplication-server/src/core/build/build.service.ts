@@ -39,9 +39,6 @@ import {
   CreateLogger,
   Transports,
 } from "@amplication/nest-logger-module";
-import { ProjectService } from "../project/project.service";
-import { WorkspaceService } from "../workspace/workspace.service";
-import { SubscriptionService } from "../subscription/subscription.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -151,12 +148,6 @@ export class BuildService {
     private readonly commitService: CommitService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
-    @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService,
-    @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService,
-    @Inject(forwardRef(() => SubscriptionService))
-    private readonly subscriptionService: SubscriptionService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
     private readonly queueService: QueueService,
@@ -189,38 +180,6 @@ export class BuildService {
     const resource = await this.resourceService.findOne({
       where: { id: resourceId },
     });
-    const project = await this.projectService.findUnique({
-      where: { id: resource.projectId },
-    });
-    const workspace = await this.workspaceService.getWorkspace({
-      where: { id: project.workspaceId },
-    });
-    const subscription = await this.subscriptionService.getCurrentSubscription(
-      workspace.id
-    );
-
-    if (!subscription) {
-      const entities = await this.entityService.entities({
-        where: { resourceId },
-      });
-
-      if (entities.length > 6) {
-        throw new Error("Too many entities");
-      }
-
-      const resources = await this.resourceService.resources({
-        where: {
-          projectId: resource.projectId,
-        },
-      });
-
-      if (
-        resources.filter((x) => x.resourceType === EnumResourceType.Service)
-          .length > 2
-      ) {
-        throw new Error("Too many services");
-      }
-    }
 
     //TODO
     /**@todo: set version based on release when applicable */
