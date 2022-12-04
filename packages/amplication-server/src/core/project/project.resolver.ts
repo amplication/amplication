@@ -133,7 +133,9 @@ export class ProjectResolver {
       );
 
       if (services.length > 3) {
-        throw new Error("Too many services");
+        throw new Error(
+          "You have reached the maximum number of services. (Upgrade your workspace plan)"
+        );
       }
 
       const promises = services.map(this.validateService);
@@ -148,7 +150,9 @@ export class ProjectResolver {
     });
 
     if (entities.length > 7) {
-      throw new Error("Too many entities");
+      throw new Error(
+        "You have reached the maximum number of entities. (Upgrade your workspace plan)"
+      );
     }
   }
 
