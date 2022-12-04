@@ -1,6 +1,5 @@
 import { ChildProcess, exec } from "child_process";
-import { DSGResourceData } from ".";
-import { PackageInstallationFailed } from "./errors/PackageInstallationFailed";
+import { PackageInstallationFailed } from "../src/errors/PackageInstallationFailed";
 
 function promiseFromChildProcess(child: ChildProcess) {
   return new Promise(function (resolve, reject) {
@@ -10,10 +9,10 @@ function promiseFromChildProcess(child: ChildProcess) {
 }
 
 export async function dynamicPluginInstallation(
-  pluginInstallations: DSGResourceData["pluginInstallations"]
+  pluginInstallations: string[]
 ): Promise<void> {
   for await (const plugin of pluginInstallations) {
-    await installationPackage(plugin.npm);
+    await installationPackage(plugin);
   }
 }
 

@@ -2,7 +2,6 @@ import { DSGResourceData, Module } from "@amplication/code-gen-types";
 import axios from "axios";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
-import { createDataServiceImpl } from "./create-data-service-impl";
 import { dynamicPluginInstallation } from "./dynamic-plugin-installation";
 import { defaultLogger } from "./server/logging";
 
@@ -32,9 +31,15 @@ export default async function generateCode(
     const resourceData = await readInputJson(source);
     const { pluginInstallations } = resourceData;
 
-    await dynamicPluginInstallation(pluginInstallations);
+    console.log("Start code generation dynamic plugins installation");
+    await dynamicPluginInstallation(
+      pluginInstallations.map((plugin) => plugin.npm)
+    );
+    console.log("Finish code generation dynamic plugins installation");
 
-    const modules = await createDataServiceImpl(resourceData, defaultLogger);
+    const modules = await (
+      await import("./create-data-service-impl")
+    ).createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
     await axios.post(
