@@ -1,0 +1,2156 @@
+{
+  "entities": [
+    {
+      "id": "clb3n9pgo0010jn017ye0wbjw",
+      "createdAt": "2022-11-30T12:48:54.312Z",
+      "updatedAt": "2022-11-30T12:48:59.722Z",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "name": "User",
+      "displayName": "User",
+      "pluralDisplayName": "Users",
+      "description": "An automatically created entity to manage users in the service",
+      "lockedByUserId": null,
+      "lockedAt": null,
+      "deletedAt": null,
+      "fields": [
+        {
+          "id": "clb3n9tmy003flc01slwlfpqs",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:54.312Z",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "permanentId": "clb3n9pgp001djn016x5h3ozc",
+          "name": "id",
+          "displayName": "ID",
+          "dataType": "Id",
+          "properties": {
+            "idType": "CUID"
+          },
+          "required": true,
+          "searchable": true,
+          "description": "An automatically created unique identifier of the entity",
+          "position": null,
+          "unique": true
+        },
+        {
+          "id": "clb3n9tmy003glc01z4yvlr5g",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:54.312Z",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "permanentId": "clb3n9pgp001fjn01op95k43i",
+          "name": "createdAt",
+          "displayName": "Created At",
+          "dataType": "CreatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the time the entity created at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmy003hlc01qf4b9mp7",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:54.312Z",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "permanentId": "clb3n9pgp001gjn01jps2hxju",
+          "name": "updatedAt",
+          "displayName": "Updated At",
+          "dataType": "UpdatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the last time the entity updated at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmy003ilc01dp1cc6de",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:54.312Z",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "permanentId": "clb3n9pgp001jjn01amrzkm4r",
+          "name": "firstName",
+          "displayName": "First Name",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 256
+          },
+          "required": false,
+          "searchable": true,
+          "description": "An automatically created field of the first name of the user",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmy003jlc01kdq9qpx7",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:54.312Z",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "permanentId": "clb3n9pgp001kjn011tqldbp7",
+          "name": "lastName",
+          "displayName": "Last Name",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 256
+          },
+          "required": false,
+          "searchable": true,
+          "description": "An automatically created field of the last name of the user",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmy003klc01i99hvup4",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:54.312Z",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "permanentId": "clb3n9pgp001njn01atnk054y",
+          "name": "username",
+          "displayName": "Username",
+          "dataType": "Username",
+          "properties": {
+            "maxLength": 256
+          },
+          "required": true,
+          "searchable": true,
+          "description": "An automatically created field of the username of the user",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmy003llc013mw7eiap",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:54.312Z",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "permanentId": "clb3n9pgp001pjn01ou2yd1qg",
+          "name": "password",
+          "displayName": "Password",
+          "dataType": "Password",
+          "properties": {
+            "maxLength": 256
+          },
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the password of the user",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmy003mlc01bi7wzm3f",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:54.312Z",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "permanentId": "clb3n9pgp001rjn01w7uba28u",
+          "name": "roles",
+          "displayName": "Roles",
+          "dataType": "Roles",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the roles of the user",
+          "position": null,
+          "unique": false
+        }
+      ],
+      "permissions": [
+        {
+          "id": "clb3n9tns005hlc01zbxlynv5",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "action": "View",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tns005ilc01vmcy02ls",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "action": "Create",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tns005jlc01b7iiuwfs",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "action": "Update",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tns005klc01ce5zlvwh",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "action": "Delete",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tns005llc01huthsr4h",
+          "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+          "action": "Search",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        }
+      ]
+    },
+    {
+      "id": "clb3n9piw003ljn01lbpm9jfo",
+      "createdAt": "2022-11-30T12:48:54.392Z",
+      "updatedAt": "2022-11-30T12:48:59.755Z",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "name": "Order",
+      "displayName": "Orders",
+      "pluralDisplayName": "Orders",
+      "description": null,
+      "lockedByUserId": null,
+      "lockedAt": null,
+      "deletedAt": null,
+      "fields": [
+        {
+          "id": "clb3n9tnv0061lc01c39mxnk5",
+          "createdAt": "2022-11-30T12:48:54.411Z",
+          "updatedAt": "2022-11-30T12:48:54.411Z",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "permanentId": "clb3n9pjf0049jn01pt2qcdgj",
+          "name": "id",
+          "displayName": "ID",
+          "dataType": "Id",
+          "properties": {
+            "idType": "CUID"
+          },
+          "required": true,
+          "searchable": true,
+          "description": "An automatically created unique identifier of the entity",
+          "position": null,
+          "unique": true
+        },
+        {
+          "id": "clb3n9tnv0062lc0164tijnt9",
+          "createdAt": "2022-11-30T12:48:54.422Z",
+          "updatedAt": "2022-11-30T12:48:54.422Z",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "permanentId": "clb3n9pjq004ejn01patxqsv1",
+          "name": "createdAt",
+          "displayName": "Created At",
+          "dataType": "CreatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the time the entity created at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tnv0063lc01ih6vbwp3",
+          "createdAt": "2022-11-30T12:48:54.430Z",
+          "updatedAt": "2022-11-30T12:48:54.430Z",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "permanentId": "clb3n9pjy004fjn01dfujbjyq",
+          "name": "updatedAt",
+          "displayName": "Updated At",
+          "dataType": "UpdatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the last time the entity updated at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tnv0064lc01gmp82kt0",
+          "createdAt": "2022-11-30T12:48:54.512Z",
+          "updatedAt": "2022-11-30T12:48:54.512Z",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "permanentId": "clb3n9pm5000101jn6wjicbx3",
+          "name": "quantity",
+          "displayName": "Quantity",
+          "dataType": "WholeNumber",
+          "properties": {
+            "maximumValue": 999999999,
+            "minimumValue": -999999999
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tnv0065lc01jqra4gjh",
+          "createdAt": "2022-11-30T12:48:54.556Z",
+          "updatedAt": "2022-11-30T12:48:54.556Z",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "permanentId": "clb3n9pne000201jncxwjes2s",
+          "name": "discount",
+          "displayName": "Discount",
+          "dataType": "DecimalNumber",
+          "properties": {
+            "precision": 2,
+            "maximumValue": 999999999,
+            "minimumValue": -999999999
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tnv0066lc01gdeti98y",
+          "createdAt": "2022-11-30T12:48:54.590Z",
+          "updatedAt": "2022-11-30T12:48:54.590Z",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "permanentId": "clb3n9pod000301jn902j6v7r",
+          "name": "totalPrice",
+          "displayName": "Total Price",
+          "dataType": "WholeNumber",
+          "properties": {
+            "maximumValue": 999999999,
+            "minimumValue": -999999999
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tnv0067lc01xlvmgelc",
+          "createdAt": "2022-11-30T12:48:55.262Z",
+          "updatedAt": "2022-11-30T12:48:55.262Z",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "permanentId": "clb3n9q6e000h01jn90uy2mi1",
+          "name": "customer",
+          "displayName": "Customer",
+          "dataType": "Lookup",
+          "properties": {
+            "relatedFieldId": "clb3n9q64000g01jn6cyugwhp",
+            "relatedEntityId": "clb3n9poy004ojn010dedjn0n",
+            "allowMultipleSelection": false
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tnv0068lc01kqcmb1mh",
+          "createdAt": "2022-11-30T12:48:55.313Z",
+          "updatedAt": "2022-11-30T12:48:55.313Z",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "permanentId": "clb3n9q80000j01jn47d12bwe",
+          "name": "product",
+          "displayName": "Product",
+          "dataType": "Lookup",
+          "properties": {
+            "relatedFieldId": "clb3n9q7w000i01jn7w20eyiz",
+            "relatedEntityId": "clb3n9q1u006xjn012gomuwhw",
+            "allowMultipleSelection": false
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        }
+      ],
+      "permissions": [
+        {
+          "id": "clb3n9toh0071lc01eltzoxdr",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "action": "View",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9toh0072lc01w9nth2kp",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "action": "Create",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9toh0073lc01bl8i2wie",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "action": "Update",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9toh0074lc015qhbzii8",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "action": "Delete",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9toh0075lc014jhnabpj",
+          "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+          "action": "Search",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        }
+      ]
+    },
+    {
+      "id": "clb3n9poy004ojn010dedjn0n",
+      "createdAt": "2022-11-30T12:48:54.610Z",
+      "updatedAt": "2022-11-30T12:48:59.733Z",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "name": "Customer",
+      "displayName": "Customer",
+      "pluralDisplayName": "Customers",
+      "description": null,
+      "lockedByUserId": null,
+      "lockedAt": null,
+      "deletedAt": null,
+      "fields": [
+        {
+          "id": "clb3n9tn9003vlc016xc4zcxd",
+          "createdAt": "2022-11-30T12:48:54.626Z",
+          "updatedAt": "2022-11-30T12:48:54.626Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9ppd005bjn01cw81w57l",
+          "name": "id",
+          "displayName": "ID",
+          "dataType": "Id",
+          "properties": {
+            "idType": "CUID"
+          },
+          "required": true,
+          "searchable": true,
+          "description": "An automatically created unique identifier of the entity",
+          "position": null,
+          "unique": true
+        },
+        {
+          "id": "clb3n9tn9003wlc0121sdbht5",
+          "createdAt": "2022-11-30T12:48:54.632Z",
+          "updatedAt": "2022-11-30T12:48:54.632Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9ppk005fjn01zca09rw3",
+          "name": "createdAt",
+          "displayName": "Created At",
+          "dataType": "CreatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the time the entity created at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tn9003xlc01qa72ru0d",
+          "createdAt": "2022-11-30T12:48:54.639Z",
+          "updatedAt": "2022-11-30T12:48:54.639Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9ppr005kjn01drh3n7eu",
+          "name": "updatedAt",
+          "displayName": "Updated At",
+          "dataType": "UpdatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the last time the entity updated at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tn9003ylc01mb2onkrm",
+          "createdAt": "2022-11-30T12:48:54.663Z",
+          "updatedAt": "2022-11-30T12:48:54.663Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9pqa000401jnehi4gf1q",
+          "name": "firstName",
+          "displayName": "First Name",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tn9003zlc01dtibbbnu",
+          "createdAt": "2022-11-30T12:48:54.702Z",
+          "updatedAt": "2022-11-30T12:48:54.702Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9prf000501jn1fcsehcq",
+          "name": "lastName",
+          "displayName": "Last Name",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tn90040lc0172p6ixb9",
+          "createdAt": "2022-11-30T12:48:54.732Z",
+          "updatedAt": "2022-11-30T12:48:54.732Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9psa000601jn0dpoc7uc",
+          "name": "email",
+          "displayName": "Email",
+          "dataType": "Email",
+          "properties": {},
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tn90041lc01qdy3a6e3",
+          "createdAt": "2022-11-30T12:48:54.763Z",
+          "updatedAt": "2022-11-30T12:48:54.763Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9pt5000701jn6s7fa6fs",
+          "name": "phone",
+          "displayName": "Phone",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tn90042lc01wrihhvst",
+          "createdAt": "2022-11-30T12:48:55.247Z",
+          "updatedAt": "2022-11-30T12:48:55.247Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9q64000g01jn6cyugwhp",
+          "name": "orders",
+          "displayName": "Orders",
+          "dataType": "Lookup",
+          "properties": {
+            "relatedFieldId": "clb3n9q6e000h01jn90uy2mi1",
+            "relatedEntityId": "clb3n9piw003ljn01lbpm9jfo",
+            "allowMultipleSelection": true
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tn90043lc01mx6w38xi",
+          "createdAt": "2022-11-30T12:48:55.369Z",
+          "updatedAt": "2022-11-30T12:48:55.369Z",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "permanentId": "clb3n9q9k000l01jngw4zdfh9",
+          "name": "address",
+          "displayName": "Address",
+          "dataType": "Lookup",
+          "properties": {
+            "relatedFieldId": "clb3n9q9g000k01jnbxa1cpz2",
+            "relatedEntityId": "clb3n9puo005tjn01valm21av",
+            "allowMultipleSelection": false
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        }
+      ],
+      "permissions": [
+        {
+          "id": "clb3n9to1006hlc011i5ns0u6",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "action": "View",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9to1006ilc01p26032vc",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "action": "Create",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9to1006jlc01ob2egjmu",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "action": "Update",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9to1006klc01cbn174mv",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "action": "Delete",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9to1006llc01fbq4pkxg",
+          "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+          "action": "Search",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        }
+      ]
+    },
+    {
+      "id": "clb3n9puo005tjn01valm21av",
+      "createdAt": "2022-11-30T12:48:54.817Z",
+      "updatedAt": "2022-11-30T12:48:59.718Z",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "name": "Address",
+      "displayName": "Address",
+      "pluralDisplayName": "Addresses",
+      "description": null,
+      "lockedByUserId": null,
+      "lockedAt": null,
+      "deletedAt": null,
+      "fields": [
+        {
+          "id": "clb3n9tmu002xlc01z4mos4dy",
+          "createdAt": "2022-11-30T12:48:54.860Z",
+          "updatedAt": "2022-11-30T12:48:54.860Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9pvw006hjn01tv74pxoi",
+          "name": "id",
+          "displayName": "ID",
+          "dataType": "Id",
+          "properties": {
+            "idType": "CUID"
+          },
+          "required": true,
+          "searchable": true,
+          "description": "An automatically created unique identifier of the entity",
+          "position": null,
+          "unique": true
+        },
+        {
+          "id": "clb3n9tmu002ylc01tamitugr",
+          "createdAt": "2022-11-30T12:48:54.868Z",
+          "updatedAt": "2022-11-30T12:48:54.868Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9pw4006kjn01zangwi7x",
+          "name": "createdAt",
+          "displayName": "Created At",
+          "dataType": "CreatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the time the entity created at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmu002zlc01apw9usqs",
+          "createdAt": "2022-11-30T12:48:54.876Z",
+          "updatedAt": "2022-11-30T12:48:54.876Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9pwb006mjn01alp0bfmx",
+          "name": "updatedAt",
+          "displayName": "Updated At",
+          "dataType": "UpdatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the last time the entity updated at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmu0030lc01cjvuz5i7",
+          "createdAt": "2022-11-30T12:48:54.899Z",
+          "updatedAt": "2022-11-30T12:48:54.899Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9pwv000801jn4srmgjxu",
+          "name": "address_1",
+          "displayName": "Address 1",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmu0031lc01vaa4rmze",
+          "createdAt": "2022-11-30T12:48:54.926Z",
+          "updatedAt": "2022-11-30T12:48:54.926Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9pxo000901jngqzr08ne",
+          "name": "address_2",
+          "displayName": "Address 2",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmu0032lc01e3lxk6a6",
+          "createdAt": "2022-11-30T12:48:54.955Z",
+          "updatedAt": "2022-11-30T12:48:54.955Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9pyh000a01jnf8gfa2ne",
+          "name": "city",
+          "displayName": "City",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmu0033lc01jfe10udb",
+          "createdAt": "2022-11-30T12:48:55.016Z",
+          "updatedAt": "2022-11-30T12:48:55.016Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9q06000b01jnc73aa5mf",
+          "name": "state",
+          "displayName": "State",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmu0034lc01p0pmg1ct",
+          "createdAt": "2022-11-30T12:48:55.056Z",
+          "updatedAt": "2022-11-30T12:48:55.056Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9q1a000c01jnefuq4r5t",
+          "name": "zip",
+          "displayName": "Zip",
+          "dataType": "WholeNumber",
+          "properties": {
+            "maximumValue": 999999999,
+            "minimumValue": -999999999
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmu0035lc01oweofqfz",
+          "createdAt": "2022-11-30T12:48:55.355Z",
+          "updatedAt": "2022-11-30T12:48:55.355Z",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "permanentId": "clb3n9q9g000k01jnbxa1cpz2",
+          "name": "customers",
+          "displayName": "Customers",
+          "dataType": "Lookup",
+          "properties": {
+            "relatedFieldId": "clb3n9q9k000l01jngw4zdfh9",
+            "relatedEntityId": "clb3n9poy004ojn010dedjn0n",
+            "allowMultipleSelection": true
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        }
+      ],
+      "permissions": [
+        {
+          "id": "clb3n9tnq004klc01btub2qs7",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "action": "View",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tnq004llc013kpg27fb",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "action": "Create",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tnq004mlc01kx9ta19t",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "action": "Update",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tnq004nlc01vjalww7t",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "action": "Delete",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tnq004olc014xsu4zfy",
+          "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+          "action": "Search",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        }
+      ]
+    },
+    {
+      "id": "clb3n9q1u006xjn012gomuwhw",
+      "createdAt": "2022-11-30T12:48:55.074Z",
+      "updatedAt": "2022-11-30T12:48:59.710Z",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "name": "Product",
+      "displayName": "Product",
+      "pluralDisplayName": "Products",
+      "description": null,
+      "lockedByUserId": null,
+      "lockedAt": null,
+      "deletedAt": null,
+      "fields": [
+        {
+          "id": "clb3n9tmm002jlc011l1h7v46",
+          "createdAt": "2022-11-30T12:48:55.089Z",
+          "updatedAt": "2022-11-30T12:48:55.089Z",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "permanentId": "clb3n9q28007ljn01oyqhn5i8",
+          "name": "id",
+          "displayName": "ID",
+          "dataType": "Id",
+          "properties": {
+            "idType": "CUID"
+          },
+          "required": true,
+          "searchable": true,
+          "description": "An automatically created unique identifier of the entity",
+          "position": null,
+          "unique": true
+        },
+        {
+          "id": "clb3n9tmm002klc01s9veuoa1",
+          "createdAt": "2022-11-30T12:48:55.096Z",
+          "updatedAt": "2022-11-30T12:48:55.096Z",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "permanentId": "clb3n9q2f007njn01hu51f3kq",
+          "name": "createdAt",
+          "displayName": "Created At",
+          "dataType": "CreatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the time the entity created at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmm002llc01fqqgnshs",
+          "createdAt": "2022-11-30T12:48:55.104Z",
+          "updatedAt": "2022-11-30T12:48:55.104Z",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "permanentId": "clb3n9q2o007sjn01jq221omq",
+          "name": "updatedAt",
+          "displayName": "Updated At",
+          "dataType": "UpdatedAt",
+          "properties": {},
+          "required": true,
+          "searchable": false,
+          "description": "An automatically created field of the last time the entity updated at",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmm002mlc017841sh4k",
+          "createdAt": "2022-11-30T12:48:55.129Z",
+          "updatedAt": "2022-11-30T12:48:55.129Z",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "permanentId": "clb3n9q37000d01jnhn5l35o8",
+          "name": "name",
+          "displayName": "Name",
+          "dataType": "SingleLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmm002nlc01ddax2equ",
+          "createdAt": "2022-11-30T12:48:55.161Z",
+          "updatedAt": "2022-11-30T12:48:55.161Z",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "permanentId": "clb3n9q41000e01jn4j7idsjt",
+          "name": "itemPrice",
+          "displayName": "Item Price",
+          "dataType": "DecimalNumber",
+          "properties": {
+            "precision": 2,
+            "maximumValue": 999999999,
+            "minimumValue": -999999999
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmm002olc01tvdmxnxh",
+          "createdAt": "2022-11-30T12:48:55.199Z",
+          "updatedAt": "2022-11-30T12:48:55.199Z",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "permanentId": "clb3n9q57000f01jn2skkbnn9",
+          "name": "description",
+          "displayName": "Description",
+          "dataType": "MultiLineText",
+          "properties": {
+            "maxLength": 1000
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        },
+        {
+          "id": "clb3n9tmm002plc01eykg0qhc",
+          "createdAt": "2022-11-30T12:48:55.299Z",
+          "updatedAt": "2022-11-30T12:48:55.299Z",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "permanentId": "clb3n9q7w000i01jn7w20eyiz",
+          "name": "orders",
+          "displayName": "Orders",
+          "dataType": "Lookup",
+          "properties": {
+            "relatedFieldId": "clb3n9q80000j01jn47d12bwe",
+            "relatedEntityId": "clb3n9piw003ljn01lbpm9jfo",
+            "allowMultipleSelection": true
+          },
+          "required": false,
+          "searchable": true,
+          "description": "",
+          "position": null,
+          "unique": false
+        }
+      ],
+      "permissions": [
+        {
+          "id": "clb3n9tno004dlc014zsvblwc",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "action": "View",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tno004elc01g8ytiojj",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "action": "Create",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tno004flc01z85tn774",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "action": "Update",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tno004glc01uipxp143",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "action": "Delete",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        },
+        {
+          "id": "clb3n9tno004hlc01f9ezon28",
+          "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+          "action": "Search",
+          "type": "AllRoles",
+          "permissionRoles": [],
+          "permissionFields": []
+        }
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "id": "clb3n9pgc000zjn01rxba7rhr",
+      "createdAt": "2022-11-30T12:48:54.301Z",
+      "updatedAt": "2022-11-30T12:48:54.301Z",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "name": "user",
+      "displayName": "User",
+      "description": null
+    }
+  ],
+  "pluginInstallations": [
+    {
+      "id": "clb3p3ov800cplc01a8f6uwje",
+      "createdAt": "2022-11-30T13:40:12.836Z",
+      "updatedAt": "2022-11-30T13:40:26.226Z",
+      "parentBlock": null,
+      "displayName": "PostgreSQL DB",
+      "description": null,
+      "blockType": "PluginInstallation",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "lockedAt": null,
+      "lockedByUserId": null,
+      "versionNumber": 0,
+      "npm": "@amplication/plugin-db-postgres",
+      "enabled": true,
+      "version": "0.0.1",
+      "pluginId": "db-postgres",
+      "settings": {
+        "defaultPort": "5432",
+        "enableLogging": true
+      }
+    },
+    {
+      "id": "clb3p3uxx009bjn01zfbim7p1",
+      "createdAt": "2022-11-30T13:40:20.709Z",
+      "updatedAt": "2022-11-30T13:40:26.224Z",
+      "parentBlock": null,
+      "displayName": "Passport JWT Authentication",
+      "description": null,
+      "blockType": "PluginInstallation",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "lockedAt": null,
+      "lockedByUserId": null,
+      "versionNumber": 0,
+      "npm": "@amplication/plugin-auth-jwt",
+      "enabled": true,
+      "version": "latest",
+      "pluginId": "auth-jwt",
+      "settings": {}
+    },
+    {
+      "id": "clb3p3t7z0098jn015na6ork3",
+      "createdAt": "2022-11-30T13:40:18.480Z",
+      "updatedAt": "2022-11-30T13:40:26.227Z",
+      "parentBlock": null,
+      "displayName": "Kafka",
+      "description": null,
+      "blockType": "PluginInstallation",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "lockedAt": null,
+      "lockedByUserId": null,
+      "versionNumber": 0,
+      "npm": "@amplication/plugin-broker-kafka",
+      "enabled": true,
+      "version": "latest",
+      "pluginId": "broker-kafka",
+      "settings": {}
+    }
+  ],
+  "resourceType": "Service",
+  "topics": [],
+  "serviceTopics": [],
+  "resourceInfo": {
+    "name": "Sample service",
+    "description": "Sample service for e-commerce",
+    "version": "dngvohq5",
+    "id": "clb3n9pg0000yjn01rk61ft79",
+    "url": "https://server-next.amplication-dev.com/clb3n9pg0000yjn01rk61ft79",
+    "settings": {
+      "dbHost": "localhost",
+      "dbName": "",
+      "dbPassword": "admin",
+      "dbPort": 5432,
+      "dbUser": "admin",
+      "resourceId": "clb3n9pg0000yjn01rk61ft79",
+      "authProvider": "Jwt",
+      "serverSettings": {
+        "serverPath": "",
+        "generateGraphQL": true,
+        "generateRestApi": true
+      },
+      "adminUISettings": {
+        "adminUIPath": "",
+        "generateAdminUI": true
+      }
+    }
+  },
+  "otherResources": [
+    {
+      "entities": [
+        {
+          "id": "clb3n9pgo0010jn017ye0wbjw",
+          "createdAt": "2022-11-30T12:48:54.312Z",
+          "updatedAt": "2022-11-30T12:48:59.722Z",
+          "resourceId": "clb3n9pg0000yjn01rk61ft79",
+          "name": "User",
+          "displayName": "User",
+          "pluralDisplayName": "Users",
+          "description": "An automatically created entity to manage users in the service",
+          "lockedByUserId": null,
+          "lockedAt": null,
+          "deletedAt": null,
+          "fields": [
+            {
+              "id": "clb3n9tmy003flc01slwlfpqs",
+              "createdAt": "2022-11-30T12:48:54.312Z",
+              "updatedAt": "2022-11-30T12:48:54.312Z",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "permanentId": "clb3n9pgp001djn016x5h3ozc",
+              "name": "id",
+              "displayName": "ID",
+              "dataType": "Id",
+              "properties": {
+                "idType": "CUID"
+              },
+              "required": true,
+              "searchable": true,
+              "description": "An automatically created unique identifier of the entity",
+              "position": null,
+              "unique": true
+            },
+            {
+              "id": "clb3n9tmy003glc01z4yvlr5g",
+              "createdAt": "2022-11-30T12:48:54.312Z",
+              "updatedAt": "2022-11-30T12:48:54.312Z",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "permanentId": "clb3n9pgp001fjn01op95k43i",
+              "name": "createdAt",
+              "displayName": "Created At",
+              "dataType": "CreatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the time the entity created at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmy003hlc01qf4b9mp7",
+              "createdAt": "2022-11-30T12:48:54.312Z",
+              "updatedAt": "2022-11-30T12:48:54.312Z",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "permanentId": "clb3n9pgp001gjn01jps2hxju",
+              "name": "updatedAt",
+              "displayName": "Updated At",
+              "dataType": "UpdatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the last time the entity updated at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmy003ilc01dp1cc6de",
+              "createdAt": "2022-11-30T12:48:54.312Z",
+              "updatedAt": "2022-11-30T12:48:54.312Z",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "permanentId": "clb3n9pgp001jjn01amrzkm4r",
+              "name": "firstName",
+              "displayName": "First Name",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 256
+              },
+              "required": false,
+              "searchable": true,
+              "description": "An automatically created field of the first name of the user",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmy003jlc01kdq9qpx7",
+              "createdAt": "2022-11-30T12:48:54.312Z",
+              "updatedAt": "2022-11-30T12:48:54.312Z",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "permanentId": "clb3n9pgp001kjn011tqldbp7",
+              "name": "lastName",
+              "displayName": "Last Name",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 256
+              },
+              "required": false,
+              "searchable": true,
+              "description": "An automatically created field of the last name of the user",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmy003klc01i99hvup4",
+              "createdAt": "2022-11-30T12:48:54.312Z",
+              "updatedAt": "2022-11-30T12:48:54.312Z",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "permanentId": "clb3n9pgp001njn01atnk054y",
+              "name": "username",
+              "displayName": "Username",
+              "dataType": "Username",
+              "properties": {
+                "maxLength": 256
+              },
+              "required": true,
+              "searchable": true,
+              "description": "An automatically created field of the username of the user",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmy003llc013mw7eiap",
+              "createdAt": "2022-11-30T12:48:54.312Z",
+              "updatedAt": "2022-11-30T12:48:54.312Z",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "permanentId": "clb3n9pgp001pjn01ou2yd1qg",
+              "name": "password",
+              "displayName": "Password",
+              "dataType": "Password",
+              "properties": {
+                "maxLength": 256
+              },
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the password of the user",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmy003mlc01bi7wzm3f",
+              "createdAt": "2022-11-30T12:48:54.312Z",
+              "updatedAt": "2022-11-30T12:48:54.312Z",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "permanentId": "clb3n9pgp001rjn01w7uba28u",
+              "name": "roles",
+              "displayName": "Roles",
+              "dataType": "Roles",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the roles of the user",
+              "position": null,
+              "unique": false
+            }
+          ],
+          "permissions": [
+            {
+              "id": "clb3n9tns005hlc01zbxlynv5",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "action": "View",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tns005ilc01vmcy02ls",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "action": "Create",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tns005jlc01b7iiuwfs",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "action": "Update",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tns005klc01ce5zlvwh",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "action": "Delete",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tns005llc01huthsr4h",
+              "entityVersionId": "clb3n9tlb002glc01pg3julzq",
+              "action": "Search",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            }
+          ]
+        },
+        {
+          "id": "clb3n9piw003ljn01lbpm9jfo",
+          "createdAt": "2022-11-30T12:48:54.392Z",
+          "updatedAt": "2022-11-30T12:48:59.755Z",
+          "resourceId": "clb3n9pg0000yjn01rk61ft79",
+          "name": "Order",
+          "displayName": "Orders",
+          "pluralDisplayName": "Orders",
+          "description": null,
+          "lockedByUserId": null,
+          "lockedAt": null,
+          "deletedAt": null,
+          "fields": [
+            {
+              "id": "clb3n9tnv0061lc01c39mxnk5",
+              "createdAt": "2022-11-30T12:48:54.411Z",
+              "updatedAt": "2022-11-30T12:48:54.411Z",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "permanentId": "clb3n9pjf0049jn01pt2qcdgj",
+              "name": "id",
+              "displayName": "ID",
+              "dataType": "Id",
+              "properties": {
+                "idType": "CUID"
+              },
+              "required": true,
+              "searchable": true,
+              "description": "An automatically created unique identifier of the entity",
+              "position": null,
+              "unique": true
+            },
+            {
+              "id": "clb3n9tnv0062lc0164tijnt9",
+              "createdAt": "2022-11-30T12:48:54.422Z",
+              "updatedAt": "2022-11-30T12:48:54.422Z",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "permanentId": "clb3n9pjq004ejn01patxqsv1",
+              "name": "createdAt",
+              "displayName": "Created At",
+              "dataType": "CreatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the time the entity created at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tnv0063lc01ih6vbwp3",
+              "createdAt": "2022-11-30T12:48:54.430Z",
+              "updatedAt": "2022-11-30T12:48:54.430Z",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "permanentId": "clb3n9pjy004fjn01dfujbjyq",
+              "name": "updatedAt",
+              "displayName": "Updated At",
+              "dataType": "UpdatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the last time the entity updated at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tnv0064lc01gmp82kt0",
+              "createdAt": "2022-11-30T12:48:54.512Z",
+              "updatedAt": "2022-11-30T12:48:54.512Z",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "permanentId": "clb3n9pm5000101jn6wjicbx3",
+              "name": "quantity",
+              "displayName": "Quantity",
+              "dataType": "WholeNumber",
+              "properties": {
+                "maximumValue": 999999999,
+                "minimumValue": -999999999
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tnv0065lc01jqra4gjh",
+              "createdAt": "2022-11-30T12:48:54.556Z",
+              "updatedAt": "2022-11-30T12:48:54.556Z",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "permanentId": "clb3n9pne000201jncxwjes2s",
+              "name": "discount",
+              "displayName": "Discount",
+              "dataType": "DecimalNumber",
+              "properties": {
+                "precision": 2,
+                "maximumValue": 999999999,
+                "minimumValue": -999999999
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tnv0066lc01gdeti98y",
+              "createdAt": "2022-11-30T12:48:54.590Z",
+              "updatedAt": "2022-11-30T12:48:54.590Z",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "permanentId": "clb3n9pod000301jn902j6v7r",
+              "name": "totalPrice",
+              "displayName": "Total Price",
+              "dataType": "WholeNumber",
+              "properties": {
+                "maximumValue": 999999999,
+                "minimumValue": -999999999
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tnv0067lc01xlvmgelc",
+              "createdAt": "2022-11-30T12:48:55.262Z",
+              "updatedAt": "2022-11-30T12:48:55.262Z",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "permanentId": "clb3n9q6e000h01jn90uy2mi1",
+              "name": "customer",
+              "displayName": "Customer",
+              "dataType": "Lookup",
+              "properties": {
+                "relatedFieldId": "clb3n9q64000g01jn6cyugwhp",
+                "relatedEntityId": "clb3n9poy004ojn010dedjn0n",
+                "allowMultipleSelection": false
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tnv0068lc01kqcmb1mh",
+              "createdAt": "2022-11-30T12:48:55.313Z",
+              "updatedAt": "2022-11-30T12:48:55.313Z",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "permanentId": "clb3n9q80000j01jn47d12bwe",
+              "name": "product",
+              "displayName": "Product",
+              "dataType": "Lookup",
+              "properties": {
+                "relatedFieldId": "clb3n9q7w000i01jn7w20eyiz",
+                "relatedEntityId": "clb3n9q1u006xjn012gomuwhw",
+                "allowMultipleSelection": false
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            }
+          ],
+          "permissions": [
+            {
+              "id": "clb3n9toh0071lc01eltzoxdr",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "action": "View",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9toh0072lc01w9nth2kp",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "action": "Create",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9toh0073lc01bl8i2wie",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "action": "Update",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9toh0074lc015qhbzii8",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "action": "Delete",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9toh0075lc014jhnabpj",
+              "entityVersionId": "clb3n9tli002ilc01nzz2arpl",
+              "action": "Search",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            }
+          ]
+        },
+        {
+          "id": "clb3n9poy004ojn010dedjn0n",
+          "createdAt": "2022-11-30T12:48:54.610Z",
+          "updatedAt": "2022-11-30T12:48:59.733Z",
+          "resourceId": "clb3n9pg0000yjn01rk61ft79",
+          "name": "Customer",
+          "displayName": "Customer",
+          "pluralDisplayName": "Customers",
+          "description": null,
+          "lockedByUserId": null,
+          "lockedAt": null,
+          "deletedAt": null,
+          "fields": [
+            {
+              "id": "clb3n9tn9003vlc016xc4zcxd",
+              "createdAt": "2022-11-30T12:48:54.626Z",
+              "updatedAt": "2022-11-30T12:48:54.626Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9ppd005bjn01cw81w57l",
+              "name": "id",
+              "displayName": "ID",
+              "dataType": "Id",
+              "properties": {
+                "idType": "CUID"
+              },
+              "required": true,
+              "searchable": true,
+              "description": "An automatically created unique identifier of the entity",
+              "position": null,
+              "unique": true
+            },
+            {
+              "id": "clb3n9tn9003wlc0121sdbht5",
+              "createdAt": "2022-11-30T12:48:54.632Z",
+              "updatedAt": "2022-11-30T12:48:54.632Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9ppk005fjn01zca09rw3",
+              "name": "createdAt",
+              "displayName": "Created At",
+              "dataType": "CreatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the time the entity created at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tn9003xlc01qa72ru0d",
+              "createdAt": "2022-11-30T12:48:54.639Z",
+              "updatedAt": "2022-11-30T12:48:54.639Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9ppr005kjn01drh3n7eu",
+              "name": "updatedAt",
+              "displayName": "Updated At",
+              "dataType": "UpdatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the last time the entity updated at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tn9003ylc01mb2onkrm",
+              "createdAt": "2022-11-30T12:48:54.663Z",
+              "updatedAt": "2022-11-30T12:48:54.663Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9pqa000401jnehi4gf1q",
+              "name": "firstName",
+              "displayName": "First Name",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tn9003zlc01dtibbbnu",
+              "createdAt": "2022-11-30T12:48:54.702Z",
+              "updatedAt": "2022-11-30T12:48:54.702Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9prf000501jn1fcsehcq",
+              "name": "lastName",
+              "displayName": "Last Name",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tn90040lc0172p6ixb9",
+              "createdAt": "2022-11-30T12:48:54.732Z",
+              "updatedAt": "2022-11-30T12:48:54.732Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9psa000601jn0dpoc7uc",
+              "name": "email",
+              "displayName": "Email",
+              "dataType": "Email",
+              "properties": {},
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tn90041lc01qdy3a6e3",
+              "createdAt": "2022-11-30T12:48:54.763Z",
+              "updatedAt": "2022-11-30T12:48:54.763Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9pt5000701jn6s7fa6fs",
+              "name": "phone",
+              "displayName": "Phone",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tn90042lc01wrihhvst",
+              "createdAt": "2022-11-30T12:48:55.247Z",
+              "updatedAt": "2022-11-30T12:48:55.247Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9q64000g01jn6cyugwhp",
+              "name": "orders",
+              "displayName": "Orders",
+              "dataType": "Lookup",
+              "properties": {
+                "relatedFieldId": "clb3n9q6e000h01jn90uy2mi1",
+                "relatedEntityId": "clb3n9piw003ljn01lbpm9jfo",
+                "allowMultipleSelection": true
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tn90043lc01mx6w38xi",
+              "createdAt": "2022-11-30T12:48:55.369Z",
+              "updatedAt": "2022-11-30T12:48:55.369Z",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "permanentId": "clb3n9q9k000l01jngw4zdfh9",
+              "name": "address",
+              "displayName": "Address",
+              "dataType": "Lookup",
+              "properties": {
+                "relatedFieldId": "clb3n9q9g000k01jnbxa1cpz2",
+                "relatedEntityId": "clb3n9puo005tjn01valm21av",
+                "allowMultipleSelection": false
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            }
+          ],
+          "permissions": [
+            {
+              "id": "clb3n9to1006hlc011i5ns0u6",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "action": "View",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9to1006ilc01p26032vc",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "action": "Create",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9to1006jlc01ob2egjmu",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "action": "Update",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9to1006klc01cbn174mv",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "action": "Delete",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9to1006llc01fbq4pkxg",
+              "entityVersionId": "clb3n9tl3002flc01lj9mmtq9",
+              "action": "Search",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            }
+          ]
+        },
+        {
+          "id": "clb3n9puo005tjn01valm21av",
+          "createdAt": "2022-11-30T12:48:54.817Z",
+          "updatedAt": "2022-11-30T12:48:59.718Z",
+          "resourceId": "clb3n9pg0000yjn01rk61ft79",
+          "name": "Address",
+          "displayName": "Address",
+          "pluralDisplayName": "Addresses",
+          "description": null,
+          "lockedByUserId": null,
+          "lockedAt": null,
+          "deletedAt": null,
+          "fields": [
+            {
+              "id": "clb3n9tmu002xlc01z4mos4dy",
+              "createdAt": "2022-11-30T12:48:54.860Z",
+              "updatedAt": "2022-11-30T12:48:54.860Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9pvw006hjn01tv74pxoi",
+              "name": "id",
+              "displayName": "ID",
+              "dataType": "Id",
+              "properties": {
+                "idType": "CUID"
+              },
+              "required": true,
+              "searchable": true,
+              "description": "An automatically created unique identifier of the entity",
+              "position": null,
+              "unique": true
+            },
+            {
+              "id": "clb3n9tmu002ylc01tamitugr",
+              "createdAt": "2022-11-30T12:48:54.868Z",
+              "updatedAt": "2022-11-30T12:48:54.868Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9pw4006kjn01zangwi7x",
+              "name": "createdAt",
+              "displayName": "Created At",
+              "dataType": "CreatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the time the entity created at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmu002zlc01apw9usqs",
+              "createdAt": "2022-11-30T12:48:54.876Z",
+              "updatedAt": "2022-11-30T12:48:54.876Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9pwb006mjn01alp0bfmx",
+              "name": "updatedAt",
+              "displayName": "Updated At",
+              "dataType": "UpdatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the last time the entity updated at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmu0030lc01cjvuz5i7",
+              "createdAt": "2022-11-30T12:48:54.899Z",
+              "updatedAt": "2022-11-30T12:48:54.899Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9pwv000801jn4srmgjxu",
+              "name": "address_1",
+              "displayName": "Address 1",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmu0031lc01vaa4rmze",
+              "createdAt": "2022-11-30T12:48:54.926Z",
+              "updatedAt": "2022-11-30T12:48:54.926Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9pxo000901jngqzr08ne",
+              "name": "address_2",
+              "displayName": "Address 2",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmu0032lc01e3lxk6a6",
+              "createdAt": "2022-11-30T12:48:54.955Z",
+              "updatedAt": "2022-11-30T12:48:54.955Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9pyh000a01jnf8gfa2ne",
+              "name": "city",
+              "displayName": "City",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmu0033lc01jfe10udb",
+              "createdAt": "2022-11-30T12:48:55.016Z",
+              "updatedAt": "2022-11-30T12:48:55.016Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9q06000b01jnc73aa5mf",
+              "name": "state",
+              "displayName": "State",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmu0034lc01p0pmg1ct",
+              "createdAt": "2022-11-30T12:48:55.056Z",
+              "updatedAt": "2022-11-30T12:48:55.056Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9q1a000c01jnefuq4r5t",
+              "name": "zip",
+              "displayName": "Zip",
+              "dataType": "WholeNumber",
+              "properties": {
+                "maximumValue": 999999999,
+                "minimumValue": -999999999
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmu0035lc01oweofqfz",
+              "createdAt": "2022-11-30T12:48:55.355Z",
+              "updatedAt": "2022-11-30T12:48:55.355Z",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "permanentId": "clb3n9q9g000k01jnbxa1cpz2",
+              "name": "customers",
+              "displayName": "Customers",
+              "dataType": "Lookup",
+              "properties": {
+                "relatedFieldId": "clb3n9q9k000l01jngw4zdfh9",
+                "relatedEntityId": "clb3n9poy004ojn010dedjn0n",
+                "allowMultipleSelection": true
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            }
+          ],
+          "permissions": [
+            {
+              "id": "clb3n9tnq004klc01btub2qs7",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "action": "View",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tnq004llc013kpg27fb",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "action": "Create",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tnq004mlc01kx9ta19t",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "action": "Update",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tnq004nlc01vjalww7t",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "action": "Delete",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tnq004olc014xsu4zfy",
+              "entityVersionId": "clb3n9tl2002dlc017xryuf6n",
+              "action": "Search",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            }
+          ]
+        },
+        {
+          "id": "clb3n9q1u006xjn012gomuwhw",
+          "createdAt": "2022-11-30T12:48:55.074Z",
+          "updatedAt": "2022-11-30T12:48:59.710Z",
+          "resourceId": "clb3n9pg0000yjn01rk61ft79",
+          "name": "Product",
+          "displayName": "Product",
+          "pluralDisplayName": "Products",
+          "description": null,
+          "lockedByUserId": null,
+          "lockedAt": null,
+          "deletedAt": null,
+          "fields": [
+            {
+              "id": "clb3n9tmm002jlc011l1h7v46",
+              "createdAt": "2022-11-30T12:48:55.089Z",
+              "updatedAt": "2022-11-30T12:48:55.089Z",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "permanentId": "clb3n9q28007ljn01oyqhn5i8",
+              "name": "id",
+              "displayName": "ID",
+              "dataType": "Id",
+              "properties": {
+                "idType": "CUID"
+              },
+              "required": true,
+              "searchable": true,
+              "description": "An automatically created unique identifier of the entity",
+              "position": null,
+              "unique": true
+            },
+            {
+              "id": "clb3n9tmm002klc01s9veuoa1",
+              "createdAt": "2022-11-30T12:48:55.096Z",
+              "updatedAt": "2022-11-30T12:48:55.096Z",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "permanentId": "clb3n9q2f007njn01hu51f3kq",
+              "name": "createdAt",
+              "displayName": "Created At",
+              "dataType": "CreatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the time the entity created at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmm002llc01fqqgnshs",
+              "createdAt": "2022-11-30T12:48:55.104Z",
+              "updatedAt": "2022-11-30T12:48:55.104Z",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "permanentId": "clb3n9q2o007sjn01jq221omq",
+              "name": "updatedAt",
+              "displayName": "Updated At",
+              "dataType": "UpdatedAt",
+              "properties": {},
+              "required": true,
+              "searchable": false,
+              "description": "An automatically created field of the last time the entity updated at",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmm002mlc017841sh4k",
+              "createdAt": "2022-11-30T12:48:55.129Z",
+              "updatedAt": "2022-11-30T12:48:55.129Z",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "permanentId": "clb3n9q37000d01jnhn5l35o8",
+              "name": "name",
+              "displayName": "Name",
+              "dataType": "SingleLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmm002nlc01ddax2equ",
+              "createdAt": "2022-11-30T12:48:55.161Z",
+              "updatedAt": "2022-11-30T12:48:55.161Z",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "permanentId": "clb3n9q41000e01jn4j7idsjt",
+              "name": "itemPrice",
+              "displayName": "Item Price",
+              "dataType": "DecimalNumber",
+              "properties": {
+                "precision": 2,
+                "maximumValue": 999999999,
+                "minimumValue": -999999999
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmm002olc01tvdmxnxh",
+              "createdAt": "2022-11-30T12:48:55.199Z",
+              "updatedAt": "2022-11-30T12:48:55.199Z",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "permanentId": "clb3n9q57000f01jn2skkbnn9",
+              "name": "description",
+              "displayName": "Description",
+              "dataType": "MultiLineText",
+              "properties": {
+                "maxLength": 1000
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            },
+            {
+              "id": "clb3n9tmm002plc01eykg0qhc",
+              "createdAt": "2022-11-30T12:48:55.299Z",
+              "updatedAt": "2022-11-30T12:48:55.299Z",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "permanentId": "clb3n9q7w000i01jn7w20eyiz",
+              "name": "orders",
+              "displayName": "Orders",
+              "dataType": "Lookup",
+              "properties": {
+                "relatedFieldId": "clb3n9q80000j01jn47d12bwe",
+                "relatedEntityId": "clb3n9piw003ljn01lbpm9jfo",
+                "allowMultipleSelection": true
+              },
+              "required": false,
+              "searchable": true,
+              "description": "",
+              "position": null,
+              "unique": false
+            }
+          ],
+          "permissions": [
+            {
+              "id": "clb3n9tno004dlc014zsvblwc",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "action": "View",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tno004elc01g8ytiojj",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "action": "Create",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tno004flc01z85tn774",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "action": "Update",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tno004glc01uipxp143",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "action": "Delete",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            },
+            {
+              "id": "clb3n9tno004hlc01f9ezon28",
+              "entityVersionId": "clb3n9tl0002blc01x7t7icuo",
+              "action": "Search",
+              "type": "AllRoles",
+              "permissionRoles": [],
+              "permissionFields": []
+            }
+          ]
+        }
+      ],
+      "roles": [],
+      "pluginInstallations": [],
+      "resourceType": "ProjectConfiguration",
+      "topics": [],
+      "serviceTopics": [],
+      "resourceInfo": {
+        "name": "Sample Project",
+        "description": "This resource is used to store project configuration.",
+        "version": "dngvohq5",
+        "id": "clb3n9g0o003ego01m36q805i",
+        "url": "https://server-next.amplication-dev.com/clb3n9g0o003ego01m36q805i"
+      }
+    }
+  ]
+}
