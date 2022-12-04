@@ -200,18 +200,25 @@ export class BuildService {
     );
 
     if (!subscription) {
+      const entities = await this.entityService.entities({
+        where: { resourceId },
+      });
+
+      if (entities.length > 6) {
+        throw new Error("Too many entities");
+      }
+
       const resources = await this.resourceService.resources({
         where: {
           projectId: resource.projectId,
         },
       });
 
-      if (resource.entities.length > 6) {
-        throw new Error("Too many entities");
-      }
-
-      if (resources.length > 2) {
-        throw new Error("Too many resources");
+      if (
+        resources.filter((x) => x.resourceType === EnumResourceType.Service)
+          .length > 2
+      ) {
+        throw new Error("Too many services");
       }
     }
 
