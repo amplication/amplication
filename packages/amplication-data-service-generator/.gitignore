@@ -7,3 +7,5 @@ generated/
 *.map
 # ESLint
 .eslintcache
+
+input.json
