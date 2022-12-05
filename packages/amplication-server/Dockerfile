@@ -14,7 +14,7 @@ RUN npm i --omit=dev
 COPY ./dist/packages/amplication-server .
 
 # This is required to include the Prisma client in the image
-COPY ./node_modules/@amplication/prisma-clients/amplication-prisma-db ./node_modules/@amplication/prisma-clients/amplication-prisma-db
+COPY ./packages/amplication-prisma-db/src/generated-prisma-client ./packages/amplication-prisma-db/src/generated-prisma-client
 
 
 ENV PORT=3333
