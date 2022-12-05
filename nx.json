@@ -1,5 +1,10 @@
 {
   "extends": "nx/presets/npm.json",
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  },
   "npmScope": "amplication",
   "affected": {
     "defaultBase": "master"

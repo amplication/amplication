@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-data-service-generator/src",
   "projectType": "application",
-  "implicitDependencies": ["amplication-code-gen-types"],
   "targets": {
     "install": {
       "executor": "nx:run-commands",
