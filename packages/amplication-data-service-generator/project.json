@@ -83,16 +83,12 @@
     "generate:test-data-service": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/generated"],
-      "dependsOn": ["remove:generated"],
       "options": {
-        "command": "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated",
-        "cwd": "packages/amplication-data-service-generator"
-      }
-    },
-    "remove:generated": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "rm -r generated",
+        "commands": [
+          "rimraf generated",
+          "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated"
+        ],
+        "parallel": false,
         "cwd": "packages/amplication-data-service-generator"
       }
     },
