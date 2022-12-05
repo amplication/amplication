@@ -8,7 +8,7 @@ on:
         description: Commit SHA, branch or tag name used by Nx in the affected jobs. 
         required: true
         default: next
-  pull_request_target:
+  pull_request:
     types: [opened, reopened, synchronize]
     paths-ignore:
       - "**/*.md"
