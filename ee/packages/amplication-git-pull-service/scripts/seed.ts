@@ -1,8 +1,10 @@
 import * as dotenv from "dotenv";
-import { PrismaClient } from "@amplication/prisma-clients/amplication-git-pull-service";
+import { PrismaClient } from "../src/generated-prisma-client";
 import { customSeed } from "./customSeed";
-import { EnumGitPullEventStatus } from "../src/contracts/enums/gitPullEventStatus.enum";
-import { GitProviderEnum } from "../src/contracts/enums/gitProvider.enum";
+import {
+  GitProviderEnum,
+  GitPullEventStatusEnum,
+} from "../src/git-pull-event/git-pull-event.types";
 
 if (require.main === module) {
   dotenv.config();
@@ -25,7 +27,7 @@ async function seed() {
     branch: "main",
     commit: "e3355tt",
     pushedAt: new Date(),
-    status: EnumGitPullEventStatus.Created,
+    status: GitPullEventStatusEnum.Created,
   };
   await client.gitPullEvent.upsert({
     where: { id: data.id },
