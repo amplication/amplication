@@ -1,6 +1,7 @@
 # compiled output
 /lib
 /node_modules
+src/generated-prisma-client
 
 # Logs
 logs
