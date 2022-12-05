@@ -22,6 +22,11 @@ REACT_APP_SERVER_URL=http://localhost:3000",
     \\"sass\\": \\"^1.39.0\\",
     \\"web-vitals\\": \\"1.1.2\\"
   },
+  \\"overrides\\": {
+    \\"react-scripts\\": {
+      \\"@svgr/webpack\\": \\"6.5.1\\"
+    }
+  },
   \\"scripts\\": {
     \\"start\\": \\"react-scripts start\\",
     \\"build\\": \\"react-scripts build\\",
