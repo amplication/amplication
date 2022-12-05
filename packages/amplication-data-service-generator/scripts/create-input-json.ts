@@ -1,11 +1,11 @@
 import { EnumResourceType } from "../src/models";
 import { appInfo } from "../src/tests/appInfo";
 import entities from "../src/tests/entities";
-import { installedPlugins } from "../src/tests/pluginInstallation";
 import roles from "../src/tests/roles";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import { format } from "prettier";
+import { plugins } from "./constants/example-plugins";
 
 async function createInputJsonFile() {
   const object = {
@@ -13,7 +13,7 @@ async function createInputJsonFile() {
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    pluginInstallations: installedPlugins,
+    pluginInstallations: [plugins.kafka],
   };
   await writeFile(
     join(__dirname, "../input.json"),

@@ -1,6 +1,6 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
 
-export const plugins: Record<string, PluginInstallation> = {
+export const plugins: Record<string, PluginInstallation> = Object.freeze({
   kafka: {
     id: "clb3p3t7z0098jn015na6ork3",
     npm: "@amplication/plugin-broker-kafka",
@@ -28,4 +28,4 @@ export const plugins: Record<string, PluginInstallation> = {
       enableLogging: true,
     },
   },
-};
+});

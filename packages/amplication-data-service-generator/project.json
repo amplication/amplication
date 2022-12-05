@@ -87,7 +87,7 @@
         "cwd": "packages/amplication-data-service-generator"
       }
     },
-    "generate-input-json": {
+    "generate-example-input-json": {
       "executor": "nx:run-commands",
       "options": {
         "command": "ts-node ./scripts/create-input-json.ts",
@@ -100,7 +100,7 @@
         "command": "ts-node ./src/generate-code.ts ./input.json ./generated",
         "cwd": "packages/amplication-data-service-generator"
       },
-      "dependsOn": ["generate-input-json"]
+      "dependsOn": ["generate-example-input-json"]
     },
     "docker:build": {
       "executor": "@nx-tools/nx-docker:build",
