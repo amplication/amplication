@@ -8,10 +8,11 @@ import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
 import { createDTOs } from "./server/resource/create-dtos";
 import { EnumResourceType } from "./models";
+import { defaultLogger } from "./server/logging";
 
 export async function createDataServiceImpl(
   dSGResourceData: DSGResourceData,
-  logger: winston.Logger
+  logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {
   if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
     logger.info("No code to generate for a message broker");

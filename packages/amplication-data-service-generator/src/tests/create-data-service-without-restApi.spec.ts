@@ -1,10 +1,10 @@
-import { createDataService } from "../create-data-service";
-import entities from "./entities";
-import roles from "./roles";
 import { AppInfo } from "@amplication/code-gen-types";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { createDataServiceImpl } from "../create-data-service-impl";
 import { EnumResourceType } from "../models";
+import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import entities from "./entities";
 import { installedPlugins } from "./pluginInstallation";
+import roles from "./roles";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -26,7 +26,7 @@ jest.mock("./create-log", () => ({
 
 describe("createDataService", () => {
   test("creates app as expected", async () => {
-    const modules = await createDataService({
+    const modules = await createDataServiceImpl({
       entities,
       roles,
       resourceInfo: newAppInfo,
