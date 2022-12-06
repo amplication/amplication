@@ -68,6 +68,6 @@ export async function createDataServiceImpl(
     });
     logger.error((error as Error).message);
     logger.error((error as Error).stack);
-    return [];
+    throw new Error((error as Error).message);
   }
 }
