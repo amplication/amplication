@@ -23,8 +23,6 @@ import { createDockerComposeDBFile } from "./docker-compose/create-docker-compos
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
 import { createLog } from "../create-log";
-import { createTokenPayloadInterface } from "./auth/token/create-token-payload-interface";
-import { createAuthConstants } from "./auth/create-constants/create-constants";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -71,24 +69,6 @@ async function createServerInternal(
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
 
-  await createLog({
-    level: "info",
-    message: "Creating Token Payload Interface...",
-  });
-  logger.info("Token Payload Interface...");
-  const tokenPayloadInterface = await createTokenPayloadInterface(); //todo::
-
-  await createLog({
-    level: "info",
-    message: "Creating Auth Constants...",
-  });
-  logger.info("Creating Auth Constants...");
-  const authConstants = await createAuthConstants(); //todo::
-
-  await createLog({ level: "info", message: "Creating Auth module..." });
-  logger.info("Creating Auth module...");
-  const authModules = await createAuthModules(); //todo::
-
   await createLog({ level: "info", message: "Creating swagger..." });
   logger.info("Creating swagger...");
   const swagger = await createSwagger();
@@ -116,9 +96,6 @@ async function createServerInternal(
     ...swagger,
     ...appModule,
     ...seedModule,
-    ...tokenPayloadInterface,
-    authConstants,
-    ...authModules,
     ...messageBrokerModules,
   ];
 

@@ -3,7 +3,6 @@ import { VariableDictionary } from "@amplication/code-gen-types";
 export const SERVER_BASE_DIRECTORY = "server";
 export const SRC_DIRECTORY = `${SERVER_BASE_DIRECTORY}/src`;
 export const SCRIPTS_DIRECTORY = `${SERVER_BASE_DIRECTORY}/scripts`;
-export const AUTH_PATH = `${SRC_DIRECTORY}/auth`;
 
 export const ENV_VARIABLES: VariableDictionary = [
   { BCRYPT_SALT: "10" },
