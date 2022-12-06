@@ -26,16 +26,11 @@
           "build",
           "postbuild",
           "prepare",
-          "check-format",
-          "format",
           "test",
           "db:init",
           "lint",
           "test:e2e",
-          "test:cov",
-          "db:prisma:generate",
-          "graphql:schema:generate",
-          "graphql:schema:check"
+          "test:cov"
         ]
       }
     }
