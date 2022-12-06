@@ -72,27 +72,23 @@ async function createServerInternal(
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
 
-  await createLog({ level: "info", message: "Creating User Info..." });
-  logger.info("Creating User Info...");
-  const userInfo = await createUserInfo();
-
   await createLog({
     level: "info",
     message: "Creating Token Payload Interface...",
   });
   logger.info("Token Payload Interface...");
-  const tokenPayloadInterface = await createTokenPayloadInterface();
+  const tokenPayloadInterface = await createTokenPayloadInterface(); //todo::
 
   await createLog({
     level: "info",
     message: "Creating Auth Constants...",
   });
   logger.info("Creating Auth Constants...");
-  const authConstants = await createAuthConstants();
+  const authConstants = await createAuthConstants(); //todo::
 
   await createLog({ level: "info", message: "Creating Auth module..." });
   logger.info("Creating Auth module...");
-  const authModules = await createAuthModules();
+  const authModules = await createAuthModules(); //todo::
 
   await createLog({ level: "info", message: "Creating swagger..." });
   logger.info("Creating swagger...");
@@ -121,7 +117,6 @@ async function createServerInternal(
     ...swagger,
     ...appModule,
     ...seedModule,
-    ...userInfo,
     ...tokenPayloadInterface,
     authConstants,
     ...authModules,
@@ -150,6 +145,7 @@ async function createServerInternal(
   logger.info("Creating access control grants...");
   const grantsModule = createGrantsModule(entities, roles);
   const dotEnvModule = await createDotEnvModule({
+    //todo::
     envVariables: ENV_VARIABLES,
   });
 
