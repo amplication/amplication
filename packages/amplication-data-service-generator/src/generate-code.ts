@@ -29,7 +29,7 @@ export default async function generateCode(
     const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
-    httpClient.post(
+    await httpClient.post(
       new URL(
         "build-runner/code-generation-success",
         process.env.BUILD_MANAGER_URL
@@ -41,7 +41,7 @@ export default async function generateCode(
     );
   } catch (err) {
     console.error(err);
-    httpClient.post(
+    await httpClient.post(
       new URL(
         "build-runner/code-generation-failure",
         process.env.BUILD_MANAGER_URL
