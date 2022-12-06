@@ -56,6 +56,7 @@ export async function createDataServiceImpl(
       level: "info",
       message: "Failed to run createDataServiceImpl",
     });
+    logger.error((error as Error).message);
     logger.error((error as Error).stack);
     return [];
   }
