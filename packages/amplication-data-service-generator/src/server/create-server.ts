@@ -23,7 +23,6 @@ import { createDockerComposeDBFile } from "./docker-compose/create-docker-compos
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
 import { createLog } from "../create-log";
-import { createUserInfo } from "./auth/user-info/create-user-info";
 import { createTokenPayloadInterface } from "./auth/token/create-token-payload-interface";
 import { createAuthConstants } from "./auth/create-constants/create-constants";
 
