@@ -1,4 +1,4 @@
-import { httpClient } from "./util/httpClient";
+import { httpClient } from "./util/http-client";
 import { defaultLogger as logger } from "./server/logging";
 import { LogEntry } from "winston";
 

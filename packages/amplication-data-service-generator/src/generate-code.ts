@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import { DSGResourceData, Module } from "@amplication/code-gen-types";
 import { createDataServiceImpl } from "./create-data-service-impl";
 import { defaultLogger } from "./server/logging";
-import { httpClient } from "./util/httpClient";
+import { httpClient } from "./util/http-client";
 
 const [, , source, destination] = process.argv;
 if (!source) {
