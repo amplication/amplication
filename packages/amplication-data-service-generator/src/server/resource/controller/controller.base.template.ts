@@ -1,8 +1,5 @@
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
-import * as nestAccessControl from "nest-access-control";
-// @ts-ignore
-import * as defaultAuthGuard from "../../auth/defaultAuth.guard";
 // @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
@@ -50,20 +47,9 @@ declare const SELECT: Select;
 
 //@ts-ignore
 @swagger.SWAGGER_API_AUTH_FUNCTION()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class CONTROLLER_BASE {
-  constructor(
-    protected readonly service: SERVICE,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: SERVICE) {}
 
-  // @ts-ignore
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "create",
-    possession: "any",
-  })
   @common.Post()
   @swagger.ApiCreatedResponse({ type: ENTITY })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
@@ -76,13 +62,6 @@ export class CONTROLLER_BASE {
     });
   }
 
-  // @ts-ignore
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "read",
-    possession: "any",
-  })
   @common.Get()
   @swagger.ApiOkResponse({ type: [ENTITY] })
   @swagger.ApiForbiddenResponse()
@@ -97,13 +76,6 @@ export class CONTROLLER_BASE {
     });
   }
 
-  // @ts-ignore
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "read",
-    possession: "own",
-  })
   @common.Get(FINE_ONE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -123,13 +95,6 @@ export class CONTROLLER_BASE {
     return result;
   }
 
-  // @ts-ignore
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "update",
-    possession: "any",
-  })
   @common.Patch(UPDATE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -154,11 +119,6 @@ export class CONTROLLER_BASE {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "delete",
-    possession: "any",
-  })
   @common.Delete(DELETE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
