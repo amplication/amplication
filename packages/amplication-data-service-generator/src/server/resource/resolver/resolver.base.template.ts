@@ -1,11 +1,5 @@
-import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
-// @ts-ignore
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-// @ts-ignore
-import * as gqlACGuard from "../../auth/gqlAC.guard";
 // @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
@@ -55,19 +49,8 @@ declare interface SERVICE {
 declare const ENTITY_NAME: string;
 
 @graphql.Resolver(() => ENTITY)
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 export class RESOLVER_BASE {
-  constructor(
-    protected readonly service: SERVICE,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "read",
-    possession: "any",
-  })
+  constructor(protected readonly service: SERVICE) {}
   async META_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<MetaQueryPayload> {
@@ -81,28 +64,14 @@ export class RESOLVER_BASE {
     };
   }
 
-  // @ts-ignore
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [ENTITY])
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "read",
-    possession: "any",
-  })
   async ENTITIES_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<ENTITY[]> {
     return this.service.findMany(args);
   }
 
-  // @ts-ignore
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => ENTITY, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "read",
-    possession: "own",
-  })
   async ENTITY_QUERY(
     @graphql.Args() args: FIND_ONE_ARGS
   ): Promise<ENTITY | null> {
@@ -113,14 +82,7 @@ export class RESOLVER_BASE {
     return result;
   }
 
-  // @ts-ignore
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ENTITY)
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "create",
-    possession: "any",
-  })
   async CREATE_MUTATION(@graphql.Args() args: CREATE_ARGS): Promise<ENTITY> {
     // @ts-ignore
     return await this.service.create({
@@ -129,14 +91,7 @@ export class RESOLVER_BASE {
     });
   }
 
-  // @ts-ignore
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => ENTITY)
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "update",
-    possession: "any",
-  })
   async UPDATE_MUTATION(
     @graphql.Args() args: UPDATE_ARGS
   ): Promise<ENTITY | null> {
@@ -157,11 +112,6 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Mutation(() => ENTITY)
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "delete",
-    possession: "any",
-  })
   async DELETE_MUTATION(
     @graphql.Args() args: DELETE_ARGS
   ): Promise<ENTITY | null> {
