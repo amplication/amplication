@@ -13,7 +13,7 @@ async function createInputJsonFile() {
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    pluginInstallations: [plugins.kafka],
+    pluginInstallations: [plugins.kafka, plugins.postgresPlugin],
   };
   await writeFile(
     join(__dirname, "../input.json"),

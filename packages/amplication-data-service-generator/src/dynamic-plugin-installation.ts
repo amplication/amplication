@@ -11,15 +11,7 @@ function promiseFromChildProcess(child: ChildProcess) {
 export async function dynamicPluginInstallation(
   pluginInstallations: string[]
 ): Promise<void> {
-  for await (const plugin of pluginInstallations) {
-    await installationPackage(plugin);
-  }
-}
-
-async function installationPackage(packageName: string): Promise<void> {
-  try {
-    await promiseFromChildProcess(exec(`npm i ${packageName}`));
-  } catch (error) {
-    throw new PackageInstallationFailed(packageName);
-  }
+  await promiseFromChildProcess(
+    exec(`npm i ${pluginInstallations.join(" ")} --no-save -f`)
+  );
 }
