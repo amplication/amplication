@@ -56,6 +56,16 @@ export async function createDataServiceImpl(
       level: "info",
       message: "Failed to run createDataServiceImpl",
     });
+    await createLog({
+      level: "info",
+      message: `createDataServiceImpl Error message: ${
+        (error as Error).message
+      }`,
+    });
+    await createLog({
+      level: "info",
+      message: `createDataServiceImpl Error stack: ${(error as Error).stack}`,
+    });
     logger.error((error as Error).message);
     logger.error((error as Error).stack);
     return [];
