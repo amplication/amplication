@@ -4,18 +4,15 @@ import { LogEntry } from "winston";
 
 export const createLog = async (log: LogEntry): Promise<void> => {
   try {
+    const logContext = { buildId: process.env.BUILD_ID, ...log };
     if (process.env.REMOTE_ENV !== "true") {
-      logger.info("Running locally, skipping log reporting");
+      logger.info("Running locally, skipping log reporting", logContext);
       return;
     }
 
-    logger.info("Sending log to build manager");
     await httpClient.post(
       new URL("build-logger/create-log", process.env.BUILD_MANAGER_URL).href,
-      {
-        buildId: process.env.BUILD_ID,
-        ...log,
-      }
+      logContext
     );
   } catch (error) {
     logger.error("Failed to send log to build manager", error);
