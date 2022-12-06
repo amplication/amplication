@@ -1,0 +1,482 @@
+import {
+  Entity,
+  EntityField,
+  EnumDataType,
+  LookupResolvedProperties,
+  types,
+} from "@amplication/code-gen-types";
+import { camelCase } from "camel-case";
+import { pascalCase } from "pascal-case";
+import * as PrismaSchemaDSL from "prisma-schema-dsl";
+import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
+
+export const CUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
+  PrismaSchemaDSLTypes.CUID
+);
+
+export const UUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
+  PrismaSchemaDSLTypes.UUID
+);
+
+export const INCREMENTAL_CALL_EXPRESSION =
+  new PrismaSchemaDSLTypes.CallExpression(PrismaSchemaDSLTypes.AUTO_INCREMENT);
+
+export const NOW_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
+  PrismaSchemaDSLTypes.NOW
+);
+
+export function createPrismaFields(
+  field: EntityField,
+  entity: Entity,
+  fieldNamesCount?: Record<string, number>
+):
+  | [PrismaSchemaDSLTypes.ScalarField]
+  | [PrismaSchemaDSLTypes.ObjectField]
+  | [PrismaSchemaDSLTypes.ObjectField, PrismaSchemaDSLTypes.ScalarField] {
+  return createPrismaSchemaFieldsHandlers[field.dataType](
+    field,
+    entity,
+    fieldNamesCount
+  );
+}
+
+export const createPrismaSchemaFieldsHandlers: {
+  [key in EnumDataType]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount?: Record<string, number>
+  ) =>
+    | [PrismaSchemaDSLTypes.ScalarField]
+    | [PrismaSchemaDSLTypes.ObjectField]
+    | [PrismaSchemaDSLTypes.ObjectField, PrismaSchemaDSLTypes.ScalarField];
+} = {
+  [EnumDataType.SingleLineText]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.String,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.MultiLineText]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.String,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.Email]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.String,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.WholeNumber]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.Int,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.DateTime]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.DateTime,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.DecimalNumber]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.Float,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.Boolean]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.Boolean,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.GeographicLocation]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.String,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.Json]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.Json,
+        false,
+        field.required,
+        field.unique
+      ),
+    ];
+  },
+  [EnumDataType.Lookup]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    const {
+      relatedEntity,
+      relatedField,
+      allowMultipleSelection,
+      isOneToOneWithoutForeignKey,
+    } = properties as LookupResolvedProperties;
+    const hasAnotherRelation = entity.fields.some(
+      (entityField) =>
+        entityField.id !== field.id &&
+        entityField.dataType === EnumDataType.Lookup &&
+        entityField.properties.relatedEntity.name === relatedEntity.name
+    );
+
+    const relationName = !hasAnotherRelation
+      ? null
+      : createRelationName(
+          entity,
+          field,
+          relatedEntity,
+          relatedField,
+          fieldNamesCount[field.name] === 1,
+          fieldNamesCount[relatedField.name] === 1
+        );
+
+    if (allowMultipleSelection || isOneToOneWithoutForeignKey) {
+      return [
+        PrismaSchemaDSL.createObjectField(
+          name,
+          relatedEntity.name,
+          !isOneToOneWithoutForeignKey,
+          allowMultipleSelection || false,
+          relationName
+        ),
+      ];
+    }
+
+    const scalarRelationFieldName = `${name}Id`;
+
+    const relatedEntityFiledId = relatedEntity.fields?.find(
+      (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
+    );
+
+    const { idType } = (relatedEntityFiledId?.properties as types.Id) || "CUID";
+
+    return [
+      PrismaSchemaDSL.createObjectField(
+        name,
+        relatedEntity.name,
+        false,
+        field.required,
+        relationName,
+        [scalarRelationFieldName],
+        [
+          "id",
+        ] /**@todo: calculate the referenced field on the related entity (currently it is always 'id') */
+      ),
+      // Prisma Scalar Relation Field
+      PrismaSchemaDSL.createScalarField(
+        scalarRelationFieldName,
+        idType === "AUTO_INCREMENT"
+          ? PrismaSchemaDSLTypes.ScalarType.Int
+          : PrismaSchemaDSLTypes.ScalarType.String,
+        false,
+        field.required,
+        !field.properties.allowMultipleSelection &&
+          !relatedField?.properties.allowMultipleSelection &&
+          !isOneToOneWithoutForeignKey
+          ? true
+          : field.unique
+      ),
+    ];
+  },
+  [EnumDataType.MultiSelectOptionSet]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createObjectField(
+        name,
+        createEnumName(field, entity),
+        true,
+        true
+      ),
+    ];
+  },
+  [EnumDataType.OptionSet]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createObjectField(
+        name,
+        createEnumName(field, entity),
+        false,
+        field.required
+      ),
+    ];
+  },
+  [EnumDataType.Id]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    const { idType } = (properties as types.Id) || "CUID";
+    const isAutoIncremental = idType === "AUTO_INCREMENT";
+    const isUUID = idType === "UUID";
+
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        isAutoIncremental
+          ? PrismaSchemaDSLTypes.ScalarType.Int
+          : PrismaSchemaDSLTypes.ScalarType.String,
+        false,
+        field.required,
+        false,
+        true,
+        false,
+        isAutoIncremental
+          ? INCREMENTAL_CALL_EXPRESSION
+          : isUUID
+          ? UUID_CALL_EXPRESSION
+          : CUID_CALL_EXPRESSION
+      ),
+    ];
+  },
+  [EnumDataType.CreatedAt]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.DateTime,
+        false,
+        field.required,
+        false,
+        false,
+        false,
+        NOW_CALL_EXPRESSION
+      ),
+    ];
+  },
+  [EnumDataType.UpdatedAt]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.DateTime,
+        false,
+        field.required,
+        false,
+        false,
+        true
+      ),
+    ];
+  },
+  [EnumDataType.Roles]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.Json,
+        false,
+        true
+      ),
+    ];
+  },
+  [EnumDataType.Username]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.String,
+        false,
+        field.required,
+        true
+      ),
+    ];
+  },
+  [EnumDataType.Password]: (
+    field: EntityField,
+    entity: Entity,
+    fieldNamesCount: Record<string, number> = {}
+  ) => {
+    const { dataType, name, properties } = field;
+    return [
+      PrismaSchemaDSL.createScalarField(
+        name,
+        PrismaSchemaDSLTypes.ScalarType.String,
+        false,
+        field.required
+      ),
+    ];
+  },
+};
+
+/**
+ * Creates Prisma Schema relation name according to the names of the entity,
+ * field, relatedEntity and relatedField.
+ * This function is assumed to be used when a relation name is necessary
+ * @param entity
+ * @param field
+ * @param relatedEntity
+ * @param relatedField
+ * @param fieldHasUniqueName
+ * @returns Prisma Schema relation name
+ * @todo use unique name of one of the fields deterministically (VIPCustomers or VIPOrganizations)
+ */
+export function createRelationName(
+  entity: Entity,
+  field: EntityField,
+  relatedEntity: Entity,
+  relatedField: EntityField,
+  fieldHasUniqueName: boolean,
+  relatedFieldHasUniqueName: boolean
+): string {
+  const relatedEntityNames = [
+    relatedEntity.name,
+    pascalCase(relatedEntity.pluralName),
+  ];
+  const entityNames = [entity.name, pascalCase(entity.pluralName)];
+  const matchingRelatedEntityName = relatedEntityNames.find(
+    (name) => field.name === camelCase(name)
+  );
+  const matchingEntityName = entityNames.find(
+    (name) => relatedField.name === camelCase(name)
+  );
+  if (matchingRelatedEntityName && matchingEntityName) {
+    const names = [matchingRelatedEntityName, matchingEntityName];
+    // Sort names for deterministic results regardless of entity and related order
+    names.sort();
+    return names.join("On");
+  }
+  if (fieldHasUniqueName || relatedFieldHasUniqueName) {
+    const names = [];
+    if (fieldHasUniqueName) {
+      names.push(field.name);
+    }
+    if (relatedFieldHasUniqueName) {
+      names.push(relatedField.name);
+    }
+    // Sort names for deterministic results regardless of entity and related order
+    names.sort();
+    return names[0];
+  }
+  const entityAndField = [entity.name, field.name].join(" ");
+  const relatedEntityAndField = [relatedEntity.name, relatedField.name].join(
+    " "
+  );
+  const parts = [entityAndField, relatedEntityAndField];
+  // Sort parts for deterministic results regardless of entity and related order
+  parts.sort();
+  return pascalCase(parts.join(" "));
+}
+
+export function createEnumName(field: EntityField, entity: Entity): string {
+  return `Enum${pascalCase(entity.name)}${pascalCase(field.name)}`;
+}
