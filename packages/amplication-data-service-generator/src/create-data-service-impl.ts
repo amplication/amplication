@@ -55,7 +55,6 @@ export async function createDataServiceImpl(
     await createLog({
       level: "info",
       message: "Failed to run createDataServiceImpl",
-      data: JSON.stringify(dSGResourceData),
     });
     logger.error((error as Error).stack);
     return [];
