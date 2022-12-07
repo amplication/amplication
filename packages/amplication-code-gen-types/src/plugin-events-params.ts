@@ -5,10 +5,9 @@ import {
   EntityField,
   Module,
   NamedClassDeclaration,
-  PrismaClientGenerator,
-  PrismaDataSource,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
+import { Generator, DataSource } from "prisma-schema-dsl-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   entityName: string;
@@ -58,6 +57,17 @@ export interface CreateEntityControllerSpecParams extends EventParams {
   controllerId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
+
+export interface CreateUserInfoParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  filePath: string;
+}
+export interface CreateTokenPayloadInterfaceParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  filePath: string;
+}
 export interface CreateServerAuthParams extends EventParams {
   srcDir: string;
 }
@@ -86,8 +96,8 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
 }
 export interface CreatePrismaSchemaParams extends EventParams {
   entities: Entity[];
-  dataSource: PrismaDataSource;
-  clientGenerator: PrismaClientGenerator;
+  dataSource: DataSource;
+  clientGenerator: Generator;
 }
 
 export interface CreateMessageBrokerParams extends EventParams {}
@@ -99,10 +109,12 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
 export interface CreateMessageBrokerServiceParams extends EventParams {}
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
 export interface CreateServerPackageJsonParams extends EventParams {
+  fileContent: string;
   updateProperties: { [key: string]: any }[];
 }
 
 export interface CreateAdminUIPackageJsonParams extends EventParams {
+  fileContent: string;
   updateProperties: { [key: string]: any }[];
 }
 

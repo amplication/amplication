@@ -2,22 +2,16 @@ import React, { useCallback } from "react";
 
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useTracking } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
-
-const EVENT_DATA: TrackEvent = {
-  eventName: "featureRequestTileClick",
-};
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 function FeatureRequestTile() {
   const { trackEvent } = useTracking();
 
-  const handleClick = useCallback(
-    (event) => {
-      trackEvent(EVENT_DATA);
-    },
-    [trackEvent]
-  );
+  const handleClick = useCallback(() => {
+    trackEvent({ eventName: AnalyticsEventNames.FeatureRequestTileClick });
+  }, [trackEvent]);
 
   return (
     <OverviewSecondaryTile

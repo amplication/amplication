@@ -5,6 +5,7 @@ import { EnumBlockType } from "../../enums/EnumBlockType";
 import { IBlock, BlockInputOutput, Block, User } from "../../models";
 import { FindManyBlockTypeArgs, CreateBlockArgs, UpdateBlockArgs } from "./dto";
 import { FindOneArgs } from "../../dto";
+import { DeleteUserArgs } from "../workspace/dto";
 
 const EXAMPLE_IBLOCK_ID = "exampleIblockId";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
@@ -80,7 +81,8 @@ describe("BlockTypeService", () => {
     IBlock,
     FindManyBlockTypeArgs,
     CreateBlockArgs,
-    UpdateBlockArgs
+    UpdateBlockArgs,
+    DeleteUserArgs
   >;
 
   beforeEach(async () => {
@@ -109,7 +111,8 @@ describe("BlockTypeService", () => {
           IBlock,
           FindManyBlockTypeArgs,
           CreateBlockArgs,
-          UpdateBlockArgs
+          UpdateBlockArgs,
+          DeleteUserArgs
         >
       >(BlockTypeService);
 

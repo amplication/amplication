@@ -24,8 +24,10 @@ export async function createDotEnvModule(
     appInfo.settings.dbName = `/${appInfo.settings.dbName}`;
   }
 
+  const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
+
   return {
     path: MODULE_PATH,
-    code: replacePlaceholdersInCode(code, appInfo.settings),
+    code: replacePlaceholdersInCode(code, serviceSettingsDic),
   };
 }

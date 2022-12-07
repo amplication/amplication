@@ -14,7 +14,6 @@ import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ResourceService } from "./resource.service";
 import { Resource } from "../../models/Resource";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { ConfigService } from "@nestjs/config";
 import { Entity } from "../../models/Entity";
 import { Build } from "../build/dto/Build";
@@ -23,6 +22,7 @@ import { User } from "../../models/User";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { UserService } from "../user/user.service";
 import { ResourceCreateInput } from "./dto";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -360,7 +360,7 @@ describe("ResourceResolver", () => {
           })),
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

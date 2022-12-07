@@ -4,8 +4,8 @@ import {
   ObjectField,
   ScalarField,
   ScalarType,
-} from "prisma-schema-dsl";
-import { createEnumName } from "../../../prisma/create-prisma-schema";
+} from "prisma-schema-dsl-types";
+import { createEnumName } from "../../../prisma/create-prisma-schema-fields";
 import { Entity, EntityField } from "@amplication/code-gen-types";
 import { isRelationField, isToManyRelationField } from "../../../../util/field";
 import {

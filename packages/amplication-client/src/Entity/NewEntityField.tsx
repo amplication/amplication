@@ -9,6 +9,7 @@ import { useTracking } from "../util/analytics";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./NewEntityField.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   entity: models.Entity;
@@ -73,7 +74,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
       onCompleted: (data) => {
         addEntity(entity.id);
         trackEvent({
-          eventName: "createEntityField",
+          eventName: AnalyticsEventNames.EntityFieldCreate,
           entityFieldName: data.createEntityFieldByDisplayName.displayName,
           dataType: data.createEntityFieldByDisplayName.dataType,
         });

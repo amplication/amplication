@@ -20,7 +20,7 @@ env:
 jobs:
   ci:
     name: Continuous Integration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       affected: ${{ steps.set-affected.outputs.affected }}
     steps:
@@ -50,7 +50,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm install
 
       - name: Nx Version Print
         run: npx nx --version
@@ -81,7 +81,7 @@ jobs:
   dockerize:
     if: ${{ needs.ci.outputs.affected != '[]' }}
     name: Dockerize
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: ci
     strategy:
       matrix:

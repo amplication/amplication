@@ -20,3 +20,4 @@ export const DEFAULT_BUILDS_FOLDER = join(
   "storage",
   "builds"
 );
+export const SERVICE_NAME = "amplication-server";

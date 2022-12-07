@@ -3,11 +3,6 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-build-manager/src",
   "projectType": "application",
-  "implicitDependencies": [
-    "amplication-kafka",
-    "amplication-nest-logger-module",
-    "amplication-code-gen-types"
-  ],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",

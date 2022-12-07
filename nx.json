@@ -1,5 +1,10 @@
 {
   "extends": "nx/presets/npm.json",
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  },
   "npmScope": "amplication",
   "affected": {
     "defaultBase": "master"
@@ -19,17 +24,13 @@
           "install",
           "prebuild",
           "build",
+          "postbuild",
           "prepare",
-          "check-format",
-          "format",
           "test",
           "db:init",
           "lint",
           "test:e2e",
-          "test:cov",
-          "db:prisma:generate",
-          "graphql:schema:generate",
-          "graphql:schema:check"
+          "test:cov"
         ]
       }
     }

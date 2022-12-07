@@ -44,22 +44,6 @@ amplication-server:
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
 
-      #GCP - APPS Builder
-
-      DEFAULT_DISK: gcs
-      LOCAL_DISK_ROOT: /artifacts
-      CONTAINER_BUILDER_DEFAULT: cloud-build
-      GCS_BUCKET: amplication-artifacts
-
-      #GCP - APPS Deployer
-      DEPLOYER_DEFAULT: gcp
-
-      GCP_APPS_PROJECT_ID: amplication-apps
-      GCP_APPS_REGION: us-east1
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
-      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
-      GCP_APPS_DOMAIN: staging.amplication.app
-
       DOCKER_HOST: tcp://docker:2375
 
       #GitHub App
@@ -119,3 +103,4 @@ amplication-storage-gateway:
       KAFKA_BROKERS: 'amplication-amit-cp-kafka-headless:9092'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: "215215"
+      
