@@ -54,148 +54,119 @@ export const createPrismaSchemaFieldsHandlers: {
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.String,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.String,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.MultiLineText]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.String,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.String,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.Email]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.String,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.String,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.WholeNumber]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.Int,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.Int,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.DateTime]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.DateTime,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.DateTime,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.DecimalNumber]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.Float,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.Float,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.Boolean]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.Boolean,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.Boolean,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.GeographicLocation]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.String,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.String,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.Json]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.Json,
-        false,
-        field.required,
-        field.unique
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.Json,
+      false,
+      field.required,
+      field.unique
+    ),
+  ],
   [EnumDataType.Lookup]: (
     field: EntityField,
     entity: Entity,
@@ -278,32 +249,26 @@ export const createPrismaSchemaFieldsHandlers: {
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createObjectField(
-        name,
-        createEnumName(field, entity),
-        true,
-        true
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createObjectField(
+      field.name,
+      createEnumName(field, entity),
+      true,
+      true
+    ),
+  ],
   [EnumDataType.OptionSet]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createObjectField(
-        name,
-        createEnumName(field, entity),
-        false,
-        field.required
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createObjectField(
+      field.name,
+      createEnumName(field, entity),
+      false,
+      field.required
+    ),
+  ],
   [EnumDataType.Id]: (
     field: EntityField,
     entity: Entity,
@@ -337,85 +302,70 @@ export const createPrismaSchemaFieldsHandlers: {
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.DateTime,
-        false,
-        field.required,
-        false,
-        false,
-        false,
-        NOW_CALL_EXPRESSION
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.DateTime,
+      false,
+      field.required,
+      false,
+      false,
+      false,
+      NOW_CALL_EXPRESSION
+    ),
+  ],
   [EnumDataType.UpdatedAt]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.DateTime,
-        false,
-        field.required,
-        false,
-        false,
-        true
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.DateTime,
+      false,
+      field.required,
+      false,
+      false,
+      true
+    ),
+  ],
   [EnumDataType.Roles]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.Json,
-        false,
-        true
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.Json,
+      false,
+      true
+    ),
+  ],
   [EnumDataType.Username]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.String,
-        false,
-        field.required,
-        true
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.String,
+      false,
+      field.required,
+      true
+    ),
+  ],
   [EnumDataType.Password]: (
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => {
-    const { name } = field;
-    return [
-      PrismaSchemaDSL.createScalarField(
-        name,
-        PrismaSchemaDSLTypes.ScalarType.String,
-        false,
-        field.required
-      ),
-    ];
-  },
+  ) => [
+    PrismaSchemaDSL.createScalarField(
+      field.name,
+      PrismaSchemaDSLTypes.ScalarType.String,
+      false,
+      field.required
+    ),
+  ],
 };
 
 /**
