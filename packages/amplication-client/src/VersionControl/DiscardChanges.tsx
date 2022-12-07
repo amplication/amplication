@@ -1,22 +1,28 @@
 import { useCallback, useContext } from "react";
-import { Snackbar } from "@amplication/design-system";
+import { ConfirmationDialog, Snackbar } from "@amplication/design-system";
 import * as models from "../models";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";
-import { Button, EnumButtonStyle } from "../Components/Button";
 import "./DiscardChanges.scss";
 import { AppContext } from "../context/appContext";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { useTracking } from "../util/analytics";
 
 type Props = {
+  isOpen: boolean;
   projectId: string;
   onComplete: () => void;
-  onCancel: () => void;
+  onDismiss: () => void;
 };
 
-const CLASS_NAME = "discard-changes";
+const DiscardChanges = ({
+  isOpen,
+  projectId,
+  onComplete,
+  onDismiss,
+}: Props) => {
+  const { trackEvent } = useTracking();
 
-const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
   const { pendingChanges, resetPendingChanges, addChange } =
     useContext(AppContext);
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
@@ -51,6 +57,10 @@ const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
   });
 
   const handleConfirm = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.PendingChangesDiscard,
+    });
+
     discardChanges({
       variables: {
         projectId,
@@ -61,36 +71,31 @@ const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__content`}>
-        <div>
-          <div className={`${CLASS_NAME}__content__title`}>Please Notice</div>
-          <div className={`${CLASS_NAME}__content__instructions`}>
-            This action cannot be undone.
-            <br /> Are you sure you want to discard all pending changes?
+    <>
+      <ConfirmationDialog
+        isOpen={isOpen}
+        title="Discard Changes"
+        confirmButton={{
+          label: "Discard",
+          disabled: loading,
+        }}
+        dismissButton={{
+          label: "Cancel",
+        }}
+        message={
+          <div>
+            <div>This action cannot be undone. </div>
+            <div>
+              This will permanently delete the resource and its content. Are you
+              sure you want to continue?
+            </div>
           </div>
-        </div>
-      </div>
-      <div className={`${CLASS_NAME}__buttons`}>
-        <div className="spacer" />
-        <Button buttonStyle={EnumButtonStyle.Text} onClick={onCancel}>
-          Cancel
-        </Button>
-
-        <Button
-          buttonStyle={EnumButtonStyle.Primary}
-          eventData={{
-            eventName: AnalyticsEventNames.PendingChangesDiscard,
-          }}
-          onClick={handleConfirm}
-          disabled={loading}
-        >
-          Discard Changes
-        </Button>
-      </div>
-
+        }
+        onConfirm={handleConfirm}
+        onDismiss={onDismiss}
+      />
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </div>
+    </>
   );
 };
 
