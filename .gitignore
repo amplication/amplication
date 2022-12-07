@@ -62,3 +62,4 @@ infra/tilt/.temp/**
 .env.local
 
 src/schema.graphql
+packages/amplication-data-service-generator/.tsbuildinfo

@@ -22,4 +22,8 @@ export default {
     "src/admin/static",
     "src/server/auth/token",
   ],
+  moduleNameMapper: {
+    "^axios$": require.resolve("axios"),
+  },
+  transformIgnorePatterns: ["node_modules/(?!axios)"],
 };
