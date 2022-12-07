@@ -9,7 +9,7 @@ import {
   EntityDTOs,
 } from "@amplication/code-gen-types";
 import { getEnumFields } from "../../util/entity";
-import { createEnumName } from "../prisma/create-prisma-schema";
+import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import { createCreateInput } from "./dto/create-create-input";
 import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 import { createEntityDTO } from "./dto/create-entity-dto";
