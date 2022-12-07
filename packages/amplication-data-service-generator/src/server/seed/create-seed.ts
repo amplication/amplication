@@ -27,7 +27,7 @@ import {
 import { getDTONameToPath } from "../resource/create-dtos";
 import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
-import { createEnumName } from "../prisma/create-prisma-schema";
+import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 
