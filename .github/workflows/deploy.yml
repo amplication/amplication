@@ -23,6 +23,19 @@ on:
         description: Confirm the environment to deploy
         required: true
         default: staging
+  workflow_run:
+    workflows: ["Continuous Integration (Nx - Affected)"]
+    branches: ["next"]
+    types:
+      - "completed"
+    inputs:
+      target-env:
+        type: string
+        default: next
+      confirm-env:
+        type: string
+        default: next
+
 jobs:
   validate-image:
     runs-on: ubuntu-20.04
