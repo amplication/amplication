@@ -7,7 +7,7 @@ RUN apt-get install -y openssl
 
 WORKDIR /app
 
-COPY ./dist/packages/amplication-server/package.json .
+COPY ./dist/packages/amplication-server/package*.json ./
 
 RUN npm i --omit=dev
 

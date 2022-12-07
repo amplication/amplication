@@ -42,6 +42,12 @@ If you don't feel ready to make a code contribution yet, no problem! You can als
 
 # <a name="submit-pr"></a> How do I make a code contribution?
 
+## Open to community
+
+You can check all the issues that are open for community contributions. Check [here](https://github.com/amplication/amplication/issues?q=is%3Aopen+is%3Aissue+label%3A%22open+to+community%22).
+
+## Good first issues
+
 Are you new to open source contribution? Wondering how contributions work in our project? Here's a quick rundown.
 
 Find an issue that you're interested in addressing, or a feature that you'd like to add.

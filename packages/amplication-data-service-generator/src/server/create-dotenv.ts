@@ -49,12 +49,14 @@ export async function createDotEnvModuleInternal({
     appInfo.settings.dbName = `/${appInfo.settings.dbName}`;
   }
 
+  const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
+
   return [
     {
       path: `${serverDirectories.baseDirectory}/.env`,
       code: replacePlaceholdersInCode(
         codeWithAdditionalVariables,
-        appInfo.settings
+        serviceSettingsDic
       ),
     },
   ];

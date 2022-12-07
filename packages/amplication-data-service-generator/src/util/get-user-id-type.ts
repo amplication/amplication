@@ -21,5 +21,5 @@ export const getUserIdType = () => {
   }
 
   const { idType } = idField.properties as types.Id;
-  return idType;
+  return idType ?? "CUID";
 };

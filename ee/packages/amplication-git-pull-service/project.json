@@ -3,10 +3,6 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ee/packages/amplication-git-pull-service/src",
   "projectType": "application",
-  "implicitDependencies": [
-    "amplication-kafka",
-    "amplication-nest-logger-module"
-  ],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
