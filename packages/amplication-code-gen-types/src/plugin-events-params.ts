@@ -100,10 +100,7 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
   outputFileName: string;
 }
 
-export type CreateSchemaFieldResult =
-  | [ScalarField]
-  | [ObjectField]
-  | [ObjectField, ScalarField];
+export type CreateSchemaFieldResult = (ScalarField | ObjectField)[];
 
 export type CreateSchemaFieldHandler = (
   field: EntityField,
