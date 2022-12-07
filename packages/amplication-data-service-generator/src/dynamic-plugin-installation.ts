@@ -1,5 +1,4 @@
 import { ChildProcess, exec } from "child_process";
-import { PackageInstallationFailed } from "../src/errors/PackageInstallationFailed";
 
 function promiseFromChildProcess(child: ChildProcess) {
   return new Promise(function (resolve, reject) {
