@@ -1,11 +1,12 @@
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
 import {
-  createPrismaFields,
   CUID_CALL_EXPRESSION,
   NOW_CALL_EXPRESSION,
   createRelationName,
-} from "./create-prisma-schema";
+  createPrismaFields,
+} from "./create-prisma-schema-fields";
+
 import {
   Entity,
   EntityField,
