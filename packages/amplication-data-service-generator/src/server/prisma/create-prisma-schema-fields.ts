@@ -55,7 +55,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
 
     return [
       PrismaSchemaDSL.createScalarField(
@@ -72,7 +72,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
 
     return [
       PrismaSchemaDSL.createScalarField(
@@ -89,7 +89,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -105,7 +105,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -121,7 +121,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -137,7 +137,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -153,7 +153,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -169,7 +169,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -185,7 +185,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -201,7 +201,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name, properties } = field;
     const {
       relatedEntity,
       relatedField,
@@ -279,7 +279,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createObjectField(
         name,
@@ -294,7 +294,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createObjectField(
         name,
@@ -309,7 +309,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name, properties } = field;
     const { idType } = (properties as types.Id) || "CUID";
     const isAutoIncremental = idType === "AUTO_INCREMENT";
     const isUUID = idType === "UUID";
@@ -338,7 +338,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -357,7 +357,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -375,7 +375,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -390,7 +390,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
@@ -406,7 +406,7 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType, name, properties } = field;
+    const { name } = field;
     return [
       PrismaSchemaDSL.createScalarField(
         name,
