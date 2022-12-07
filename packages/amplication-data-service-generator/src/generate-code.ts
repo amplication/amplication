@@ -1,9 +1,9 @@
 import { DSGResourceData, Module } from "@amplication/code-gen-types";
-import axios from "axios";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { dynamicPluginInstallation } from "./dynamic-plugin-installation";
 import { defaultLogger } from "./server/logging";
+import { httpClient } from "./util/http-client";
 
 const [, , source, destination] = process.argv;
 if (!source) {
@@ -42,7 +42,7 @@ export default async function generateCode(
     ).createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
-    await axios.post(
+    await httpClient.post(
       new URL(
         "build-runner/code-generation-success",
         process.env.BUILD_MANAGER_URL
@@ -54,7 +54,7 @@ export default async function generateCode(
     );
   } catch (err) {
     console.error(err);
-    await axios.post(
+    await httpClient.post(
       new URL(
         "build-runner/code-generation-failure",
         process.env.BUILD_MANAGER_URL
