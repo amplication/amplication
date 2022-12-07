@@ -94,7 +94,6 @@ async function createServerInternal(
     ...dtoModules,
     ...swagger,
     ...appModule,
-    ...seedModule,
     ...messageBrokerModules,
   ];
 
