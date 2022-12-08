@@ -1,4 +1,3 @@
-import React from "react";
 import { Commit } from "../models";
 import "./CommitSelectorItem.scss";
 import UserBadge from "./UserBadge";
