@@ -1,6 +1,7 @@
 import { Commit } from "../models";
-import "./CommitSelectorItem.scss";
+import { CommitMessage } from "./CommitMessage";
 import UserBadge from "./UserBadge";
+import "./CommitSelectorItem.scss";
 
 type Props = {
   commit: Commit | null;
@@ -14,7 +15,7 @@ export const CommitSelectorItem = ({ commit }: Props) => {
         <>
           <UserBadge />
           <div className={`${CLASS_NAME}__title`}>
-            {commit.message || `Commit - ${commit.id}`}
+            <CommitMessage commit={commit} />
           </div>
         </>
       ) : (

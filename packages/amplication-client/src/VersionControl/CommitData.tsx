@@ -1,4 +1,5 @@
 import React from "react";
+import { CommitMessage } from "../Components/CommitMessage";
 import UserBadge from "../Components/UserBadge";
 import { Commit } from "../models";
 import "./CommitData.scss";
@@ -13,7 +14,7 @@ const CommitData: React.FC<Props> = ({ commit }) => {
       <UserBadge />
       <div className={`${CLASS_NAME}__metadata`}>
         <span className={`${CLASS_NAME}__metadata__message`}>
-          {commit.message || `Commit - ${commit.id}`}
+          <CommitMessage commit={commit} />
         </span>
         <span className={`${CLASS_NAME}__metadata__created`}>
           {new Date(commit.createdAt).toDateString()}
