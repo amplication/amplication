@@ -160,3 +160,12 @@ jobs:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
+
+  deploy:
+    if:  ${{ github.head_ref == 'next' }}
+    needs: dockerize
+    uses: ./.github/workflows/deploy.yml
+    with:
+     target-env: ${{ github.head_ref }}
+     confirm-env: ${{ github.head_ref }}
+
