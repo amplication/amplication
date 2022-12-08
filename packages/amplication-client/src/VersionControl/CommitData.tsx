@@ -13,7 +13,7 @@ const CommitData: React.FC<Props> = ({ commit }) => {
       <UserBadge />
       <div className={`${CLASS_NAME}__metadata`}>
         <span className={`${CLASS_NAME}__metadata__message`}>
-          {commit.message || "No commit message"}
+          {commit.message || `Commit - ${commit.id}`}
         </span>
         <span className={`${CLASS_NAME}__metadata__created`}>
           {new Date(commit.createdAt).toDateString()}

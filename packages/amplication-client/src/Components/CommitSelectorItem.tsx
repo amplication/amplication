@@ -15,7 +15,7 @@ export const CommitSelectorItem = ({ commit }: Props) => {
         <>
           <UserBadge />
           <div className={`${CLASS_NAME}__title`}>
-            {commit?.message || "No commit message"}
+            {commit.message || `Commit - ${commit.id}`}
           </div>
         </>
       ) : (
