@@ -23,17 +23,16 @@ on:
         description: Confirm the environment to deploy
         required: true
         default: staging
-  workflow_run:
-    workflows: ["Continuous Integration (Nx - Affected)"]
-    branches: ["next"]
-    types:
-      - "completed"
+
+  workflow_call:
     inputs:
-      target-env:
+      target-env: 
         type: string
+        required: true
         default: next
       confirm-env:
         type: string
+        required: true
         default: next
 
 jobs:
