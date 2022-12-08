@@ -168,4 +168,5 @@ jobs:
     with:
      target-env: ${{ github.head_ref }}
      confirm-env: ${{ github.head_ref }}
+    secrets: inherit
 
