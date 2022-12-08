@@ -23,10 +23,22 @@ on:
         description: Confirm the environment to deploy
         required: true
         default: staging
+
+  workflow_call:
+    inputs:
+      target-env: 
+        type: string
+        required: true
+        default: next
+      confirm-env:
+        type: string
+        required: true
+        default: next
+
 jobs:
   validate-image:
     runs-on: ubuntu-20.04
-    if: github.event.inputs.target-env == github.event.inputs.confirm-env
+    if: inputs.target-env == inputs.confirm-env
     outputs:
       valid_image: ${{ steps.check-image.outputs.image_exist }}
     steps:
@@ -63,7 +75,7 @@ jobs:
             echo "::set-output name=ARGOCD::AWS_STAGING_ARGOCD"
           fi
         env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          TARGET_ENV: ${{ inputs.target-env }}
   deploy:
     runs-on: ubuntu-20.04
     needs:
@@ -86,13 +98,13 @@ jobs:
         run: |
           echo "BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed "s/[^a-zA-Z0-9]/-/g")" >> $GITHUB_ENV
         env:
-          SOURCE_BRANCH_NAME: ${{ github.event.inputs.source-branch }}
+          SOURCE_BRANCH_NAME: ${{ inputs.source-branch }}
       - name: calculate docker tags
         id: calculate-docker-tags
         run: |
           bash ./.github/workflows/scripts/build-values-command.sh
         env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          TARGET_ENV: ${{ inputs.target-env }}
       - name: set namespace
         id: set-namespace
         run: |
@@ -100,7 +112,7 @@ jobs:
           echo "Will deploy to $NAMESPACE"
           echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
         env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          TARGET_ENV: ${{ inputs.target-env }}
       - name: set cluster name
         id: set-cluster-name
         run: |
@@ -111,7 +123,7 @@ jobs:
           echo "Will deploy to $CLUSTER_NAME eks cluster"
           echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
         env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          TARGET_ENV: ${{ inputs.target-env }}
       - name: set repo url
         id: set-repo-url
         run: |
@@ -149,7 +161,7 @@ jobs:
           ls
           kubectl apply -f . -n $TARGET_ENV
         env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          TARGET_ENV: ${{ inputs.target-env }}
           SECRETS_FILE_PATH: helm/charts/amplication/values-secrets-raw.json
           SECRETS_TEMPLATE_FILE_PATH: .github/workflows/scripts/secret_template.yaml
       - name: delete unused job
@@ -163,7 +175,7 @@ jobs:
         run: |
           helm upgrade -i dsg-runner-infra . --namespace $TARGET_ENV-dsg --create-namespace -f values/$TARGET_ENV.yaml
         env:
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          TARGET_ENV: ${{ inputs.target-env }}
       - name: deploy app
         id: deploy-app
         run: |
@@ -196,4 +208,4 @@ jobs:
 
         env:
           ARGO_CD_PASSWORD: ${{ secrets[env.ARGOCD] }}
-          TARGET_ENV: ${{ github.event.inputs.target-env }}
+          TARGET_ENV: ${{ inputs.target-env }}

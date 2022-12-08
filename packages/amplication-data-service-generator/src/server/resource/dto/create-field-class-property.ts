@@ -16,7 +16,7 @@ import {
 import {
   createEnumName,
   createPrismaFields,
-} from "../../prisma/create-prisma-schema";
+} from "../../prisma/create-prisma-schema-fields";
 import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
 import * as classTransformerUtil from "./class-transformer.util";
 import {
