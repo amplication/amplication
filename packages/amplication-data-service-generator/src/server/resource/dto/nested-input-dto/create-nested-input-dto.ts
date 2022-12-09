@@ -7,7 +7,7 @@ import {
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
 import { classDeclaration, classProperty } from "../../../../util/ast";
-import { createPrismaFields } from "../../../prisma/create-prisma-schema";
+import { createPrismaFields } from "../../../prisma/create-prisma-schema-fields";
 import { ApiPropertyDecoratorBuilder } from "../api-property-decorator";
 import {
   createFieldValueTypeFromPrismaField,

@@ -1,7 +1,7 @@
 global:
   pvc:
     name: prod-efs-claim
-    storageRequest: 5Gi
+    storageRequest: 1Gi
     storageName: efs-sc
   pv:
     name: efs-pv-prod
