@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { PrismaClient } from "../src/generated-prisma-client";
+import { PrismaClient } from "../prisma/generated-prisma-client";
 import { customSeed } from "./customSeed";
 import {
   GitProviderEnum,

@@ -2,7 +2,7 @@
  * Clean all the tables and types created by Prisma in the databases
  */
 
-import { PrismaClient } from "../src/generated-prisma-client";
+import { PrismaClient } from "../prisma/generated-prisma-client";
 
 if (require.main === module) {
   clean().catch((error) => {
