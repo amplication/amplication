@@ -6150,11 +6150,13 @@ export class CustomerServiceBase {
     parentId: string,
     args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
-    return this.prisma.customer
-      .findUnique({
-        where: { id: parentId },
-      })
-      .orders(args) as Promise<Order[]>;
+    return (
+      (await this.prisma.customer
+        .findUnique({
+          where: { id: parentId },
+        })
+        .orders(args)) ?? []
+    );
   }
 
   async getOrganization(parentId: string): Promise<Organization | null> {
@@ -10655,33 +10657,39 @@ export class OrganizationServiceBase {
     parentId: string,
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
-    return this.prisma.organization
-      .findUnique({
-        where: { id: parentId },
-      })
-      .users(args) as Promise<User[]>;
+    return (
+      (await this.prisma.organization
+        .findUnique({
+          where: { id: parentId },
+        })
+        .users(args)) ?? []
+    );
   }
 
   async findCustomers(
     parentId: string,
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return this.prisma.organization
-      .findUnique({
-        where: { id: parentId },
-      })
-      .customers(args) as Promise<Customer[]>;
+    return (
+      (await this.prisma.organization
+        .findUnique({
+          where: { id: parentId },
+        })
+        .customers(args)) ?? []
+    );
   }
 
   async findVipCustomers(
     parentId: string,
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return this.prisma.organization
-      .findUnique({
-        where: { id: parentId },
-      })
-      .vipCustomers(args) as Promise<Customer[]>;
+    return (
+      (await this.prisma.organization
+        .findUnique({
+          where: { id: parentId },
+        })
+        .vipCustomers(args)) ?? []
+    );
   }
 }
 ",
@@ -14421,22 +14429,26 @@ export class UserServiceBase {
     parentId: string,
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
-    return this.prisma.user
-      .findUnique({
-        where: { id: parentId },
-      })
-      .employees(args) as Promise<User[]>;
+    return (
+      (await this.prisma.user
+        .findUnique({
+          where: { id: parentId },
+        })
+        .employees(args)) ?? []
+    );
   }
 
   async findOrganizations(
     parentId: string,
     args: Prisma.OrganizationFindManyArgs
   ): Promise<Organization[]> {
-    return this.prisma.user
-      .findUnique({
-        where: { id: parentId },
-      })
-      .organizations(args) as Promise<Organization[]>;
+    return (
+      (await this.prisma.user
+        .findUnique({
+          where: { id: parentId },
+        })
+        .organizations(args)) ?? []
+    );
   }
 
   async getManager(parentId: string): Promise<User | null> {
