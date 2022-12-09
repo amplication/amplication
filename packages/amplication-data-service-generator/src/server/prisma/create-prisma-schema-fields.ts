@@ -1,4 +1,6 @@
 import {
+  CreateSchemaFieldHandler,
+  CreateSchemaFieldResult,
   Entity,
   EntityField,
   EnumDataType,
@@ -29,10 +31,7 @@ export function createPrismaFields(
   field: EntityField,
   entity: Entity,
   fieldNamesCount?: Record<string, number>
-):
-  | [PrismaSchemaDSLTypes.ScalarField]
-  | [PrismaSchemaDSLTypes.ObjectField]
-  | [PrismaSchemaDSLTypes.ObjectField, PrismaSchemaDSLTypes.ScalarField] {
+): CreateSchemaFieldResult {
   return createPrismaSchemaFieldsHandlers[field.dataType](
     field,
     entity,
@@ -41,14 +40,7 @@ export function createPrismaFields(
 }
 
 export const createPrismaSchemaFieldsHandlers: {
-  [key in EnumDataType]: (
-    field: EntityField,
-    entity: Entity,
-    fieldNamesCount?: Record<string, number>
-  ) =>
-    | [PrismaSchemaDSLTypes.ScalarField]
-    | [PrismaSchemaDSLTypes.ObjectField]
-    | [PrismaSchemaDSLTypes.ObjectField, PrismaSchemaDSLTypes.ScalarField];
+  [key in EnumDataType]: CreateSchemaFieldHandler;
 } = {
   [EnumDataType.SingleLineText]: (
     field: EntityField,

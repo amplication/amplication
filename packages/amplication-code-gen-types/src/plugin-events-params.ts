@@ -1,13 +1,18 @@
 import { namedTypes } from "ast-types";
-
 import {
   Entity,
   EntityField,
+  EnumDataType,
   Module,
   NamedClassDeclaration,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import { Generator, DataSource } from "prisma-schema-dsl-types";
+import {
+  Generator,
+  DataSource,
+  ScalarField,
+  ObjectField,
+} from "prisma-schema-dsl-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   entityName: string;
@@ -94,10 +99,23 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
   updateProperties: { [key: string]: any }[];
   outputFileName: string;
 }
+
+export type CreateSchemaFieldResult = (ScalarField | ObjectField)[];
+
+export type CreateSchemaFieldHandler = (
+  field: EntityField,
+  entity: Entity,
+  fieldNamesCount?: Record<string, number>
+) => CreateSchemaFieldResult;
+
+export type CreateSchemaFieldsHandlers = {
+  [key in EnumDataType]: CreateSchemaFieldHandler;
+};
 export interface CreatePrismaSchemaParams extends EventParams {
   entities: Entity[];
   dataSource: DataSource;
   clientGenerator: Generator;
+  createFieldsHandlers: CreateSchemaFieldsHandlers;
 }
 
 export interface CreateMessageBrokerParams extends EventParams {}

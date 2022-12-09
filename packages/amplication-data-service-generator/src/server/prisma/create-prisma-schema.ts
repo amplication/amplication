@@ -5,6 +5,7 @@ import {
   EventNames,
   Module,
   types,
+  CreateSchemaFieldsHandlers,
 } from "@amplication/code-gen-types";
 import { countBy } from "lodash";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
@@ -13,10 +14,7 @@ import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 import { getEnumFields } from "../../util/entity";
-import {
-  createEnumName,
-  createPrismaSchemaFieldsHandlers,
-} from "./create-prisma-schema-fields";
+import { createEnumName } from "./create-prisma-schema-fields";
 
 export async function createPrismaSchema(
   eventParams: CreatePrismaSchemaParams
@@ -32,6 +30,7 @@ export async function createPrismaSchemaInternal({
   entities,
   dataSource,
   clientGenerator,
+  createFieldsHandlers,
 }: CreatePrismaSchemaParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.baseDirectory}/prisma/schema.prisma`;
@@ -40,7 +39,7 @@ export async function createPrismaSchemaInternal({
     "name"
   );
   const models = entities.map((entity) =>
-    createPrismaModel(entity, fieldNamesCount)
+    createPrismaModel(entity, fieldNamesCount, createFieldsHandlers)
   );
 
   const enums = entities.flatMap((entity) => {
@@ -84,16 +83,13 @@ export function createPrismaEnum(
 
 export function createPrismaModel(
   entity: Entity,
-  fieldNamesCount: Record<string, number>
+  fieldNamesCount: Record<string, number>,
+  createFieldsHandlers: CreateSchemaFieldsHandlers
 ): PrismaSchemaDSLTypes.Model {
   return PrismaSchemaDSL.createModel(
     entity.name,
     entity.fields.flatMap((field) =>
-      createPrismaSchemaFieldsHandlers[field.dataType](
-        field,
-        entity,
-        fieldNamesCount
-      )
+      createFieldsHandlers[field.dataType](field, entity, fieldNamesCount)
     )
   );
 }
