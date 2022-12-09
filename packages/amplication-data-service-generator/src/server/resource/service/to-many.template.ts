@@ -16,6 +16,6 @@ export class Mixin {
   ): Promise<RELATED_ENTITY[]> {
     return this.prisma.DELEGATE.findUnique({
       where: { id: parentId },
-    }).PROPERTY(args);
+    }).PROPERTY(args) as Promise<RELATED_ENTITY[]>;
   }
 }

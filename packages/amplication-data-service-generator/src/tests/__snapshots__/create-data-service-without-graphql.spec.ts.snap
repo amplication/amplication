@@ -6154,7 +6154,7 @@ export class CustomerServiceBase {
       .findUnique({
         where: { id: parentId },
       })
-      .orders(args);
+      .orders(args) as Promise<Order[]>;
   }
 
   async getOrganization(parentId: string): Promise<Organization | null> {
@@ -10659,7 +10659,7 @@ export class OrganizationServiceBase {
       .findUnique({
         where: { id: parentId },
       })
-      .users(args);
+      .users(args) as Promise<User[]>;
   }
 
   async findCustomers(
@@ -10670,7 +10670,7 @@ export class OrganizationServiceBase {
       .findUnique({
         where: { id: parentId },
       })
-      .customers(args);
+      .customers(args) as Promise<Customer[]>;
   }
 
   async findVipCustomers(
@@ -10681,7 +10681,7 @@ export class OrganizationServiceBase {
       .findUnique({
         where: { id: parentId },
       })
-      .vipCustomers(args);
+      .vipCustomers(args) as Promise<Customer[]>;
   }
 }
 ",
@@ -14425,7 +14425,7 @@ export class UserServiceBase {
       .findUnique({
         where: { id: parentId },
       })
-      .employees(args);
+      .employees(args) as Promise<User[]>;
   }
 
   async findOrganizations(
@@ -14436,7 +14436,7 @@ export class UserServiceBase {
       .findUnique({
         where: { id: parentId },
       })
-      .organizations(args);
+      .organizations(args) as Promise<Organization[]>;
   }
 
   async getManager(parentId: string): Promise<User | null> {
