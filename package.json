@@ -17,7 +17,7 @@
   },
   "lint-staged": {
     "*": [
-      "npx nx format:write --base=master",
+      "npx nx format:write --all",
       "git add"
     ]
   },
