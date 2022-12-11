@@ -38,4 +38,8 @@ $icon-size: 20px;
       font-size: $icon-size;
     }
   }
+
+  .amp-page-content__main {
+    overflow-x: hidden;
+  }
 }
