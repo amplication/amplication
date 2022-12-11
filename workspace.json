@@ -6,6 +6,7 @@
     "amplication-client": "packages/amplication-client",
     "amplication-code-gen-types": "packages/amplication-code-gen-types",
     "amplication-data-service-generator": "packages/amplication-data-service-generator",
+    "amplication-data-service-generator-fs-runner": "packages/amplication-data-service-generator-fs-runner",
     "amplication-design-system": "packages/amplication-design-system",
     "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",

@@ -1,0 +1,66 @@
+{
+  "name": "amplication-data-service-generator-fs-runner",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-data-service-generator-fs-runner/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/amplication-data-service-generator-fs-runner",
+        "main": "packages/amplication-data-service-generator-fs-runner/src/main.ts",
+        "tsConfig": "packages/amplication-data-service-generator-fs-runner/tsconfig.app.json",
+        "assets": [
+          "packages/amplication-data-service-generator-fs-runner/src/assets"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "packages/amplication-data-service-generator-fs-runner/src/environments/environment.ts",
+              "with": "packages/amplication-data-service-generator-fs-runner/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "options": {
+        "buildTarget": "amplication-data-service-generator-fs-runner:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-data-service-generator-fs-runner:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/amplication-data-service-generator-fs-runner/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/amplication-data-service-generator-fs-runner"
+      ],
+      "options": {
+        "jestConfig": "packages/amplication-data-service-generator-fs-runner/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
