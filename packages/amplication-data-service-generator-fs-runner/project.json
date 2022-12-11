@@ -60,6 +60,21 @@
         "jestConfig": "packages/amplication-data-service-generator-fs-runner/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "generate-example-input-json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node ./scripts/create-input-json.ts",
+        "cwd": "packages/amplication-data-service-generator-fs-runner"
+      }
+    },
+    "generate-local-code": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node ./src/main.ts ./input.json ./generated",
+        "cwd": "packages/amplication-data-service-generator-fs-runner"
+      },
+      "dependsOn": ["generate-example-input-json"]
     }
   },
   "tags": []
