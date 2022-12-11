@@ -456,18 +456,6 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   Topic
   ServiceTopics
-  Flow
-  ConnectorRestApi
-  ConnectorRestApiCall
-  ConnectorSoapApi
-  ConnectorFile
-  EntityApi
-  EntityApiEndpoint
-  FlowApi
-  Layout
-  CanvasPage
-  EntityPage
-  Document
   PluginInstallation
   PluginOrder
 }

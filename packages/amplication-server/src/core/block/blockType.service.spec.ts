@@ -20,7 +20,7 @@ const EXAMPLE_BLOCK_INPUT_OUTPUT: BlockInputOutput = {
   name: EXAMPLE_INPUT_OUTPUT_NAME,
 };
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
-const EXAMPLE_BLOCK_TYPE = EnumBlockType.ConnectorRestApi;
+const EXAMPLE_BLOCK_TYPE = EnumBlockType.ServiceSettings;
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 
@@ -116,7 +116,7 @@ describe("BlockTypeService", () => {
         >
       >(BlockTypeService);
 
-    service.blockType = EnumBlockType.ConnectorRestApi;
+    service.blockType = EnumBlockType.ServiceSettings;
   });
 
   it("should find a block service", async () => {
