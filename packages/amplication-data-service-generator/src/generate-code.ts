@@ -54,7 +54,7 @@ export default async function generateCode(
   }
 }
 
-const filesToFilter = [".DS_Store", "._file"];
+const filesToFilter = /(\._.*)|(.DS_Store)$/;
 
 async function writeModules(
   modules: Module[],
@@ -65,7 +65,7 @@ async function writeModules(
   console.info(`Writing modules to ${destination} ...`);
   await Promise.all(
     modules.map(async (module) => {
-      if (filesToFilter.includes(module.path)) return;
+      if (filesToFilter.test(module.path)) return;
 
       const filePath = join(destination, module.path);
       await mkdir(dirname(filePath), { recursive: true });
