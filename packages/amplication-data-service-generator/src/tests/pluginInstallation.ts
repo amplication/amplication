@@ -1,3 +1,3 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
-
-export const installedPlugins: PluginInstallation[] = [];
+import { plugins } from "../../scripts/constants/example-plugins";
+export const installedPlugins: PluginInstallation[] = [plugins.postgresPlugin];
