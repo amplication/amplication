@@ -44,7 +44,7 @@
     },
     "build": {
       "dependsOn": [
-        "^prebuild",
+        "prebuild",
         "^build",
         "db:prisma:generate",
         "^db:prisma:generate"

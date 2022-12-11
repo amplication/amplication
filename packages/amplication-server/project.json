@@ -67,7 +67,7 @@
     "graphql:schema:generate": {
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/**/*.ts"],
-      "dependsOn": ["^db:prisma:generate"],
+      "dependsOn": ["^db:prisma:generate", "^prebuild"],
       "outputs": ["packages/amplication-server/src/schema.graphql"],
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/generate-graphql-schema.ts",
