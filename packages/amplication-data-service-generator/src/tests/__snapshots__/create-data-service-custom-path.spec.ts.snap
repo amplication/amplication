@@ -6382,7 +6382,7 @@ export class CustomerServiceBase {
     parentId: string,
     args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
-    return await this.prisma.customer
+    return this.prisma.customer
       .findUniqueOrThrow({
         where: { id: parentId },
       })
@@ -11415,7 +11415,7 @@ export class OrganizationServiceBase {
     parentId: string,
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
-    return await this.prisma.organization
+    return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
       })
@@ -11426,7 +11426,7 @@ export class OrganizationServiceBase {
     parentId: string,
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return await this.prisma.organization
+    return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
       })
@@ -11437,7 +11437,7 @@ export class OrganizationServiceBase {
     parentId: string,
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return await this.prisma.organization
+    return this.prisma.organization
       .findUniqueOrThrow({
         where: { id: parentId },
       })
@@ -15649,7 +15649,7 @@ export class UserServiceBase {
     parentId: string,
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
-    return await this.prisma.user
+    return this.prisma.user
       .findUniqueOrThrow({
         where: { id: parentId },
       })
@@ -15660,7 +15660,7 @@ export class UserServiceBase {
     parentId: string,
     args: Prisma.OrganizationFindManyArgs
   ): Promise<Organization[]> {
-    return await this.prisma.user
+    return this.prisma.user
       .findUniqueOrThrow({
         where: { id: parentId },
       })
