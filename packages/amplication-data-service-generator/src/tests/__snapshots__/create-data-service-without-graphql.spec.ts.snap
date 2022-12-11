@@ -6151,7 +6151,7 @@ export class CustomerServiceBase {
     args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
     return this.prisma.customer
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .orders(args);
@@ -10656,7 +10656,7 @@ export class OrganizationServiceBase {
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .users(args);
@@ -10667,7 +10667,7 @@ export class OrganizationServiceBase {
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .customers(args);
@@ -10678,7 +10678,7 @@ export class OrganizationServiceBase {
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .vipCustomers(args);
@@ -14422,7 +14422,7 @@ export class UserServiceBase {
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .employees(args);
@@ -14433,7 +14433,7 @@ export class UserServiceBase {
     args: Prisma.OrganizationFindManyArgs
   ): Promise<Organization[]> {
     return this.prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .organizations(args);
