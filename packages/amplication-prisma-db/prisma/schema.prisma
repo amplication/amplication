@@ -1,6 +1,6 @@
 generator client {
   provider      = "prisma-client-js"
-  output        = "../../../node_modules/@amplication/prisma-clients/amplication-prisma-db"
+  output        = "./generated-prisma-client"
   binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
 }
 
@@ -456,18 +456,6 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   Topic
   ServiceTopics
-  Flow
-  ConnectorRestApi
-  ConnectorRestApiCall
-  ConnectorSoapApi
-  ConnectorFile
-  EntityApi
-  EntityApiEndpoint
-  FlowApi
-  Layout
-  CanvasPage
-  EntityPage
-  Document
   PluginInstallation
   PluginOrder
 }

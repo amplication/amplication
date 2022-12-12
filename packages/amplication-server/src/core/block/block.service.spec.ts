@@ -53,7 +53,7 @@ const EXAMPLE_BLOCK: Block = {
   updatedAt: NOW,
   resourceId: EXAMPLE_RESOURCE.id,
   resource: EXAMPLE_RESOURCE,
-  blockType: EnumBlockType.ConnectorRestApi,
+  blockType: EnumBlockType.ServiceSettings,
   displayName: "Example Block",
   description: "Block Description",
   parentBlockId: null,
@@ -92,7 +92,7 @@ const EXAMPLE_IBLOCK: BlockType = {
   id: EXAMPLE_BLOCK.id,
   createdAt: EXAMPLE_BLOCK.createdAt,
   updatedAt: EXAMPLE_BLOCK.updatedAt,
-  blockType: EnumBlockType.ConnectorRestApi,
+  blockType: EnumBlockType.ServiceSettings,
   displayName: EXAMPLE_BLOCK.displayName,
   description: EXAMPLE_BLOCK.description,
   inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
@@ -398,7 +398,7 @@ describe("BlockService", () => {
     ]);
     const functionArgs = {
       args: {},
-      blockType: EnumBlockType.ConnectorRestApi,
+      blockType: EnumBlockType.ServiceSettings,
     };
     const blocksArgs = {
       ...functionArgs.args,

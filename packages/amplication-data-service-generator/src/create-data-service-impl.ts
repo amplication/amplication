@@ -8,46 +8,57 @@ import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
 import { createDTOs } from "./server/resource/create-dtos";
 import { EnumResourceType } from "./models";
+import { defaultLogger } from "./server/logging";
 
 export async function createDataServiceImpl(
   dSGResourceData: DSGResourceData,
-  logger: winston.Logger
+  logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {
-  if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
-    logger.info("No code to generate for a message broker");
+  try {
+    if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
+      logger.info("No code to generate for a message broker");
+      return [];
+    }
+
+    const timer = logger.startTimer();
+
+    await prepareContext(dSGResourceData, logger);
+    await createLog({ level: "info", message: "Creating application..." });
+    logger.info("Creating application...");
+
+    const context = DsgContext.getInstance;
+
+    await createLog({ level: "info", message: "Creating DTOs..." });
+    logger.info("Creating DTOs...");
+    const dtos = await createDTOs(context.entities);
+    context.DTOs = dtos;
+
+    await createLog({ level: "info", message: "Copying static modules..." });
+    logger.info("Copying static modules...");
+
+    const modules = (
+      await Promise.all([
+        createServer(),
+        (context.appInfo.settings.adminUISettings.generateAdminUI &&
+          createAdminModules()) ||
+          [],
+      ])
+    ).flat();
+
+    timer.done({ message: "Application creation time" });
+
+    /** @todo make module paths to always use Unix path separator */
+    return modules.map((module) => ({
+      ...module,
+      path: normalize(module.path),
+    }));
+  } catch (error) {
+    await createLog({
+      level: "info",
+      message: "Failed to run createDataServiceImpl",
+      data: JSON.stringify(dSGResourceData),
+    });
+    logger.error((error as Error).stack);
     return [];
   }
-
-  const timer = logger.startTimer();
-
-  await prepareContext(dSGResourceData, logger);
-  await createLog({ level: "info", message: "Creating application..." });
-  logger.info("Creating application...");
-
-  const context = DsgContext.getInstance;
-
-  await createLog({ level: "info", message: "Creating DTOs..." });
-  logger.info("Creating DTOs...");
-  const dtos = await createDTOs(context.entities);
-  context.DTOs = dtos;
-
-  await createLog({ level: "info", message: "Copying static modules..." });
-  logger.info("Copying static modules...");
-
-  const modules = (
-    await Promise.all([
-      createServer(),
-      (context.appInfo.settings.adminUISettings.generateAdminUI &&
-        createAdminModules()) ||
-        [],
-    ])
-  ).flat();
-
-  timer.done({ message: "Application creation time" });
-
-  /** @todo make module paths to always use Unix path separator */
-  return modules.map((module) => ({
-    ...module,
-    path: normalize(module.path),
-  }));
 }

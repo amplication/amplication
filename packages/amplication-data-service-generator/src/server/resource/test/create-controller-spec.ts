@@ -15,7 +15,7 @@ import {
   removeTSIgnoreComments,
   removeESLintComments,
 } from "../../../util/ast";
-import { createPrismaFields } from "../../prisma/create-prisma-schema";
+import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
 import {
   CreateEntityControllerSpecParams,
   Entity,

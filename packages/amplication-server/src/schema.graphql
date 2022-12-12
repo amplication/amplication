@@ -391,18 +391,6 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   Topic
   ServiceTopics
-  Flow
-  ConnectorRestApi
-  ConnectorRestApiCall
-  ConnectorSoapApi
-  ConnectorFile
-  EntityApi
-  EntityApiEndpoint
-  FlowApi
-  Layout
-  CanvasPage
-  EntityPage
-  Document
   PluginInstallation
   PluginOrder
 }
@@ -1097,37 +1085,20 @@ type Mutation {
   createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
-  updateServiceTopics(
-    data: ServiceTopicsUpdateInput!
-    where: WhereUniqueInput!
-  ): ServiceTopics!
+  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
   createBuild(data: BuildCreateInput!): Build!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
-  updateResourceRole(
-    data: ResourceRoleUpdateInput!
-    where: WhereUniqueInput!
-  ): ResourceRole
-  createPluginInstallation(
-    data: PluginInstallationCreateInput!
-  ): PluginInstallation!
-  updatePluginInstallation(
-    data: PluginInstallationUpdateInput!
-    where: WhereUniqueInput!
-  ): PluginInstallation!
+  updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
+  updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
-  setPluginOrder(
-    data: PluginSetOrderInput!
-    where: WhereUniqueInput!
-  ): PluginOrder
+  setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   createTopic(data: TopicCreateInput!): Topic!
   updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
   deleteTopic(where: WhereUniqueInput!): Topic!
-  updateProjectConfigurationSettings(
-    data: ProjectConfigurationSettingsUpdateInput!
-    where: WhereUniqueInput!
-  ): ProjectConfigurationSettings
+  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!

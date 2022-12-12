@@ -601,18 +601,6 @@ export enum EnumAuthProviderType {
 }
 
 export enum EnumBlockType {
-  CanvasPage = 'CanvasPage',
-  ConnectorFile = 'ConnectorFile',
-  ConnectorRestApi = 'ConnectorRestApi',
-  ConnectorRestApiCall = 'ConnectorRestApiCall',
-  ConnectorSoapApi = 'ConnectorSoapApi',
-  Document = 'Document',
-  EntityApi = 'EntityApi',
-  EntityApiEndpoint = 'EntityApiEndpoint',
-  EntityPage = 'EntityPage',
-  Flow = 'Flow',
-  FlowApi = 'FlowApi',
-  Layout = 'Layout',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
