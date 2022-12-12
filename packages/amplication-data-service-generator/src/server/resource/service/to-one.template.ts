@@ -1,4 +1,4 @@
-import { PrismaService } from "nestjs-prisma";
+import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   // @ts-ignore
