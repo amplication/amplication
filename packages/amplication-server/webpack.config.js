@@ -57,7 +57,6 @@ function generatePackageJson() {
   };
   const pathToPackageJson = path.join(__dirname, "../../", "package.json");
   return new GeneratePackageJsonPlugin(basePackageJson, {
-    excludeDependencies: ["@amplication/prisma-clients"],
     sourcePackageFilenames: [pathToPackageJson],
   });
 }

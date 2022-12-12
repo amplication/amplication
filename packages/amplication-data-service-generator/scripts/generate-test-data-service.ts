@@ -1,12 +1,12 @@
-import * as path from "path";
-import * as fs from "fs";
-import entities from "../src/tests/entities";
-import roles from "../src/tests/roles";
-import { appInfo } from "../src/tests/appInfo";
 import { AppInfo, Module } from "@amplication/code-gen-types";
-import { createDataService } from "../src/create-data-service";
+import * as fs from "fs";
+import * as path from "path";
 import { EnumResourceType } from "../src/models";
+import { appInfo } from "../src/tests/appInfo";
+import entities from "../src/tests/entities";
 import { installedPlugins } from "../src/tests/pluginInstallation";
+import roles from "../src/tests/roles";
+import { createDataServiceImpl } from "../src";
 
 if (require.main === module) {
   const [, , output] = process.argv;
@@ -23,7 +23,7 @@ export default async function generateTestDataService(
   destination: string,
   appInfo: AppInfo
 ): Promise<void> {
-  const modules = await createDataService({
+  const modules = await createDataServiceImpl({
     entities,
     roles,
     resourceInfo: appInfo,
