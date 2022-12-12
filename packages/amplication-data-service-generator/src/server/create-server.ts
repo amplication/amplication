@@ -130,7 +130,6 @@ async function createServerInternal(
     ...formattedJsonFiles,
     ...formattedModules,
     ...prismaSchemaModule,
-    grantsModule,
     ...dotEnvModule,
     ...dockerComposeFile,
     ...dockerComposeDBFile,
