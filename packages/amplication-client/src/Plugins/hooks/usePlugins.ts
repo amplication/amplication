@@ -50,18 +50,8 @@ const PLUGINS: Plugin[] = [
     type: "test",
     versions: [
       {
-        version: "0.0.1",
-        settings: {
-          enableLogging: true,
-          defaultPort: "5432",
-        },
-      },
-      {
-        version: "0.0.2",
-        settings: {
-          enableLogging: true,
-          defaultPort: "5432",
-        },
+        version: "latest",
+        settings: {},
       },
     ],
   },
