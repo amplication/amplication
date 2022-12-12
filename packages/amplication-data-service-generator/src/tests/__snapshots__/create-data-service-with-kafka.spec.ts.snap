@@ -2986,9 +2986,9 @@ networks:
     driver: bridge
 ",
   "server/nest-cli.json": "{
-  \\"sourceRoot\\": \\"src\\",
+  \\"sourceRoot\\": \\"/\\",
   \\"compilerOptions\\": {
-    \\"assets\\": [\\"swagger\\"]
+    \\"assets\\": [\\"src/swagger\\", \\"prisma/generated-prisma-client\\"]
   }
 }
 ",
@@ -3076,6 +3076,7 @@ networks:
 
 generator client {
   provider = \\"prisma-client-js\\"
+  output   = \\"./generated-prisma-client\\"
 }
 
 model User {
@@ -3342,6 +3343,7 @@ import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
+import { PrismaModule } from \\"./prisma/prisma.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { KafkaModule } from \\"./kafka/kafka.module\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
@@ -3361,6 +3363,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     ACLModule,
     AuthModule,
     HealthModule,
+    PrismaModule,
     SecretsManagerModule,
     KafkaModule,
     MorganModule,
@@ -6120,19 +6123,14 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
+
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class CustomerModuleBase {}
 ",
@@ -6379,8 +6377,13 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Customer, Order, Organization } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import {
+  Prisma,
+  Customer,
+  Order,
+} from \\"../../../prisma/generated-prisma-client\\";
+import { Organization } from \\"@prisma/client\\";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -6499,7 +6502,7 @@ export class CustomerResolver extends CustomerResolverBase {
 }
 ",
   "server/src/customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { CustomerServiceBase } from \\"./base/customer.service.base\\";
 
 @Injectable()
@@ -7336,19 +7339,14 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
+
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class EmptyModuleBase {}
 ",
@@ -7466,8 +7464,8 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Empty } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, Empty } from \\"../../../prisma/generated-prisma-client\\";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -7559,7 +7557,7 @@ export class EmptyResolver extends EmptyResolverBase {
 }
 ",
   "server/src/empty/empty.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { EmptyServiceBase } from \\"./base/empty.service.base\\";
 
 @Injectable()
@@ -9473,19 +9471,14 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
+
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class OrderModuleBase {}
 ",
@@ -9646,8 +9639,9 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Order, Customer } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, Order } from \\"../../../prisma/generated-prisma-client\\";
+import { Customer } from \\"@prisma/client\\";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -9747,7 +9741,7 @@ export class OrderResolver extends OrderResolverBase {
 }
 ",
   "server/src/order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { OrderServiceBase } from \\"./base/order.service.base\\";
 
 @Injectable()
@@ -11255,19 +11249,14 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
+
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class OrganizationModuleBase {}
 ",
@@ -11495,8 +11484,13 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Organization, User, Customer } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import {
+  Prisma,
+  Organization,
+  User,
+  Customer,
+} from \\"../../../prisma/generated-prisma-client\\";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11621,7 +11615,7 @@ export class OrganizationResolver extends OrganizationResolverBase {
 }
 ",
   "server/src/organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { OrganizationServiceBase } from \\"./base/organization.service.base\\";
 
 @Injectable()
@@ -11684,6 +11678,32 @@ export async function transformStringFieldUpdateInput<
     return (await transform(input)) as T;
   }
   return input;
+}
+",
+  "server/src/prisma/prisma.module.ts": "import { Global, Module } from \\"@nestjs/common\\";
+import { PrismaService } from \\"./prisma.service\\";
+
+@Global()
+@Module({
+  providers: [PrismaService],
+  exports: [PrismaService],
+})
+export class PrismaModule {}
+",
+  "server/src/prisma/prisma.service.ts": "import { Injectable, OnModuleInit, INestApplication } from \\"@nestjs/common\\";
+import { PrismaClient } from \\"../../prisma/generated-prisma-client\\";
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  async onModuleInit() {
+    await this.$connect();
+  }
+
+  async enableShutdownHooks(app: INestApplication) {
+    this.$on(\\"beforeExit\\", async () => {
+      await app.close();
+    });
+  }
 }
 ",
   "server/src/profile/base/CreateProfileArgs.ts": "/*
@@ -12638,19 +12658,14 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
+
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class ProfileModuleBase {}
 ",
@@ -12847,8 +12862,9 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Profile, User } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, Profile } from \\"../../../prisma/generated-prisma-client\\";
+import { User } from \\"@prisma/client\\";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -12948,7 +12964,7 @@ export class ProfileResolver extends ProfileResolverBase {
 }
 ",
   "server/src/profile/profile.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { ProfileServiceBase } from \\"./base/profile.service.base\\";
 
 @Injectable()
@@ -13266,7 +13282,7 @@ describe(\\"Testing the HealthServiceBase\\", () => {
   });
 });
 ",
-  "server/src/types.ts": "import { JsonValue } from \\"type-fest\\";
+  "server/src/types.ts": "import type { JsonValue } from \\"type-fest\\";
 
 export type InputJsonValue = Omit<JsonValue, \\"null\\">;
 ",
@@ -15435,19 +15451,14 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
+
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class UserModuleBase {}
 ",
@@ -15704,8 +15715,13 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import {
+  Prisma,
+  User,
+  Organization,
+} from \\"../../../prisma/generated-prisma-client\\";
+import { User, Profile } from \\"@prisma/client\\";
 import { PasswordService } from \\"../../auth/password.service\\";
 import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
@@ -15860,7 +15876,7 @@ export class UserResolver extends UserResolverBase {
 }
 ",
   "server/src/user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { UserServiceBase } from \\"./base/user.service.base\\";
 import { PasswordService } from \\"../auth/password.service\\";
 
@@ -16563,7 +16579,7 @@ export class JsonFilter {
   not?: InputJsonValue;
 }
 ",
-  "server/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";
+  "server/src/util/JsonNullableFilter.ts": "import type { JsonValue } from \\"type-fest\\";
 import { Field, InputType } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
