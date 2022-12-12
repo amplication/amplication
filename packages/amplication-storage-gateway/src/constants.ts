@@ -12,6 +12,7 @@ export const DOT_AMPLICATION_FOLDER = join(
   "..",
   ".amplication"
 );
+
 export const DEFAULT_BUILDS_FOLDER = join(
   DOT_AMPLICATION_FOLDER,
   "storage",

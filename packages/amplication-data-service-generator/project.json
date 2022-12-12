@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-data-service-generator/src",
   "projectType": "application",
-  "implicitDependencies": ["amplication-code-gen-types"],
   "targets": {
     "install": {
       "executor": "nx:run-commands",
@@ -36,7 +35,7 @@
       ],
       "outputs": ["{projectRoot}/node_modules"],
       "options": {
-        "commands": ["npm ci"],
+        "commands": ["npm ci", "ts-node ./scripts/update-version.ts"],
         "parallel": false,
         "cwd": "packages/amplication-data-service-generator"
       }
@@ -55,6 +54,7 @@
     },
     "postbuild": {
       "executor": "nx:run-commands",
+      "outputs": ["dist/packages/amplication-data-service-generator"],
       "options": {
         "command": "ts-node scripts/copy-files.ts",
         "cwd": "packages/amplication-data-service-generator"
@@ -83,7 +83,11 @@
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/generated"],
       "options": {
-        "command": "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated",
+        "commands": [
+          "rimraf generated",
+          "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated"
+        ],
+        "parallel": false,
         "cwd": "packages/amplication-data-service-generator"
       }
     },

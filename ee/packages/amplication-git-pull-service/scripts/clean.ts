@@ -2,7 +2,7 @@
  * Clean all the tables and types created by Prisma in the databases
  */
 
-import { PrismaClient } from "@amplication/prisma-clients/amplication-git-pull-service";
+import { PrismaClient } from "../prisma/generated-prisma-client";
 
 if (require.main === module) {
   clean().catch((error) => {
@@ -40,7 +40,8 @@ async function dropTypes(prisma: PrismaClient, types: string[]) {
 async function getTables(prisma: PrismaClient): Promise<string[]> {
   const results: Array<{
     tablename: string;
-  }> = await prisma.$queryRaw`SELECT tablename from pg_tables where schemaname = 'public';`;
+  }> =
+    await prisma.$queryRaw`SELECT tablename from pg_tables where schemaname = 'public';`;
   return results.map((result) => result.tablename);
 }
 

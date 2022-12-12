@@ -601,18 +601,6 @@ export enum EnumAuthProviderType {
 }
 
 export enum EnumBlockType {
-  CanvasPage = 'CanvasPage',
-  ConnectorFile = 'ConnectorFile',
-  ConnectorRestApi = 'ConnectorRestApi',
-  ConnectorRestApiCall = 'ConnectorRestApiCall',
-  ConnectorSoapApi = 'ConnectorSoapApi',
-  Document = 'Document',
-  EntityApi = 'EntityApi',
-  EntityApiEndpoint = 'EntityApiEndpoint',
-  EntityPage = 'EntityPage',
-  Flow = 'Flow',
-  FlowApi = 'FlowApi',
-  Layout = 'Layout',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
@@ -793,6 +781,7 @@ export type IBlock = {
   lockedByUserId?: Maybe<Scalars['String']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  resourceId?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
@@ -1055,12 +1044,27 @@ export type MutationDeleteGitRepositoryArgs = {
 };
 
 
+export type MutationDeletePluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type MutationDeleteResourceArgs = {
   where: WhereUniqueInput;
 };
 
 
 export type MutationDeleteResourceRoleArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteServiceTopicsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteTopicArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1254,7 +1258,10 @@ export type PluginInstallation = IBlock & {
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   pluginId: Scalars['String'];
+  resourceId?: Maybe<Scalars['String']>;
+  settings?: Maybe<Scalars['JSONObject']>;
   updatedAt: Scalars['DateTime'];
+  version: Scalars['String'];
   versionNumber: Scalars['Float'];
 };
 
@@ -1268,6 +1275,8 @@ export type PluginInstallationCreateInput = {
   parentBlock?: InputMaybe<WhereParentIdInput>;
   pluginId: Scalars['String'];
   resource: WhereParentIdInput;
+  settings?: InputMaybe<Scalars['JSONObject']>;
+  version: Scalars['String'];
 };
 
 export type PluginInstallationOrderByInput = {
@@ -1283,6 +1292,8 @@ export type PluginInstallationUpdateInput = {
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
+  settings?: InputMaybe<Scalars['JSONObject']>;
+  version: Scalars['String'];
 };
 
 export type PluginInstallationWhereInput = {
@@ -1308,6 +1319,7 @@ export type PluginOrder = IBlock & {
   order: Array<PluginOrderItem>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  resourceId?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
@@ -1344,6 +1356,7 @@ export type ProjectConfigurationSettings = IBlock & {
   lockedByUserId?: Maybe<Scalars['String']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  resourceId?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
@@ -1819,6 +1832,7 @@ export type ServiceSettings = IBlock & {
   lockedByUserId?: Maybe<Scalars['String']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  resourceId?: Maybe<Scalars['String']>;
   serverSettings: ServerSettings;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
@@ -1852,6 +1866,7 @@ export type ServiceTopics = IBlock & {
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   patterns: Array<MessagePattern>;
+  resourceId?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
@@ -1952,6 +1967,7 @@ export type Topic = IBlock & {
   name: Scalars['String'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  resourceId?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };

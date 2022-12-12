@@ -18,10 +18,9 @@ export enum EnumDialogStyle {
 }
 
 type DialogProps = {
-  /** The display style of the dialog */
   dialogStyle?: EnumDialogStyle;
-  title: string;
   children?: React.ReactNode;
+  showCloseButton?: boolean;
 };
 export type Props = DialogProps & PrimerDialogProps;
 
@@ -32,6 +31,7 @@ export const Dialog: React.FC<Props> = ({
   title,
   className,
   dialogStyle = EnumDialogStyle.Default,
+  showCloseButton = true,
 }) => {
   //colors.primer.canvas.backdrop
   const theme = {
@@ -59,12 +59,14 @@ export const Dialog: React.FC<Props> = ({
         sx={{}}
       >
         <div className={`${CLASS_NAME}__header`}>
-          <h3>{title}</h3>
-          <Button
-            icon="close"
-            buttonStyle={EnumButtonStyle.Text}
-            onClick={onDismiss}
-          />
+          <div className={`${CLASS_NAME}__title`}>{title}</div>
+          {showCloseButton && (
+            <Button
+              icon="close"
+              buttonStyle={EnumButtonStyle.Text}
+              onClick={onDismiss}
+            />
+          )}
         </div>
         <div className={`${CLASS_NAME}__body`}>{children}</div>
       </PrimerDialog>

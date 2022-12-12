@@ -22,6 +22,11 @@ REACT_APP_SERVER_URL=http://localhost:3000",
     \\"sass\\": \\"^1.39.0\\",
     \\"web-vitals\\": \\"1.1.2\\"
   },
+  \\"overrides\\": {
+    \\"react-scripts\\": {
+      \\"@svgr/webpack\\": \\"6.5.1\\"
+    }
+  },
   \\"scripts\\": {
     \\"start\\": \\"react-scripts start\\",
     \\"build\\": \\"react-scripts build\\",
@@ -2974,13 +2979,13 @@ volumes:
     \\"compose:down\\": \\"docker-compose down --volumes\\"
   },
   \\"dependencies\\": {
-    \\"@nestjs/common\\": \\"8.2.3\\",
+    \\"@nestjs/common\\": \\"8.4.7\\",
     \\"@nestjs/config\\": \\"1.1.5\\",
-    \\"@nestjs/core\\": \\"8.2.3\\",
+    \\"@nestjs/core\\": \\"8.4.7\\",
     \\"@nestjs/graphql\\": \\"9.1.2\\",
     \\"@nestjs/jwt\\": \\"8.0.0\\",
     \\"@nestjs/passport\\": \\"8.2.2\\",
-    \\"@nestjs/platform-express\\": \\"8.2.3\\",
+    \\"@nestjs/platform-express\\": \\"8.4.7\\",
     \\"@nestjs/serve-static\\": \\"2.2.2\\",
     \\"@nestjs/swagger\\": \\"5.1.5\\",
     \\"@prisma/client\\": \\"4.6.1\\",
@@ -3003,7 +3008,7 @@ volumes:
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
-    \\"@nestjs/testing\\": \\"8.2.3\\",
+    \\"@nestjs/testing\\": \\"8.4.7\\",
     \\"@types/bcrypt\\": \\"5.0.0\\",
     \\"@types/express\\": \\"4.17.9\\",
     \\"@types/graphql-type-json\\": \\"0.3.2\\",
@@ -3061,7 +3066,7 @@ model User {
 }
 
 model Profile {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
@@ -3193,7 +3198,8 @@ async function dropTypes(prisma: PrismaClient, types: string[]) {
 async function getTables(prisma: PrismaClient): Promise<string[]> {
   const results: Array<{
     tablename: string;
-  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
+  }> =
+    await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
   return results.map((result) => result.tablename);
 }
 
@@ -3396,9 +3402,7 @@ export class LoginArgs {
 }
 ",
   "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from \\"../user/user\\";
+import { User } from \\"../user/base/user\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
@@ -5616,6 +5620,29 @@ describe(\\"Customer\\", () => {
       });
   });
 
+  test(\\"POST /customers existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/customers\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/customers\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -6124,7 +6151,7 @@ export class CustomerServiceBase {
     args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
     return this.prisma.customer
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .orders(args);
@@ -6802,6 +6829,28 @@ describe(\\"Empty\\", () => {
       });
   });
 
+  test(\\"POST /empties existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/empties\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/empties\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -7117,6 +7166,99 @@ export class NotFoundException extends common.NotFoundException {
   statusCode!: number;
   @ApiProperty()
   message!: string;
+}
+",
+  "server/src/filters/HttpExceptions.filter.ts": "import {
+  ArgumentsHost,
+  Catch,
+  HttpException,
+  HttpServer,
+  HttpStatus,
+} from \\"@nestjs/common\\";
+import { BaseExceptionFilter } from \\"@nestjs/core\\";
+import {
+  // @ts-ignore
+  Prisma,
+} from \\"@prisma/client\\";
+import { Response } from \\"express\\";
+
+export type ErrorCodesStatusMapping = {
+  [key: string]: number;
+};
+
+/**
+ * {@link PrismaClientExceptionFilter} handling {@link Prisma.PrismaClientKnownRequestError} exceptions.
+ */
+@Catch(Prisma?.PrismaClientKnownRequestError)
+export class HttpExceptionFilter extends BaseExceptionFilter {
+  /**
+   * default error codes mapping
+   *
+   * Error codes definition for Prisma Client (Query Engine)
+   * @see https://www.prisma.io/docs/reference/api-reference/error-reference#prisma-client-query-engine
+   */
+  private errorCodesStatusMapping: ErrorCodesStatusMapping = {
+    P2000: HttpStatus.BAD_REQUEST,
+    P2002: HttpStatus.CONFLICT,
+    P2025: HttpStatus.NOT_FOUND,
+  };
+
+  /**
+   * @param applicationRef
+   */
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(applicationRef?: HttpServer) {
+    super(applicationRef);
+  }
+
+  /**
+   * @param exception
+   * @param host
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
+    const statusCode = this.errorCodesStatusMapping[exception.code];
+    let message;
+    if (host.getType() === \\"http\\") {
+      // for http requests (REST)
+      // Todo : Add all other exception types and also add mapping
+      const ctx = host.switchToHttp();
+      const response = ctx.getResponse<Response>();
+      if (exception.code === \\"P2002\\") {
+        // Handling Unique Key Constraint Violation Error
+        const fields = (exception.meta as { target: string[] }).target;
+        message = \`Another record with the requested (\${fields.join(
+          \\", \\"
+        )}) already exists\`;
+      } else {
+        message =
+          \`[\${exception.code}]: \` +
+          this.exceptionShortMessage(exception.message);
+      }
+      if (!Object.keys(this.errorCodesStatusMapping).includes(exception.code)) {
+        return super.catch(exception, host);
+      }
+      const errorResponse = {
+        message: message,
+        statusCode: statusCode,
+      };
+      response.status(statusCode).send(errorResponse);
+    }
+    return new HttpException({ statusCode, message }, statusCode);
+  }
+
+  /**
+   * @param exception
+   * @returns short message for the exception
+   */
+  exceptionShortMessage(message: string): string {
+    const shortMessage = message.substring(message.indexOf(\\"→\\"));
+    return shortMessage
+      .substring(shortMessage.indexOf(\\"\\\\n\\"))
+      .replace(/\\\\n/g, \\"\\")
+      .trim();
+  }
 }
 ",
   "server/src/grants.json": "[
@@ -7740,8 +7882,9 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
 }
 ",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
-import { NestFactory } from \\"@nestjs/core\\";
+import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
+import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
@@ -7780,6 +7923,9 @@ async function main() {
   });
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
 
   void app.listen(PORT);
 
@@ -8577,6 +8723,28 @@ describe(\\"Order\\", () => {
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"POST /orders existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/orders\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/orders\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
       });
   });
 
@@ -9836,6 +10004,28 @@ describe(\\"Organization\\", () => {
       });
   });
 
+  test(\\"POST /organizations existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/organizations\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/organizations\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -10466,7 +10656,7 @@ export class OrganizationServiceBase {
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .users(args);
@@ -10477,7 +10667,7 @@ export class OrganizationServiceBase {
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .customers(args);
@@ -10488,7 +10678,7 @@ export class OrganizationServiceBase {
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .vipCustomers(args);
@@ -11276,6 +11466,28 @@ describe(\\"Profile\\", () => {
         ...FIND_ONE_RESULT,
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+      });
+  });
+
+  test(\\"POST /profiles existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/profiles\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/profiles\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
       });
   });
 
@@ -13536,6 +13748,27 @@ describe(\\"User\\", () => {
       });
   });
 
+  test(\\"POST /users existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/users\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/users\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -14189,7 +14422,7 @@ export class UserServiceBase {
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .employees(args);
@@ -14200,7 +14433,7 @@ export class UserServiceBase {
     args: Prisma.OrganizationFindManyArgs
   ): Promise<Organization[]> {
     return this.prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .organizations(args);

@@ -1,0 +1,18 @@
+@import "../style/index.scss";
+
+$logo-size: 44px;
+
+.plugin-logo {
+  width: $logo-size;
+  height: $logo-size;
+  background-color: var(--black40);
+  border-radius: var(--default-border-radius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  img {
+    max-height: 100%;
+    max-width: 100%;
+  }
+}

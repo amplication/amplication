@@ -3,11 +3,6 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ee/packages/amplication-git-push-webhook-service/src",
   "projectType": "application",
-  "implicitDependencies": [
-    "amplication-prisma-db",
-    "amplication-nest-logger-module",
-    "amplication-kafka"
-  ],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
