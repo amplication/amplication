@@ -1,4 +1,4 @@
-FROM node:19.1 AS base
+FROM node:18.12.1 AS base
 
 ARG REACT_APP_SERVER_URL
 

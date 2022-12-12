@@ -1,4 +1,4 @@
-FROM node:19.1 AS base
+FROM node:18.12.1 AS base
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:19.1 AS prod
+FROM node:18.12.1 AS prod
 
 WORKDIR /app
 
