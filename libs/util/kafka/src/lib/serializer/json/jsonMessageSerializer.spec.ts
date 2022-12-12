@@ -1,0 +1,95 @@
+import { KafkaMessage } from "../../../types";
+import Serialiser from "./jsonMessageSerializer";
+
+jest.mock("console");
+
+describe("jsonMessageSerialiser", () => {
+  let serialiser: Serialiser;
+
+  const createMessage = (key: string, message: string): KafkaMessage => ({
+    key: Buffer.from(key, "utf8"),
+    value: Buffer.from(message, "utf8"),
+    headers: {},
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    serialiser = new Serialiser();
+  });
+
+  it("is instantiable", () => {
+    expect(serialiser).toBeInstanceOf(Serialiser);
+  });
+
+  describe("when serializing plain text messages", () => {
+    describe("and the messages contain a key and a value", () => {
+      const message = { key: "key1", value: "value1" };
+
+      it("the KafkaMessage is correctly serialised", async () => {
+        const expectedMessage: KafkaMessage = {
+          key: Buffer.from([0x6b, 0x65, 0x79, 0x31]),
+          value: Buffer.from([0x76, 0x61, 0x6c, 0x75, 0x65, 0x31]),
+        };
+
+        const result = await serialiser.serialize(message);
+        expect(result).toEqual(expectedMessage);
+      });
+    });
+
+    describe("and the messages contain only values", () => {
+      const message = { value: "value1" };
+
+      it("the KafkaMessage is correctly serialised", async () => {
+        const expectedMessage: KafkaMessage = {
+          key: null,
+          value: Buffer.from([0x76, 0x61, 0x6c, 0x75, 0x65, 0x31]),
+        };
+
+        const result = await serialiser.serialize(message);
+        expect(result).toEqual(expectedMessage);
+      });
+    });
+  });
+
+  describe("when serializing message with json objects", () => {
+    describe("and the messages contain a key and a value", () => {
+      const message = { key: { key: "key1" }, value: { a: "hello", b: 2 } };
+
+      it("the KafkaMessage is correctly serialised", async () => {
+        const expectedMessage: KafkaMessage = {
+          key: Buffer.from([
+            0x7b, 0x22, 0x6b, 0x65, 0x79, 0x22, 0x3a, 0x22, 0x6b, 0x65, 0x79,
+            0x31, 0x22, 0x7d,
+          ]),
+          value: Buffer.from([
+            0x7b, 0x22, 0x61, 0x22, 0x3a, 0x22, 0x68, 0x65, 0x6c, 0x6c, 0x6f,
+            0x22, 0x2c, 0x22, 0x62, 0x22, 0x3a, 0x32, 0x7d,
+          ]),
+        };
+
+        const result = await serialiser.serialize(message);
+        expect(result).toEqual(expectedMessage);
+      });
+    });
+
+    describe("and the messages contain only values", () => {
+      const message = { value: { a: "hello", b: 2 } };
+
+      it("the KafkaMessage is correctly serialised", async () => {
+        const expectedMessage: KafkaMessage = {
+          key: null,
+          value: Buffer.from([
+            0x7b, 0x22, 0x61, 0x22, 0x3a, 0x22, 0x68, 0x65, 0x6c, 0x6c, 0x6f,
+            0x22, 0x2c, 0x22, 0x62, 0x22, 0x3a, 0x32, 0x7d,
+          ]),
+        };
+
+        const result = await serialiser.serialize(message);
+        expect(result).toEqual(expectedMessage);
+      });
+    });
+  });
+
+  describe("when deserializing a kafka message", () => {});
+});
