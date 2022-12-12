@@ -1,5 +1,12 @@
-import { DSGResourceData } from "@amplication/code-gen-types";
-import { readFile } from "fs/promises";
+import { DSGResourceData, Module } from "@amplication/code-gen-types";
+import { mkdir, readFile, writeFile } from "fs/promises";
+import {
+  createDataServiceImpl,
+  defaultLogger,
+  httpClient,
+} from "@amplication/data-service-generator";
+import { dirname, join } from "path";
+import { dynamicPluginInstallation } from "./dynamic-plugin-installation";
 
 const [, , source, destination] = process.argv;
 if (!source) {
@@ -33,9 +40,7 @@ export default async function generateCode(
     );
     console.log("Finish code generation dynamic plugins installation");
 
-    const modules = await (
-      await import("@amplication/data-service-generator")
-    ).createDataServiceImpl(resourceData, defaultLogger);
+    const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
     await httpClient.post(
