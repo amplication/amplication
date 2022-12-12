@@ -1,28 +1,28 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { DateTimeFilter, StringFilter } from '../../../dto';
-import { WorkspaceWhereInput } from '../../workspace/dto';
+import { Field, InputType } from "@nestjs/graphql";
+import { DateTimeFilter, StringFilter } from "../../../dto";
+import { WorkspaceWhereInput } from "../../workspace/dto";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class UserWhereInput {
   @Field(() => StringFilter, {
-    nullable: true
+    nullable: true,
   })
   id?: StringFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   createdAt?: DateTimeFilter | null;
 
   @Field(() => DateTimeFilter, {
-    nullable: true
+    nullable: true,
   })
   updatedAt?: DateTimeFilter | null;
 
   @Field(() => WorkspaceWhereInput, {
-    nullable: true
+    nullable: true,
   })
   workspace?: WorkspaceWhereInput | null;
 }

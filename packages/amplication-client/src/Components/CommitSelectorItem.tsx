@@ -11,10 +11,16 @@ const CLASS_NAME = "commit-selector-item";
 export const CommitSelectorItem = ({ commit }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      <UserBadge />
-      <div className={`${CLASS_NAME}__title`}>
-        {commit?.message || "No commit message"}
-      </div>
+      {commit ? (
+        <>
+          <UserBadge />
+          <div className={`${CLASS_NAME}__title`}>
+            {commit?.message || "No commit message"}
+          </div>
+        </>
+      ) : (
+        <div className={`${CLASS_NAME}__title`}>none</div>
+      )}
     </div>
   );
 };

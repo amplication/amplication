@@ -106,7 +106,7 @@ describe("Data Service Generator", () => {
         POSTGRESQL_USER: POSTGRESQL_USER,
         POSTGRESQL_PASSWORD: POSTGRESQL_PASSWORD,
         POSTGRESQL_PORT: String(dbPort),
-        SERVER_PORT: String(port),
+        PORT: String(port),
         BCRYPT_SALT: "10",
         // See: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
         COMPOSE_DOCKER_CLI_BUILD: "1",

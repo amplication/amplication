@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import { useCallback, useContext } from "react";
 import { Snackbar } from "@amplication/design-system";
 import * as models from "../models";
 import { gql, useMutation } from "@apollo/client";
@@ -6,6 +6,7 @@ import { formatError } from "../util/error";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./DiscardChanges.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   projectId: string;
@@ -16,15 +17,14 @@ type Props = {
 const CLASS_NAME = "discard-changes";
 
 const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
-  const { pendingChanges, resetPendingChanges, addChange } = useContext(
-    AppContext
-  );
+  const { pendingChanges, resetPendingChanges, addChange } =
+    useContext(AppContext);
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
       if (!data) return;
 
       //remove entities from cache to reflect discarded changes
-      for (var change of pendingChanges) {
+      for (const change of pendingChanges) {
         if (change.originType === models.EnumPendingChangeOriginType.Entity) {
           cache.evict({
             id: cache.identify({
@@ -80,7 +80,7 @@ const DiscardChanges = ({ projectId, onComplete, onCancel }: Props) => {
         <Button
           buttonStyle={EnumButtonStyle.Primary}
           eventData={{
-            eventName: "discardPendingChanges",
+            eventName: AnalyticsEventNames.PendingChangesDiscard,
           }}
           onClick={handleConfirm}
           disabled={loading}

@@ -1,6 +1,11 @@
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { Module } from "@amplication/code-gen-types";
+import {
+  EventNames,
+  Module,
+  CreateEntityModuleParams,
+  CreateEntityModuleBaseParams,
+} from "@amplication/code-gen-types";
 import { relativeImportPath, readFile } from "../../../util/module";
 import {
   interpolate,
@@ -15,6 +20,8 @@ import { removeIdentifierFromModuleDecorator } from "../../../util/nestjs-code-g
 import { createControllerId } from "../controller/create-controller";
 import { createServiceId } from "../service/create-service";
 import { createResolverId } from "../resolver/create-resolver";
+import DsgContext from "../../../dsg-context";
+import pluginWrapper from "../../../plugin-wrapper";
 
 const moduleTemplatePath = require.resolve("./module.template.ts");
 const moduleBaseTemplatePath = require.resolve("./module.base.template.ts");
@@ -24,36 +31,41 @@ export async function createModules(
   entityType: string,
   entityServiceModule: string,
   entityControllerModule: string | undefined,
-  entityResolverModule: string | undefined,
-  srcDirectory: string
+  entityResolverModule: string | undefined
 ): Promise<Module[]> {
   const moduleBaseId = createBaseModuleId(entityType);
 
   return [
-    await createModule(
+    ...(await pluginWrapper(createModule, EventNames.CreateEntityModule, {
       entityName,
       entityType,
       entityServiceModule,
       entityControllerModule,
       entityResolverModule,
       moduleBaseId,
-      srcDirectory
-    ),
-    await createBaseModule(entityName, moduleBaseId, srcDirectory),
+    })),
+    ...(await pluginWrapper(
+      createBaseModule,
+      EventNames.CreateEntityModuleBase,
+      {
+        entityName,
+        moduleBaseId,
+      }
+    )),
   ];
 }
 
-async function createModule(
-  entityName: string,
-  entityType: string,
-  entityServiceModule: string,
-  entityControllerModule: string | undefined,
-  entityResolverModule: string | undefined,
-  moduleBaseId: namedTypes.Identifier,
-  srcDirectory: string
-): Promise<Module> {
-  const modulePath = `${srcDirectory}/${entityName}/${entityName}.module.ts`;
-  const moduleBasePath = `${srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
+async function createModule({
+  entityName,
+  entityType,
+  entityServiceModule,
+  entityControllerModule,
+  entityResolverModule,
+  moduleBaseId,
+}: CreateEntityModuleParams): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.module.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleTemplatePath);
   const controllerId = createControllerId(entityType);
   const serviceId = createServiceId(entityType);
@@ -86,7 +98,7 @@ async function createModule(
       )
     : undefined;
 
-  //if we are not generating the controller, remove the controller property
+  // if we are not generating the controller, remove the controller property
   if (!entityControllerModule) {
     removeIdentifierFromModuleDecorator(file, controllerId);
   }
@@ -114,18 +126,20 @@ async function createModule(
   removeESLintComments(file);
   removeTSClassDeclares(file);
 
-  return {
-    path: modulePath,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: modulePath,
+      code: print(file).code,
+    },
+  ];
 }
 
-async function createBaseModule(
-  entityName: string,
-  moduleBaseId: namedTypes.Identifier,
-  srcDirectory: string
-): Promise<Module> {
-  const modulePath = `${srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
+async function createBaseModule({
+  entityName,
+  moduleBaseId,
+}: CreateEntityModuleBaseParams): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
   const file = await readFile(moduleBaseTemplatePath);
 
   interpolate(file, {
@@ -137,10 +151,12 @@ async function createBaseModule(
   removeTSClassDeclares(file);
   addAutoGenerationComment(file);
 
-  return {
-    path: modulePath,
-    code: print(file).code,
-  };
+  return [
+    {
+      path: modulePath,
+      code: print(file).code,
+    },
+  ];
 }
 
 function createModuleId(entityType: string): namedTypes.Identifier {

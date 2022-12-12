@@ -36,7 +36,7 @@ import {
 } from "./nestjs-graphql.util";
 import {
   GRAPHQL_TYPE_JSON_MODULE,
-  GRAPHQL_JSON_OBJECT_ID,
+  GRAPHQL_JSON_ID,
 } from "./graphql-type-json.util";
 import { TYPE_FEST_MODULE, JSON_VALUE_ID } from "./type-fest.util";
 import {
@@ -45,6 +45,7 @@ import {
 } from "./filters.util";
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
+import DsgContext from "../../../dsg-context";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
@@ -70,7 +71,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
   [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
   [TYPE_FEST_MODULE]: [JSON_VALUE_ID],
-  [GRAPHQL_TYPE_JSON_MODULE]: [GRAPHQL_JSON_OBJECT_ID],
+  [GRAPHQL_TYPE_JSON_MODULE]: [GRAPHQL_JSON_ID],
   [NESTJS_GRAPHQL_MODULE]: [
     OBJECT_TYPE_ID,
     INPUT_TYPE_ID,
@@ -133,8 +134,8 @@ export function getImportableDTOs(
 
 export function createDTOModulePath(
   entityDirectory: string,
-  dtoName: string,
-  srcDirectory: string
+  dtoName: string
 ): string {
-  return `${srcDirectory}/${entityDirectory}/base/${dtoName}.ts`;
+  const { serverDirectories } = DsgContext.getInstance;
+  return `${serverDirectories.srcDirectory}/${entityDirectory}/base/${dtoName}.ts`;
 }

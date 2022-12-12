@@ -1,0 +1,29 @@
+@import "../../style/index.scss";
+
+.service-topic-panel {
+  margin: 0;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &__title {
+      @include bold-14;
+    }
+  }
+
+  &__description {
+    @include body2;
+    margin-bottom: var(--default-spacing);
+    margin-right: 140px;
+  }
+
+  &-disable {
+    color: var(--black40);
+  }
+
+  > .amp-horizontal-rule {
+    border-color: var(--black20);
+    margin: var(--large-spacing) 0;
+  }
+}

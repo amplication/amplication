@@ -9,7 +9,7 @@ import {
   EntityDTOs,
 } from "@amplication/code-gen-types";
 import { getEnumFields } from "../../util/entity";
-import { createEnumName } from "../prisma/create-prisma-schema";
+import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import { createCreateInput } from "./dto/create-create-input";
 import { createDTOModule, createDTOModulePath } from "./dto/create-dto-module";
 import { createEntityDTO } from "./dto/create-entity-dto";
@@ -32,8 +32,8 @@ import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relati
  * creating all the DTOs files in the base (only the DTOs)
  *
  */
-export function createDTOModules(dtos: DTOs, srcDirectory: string): Module[] {
-  const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
+export function createDTOModules(dtos: DTOs): Module[] {
+  const dtoNameToPath = getDTONameToPath(dtos);
   return Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs).map((dto) =>
       namedTypes.TSEnumDeclaration.check(dto)
@@ -43,15 +43,12 @@ export function createDTOModules(dtos: DTOs, srcDirectory: string): Module[] {
   );
 }
 
-export function getDTONameToPath(
-  dtos: DTOs,
-  srcDirectory: string
-): Record<string, string> {
+export function getDTONameToPath(dtos: DTOs): Record<string, string> {
   return Object.fromEntries(
     Object.entries(dtos).flatMap(([entityName, entityDTOs]) =>
       Object.values(entityDTOs).map((dto) => [
         dto.id.name,
-        createDTOModulePath(camelCase(entityName), dto.id.name, srcDirectory),
+        createDTOModulePath(camelCase(entityName), dto.id.name),
       ])
     )
   );

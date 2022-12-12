@@ -534,6 +534,33 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "Smartmind12",
+      "name": "Utsav Paul",
+      "avatar_url": "https://avatars.githubusercontent.com/u/91927689?v=4",
+      "profile": "https://github.com/Smartmind12",
+      "contributions": [
+        "maintenance"
+      ]
+    },
+    {
+      "login": "TheLearneer",
+      "name": "Santosh Bhandari",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23402178?v=4",
+      "profile": "http://santoshb.com.np",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vincenzodomina",
+      "name": "Vincenzo Domina",
+      "avatar_url": "https://avatars.githubusercontent.com/u/54762917?v=4",
+      "profile": "https://github.com/vincenzodomina",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -541,5 +568,6 @@
   "projectOwner": "amplication",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }

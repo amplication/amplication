@@ -1,13 +1,11 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-
-import { RootWinstonModule } from '../services/root-winston.module';
-import { GqlResolverExceptionsFilter } from './GqlResolverExceptions.filter';
-import { GithubAuthExceptionFilter } from './github-auth-exception.filter';
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { GqlResolverExceptionsFilter } from "./GqlResolverExceptions.filter";
+import { GithubAuthExceptionFilter } from "./github-auth-exception.filter";
 
 @Module({
-  imports: [ConfigModule, RootWinstonModule],
+  imports: [ConfigModule],
   providers: [GqlResolverExceptionsFilter, GithubAuthExceptionFilter],
-  exports: [GqlResolverExceptionsFilter, GithubAuthExceptionFilter]
+  exports: [GqlResolverExceptionsFilter, GithubAuthExceptionFilter],
 })
 export class ExceptionFiltersModule {}

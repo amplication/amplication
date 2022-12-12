@@ -3,7 +3,12 @@ import { useField, ErrorMessage } from "formik";
 import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
 
-import Select, { OptionProps, GroupBase } from "react-select";
+import Select, {
+  OptionProps,
+  GroupBase,
+  MultiValue,
+  SingleValue,
+} from "react-select";
 import { OptionItem } from "../types";
 import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
 
@@ -29,14 +34,14 @@ export const SelectField = ({
   const [field, meta, { setValue }] = useField<string | string[]>(name);
 
   const handleChange = useCallback(
-    (selected) => {
+    (selected: MultiValue<OptionItem> | SingleValue<OptionItem>) => {
       // React Select emits values instead of event onChange
       if (!selected) {
         setValue([]);
       } else {
         const values = isMulti
-          ? selected.map((option: OptionItem) => option.value)
-          : selected.value;
+          ? (selected as OptionItem[]).map((option: OptionItem) => option.value)
+          : (selected as OptionItem).value;
         setValue(values);
       }
     },
@@ -66,7 +71,6 @@ export const SelectField = ({
           {...field}
           isMulti={isMulti}
           isClearable={isClearable}
-          // @ts-ignore
           value={value}
           onChange={handleChange}
           options={options}
@@ -97,7 +101,7 @@ const CustomOption = <
     data,
   } = props;
 
-  const icon = ((data as unknown) as OptionItem).icon;
+  const icon = (data as unknown as OptionItem).icon;
 
   return (
     <div

@@ -10,7 +10,14 @@ import normalize from "normalize-path";
 /** The directory of the source code */
 const SRC_DIRECTORY = path.join(__dirname, "..", "src");
 /** The directory of the compiled code */
-const DIST_DIRECTORY = path.join(__dirname, "..", "dist");
+const DIST_DIRECTORY = path.join(
+  __dirname,
+  "../../../",
+  "dist",
+  "packages",
+  "amplication-data-service-generator",
+  "src"
+);
 /*** The directory of the server source code */
 const SERVER_SRC_DIRECTORY = path.join(SRC_DIRECTORY, "server");
 /*** The directory of the admin source code */
@@ -21,14 +28,15 @@ const ADMIN_SRC_DIRECTORY_GLOB = normalize(ADMIN_SRC_DIRECTORY);
 /** The globs to copy from to DIST_DIRECTORY */
 const GLOB_SOURCES: string[] = [
   `${SRC_DIRECTORY_GLOB}/**/*.template.env`,
-  `${SERVER_SRC_DIRECTORY_GLOB}/**/*.template.(ts|env)`,
+  `${SERVER_SRC_DIRECTORY_GLOB}/**/*.template.(ts|env|json|yml)`,
+  `${SERVER_SRC_DIRECTORY_GLOB}/**/*.db.template.(yml)`,
   `${SERVER_SRC_DIRECTORY_GLOB}/static/**`,
-  `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html|env)`,
+  `${ADMIN_SRC_DIRECTORY_GLOB}/**/*.template.(ts|tsx|html|env|json)`,
   `${ADMIN_SRC_DIRECTORY_GLOB}/static/**`,
 ];
 
 if (require.main === module) {
-  void copyFiles().catch((error) => {
+  void copyFiles().catch((error: any) => {
     console.error(error);
     process.exit(1);
   });

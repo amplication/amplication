@@ -11,7 +11,7 @@ export interface RouteDef {
   moduleClass?: string;
   routeTrackType?: string;
   permission?: boolean;
-  isAnalytics?: boolean
+  isAnalytics?: boolean;
 }
 
 export const Routes: RouteDef[] = [
@@ -31,8 +31,7 @@ export const Routes: RouteDef[] = [
         exactPath: false,
         routes: [
           {
-            path:
-              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view",
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view",
             Component: lazy(() => import("../Resource/code-view/CodeViewPage")),
             moduleName: "CodeViewPage",
             moduleClass: "code-view-page",
@@ -41,8 +40,7 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
-            path:
-              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?",
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?",
             Component: lazy(() => import("../VersionControl/CommitsPage")),
             moduleName: "CommitsPage",
             moduleClass: "commits-page",
@@ -51,8 +49,7 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
-            path:
-              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
             Component: lazy(
               () => import("../VersionControl/PendingChangesPage")
             ),
@@ -63,8 +60,7 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
-            path:
-              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
             Component: lazy(
               () => import("../Resource/create-resource/CreateServiceWizard")
             ),
@@ -75,8 +71,19 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
-            path:
-              "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",
+            Component: lazy(
+              () =>
+                import("../Resource/create-message-broker/CreateMessageBroker")
+            ),
+            moduleName: "CreateMessageBroker",
+            moduleClass: "create-message-broker",
+            routeTrackType: "",
+            exactPath: true,
+            isAnalytics: true,
+          },
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
             Component: lazy(() => import("../Resource/ResourceHome")),
             moduleName: "",
             routeTrackType: "",

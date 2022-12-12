@@ -6,7 +6,6 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
-  DTOs,
 } from "@amplication/code-gen-types";
 import {
   addImports,
@@ -22,6 +21,7 @@ import {
   REACT_ADMIN_COMPONENTS_ID,
   REACT_ADMIN_MODULE,
 } from "../react-admin.util";
+import DsgContext from "../../../dsg-context";
 const template = path.resolve(
   __dirname,
   "entity-create-component.template.tsx"
@@ -34,14 +34,15 @@ const IMPORTABLE_IDS = {
 
 export async function createEntityCreateComponent(
   entity: Entity,
-  dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
   const file = await readFile(template);
   const name = `${entity.name}Create`;
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
-  const dto = dtos[entity.name].createInput;
+  const dto = DTOs[entity.name].createInput;
   const dtoProperties = dto.body.body.filter(
     (
       member

@@ -1,24 +1,24 @@
-import cli from 'cli-ux';
-import { ConfiguredCommand } from '../../configured-command';
-import { getResource } from '../../api';
-import { flags } from '@oclif/command';
-import { format } from '../../flags/format-flag';
-import { AMP_CURRENT_RESOURCE } from '../../properties';
-import { RESOURCE_COLUMNS } from './index';
+import cli from "cli-ux";
+import { ConfiguredCommand } from "../../configured-command";
+import { getResource } from "../../api";
+import { flags } from "@oclif/command";
+import { format } from "../../flags/format-flag";
+import { AMP_CURRENT_RESOURCE } from "../../properties";
+import { RESOURCE_COLUMNS } from "./index";
 
 export default class ResourcesCurrent extends ConfiguredCommand {
-  static description = 'set the current resource';
+  static description = "set the current resource";
 
-  static examples = ['amp resources:current -r ckm1w4vy857869go3nsw4mk2ay'];
+  static examples = ["amp resources:current -r ckm1w4vy857869go3nsw4mk2ay"];
 
   static flags = {
     ...cli.table.flags(),
     format: format(),
 
     resource: flags.string({
-      char: 'a',
+      char: "a",
       required: true,
-      description: 'ID of the resource',
+      description: "ID of the resource",
     }),
   };
 

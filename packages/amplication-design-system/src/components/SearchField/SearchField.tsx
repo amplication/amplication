@@ -11,7 +11,7 @@ export type Props = {
 const SearchField = ({ label, placeholder, onChange }: Props) => {
   /**@todo: add timer to raise event only after minimal idle time  */
   const handleInputChange = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       onChange(event.target.value);
     },
     [onChange]

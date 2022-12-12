@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useContext } from "react";
-// @ts-ignore
 import ReactCommandPalette from "react-command-palette";
 import { useQuery, gql } from "@apollo/client";
 import { History } from "history";
@@ -10,7 +9,7 @@ import { CircleBadge, Icon } from "@amplication/design-system";
 import * as models from "../models";
 import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
-import { resourceThemeMap } from "../util/resourceThemeMap";
+import { resourceThemeMap } from "../Resource/constants";
 
 export type ResourceDescriptor = Pick<
   models.Resource,
@@ -105,9 +104,8 @@ type Props = {
 };
 
 const CommandPalette = ({ trigger }: Props) => {
-  const { currentWorkspace, currentProject, currentResource } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
 
   const projectBaseUrl = useMemo(
     () => `/${currentWorkspace?.id}/${currentProject?.id}`,
@@ -124,7 +122,9 @@ const CommandPalette = ({ trigger }: Props) => {
   });
   const commands = useMemo(
     () =>
-      data ? getCommands(data, history, currentResource, projectBaseUrl) : [],
+      data
+        ? getCommands(data, history, currentResource as any, projectBaseUrl)
+        : [],
     [data, history, currentResource, projectBaseUrl]
   );
 

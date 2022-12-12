@@ -1,72 +1,72 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { Workspace } from '../../../models/Workspace'; // eslint-disable-line import/no-cycle
+import { Field, ObjectType } from "@nestjs/graphql";
+import { Workspace } from "../../../models/Workspace";
 import {
   EnumSubscriptionPlan,
   EnumSubscriptionStatus,
-  SubscriptionData
-} from '.';
+  SubscriptionData,
+} from ".";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class Subscription {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   createdAt!: Date;
 
   @Field(() => Date, {
-    nullable: false
+    nullable: false,
   })
   updatedAt!: Date;
 
   @Field(() => Workspace, {
-    nullable: true
+    nullable: true,
   })
   workspace?: Workspace;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   workspaceId: string;
 
   @Field(() => EnumSubscriptionPlan, {
-    nullable: false
+    nullable: false,
   })
   subscriptionPlan: keyof typeof EnumSubscriptionPlan;
 
   @Field(() => EnumSubscriptionStatus, {
-    nullable: false
+    nullable: false,
   })
   status: keyof typeof EnumSubscriptionStatus;
 
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
   cancellationEffectiveDate?: Date | null;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   cancelUrl?: string;
 
   @Field(() => String, {
-    nullable: true
+    nullable: true,
   })
   updateUrl?: string;
 
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
   nextBillDate?: Date;
 
   @Field(() => Number, {
-    nullable: true
+    nullable: true,
   })
   price?: number;
 

@@ -1,24 +1,26 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import { Location } from "history";
-import { useHistory, useLocation, Link } from "react-router-dom";
+import {
+  CircularProgress,
+  Snackbar,
+  TextField,
+} from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
-import { REACT_APP_GITHUB_CLIENT_ID } from "../env";
-import { setToken } from "../authentication/authentication";
-import { formatError } from "../util/error";
-import {
-  TextField,
-  Snackbar,
-  CircularProgress,
-} from "@amplication/design-system";
-import { Button } from "../Components/Button";
-import { Form } from "../Components/Form";
+import { Location } from "history";
 import queryString from "query-string";
-import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
+import { useCallback, useEffect, useMemo } from "react";
+import { Helmet } from "react-helmet";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import useLocalStorage from "react-use-localstorage";
-import { GitHubLoginButton } from "./GitHubLoginButton";
-import WelcomePage from "../Layout/WelcomePage";
+import { setToken } from "../authentication/authentication";
+import { Button } from "../Components/Button";
 import { ErrorMessage } from "../Components/ErrorMessage";
+import { Form } from "../Components/Form";
+import { REACT_APP_GITHUB_AUTH_ENABLED } from "../env";
+import WelcomePage from "../Layout/WelcomePage";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { formatError } from "../util/error";
+import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
+import { GitHubLoginButton } from "./GitHubLoginButton";
 import "./Login.scss";
 
 type Values = {
@@ -72,8 +74,7 @@ const Login = () => {
 
   const urlError = useMemo(() => {
     const params = queryString.parse(location.search);
-    console.log("params", params);
-    console.log("params.error", params.error);
+
     return params.error;
   }, [location.search]);
 
@@ -83,13 +84,14 @@ const Login = () => {
       //save the invitation token in local storage to be validated by
       //<CompleteInvitation/> after signup or sign in
       //we user local storage since github-passport does not support dynamic callback
-      setInvitationToken(params.invitation);
+      setInvitationToken(params.invitation as string);
     }
   }, [setInvitationToken, location.search]);
 
   useEffect(() => {
     if (data) {
       setToken(data.login.token);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       let { from } = location.state || { from: { pathname: "/" } };
       if (from === "login") {
@@ -103,12 +105,15 @@ const Login = () => {
 
   return (
     <WelcomePage {...content}>
+      <Helmet>
+        <title>Amplication | Login</title>
+      </Helmet>
       <span className={`${CLASS_NAME}__title`}>Hi There</span>
       <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
         <Form childrenAsBlocks>
           {urlError && <ErrorMessage errorMessage={urlError} />}
 
-          {REACT_APP_GITHUB_CLIENT_ID ? (
+          {REACT_APP_GITHUB_AUTH_ENABLED ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
                 Welcome to {content.name}. Please use your GitHub account to
@@ -141,7 +146,7 @@ const Login = () => {
               <Button
                 type="submit"
                 eventData={{
-                  eventName: "signInWithUserName",
+                  eventName: AnalyticsEventNames.SignInWithUserName,
                 }}
               >
                 Continue

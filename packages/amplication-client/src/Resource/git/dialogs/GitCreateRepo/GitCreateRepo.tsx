@@ -1,4 +1,4 @@
-import { Resource } from "@amplication/code-gen-types/dist/models";
+import { Resource } from "@amplication/code-gen-types/models";
 import {
   Button,
   CircularProgress,
@@ -8,6 +8,7 @@ import {
 } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
+import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import React, { useCallback } from "react";
 import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
@@ -19,6 +20,7 @@ type Props = {
   gitProvider: EnumGitProvider;
   resource: Resource;
   gitOrganizationId: string;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   onCompleted: Function;
   gitOrganizationName: string;
 };
@@ -32,7 +34,10 @@ export default function GitCreateRepo({
   onCompleted,
   gitOrganizationName,
 }: Props) {
-  const initialValues: CreateGitRepositoryInput = { name: "", public: true };
+  const initialValues: Partial<CreateGitRepositoryInput> = {
+    name: "",
+    public: true,
+  };
   const { trackEvent } = useTracking();
 
   const [triggerCreation, { loading, error }] = useMutation(
@@ -42,7 +47,7 @@ export default function GitCreateRepo({
         onCompleted();
 
         trackEvent({
-          eventName: "createGitRepo",
+          eventName: AnalyticsEventNames.GitHubRepositoryCreate,
         });
       },
     }

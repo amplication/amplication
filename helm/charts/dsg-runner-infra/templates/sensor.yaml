@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: webhook
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  dependencies:
+    - name: request
+      eventSourceName: webhook
+      eventName: example
+  triggers:
+    - template:
+        name: webhook-pod-trigger
+        k8s:
+          operation: create
+          source:
+            resource:
+              apiVersion: batch/v1
+              kind: Job
+              metadata:
+                generateName: dsg-job-
+              spec:
+                template:
+                  spec:
+                    nodeSelector:
+                      role: dsg
+                    tolerations:
+                      - key: dedicated
+                        value: dsg
+                    restartPolicy: Never
+                    containers:
+                      - name: dsg-container
+                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:sha-5d2d4f5"
+                        command: ["sh", "-c"]
+                        args: [ "cd /workspace/packages/amplication-data-service-generator; node ./src/generate-code.js /efs/input.json /efs/code" ]
+                        env:
+                          - name: BUILD_ID
+                            value: null # provided in parameters
+                          - name: RESOURCE_ID
+                            value: null # provided in parameters
+                          - name: BUILD_MANAGER_URL
+                            value: http://amplication-build-manager
+                          - name: REMOTE_ENV
+                            value: "true"
+                        volumeMounts:
+                          - name: persistent-storage
+                            mountPath: /efs
+                            subPathExpr: $(BUILD_ID)
+                    imagePullPolicy: Always
+                    volumes:
+                      - name: persistent-storage
+                        persistentVolumeClaim:
+                          claimName: dsg-jobs
+                ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+                backoffLimit: 0
+          parameters:
+            - src:
+                dependencyName: request
+                dataKey: body.buildId
+              dest: spec.template.spec.containers.0.env.0.value
+            - src:
+                dependencyName: request
+                dataKey: body.resourceId
+              dest: spec.template.spec.containers.0.env.1.value

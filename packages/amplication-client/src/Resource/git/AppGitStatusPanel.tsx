@@ -13,6 +13,7 @@ import "./AppGitStatusPanel.scss";
 import { format } from "date-fns";
 import { AppContext } from "../../context/appContext";
 import GitRepoDetails from "./GitRepoDetails";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 type Props = {
   resource: models.Resource | null;
@@ -23,11 +24,14 @@ const CLASS_NAME = "app-git-status-panel";
 const DATE_FORMAT = "PP p";
 
 const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
-  const { currentWorkspace, currentProject, gitRepositoryUrl } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, gitRepositoryUrl } =
+    useContext(AppContext);
 
-  const lastSync = new Date(resource?.githubLastSync);
+  const lastSync = resource?.githubLastSync
+    ? new Date(resource.githubLastSync)
+    : null;
+
+  const lastSyncDate = lastSync ? format(lastSync, DATE_FORMAT) : "Never";
 
   return (
     <div className={CLASS_NAME}>
@@ -66,22 +70,18 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
                 buttonStyle={EnumButtonStyle.Text}
                 icon="external_link"
                 eventData={{
-                  eventName: "openGithubCodeView",
+                  eventName: AnalyticsEventNames.GithubCodeViewClick,
                 }}
               />
             </a>
           </div>
-          {lastSync && (
-            <div className={`${CLASS_NAME}__last-sync`}>
-              <Icon icon="clock" />
-              <Tooltip
-                aria-label={`Last sync: ${format(lastSync, DATE_FORMAT)}`}
-              >
-                <span>Last sync </span>
-                {format(lastSync, DATE_FORMAT)}
-              </Tooltip>
-            </div>
-          )}
+          <div className={`${CLASS_NAME}__last-sync`}>
+            <Icon icon="clock" />
+            <Tooltip aria-label={`Last sync: ${lastSyncDate}`}>
+              <span>Last sync </span>
+              {lastSyncDate}
+            </Tooltip>
+          </div>
         </div>
       )}
     </div>

@@ -1,5 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  output        = "../../../node_modules/@amplication/prisma-clients/amplication-prisma-db"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
 }
 
 datasource db {
@@ -135,9 +137,9 @@ model Resource {
   roles                 ResourceRole[]
   blocks                Block[]
   builds                Build[]
-  entities          Entity[]
-  environments      Environment[]
-  gitRepository     GitRepository?@relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
+  entities              Entity[]
+  environments          Environment[]
+  gitRepository         GitRepository?   @relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
   projectId             String
   project               Project          @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
   resourceType          EnumResourceType
@@ -452,6 +454,8 @@ enum EnumDataType {
 enum EnumBlockType {
   ServiceSettings
   ProjectConfigurationSettings
+  Topic
+  ServiceTopics
   Flow
   ConnectorRestApi
   ConnectorRestApiCall
@@ -464,6 +468,8 @@ enum EnumBlockType {
   CanvasPage
   EntityPage
   Document
+  PluginInstallation
+  PluginOrder
 }
 
 enum ActionStepStatus {
@@ -533,6 +539,7 @@ model Subscription {
 enum EnumResourceType {
   Service
   ProjectConfiguration
+  MessageBroker
 }
 
 enum EnumGitProvider {

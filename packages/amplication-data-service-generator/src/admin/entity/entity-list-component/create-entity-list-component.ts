@@ -5,7 +5,6 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
-  DTOs,
 } from "@amplication/code-gen-types";
 import {
   addImports,
@@ -32,7 +31,6 @@ const template = path.resolve(__dirname, "entity-list-component.template.tsx");
 
 export async function createEntityListComponent(
   entity: Entity,
-  dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>
 ): Promise<EntityComponent> {
@@ -41,7 +39,7 @@ export async function createEntityListComponent(
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
 
   //get the fields from the DTO object excluding toMany relations
-  const fields = getFieldsFromDTOWithoutToManyRelations(entity, dtos);
+  const fields = getFieldsFromDTOWithoutToManyRelations(entity);
 
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup

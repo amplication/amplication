@@ -3,6 +3,7 @@ import { useCallback, useContext } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useTracking } from "../util/analytics";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   updateProjectConfigurationSettings: models.ProjectConfigurationSettings;
@@ -35,21 +36,19 @@ const useProjectConfigSettingsHook = () => {
     skip: !currentResource?.id,
   });
 
-  const [
-    updateResourceSettings,
-    { error: ProjectConfigurationUpdateError },
-  ] = useMutation<TData>(UPDATE_PROJECT_CONFIG_SETTINGS, {
-    onCompleted: (data) => {
-      refetch();
-      addBlock(data.updateProjectConfigurationSettings.id);
-    },
-  });
+  const [updateResourceSettings, { error: ProjectConfigurationUpdateError }] =
+    useMutation<TData>(UPDATE_PROJECT_CONFIG_SETTINGS, {
+      onCompleted: (data) => {
+        refetch();
+        addBlock(data.updateProjectConfigurationSettings.id);
+      },
+    });
 
   const handleSubmit = useCallback(
     (data: models.ProjectConfigurationSettings) => {
       const { baseDirectory } = data;
       trackEvent({
-        eventName: "updateProjectConfigurationsSettings",
+        eventName: AnalyticsEventNames.ProjectConfigurationsSettingsUpdate,
       });
       updateResourceSettings({
         variables: {

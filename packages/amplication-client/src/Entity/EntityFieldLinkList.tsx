@@ -9,6 +9,10 @@ import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import NewEntityField from "./NewEntityField";
 import { AppContext } from "../context/appContext";
 
+import "./EntityFieldLinkList.scss";
+
+const CLASS_NAME = "entity-field-link-list";
+
 type TData = {
   entity: models.Entity;
 };
@@ -20,7 +24,7 @@ type Props = {
 };
 
 export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
-  const {currentWorkspace, currentProject} = useContext(AppContext); 
+  const { currentWorkspace, currentProject } = useContext(AppContext);
   const { data, error } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
@@ -35,23 +39,26 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
       const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${entityId}/fields/${field.id}`;
       history.push(fieldUrl);
     },
-    [data, history, entityId,currentWorkspace,currentProject]
+    [data, history, entityId, currentWorkspace, currentProject]
   );
 
   const errorMessage = formatError(error);
 
   return (
     <>
-      {data?.entity.fields?.map((field) => (
-        <div key={field.id}>
-          <InnerTabLink
-            icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${data?.entity.id}/fields/${field.id}`}
-          >
-            <span>{field.displayName}</span>
-          </InnerTabLink>
-        </div>
-      ))}
+      <div className={CLASS_NAME}>
+        {data?.entity.fields?.map((field) => (
+          <div key={field.id}>
+            <InnerTabLink
+              icon={DATA_TYPE_TO_LABEL_AND_ICON[field.dataType].icon}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${data?.entity.resourceId}/entities/${data?.entity.id}/fields/${field.id}`}
+            >
+              <span>{field.displayName}</span>
+            </InnerTabLink>
+          </div>
+        ))}
+      </div>
+
       {data?.entity && (
         <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
       )}
@@ -59,7 +66,6 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
     </>
   );
 });
-
 /**@todo: expand search on other field  */
 export const GET_FIELDS = gql`
   query getEntityFields(

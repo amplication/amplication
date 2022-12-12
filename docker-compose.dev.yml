@@ -8,9 +8,13 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
-      SERVICE_DB_NAME: ${SERVICE_DB_NAME}
     volumes:
       - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka-ui:
     container_name: kafka-ui
@@ -50,13 +54,20 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       JMX_PORT: 9997
       KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka -Dcom.sun.management.jmxremote.rmi.port=9997
+    healthcheck:
+      test: nc -z localhost 9092 || exit -1
+      start_period: 15s
+      interval: 30s
+      timeout: 10s
+      retries: 10
 
   kafka-init-topics:
     image: confluentinc/cp-kafka:5.3.1
     volumes:
-      - ./message.json:/data/message.json
+      - ./temp/message.json:/data/message.json
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
       cub kafka-ready -b kafka:29092 1 30 && \
       kafka-topics --create --topic second.users --partitions 3 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \

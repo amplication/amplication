@@ -1,14 +1,14 @@
-import { GithubFactory, GitProvider } from '@amplication/git-service';
-import { Inject } from '@nestjs/common';
+import { GithubFactory, GitProvider } from "@amplication/git-utils";
+import { Inject } from "@nestjs/common";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
-} from '@amplication/nest-logger-module';
-import { PullRequestDetailsDto } from './dto/pull-request-details.dto';
-import { CommitContextDto } from './dto/commit-context.dto';
-import { CommitCreatedDto } from './dto/commit-created.dto';
+} from "@amplication/nest-logger-module";
+import { PullRequestDetailsDto } from "./dto/pull-request-details.dto";
+import { CommitContextDto } from "./dto/commit-context.dto";
+import { CommitCreatedDto } from "./dto/commit-created.dto";
 
-const BRANCH_NAME = 'amplication';
+const BRANCH_NAME = "amplication";
 
 export class CommitsService {
   constructor(
@@ -83,12 +83,12 @@ export class CommitsService {
         }
       );
       pullRequest = await gitClient.createPullRequest(
-        'Amplication Resent Changes',
+        "Amplication Resent Changes",
         message,
         branch,
         baseBranchName || (await gitClient.getDefaultBranchName())
       );
-      this.logger.info('Opened new pull request', {
+      this.logger.info("Opened new pull request", {
         ...context,
         branch,
       });

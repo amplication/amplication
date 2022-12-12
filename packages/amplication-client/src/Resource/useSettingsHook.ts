@@ -1,9 +1,10 @@
 import * as models from "../models";
 import { useCallback } from "react";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 export interface SettingsHookParams {
   trackEvent: (event: { eventName: string; [key: string]: any }) => void;
-  resourceId: string;
+  resourceId: string | undefined;
   updateResourceSettings: any;
 }
 
@@ -83,7 +84,7 @@ const useSettingsHook = ({
         serverSettings: { generateRestApi, generateGraphQL, serverPath },
       } = data;
       trackEvent({
-        eventName: "updateServiceSettings",
+        eventName: AnalyticsEventNames.ServiceSettingsUpdate,
       });
       updateResourceSettings({
         variables: {

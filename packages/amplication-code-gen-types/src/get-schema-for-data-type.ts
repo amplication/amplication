@@ -1,4 +1,4 @@
-import { JSONSchema7 } from "json-schema";
+import type { JSONSchema7 } from "json-schema";
 import * as models from "./models";
 import { DATA_TYPE_TO_SCHEMA } from "./data-type-to-schema";
 

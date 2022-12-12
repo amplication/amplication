@@ -3,41 +3,41 @@ name: amplication
 description: A Helm chart for Amplication.
 
 dependencies:
-- name: amplication-client
-  version: "0.1.0"
-  repository: "file://../services/amplication-client"
-- name: base
-  version: "0.1.0"
-  repository: "file://../base"  
-- name: amplication-server
-  version: "0.1.0"
-  repository: "file://../services/amplication-server"
-- name: amplication-git-pull-request-service
-  version: "0.1.0"
-  repository: "file://../services/amplication-git-pull-request-service"
-- name: amplication-git-pull-service
-  version: "0.1.0"
-  repository: "file://../services/amplication-git-pull-service"
-- name: amplication-git-push-webhook-service
-  version: "0.1.0"
-  repository: "file://../services/amplication-git-push-webhook-service"
-- name: amplication-storage-gateway
-  version: "0.1.0"
-  repository: "file://../services/amplication-storage-gateway"
-- name: infra
-  version: "0.1.0"
-  repository: "file://../infra"
-  
-- name: postgresql
-  alias: postgres
-  version: "10.16.2"
-  repository: "https://charts.bitnami.com/bitnami"
-  condition: postgres.install
+  - name: amplication-client
+    version: "0.1.0"
+    repository: "file://../services/amplication-client"
+  - name: base
+    version: "0.1.0"
+    repository: "file://../base"
+  - name: amplication-server
+    version: "0.1.0"
+    repository: "file://../services/amplication-server"
+  - name: amplication-git-pull-request-service
+    version: "0.1.0"
+    repository: "file://../services/amplication-git-pull-request-service"
+  - name: amplication-git-pull-service
+    version: "0.1.0"
+    repository: "file://../services/amplication-git-pull-service"
+  - name: amplication-git-push-webhook-service
+    version: "0.1.0"
+    repository: "file://../services/amplication-git-push-webhook-service"
+  - name: amplication-storage-gateway
+    version: "0.1.0"
+    repository: "file://../services/amplication-storage-gateway"
+  - name: infra
+    version: "0.1.0"
+    repository: "file://../infra"
 
-- name: cp-helm-charts
-  version: "0.6.1"
-  repository: "https://confluentinc.github.io/cp-helm-charts/"
-  condition: cp-helm-charts.enabled
+  - name: postgresql
+    alias: postgres
+    version: "10.16.2"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgres.install
+
+  - name: cp-helm-charts
+    version: "0.6.1"
+    repository: "https://confluentinc.github.io/cp-helm-charts/"
+    condition: cp-helm-charts.enabled
 type: application
 
 version: 0.1.0

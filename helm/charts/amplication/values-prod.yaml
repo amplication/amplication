@@ -1,8 +1,11 @@
 global:
   pvc:
     name: prod-efs-claim
+    storageRequest: 1Gi
+    storageName: efs-sc
   pv:
     name: efs-pv-prod
+    storageCapacity: 5Gi
     handle: fs-0d4fb7d4e763c5fd0::fsap-0ed941c62eddef61c
 
 cp-helm-charts:
@@ -20,14 +23,18 @@ amplication-client:
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/7cf536df-6c61-4f76-bf3c-fd8f4e021721
   config:
     env:
-      REACT_APP_SERVER_URI: "https://server.amplication.com"
-      REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.amplication.com/github"
-      REACT_APP_PADDLE_VENDOR_ID: "131992"
-      REACT_APP_FEATURE_FLAGS: '{"SHOW_DEPLOYER":true}'
-      REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
+      NX_REACT_APP_SERVER_URI: "https://server.amplication.com"
+      NX_REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql"
+      NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.amplication.com/github"
+      NX_REACT_APP_PADDLE_VENDOR_ID: "131992"
+      NX_REACT_APP_FEATURE_FLAGS: '{"SHOW_DEPLOYER":true}'
+      NX_REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
 
 amplication-server:
+  autoscaling:
+    minReplicas: 20
+    maxReplicas: 30
+  replicaCount: 20
   resources:
     limits:
       cpu: 3
@@ -47,20 +54,24 @@ amplication-server:
       DISABLE_EVENT_TRACKING: "1"
 
       #KAFKA
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.1
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
+
+      CODE_GENERATION_REQUEST_TOPIC: build.internal.code-generation.request.1
+      CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.1
+      CODE_GENERATION_FAILURE_TOPIC: build.internal.code-generation.failure.1
+      
+      DSG_LOG_TOPIC: build.internal.dsg-log.1
+
+      DSG_RUNNER_URL: http://webhook-eventsource-svc.prod-dsg.svc.cluster.local:12000/example
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-
-      #GCP - APPS Builder
-      GCS_BUCKET: amplication-production-artifacts
-
-      GCP_APPS_PROJECT_ID: amplication-production-apps
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-production-apps-state-bucket
-      GCP_APPS_DOMAIN: amplication.app
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
@@ -91,7 +102,7 @@ amplication-git-push-webhook-service:
   config:
     env:
       #KAFKA
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
@@ -112,25 +123,32 @@ amplication-git-pull-service:
       GITHUB_APP_PRIVATE_KEY: ""
 
       #KAFKA
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
 
 amplication-git-pull-request-service:
+  autoscaling:
+    minReplicas: 5
+    maxReplicas: 24
+  replicaCount: 3
   pvc:
     name: prod-efs-claim
   config:
     env:
       #KAFKA
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
-      GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
 
-      #EFS
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
+      CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
+
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"
@@ -141,10 +159,10 @@ amplication-storage-gateway:
   config:
     env:
       #KAFKA
-      KAFKA_BROKERS: '["b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092","b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092"]'
+      KAFKA_BROKERS: 'b-2.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092,b-1.amplicationuseast1pro.itu8pk.c16.kafka.us-east-1.amazonaws.com:9092'
 
-      #EFS
-      BASE_BUILDS_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
+      BUILD_ARTIFACTS_CODE_FOLDER: code
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"

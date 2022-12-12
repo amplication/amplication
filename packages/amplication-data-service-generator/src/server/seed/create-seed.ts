@@ -1,12 +1,13 @@
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
 import {
+  CreateSeedParams,
   Entity,
   EntityField,
   EnumDataType,
+  EventNames,
   Module,
   types,
-  DTOs,
 } from "@amplication/code-gen-types";
 import { readFile } from "../../util/module";
 import {
@@ -26,7 +27,9 @@ import {
 import { getDTONameToPath } from "../resource/create-dtos";
 import { getImportableDTOs } from "../resource/dto/create-dto-module";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
-import { createEnumName } from "../prisma/create-prisma-schema";
+import { createEnumName } from "../prisma/create-prisma-schema-fields";
+import DsgContext from "../../dsg-context";
+import pluginWrapper from "../../plugin-wrapper";
 
 const seedTemplatePath = require.resolve("./seed.template.ts");
 
@@ -43,6 +46,12 @@ export const EMPTY_ARRAY_EXPRESSION = builders.arrayExpression([]);
 export const DEFAULT_NUMBER_LITERAL = builders.numericLiteral(0);
 export const DEFAULT_EMAIL_LITERAL = builders.stringLiteral(DEFAULT_EMAIL);
 export const NEW_DATE_EXPRESSION = builders.newExpression(DATE_ID, []);
+export const NEW_JSON_EXPRESSION = builders.objectExpression([
+  builders.objectProperty(
+    builders.stringLiteral("foo"),
+    builders.stringLiteral("bar")
+  ),
+]);
 export const AUTH_FIELD_NAMES = new Set(
   USER_AUTH_FIELDS.map((field) => field.name)
 );
@@ -61,37 +70,58 @@ export const DEFAULT_AUTH_PROPERTIES = [
   ),
 ];
 
-export async function createSeedModule(
-  userEntity: Entity,
-  dtos: DTOs,
-  scriptsDirectory: string,
-  srcDirectory: string
-): Promise<Module> {
-  const MODULE_PATH = `${scriptsDirectory}/seed.ts`;
-  const file = await readFile(seedTemplatePath);
-  const customProperties = createUserObjectCustomProperties(userEntity);
+export async function createSeed(): Promise<Module[]> {
+  const { serverDirectories, entities } = DsgContext.getInstance;
 
-  interpolate(file, {
-    DATA: builders.objectExpression([
-      ...DEFAULT_AUTH_PROPERTIES,
-      ...customProperties,
-    ]),
-  });
+  const fileDir = serverDirectories.scriptsDirectory;
+  const outputFileName = "seed.ts";
 
-  removeTSVariableDeclares(file);
-
-  const dtoNameToPath = getDTONameToPath(dtos, srcDirectory);
-  const dtoImports = importContainedIdentifiers(
-    file,
-    getImportableDTOs(MODULE_PATH, dtoNameToPath)
+  const userEntity = entities.find((entity) => entity.name === "User");
+  const customProperties = createUserObjectCustomProperties(
+    userEntity as Entity
   );
 
-  addImports(file, dtoImports);
-
-  return {
-    path: MODULE_PATH,
-    code: print(file).code,
+  const template = await readFile(seedTemplatePath);
+  const seedingProperties = [...DEFAULT_AUTH_PROPERTIES, ...customProperties];
+  const templateMapping = {
+    DATA: builders.objectExpression(seedingProperties),
   };
+
+  return pluginWrapper(createSeedInternal, EventNames.CreateSeed, {
+    template,
+    templateMapping,
+    fileDir,
+    outputFileName,
+  });
+}
+
+async function createSeedInternal({
+  template,
+  templateMapping,
+  fileDir,
+  outputFileName,
+}: CreateSeedParams): Promise<Module[]> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { DTOs } = DsgContext.getInstance;
+
+  interpolate(template, templateMapping);
+
+  removeTSVariableDeclares(template);
+
+  const dtoNameToPath = getDTONameToPath(DTOs);
+  const dtoImports = importContainedIdentifiers(
+    template,
+    getImportableDTOs(`${fileDir}/${outputFileName}`, dtoNameToPath)
+  );
+
+  addImports(template, dtoImports);
+
+  return [
+    {
+      path: `${fileDir}/${outputFileName}`,
+      code: print(template).code,
+    },
+  ];
 }
 
 export function createUserObjectCustomProperties(
@@ -152,7 +182,7 @@ export function createDefaultValue(
       return DEFAULT_ADDRESS_LITERAL;
     }
     case EnumDataType.Json: {
-      return DEFAULT_BOOLEAN_LITERAL;
+      return NEW_JSON_EXPRESSION;
     }
     case EnumDataType.Id:
     case EnumDataType.CreatedAt:

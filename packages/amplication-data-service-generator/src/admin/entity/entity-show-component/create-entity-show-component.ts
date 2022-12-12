@@ -5,7 +5,6 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
-  DTOs,
 } from "@amplication/code-gen-types";
 import { getFieldsFromDTOWithoutToManyRelations } from "../../../util/entity";
 import {
@@ -32,7 +31,6 @@ const template = path.resolve(__dirname, "entity-show-component.template.tsx");
 
 export async function createEntityShowComponent(
   entity: Entity,
-  dtos: DTOs,
   entityToDirectory: Record<string, string>,
   entityToTitleComponent: Record<string, EntityComponent>,
   entityNameToEntity: Record<string, Entity>
@@ -42,7 +40,7 @@ export async function createEntityShowComponent(
   const modulePath = `${entityToDirectory[entity.name]}/${name}.tsx`;
 
   //get the fields from the DTO object excluding toMany relations
-  const fields = getFieldsFromDTOWithoutToManyRelations(entity, dtos);
+  const fields = getFieldsFromDTOWithoutToManyRelations(entity);
   const relationFields: EntityField[] = fields.filter(
     (field) => field.dataType === EnumDataType.Lookup
   );
@@ -60,12 +58,7 @@ export async function createEntityShowComponent(
   });
 
   const toManyRelationData = toManyRelationFields.map((relatedField) => {
-    return createToManyReferenceField(
-      entity,
-      relatedField,
-      dtos,
-      entityNameToEntity
-    );
+    return createToManyReferenceField(entity, relatedField, entityNameToEntity);
   });
 
   const toManyRelationElements = toManyRelationData.map((item) => item.element);
@@ -112,7 +105,6 @@ export async function createEntityShowComponent(
 function createToManyReferenceField(
   entity: Entity,
   field: EntityField,
-  dtos: DTOs,
   entityNameToEntity: Record<string, Entity>
 ) {
   const { relatedEntity } = field.properties as LookupResolvedProperties;
@@ -125,8 +117,7 @@ function createToManyReferenceField(
   }
 
   const fields = getFieldsFromDTOWithoutToManyRelations(
-    relatedEntityWithResolvedFields,
-    dtos
+    relatedEntityWithResolvedFields
   );
 
   //return the names of the related entities to be used to import the title components

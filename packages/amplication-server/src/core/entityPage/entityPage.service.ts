@@ -1,25 +1,31 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { BlockTypeService } from '../block/blockType.service';
-import { EntityService } from '../entity/entity.service';
-import { FindManyEntityPageArgs } from './dto/';
-import { EntityPage } from './dto/EntityPage';
-import { EnumEntityPageType } from './dto/EnumEntityPageType';
-import { CreateEntityPageArgs } from './dto/CreateEntityPageArgs';
-import { UpdateEntityPageArgs } from './dto/UpdateEntityPageArgs';
-import { User } from '../../models';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { BlockTypeService } from "../block/blockType.service";
+import { EntityService } from "../entity/entity.service";
+import { FindManyEntityPageArgs } from "./dto/";
+import { EntityPage } from "./dto/EntityPage";
+import { EnumEntityPageType } from "./dto/EnumEntityPageType";
+import { CreateEntityPageArgs } from "./dto/CreateEntityPageArgs";
+import { UpdateEntityPageArgs } from "./dto/UpdateEntityPageArgs";
+import { User } from "../../models";
+import { BlockService } from "../block/block.service";
+import { DeleteEntityPageArgs } from "./dto/DeleteEntityPageArgs";
 
 @Injectable()
 export class EntityPageService extends BlockTypeService<
   EntityPage,
   FindManyEntityPageArgs,
   CreateEntityPageArgs,
-  UpdateEntityPageArgs
+  UpdateEntityPageArgs,
+  DeleteEntityPageArgs
 > {
   blockType = EnumBlockType.EntityPage;
 
-  constructor(private readonly entityService: EntityService) {
-    super();
+  constructor(
+    private readonly entityService: EntityService,
+    protected readonly blockService: BlockService
+  ) {
+    super(blockService);
   }
 
   private async validateEntityInResource(
@@ -47,7 +53,7 @@ export class EntityPageService extends BlockTypeService<
     );
     if (nonMatchingNames.size > 0) {
       throw new NotFoundException(
-        `Invalid fields selected: ${Array.from(nonMatchingNames).join(', ')}`
+        `Invalid fields selected: ${Array.from(nonMatchingNames).join(", ")}`
       );
     }
   }
@@ -74,7 +80,7 @@ export class EntityPageService extends BlockTypeService<
         args.data.entityId,
         args.data.showAllFields,
         args.data.showFieldList
-      )
+      ),
     ]);
 
     return super.create(args, user);

@@ -9,10 +9,10 @@ amplication-client:
     hostname: app-ariel.amplication-dev.com
   config:
     env:
-      REACT_APP_SERVER_URI: 'https://server-ariel.amplication-dev.com'
-      REACT_APP_DATA_SOURCE: 'https://server-ariel.amplication-dev.com/graphql'
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: 'https://server-ariel.amplication-dev.com/github'
-      REACT_APP_STORAGE_GATEWAY_URL: https://server-ariel.amplication-dev.com
+      NX_REACT_APP_SERVER_URI: 'https://server-ariel.amplication-dev.com'
+      NX_REACT_APP_DATA_SOURCE: 'https://server-ariel.amplication-dev.com/graphql'
+      NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: 'https://server-ariel.amplication-dev.com/github'
+      NX_REACT_APP_STORAGE_GATEWAY_URL: https://server-ariel.amplication-dev.com
 
 amplication-server:
   ingress:
@@ -25,28 +25,12 @@ amplication-server:
 
       #KAFKA
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
-      KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-ariel-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-
-      #GCP - APPS Builder
-
-      DEFAULT_DISK: gcs
-      LOCAL_DISK_ROOT: /artifacts
-      CONTAINER_BUILDER_DEFAULT: cloud-build
-      GCS_BUCKET: amplication-artifacts
-
-      #GCP - APPS Deployer
-      DEPLOYER_DEFAULT: gcp
-
-      GCP_APPS_PROJECT_ID: amplication-apps
-      GCP_APPS_REGION: us-east1
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
-      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
-      GCP_APPS_DOMAIN: staging.amplication.app
 
       DOCKER_HOST: tcp://docker:2375
 
@@ -65,7 +49,7 @@ amplication-git-push-webhook-service:
     hostname: webhook-ariel.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-ariel-cp-kafka-headless:9092'
       KAFKA_REPOSITORY_PUSH_QUEUE: git.external.push.event.0
       KAFKA_CLIENT_ID: git-push-webhook-service
       KAFKA_GROUP_ID: amplication-git-push-webhook-service
@@ -84,7 +68,7 @@ amplication-git-pull-service:
       GITHUB_APP_CLIENT_ID: 'Iv1.500372fe9efa340d'
       GIT_DEFAULT_ORIGIN_NAME: origin
 
-      KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-ariel-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
@@ -93,7 +77,7 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-ariel-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
       GENERATE_PULL_REQUEST_TOPIC: git.internal.pull-request.request.0
@@ -105,6 +89,6 @@ amplication-storage-gateway:
     hostname: server-ariel.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-ariel-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-ariel-cp-kafka-headless:9092'
       BASE_BUILDS_FOLDER: /amplication-data/build-data
       GITHUB_APP_APP_ID: '219560'

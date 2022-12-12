@@ -3,7 +3,12 @@
  */
 
 import { Test } from "@nestjs/testing";
-import { INestApplication, HttpStatus, ExecutionContext } from "@nestjs/common";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from "@nestjs/common";
 import request from "supertest";
 import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
@@ -11,6 +16,11 @@ import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 // @ts-ignore
 import { ACLModule } from "../../auth/acl.module";
+// @ts-ignore
+import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+// @ts-ignore
+import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
+import { map } from "rxjs";
 
 // declare class MODULE {}
 declare class CONTROLLER {}
@@ -76,6 +86,21 @@ const acGuard = {
   },
 };
 
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(TEST_NAME, () => {
   let app: INestApplication;
 
@@ -94,6 +119,10 @@ describe(TEST_NAME, () => {
       .useValue(basicAuthGuard)
       .overrideGuard(ACGuard)
       .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -131,6 +160,24 @@ describe(TEST_NAME, () => {
       .get(`${RESOURCE}/${EXISTING_PARAM_ID}`)
       .expect(HttpStatus.OK)
       .expect(FIND_ONE_EXPECTED_RESULT);
+  });
+
+  test(`POST ${CREATE_PATHNAME} existing resource`, async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(CREATE_PATHNAME)
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect(CREATE_EXPECTED_RESULT)
+      .then(function () {
+        agent
+          .post(CREATE_PATHNAME)
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
   });
 
   afterAll(async () => {

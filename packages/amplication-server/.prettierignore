@@ -1,7 +1,0 @@
-node_modules/
-prisma/dal/
-prisma/migrations/
-dist/
-package-lock.json
-coverage/
-*.md

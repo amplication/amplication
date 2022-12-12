@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo } from "react";
-import download from "downloadjs";
+import { useMemo } from "react";
 import { isEmpty } from "lodash";
 
 import * as models from "../models";
@@ -11,7 +10,7 @@ import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
 import { BuildStepsStatus } from "./BuildStepsStatus";
 
 import "./BuildSteps.scss";
-import { REACT_APP_SERVER_URI } from "../env";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 const CLASS_NAME = "build-steps";
 
@@ -30,15 +29,10 @@ export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 
 type Props = {
   build: models.Build;
-  onError: (error: Error) => void;
 };
 
-const BuildSteps = ({ build, onError }: Props) => {
+const BuildSteps = ({ build }: Props) => {
   const { data } = useBuildWatchStatus(build);
-
-  const handleDownloadClick = useCallback(() => {
-    downloadArchive(data.build.archiveURI).catch(onError);
-  }, [data.build.archiveURI, onError]);
 
   const stepGenerateCode = useMemo(() => {
     if (!data.build.action?.steps?.length) {
@@ -87,18 +81,6 @@ const BuildSteps = ({ build, onError }: Props) => {
         <span>Generate Code</span>
         <BuildStepsStatus status={stepGenerateCode.status} />
         <span className="spacer" />
-        <Button
-          buttonStyle={EnumButtonStyle.Text}
-          icon="download1"
-          disabled={
-            stepGenerateCode.status !== models.EnumActionStepStatus.Success
-          }
-          onClick={handleDownloadClick}
-          eventData={{
-            eventName: "downloadBuild",
-            versionNumber: data.build.version,
-          }}
-        />
       </Panel>
       {stepGithub && (
         <Panel
@@ -119,7 +101,7 @@ const BuildSteps = ({ build, onError }: Props) => {
                   models.EnumActionStepStatus.Success
                 }
                 eventData={{
-                  eventName: "openGithubPullRequest",
+                  eventName: AnalyticsEventNames.GithubOpenPullRequest,
                 }}
               />
             </a>
@@ -131,21 +113,3 @@ const BuildSteps = ({ build, onError }: Props) => {
 };
 
 export default BuildSteps;
-
-export async function downloadArchive(uri: string): Promise<void> {
-  const res = await fetch(REACT_APP_SERVER_URI + uri);
-  const url = new URL(res.url);
-  switch (res.status) {
-    case 200: {
-      const blob = await res.blob();
-      download(blob, url.pathname);
-      break;
-    }
-    case 404: {
-      throw new Error("File not found");
-    }
-    default: {
-      throw new Error(await res.text());
-    }
-  }
-}

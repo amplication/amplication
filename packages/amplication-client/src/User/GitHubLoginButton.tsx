@@ -1,9 +1,9 @@
-import React from "react";
 import { Icon } from "@amplication/design-system";
 import { isEmpty } from "lodash";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { REACT_APP_GITHUB_CONTROLLER_LOGIN_URL } from "../env";
 import "./GitHubLoginButton.scss";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 export const GitHubLoginButton = () => {
   return (
@@ -19,7 +19,7 @@ export const GitHubLoginButton = () => {
         type="button"
         buttonStyle={EnumButtonStyle.Primary}
         eventData={{
-          eventName: "signInWithGitHub",
+          eventName: AnalyticsEventNames.SignInWithGitHub,
         }}
       >
         <Icon icon="github" />

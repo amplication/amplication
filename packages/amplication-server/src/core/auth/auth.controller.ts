@@ -6,38 +6,41 @@ import {
   Res,
   Req,
   UseFilters,
-  Logger,
-  Inject
-} from '@nestjs/common';
-import { MorganInterceptor } from 'nest-morgan';
-import { Response } from 'express';
-import { AuthService, AuthUser } from './auth.service';
-import { GithubAuthExceptionFilter } from '../../filters/github-auth-exception.filter';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { GitHubAuthGuard } from './github.guard';
-import { GitHubRequest } from './types';
-import { stringifyUrl } from 'query-string';
+  Inject,
+} from "@nestjs/common";
+import { MorganInterceptor } from "nest-morgan";
+import { Response } from "express";
+import { AuthService, AuthUser } from "./auth.service";
+import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.filter";
+import { GitHubAuthGuard } from "./github.guard";
+import { GitHubRequest } from "./types";
+import { stringifyUrl } from "query-string";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from "@amplication/nest-logger-module";
 
-@Controller('/')
+@Controller("/")
 export class AuthController {
   private host: string;
   constructor(
     private readonly authService: AuthService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {
-    this.host = process.env.CLIENT_HOST || 'http://localhost:3001';
+    this.host = process.env.CLIENT_HOST || "http://localhost:3001";
   }
 
-  @UseInterceptors(MorganInterceptor('combined'))
-  @Get('/github')
+  @UseInterceptors(MorganInterceptor("combined"))
+  @Get("/github")
   @UseGuards(GitHubAuthGuard)
   async github() {
     return;
   }
 
-  @UseInterceptors(MorganInterceptor('combined'))
+  @UseInterceptors(MorganInterceptor("combined"))
   @UseFilters(GithubAuthExceptionFilter)
-  @Get('/github/callback')
+  @Get("/github/callback")
   @UseGuards(GitHubAuthGuard)
   async githubCallback(
     @Req() request: GitHubRequest,
@@ -47,14 +50,15 @@ export class AuthController {
     const isNew = request.isNew;
 
     this.logger.log({
-      level: 'info',
-      message: `receive login callback from github account_id=${user.account.id}`
+      level: "info",
+      message: `receive login callback from github account_id=${user.account.id}`,
     });
 
     const token = await this.authService.prepareToken(user);
     const url = stringifyUrl({
       url: this.host,
-      query: { token, 'complete-signup': isNew ? '1' : '0' }
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      query: { token, "complete-signup": isNew ? "1" : "0" },
     });
     response.redirect(301, url);
   }

@@ -1,17 +1,19 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { isEmpty } from 'lodash';
-import { JsonValue } from 'type-fest';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { Logger } from 'winston';
-import { Prisma, PrismaService } from '@amplication/prisma-db';
+import { Inject, Injectable } from "@nestjs/common";
+import { isEmpty } from "lodash";
+import { JsonValue } from "type-fest";
+import { Prisma, PrismaService } from "@amplication/prisma-db";
 import {
   Action,
   ActionStep,
   EnumActionLogLevel,
-  FindOneActionArgs
-} from './dto/';
-import { StepNameEmptyError } from './errors/StepNameEmptyError';
-import { EnumActionStepStatus } from './dto/EnumActionStepStatus';
+  FindOneActionArgs,
+} from "./dto/";
+import { StepNameEmptyError } from "./errors/StepNameEmptyError";
+import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from "@amplication/nest-logger-module";
 
 export const SELECT_ID = { id: true };
 
@@ -19,7 +21,8 @@ export const SELECT_ID = { id: true };
 export class ActionService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {}
 
   async findOne(args: FindOneActionArgs): Promise<Action | null> {
@@ -34,18 +37,18 @@ export class ActionService {
   async getSteps(actionId: string): Promise<ActionStep[]> {
     return this.prisma.actionStep.findMany({
       where: {
-        actionId: actionId
+        actionId: actionId,
       },
       orderBy: {
-        createdAt: Prisma.SortOrder.asc
+        createdAt: Prisma.SortOrder.asc,
       },
       include: {
         logs: {
           orderBy: {
-            createdAt: Prisma.SortOrder.asc
-          }
-        }
-      }
+            createdAt: Prisma.SortOrder.asc,
+          },
+        },
+      },
     });
   }
 
@@ -70,9 +73,9 @@ export class ActionService {
         message,
         name: stepName,
         action: {
-          connect: { id: actionId }
-        }
-      }
+          connect: { id: actionId },
+        },
+      },
     });
   }
 
@@ -87,14 +90,28 @@ export class ActionService {
   ): Promise<void> {
     await this.prisma.actionStep.update({
       where: {
-        id: step.id
+        id: step.id,
       },
       data: {
         status,
-        completedAt: new Date()
+        completedAt: new Date(),
       },
-      select: SELECT_ID
+      select: SELECT_ID,
     });
+  }
+
+  async updateActionStepStatus(
+    actionStepId: string,
+    status: EnumActionStepStatus
+  ): Promise<void> {
+    const step = await this.prisma.actionStep.findUnique({
+      where: { id: actionStepId },
+    });
+    switch (status) {
+      case EnumActionStepStatus.Success:
+      case EnumActionStepStatus.Failed:
+        await this.complete(step, status);
+    }
   }
 
   /**
@@ -115,10 +132,29 @@ export class ActionService {
         message: message.toString(),
         meta,
         step: {
-          connect: { id: step.id }
-        }
+          connect: { id: step.id },
+        },
       },
-      select: SELECT_ID
+      select: SELECT_ID,
+    });
+  }
+
+  async logByStepId(
+    stepId: string,
+    level: EnumActionLogLevel,
+    message: string,
+    meta: JsonValue = {}
+  ): Promise<void> {
+    await this.prisma.actionLog.create({
+      data: {
+        level,
+        message,
+        step: {
+          connect: { id: stepId },
+        },
+        meta,
+      },
+      select: SELECT_ID,
     });
   }
 

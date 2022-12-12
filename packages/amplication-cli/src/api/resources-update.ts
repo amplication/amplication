@@ -1,6 +1,6 @@
-import { ApolloClient, gql, NormalizedCacheObject } from '@apollo/client/core';
+import { ApolloClient, gql, NormalizedCacheObject } from "@apollo/client/core";
 
-import * as models from '../models';
+import * as models from "../models";
 
 const UPDATE_RESOURCE = gql`
   mutation updateResource($data: ResourceUpdateInput!, $resourceId: String!) {
@@ -30,7 +30,7 @@ export async function updateResource(
   });
 
   if (!resourceData) {
-    throw new Error('no data');
+    throw new Error("no data");
   }
 
   return resourceData.updateResource;

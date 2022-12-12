@@ -1,9 +1,6 @@
 # Amplication Data Service Generator
 
-Amplication Data Service Generator is the component that generates the server-side code (models, Prisma client, REST API, authentication, and authorization filters) of the application built with Amplication.
-
-Generate a REST API code using data and access control definitions.
-The generator can be used as a library or as a CLI.
+DSG (Data Service Generator) is the component responsible for the generation of source code by Amplication, and allows the integration of plugins into the code generation process.
 
 ## Technologies
 
@@ -26,26 +23,34 @@ The generator can be used as a library or as a CLI.
 
 - [Node.js v14 or above](https://nodejs.org/en/download/)
 
-  ```
+  ```bash
   node -v
   ```
 
   Should be: `v14.0.0` or newer
 
 - [npm v7 or above](https://github.blog/2020-10-13-presenting-v7-0-0-of-the-npm-cli/)
-  ```
+
+  ```bash
   npm -v
   ```
+
   Should be: `7.0.0` or newer
+
 - [Docker](https://docs.docker.com/desktop/)
-  ```
+
+  ```bash
   docker -v
   ```
+
   Should start with: `Docker version`
+
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
-  ```
+
+  ```bash
   git version
   ```
+
   Should start with: `git version`
 
 ### One time set up
@@ -53,20 +58,27 @@ The generator can be used as a library or as a CLI.
 After cloning the repository open its root directory and run the following commands:
 
 - Install dependencies of the monorepo (execute in root directory):
-  ```
+
+  ```bash
   npm install
   npm run bootstrap
   ```
+
 - Build the Data Service Generator and its dependencies:
-  ```
+
+  ```bash
   npm run build -- --scope @amplication/data-service-generator --include-dependencies
   ```
+
 - Open the data service generator directory
-  ```
+
+  ```bash
   cd packages/amplication-data-service-generator
   ```
+
 - Generate the test data service app
-  ```
+
+  ```bash
   npm run generate-test-data-service
   ```
 
@@ -76,19 +88,26 @@ Make sure you are in the data service generator directory (`packages/amplication
 Once you are done making changes, run the following commands:
 
 - Format files (editors like VSCode can do it for you automatically)
-  ```
+
+  ```bash
   npm run format
   ```
+
 - Lint files (editors like VSCode come with integration to display those continuously)
-  ```
+
+  ```bash
   npm run lint
   ```
+
 - Run unit tests
-  ```
+
+  ```bash
   npm test
   ```
+
 - (Optional) Rebuild the package
-  ```
+
+  ```bash
   npm run build
   ```
 
@@ -114,12 +133,12 @@ npm run test:e2e
 
 ### Add a dependency to the server template
 
-```
+```bash
 npx lerna add --scope server-template $NAME_OF_DEPENDENCY
 ```
 
 ### Add a dependency to the client template
 
-```
+```bash
 npx lerna add --scope admin-template $NAME_OF_DEPENDENCY
 ```

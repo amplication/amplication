@@ -41,7 +41,7 @@ const NewWorkspace = () => {
           validate(values, WORKSPACE_FORM_SCHEMA)
         }
         onSubmit={createWorkspace}
-        validateOnMount
+        validateOnChange
         validateOnBlur={false}
       >
         {(formik) => {
@@ -63,7 +63,9 @@ const NewWorkspace = () => {
               <Button
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loadingCreateNewWorkspace}
+                disabled={
+                  !formik.isValid || !formik.dirty || loadingCreateNewWorkspace
+                }
               >
                 Create Workspace
               </Button>

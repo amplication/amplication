@@ -3,7 +3,7 @@ import * as kinds from "ast-types/gen/kinds";
 import { print } from "recast";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
-import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl";
+import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
   interpolate,
@@ -15,11 +15,18 @@ import {
   removeTSIgnoreComments,
   removeESLintComments,
 } from "../../../util/ast";
-import { createPrismaFields } from "../../prisma/create-prisma-schema";
-import { Entity, EntityField, Module } from "@amplication/code-gen-types";
+import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
+import {
+  CreateEntityControllerSpecParams,
+  Entity,
+  EntityField,
+  EventNames,
+  Module,
+} from "@amplication/code-gen-types";
 import { isOneToOneRelationField, isRelationField } from "../../../util/field";
 import { createServiceId } from "../service/create-service";
 import { createControllerId } from "../controller/create-controller";
+import pluginWrapper from "../../../plugin-wrapper";
 
 const testTemplatePath = require.resolve("./controller.spec.template.ts");
 const TO_ISO_STRING_ID = builders.identifier("toISOString");
@@ -27,25 +34,21 @@ const CREATE_RESULT_ID = builders.identifier("CREATE_RESULT");
 const FIND_ONE_RESULT_ID = builders.identifier("FIND_ONE_RESULT");
 const FIND_MANY_RESULT_ID = builders.identifier("FIND_MANY_RESULT");
 
-export async function createControllerSpecModule(
+export async function createEntityControllerSpec(
   resource: string,
   entity: Entity,
   entityType: string,
-  entityServiceModule: string,
-  entityControllerModule: string,
-  entityControllerBaseModule: string
-): Promise<Module> {
-  const modulePath = replaceExt(entityControllerBaseModule, ".spec.ts");
-  const file = await readFile(testTemplatePath);
-  const serviceId = createServiceId(entityType);
-  const controllerId = createControllerId(entityType);
-
+  entityServiceModulePath: string,
+  entityControllerModulePath: string,
+  entityControllerBaseModulePath: string
+): Promise<Module[]> {
   /** @todo make dynamic */
   const param = "id";
   const paramType = builders.tsStringKeyword();
-
   const existingParam = camelCase(["existing", param].join(" "));
   const nonExistingParam = camelCase(["nonExisting", param].join(" "));
+  const serviceId = createServiceId(entityType);
+  const controllerId = createControllerId(entityType);
   const fieldNameToPrismField = Object.fromEntries(
     entity.fields.map((field) => [
       field.name,
@@ -53,7 +56,8 @@ export async function createControllerSpecModule(
     ])
   );
 
-  interpolate(file, {
+  const template = await readFile(testTemplatePath);
+  const templateMapping = {
     CONTROLLER: controllerId,
     SERVICE: serviceId,
     TEST_NAME: builders.stringLiteral(entityType),
@@ -90,29 +94,61 @@ export async function createControllerSpecModule(
       entity.fields,
       fieldNameToPrismField
     ),
-  });
+  };
+
+  return pluginWrapper(
+    createEntityControllerSpecInternal,
+    EventNames.CreateEntityControllerSpec,
+    {
+      entity,
+      entityType,
+      template,
+      templateMapping,
+      entityServiceModulePath,
+      entityControllerModulePath,
+      entityControllerBaseModulePath,
+      controllerId,
+      serviceId,
+    }
+  );
+}
+
+export async function createEntityControllerSpecInternal({
+  template,
+  templateMapping,
+  entityServiceModulePath,
+  entityControllerModulePath,
+  entityControllerBaseModulePath,
+  controllerId,
+  serviceId,
+}: CreateEntityControllerSpecParams): Promise<Module[]> {
+  const modulePath = replaceExt(entityControllerBaseModulePath, ".spec.ts");
 
   const importResourceModule = importNames(
     [controllerId],
-    relativeImportPath(modulePath, entityControllerModule)
+    relativeImportPath(modulePath, entityControllerModulePath)
   );
   const importService = importNames(
     [serviceId],
-    relativeImportPath(modulePath, entityServiceModule)
+    relativeImportPath(modulePath, entityServiceModulePath)
   );
 
-  addImports(file, [importResourceModule, importService]);
+  interpolate(template, templateMapping);
 
-  removeESLintComments(file);
-  removeTSIgnoreComments(file);
-  removeTSVariableDeclares(file);
-  removeTSClassDeclares(file);
-  removeTSInterfaceDeclares(file);
+  addImports(template, [importResourceModule, importService]);
 
-  return {
-    path: modulePath,
-    code: print(file).code,
-  };
+  removeESLintComments(template);
+  removeTSIgnoreComments(template);
+  removeTSVariableDeclares(template);
+  removeTSClassDeclares(template);
+  removeTSInterfaceDeclares(template);
+
+  return [
+    {
+      path: modulePath,
+      code: print(template).code,
+    },
+  ];
 }
 
 function createExpectedResult<T extends kinds.ExpressionKind>(

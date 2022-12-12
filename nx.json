@@ -1,73 +1,83 @@
 {
   "extends": "nx/presets/npm.json",
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  },
+  "npmScope": "amplication",
+  "affected": {
+    "defaultBase": "master"
+  },
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    ".eslintrc.json": "*"
+  },
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx/tasks-runners/default",
+      "runner": "@nrwl/nx-cloud",
       "options": {
         "cacheableOperations": [
-          "build",
-          "posttest",
-          "prepare",
-          "check-format",
-          "format",
-          "test",
-          "seed",
-          "migrate:save",
-          "migrate:up",
-          "db:migrate-save",
-          "db:migrate-up",
-          "db:clean",
-          "db:init",
-          "prisma:generate",
-          "prisma:studio",
-          "docker:db",
-          "docker:build",
+          "install",
           "prebuild",
+          "build",
+          "postbuild",
+          "prepare",
+          "test",
+          "db:init",
           "lint",
-          "docker",
-          "docker:down",
-          "postpack",
-          "prepack-manual",
-          "eject",
-          "lint:fix",
-          "build:compile",
-          "build:generate-types",
-          "compose:up",
-          "compose:down",
-          "build:copy-files",
-          "build:update-version",
-          "test:watch",
           "test:e2e",
-          "generate-test-data-service",
-          "update-test-data-service-snapshot",
-          "watch",
-          "storybook",
-          "build-storybook",
-          "test:cov",
-          "postinstall",
-          "test:debug",
-          "migrate:rollback",
-          "prisma:generate:watch",
-          "build:generate-help",
-          "generate-graphql-schema",
-          "check-graphql-schema"
+          "test:cov"
         ]
       }
     }
   },
   "targetDefaults": {
+    "test": {
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
+    },
+    "prebuild": {
+      "dependsOn": ["^prebuild"]
+    },
     "build": {
       "dependsOn": [
-        "^build"
+        "prebuild",
+        "^build",
+        "db:prisma:generate",
+        "^db:prisma:generate"
       ]
     },
-    "prepare": {
-      "dependsOn": [
-        "^prepare"
-      ]
+    "postbuild": {
+      "dependsOn": ["build", "^postbuild"]
+    },
+    "serve": {
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
+    },
+    "lint": {
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+    },
+    "docker:build": {
+      "dependsOn": ["prebuild", "build", "postbuild"]
     }
   },
-  "affected": {
-    "defaultBase": "master"
-  }
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "style": "scss",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "scss"
+      },
+      "library": {
+        "style": "scss",
+        "linter": "eslint"
+      }
+    }
+  },
+  "defaultProject": "amplication-client"
 }

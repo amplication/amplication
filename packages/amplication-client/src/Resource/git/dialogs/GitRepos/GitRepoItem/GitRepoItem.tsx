@@ -1,19 +1,20 @@
 import React, { useCallback } from "react";
-import { GitRepo } from "../../../../../models";
+import { RemoteGitRepository } from "../../../../../models";
 import { Icon } from "@amplication/design-system";
 import "./GitRepoItem.scss";
 import { Button } from "../../../../../Components/Button";
+import { AnalyticsEventNames } from "../../../../../util/analytics-events.types";
 
 const CLASS_NAME = "git-repo-item";
 
 type Props = {
-  repo: GitRepo;
-  onSelectRepo: (repo: GitRepo) => void;
+  repo: RemoteGitRepository;
+  onSelectRepo: (repo: RemoteGitRepository) => void;
 };
 
 function GitRepoItem({ repo, onSelectRepo }: Props) {
   const handleRepoSelected = useCallback(
-    (data: GitRepo) => {
+    (data: RemoteGitRepository) => {
       onSelectRepo(data);
     },
     [onSelectRepo]
@@ -40,7 +41,7 @@ function GitRepoItem({ repo, onSelectRepo }: Props) {
       <div className={`${CLASS_NAME}__action`}>
         <Button
           eventData={{
-            eventName: "selectGithubRepo",
+            eventName: AnalyticsEventNames.GithubRepoSync,
           }}
           onClick={() => {
             handleRepoSelected(repo);

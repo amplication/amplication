@@ -10,6 +10,7 @@ import { Form } from "../Components/Form";
 import * as models from "../models";
 import "./EntityRelationFieldsChart.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 export type FormValues = {
   fieldId: string;
@@ -45,7 +46,7 @@ export const EntityRelationFieldsChart = ({
   };
 
   const relatedFieldIsMissing = isEmpty(field.properties.relatedFieldId);
-  const {currentWorkspace, currentProject} = useContext(AppContext); 
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   return (
     <Formik
@@ -61,13 +62,17 @@ export const EntityRelationFieldsChart = ({
           key={field.id}
         >
           <div className={`${CLASS_NAME}__entity`}>
-            <Link to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}>
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}
+            >
               <Icon icon="entity_outline" />
               {entityName}
             </Link>
           </div>
           <div className={`${CLASS_NAME}__field`}>
-            <Link to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}>
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entityId}`}
+            >
               {field.displayName}
             </Link>
           </div>
@@ -129,7 +134,7 @@ export const EntityRelationFieldsChart = ({
               buttonStyle={EnumButtonStyle.Clear}
               type="submit"
               eventData={{
-                eventName: "fixRelatedEntity",
+                eventName: AnalyticsEventNames.RelatedEntityFix,
                 fieldId: field.id,
               }}
             >

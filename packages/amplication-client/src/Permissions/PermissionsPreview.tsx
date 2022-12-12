@@ -38,7 +38,7 @@ function PermissionsPreview({
 
   return (
     <div className="permissions-preview">
-      {Boolean(error) ? (
+      {error ? (
         errorMessage
       ) : (
         <div className="permissions-preview__actions">

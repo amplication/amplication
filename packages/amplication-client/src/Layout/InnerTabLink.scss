@@ -3,6 +3,7 @@
 @mixin active-link {
   background-color: var(--black10);
   color: var(--black100);
+  padding: var(--default-spacing-small);
 }
 
 .inner-tab-link {
@@ -28,5 +29,11 @@
 
   &.active {
     @include active-link;
+  }
+
+  &__inner-span {
+    width: 100%;
+    display: flex;
+    align-items: center;
   }
 }
