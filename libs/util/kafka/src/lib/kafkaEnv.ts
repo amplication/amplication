@@ -1,4 +1,4 @@
-import { EnvironmentVariables } from "./";
+import { EnvironmentVariables } from "./environmentVariables";
 import { KAFKA_BROKERS, KAFKA_CLIENT_ID, KAFKA_GROUP_ID } from "./constants";
 
 export class KafkaEnvironmentVariables {
