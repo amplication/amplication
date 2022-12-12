@@ -1,11 +1,11 @@
-import { EnumResourceType } from "../src/models";
-import { appInfo } from "../src/tests/appInfo";
-import entities from "../src/tests/entities";
-import roles from "../src/tests/roles";
+import { EnumResourceType } from "../../amplication-data-service-generator/src/models";
+import { appInfo } from "../../amplication-data-service-generator/src/tests/appInfo";
+import entities from "../../amplication-data-service-generator/src/tests/entities";
+import roles from "../../amplication-data-service-generator/src/tests/roles";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import { format } from "prettier";
-import { plugins } from "./constants/example-plugins";
+import { plugins } from "../../amplication-data-service-generator/scripts/constants/example-plugins";
 
 async function createInputJsonFile() {
   const object = {
