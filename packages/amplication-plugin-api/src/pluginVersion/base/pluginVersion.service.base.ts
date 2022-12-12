@@ -10,7 +10,10 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, PluginVersion } from "@amplication/prisma-clients/amplication-plugin-api";
+import {
+  Prisma,
+  PluginVersion,
+} from "@amplication/prisma-clients/amplication-plugin-api";
 import { PluginVersionFindManyArgs } from "./PluginVersionFindManyArgs";
 import { PluginVersionFindUniqueArgs } from "./PluginVersionFindUniqueArgs";
 
@@ -31,7 +34,9 @@ export class PluginVersionServiceBase {
   async findOne<T extends Prisma.PluginVersionFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginVersionFindUniqueArgs>
   ): Promise<PluginVersion | null> {
-    return this.prisma.pluginVersion.findUnique(args as PluginVersionFindUniqueArgs);
+    return this.prisma.pluginVersion.findUnique(
+      args as PluginVersionFindUniqueArgs
+    );
   }
   async create<T extends Prisma.PluginVersionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginVersionCreateArgs>

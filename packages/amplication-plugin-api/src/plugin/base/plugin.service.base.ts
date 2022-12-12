@@ -10,7 +10,10 @@ https://docs.amplication.com/docs/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Plugin } from "@amplication/prisma-clients/amplication-plugin-api";
+import {
+  Prisma,
+  Plugin,
+} from "@amplication/prisma-clients/amplication-plugin-api";
 import { PluginFindManyArgs } from "./PluginFindManyArgs";
 import { PluginFindUniqueArgs } from "./PluginFindUniqueArgs";
 
