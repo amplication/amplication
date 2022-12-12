@@ -2,7 +2,7 @@
   "name": "amplication-data-service-generator",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-data-service-generator/src",
-  "projectType": "application",
+  "projectType": "library",
   "targets": {
     "install": {
       "executor": "nx:run-commands",
@@ -90,28 +90,7 @@
         "parallel": false,
         "cwd": "packages/amplication-data-service-generator"
       }
-    },
-    "generate-example-input-json": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "ts-node ./scripts/create-input-json.ts",
-        "cwd": "packages/amplication-data-service-generator"
-      }
-    },
-    "generate-local-code": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "ts-node ./src/generate-code.ts ./input.json ./generated",
-        "cwd": "packages/amplication-data-service-generator"
-      },
-      "dependsOn": ["generate-example-input-json"]
-    },
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
-      "options": {
-        "push": false,
-        "tags": ["amplication/data-service-generator:latest"]
-      }
     }
-  }
+  },
+  "tags": []
 }

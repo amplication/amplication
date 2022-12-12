@@ -75,6 +75,13 @@
         "cwd": "packages/amplication-data-service-generator-fs-runner"
       },
       "dependsOn": ["generate-example-input-json"]
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/data-service-generator:latest"]
+      }
     }
   },
   "tags": []
