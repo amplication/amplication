@@ -3,7 +3,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import {
   // @ts-ignore
   RELATED_ENTITY,
-} from "@prisma/client";
+} from "../../../prisma/generated-prisma-client";
 
 export class Mixin {
   constructor(protected readonly prisma: PrismaService) {}
