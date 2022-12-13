@@ -3199,7 +3199,8 @@ async function dropTypes(prisma: PrismaClient, types: string[]) {
 async function getTables(prisma: PrismaClient): Promise<string[]> {
   const results: Array<{
     tablename: string;
-  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
+  }> =
+    await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
   return results.map((result) => result.tablename);
 }
 
@@ -4072,7 +4073,7 @@ export class TokenService extends TokenServiceBase implements ITokenService {}
   "test/src/auth/userData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlContextType, GqlExecutionContext } from \\"@nestjs/graphql\\";
 //@ts-ignore
-import { User } from \\"@prisma/client\\";
+import { User } from \\"../../prisma/generated-prisma-client\\";
 
 /**
  * Access the user data from the request object i.e \`req.user\`.
@@ -6342,8 +6343,8 @@ import {
   Prisma,
   Customer,
   Order,
+  Organization,
 } from \\"../../../prisma/generated-prisma-client\\";
-import { Organization } from \\"@prisma/client\\";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -7555,7 +7556,7 @@ import { BaseExceptionFilter } from \\"@nestjs/core\\";
 import {
   // @ts-ignore
   Prisma,
-} from \\"@prisma/client\\";
+} from \\"../../prisma/generated-prisma-client\\";
 import { Response } from \\"express\\";
 
 export type ErrorCodesStatusMapping = {
@@ -8110,7 +8111,7 @@ export class HealthControllerBase {
 }
 ",
   "test/src/health/base/health.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
 
 @Injectable()
 export class HealthServiceBase {
@@ -8137,12 +8138,10 @@ export class HealthController extends HealthControllerBase {
 }
 ",
   "test/src/health/health.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
 import { HealthController } from \\"./health.controller\\";
 import { HealthService } from \\"./health.service\\";
 
 @Module({
-  imports: [PrismaModule],
   controllers: [HealthController],
   providers: [HealthService],
   exports: [HealthService],
@@ -8150,7 +8149,7 @@ import { HealthService } from \\"./health.service\\";
 export class HealthModule {}
 ",
   "test/src/health/health.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { HealthServiceBase } from \\"./base/health.service.base\\";
 
 @Injectable()
@@ -9517,8 +9516,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Order } from \\"../../../prisma/generated-prisma-client\\";
-import { Customer } from \\"@prisma/client\\";
+import {
+  Prisma,
+  Order,
+  Customer,
+} from \\"../../../prisma/generated-prisma-client\\";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -12740,8 +12742,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Profile } from \\"../../../prisma/generated-prisma-client\\";
-import { User } from \\"@prisma/client\\";
+import { Prisma, Profile, User } from \\"../../../prisma/generated-prisma-client\\";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -15597,8 +15598,8 @@ import {
   Prisma,
   User,
   Organization,
+  Profile,
 } from \\"../../../prisma/generated-prisma-client\\";
-import { User, Profile } from \\"@prisma/client\\";
 import { PasswordService } from \\"../../auth/password.service\\";
 import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
