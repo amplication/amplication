@@ -149,4 +149,13 @@ export const Routes: RouteDef[] = [
     routes: [],
     isAnalytics: true,
   },
+  {
+    path: "*",
+    Component: lazy(() => import("../404/NotFound")),
+    moduleName: "NotFound",
+    moduleClass: "not-found",
+    routeTrackType: "notFound",
+    exactPath: true,
+    isAnalytics: true,
+  },
 ];
