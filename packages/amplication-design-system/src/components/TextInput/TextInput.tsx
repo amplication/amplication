@@ -32,6 +32,7 @@ export function TextInput({
   labelType,
   ...rest
 }: Props) {
+  const key = rest.key || rest.autoFocus?.toString();
   return (
     <div
       className={classNames(`${CLASS_NAME}`, className, {
@@ -48,7 +49,11 @@ export function TextInput({
               ref={inputRef as React.Ref<HTMLTextAreaElement>}
             />
           ) : (
-            <input {...rest} ref={inputRef as React.Ref<HTMLInputElement>} />
+            <input
+              key={key}
+              {...rest}
+              ref={inputRef as React.Ref<HTMLInputElement>}
+            />
           )}
           {hasError && (
             <Icon
