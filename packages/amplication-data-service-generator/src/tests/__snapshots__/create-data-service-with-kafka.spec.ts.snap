@@ -3198,7 +3198,7 @@ enum EnumCustomerCustomerType {
  * Clean all the tables and types created by Prisma in the database
  */
 
-import { PrismaClient } from \\"@prisma/client\\";
+import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 
 if (require.main === module) {
   clean().catch((error) => {
@@ -3236,8 +3236,7 @@ async function dropTypes(prisma: PrismaClient, types: string[]) {
 async function getTables(prisma: PrismaClient): Promise<string[]> {
   const results: Array<{
     tablename: string;
-  }> =
-    await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
+  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
   return results.map((result) => result.tablename);
 }
 
@@ -3253,7 +3252,7 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
   return results.map((result) => result.typname);
 }
 ",
-  "server/scripts/customSeed.ts": "import { PrismaClient } from \\"@prisma/client\\";
+  "server/scripts/customSeed.ts": "import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 
 export async function customSeed() {
   const client = new PrismaClient();
@@ -3272,7 +3271,7 @@ export async function customSeed() {
 }
 ",
   "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
-import { PrismaClient } from \\"@prisma/client\\";
+import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
 import { customSeed } from \\"./customSeed\\";
