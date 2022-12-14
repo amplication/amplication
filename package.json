@@ -164,6 +164,7 @@
     "@nrwl/nx-cloud": "^14.7.0",
     "@nrwl/react": "^14.8.2",
     "@nrwl/web": "^14.8.2",
+    "@nrwl/webpack": "14.8.2",
     "@nrwl/workspace": "^14.8.2",
     "@nx-tools/nx-docker": "^3.0.4",
     "@testing-library/react": "13.3.0",
