@@ -1,25 +1,10 @@
-import * as fs from "fs";
 import * as path from "path";
-import { memoize } from "lodash";
-import * as prettier from "prettier";
-import { namedTypes } from "ast-types";
+
 import normalize from "normalize-path";
-import { parse } from "./ast";
 
 export type Variables = { [variable: string]: string | null | undefined };
 
 const JSON_EXT = ".json";
-
-export const readCode = memoize((path: string): Promise<string> => {
-  return fs.promises.readFile(path, "utf-8");
-});
-
-const readFile = async (path: string): Promise<namedTypes.File> => {
-  const code = await readCode(path);
-  return parse(code) as namedTypes.File;
-};
-
-export { readFile };
 
 /**
  * @param from filePath of the module to import from

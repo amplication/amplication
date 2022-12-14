@@ -1,12 +1,10 @@
-import * as recast from "recast";
-import { ParserOptions } from "@babel/parser";
-import { ASTNode, namedTypes, builders } from "ast-types";
+import { NamedClassProperty } from "@amplication/code-gen-types";
+import { parse, partialParse } from "@amplication/code-gen-utils";
+import { ASTNode, builders, namedTypes } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
-import * as parser from "./parser";
-import * as partialParser from "./partial-parser";
-import { NamedClassProperty } from "@amplication/code-gen-types";
+import * as recast from "recast";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
@@ -22,55 +20,6 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   `;
-
-type ParseOptions = Omit<recast.Options, "parser">;
-type PartialParseOptions = Omit<ParserOptions, "tolerant">;
-
-export class ParseError extends SyntaxError {
-  constructor(message: string, source: string) {
-    super(`${message}\nSource:\n${source}`);
-  }
-}
-
-/**
- * Wraps recast.parse()
- * Sets parser to use the TypeScript parser
- */
-export function parse(source: string, options?: ParseOptions): namedTypes.File {
-  try {
-    return recast.parse(source, {
-      ...options,
-      parser,
-    });
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      throw new ParseError(error.message, source);
-    }
-    throw error;
-  }
-}
-
-/**
- * Wraps recast.parse()
- * Sets parser to use the TypeScript parser with looser restrictions
- */
-export function partialParse(
-  source: string,
-  options?: PartialParseOptions
-): namedTypes.File {
-  try {
-    return recast.parse(source, {
-      ...options,
-      tolerant: true,
-      parser: partialParser,
-    });
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      throw new ParseError(error.message, source);
-    }
-    throw error;
-  }
-}
 
 /**
  * Consolidate import declarations to a valid minimal representation
