@@ -1,11 +1,11 @@
-import { createDataService } from "../create-data-service";
+import { types } from "@amplication/code-gen-types";
+import { createDataServiceImpl } from "../create-data-service-impl";
+import { EnumDataType, EnumResourceType } from "../models";
+import { USER_ENTITY_NAME } from "../server/user-entity";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
-import roles from "./roles";
-import { EnumDataType, EnumResourceType } from "../models";
 import { installedPlugins } from "./pluginInstallation";
-import { USER_ENTITY_NAME } from "../server/user-entity";
-import { types } from "@amplication/code-gen-types";
+import roles from "./roles";
 
 jest.setTimeout(100000);
 
@@ -29,7 +29,7 @@ beforeAll(() => {
 
 describe("createDataService", () => {
   test("creates resource as expected", async () => {
-    const modules = await createDataService({
+    const modules = await createDataServiceImpl({
       entities,
       roles,
       resourceInfo: appInfo,

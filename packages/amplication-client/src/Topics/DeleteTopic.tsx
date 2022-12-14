@@ -5,7 +5,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import useTopic from "./hooks/useTopic";
 import { formatError } from "../util/error";
 
-const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
+const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type Props = {
@@ -50,10 +50,10 @@ export const DeleteTopic = ({ topic, onDelete }: Props) => {
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Delete ${topic.displayName}`}
+        title={`Delete '${topic.displayName}' ?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message="Are you sure you want to delete this topic?"
+        message={<div>Are you sure you want to delete this topic?</div>}
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />

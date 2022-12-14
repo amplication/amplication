@@ -30,6 +30,7 @@ export default function TopicsList({
 }: Props) {
   const { trackEvent } = useTracking();
   const { data } = useQuery<TData>(topicsOfBroker, {
+    fetchPolicy: "no-cache",
     variables: { messageBrokerId },
     skip: !messageBrokerId,
   });
