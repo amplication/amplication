@@ -1,6 +1,6 @@
 import { namedTypes, builders } from "ast-types";
 import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
-import { readFile } from "../../../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import {
   getClassDeclarationById,
   interpolate,

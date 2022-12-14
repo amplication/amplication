@@ -11,9 +11,9 @@ export function getOptions(options?: Overrides): Options {
   return babelOptions;
 }
 
-export type ParseOptions = Omit<recast.Options, "parser">;
+type ParseOptions = Omit<recast.Options, "parser">;
 
-export type Options = ReturnType<typeof getBabelOptions>;
+type Options = ReturnType<typeof getBabelOptions>;
 
 /**
  * Wraps recast.parse()
