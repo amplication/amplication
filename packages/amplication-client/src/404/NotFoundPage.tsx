@@ -9,9 +9,11 @@ const pageTitle = "Not Found";
 const NotFound = () => {
   return (
     <PageContent pageTitle={pageTitle} className={CLASS_NAME}>
-      <img src={warning} alt="warning" />
-      <h1>Not Found | 404</h1>
-      <h2>Oops! Looks like this page doesn't exist.</h2>
+      <h1>
+        <img src={warning} alt="warning" className="warning" />
+        404 | Not Found
+      </h1>
+      <h2>Oops! It looks like this page doesn't exist.</h2>
     </PageContent>
   );
 };

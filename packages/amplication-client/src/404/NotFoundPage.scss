@@ -1,6 +1,24 @@
 .not-found-page {
-  img {
-    height: 8rem;
-    width: 8rem;
+  height: 100%;
+
+  main {
+    min-width: min-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .warning {
+    height: 4rem;
+    width: 4rem;
   }
 }
