@@ -114,7 +114,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
               setVersionAlert(false);
             }}
           >
-            {version}
+            <span>v{version}</span>
           </Button>
         </Tooltip>
       </div>
