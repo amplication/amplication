@@ -20,5 +20,5 @@
       "generated-prisma-client": ["prisma/generated-prisma-client/index"]
     }
   },
-  "include": ["src", "scripts"]
+  "include": ["src"]
 }
