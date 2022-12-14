@@ -12,6 +12,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { GraphQLModule } from "@nestjs/graphql";
+import { GraphQLError, GraphQLFormattedError } from "graphql";
 
 @Module({
   controllers: [],
@@ -37,6 +38,20 @@ import { GraphQLModule } from "@nestjs/graphql";
           sortSchema: true,
           playground,
           introspection: playground || introspection,
+          formatError: (error: GraphQLError) => {
+            const graphQLFormattedError: GraphQLFormattedError = {
+              message:
+                error?.extensions?.exception?.response?.message ||
+                error?.message,
+              extensions: {
+                code:
+                  error?.extensions?.extensions?.code ||
+                  "INTERNAL_SERVER_ERROR",
+                http: error?.extensions?.extensions?.http || { status: 400 },
+              },
+            };
+            return graphQLFormattedError;
+          },
         };
       },
       inject: [ConfigService],

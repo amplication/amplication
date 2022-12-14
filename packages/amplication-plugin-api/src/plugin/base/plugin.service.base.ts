@@ -51,4 +51,9 @@ export class PluginServiceBase {
   ): Promise<Plugin> {
     return this.prisma.plugin.delete(args);
   }
+  async upsert<T extends Prisma.PluginUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.PluginUpsertArgs>
+  ): Promise<Plugin> {
+    return this.prisma.plugin.upsert(args);
+  }
 }

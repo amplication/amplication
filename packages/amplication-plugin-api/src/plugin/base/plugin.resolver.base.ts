@@ -18,6 +18,7 @@ import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
+import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreatePluginArgs } from "./CreatePluginArgs";
 import { UpdatePluginArgs } from "./UpdatePluginArgs";
@@ -65,13 +66,8 @@ export class PluginResolverBase {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => Plugin, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: "Plugin",
-    action: "read",
-    possession: "own",
-  })
   async plugin(
     @graphql.Args() args: PluginFindUniqueArgs
   ): Promise<Plugin | null> {
