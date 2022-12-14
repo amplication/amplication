@@ -29,6 +29,17 @@ class PluginVersionUpdateInput {
 
   @ApiProperty({
     required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  pluginIdVersion?: string;
+
+  @ApiProperty({
+    required: false,
   })
   @IsJSON()
   @IsOptional()

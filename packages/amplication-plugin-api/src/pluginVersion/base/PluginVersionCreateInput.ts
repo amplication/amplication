@@ -28,6 +28,14 @@ class PluginVersionCreateInput {
   pluginId?: string | null;
 
   @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  pluginIdVersion!: string;
+
+  @ApiProperty({
     required: false,
   })
   @IsJSON()

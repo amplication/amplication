@@ -12,7 +12,10 @@ export class PluginService extends PluginServiceBase {
   ) {
     super(prisma);
   }
-
+  /**
+   * main service that trigger gitPluginService and return plugin list. It upsert the plugins to DB
+   * @returns Plugin[]
+   */
   async githubCatalogPlugins() {
     try {
       const pluginsList = await this.gitPluginService.getPlugins();
@@ -22,11 +25,19 @@ export class PluginService extends PluginServiceBase {
       )
         throw pluginsList;
 
-      const now = new Date();
       const insertedPluginArr: Plugin[] = [];
       for await (const plugin of pluginsList) {
-        const { description, github, icon, name, npm, website, pluginId } =
-          plugin;
+        const {
+          description,
+          github,
+          icon,
+          name,
+          npm,
+          website,
+          pluginId,
+          updatedAt,
+          createdAt,
+        } = plugin;
         const upsertPlugin = await this.upsert({
           where: {
             pluginId,
@@ -37,7 +48,7 @@ export class PluginService extends PluginServiceBase {
             icon,
             name,
             npm,
-            updatedAt: now,
+            updatedAt,
             website,
           },
           create: {
@@ -46,10 +57,10 @@ export class PluginService extends PluginServiceBase {
             icon,
             name,
             npm,
-            updatedAt: now,
+            updatedAt,
             website,
             pluginId,
-            createdAt: now,
+            createdAt,
           },
         });
         insertedPluginArr.push(upsertPlugin);

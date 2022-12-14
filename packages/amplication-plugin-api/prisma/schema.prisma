@@ -32,6 +32,7 @@ model PluginVersion {
   createdAt DateTime @default(now())
   id        String   @id @default(cuid())
   pluginId  String?
+  pluginIdVersion String @unique
   settings  Json?
   updatedAt DateTime @updatedAt
   version   String?

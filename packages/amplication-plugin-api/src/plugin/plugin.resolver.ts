@@ -8,7 +8,6 @@ import { Plugin } from "./base/Plugin";
 import { PluginService } from "./plugin.service";
 import { Public } from "../decorators/public.decorator";
 import { GraphQLError } from "graphql";
-import { Extensions } from "@nestjs/graphql";
 
 @graphql.Resolver(() => Plugin)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -22,18 +21,16 @@ export class PluginResolver extends PluginResolverBase {
   }
 
   @Public()
-  @graphql.Query(() => Plugin, { nullable: true })
+  @graphql.Query(() => [Plugin], { nullable: true })
   async githubPlugins(): Promise<Plugin[]> {
     try {
-      const AmplicationPlugins = await this.service.githubCatalogPlugins();
+      const amplicationPlugins = await this.service.githubCatalogPlugins();
       if (
-        Object.prototype.toString.call(AmplicationPlugins) === "[object String]"
+        Object.prototype.toString.call(amplicationPlugins) === "[object String]"
       )
-        throw AmplicationPlugins;
+        throw amplicationPlugins;
 
-      console.log(AmplicationPlugins);
-
-      return [];
+      return amplicationPlugins;
     } catch (error) {
       throw new GraphQLError(error.message, null, null, null, null, null, {
         extensions: {

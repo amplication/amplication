@@ -53,4 +53,9 @@ export class PluginVersionServiceBase {
   ): Promise<PluginVersion> {
     return this.prisma.pluginVersion.delete(args);
   }
+  async upsert<T extends Prisma.PluginVersionUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.PluginVersionUpsertArgs>
+  ): Promise<PluginVersion> {
+    return this.prisma.pluginVersion.upsert(args);
+  }
 }

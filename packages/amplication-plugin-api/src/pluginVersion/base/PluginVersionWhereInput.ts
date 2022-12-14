@@ -42,6 +42,17 @@ class PluginVersionWhereInput {
 
   @ApiProperty({
     required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  pluginIdVersion?: StringFilter;
+
+  @ApiProperty({
+    required: false,
     type: JsonFilter,
   })
   @Type(() => JsonFilter)

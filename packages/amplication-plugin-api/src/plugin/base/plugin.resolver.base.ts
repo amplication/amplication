@@ -55,13 +55,8 @@ export class PluginResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [Plugin])
-  @nestAccessControl.UseRoles({
-    resource: "Plugin",
-    action: "read",
-    possession: "any",
-  })
   async plugins(@graphql.Args() args: PluginFindManyArgs): Promise<Plugin[]> {
     return this.service.findMany(args);
   }

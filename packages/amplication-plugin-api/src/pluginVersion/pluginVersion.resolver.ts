@@ -6,6 +6,8 @@ import * as gqlACGuard from "../auth/gqlAC.guard";
 import { PluginVersionResolverBase } from "./base/pluginVersion.resolver.base";
 import { PluginVersion } from "./base/PluginVersion";
 import { PluginVersionService } from "./pluginVersion.service";
+import { Public } from "../decorators/public.decorator";
+import { GraphQLError } from "graphql";
 
 @graphql.Resolver(() => PluginVersion)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -16,5 +18,25 @@ export class PluginVersionResolver extends PluginVersionResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {
     super(service, rolesBuilder);
+  }
+
+  @Public()
+  @graphql.Query(() => [PluginVersion])
+  async pluginsVersions(): Promise<PluginVersion[]> {
+    try {
+      const npmPluginsVersions = await this.service.npmPluginsVersions();
+      if (!npmPluginsVersions) throw "Failed to update plugins versions";
+
+      return npmPluginsVersions;
+    } catch (error) {
+      throw new GraphQLError(error.message, null, null, null, null, null, {
+        extensions: {
+          code: "SOMETHING_BAD_HAPPENED",
+          http: {
+            status: 400,
+          },
+        },
+      });
+    }
   }
 }
