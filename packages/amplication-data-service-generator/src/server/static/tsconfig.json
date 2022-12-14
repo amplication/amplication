@@ -14,7 +14,11 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "generated-prisma-client": ["prisma/generated-prisma-client/index"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "scripts"]
 }
