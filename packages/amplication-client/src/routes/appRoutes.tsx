@@ -151,9 +151,9 @@ export const Routes: RouteDef[] = [
   },
   {
     path: "*",
-    Component: lazy(() => import("../404/NotFound")),
+    Component: lazy(() => import("../404/NotFoundPage")),
     moduleName: "NotFound",
-    moduleClass: "not-found",
+    moduleClass: "not-found-page",
     routeTrackType: "notFound",
     exactPath: true,
     isAnalytics: true,
