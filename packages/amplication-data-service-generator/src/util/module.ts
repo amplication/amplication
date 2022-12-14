@@ -21,14 +21,6 @@ const readFile = async (path: string): Promise<namedTypes.File> => {
 
 export { readFile };
 
-export const formatCode = (code: string): string => {
-  return prettier.format(code, { parser: "typescript" });
-};
-
-export const formatJson = (code: string): string => {
-  return prettier.format(code, { parser: "json" });
-};
-
 /**
  * @param from filePath of the module to import from
  * @param to filePath of the module to import to
