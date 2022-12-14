@@ -3161,7 +3161,7 @@ enum EnumCustomerCustomerType {
  * Clean all the tables and types created by Prisma in the database
  */
 
-import { PrismaClient } from \\"generated-prisma-client\\";
+import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 
 if (require.main === module) {
   clean().catch((error) => {
@@ -3216,7 +3216,7 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
   return results.map((result) => result.typname);
 }
 ",
-  "test/scripts/customSeed.ts": "import { PrismaClient } from \\"generated-prisma-client\\";
+  "test/scripts/customSeed.ts": "import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 
 export async function customSeed() {
   const client = new PrismaClient();
@@ -3235,7 +3235,7 @@ export async function customSeed() {
 }
 ",
   "test/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
-import { PrismaClient } from \\"generated-prisma-client\\";
+import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
 import { customSeed } from \\"./customSeed\\";
@@ -16810,7 +16810,7 @@ export class StringNullableFilter {
       \\"generated-prisma-client\\": [\\"prisma/generated-prisma-client/index\\"]
     }
   },
-  \\"include\\": [\\"src\\", \\"scripts\\"]
+  \\"include\\": [\\"src\\"]
 }
 ",
 }
