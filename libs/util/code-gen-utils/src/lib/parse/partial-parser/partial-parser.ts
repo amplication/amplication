@@ -5,11 +5,11 @@ import * as recast from "recast";
 import * as recastBabelParser from "recast/parsers/babel";
 import { Overrides } from "recast/parsers/_babel_options";
 import { ParseError } from "../errors/ParseError";
-import { getOptions as parserGetOptions } from "../main";
+import { getOptions as parserGetOptions, Options } from "../main";
 
 type PartialParseOptions = Omit<ParserOptions, "tolerant">;
 
-function getOptions(options?: Overrides): parser.Options {
+function getOptions(options?: Overrides): Options {
   const parserOptions = parserGetOptions(options);
   parserOptions.allowAwaitOutsideFunction = true;
   parserOptions.allowReturnOutsideFunction = true;

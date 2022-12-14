@@ -13,7 +13,7 @@ export function getOptions(options?: Overrides): Options {
 
 type ParseOptions = Omit<recast.Options, "parser">;
 
-type Options = ReturnType<typeof getBabelOptions>;
+export type Options = ReturnType<typeof getBabelOptions>;
 
 /**
  * Wraps recast.parse()

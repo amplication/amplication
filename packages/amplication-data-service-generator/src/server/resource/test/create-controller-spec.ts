@@ -4,7 +4,8 @@ import { print } from "recast";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
 import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
+import { relativeImportPath } from "../../../util/module";
 import {
   interpolate,
   removeTSVariableDeclares,

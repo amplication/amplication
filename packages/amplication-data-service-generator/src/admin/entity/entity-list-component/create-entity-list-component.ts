@@ -13,7 +13,8 @@ import {
   interpolate,
 } from "../../../util/ast";
 import { getFieldsFromDTOWithoutToManyRelations } from "../../../util/entity";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import { EntityComponent } from "../../types";
 import { jsxElement, jsxFragment } from "../../util";
 import { createFieldValue } from "../create-field-value";

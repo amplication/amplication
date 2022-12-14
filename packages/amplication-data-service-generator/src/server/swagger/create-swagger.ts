@@ -12,7 +12,7 @@ import {
   removeTSIgnoreComments,
   removeTSVariableDeclares,
 } from "../../util/ast";
-import { readFile } from "../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 

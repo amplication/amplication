@@ -6,7 +6,8 @@ import {
   CreateEntityModuleParams,
   CreateEntityModuleBaseParams,
 } from "@amplication/code-gen-types";
-import { relativeImportPath, readFile } from "../../../util/module";
+import { relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import {
   interpolate,
   removeTSIgnoreComments,

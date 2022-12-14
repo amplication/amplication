@@ -14,7 +14,8 @@ import {
   importNames,
   interpolate,
 } from "../../../util/ast";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import { EntityComponent } from "../../types";
 import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";

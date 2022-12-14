@@ -5,13 +5,13 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/webpack:webpack",
+      "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/util/code-gen-utils",
         "main": "libs/util/code-gen-utils/src/index.ts",
         "tsConfig": "libs/util/code-gen-utils/tsconfig.lib.json",
-        "assets": []
+        "assets": ["libs/util/code-gen-utils/*.md"]
       }
     },
     "publish": {

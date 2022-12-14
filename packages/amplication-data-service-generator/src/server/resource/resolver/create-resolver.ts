@@ -13,7 +13,8 @@ import {
   DTOs,
   EventNames,
 } from "@amplication/code-gen-types";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import {
   interpolate,

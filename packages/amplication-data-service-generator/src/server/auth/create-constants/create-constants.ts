@@ -1,7 +1,7 @@
 import { Module } from "../../..";
 import DsgContext from "../../../dsg-context";
 import { types } from "@amplication/code-gen-types";
-import { readFile } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders } from "ast-types";
 import { print } from "recast";
