@@ -5,7 +5,7 @@
  ***/
 
 import * as dotenv from "dotenv";
-import { PrismaClient } from "generated-prisma-client";
+import { PrismaClient } from "../prisma/generated-prisma-client";
 // @ts-ignore
 import { Salt, parseSalt } from "../src/auth/password.service";
 import { hash } from "bcrypt";
