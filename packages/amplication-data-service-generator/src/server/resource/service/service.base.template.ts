@@ -4,7 +4,7 @@ import {
   Prisma,
   // @ts-ignore
   ENTITY,
-} from "../../../prisma/generated-prisma-client";
+} from "generated-prisma-client";
 
 declare const CREATE_ARGS_MAPPING: Prisma.CREATE_ARGS;
 declare const UPDATE_ARGS_MAPPING: Prisma.UPDATE_ARGS;
