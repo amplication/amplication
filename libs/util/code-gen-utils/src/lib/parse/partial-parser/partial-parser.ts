@@ -1,7 +1,7 @@
 import { ParserOptions } from "@babel/parser";
 import type { File } from "@babel/types";
 import { namedTypes } from "ast-types";
-import * as recast from "recast";
+import { parse as recastParse } from "recast";
 import * as recastBabelParser from "recast/parsers/babel";
 import { Overrides } from "recast/parsers/_babel_options";
 import { ParseError } from "../errors/ParseError";
@@ -27,7 +27,7 @@ export function partialParse(
   options?: PartialParseOptions
 ): namedTypes.File {
   try {
-    return recast.parse(source, {
+    return recastParse(source, {
       ...options,
       tolerant: true,
       parser: {
