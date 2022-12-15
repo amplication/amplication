@@ -1,6 +1,5 @@
 import { namedTypes } from "ast-types";
 import * as recast from "recast";
-import { ParseError } from "../errors/ParseError";
 import { partialParse } from "./partial-parser";
 
 describe("partialParser", () => {
@@ -22,29 +21,5 @@ describe("partialParse", () => {
         parser: { partialParse },
       })
     );
-  });
-
-  test("tries to partially parse but catches a SyntaxError", () => {
-    const EXAMPLE_ERROR = new SyntaxError("exampleError");
-    const EXAMPLE_SOURCE = "exampleSource";
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    recast.parse.mockImplementationOnce(() => {
-      throw EXAMPLE_ERROR;
-    });
-    expect(() => partialParse(EXAMPLE_SOURCE)).toThrow(
-      new ParseError(EXAMPLE_ERROR.message, EXAMPLE_SOURCE)
-    );
-  });
-
-  test("tries to partially parse but catches an Error", () => {
-    const EXAMPLE_ERROR = new Error("exampleError");
-    const EXAMPLE_SOURCE = "exampleSource";
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    recast.parse.mockImplementationOnce(() => {
-      throw EXAMPLE_ERROR;
-    });
-    expect(() => partialParse(EXAMPLE_SOURCE)).toThrow(EXAMPLE_ERROR);
   });
 });
