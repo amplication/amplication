@@ -12,7 +12,7 @@
     "db:migrate-save": "prisma migrate dev",
     "db:migrate-up": "prisma migrate deploy",
     "db:clean": "ts-node scripts/clean.ts",
-    "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up",
+    "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
     "prisma:generate": "prisma generate",
     "docker:db": "docker-compose -f docker-compose.db.yml up -d",
     "docker:build": "docker build .",

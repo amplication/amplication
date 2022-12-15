@@ -90,6 +90,7 @@ async function createServerInternal(
   });
 
   const createdModules = [
+    ...seedModule,
     ...resourcesModules,
     ...dtoModules,
     ...swagger,
