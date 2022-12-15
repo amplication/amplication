@@ -1,12 +1,11 @@
 import { DSGResourceData, Module } from "@amplication/code-gen-types";
-import { mkdir, readFile, writeFile } from "fs/promises";
 import {
   createDataServiceImpl,
   defaultLogger,
   httpClient,
 } from "@amplication/data-service-generator";
+import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
-import { dynamicPluginInstallation } from "./dynamic-plugin-installation";
 
 const [, , source, destination] = process.argv;
 if (!source) {
@@ -32,13 +31,6 @@ export default async function generateCode(
 ): Promise<void> {
   try {
     const resourceData = await readInputJson(source);
-    const { pluginInstallations } = resourceData;
-
-    console.log("Start code generation dynamic plugins installation");
-    await dynamicPluginInstallation(
-      pluginInstallations.map((plugin) => plugin.npm)
-    );
-    console.log("Finish code generation dynamic plugins installation");
 
     const modules = await createDataServiceImpl(resourceData, defaultLogger);
     await writeModules(modules, destination);
