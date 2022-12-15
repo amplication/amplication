@@ -3,7 +3,6 @@ import { pascalCase } from "pascal-case";
 import { print } from "recast";
 import {
   Entity,
-  EntityField,
   EntityLookupField,
   Module,
   EventNames,
@@ -12,15 +11,12 @@ import {
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
-  addIdentifierToConstructorSuperCall,
   addImports,
-  awaitExpression,
   extractImportDeclarations,
   getClassDeclarationById,
   getMethods,
   importNames,
   interpolate,
-  logicalExpression,
   memberExpression,
   removeESLintComments,
   removeTSClassDeclares,
@@ -30,11 +26,9 @@ import {
 } from "../../../util/ast";
 import {
   isOneToOneRelationField,
-  isPasswordField,
   isToManyRelationField,
 } from "../../../util/field";
 import { readFile, relativeImportPath } from "../../../util/module";
-import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 
@@ -122,40 +116,6 @@ async function createServiceModule({
     ),
   ]);
 
-  //if there are any password fields, add imports, injection, and pass service to super
-  // if (passwordFields.length) {
-  //   const classDeclaration = getClassDeclarationById(template, serviceId);
-
-  //   addInjectableDependency(
-  //     classDeclaration,
-  //     PASSWORD_SERVICE_MEMBER_ID.name,
-  //     PASSWORD_SERVICE_ID,
-  //     "protected"
-  //   );
-
-  //   addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
-
-  //   for (const member of classDeclaration.body.body) {
-  //     if (
-  //       namedTypes.ClassMethod.check(member) &&
-  //       namedTypes.Identifier.check(member.key) &&
-  //       PASSWORD_FIELD_ASYNC_METHODS.has(member.key.name)
-  //     ) {
-  //       member.async = true;
-  //     }
-  //   }
-  //   //add the password service
-  //   addImports(template, [
-  //     importNames(
-  //       [PASSWORD_SERVICE_ID],
-  //       relativeImportPath(
-  //         modulePath,
-  //         `${serverDirectories.srcDirectory}/auth/password.service.ts`
-  //       )
-  //     ),
-  //   ]);
-  // }
-
   removeTSIgnoreComments(template);
   removeESLintComments(template);
   removeTSVariableDeclares(template);
@@ -237,48 +197,6 @@ async function createServiceBaseModule({
   );
 
   removeTSClassDeclares(template);
-
-  // if (passwordFields.length) {
-  //   const classDeclaration = getClassDeclarationById(template, serviceBaseId);
-
-  //   addInjectableDependency(
-  //     classDeclaration,
-  //     PASSWORD_SERVICE_MEMBER_ID.name,
-  //     PASSWORD_SERVICE_ID,
-  //     "protected"
-  //   );
-
-  //   for (const member of classDeclaration.body.body) {
-  //     if (
-  //       namedTypes.ClassMethod.check(member) &&
-  //       namedTypes.Identifier.check(member.key) &&
-  //       PASSWORD_FIELD_ASYNC_METHODS.has(member.key.name)
-  //     ) {
-  //       member.async = true;
-  //     }
-  //   }
-  //   //add the password service
-  //   addImports(template, [
-  //     importNames(
-  //       [PASSWORD_SERVICE_ID],
-  //       relativeImportPath(
-  //         moduleBasePath,
-  //         `${serverDirectories.srcDirectory}/auth/password.service.ts`
-  //       )
-  //     ),
-  //   ]);
-
-  //   addImports(template, [
-  //     importNames(
-  //       [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
-  //       relativeImportPath(
-  //         moduleBasePath,
-  //         `${serverDirectories.srcDirectory}/prisma.util.ts`
-  //       )
-  //     ),
-  //   ]);
-  // }
-
   removeTSIgnoreComments(template);
   removeESLintComments(template);
   removeTSVariableDeclares(template);
@@ -291,25 +209,6 @@ async function createServiceBaseModule({
       code: print(template).code,
     },
   ];
-}
-
-function createMutationDataMapping(
-  mappings: namedTypes.ObjectProperty[]
-): namedTypes.Identifier | namedTypes.ObjectExpression {
-  if (!mappings.length) {
-    console.log({ ARGS_ID });
-    return ARGS_ID;
-  }
-  return builders.objectExpression([
-    builders.spreadProperty(ARGS_ID),
-    builders.objectProperty(
-      DATA_ID,
-      builders.objectExpression([
-        builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
-        ...mappings,
-      ])
-    ),
-  ]);
 }
 
 export function createServiceId(entityType: string): namedTypes.Identifier {
