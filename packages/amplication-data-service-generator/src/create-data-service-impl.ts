@@ -10,7 +10,7 @@ import { createDTOs } from "./server/resource/create-dtos";
 import { EnumResourceType } from "./models";
 import { defaultLogger } from "./server/logging";
 
-export async function createDataServiceImpl(
+export async function createDataService(
   dSGResourceData: DSGResourceData,
   logger: winston.Logger = defaultLogger
 ): Promise<Module[]> {

@@ -1,6 +1,6 @@
 import { DSGResourceData, Module } from "@amplication/code-gen-types";
 import {
-  createDataServiceImpl,
+  createDataService,
   defaultLogger,
   httpClient,
 } from "@amplication/data-service-generator";
@@ -32,7 +32,7 @@ export default async function generateCode(
   try {
     const resourceData = await readInputJson(source);
 
-    const modules = await createDataServiceImpl(resourceData, defaultLogger);
+    const modules = await createDataService(resourceData, defaultLogger);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
     await httpClient.post(
