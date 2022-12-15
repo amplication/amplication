@@ -33,7 +33,6 @@ async function createServerInternal(
 ): Promise<Module[]> {
   const {
     serverDirectories,
-    roles,
     entities,
     DTOs: dtos,
     logger,

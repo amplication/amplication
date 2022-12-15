@@ -17,7 +17,6 @@ import {
   getMethods,
   importNames,
   interpolate,
-  memberExpression,
   removeESLintComments,
   removeTSClassDeclares,
   removeTSIgnoreComments,
@@ -34,16 +33,8 @@ import DsgContext from "../../../dsg-context";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
-const DATA_ID = builders.identifier("data");
-const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
-const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
-const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
-const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
-  "transformStringFieldUpdateInput"
-);
 const serviceTemplatePath = require.resolve("./service.template.ts");
 const serviceBaseTemplatePath = require.resolve("./service.base.template.ts");
-const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
 const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
