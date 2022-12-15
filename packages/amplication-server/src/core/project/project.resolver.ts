@@ -122,15 +122,26 @@ export class ProjectResolver {
     );
 
     if (!subscription) {
-      const resources = await this.resourceService.resources({
-        where: {
-          projectId: projectId,
-        },
+      const projects = await this.projectService.findProjects({
+        where: { workspace: { id: workspace.id } },
       });
 
-      const services = resources.filter(
-        (x) => x.resourceType === EnumResourceType.Service
-      );
+      const getServicesPerProject = projects.map(async (project) => {
+        const resources = await this.resourceService.resources({
+          where: {
+            projectId: project.id,
+          },
+        });
+
+        const services = resources.filter(
+          (x) => x.resourceType === EnumResourceType.Service
+        );
+
+        return services;
+      });
+
+      const servicesPerProject = await Promise.all(getServicesPerProject);
+      const services = servicesPerProject.flat();
 
       if (services.length > 3) {
         throw new Error(
@@ -138,7 +149,12 @@ export class ProjectResolver {
         );
       }
 
-      const promises = services.map(this.validateService);
+      const projectServices = await this.resourceService.resources({
+        where: { projectId: project.id },
+      });
+      const promises = projectServices.map((project) =>
+        this.validateService(project)
+      );
 
       await Promise.all(promises);
     }
