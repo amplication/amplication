@@ -33,9 +33,8 @@ amplication-client:
 
 amplication-server:
   autoscaling:
-    minReplicas: 4
-    maxReplicas: 99
-  replicaCount: 4
+    minReplicas: 2
+    maxReplicas: 10
   ingress:
     hostname: server-next.amplication-dev.com
   config:

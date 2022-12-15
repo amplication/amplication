@@ -2941,7 +2941,7 @@ services:
         - pg_isready
         - -q
         - -d
-        - \${DB_DB_NAME}
+        - \${DB_NAME}
         - -U
         - \${DB_USER}
       timeout: 45s
@@ -3402,7 +3402,7 @@ export class LoginArgs {
 }
 ",
   "test/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-import { User } from \\"../user/base/user\\";
+import { User } from \\"../user/base/User\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
