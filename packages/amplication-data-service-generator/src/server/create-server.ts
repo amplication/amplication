@@ -115,10 +115,9 @@ async function createServerInternal(
 
   await createLog({
     level: "info",
-    message: "Creating access control grants...",
+    message: "Creating Dot Env...",
   });
-  logger.info("Creating access control grants...");
-  const grantsModule = createGrantsModule(entities, roles);
+
   const dotEnvModule = await createDotEnvModule({
     envVariables: ENV_VARIABLES,
   });
