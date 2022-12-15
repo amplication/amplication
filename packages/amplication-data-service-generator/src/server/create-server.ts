@@ -11,7 +11,6 @@ import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
-import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
 import { createSeed } from "./seed/create-seed";
 import DsgContext from "../dsg-context";
