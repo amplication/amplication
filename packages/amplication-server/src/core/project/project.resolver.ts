@@ -122,26 +122,9 @@ export class ProjectResolver {
     );
 
     if (!subscription) {
-      const projects = await this.projectService.findProjects({
-        where: { workspace: { id: workspace.id } },
-      });
-
-      const getServicesPerProject = projects.map(async (project) => {
-        const resources = await this.resourceService.resources({
-          where: {
-            projectId: project.id,
-          },
-        });
-
-        const services = resources.filter(
-          (x) => x.resourceType === EnumResourceType.Service
-        );
-
-        return services;
-      });
-
-      const servicesPerProject = await Promise.all(getServicesPerProject);
-      const services = servicesPerProject.flat();
+      const services = await this.resourceService.getWorkspaceServices(
+        workspace.id
+      );
 
       if (services.length > 3) {
         throw new Error(

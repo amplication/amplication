@@ -489,4 +489,28 @@ export class ResourceService {
       },
     });
   }
+
+  async getWorkspaceServices(workspaceId: string): Promise<Resource[]> {
+    const projects = await this.projectService.findProjects({
+      where: { workspace: { id: workspaceId } },
+    });
+
+    const servicesPerProjectPromises = projects.map(async (project) => {
+      const resources = await this.resources({
+        where: {
+          projectId: project.id,
+        },
+      });
+
+      const services = resources.filter(
+        (x) => x.resourceType === EnumResourceType.Service
+      );
+
+      return services;
+    });
+
+    const servicesPerProject = await Promise.all(servicesPerProjectPromises);
+
+    return servicesPerProject.flat();
+  }
 }
