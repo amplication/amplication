@@ -51,7 +51,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   height = "100vh",
   value = "",
   defaultValue = "",
-  defaultLanguage = "json",
+  defaultLanguage = "typescript",
   options = {
     selectOnLineNumbers: true,
     readOnly: false,
