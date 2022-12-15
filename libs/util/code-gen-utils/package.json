@@ -1,4 +1,7 @@
 {
   "name": "@amplication/code-gen-utils",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "recast": "^0.22.0"
+  }
 }

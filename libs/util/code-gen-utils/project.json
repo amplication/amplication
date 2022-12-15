@@ -11,7 +11,9 @@
         "outputPath": "dist/libs/util/code-gen-utils",
         "main": "libs/util/code-gen-utils/src/index.ts",
         "tsConfig": "libs/util/code-gen-utils/tsconfig.lib.json",
-        "assets": ["libs/util/code-gen-utils/*.md"]
+        "assets": ["libs/util/code-gen-utils/*.md"],
+        "buildableProjectDepsInPackageJsonType": "dependencies",
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "publish": {
