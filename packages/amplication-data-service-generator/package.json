@@ -4,7 +4,7 @@
   "private": true,
   "main": "./main.js",
   "dependencies": {
-    "@amplication/plugin-db-postgres": "^1.1.4",
+    "@amplication/plugin-db-postgres": "^1.1.5",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "axios": "1.2.1",
@@ -15,7 +15,7 @@
     "pascal-case": "3.1.2",
     "pluralize": "8.0.0",
     "prettier": "2.1.2",
-    "prisma-schema-dsl": "^2.0.0",
+    "prisma-schema-dsl": "^2.0.2",
     "recast": "0.20.5",
     "replace-ext": "2.0.0",
     "semver": "7.3.5",

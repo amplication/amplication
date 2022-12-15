@@ -2941,7 +2941,7 @@ services:
         - pg_isready
         - -q
         - -d
-        - \${DB_DB_NAME}
+        - \${DB_NAME}
         - -U
         - \${DB_USER}
       timeout: 45s

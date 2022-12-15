@@ -34,6 +34,8 @@ export async function createModules(
   entityResolverModule: string | undefined
 ): Promise<Module[]> {
   const moduleBaseId = createBaseModuleId(entityType);
+  const moduleTemplate = await readFile(moduleTemplatePath);
+  const moduleBaseTemplate = await readFile(moduleBaseTemplatePath);
 
   return [
     ...(await pluginWrapper(createModule, EventNames.CreateEntityModule, {
@@ -43,6 +45,7 @@ export async function createModules(
       entityControllerModule,
       entityResolverModule,
       moduleBaseId,
+      template: moduleTemplate,
     })),
     ...(await pluginWrapper(
       createBaseModule,
@@ -50,6 +53,7 @@ export async function createModules(
       {
         entityName,
         moduleBaseId,
+        template: moduleBaseTemplate,
       }
     )),
   ];
@@ -62,17 +66,17 @@ async function createModule({
   entityControllerModule,
   entityResolverModule,
   moduleBaseId,
+  template,
 }: CreateEntityModuleParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.module.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
-  const file = await readFile(moduleTemplatePath);
   const controllerId = createControllerId(entityType);
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
   const moduleId = createModuleId(entityType);
 
-  interpolate(file, {
+  interpolate(template, {
     ENTITY: builders.identifier(entityType),
     SERVICE: serviceId,
     CONTROLLER: controllerId,
@@ -100,7 +104,7 @@ async function createModule({
 
   // if we are not generating the controller, remove the controller property
   if (!entityControllerModule) {
-    removeIdentifierFromModuleDecorator(file, controllerId);
+    removeIdentifierFromModuleDecorator(template, controllerId);
   }
 
   const resolverImport = entityResolverModule
@@ -112,24 +116,24 @@ async function createModule({
 
   //if we are not generating the resolver, remove it from the providers list
   if (!entityResolverModule) {
-    removeIdentifierFromModuleDecorator(file, resolverId);
+    removeIdentifierFromModuleDecorator(template, resolverId);
   }
 
   addImports(
-    file,
+    template,
     [moduleBaseImport, serviceImport, controllerImport, resolverImport].filter(
       (x) => x //remove nulls and undefined
     ) as namedTypes.ImportDeclaration[]
   );
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSClassDeclares(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSClassDeclares(template);
 
   return [
     {
       path: modulePath,
-      code: print(file).code,
+      code: print(template).code,
     },
   ];
 }
@@ -137,24 +141,24 @@ async function createModule({
 async function createBaseModule({
   entityName,
   moduleBaseId,
+  template,
 }: CreateEntityModuleBaseParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
-  const file = await readFile(moduleBaseTemplatePath);
 
-  interpolate(file, {
+  interpolate(template, {
     MODULE_BASE: moduleBaseId,
   });
 
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSClassDeclares(file);
-  addAutoGenerationComment(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSClassDeclares(template);
+  addAutoGenerationComment(template);
 
   return [
     {
       path: modulePath,
-      code: print(file).code,
+      code: print(template).code,
     },
   ];
 }
