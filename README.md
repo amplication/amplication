@@ -125,6 +125,8 @@ Follow these simple instructions to set up a local development environment.
   npx nx serve amplication-client
   ```
 
++ **Please note that in order to be able to run the app's client properly, you need to `serve` both the server and client.**
+
 That's it, you are good to go! Happy hacking! 👾
 
 You can always find more information in each app/library's respective README.md file.
