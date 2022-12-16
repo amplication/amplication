@@ -21,6 +21,7 @@ import { createDockerComposeDBFile } from "./docker-compose/create-docker-compos
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
 import { createLog } from "../create-log";
+import { createAuthModules } from "./auth/create-auth";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -66,6 +67,10 @@ async function createServerInternal(
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
 
+  await createLog({ level: "info", message: "Creating Auth module..." });
+  logger.info("Creating Auth module...");
+  const authModules = await createAuthModules();
+
   await createLog({ level: "info", message: "Creating swagger..." });
   logger.info("Creating swagger...");
   const swagger = await createSwagger();
@@ -88,11 +93,12 @@ async function createServerInternal(
   });
 
   const createdModules = [
-    ...seedModule,
     ...resourcesModules,
     ...dtoModules,
     ...swagger,
     ...appModule,
+    ...seedModule,
+    ...authModules,
     ...messageBrokerModules,
   ];
 
