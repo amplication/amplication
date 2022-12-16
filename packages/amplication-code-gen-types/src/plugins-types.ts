@@ -3,6 +3,7 @@ import winston from "winston";
 import {
   clientDirectories,
   DTOs,
+  EntityField,
   Module,
   serverDirectories,
 } from "./code-gen-types";
@@ -48,6 +49,12 @@ export interface DsgContext extends DSGResourceData {
   utils: ContextUtil;
   clientDirectories: clientDirectories;
   serverDirectories: serverDirectories;
+  userEntityName: string;
+  userNameField: EntityField;
+  userPasswordField: EntityField;
+  userRolesField: EntityField;
+  userIdField: EntityField;
+  userAuthField: EntityField[];
 }
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
