@@ -20,7 +20,7 @@ import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
-import { createUserEntityIfNotExist } from "./server/user-entity";
+import { createUserEntityIfNotExist } from "./server/user-entity/user-entity";
 import { resolveTopicNames } from "./util/message-broker";
 
 export const POSTGRESQL_PLUGIN_ID = "db-postgres";
