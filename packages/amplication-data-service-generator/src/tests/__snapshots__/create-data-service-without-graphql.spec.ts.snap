@@ -4839,7 +4839,6 @@ export class CustomerControllerBase {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
     return await this.service.create({
       data: {
@@ -4890,7 +4889,6 @@ export class CustomerControllerBase {
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(CustomerFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
@@ -4930,7 +4928,6 @@ export class CustomerControllerBase {
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
@@ -4976,7 +4973,6 @@ export class CustomerControllerBase {
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() data: CustomerUpdateInput
@@ -5041,7 +5037,6 @@ export class CustomerControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
@@ -5927,7 +5922,6 @@ export class EmptyControllerBase {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
     return await this.service.create({
       data: data,
@@ -5941,7 +5935,6 @@ export class EmptyControllerBase {
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EmptyFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
@@ -5958,7 +5951,6 @@ export class EmptyControllerBase {
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
@@ -5981,7 +5973,6 @@ export class EmptyControllerBase {
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body() data: EmptyUpdateInput
@@ -6009,7 +6000,6 @@ export class EmptyControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
@@ -7176,7 +7166,6 @@ export class OrderControllerBase {
   @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: OrderCreateInput): Promise<Order> {
     return await this.service.create({
       data: {
@@ -7206,7 +7195,6 @@ export class OrderControllerBase {
   @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrderFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
@@ -7233,7 +7221,6 @@ export class OrderControllerBase {
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
@@ -7266,7 +7253,6 @@ export class OrderControllerBase {
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body() data: OrderUpdateInput
@@ -7310,7 +7296,6 @@ export class OrderControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
@@ -8388,7 +8373,6 @@ export class OrganizationControllerBase {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
@@ -8405,7 +8389,6 @@ export class OrganizationControllerBase {
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrganizationFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
@@ -8423,7 +8406,6 @@ export class OrganizationControllerBase {
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
@@ -8447,7 +8429,6 @@ export class OrganizationControllerBase {
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() data: OrganizationUpdateInput
@@ -8476,7 +8457,6 @@ export class OrganizationControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
@@ -9683,7 +9663,6 @@ export class ProfileControllerBase {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
     return await this.service.create({
       data: {
@@ -9712,7 +9691,6 @@ export class ProfileControllerBase {
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(ProfileFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
@@ -9736,7 +9714,6 @@ export class ProfileControllerBase {
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
@@ -9766,7 +9743,6 @@ export class ProfileControllerBase {
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: ProfileWhereUniqueInput,
     @common.Body() data: ProfileUpdateInput
@@ -9809,7 +9785,6 @@ export class ProfileControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
@@ -11734,7 +11709,6 @@ export class UserControllerBase {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: UserCreateInput): Promise<User> {
     return await this.service.create({
       data: {
@@ -11786,7 +11760,6 @@ export class UserControllerBase {
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(UserFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
@@ -11827,7 +11800,6 @@ export class UserControllerBase {
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
@@ -11874,7 +11846,6 @@ export class UserControllerBase {
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() data: UserUpdateInput
@@ -11940,7 +11911,6 @@ export class UserControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {

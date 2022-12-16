@@ -50,7 +50,6 @@ export class CONTROLLER_BASE {
 
   @common.Post()
   @swagger.ApiCreatedResponse({ type: ENTITY })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async CREATE_ENTITY_FUNCTION(
     @common.Body() data: CREATE_INPUT
   ): Promise<ENTITY> {
@@ -62,7 +61,6 @@ export class CONTROLLER_BASE {
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [ENTITY] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(FIND_MANY_ARGS)
   async FIND_MANY_ENTITY_FUNCTION(
     @common.Req() request: Request
@@ -77,7 +75,6 @@ export class CONTROLLER_BASE {
   @common.Get(FINE_ONE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async FIND_ONE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
@@ -96,7 +93,6 @@ export class CONTROLLER_BASE {
   @common.Patch(UPDATE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async UPDATE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT,
     @common.Body() data: UPDATE_INPUT
@@ -120,7 +116,6 @@ export class CONTROLLER_BASE {
   @common.Delete(DELETE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async DELETE_ENTITY_FUNCTION(
     @common.Param() params: WHERE_UNIQUE_INPUT
   ): Promise<ENTITY | null> {
