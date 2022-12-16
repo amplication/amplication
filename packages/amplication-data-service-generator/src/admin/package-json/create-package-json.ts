@@ -7,7 +7,7 @@ import { readFile } from "fs/promises";
 import { join, resolve } from "path";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
-import { updatePackageJSONs } from "../../update-package-jsons";
+import { updatePackageJSONs } from "../../util/update-package-jsons";
 import { paramCase } from "param-case";
 import { promises as fs } from "fs";
 

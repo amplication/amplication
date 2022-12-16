@@ -1,5 +1,5 @@
 import { Module } from "@amplication/code-gen-types";
-import { preparePackageJsonFile } from "./util/preparePackageJsonFile";
+import { preparePackageJsonFile } from "./preparePackageJsonFile";
 
 /**
  * Update package.json and package-lock.json modules in given modules with the
