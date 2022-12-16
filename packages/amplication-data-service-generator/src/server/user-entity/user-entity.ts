@@ -42,7 +42,7 @@ export const USER_ROLES_FIELD: EntityField = {
   properties: {},
 };
 
-const USER_ID_FIELD: EntityField = {
+export const USER_ID_FIELD: EntityField = {
   id: "USER_ID_FIELD",
   permanentId: "USER_ID_FIELD_PERMANENT_ID",
   name: "id",
