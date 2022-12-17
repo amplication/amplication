@@ -1648,11 +1648,12 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
 };
 ",
   "test-ui/src/customer/CustomerTitle.ts": "import { Customer as TCustomer } from \\"../api/customer/Customer\\";
+// declare class ENTITY_TITLE_RETURN_TYPE {}
 
 export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
 export const CustomerTitle = (record: TCustomer): string => {
-  return record.firstName || record.id;
+  return record.firstName || String(record.id);
 };
 ",
   "test-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
@@ -1754,11 +1755,12 @@ export const EmptyShow = (props: ShowProps): React.ReactElement => {
 };
 ",
   "test-ui/src/empty/EmptyTitle.ts": "import { Empty as TEmpty } from \\"../api/empty/Empty\\";
+// declare class ENTITY_TITLE_RETURN_TYPE {}
 
 export const EMPTY_TITLE_FIELD = \\"id\\";
 
 export const EmptyTitle = (record: TEmpty): string => {
-  return record.id || record.id;
+  return record.id || String(record.id);
 };
 ",
   "test-ui/src/index.tsx": "import React from \\"react\\";
@@ -1943,11 +1945,12 @@ export const OrderShow = (props: ShowProps): React.ReactElement => {
 };
 ",
   "test-ui/src/order/OrderTitle.ts": "import { Order as TOrder } from \\"../api/order/Order\\";
+// declare class ENTITY_TITLE_RETURN_TYPE {}
 
 export const ORDER_TITLE_FIELD = \\"id\\";
 
 export const OrderTitle = (record: TOrder): string => {
-  return record.id || record.id;
+  return record.id || String(record.id);
 };
 ",
   "test-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
@@ -2195,11 +2198,12 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
 };
 ",
   "test-ui/src/organization/OrganizationTitle.ts": "import { Organization as TOrganization } from \\"../api/organization/Organization\\";
+// declare class ENTITY_TITLE_RETURN_TYPE {}
 
 export const ORGANIZATION_TITLE_FIELD = \\"name\\";
 
 export const OrganizationTitle = (record: TOrganization): string => {
-  return record.name || record.id;
+  return record.name || String(record.id);
 };
 ",
   "test-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
@@ -2325,11 +2329,12 @@ export const ProfileShow = (props: ShowProps): React.ReactElement => {
 };
 ",
   "test-ui/src/profile/ProfileTitle.ts": "import { Profile as TProfile } from \\"../api/profile/Profile\\";
+// declare class ENTITY_TITLE_RETURN_TYPE {}
 
 export const PROFILE_TITLE_FIELD = \\"id\\";
 
 export const ProfileTitle = (record: TProfile): string => {
-  return record.id || record.id;
+  return record.id || String(record.id);
 };
 ",
   "test-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
@@ -2695,11 +2700,12 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 };
 ",
   "test-ui/src/user/UserTitle.ts": "import { User as TUser } from \\"../api/user/User\\";
+// declare class ENTITY_TITLE_RETURN_TYPE {}
 
 export const USER_TITLE_FIELD = \\"username\\";
 
 export const UserTitle = (record: TUser): string => {
-  return record.username || record.id;
+  return record.username || String(record.id);
 };
 ",
   "test-ui/src/user/roles.ts": "export const ROLES = [
