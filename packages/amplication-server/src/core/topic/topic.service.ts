@@ -11,6 +11,11 @@ import { FindManyTopicArgs } from "./dto/FindManyTopicArgs";
 import { Topic } from "./dto/Topic";
 import { UpdateTopicArgs } from "./dto/UpdateTopicArgs";
 
+const DEFAULT_TOPIC_NAME = "topic.1";
+const DEFAULT_TOPIC_DISPLAY_NAME = "Topic 1";
+const DEFAULT_TOPIC_DESCRIPTION =
+  "An automatically created topic to be used with the Message Broker";
+
 @Injectable()
 export class TopicService extends BlockTypeService<
   Topic,
@@ -37,6 +42,18 @@ export class TopicService extends BlockTypeService<
       throw new Error("Invalid name");
     }
     return super.create(args, user);
+  }
+
+  async createDefault(resourceId: string, user: User): Promise<Topic> {
+    const defaultTopic: CreateTopicArgs = {
+      data: {
+        displayName: DEFAULT_TOPIC_DISPLAY_NAME,
+        name: DEFAULT_TOPIC_NAME,
+        description: DEFAULT_TOPIC_DESCRIPTION,
+        resource: { connect: { id: resourceId } },
+      },
+    };
+    return this.create(defaultTopic, user);
   }
 
   async delete(
