@@ -50,11 +50,9 @@ export interface DsgContext extends DSGResourceData {
   clientDirectories: clientDirectories;
   serverDirectories: serverDirectories;
   userEntityName: string;
-  userNameField: EntityField;
-  userPasswordField: EntityField;
-  userRolesField: EntityField;
-  userIdField: EntityField;
-  userAuthField: EntityField[];
+  userNameFieldName: string;
+  userPasswordFieldName: string;
+  userRolesFieldName: string;
 }
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
