@@ -2,19 +2,16 @@ import * as types from "@amplication/code-gen-types";
 import {
   clientDirectories,
   ContextUtil,
-  EntityField,
   serverDirectories,
 } from "@amplication/code-gen-types";
 import { EnumResourceType } from "./models";
 import winston from "winston";
 import { readPluginStaticModules } from "./util/read-static-modules";
 import {
-  USER_AUTH_FIELDS,
   USER_ENTITY_NAME,
-  USER_ID_FIELD,
-  USER_NAME_FIELD,
-  USER_PASSWORD_FIELD,
-  USER_ROLES_FIELD,
+  USER_NAME_FIELD_NAME,
+  USER_PASSWORD_FIELD_NAME,
+  USER_ROLES_FIELD_NAME,
 } from "./server/user-entity/user-entity";
 
 // const contextUtil = {
@@ -54,11 +51,9 @@ class DsgContext implements types.DsgContext {
   public serverDirectories!: serverDirectories;
 
   public userEntityName: string = USER_ENTITY_NAME;
-  public userNameField: EntityField = USER_NAME_FIELD;
-  public userPasswordField: EntityField = USER_PASSWORD_FIELD;
-  public userRolesField: EntityField = USER_ROLES_FIELD;
-  public userIdField: EntityField = USER_ID_FIELD;
-  public userAuthField: EntityField[] = USER_AUTH_FIELDS;
+  public userNameFieldName: string = USER_NAME_FIELD_NAME;
+  public userPasswordFieldName: string = USER_PASSWORD_FIELD_NAME;
+  public userRolesFieldName: string = USER_ROLES_FIELD_NAME;
 
   private static instance: DsgContext;
 
