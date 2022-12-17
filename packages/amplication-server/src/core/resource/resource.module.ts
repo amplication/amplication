@@ -14,6 +14,7 @@ import { ServiceSettingsModule } from "../serviceSettings/serviceSettings.module
 import { ProjectConfigurationSettingsModule } from "../projectConfigurationSettings/projectConfigurationSettings.module";
 import { ProjectModule } from "../project/project.module";
 import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
+import { TopicModule } from "../topic/topic.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
     EntityModule,
     ServiceSettingsModule,
     ServiceTopicsModule,
+    TopicModule,
     forwardRef(() => BuildModule),
     EnvironmentModule,
     CommitModule,
