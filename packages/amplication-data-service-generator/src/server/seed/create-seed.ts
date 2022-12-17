@@ -24,11 +24,12 @@ import { createEnumMemberName } from "../resource/dto/create-enum-dto";
 import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
+import { USER_AUTH_FIELDS } from "../user-entity/user-entity";
 
 type SeedProperties = {
-  userNameField: EntityField;
-  userPasswordField: EntityField;
-  userRolesField: EntityField;
+  userNameFieldName: string;
+  userPasswordFieldName: string;
+  userRolesFieldName: string;
 };
 
 const seedTemplatePath = require.resolve("./seed.template.ts");
@@ -56,20 +57,20 @@ export const createAuthFieldNames = (userAuthField: EntityField[]) =>
   new Set(userAuthField.map((field) => field.name));
 
 export const createDefaultAuthProperties = ({
-  userNameField,
-  userPasswordField,
-  userRolesField,
+  userNameFieldName,
+  userPasswordFieldName,
+  userRolesFieldName,
 }: SeedProperties) => [
   builders.objectProperty(
-    builders.identifier(userNameField.name),
+    builders.identifier(userNameFieldName),
     builders.stringLiteral(ADMIN_USERNAME)
   ),
   builders.objectProperty(
-    builders.identifier(userPasswordField.name),
+    builders.identifier(userPasswordFieldName),
     awaitExpression`await hash("${ADMIN_PASSWORD}", bcryptSalt)`
   ),
   builders.objectProperty(
-    builders.identifier(userRolesField.name),
+    builders.identifier(userRolesFieldName),
     builders.arrayExpression([builders.stringLiteral(ADMIN_ROLE)])
   ),
 ];
@@ -78,15 +79,16 @@ export async function createSeed(): Promise<Module[]> {
   const {
     serverDirectories,
     entities,
-    userNameField,
-    userPasswordField,
-    userRolesField,
+    userEntityName,
+    userNameFieldName,
+    userPasswordFieldName,
+    userRolesFieldName,
   } = DsgContext.getInstance;
 
   const fileDir = serverDirectories.scriptsDirectory;
   const outputFileName = "seed.ts";
 
-  const userEntity = entities.find((entity) => entity.name === "User");
+  const userEntity = entities.find((entity) => entity.name === userEntityName);
   const customProperties = createUserObjectCustomProperties(
     userEntity as Entity
   );
@@ -94,9 +96,9 @@ export async function createSeed(): Promise<Module[]> {
   const template = await readFile(seedTemplatePath);
   const seedingProperties = [
     ...createDefaultAuthProperties({
-      userNameField,
-      userPasswordField,
-      userRolesField,
+      userNameFieldName,
+      userPasswordFieldName,
+      userRolesFieldName,
     }),
     ...customProperties,
   ];
@@ -144,7 +146,6 @@ async function createSeedInternal({
 export function createUserObjectCustomProperties(
   userEntity: Entity
 ): namedTypes.ObjectProperty[] {
-  const { userAuthField } = DsgContext.getInstance;
   return userEntity.fields
     .filter((field) => field.required)
     .map((field): [EntityField, namedTypes.Expression | null] => [
@@ -153,7 +154,7 @@ export function createUserObjectCustomProperties(
     ])
     .filter(
       ([field, value]) =>
-        !createAuthFieldNames(userAuthField).has(field.name) && value
+        !createAuthFieldNames(USER_AUTH_FIELDS).has(field.name) && value
     )
     .map(([field, value]) =>
       builders.objectProperty(
