@@ -168,7 +168,7 @@ export class ResourceService {
         resourceType: EnumResourceType.MessageBroker,
       },
     });
-    await this.topicService.createDefault(resource.id, user);
+    await this.topicService.createDefault(resource, user);
 
     return resource;
   }
