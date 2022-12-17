@@ -272,7 +272,7 @@ const serviceSettingsCreateMock = jest.fn(() => {
   return EXAMPLE_APP_SETTINGS;
 });
 
-const topicCreateMock = jest.fn(() => {
+const defaultTopicCreateMock = jest.fn(() => {
   return EXAMPLE_TOPIC;
 });
 
@@ -436,7 +436,7 @@ describe("ResourceService", () => {
         {
           provide: TopicService,
           useClass: jest.fn(() => ({
-            create: topicCreateMock,
+            create: defaultTopicCreateMock,
           })),
         },
         {
