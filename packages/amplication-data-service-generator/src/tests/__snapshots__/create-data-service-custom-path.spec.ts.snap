@@ -335,7 +335,7 @@ export type CreateCustomerArgs = {
 import { Order } from \\"../order/Order\\";
 
 export type Customer = {
-  id: string;
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   email: string;
@@ -439,8 +439,9 @@ export type CustomerUpdateInput = {
   orders?: OrderUpdateManyWithoutCustomersInput;
 };
 ",
-  "test-ui/src/api/customer/CustomerWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+  "test-ui/src/api/customer/CustomerWhereInput.ts": "import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
 import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
@@ -450,7 +451,7 @@ import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWher
 import { OrderListRelationFilter } from \\"../order/OrderListRelationFilter\\";
 
 export type CustomerWhereInput = {
-  id?: StringFilter;
+  id?: IntFilter;
   createdAt?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   email?: StringFilter;
@@ -469,7 +470,7 @@ export type CustomerWhereInput = {
 };
 ",
   "test-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
-  id: string;
+  id: number;
 };
 ",
   "test-ui/src/api/customer/DeleteCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -832,7 +833,7 @@ export type DeleteProfileArgs = {
   "test-ui/src/api/profile/Profile.ts": "import { User } from \\"../user/User\\";
 
 export type Profile = {
-  id: string;
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   email: string;
@@ -887,12 +888,13 @@ export type ProfileUpdateInput = {
   user?: UserWhereUniqueInput | null;
 };
 ",
-  "test-ui/src/api/profile/ProfileWhereInput.ts": "import { StringFilter } from \\"../../util/StringFilter\\";
+  "test-ui/src/api/profile/ProfileWhereInput.ts": "import { IntFilter } from \\"../../util/IntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
 import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 
 export type ProfileWhereInput = {
-  id?: StringFilter;
+  id?: IntFilter;
   createdAt?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   email?: StringFilter;
@@ -900,7 +902,7 @@ export type ProfileWhereInput = {
 };
 ",
   "test-ui/src/api/profile/ProfileWhereUniqueInput.ts": "export type ProfileWhereUniqueInput = {
-  id: string;
+  id: number;
 };
 ",
   "test-ui/src/api/profile/UpdateProfileArgs.ts": "import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
@@ -3062,11 +3064,11 @@ model User {
   location           String
   extendedProperties Json
   profile            Profile?            @relation(fields: [profileId], references: [id])
-  profileId          String?             @unique
+  profileId          Int?                @unique
 }
 
 model Profile {
-  id        String   @id @default(uuid())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
@@ -3078,7 +3080,7 @@ model Order {
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
   customer   Customer        @relation(fields: [customerId], references: [id])
-  customerId String
+  customerId Int
   status     EnumOrderStatus
   label      EnumOrderLabel?
 }
@@ -3094,7 +3096,7 @@ model Organization {
 }
 
 model Customer {
-  id                String                       @id @default(cuid())
+  id                Int                          @id @default(autoincrement())
   createdAt         DateTime                     @default(now())
   updatedAt         DateTime                     @updatedAt
   email             String
@@ -4139,12 +4141,12 @@ import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
-  IsString,
+  IsInt,
   IsDate,
+  IsString,
   IsOptional,
   IsBoolean,
   IsNumber,
-  IsInt,
   IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
@@ -4158,11 +4160,11 @@ import { Order } from \\"../../order/base/Order\\";
 class Customer {
   @ApiProperty({
     required: true,
-    type: String,
+    type: Number,
   })
-  @IsString()
-  @Field(() => String)
-  id!: string;
+  @IsInt()
+  @Field(() => Number)
+  id!: number;
 
   @ApiProperty({
     required: true,
@@ -5028,10 +5030,11 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
+import { IntFilter } from \\"../../util/IntFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
 import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
@@ -5044,14 +5047,14 @@ import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFil
 class CustomerWhereInput {
   @ApiProperty({
     required: false,
-    type: StringFilter,
+    type: IntFilter,
   })
-  @Type(() => StringFilter)
+  @Type(() => IntFilter)
   @IsOptional()
-  @Field(() => StringFilter, {
+  @Field(() => IntFilter, {
     nullable: true,
   })
-  id?: StringFilter;
+  id?: IntFilter;
 
   @ApiProperty({
     required: false,
@@ -5236,16 +5239,16 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString } from \\"class-validator\\";
+import { IsInt } from \\"class-validator\\";
 @InputType()
 class CustomerWhereUniqueInput {
   @ApiProperty({
     required: true,
-    type: String,
+    type: Number,
   })
-  @IsString()
-  @Field(() => String)
-  id!: string;
+  @IsInt()
+  @Field(() => Number)
+  id!: number;
 }
 export { CustomerWhereUniqueInput };
 ",
@@ -5437,7 +5440,7 @@ import { CustomerService } from \\"../customer.service\\";
 const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
-  id: \\"exampleId\\",
+  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -5451,7 +5454,7 @@ const CREATE_INPUT = {
   comments: \\"exampleComments\\",
 };
 const CREATE_RESULT = {
-  id: \\"exampleId\\",
+  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -5466,7 +5469,7 @@ const CREATE_RESULT = {
 };
 const FIND_MANY_RESULT = [
   {
-    id: \\"exampleId\\",
+    id: 42,
     createdAt: new Date(),
     updatedAt: new Date(),
     email: \\"exampleEmail\\",
@@ -5481,7 +5484,7 @@ const FIND_MANY_RESULT = [
   },
 ];
 const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
+  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -6379,7 +6382,7 @@ export class CustomerServiceBase {
   }
 
   async findOrders(
-    parentId: string,
+    parentId: number,
     args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
     return this.prisma.customer
@@ -6389,7 +6392,7 @@ export class CustomerServiceBase {
       .orders(args);
   }
 
-  async getOrganization(parentId: string): Promise<Organization | null> {
+  async getOrganization(parentId: number): Promise<Organization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -6397,7 +6400,7 @@ export class CustomerServiceBase {
       .organization();
   }
 
-  async getVipOrganization(parentId: string): Promise<Organization | null> {
+  async getVipOrganization(parentId: number): Promise<Organization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -11621,18 +11624,24 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\\";
+import {
+  IsInt,
+  IsDate,
+  IsString,
+  ValidateNested,
+  IsOptional,
+} from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { User } from \\"../../user/base/User\\";
 @ObjectType()
 class Profile {
   @ApiProperty({
     required: true,
-    type: String,
+    type: Number,
   })
-  @IsString()
-  @Field(() => String)
-  id!: string;
+  @IsInt()
+  @Field(() => Number)
+  id!: number;
 
   @ApiProperty({
     required: true,
@@ -11966,23 +11975,24 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { StringFilter } from \\"../../util/StringFilter\\";
+import { IntFilter } from \\"../../util/IntFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+import { StringFilter } from \\"../../util/StringFilter\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 @InputType()
 class ProfileWhereInput {
   @ApiProperty({
     required: false,
-    type: StringFilter,
+    type: IntFilter,
   })
-  @Type(() => StringFilter)
+  @Type(() => IntFilter)
   @IsOptional()
-  @Field(() => StringFilter, {
+  @Field(() => IntFilter, {
     nullable: true,
   })
-  id?: StringFilter;
+  id?: IntFilter;
 
   @ApiProperty({
     required: false,
@@ -12044,16 +12054,16 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString } from \\"class-validator\\";
+import { IsInt } from \\"class-validator\\";
 @InputType()
 class ProfileWhereUniqueInput {
   @ApiProperty({
     required: true,
-    type: String,
+    type: Number,
   })
-  @IsString()
-  @Field(() => String)
-  id!: string;
+  @IsInt()
+  @Field(() => Number)
+  id!: number;
 }
 export { ProfileWhereUniqueInput };
 ",
@@ -12103,27 +12113,27 @@ import { ProfileService } from \\"../profile.service\\";
 const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
-  id: \\"exampleId\\",
+  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
 };
 const CREATE_RESULT = {
-  id: \\"exampleId\\",
+  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
 };
 const FIND_MANY_RESULT = [
   {
-    id: \\"exampleId\\",
+    id: 42,
     createdAt: new Date(),
     updatedAt: new Date(),
     email: \\"exampleEmail\\",
   },
 ];
 const FIND_ONE_RESULT = {
-  id: \\"exampleId\\",
+  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -12763,7 +12773,7 @@ export class ProfileServiceBase {
     return this.prisma.profile.delete(args);
   }
 
-  async getUser(parentId: string): Promise<User | null> {
+  async getUser(parentId: number): Promise<User | null> {
     return this.prisma.profile
       .findUnique({
         where: { id: parentId },
