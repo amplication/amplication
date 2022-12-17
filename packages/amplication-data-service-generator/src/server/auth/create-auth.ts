@@ -1,13 +1,9 @@
-import { EventNames, Module } from "@amplication/code-gen-types";
+import {
+  CreateServerAuthParams,
+  EventNames,
+  Module,
+} from "@amplication/code-gen-types";
 import pluginWrapper from "../../plugin-wrapper";
-
-export function createAuthModules(): Module[] {
-  return pluginWrapper(
-    createAuthModulesInternal,
-    EventNames.CreateServerAuth,
-    {}
-  );
-}
 
 /**
  *
@@ -15,6 +11,8 @@ export function createAuthModules(): Module[] {
  * but plugins can override this function to return an array of modules (files) that related to the auth logic and
  *  will be written to the server auth folder
  */
-async function createAuthModulesInternal(): Promise<Module[]> {
-  return [{ path: "", code: "" }];
+export function createAuthModules(
+  eventParams: CreateServerAuthParams = {}
+): Module[] {
+  return pluginWrapper(() => [], EventNames.CreateServerAuth, eventParams);
 }
