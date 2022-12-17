@@ -1,15 +1,18 @@
 import { EntityField, EnumDataType } from "@amplication/code-gen-types";
-import DsgContext from "../../dsg-context";
-import { getMissingAuthFields, InvalidDataTypeError } from "./user-entity";
+import {
+  getMissingAuthFields,
+  InvalidDataTypeError,
+  USER_AUTH_FIELDS,
+  USER_NAME_FIELD,
+} from "./user-entity";
 
 describe("getMissingAuthFields", () => {
-  const { userNameField, userAuthField } = DsgContext.getInstance;
   const cases: Array<[string, EntityField[], EntityField[]]> = [
-    ["No missing auth fields", userAuthField, []],
+    ["No missing auth fields", USER_AUTH_FIELDS, []],
     [
       "One missing auth field",
-      userAuthField.slice(0, -1),
-      userAuthField.slice(-1),
+      USER_AUTH_FIELDS.slice(0, -1),
+      USER_AUTH_FIELDS.slice(-1),
     ],
   ];
   test.each(cases)("%s", (name, fields, expected) => {
@@ -18,17 +21,15 @@ describe("getMissingAuthFields", () => {
 
   test("throws for invalid data type", () => {
     expect(() =>
-      getMissingAuthFields([{ ...userNameField, dataType: EnumDataType.Id }])
-    ).toThrow(new InvalidDataTypeError([userNameField]));
+      getMissingAuthFields([{ ...USER_NAME_FIELD, dataType: EnumDataType.Id }])
+    ).toThrow(new InvalidDataTypeError([USER_NAME_FIELD]));
   });
 });
 
 describe("InvalidDataTypeError", () => {
-  const { userNameField } = DsgContext.getInstance;
-
   test("constructs correctly", () => {
-    expect(new InvalidDataTypeError([userNameField]).message).toEqual(
-      `Invalid fields data types: ${userNameField.name} data type should be ${userNameField.dataType}`
+    expect(new InvalidDataTypeError([USER_NAME_FIELD]).message).toEqual(
+      `Invalid fields data types: ${USER_NAME_FIELD.name} data type should be ${USER_NAME_FIELD.dataType}`
     );
   });
 });
