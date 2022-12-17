@@ -40,10 +40,6 @@ async function writeModules(
   console.info(`Writing modules to ${destination}${path.sep} ...`);
   await Promise.all(
     modules.map(async (module) => {
-      if (!module.path || !module.code) {
-        console.log("module path or code was not provided");
-        return;
-      }
       const filePath = path.join(destination, module.path);
       await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
       await fs.promises.writeFile(filePath, module.code);
