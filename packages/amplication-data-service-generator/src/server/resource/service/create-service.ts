@@ -9,6 +9,8 @@ import {
   EventNames,
   CreateEntityServiceParams,
   CreateEntityServiceBaseParams,
+  EnumDataType,
+  types,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -195,7 +197,11 @@ async function createServiceBaseModule({
   const toManyRelations = (
     await Promise.all(
       toManyRelationFields.map(async (field) => {
-        const toManyFile = await createToManyRelationFile(field, delegateId);
+        const toManyFile = await createToManyRelationFile(
+          entity,
+          field,
+          delegateId
+        );
 
         const imports = extractImportDeclarations(toManyFile);
         const methods = getMethods(
@@ -213,7 +219,11 @@ async function createServiceBaseModule({
   const toOneRelations = (
     await Promise.all(
       toOneRelationFields.map(async (field) => {
-        const toOneFile = await createToOneRelationFile(field, delegateId);
+        const toOneFile = await createToOneRelationFile(
+          entity,
+          field,
+          delegateId
+        );
 
         const imports = extractImportDeclarations(toOneFile);
         const methods = getMethods(
@@ -338,6 +348,7 @@ export function createFieldFindOneFunctionId(
 }
 
 async function createToOneRelationFile(
+  entity: Entity,
   field: EntityLookupField,
   delegateId: namedTypes.Identifier
 ) {
@@ -346,6 +357,7 @@ async function createToOneRelationFile(
 
   interpolate(toOneFile, {
     DELEGATE: delegateId,
+    PARENT_ID_TYPE: identityParentIdType(entity),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: createFieldFindOneFunctionId(field.name),
@@ -355,6 +367,7 @@ async function createToOneRelationFile(
 }
 
 async function createToManyRelationFile(
+  entity: Entity,
   field: EntityLookupField,
   delegateId: namedTypes.Identifier
 ) {
@@ -366,6 +379,7 @@ async function createToManyRelationFile(
 
   interpolate(toManyFile, {
     DELEGATE: delegateId,
+    PARENT_ID_TYPE: identityParentIdType(entity),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: createFieldFindManyFunctionId(field.name),
@@ -373,6 +387,23 @@ async function createToManyRelationFile(
   });
 
   return toManyFile;
+}
+
+function identityParentIdType(entity: Entity): namedTypes.Identifier {
+  const relatedEntityFiledId = entity.fields?.find(
+    (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
+  );
+
+  const { idType } = (relatedEntityFiledId?.properties as types.Id) || "CUID";
+  const idTypeTSOptions: {
+    [key in types.Id["idType"]]: namedTypes.Identifier;
+  } = {
+    AUTO_INCREMENT: builders.identifier("number"),
+    UUID: builders.identifier("string"),
+    CUID: builders.identifier("string"),
+  };
+
+  return idTypeTSOptions[idType] ?? idTypeTSOptions["CUID"];
 }
 
 function createTemplateMapping(
