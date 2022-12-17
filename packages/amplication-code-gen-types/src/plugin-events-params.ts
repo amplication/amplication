@@ -73,9 +73,7 @@ export interface CreateTokenPayloadInterfaceParams extends EventParams {
   templateMapping: { [key: string]: any };
   filePath: string;
 }
-export interface CreateServerAuthParams extends EventParams {
-  srcDir: string;
-}
+export interface CreateServerAuthParams extends EventParams {}
 
 export interface CreateAdminUIParams extends EventParams {}
 export interface CreateServerParams extends EventParams {}
