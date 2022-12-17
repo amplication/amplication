@@ -12,6 +12,6 @@ import pluginWrapper from "../../plugin-wrapper";
  */
 export function createAuthModules(
   eventParams: CreateServerAuthParams = {}
-): Module[] {
+): Promise<Module[]> {
   return pluginWrapper(() => [], EventNames.CreateServerAuth, eventParams);
 }
