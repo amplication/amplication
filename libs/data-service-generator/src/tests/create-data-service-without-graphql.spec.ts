@@ -26,7 +26,7 @@ jest.mock("./create-log", () => ({
 
 describe("createDataService", () => {
   test("creates app as expected", async () => {
-    const modules = await createDataServiceImpl({
+    const modules = await createDataService({
       entities,
       roles,
       resourceInfo: newAppInfo,
