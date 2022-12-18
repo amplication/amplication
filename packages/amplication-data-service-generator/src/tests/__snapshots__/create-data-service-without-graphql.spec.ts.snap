@@ -12193,7 +12193,6 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
 import { Prisma, User, Organization, Profile } from \\"generated-prisma-client\\";
-import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}

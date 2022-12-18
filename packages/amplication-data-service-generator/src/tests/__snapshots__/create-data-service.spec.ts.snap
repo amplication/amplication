@@ -6567,7 +6567,6 @@ import { HealthController } from \\"./health.controller\\";
 import { HealthService } from \\"./health.service\\";
 
 @Module({
-  imports: [PrismaModule],
   controllers: [HealthController],
   providers: [HealthService],
   exports: [HealthService],
@@ -6575,7 +6574,7 @@ import { HealthService } from \\"./health.service\\";
 export class HealthModule {}
 ",
   "server/src/health/health.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { HealthServiceBase } from \\"./base/health.service.base\\";
 
 @Injectable()
@@ -13082,7 +13081,6 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
 import { Prisma, User, Organization, Profile } from \\"generated-prisma-client\\";
-import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
