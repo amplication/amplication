@@ -390,12 +390,12 @@ async function createToManyRelationFile(
 }
 
 function identityParentIdType(entity: Entity): namedTypes.Identifier {
-  const relatedEntityFiledId = entity.fields?.find(
+  const entityFiledId = entity.fields?.find(
     (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
   );
 
-  const { idType } = (relatedEntityFiledId?.properties as types.Id) || "CUID";
-  const idTypeTSOptions: {
+  const { idType } = (entityFiledId?.properties as types.Id) || "CUID";
+  const idTypeOptions: {
     [key in types.Id["idType"]]: namedTypes.Identifier;
   } = {
     AUTO_INCREMENT: builders.identifier("number"),
@@ -403,7 +403,7 @@ function identityParentIdType(entity: Entity): namedTypes.Identifier {
     CUID: builders.identifier("string"),
   };
 
-  return idTypeTSOptions[idType] ?? idTypeTSOptions["CUID"];
+  return idTypeOptions[idType] ?? idTypeOptions["CUID"];
 }
 
 function createTemplateMapping(
