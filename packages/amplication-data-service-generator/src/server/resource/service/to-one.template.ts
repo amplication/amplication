@@ -1,9 +1,9 @@
-import { PrismaService } from "nestjs-prisma";
+import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   // @ts-ignore
   RELATED_ENTITY,
-} from "@prisma/client";
+} from "generated-prisma-client";
 
 declare class PARENT_ID_TYPE {}
 
