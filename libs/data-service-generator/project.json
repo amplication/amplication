@@ -68,6 +68,7 @@
     "postbuild": {
       "executor": "nx:run-commands",
       "outputs": ["dist/libs/data-service-generator"],
+      "dependsOn": ["build"],
       "options": {
         "command": "ts-node scripts/copy-files.ts",
         "cwd": "libs/data-service-generator"
