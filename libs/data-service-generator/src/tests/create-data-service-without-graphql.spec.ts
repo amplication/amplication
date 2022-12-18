@@ -4,7 +4,7 @@ import { AppInfo } from "@amplication/code-gen-types";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { EnumResourceType } from "../models";
 import { installedPlugins } from "./pluginInstallation";
-import { createDataServiceImpl } from "../create-data-service-impl";
+import { createDataService } from "../create-data-service";
 
 const newAppInfo: AppInfo = {
   ...appInfo,

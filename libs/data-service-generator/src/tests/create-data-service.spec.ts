@@ -1,4 +1,4 @@
-import { createDataServiceImpl } from "../create-data-service-impl";
+import { createDataServiceImpl } from "../create-data-service";
 import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";

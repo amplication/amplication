@@ -67,7 +67,7 @@
         "passWithNoTests": true
       }
     },
-    "test:update-snapshot": {
+    "update-snapshot": {
       "dependsOn": ["prebuild"],
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/src/tests/__snapshots__"],
