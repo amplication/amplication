@@ -391,7 +391,7 @@ async function createToManyRelationFile(
 
 function identityParentIdType(entity: Entity): namedTypes.Identifier {
   const entityFiledId = entity.fields?.find(
-    (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
+    (entityField) => entityField.dataType === EnumDataType.Id
   );
 
   const { idType } = (entityFiledId?.properties as types.Id) || "CUID";
