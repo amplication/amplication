@@ -52,6 +52,18 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
   } = useProjectSelector(authenticated, currentWorkspace);
 
   const {
+    pendingChanges,
+    commitRunning,
+    pendingChangesIsError,
+    addEntity,
+    addBlock,
+    addChange,
+    resetPendingChanges,
+    setCommitRunning,
+    setPendingChangesError,
+  } = usePendingChanges(currentProject);
+
+  const {
     resources,
     projectConfigurationResource,
     handleSearchChange,
@@ -67,19 +79,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createMessageBroker,
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
-  } = useResources(currentWorkspace, currentProject);
-
-  const {
-    pendingChanges,
-    commitRunning,
-    pendingChangesIsError,
-    addEntity,
-    addBlock,
-    addChange,
-    resetPendingChanges,
-    setCommitRunning,
-    setPendingChangesError,
-  } = usePendingChanges(currentProject);
+  } = useResources(currentWorkspace, currentProject, addBlock);
 
   return currentWorkspace ? (
     <AppContextProvider

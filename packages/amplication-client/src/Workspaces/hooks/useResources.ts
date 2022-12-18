@@ -34,7 +34,8 @@ const createGitRepositoryFullName = (
 
 const useResources = (
   currentWorkspace: models.Workspace | undefined,
-  currentProject: models.Project | undefined
+  currentProject: models.Project | undefined,
+  addBlock: (id: string) => void
 ) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -121,9 +122,10 @@ const useResources = (
     });
     createBroker({ variables: { data: data } }).then((result) => {
       result.data?.createMessageBroker.id &&
-        refetch().then(() =>
-          resourceRedirect(result.data?.createMessageBroker.id as string)
-        );
+        refetch().then(() => {
+          addBlock(result.data.createMessageBroker.id);
+          resourceRedirect(result.data?.createMessageBroker.id as string);
+        });
     });
   };
   useEffect(() => {
