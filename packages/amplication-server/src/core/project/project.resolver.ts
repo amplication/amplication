@@ -28,10 +28,6 @@ import {
   FindPendingChangesArgs,
   PendingChange,
 } from "../resource/dto";
-import { WorkspaceService } from "../workspace/workspace.service";
-import { SubscriptionService } from "../subscription/subscription.service";
-import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { EntityService } from "../entity/entity.service";
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -39,14 +35,9 @@ import { EntityService } from "../entity/entity.service";
 export class ProjectResolver {
   constructor(
     private projectService: ProjectService,
-    @Inject(forwardRef(() => EntityService))
-    private readonly entityService: EntityService,
+
     @Inject(forwardRef(() => ResourceService))
-    private resourceService: ResourceService,
-    @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService,
-    @Inject(forwardRef(() => SubscriptionService))
-    private readonly subscriptionService: SubscriptionService
+    private resourceService: ResourceService
   ) {}
 
   @Query(() => [Project], { nullable: false })
@@ -103,56 +94,7 @@ export class ProjectResolver {
   )
   @InjectContextValue(InjectableOriginParameter.UserId, "data.user.connect.id")
   async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
-    const projectId = args.data.project.connect.id;
-
-    await this.validateProject(projectId);
-
     return this.projectService.commit(args);
-  }
-
-  async validateProject(projectId: string): Promise<void> {
-    const project = await this.projectService.findUnique({
-      where: { id: projectId },
-    });
-    const workspace = await this.workspaceService.getWorkspace({
-      where: { id: project.workspaceId },
-    });
-    const subscription = await this.subscriptionService.getCurrentSubscription(
-      workspace.id
-    );
-
-    if (!subscription) {
-      const services = await this.resourceService.getWorkspaceServices(
-        workspace.id
-      );
-
-      if (services.length > 3) {
-        throw new Error(
-          "You have reached the maximum number of services. (Upgrade your workspace plan)"
-        );
-      }
-
-      const projectServices = await this.resourceService.resources({
-        where: { projectId: project.id },
-      });
-      const promises = projectServices.map((project) =>
-        this.validateService(project)
-      );
-
-      await Promise.all(promises);
-    }
-  }
-
-  async validateService(service: Resource): Promise<void> {
-    const entities = await this.entityService.entities({
-      where: { resourceId: service.id },
-    });
-
-    if (entities.length > 7) {
-      throw new Error(
-        "You have reached the maximum number of entities. (Upgrade your workspace plan)"
-      );
-    }
   }
 
   @Mutation(() => Boolean, {

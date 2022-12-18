@@ -1,5 +1,5 @@
 import { EnumResourceType, PrismaService } from "@amplication/prisma-db";
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
 import { ResourceService, EntityService } from "../";
@@ -16,6 +16,8 @@ import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
+import { WorkspaceService } from "../workspace/workspace.service";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 @Injectable()
 export class ProjectService {
@@ -24,7 +26,11 @@ export class ProjectService {
     private readonly resourceService: ResourceService,
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
+    @Inject(forwardRef(() => WorkspaceService))
+    private readonly workspaceService: WorkspaceService,
+    @Inject(forwardRef(() => SubscriptionService))
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -114,12 +120,63 @@ export class ProjectService {
     return [...changedEntities, ...changedBlocks];
   }
 
+  async validateSubscriptionPlanLimitationsForProject(
+    projectId: string
+  ): Promise<void> {
+    const project = await this.findUnique({
+      where: { id: projectId },
+    });
+    const workspace = await this.workspaceService.getWorkspace({
+      where: { id: project.workspaceId },
+    });
+    const subscription = await this.subscriptionService.getCurrentSubscription(
+      workspace.id
+    );
+
+    if (!subscription) {
+      const services = await this.resourceService.getWorkspaceServices(
+        workspace.id
+      );
+
+      if (services.length > 3) {
+        throw new Error(
+          "You have reached the maximum number of services. (Upgrade your workspace plan)"
+        );
+      }
+
+      const projectServices = await this.resourceService.resources({
+        where: { projectId: project.id },
+      });
+      const promises = projectServices.map((project) =>
+        this.validateSubscriptionPlanLimitationsForService(project)
+      );
+
+      await Promise.all(promises);
+    }
+  }
+
+  async validateSubscriptionPlanLimitationsForService(
+    service: Resource
+  ): Promise<void> {
+    const entities = await this.entityService.entities({
+      where: { resourceId: service.id },
+    });
+
+    if (entities.length > 7) {
+      throw new Error(
+        "You have reached the maximum number of entities. (Upgrade your workspace plan)"
+      );
+    }
+  }
+
   async commit(
     args: CreateCommitArgs,
     skipPublish?: boolean
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
+
+    await this.validateSubscriptionPlanLimitationsForProject(projectId);
 
     const resources = await this.prisma.resource.findMany({
       where: {
