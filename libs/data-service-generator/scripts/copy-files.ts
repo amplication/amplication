@@ -14,8 +14,8 @@ const DIST_DIRECTORY = path.join(
   __dirname,
   "../../../",
   "dist",
-  "packages",
-  "amplication-data-service-generator",
+  "libs",
+  "data-service-generator",
   "src"
 );
 /*** The directory of the server source code */
