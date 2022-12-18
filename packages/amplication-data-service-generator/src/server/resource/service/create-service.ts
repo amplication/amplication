@@ -39,7 +39,7 @@ import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
-import { getEntityIdType } from "packages/amplication-data-service-generator/src/util/get-entity-id-type";
+import { getEntityIdType } from "../../../util/get-entity-id-type";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
