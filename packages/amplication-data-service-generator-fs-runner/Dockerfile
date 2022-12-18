@@ -6,10 +6,10 @@ COPY ./dist/packages/amplication-code-gen-types/package.json .
 RUN npm i --omit-dev
 COPY ./dist/packages/amplication-code-gen-types .
 
-WORKDIR /workspace/packages/amplication-data-service-generator
-COPY ./dist/packages/amplication-data-service-generator/package.json .
+WORKDIR /workspace/libs/data-service-generator
+COPY ./dist/libs/data-service-generator/package.json .
 RUN npm i --omit-dev
-COPY ./dist/packages/amplication-data-service-generator .
+COPY ./dist/libs/data-service-generator .
 
 WORKDIR /workspace/packages/amplication-data-service-generator-fs-runner
 COPY ./dist/packages/amplication-data-service-generator-fs-runner .
