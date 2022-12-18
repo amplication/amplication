@@ -46,7 +46,7 @@
       "dependsOn": ["^build", "db:prisma:generate", "^db:prisma:generate"],
       "options": {
         "outputPath": "dist/packages/amplication-data-service-generator",
-        "tsConfig": "packages/amplication-data-service-generator/tsconfig.app.json",
+        "tsConfig": "packages/amplication-data-service-generator/tsconfig.lib.json",
         "packageJson": "packages/amplication-data-service-generator/package.json",
         "main": "packages/amplication-data-service-generator/src/index.ts",
         "assets": ["packages/amplication-data-service-generator/*.md"]
