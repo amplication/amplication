@@ -1,7 +1,7 @@
 import { Module, AppInfo } from "@amplication/code-gen-types";
 import { isEmpty } from "lodash";
-import { readCode } from "./util/module";
-import { replacePlaceholdersInCode } from "./util/text-file-parser";
+import { readCode } from "../util/module";
+import { replacePlaceholdersInCode } from "../util/text-file-parser";
 export const MODULE_PATH = `.env`;
 
 const templatePath = require.resolve("./create-dotenv.template.env");

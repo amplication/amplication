@@ -105,7 +105,7 @@ function dynamicServerPathCreator(serverPath: string): serverDirectories {
     baseDirectory: baseDirectory,
     srcDirectory: srcDirectory,
     scriptsDirectory: `${baseDirectory}/scripts`,
-    authDirectory: `${baseDirectory}/auth`,
+    authDirectory: `${srcDirectory}/auth`,
     messageBrokerDirectory: join(srcDirectory, "message-broker"),
   };
 }

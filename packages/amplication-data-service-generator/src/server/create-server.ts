@@ -4,7 +4,7 @@ import {
   EventNames,
   CreateServerParams,
 } from "@amplication/code-gen-types";
-import { readStaticModules } from "../read-static-modules";
+import { readStaticModules } from "../util/read-static-modules";
 import { formatCode, formatJson } from "../util/module";
 import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";

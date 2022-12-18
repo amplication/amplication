@@ -12,7 +12,8 @@
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
     "db:migrate:deploy": "nx run-many --target=db:migrate:deploy",
     "prepare": "husky install",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "help": "nx help"
   },
   "lint-staged": {
     "*": [
@@ -251,7 +252,7 @@
     "yup": "^0.32.11"
   },
   "engines": {
-    "node": "^16.3.0 || ^14.0.0",
+    "node": "^18.3.0 || ^16.3.0",
     "npm": "^8.1.0 || ^7.3.0"
   },
   "bugs": {

@@ -55,7 +55,8 @@ export async function createPrismaSchemaInternal({
 
   const prismaClientGenerator = PrismaSchemaDSL.createGenerator(
     clientGenerator.name,
-    clientGenerator.provider
+    clientGenerator.provider,
+    clientGenerator.output
   );
 
   const schema = PrismaSchemaDSL.createSchema(models, enums, prismaDataSource, [

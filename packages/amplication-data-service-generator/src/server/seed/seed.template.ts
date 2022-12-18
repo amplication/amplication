@@ -5,7 +5,7 @@
  ***/
 
 import * as dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../prisma/generated-prisma-client";
 // @ts-ignore
 import { customSeed } from "./customSeed";
 

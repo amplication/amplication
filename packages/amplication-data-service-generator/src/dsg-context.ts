@@ -6,7 +6,7 @@ import {
 } from "@amplication/code-gen-types";
 import { EnumResourceType } from "./models";
 import winston from "winston";
-import { readPluginStaticModules } from "./read-static-modules";
+import { readPluginStaticModules } from "./util/read-static-modules";
 
 // const contextUtil = {
 //   skipDefaultBehavior: false,
