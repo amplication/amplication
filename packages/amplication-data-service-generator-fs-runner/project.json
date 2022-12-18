@@ -31,17 +31,6 @@
         }
       }
     },
-    "serve": {
-      "executor": "@nrwl/js:node",
-      "options": {
-        "buildTarget": "amplication-data-service-generator-fs-runner:build"
-      },
-      "configurations": {
-        "production": {
-          "buildTarget": "amplication-data-service-generator-fs-runner:build:production"
-        }
-      }
-    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
@@ -74,7 +63,7 @@
         "command": "ts-node ./src/main.ts ./input.json ./generated",
         "cwd": "packages/amplication-data-service-generator-fs-runner"
       },
-      "dependsOn": ["generate-example-input-json"]
+      "dependsOn": ["generate-example-input-json", "^build"]
     },
     "docker:build": {
       "executor": "@nx-tools/nx-docker:build",
