@@ -3,31 +3,23 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-data-service-generator-fs-runner/src",
   "projectType": "application",
+  "implicitDependencies": ["data-service-generator"],
   "targets": {
     "build": {
-      "executor": "@nrwl/webpack:webpack",
+      "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "target": "node",
         "compiler": "tsc",
         "outputPath": "dist/packages/amplication-data-service-generator-fs-runner",
         "main": "packages/amplication-data-service-generator-fs-runner/src/main.ts",
-        "tsConfig": "packages/amplication-data-service-generator-fs-runner/tsconfig.app.json",
-        "assets": [
-          "packages/amplication-data-service-generator-fs-runner/src/assets"
-        ]
+        "tsConfig": "packages/amplication-data-service-generator-fs-runner/tsconfig.app.json"
       },
       "configurations": {
         "production": {
           "optimization": true,
           "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "packages/amplication-data-service-generator-fs-runner/src/environments/environment.ts",
-              "with": "packages/amplication-data-service-generator-fs-runner/src/environments/environment.prod.ts"
-            }
-          ]
+          "inspect": false
         }
       }
     },
