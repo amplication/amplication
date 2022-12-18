@@ -33,7 +33,11 @@
       ],
       "outputs": ["{projectRoot}/node_modules"],
       "options": {
-        "commands": ["npm ci", "ts-node ./scripts/update-version.ts"],
+        "commands": [
+          "npm ci",
+          "ts-node ./scripts/update-version.ts",
+          "ts-node scripts/copy-files.ts"
+        ],
         "parallel": false,
         "cwd": "libs/data-service-generator"
       }
@@ -48,14 +52,6 @@
         "packageJson": "libs/data-service-generator/package.json",
         "main": "libs/data-service-generator/src/index.ts",
         "assets": ["libs/data-service-generator/*.md"]
-      }
-    },
-    "postbuild": {
-      "executor": "nx:run-commands",
-      "outputs": ["dist/libs/data-service-generator"],
-      "options": {
-        "command": "ts-node scripts/copy-files.ts",
-        "cwd": "libs/data-service-generator"
       }
     },
     "test": {
