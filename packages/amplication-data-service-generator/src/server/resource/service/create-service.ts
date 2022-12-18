@@ -39,6 +39,7 @@ import { readFile, relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
+import { getEntityIdType } from "packages/amplication-data-service-generator/src/util/get-entity-id-type";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -357,7 +358,7 @@ async function createToOneRelationFile(
 
   interpolate(toOneFile, {
     DELEGATE: delegateId,
-    PARENT_ID_TYPE: identityParentIdType(entity),
+    PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: createFieldFindOneFunctionId(field.name),
@@ -379,7 +380,7 @@ async function createToManyRelationFile(
 
   interpolate(toManyFile, {
     DELEGATE: delegateId,
-    PARENT_ID_TYPE: identityParentIdType(entity),
+    PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: createFieldFindManyFunctionId(field.name),
@@ -389,12 +390,8 @@ async function createToManyRelationFile(
   return toManyFile;
 }
 
-function identityParentIdType(entity: Entity): namedTypes.Identifier {
-  const entityFiledId = entity.fields?.find(
-    (entityField) => entityField.dataType === EnumDataType.Id
-  );
-
-  const { idType } = (entityFiledId?.properties as types.Id) || "CUID";
+function getParentIdType(entityName: string): namedTypes.Identifier {
+  const idType = getEntityIdType(entityName);
 
   const idTypeOptions: {
     [key in types.Id["idType"]]: namedTypes.Identifier;
