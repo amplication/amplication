@@ -25,19 +25,25 @@
         "lintFilePatterns": ["libs/data-service-generator/src/**/*"]
       }
     },
-    "prebuild": {
+    "update-version": {
       "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/node_modules"],
       "inputs": [
         "{projectRoot}/package.json",
         "{projectRoot}/package-lock.json"
       ],
-      "outputs": ["{projectRoot}/node_modules"],
       "options": {
-        "commands": [
-          "npm ci",
-          "ts-node ./scripts/update-version.ts",
-          "ts-node scripts/copy-files.ts"
-        ],
+        "commands": ["npm ci", "ts-node ./scripts/update-version.ts"],
+        "parallel": false,
+        "cwd": "libs/data-service-generator"
+      }
+    },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/node_modules"],
+      "dependsOn": ["update-version"],
+      "options": {
+        "commands": ["ts-node scripts/copy-files.ts"],
         "parallel": false,
         "cwd": "libs/data-service-generator"
       }
@@ -57,6 +63,14 @@
         "packageJson": "libs/data-service-generator/package.json",
         "main": "libs/data-service-generator/src/index.ts",
         "assets": ["libs/data-service-generator/*.md"]
+      }
+    },
+    "postbuild": {
+      "executor": "nx:run-commands",
+      "outputs": ["dist/libs/data-service-generator"],
+      "options": {
+        "command": "ts-node scripts/copy-files.ts",
+        "cwd": "libs/data-service-generator"
       }
     },
     "test": {
