@@ -83,7 +83,7 @@
       "options": {
         "commands": [
           "rimraf generated",
-          "ts-node -P tsconfig.app.json scripts/generate-test-data-service.ts generated"
+          "ts-node -P tsconfig.lib.json scripts/generate-test-data-service.ts generated"
         ],
         "parallel": false,
         "cwd": "libs/data-service-generator"

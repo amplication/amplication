@@ -6,7 +6,7 @@ import { appInfo } from "../src/tests/appInfo";
 import entities from "../src/tests/entities";
 import { installedPlugins } from "../src/tests/pluginInstallation";
 import roles from "../src/tests/roles";
-import { createDataServiceImpl } from "../src";
+import { createDataService } from "../src";
 
 if (require.main === module) {
   const [, , output] = process.argv;
@@ -23,7 +23,7 @@ export default async function generateTestDataService(
   destination: string,
   appInfo: AppInfo
 ): Promise<void> {
-  const modules = await createDataServiceImpl({
+  const modules = await createDataService({
     entities,
     roles,
     resourceInfo: appInfo,
