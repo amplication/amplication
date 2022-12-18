@@ -17,8 +17,10 @@
     "resolveJsonModule": true,
     "strict": true,
     "jsx": "react",
-    "lib": ["es2020", "dom"]
+    "lib": ["es2020", "dom"],
+    "baseUrl": "."
   },
+  "exclude": ["**/*.template.tsx", "**/*.template.ts", "**/static/**/*"],
   "references": [
     {
       "path": "./tsconfig.lib.json"
