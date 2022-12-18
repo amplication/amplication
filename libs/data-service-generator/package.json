@@ -2,7 +2,7 @@
   "name": "@amplication/data-service-generator",
   "version": "1.1.2",
   "private": true,
-  "main": "./main.js",
+  "main": "./src/index.js",
   "dependencies": {
     "@amplication/plugin-db-postgres": "^1.1.5",
     "@babel/parser": "7.14.7",
