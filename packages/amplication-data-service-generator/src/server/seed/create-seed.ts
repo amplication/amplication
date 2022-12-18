@@ -53,8 +53,9 @@ export const NEW_JSON_EXPRESSION = builders.objectExpression([
     builders.stringLiteral("bar")
   ),
 ]);
-export const createAuthFieldNames = (userAuthField: EntityField[]) =>
-  new Set(userAuthField.map((field) => field.name));
+export const AUTH_FIELD_NAMES = new Set(
+  USER_AUTH_FIELDS.map((field) => field.name)
+);
 
 export const createDefaultAuthProperties = ({
   userNameFieldName,
@@ -152,10 +153,7 @@ export function createUserObjectCustomProperties(
       field,
       createDefaultValue(field, userEntity),
     ])
-    .filter(
-      ([field, value]) =>
-        !createAuthFieldNames(USER_AUTH_FIELDS).has(field.name) && value
-    )
+    .filter(([field, value]) => !AUTH_FIELD_NAMES.has(field.name) && value)
     .map(([field, value]) =>
       builders.objectProperty(
         builders.identifier(field.name),
