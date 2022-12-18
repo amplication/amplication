@@ -9,7 +9,6 @@ import {
   EventNames,
   CreateEntityServiceParams,
   CreateEntityServiceBaseParams,
-  EnumDataType,
   types,
 } from "@amplication/code-gen-types";
 import {
