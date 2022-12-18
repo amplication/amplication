@@ -1,5 +1,5 @@
 import { types } from "@amplication/code-gen-types";
-import { createDataServiceImpl } from "../create-data-service-impl";
+import { createDataService } from "../create-data-service";
 import { EnumDataType, EnumResourceType } from "../models";
 import { USER_ENTITY_NAME } from "../server/user-entity";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
@@ -29,7 +29,7 @@ beforeAll(() => {
 
 describe("createDataService", () => {
   test("creates resource as expected", async () => {
-    const modules = await createDataServiceImpl({
+    const modules = await createDataService({
       entities,
       roles,
       resourceInfo: appInfo,
