@@ -22,9 +22,6 @@
       "@amplication/code-gen-types/*": [
         "packages/amplication-code-gen-types/src/*"
       ],
-      "@amplication/data-service-generator": [
-        "packages/amplication-data-service-generator/src/index.ts"
-      ],
       "@amplication/data-service-generator/*": [
         "packages/amplication-data-service-generator/src/*"
       ],

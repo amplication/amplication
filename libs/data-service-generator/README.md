@@ -73,7 +73,7 @@ After cloning the repository open its root directory and run the following comma
 - Open the data service generator directory
 
   ```bash
-  cd packages/amplication-data-service-generator
+  cd packages/data-service-generator
   ```
 
 - Generate the test data service app
@@ -84,7 +84,7 @@ After cloning the repository open its root directory and run the following comma
 
 ### Workflow
 
-Make sure you are in the data service generator directory (`packages/amplication-data-service-generator`).
+Make sure you are in the data service generator directory (`packages/data-service-generator`).
 Once you are done making changes, run the following commands:
 
 - Format files (editors like VSCode can do it for you automatically)

@@ -1,8 +1,8 @@
 import { PrismaService } from "../../prisma/prisma.service";
 
 import {
-  // @ts-ignore
   RELATED_ENTITY,
+  // @ts-ignore
 } from "generated-prisma-client";
 
 export class Mixin {

@@ -5,6 +5,7 @@
  ***/
 
 import * as dotenv from "dotenv";
+// @ts-ignore
 import { PrismaClient } from "../prisma/generated-prisma-client";
 // @ts-ignore
 import { Salt, parseSalt } from "../src/auth/password.service";
