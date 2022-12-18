@@ -395,7 +395,7 @@ function identityParentIdType(entity: Entity): namedTypes.Identifier {
   );
 
   const { idType } = (entityFiledId?.properties as types.Id) || "CUID";
-  console.log(idType, `${entity.name} id type`);
+
   const idTypeOptions: {
     [key in types.Id["idType"]]: namedTypes.Identifier;
   } = {
