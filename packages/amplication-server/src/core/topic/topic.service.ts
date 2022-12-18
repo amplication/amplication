@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { kebabCase } from "lodash";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { Resource, User } from "../../models";
@@ -12,8 +11,8 @@ import { FindManyTopicArgs } from "./dto/FindManyTopicArgs";
 import { Topic } from "./dto/Topic";
 import { UpdateTopicArgs } from "./dto/UpdateTopicArgs";
 
-const DEFAULT_TOPIC_NAME = "topic.1";
-const DEFAULT_TOPIC_DISPLAY_NAME = "Topic-1";
+const DEFAULT_TOPIC_NAME = "topic.sample.v1";
+const DEFAULT_TOPIC_DISPLAY_NAME = "Topic Sample 1";
 const DEFAULT_TOPIC_DESCRIPTION =
   "An automatically created topic to be used with the Message Broker";
 
@@ -46,15 +45,10 @@ export class TopicService extends BlockTypeService<
   }
 
   async createDefault(resource: Resource, user: User): Promise<Topic> {
-    const resourceNameKebabCase = kebabCase(resource.name.toLowerCase());
-    const resourceNameTopicConvention = resource.name
-      .toLowerCase()
-      .replace(/[\s\-/]/g, ".");
-
     const defaultTopic: CreateTopicArgs = {
       data: {
-        displayName: `${resourceNameKebabCase}-${DEFAULT_TOPIC_DISPLAY_NAME}`,
-        name: `${resourceNameTopicConvention}.${DEFAULT_TOPIC_NAME}`,
+        displayName: DEFAULT_TOPIC_DISPLAY_NAME,
+        name: DEFAULT_TOPIC_NAME,
         description: DEFAULT_TOPIC_DESCRIPTION,
         resource: { connect: { id: resource.id } },
       },
