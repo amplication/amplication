@@ -1,10 +1,10 @@
-import { PrismaService } from "nestjs-prisma";
+import { PrismaService } from "../../prisma/prisma.service";
 import {
   // @ts-ignore
   Prisma,
   // @ts-ignore
   ENTITY,
-} from "@prisma/client";
+} from "generated-prisma-client";
 
 declare const CREATE_ARGS_MAPPING: Prisma.CREATE_ARGS;
 declare const UPDATE_ARGS_MAPPING: Prisma.UPDATE_ARGS;

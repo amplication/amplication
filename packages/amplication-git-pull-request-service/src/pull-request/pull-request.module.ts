@@ -1,4 +1,4 @@
-import { createNestjsKafkaConfig } from "@amplication/kafka";
+import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { GitModule } from "@amplication/git-utils";
 import { Module } from "@nestjs/common";
 import { ClientsModule } from "@nestjs/microservices";

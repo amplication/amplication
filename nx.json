@@ -79,5 +79,9 @@
       }
     }
   },
+  "workspaceLayout": {
+    "appsDir": "packages",
+    "libsDir": "libs"
+  },
   "defaultProject": "amplication-client"
 }
