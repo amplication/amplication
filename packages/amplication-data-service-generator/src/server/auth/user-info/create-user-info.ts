@@ -9,7 +9,7 @@ import { readFile } from "../../../util/module";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { getUserIdType } from "../../../util/get-user-id-type";
+import { getUserIdType } from "../../../util/get-entity-id-type";
 import pluginWrapper from "../../../plugin-wrapper";
 
 const templatePath = require.resolve("./user-info.template.ts");

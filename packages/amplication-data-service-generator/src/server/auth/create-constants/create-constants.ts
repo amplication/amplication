@@ -5,7 +5,7 @@ import { readFile } from "../../../util/module";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders } from "ast-types";
 import { print } from "recast";
-import { getUserIdType } from "../../../util/get-user-id-type";
+import { getUserIdType } from "../../../util/get-entity-id-type";
 
 const templatePath = require.resolve("./create-constants.template.ts");
 
