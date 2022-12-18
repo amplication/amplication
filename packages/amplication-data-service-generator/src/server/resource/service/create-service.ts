@@ -400,7 +400,7 @@ function getParentIdType(entityName: string): namedTypes.Identifier {
     CUID: builders.identifier("string"),
   };
 
-  return idTypeOptions[idType ?? "CUID"];
+  return idTypeOptions[idType];
 }
 
 function createTemplateMapping(
