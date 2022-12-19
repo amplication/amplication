@@ -122,8 +122,9 @@ const useResources = (
     });
     createBroker({ variables: { data: data } }).then((result) => {
       result.data?.createMessageBroker.id &&
+        addBlock(result.data.createMessageBroker.id);
+      result.data?.createMessageBroker.id &&
         refetch().then(() => {
-          addBlock(result.data.createMessageBroker.id);
           resourceRedirect(result.data?.createMessageBroker.id as string);
         });
     });
