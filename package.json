@@ -38,7 +38,7 @@
     "@mui/lab": "^5.0.0-alpha.107",
     "@mui/material": "^5.10.13",
     "@mui/system": "^5.10.7",
-    "@nestjs/common": "^9.2.1",
+    "@nestjs/common": "^8.4.7",
     "@nestjs/config": "^1.2.1",
     "@nestjs/core": "^8.4.7",
     "@nestjs/graphql": "^9.1.2",
