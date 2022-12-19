@@ -1,9 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  Prisma,
-  EnumEntityAction,
-  PrismaService,
-} from "@amplication/prisma-db";
+import { Prisma, EnumEntityAction } from "../../prisma";
+import { PrismaService } from "../../prisma";
 import { camelCase } from "camel-case";
 import { pick, omit } from "lodash";
 import {

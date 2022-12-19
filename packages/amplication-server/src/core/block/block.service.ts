@@ -9,8 +9,8 @@ import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
   Prisma,
-  PrismaService,
-} from "@amplication/prisma-db";
+} from "../../prisma";
+import { PrismaService } from "../../prisma";
 import { DiffService } from "../../services/diff.service";
 import {
   Block,

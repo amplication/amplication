@@ -1,12 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  Account,
-  Workspace,
-  User,
-  UserRole,
-  PrismaService,
-  Project,
-} from "@amplication/prisma-db";
+import { Account, Workspace, User, UserRole, Project } from "../../prisma";
+import { PrismaService } from "../../prisma";
 import { JwtService } from "@nestjs/jwt";
 import { Role } from "../../enums/Role";
 import { AccountService } from "../account/account.service";

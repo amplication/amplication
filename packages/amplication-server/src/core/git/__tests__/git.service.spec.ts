@@ -5,7 +5,8 @@ import {
   GitServiceFactory,
 } from "@amplication/git-utils";
 import { Test, TestingModule } from "@nestjs/testing";
-import { EnumResourceType, PrismaService } from "@amplication/prisma-db";
+import { EnumResourceType } from "../../../prisma";
+import { PrismaService } from "../../../prisma";
 import { Resource } from "../../../models/Resource";
 import { EnumGitProvider } from "../dto/enums/EnumGitProvider";
 import { RemoteGitRepositoriesWhereUniqueInput } from "../dto/inputs/RemoteGitRepositoriesWhereUniqueInput";

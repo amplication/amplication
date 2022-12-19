@@ -1,4 +1,5 @@
-import { Build, PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../../../prisma";
+import { Build } from "../../../../prisma";
 
 export const previousBuild = async (
   prisma: PrismaService,

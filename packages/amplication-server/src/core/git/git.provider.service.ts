@@ -1,10 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
-import {
-  EnumResourceType,
-  Prisma,
-  PrismaService,
-} from "@amplication/prisma-db";
+import { Prisma, EnumResourceType } from "../../prisma";
+import { PrismaService } from "../../prisma";
 import { FindOneArgs } from "../../dto";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Resource } from "../../models/Resource";

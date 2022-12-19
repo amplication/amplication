@@ -15,11 +15,11 @@ import { ConfigService } from "@nestjs/config";
 import { Entity } from "../../models/Entity";
 import { User } from "../../models/User";
 import { EntityField } from "../../models/EntityField";
-import {
+import type {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType,
-} from "@amplication/prisma-db";
+} from "../../prisma";
 import { EntityPermission } from "../../models/EntityPermission";
 import { EntityVersion } from "../../models/EntityVersion";
 import { Commit, EntityPermissionField } from "../../models";

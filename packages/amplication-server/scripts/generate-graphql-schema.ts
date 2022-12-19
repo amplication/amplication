@@ -3,7 +3,7 @@
  */
 
 import { NestFactory } from "@nestjs/core";
-import { PrismaClient } from "@amplication/prisma-db";
+import { PrismaClient } from "../src/prisma";
 import { AppModule } from "../src/app.module";
 
 export default async function generateGraphQLSchema(): Promise<void> {
