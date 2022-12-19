@@ -1,13 +1,10 @@
 import { types } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";
 import { EnumDataType } from "../models";
-import { USER_ENTITY_NAME } from "../server/user-entity";
 
 export const getUserIdType = () => {
-  const { entities } = DsgContext.getInstance;
-  const userEntity = entities.find(
-    (entity) => entity.name === USER_ENTITY_NAME
-  );
+  const { entities, userEntityName } = DsgContext.getInstance;
+  const userEntity = entities.find((entity) => entity.name === userEntityName);
 
   if (!userEntity) {
     throw new Error("User entity not found");
