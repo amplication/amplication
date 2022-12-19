@@ -78,13 +78,24 @@ jobs:
         run: |
           echo ::set-output name=affected::"$(npx nx print-affected --type=app | jq -c .projects)"
 
-  vulnerability-scan:
+  fs-scan:
     name: vulnerability-scanning
     needs: ci
     runs-on: ubuntu-20.04
     uses: amplication/amplication/.github/workflows/template-vulnerability-scan.yaml@master
     with:
-      scan-type: 'config,fs'
+      scan-type: 'fs'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
+
+  config-scan:
+    name: vulnerability-scanning
+    needs: ci
+    runs-on: ubuntu-20.04
+    uses: amplication/amplication/.github/workflows/template-vulnerability-scan.yaml@master
+    with:
+      scan-type: 'config'
       format: 'sarif'
       exit-code: 0
       publish: true
