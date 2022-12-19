@@ -4,6 +4,7 @@ import {
   EnumEntityPermissionType,
   EnumEntityAction,
 } from "@amplication/code-gen-types";
+import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
 
 const CUSTOMER_ENTITY_ID = "b8d49afb-8c12-49fa-9d6e-eb64be0ddded";
 const PROFILE_ENTITY_ID = "f36aa4e3-d275-41d0-843a-876ec66bc2f7";
@@ -29,7 +30,7 @@ const PROFILE_USER_FIELD_ID = "42d31012-6164-472a-92d0-a8f5dc0486d4";
 
 const USER: Entity = {
   id: USER_ID,
-  name: "User",
+  name: USER_ENTITY_NAME,
   displayName: "User",
   pluralDisplayName: "Users",
   pluralName: "users",
