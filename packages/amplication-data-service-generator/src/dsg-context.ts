@@ -6,7 +6,13 @@ import {
 } from "@amplication/code-gen-types";
 import { EnumResourceType } from "./models";
 import winston from "winston";
-import { readPluginStaticModules } from "./read-static-modules";
+import { readPluginStaticModules } from "./util/read-static-modules";
+import {
+  USER_ENTITY_NAME,
+  USER_NAME_FIELD_NAME,
+  USER_PASSWORD_FIELD_NAME,
+  USER_ROLES_FIELD_NAME,
+} from "./server/user-entity/user-entity";
 
 // const contextUtil = {
 //   skipDefaultBehavior: false,
@@ -43,6 +49,11 @@ class DsgContext implements types.DsgContext {
 
   public clientDirectories!: clientDirectories;
   public serverDirectories!: serverDirectories;
+
+  public userEntityName: string = USER_ENTITY_NAME;
+  public userNameFieldName: string = USER_NAME_FIELD_NAME;
+  public userPasswordFieldName: string = USER_PASSWORD_FIELD_NAME;
+  public userRolesFieldName: string = USER_ROLES_FIELD_NAME;
 
   private static instance: DsgContext;
 

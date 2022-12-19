@@ -34,9 +34,8 @@ amplication-client:
 
 amplication-server:
   autoscaling:
-    minReplicas: 12
-    maxReplicas: 99
-  replicaCount: 12
+    minReplicas: 2
+    maxReplicas: 10
   ingress:
     hostname: server.staging.amplication-dev.com
   config:

@@ -3,7 +3,7 @@ import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Module, EventNames } from "@amplication/code-gen-types";
 import { formatCode } from "../util/module";
-import { readStaticModules } from "../read-static-modules";
+import { readStaticModules } from "../util/read-static-modules";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
