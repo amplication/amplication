@@ -64,10 +64,18 @@
         }
       }
     },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/**/*.ts"],
+      "outputs": ["{projectRoot}/prisma/schema.prisma"],
+      "options": {
+        "command": "npx nx db:prisma:generate amplication-prisma-db"
+      }
+    },
     "graphql:schema:generate": {
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/**/*.ts"],
-      "dependsOn": ["^db:prisma:generate", "^prebuild"],
+      "dependsOn": ["db:prisma:generate", "^prebuild"],
       "outputs": ["packages/amplication-server/src/schema.graphql"],
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/generate-graphql-schema.ts",
