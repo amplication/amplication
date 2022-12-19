@@ -1,10 +1,10 @@
 import { KafkaMessage } from "../../../types";
-import Serialiser from "./jsonMessageSerializer";
+import { KafkaMessageJsonSerializer } from "./KafkaMessageJsonSerializer";
 
 jest.mock("console");
 
 describe("jsonMessageSerialiser", () => {
-  let serialiser: Serialiser;
+  let serialiser: KafkaMessageJsonSerializer;
 
   const createMessage = (key: string, message: string): KafkaMessage => ({
     key: Buffer.from(key, "utf8"),
@@ -15,11 +15,11 @@ describe("jsonMessageSerialiser", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    serialiser = new Serialiser();
+    serialiser = new KafkaMessageJsonSerializer();
   });
 
   it("is instantiable", () => {
-    expect(serialiser).toBeInstanceOf(Serialiser);
+    expect(serialiser).toBeInstanceOf(KafkaMessageJsonSerializer);
   });
 
   describe("when serializing plain text messages", () => {

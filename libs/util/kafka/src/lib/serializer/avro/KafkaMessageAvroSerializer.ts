@@ -10,7 +10,7 @@ import type {
 import { SchemaRegistryConfig } from "../../../types";
 // import { SchemaRegistry } from "confluent-schema-registry";
 
-class KafkaMessageSerializer implements IKafkaMessageSerializer {
+class KafkaMessageAvroSerializer implements IKafkaMessageSerializer {
   private logger: Logger;
   private schemaRegistry;
 
@@ -113,4 +113,4 @@ class KafkaMessageSerializer implements IKafkaMessageSerializer {
   }
 }
 
-export default KafkaMessageSerializer;
+export { KafkaMessageAvroSerializer };

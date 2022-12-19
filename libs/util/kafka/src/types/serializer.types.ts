@@ -10,5 +10,7 @@ export interface IKafkaMessageSerializer {
     schemaIds?: SchemaIds
   ) => Promise<KafkaMessage>;
 
-  deserialize: (message: KafkaMessage) => Promise<DecodedKafkaMessage>;
+  deserialize: (
+    message: KafkaMessage
+  ) => Promise<DecodedKafkaMessage> | DecodedKafkaMessage;
 }

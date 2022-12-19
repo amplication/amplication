@@ -5,7 +5,7 @@ import type {
   KafkaMessage,
 } from "../../../types";
 
-class KafkaMessageSerializer implements IKafkaMessageSerializer {
+class KafkaMessageJsonSerializer implements IKafkaMessageSerializer {
   public async deserialize(
     message: KafkaMessage
   ): Promise<DecodedKafkaMessage> {
@@ -47,4 +47,4 @@ class KafkaMessageSerializer implements IKafkaMessageSerializer {
   }
 }
 
-export default KafkaMessageSerializer;
+export { KafkaMessageJsonSerializer };
