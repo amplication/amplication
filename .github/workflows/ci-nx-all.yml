@@ -67,17 +67,6 @@ jobs:
         run: |
           echo ::set-output name=affected::"$(npx nx print-affected --all --type=app | jq -c .projects)"
 
-  vulnerability-scan:
-    name: vulnerability-scanning
-    needs: ci
-    runs-on: ubuntu-20.04
-    uses: amplication/amplication/.github/workflows/template-vulnerability-scan.yaml@master
-    with:
-      scan-type: 'config'
-      format: 'sarif'
-      exit-code: 0
-      publish: true
-
   dockerize:
     name: Dockerize
     runs-on: ubuntu-20.04
