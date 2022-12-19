@@ -145,9 +145,9 @@ export class BuildService {
     private readonly entityService: EntityService,
     private readonly resourceRoleService: ResourceRoleService,
     private readonly actionService: ActionService,
-    private readonly commitService: CommitService,
     @Inject(forwardRef(() => ResourceService))
     private readonly resourceService: ResourceService,
+    private readonly commitService: CommitService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
     private readonly queueService: QueueService,
@@ -175,10 +175,6 @@ export class BuildService {
       where: {
         id: args.data.createdBy.connect.id,
       },
-    });
-
-    const resource = await this.resourceService.findOne({
-      where: { id: resourceId },
     });
 
     //TODO
@@ -218,6 +214,10 @@ export class BuildService {
 
     const logger = this.logger.child({
       buildId: build.id,
+    });
+
+    const resource = await this.resourceService.findOne({
+      where: { id: resourceId },
     });
 
     if (resource.resourceType !== EnumResourceType.Service) {

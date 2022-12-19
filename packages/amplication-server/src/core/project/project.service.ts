@@ -1,5 +1,5 @@
 import { EnumResourceType, PrismaService } from "@amplication/prisma-db";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
 import { ResourceService, EntityService } from "../";
@@ -16,8 +16,9 @@ import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
-import { WorkspaceService } from "../workspace/workspace.service";
-import { SubscriptionService } from "../subscription/subscription.service";
+
+const LICENSE_SERVICES_PER_WORKSPACE_LIMIT = 3;
+const LICENSE_ENTITIES_PER_SERVICE_LIMIT = 7;
 
 @Injectable()
 export class ProjectService {
@@ -26,11 +27,7 @@ export class ProjectService {
     private readonly resourceService: ResourceService,
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
-    private readonly entityService: EntityService,
-    @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService,
-    @Inject(forwardRef(() => SubscriptionService))
-    private readonly subscriptionService: SubscriptionService
+    private readonly entityService: EntityService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -123,49 +120,60 @@ export class ProjectService {
   async validateSubscriptionPlanLimitationsForProject(
     projectId: string
   ): Promise<void> {
-    const project = await this.findUnique({
-      where: { id: projectId },
+    const projects = await this.prisma.project.findMany({
+      where: {
+        id: projectId,
+      },
+      include: {
+        resources: {
+          include: {
+            entities: true,
+          },
+          where: {
+            resourceType: EnumResourceType.Service,
+            deletedAt: null,
+          },
+        },
+        workspace: {
+          include: {
+            subscriptions: true,
+            projects: {
+              include: {
+                resources: {
+                  where: {
+                    resourceType: EnumResourceType.Service,
+                    deletedAt: null,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
-    const workspace = await this.workspaceService.getWorkspace({
-      where: { id: project.workspaceId },
-    });
-    const subscription = await this.subscriptionService.getCurrentSubscription(
-      workspace.id
+
+    const project = projects[0];
+    const workspace = project.workspace;
+    const subscriptions = workspace.subscriptions;
+    const workspaceServices = workspace.projects.flatMap(
+      (project) => project.resources
     );
+    const projectServices = project.resources;
 
-    if (!subscription) {
-      const services = await this.resourceService.getWorkspaceServices(
-        workspace.id
-      );
-
-      if (services.length > 3) {
+    if (!subscriptions || subscriptions.length === 0) {
+      if (workspaceServices.length > LICENSE_SERVICES_PER_WORKSPACE_LIMIT) {
         throw new Error(
           "You have reached the maximum number of services. (Upgrade your workspace plan)"
         );
       }
 
-      const projectServices = await this.resourceService.resources({
-        where: { projectId: project.id },
+      projectServices.map((service) => {
+        if (service.entities.length > LICENSE_ENTITIES_PER_SERVICE_LIMIT) {
+          throw new Error(
+            "You have reached the maximum number of entities. (Upgrade your workspace plan)"
+          );
+        }
       });
-      const promises = projectServices.map((project) =>
-        this.validateSubscriptionPlanLimitationsForService(project)
-      );
-
-      await Promise.all(promises);
-    }
-  }
-
-  async validateSubscriptionPlanLimitationsForService(
-    service: Resource
-  ): Promise<void> {
-    const entities = await this.entityService.entities({
-      where: { resourceId: service.id },
-    });
-
-    if (entities.length > 7) {
-      throw new Error(
-        "You have reached the maximum number of entities. (Upgrade your workspace plan)"
-      );
     }
   }
 
