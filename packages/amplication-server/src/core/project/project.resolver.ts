@@ -15,7 +15,7 @@ import { ProjectService } from "./project.service";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { Roles } from "../../decorators/roles.decorator";
-import { forwardRef, Inject, UseFilters, UseGuards } from "@nestjs/common";
+import { UseFilters, UseGuards } from "@nestjs/common";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
@@ -35,8 +35,6 @@ import {
 export class ProjectResolver {
   constructor(
     private projectService: ProjectService,
-
-    @Inject(forwardRef(() => ResourceService))
     private resourceService: ResourceService
   ) {}
 
