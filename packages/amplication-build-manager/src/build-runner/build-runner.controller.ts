@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
 import { QueueService } from "../queue/queue.service";
 import { BuildRunnerService } from "./build-runner.service";
-import { EnvironmentVariables } from "@amplication/kafka";
+import { EnvironmentVariables } from "@amplication/util/nestjs/kafka";
 import { EventPattern, Payload } from "@nestjs/microservices";
 import { KafkaMessage } from "kafkajs";
 import { plainToInstance } from "class-transformer";

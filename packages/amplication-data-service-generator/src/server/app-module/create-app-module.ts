@@ -23,6 +23,7 @@ import pluginWrapper from "../../plugin-wrapper";
 
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const MODULE_PATTERN = /\.module\.ts$/;
+const PRISMA_MODULE_ID = builders.identifier("PrismaModule");
 const MORGAN_MODULE_ID = builders.identifier("MorganModule");
 const CONFIG_MODULE_ID = builders.identifier("ConfigModule");
 const CONFIG_SERVICE_ID = builders.identifier("ConfigService");
@@ -101,6 +102,7 @@ export async function createAppModuleInternal({
 
   addImports(file, [
     ...moduleImports,
+    importDeclaration`import { ${PRISMA_MODULE_ID} } from "./prisma/prisma.module"`,
     importDeclaration`import { ${MORGAN_MODULE_ID} } from "nest-morgan"`,
     importDeclaration`import { ${CONFIG_MODULE_ID}, ${CONFIG_SERVICE_ID} } from "@nestjs/config"`,
     importDeclaration`import { ${SERVE_STATIC_MODULE_ID} } from "@nestjs/serve-static"`,

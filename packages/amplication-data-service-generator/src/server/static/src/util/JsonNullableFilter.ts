@@ -1,4 +1,4 @@
-import { JsonValue } from "type-fest";
+import type { JsonValue } from "type-fest";
 import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
