@@ -17,6 +17,9 @@ import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 
+const LICENSE_SERVICES_PER_WORKSPACE_LIMIT = 3;
+const LICENSE_ENTITIES_PER_SERVICE_LIMIT = 7;
+
 @Injectable()
 export class ProjectService {
   constructor(
@@ -114,12 +117,74 @@ export class ProjectService {
     return [...changedEntities, ...changedBlocks];
   }
 
+  async validateSubscriptionPlanLimitationsForProject(
+    projectId: string
+  ): Promise<void> {
+    const projects = await this.prisma.project.findMany({
+      where: {
+        id: projectId,
+      },
+      include: {
+        resources: {
+          include: {
+            entities: true,
+          },
+          where: {
+            resourceType: EnumResourceType.Service,
+            deletedAt: null,
+          },
+        },
+        workspace: {
+          include: {
+            subscriptions: true,
+            projects: {
+              include: {
+                resources: {
+                  where: {
+                    resourceType: EnumResourceType.Service,
+                    deletedAt: null,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const project = projects[0];
+    const workspace = project.workspace;
+    const subscriptions = workspace.subscriptions;
+    const workspaceServices = workspace.projects.flatMap(
+      (project) => project.resources
+    );
+    const projectServices = project.resources;
+
+    if (!subscriptions || subscriptions.length === 0) {
+      if (workspaceServices.length > LICENSE_SERVICES_PER_WORKSPACE_LIMIT) {
+        throw new Error(
+          "You have reached the maximum number of services. (Upgrade your workspace plan)"
+        );
+      }
+
+      projectServices.map((service) => {
+        if (service.entities.length > LICENSE_ENTITIES_PER_SERVICE_LIMIT) {
+          throw new Error(
+            "You have reached the maximum number of entities. (Upgrade your workspace plan)"
+          );
+        }
+      });
+    }
+  }
+
   async commit(
     args: CreateCommitArgs,
     skipPublish?: boolean
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
+
+    await this.validateSubscriptionPlanLimitationsForProject(projectId);
 
     const resources = await this.prisma.resource.findMany({
       where: {
