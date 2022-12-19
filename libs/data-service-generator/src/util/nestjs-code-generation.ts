@@ -118,5 +118,5 @@ export function removeIdentifierFromUseInterceptorDecorator(
     return false;
   }
 
-  return decorator;
+  return decorator as unknown as namedTypes.Decorator;
 }

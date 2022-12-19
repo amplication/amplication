@@ -267,7 +267,7 @@ export const createPrismaSchemaFieldsHandlers: {
     fieldNamesCount: Record<string, number> = {}
   ) => {
     const { name, properties } = field;
-    const { idType } = (properties as types.Id) || "CUID";
+    const { idType } = (properties as types.Id) || { idType: "CUID" };
     const isAutoIncremental = idType === "AUTO_INCREMENT";
     const isUUID = idType === "UUID";
 
