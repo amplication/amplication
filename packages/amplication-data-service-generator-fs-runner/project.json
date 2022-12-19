@@ -45,17 +45,17 @@
     "generate-example-input-json": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node ./scripts/create-input-json.ts",
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./scripts/create-input-json.ts",
         "cwd": "packages/amplication-data-service-generator-fs-runner"
       }
     },
     "generate-local-code": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node ./src/main.ts ./input.json ./generated",
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts ",
         "cwd": "packages/amplication-data-service-generator-fs-runner"
       },
-      "dependsOn": ["generate-example-input-json", "^build"]
+      "dependsOn": ["generate-example-input-json"]
     },
     "docker:build": {
       "executor": "@nx-tools/nx-docker:build",
