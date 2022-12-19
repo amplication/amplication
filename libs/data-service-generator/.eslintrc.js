@@ -1,10 +1,8 @@
-const path = require("path");
-
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: "packages/amplication-data-service-generator/tsconfig.*?.json",
+    project: "libs/data-service-generator/tsconfig.*?.json",
     sourceType: "module",
   },
   ignorePatterns: [

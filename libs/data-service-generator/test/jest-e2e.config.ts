@@ -1,5 +1,5 @@
 export default {
-  displayName: "amplication-data-service-generator",
+  displayName: "data-service-generator",
   rootDir: "..",
   preset: "ts-jest",
   globals: {
