@@ -6,6 +6,7 @@
     "declaration": true,
     "types": ["node"]
   },
+  "include": ["src"],
   "exclude": [
     "jest.config.ts",
     "node_modules",
@@ -15,6 +16,5 @@
     "**/static/**/**",
     "**/*.spec.ts",
     "**/*.spec.tsx"
-  ],
-  "include": ["src"]
+  ]
 }
