@@ -4,6 +4,7 @@ import {
   InvalidDataTypeError,
   USER_AUTH_FIELDS,
   USER_NAME_FIELD,
+  USER_NAME_FIELD_NAME,
 } from "./user-entity";
 
 describe("getMissingAuthFields", () => {
@@ -29,7 +30,7 @@ describe("getMissingAuthFields", () => {
 describe("InvalidDataTypeError", () => {
   test("constructs correctly", () => {
     expect(new InvalidDataTypeError([USER_NAME_FIELD]).message).toEqual(
-      `Invalid fields data types: ${USER_NAME_FIELD.name} data type should be ${USER_NAME_FIELD.dataType}`
+      `Invalid fields data types: ${USER_NAME_FIELD_NAME} data type should be ${USER_NAME_FIELD.dataType}`
     );
   });
 });
