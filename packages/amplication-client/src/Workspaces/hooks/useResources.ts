@@ -35,7 +35,8 @@ const createGitRepositoryFullName = (
 const useResources = (
   currentWorkspace: models.Workspace | undefined,
   currentProject: models.Project | undefined,
-  addBlock: (id: string) => void
+  addBlock: (id: string) => void,
+  addEntity: (id: string) => void
 ) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -92,8 +93,7 @@ const useResources = (
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: AnalyticsEventNames,
-    addEntity: (id: string) => void
+    eventName: AnalyticsEventNames
   ) => {
     trackEvent({
       eventName: eventName,

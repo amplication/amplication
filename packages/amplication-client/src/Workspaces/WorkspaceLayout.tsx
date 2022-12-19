@@ -79,7 +79,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createMessageBroker,
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
-  } = useResources(currentWorkspace, currentProject, addBlock);
+  } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   return currentWorkspace ? (
     <AppContextProvider
