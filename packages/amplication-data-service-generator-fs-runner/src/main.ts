@@ -7,15 +7,17 @@ import {
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 
-const [, , source, destination] = process.argv;
-if (!source) {
+const buildSpecPath = process.env.BUILD_SPEC_PATH;
+const buildOutputPath = process.env.BUILD_OUTPUT_PATH;
+
+if (!buildSpecPath) {
   throw new Error("SOURCE is not defined");
 }
-if (!destination) {
+if (!buildOutputPath) {
   throw new Error("DESTINATION is not defined");
 }
 
-generateCode(source, destination).catch((err) => {
+generateCode(buildSpecPath, buildOutputPath).catch((err) => {
   console.error(err);
   process.exit(1);
 });
