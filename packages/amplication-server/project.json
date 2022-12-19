@@ -66,8 +66,6 @@
     },
     "db:prisma:generate": {
       "executor": "nx:run-commands",
-      "inputs": ["{projectRoot}/src/**/*.ts"],
-      "outputs": ["{projectRoot}/prisma/schema.prisma"],
       "options": {
         "command": "npx nx db:prisma:generate amplication-prisma-db"
       }
