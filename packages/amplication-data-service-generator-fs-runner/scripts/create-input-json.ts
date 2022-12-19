@@ -15,10 +15,10 @@ async function createInputJsonFile() {
     resourceType: EnumResourceType.Service,
     pluginInstallations: [plugins.kafka, plugins.postgresPlugin],
   };
-  await writeFile(
-    join(__dirname, "../input.json"),
-    format(JSON.stringify(object), { parser: "json" })
-  );
+  const fileName = "input.json";
+  const path = join(__dirname, `../${fileName}`);
+  await writeFile(path, format(JSON.stringify(object), { parser: "json" }));
+  console.log(`Finish writing the ${fileName} file`);
 }
 
 if (require.main === module) {
