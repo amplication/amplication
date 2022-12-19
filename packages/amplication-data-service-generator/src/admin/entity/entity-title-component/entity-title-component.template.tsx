@@ -7,5 +7,5 @@ declare const ENTITY_TITLE_FIELD_NAME = "title";
 export const ENTITY_TITLE_FIELD_NAME_ID = ENTITY_TITLE_FIELD_NAME;
 
 export const ENTITY_TITLE = (record: ENTITY): string => {
-  return record.ENTITY_TITLE_FIELD || record.id;
+  return record.ENTITY_TITLE_FIELD || String(record.id);
 };
