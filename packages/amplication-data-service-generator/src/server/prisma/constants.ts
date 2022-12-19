@@ -8,6 +8,7 @@ import {
 export const CLIENT_GENERATOR: Generator = {
   name: "client",
   provider: "prisma-client-js",
+  output: "./generated-prisma-client",
 };
 
 export const DATA_SOURCE: DataSource = {

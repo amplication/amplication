@@ -2,7 +2,7 @@ import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
 import { AppModule } from "./app.module";
 import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
-import { createNestjsKafkaConfig } from "@amplication/kafka";
+import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { MicroserviceOptions } from "@nestjs/microservices";
 
 async function bootstrap() {
