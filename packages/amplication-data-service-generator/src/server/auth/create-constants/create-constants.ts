@@ -5,15 +5,15 @@ import { readFile } from "../../../util/module";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders } from "ast-types";
 import { print } from "recast";
-import { getUserIdType } from "../../../util/get-entity-id-type";
+import { getEntityIdType } from "../../../util/get-entity-id-type";
 
 const templatePath = require.resolve("./create-constants.template.ts");
 
 export async function createAuthConstants(): Promise<Module> {
-  const { serverDirectories } = DsgContext.getInstance;
+  const { serverDirectories, userEntityName } = DsgContext.getInstance;
   const serverAuthTestDir = `${serverDirectories.srcDirectory}/tests/auth`;
   const template = await readFile(templatePath);
-  const templateMapping = prepareTemplateMapping();
+  const templateMapping = prepareTemplateMapping(userEntityName);
   const filePath = `${serverAuthTestDir}/constants.ts`;
   interpolate(template, templateMapping);
   removeTSClassDeclares(template);
@@ -21,8 +21,8 @@ export async function createAuthConstants(): Promise<Module> {
   return { code: print(template).code, path: filePath };
 }
 
-function prepareTemplateMapping() {
-  const idType = getUserIdType();
+function prepareTemplateMapping(entityName: string) {
+  const idType = getEntityIdType(entityName);
 
   /* eslint-disable @typescript-eslint/naming-convention */
   const idTypeTSOptions: {
