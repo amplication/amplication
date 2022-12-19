@@ -7,11 +7,14 @@ import {
 } from "@amplication/code-gen-types";
 
 export const USER_ENTITY_NAME = "User";
+export const USER_NAME_FIELD_NAME = "username";
+export const USER_PASSWORD_FIELD_NAME = "password";
+export const USER_ROLES_FIELD_NAME = "roles";
 
 export const USER_NAME_FIELD: EntityField = {
   id: "USER_NAME_FIELD",
   permanentId: "USER_NAME_FIELD_PERMANENT_ID",
-  name: "username",
+  name: USER_NAME_FIELD_NAME,
   displayName: "Username",
   dataType: EnumDataType.Username,
   required: true,
@@ -22,7 +25,7 @@ export const USER_NAME_FIELD: EntityField = {
 export const USER_PASSWORD_FIELD: EntityField = {
   id: "USER_PASSWORD_FIELD",
   permanentId: "USER_PASSWORD_FIELD_PERMANENT_ID",
-  name: "password",
+  name: USER_PASSWORD_FIELD_NAME,
   displayName: "Password",
   dataType: EnumDataType.Password,
   required: true,
@@ -33,7 +36,7 @@ export const USER_PASSWORD_FIELD: EntityField = {
 export const USER_ROLES_FIELD: EntityField = {
   id: "USER_ROLES_FIELD",
   permanentId: "USER_ROLES_FIELD_PERMANENT_ID",
-  name: "roles",
+  name: USER_ROLES_FIELD_NAME,
   displayName: "Roles",
   dataType: EnumDataType.Roles,
   required: true,
@@ -42,7 +45,7 @@ export const USER_ROLES_FIELD: EntityField = {
   properties: {},
 };
 
-const USER_ID_FIELD: EntityField = {
+export const USER_ID_FIELD: EntityField = {
   id: "USER_ID_FIELD",
   permanentId: "USER_ID_FIELD_PERMANENT_ID",
   name: "id",
