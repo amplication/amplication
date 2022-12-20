@@ -166,7 +166,7 @@
     "@nrwl/nx-cloud": "15.0.2",
     "@nrwl/react": "15.3.0",
     "@nrwl/web": "15.3.0",
-    "@nrwl/webpack": "14.8.2",
+    "@nrwl/webpack": "^15.3.3",
     "@nrwl/workspace": "15.3.0",
     "@nx-tools/nx-docker": "^3.0.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
