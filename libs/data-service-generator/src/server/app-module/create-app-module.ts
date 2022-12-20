@@ -5,7 +5,8 @@ import {
   Module,
   CreateServerAppModuleParams,
 } from "@amplication/code-gen-types";
-import { readFile, relativeImportPath } from "../../util/module";
+import { relativeImportPath } from "../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import {
   getExportedNames,
   interpolate,

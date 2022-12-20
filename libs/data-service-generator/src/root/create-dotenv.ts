@@ -1,6 +1,6 @@
 import { Module, AppInfo } from "@amplication/code-gen-types";
 import { isEmpty } from "lodash";
-import { readCode } from "../util/module";
+import { readCode } from "@amplication/code-gen-utils";
 import { replacePlaceholdersInCode } from "../util/text-file-parser";
 export const MODULE_PATH = `.env`;
 

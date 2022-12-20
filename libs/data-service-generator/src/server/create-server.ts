@@ -5,7 +5,7 @@ import {
   CreateServerParams,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../util/read-static-modules";
-import { formatCode, formatJson } from "../util/module";
+import { formatCode, formatJson } from "@amplication/code-gen-utils";
 import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";

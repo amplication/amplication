@@ -8,7 +8,7 @@ import { join } from "path";
 import { print, types } from "recast";
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
-import { EnumBuilder } from "../../../util/enum-builder";
+import { EnumBuilder } from "@amplication/code-gen-utils";
 
 const { builders } = types;
 const TOPIC_NAME = "topics.ts";

@@ -2,7 +2,7 @@ import * as path from "path";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Module, EventNames } from "@amplication/code-gen-types";
-import { formatCode } from "../util/module";
+import { formatCode } from "@amplication/code-gen-utils";
 import { readStaticModules } from "../util/read-static-modules";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";

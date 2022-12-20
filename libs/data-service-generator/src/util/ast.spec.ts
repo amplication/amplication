@@ -1,23 +1,19 @@
-import { print } from "recast";
+import { parse } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
+import * as recast from "recast";
+import { print } from "recast";
 import {
-  parse,
-  transformTemplateLiteralToStringLiteral,
-  interpolate,
-  removeTSInterfaceDeclares,
+  classDeclaration,
+  expression,
   findContainedIdentifiers,
+  findFirstDecoratorByName,
   importContainedIdentifiers,
   importNames,
+  interpolate,
   removeESLintComments,
-  expression,
-  classDeclaration,
-  ParseError,
-  partialParse,
-  findFirstDecoratorByName,
+  removeTSInterfaceDeclares,
+  transformTemplateLiteralToStringLiteral,
 } from "./ast";
-import * as recast from "recast";
-import * as parser from "./parser";
-import * as partialParser from "./partial-parser";
 
 const actualRecast = jest.requireActual("recast");
 
@@ -254,71 +250,6 @@ describe("classDeclaration", () => {
       `@x
 class A {}`
     );
-  });
-});
-
-describe("parse", () => {
-  test("parses", () => {
-    const EXAMPLE_SOURCE = "exampleSource";
-    expect(parse(EXAMPLE_SOURCE)).toEqual(
-      recast.parse(EXAMPLE_SOURCE, { parser })
-    );
-  });
-
-  test("tries to parse but catches a SyntaxError", () => {
-    const EXAMPLE_ERROR = new SyntaxError("exampleError");
-    const EXAMPLE_SOURCE = "exampleSource";
-    // @ts-ignore
-    recast.parse.mockImplementationOnce(() => {
-      throw EXAMPLE_ERROR;
-    });
-    expect(() => parse(EXAMPLE_SOURCE)).toThrow(
-      new ParseError(EXAMPLE_ERROR.message, EXAMPLE_SOURCE)
-    );
-  });
-
-  test("tries to parse but catches an Error", () => {
-    const EXAMPLE_ERROR = new Error("exampleError");
-    const EXAMPLE_SOURCE = "exampleSource";
-    // @ts-ignore
-    recast.parse.mockImplementationOnce(() => {
-      throw EXAMPLE_ERROR;
-    });
-    expect(() => parse(EXAMPLE_SOURCE)).toThrow(EXAMPLE_ERROR);
-  });
-});
-
-describe("partialParse", () => {
-  test.skip("partially parses", () => {
-    const EXAMPLE_SOURCE = "exampleSource";
-    expect(() => partialParse(EXAMPLE_SOURCE)).toEqual(
-      recast.parse(EXAMPLE_SOURCE, {
-        tolerant: true,
-        parser: { partialParser },
-      })
-    );
-  });
-
-  test("tries to partially parse but catches a SyntaxError", () => {
-    const EXAMPLE_ERROR = new SyntaxError("exampleError");
-    const EXAMPLE_SOURCE = "exampleSource";
-    // @ts-ignore
-    recast.parse.mockImplementationOnce(() => {
-      throw EXAMPLE_ERROR;
-    });
-    expect(() => partialParse(EXAMPLE_SOURCE)).toThrow(
-      new ParseError(EXAMPLE_ERROR.message, EXAMPLE_SOURCE)
-    );
-  });
-
-  test("tries to partially parse but catches an Error", () => {
-    const EXAMPLE_ERROR = new Error("exampleError");
-    const EXAMPLE_SOURCE = "exampleSource";
-    // @ts-ignore
-    recast.parse.mockImplementationOnce(() => {
-      throw EXAMPLE_ERROR;
-    });
-    expect(() => partialParse(EXAMPLE_SOURCE)).toThrow(EXAMPLE_ERROR);
   });
 });
 

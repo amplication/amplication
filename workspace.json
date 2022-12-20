@@ -16,6 +16,7 @@
     "amplication-server": "packages/amplication-server",
     "amplication-storage-gateway": "packages/amplication-storage-gateway",
     "data-service-generator": "libs/data-service-generator",
+    "util-code-gen-utils": "libs/util/code-gen-utils",
     "util-nestjs-kafka": "libs/util/nestjs/kafka"
   }
 }

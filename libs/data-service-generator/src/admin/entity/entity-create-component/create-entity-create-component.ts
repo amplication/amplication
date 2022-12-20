@@ -13,7 +13,7 @@ import {
   importNames,
   interpolate,
 } from "../../../util/ast";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { relativeImportPath } from "../../../util/module";
 import { EntityComponent } from "../../types";
 import { jsxFragment } from "../../util";
 import { createFieldInput } from "../create-field-input";
@@ -22,6 +22,7 @@ import {
   REACT_ADMIN_MODULE,
 } from "../react-admin.util";
 import DsgContext from "../../../dsg-context";
+import { readFile } from "@amplication/code-gen-utils";
 const template = path.resolve(
   __dirname,
   "entity-create-component.template.tsx"

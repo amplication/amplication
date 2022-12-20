@@ -6,7 +6,8 @@ import {
   CreateEntityModuleParams,
   CreateEntityModuleBaseParams,
 } from "@amplication/code-gen-types";
-import { relativeImportPath, readFile } from "../../../util/module";
+import { relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import {
   interpolate,
   removeTSIgnoreComments,
@@ -36,6 +37,22 @@ export async function createModules(
   const moduleBaseId = createBaseModuleId(entityType);
   const moduleTemplate = await readFile(moduleTemplatePath);
   const moduleBaseTemplate = await readFile(moduleBaseTemplatePath);
+  const controllerId = createControllerId(entityType);
+  const serviceId = createServiceId(entityType);
+  const resolverId = createResolverId(entityType);
+  const moduleId = createModuleId(entityType);
+
+  const moduleTemplateMapping = {
+    ENTITY: builders.identifier(entityType),
+    SERVICE: serviceId,
+    CONTROLLER: controllerId,
+    RESOLVER: resolverId,
+    MODULE: moduleId,
+    MODULE_BASE: moduleBaseId,
+  };
+  const moduleBaseTemplateMapping = {
+    MODULE_BASE: moduleBaseId,
+  };
 
   return [
     ...(await pluginWrapper(createModule, EventNames.CreateEntityModule, {
@@ -45,15 +62,19 @@ export async function createModules(
       entityControllerModule,
       entityResolverModule,
       moduleBaseId,
+      controllerId,
+      serviceId,
+      resolverId,
       template: moduleTemplate,
+      templateMapping: moduleTemplateMapping,
     })),
     ...(await pluginWrapper(
       createBaseModule,
       EventNames.CreateEntityModuleBase,
       {
         entityName,
-        moduleBaseId,
         template: moduleBaseTemplate,
+        templateMapping: moduleBaseTemplateMapping,
       }
     )),
   ];
@@ -61,29 +82,21 @@ export async function createModules(
 
 async function createModule({
   entityName,
-  entityType,
   entityServiceModule,
   entityControllerModule,
   entityResolverModule,
   moduleBaseId,
+  controllerId,
+  serviceId,
+  resolverId,
   template,
+  templateMapping,
 }: CreateEntityModuleParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.module.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
-  const controllerId = createControllerId(entityType);
-  const serviceId = createServiceId(entityType);
-  const resolverId = createResolverId(entityType);
-  const moduleId = createModuleId(entityType);
 
-  interpolate(template, {
-    ENTITY: builders.identifier(entityType),
-    SERVICE: serviceId,
-    CONTROLLER: controllerId,
-    RESOLVER: resolverId,
-    MODULE: moduleId,
-    MODULE_BASE: moduleBaseId,
-  });
+  interpolate(template, templateMapping);
 
   const moduleBaseImport = importNames(
     [moduleBaseId],
@@ -140,15 +153,13 @@ async function createModule({
 
 async function createBaseModule({
   entityName,
-  moduleBaseId,
   template,
+  templateMapping,
 }: CreateEntityModuleBaseParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
 
-  interpolate(template, {
-    MODULE_BASE: moduleBaseId,
-  });
+  interpolate(template, templateMapping);
 
   removeTSIgnoreComments(template);
   removeESLintComments(template);

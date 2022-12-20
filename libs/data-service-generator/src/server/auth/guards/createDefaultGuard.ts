@@ -8,8 +8,8 @@ import {
   interpolate,
   removeTSClassDeclares,
 } from "../../../util/ast";
-import { readFile, relativeImportPath } from "../../../util/module";
-
+import { relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 type AuthGuardMetaData = {
   path: string;
   fileName: string;

@@ -2,7 +2,8 @@ import * as path from "path";
 import { builders } from "ast-types";
 import { Entity, EnumDataType } from "@amplication/code-gen-types";
 import { addImports, interpolate } from "../../../util/ast";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import { EntityComponent } from "../../types";
 import DsgContext from "../../../dsg-context";
 

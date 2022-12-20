@@ -67,7 +67,7 @@
     },
     "postbuild": {
       "executor": "nx:run-commands",
-      "outputs": ["dist/libs/data-service-generator"],
+      "outputs": ["{workspaceRoot}/dist/libs/data-service-generator"],
       "dependsOn": ["build"],
       "options": {
         "command": "ts-node scripts/copy-files.ts",
@@ -77,7 +77,7 @@
     "test": {
       "dependsOn": ["prebuild", "^prebuild"],
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/data-service-generator"],
+      "outputs": ["{workspaceRoot}/coverage/libs/data-service-generator"],
       "options": {
         "jestConfig": "libs/data-service-generator/jest.config.ts",
         "passWithNoTests": true
