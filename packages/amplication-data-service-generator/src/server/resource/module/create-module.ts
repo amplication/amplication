@@ -41,6 +41,14 @@ export async function createModules(
   const resolverId = createResolverId(entityType);
   const moduleId = createModuleId(entityType);
 
+  const morganModuleId = builders.identifier("MorganModule");
+  const prismaModuleId = builders.identifier("PrismaModule");
+
+  const importArray = builders.arrayExpression([
+    morganModuleId,
+    prismaModuleId,
+  ]);
+
   const moduleTemplateMapping = {
     ENTITY: builders.identifier(entityType),
     SERVICE: serviceId,
@@ -51,6 +59,8 @@ export async function createModules(
   };
   const moduleBaseTemplateMapping = {
     MODULE_BASE: moduleBaseId,
+    IMPORTS_ARRAY: importArray,
+    EXPORT_ARRAY: importArray,
   };
 
   return [
