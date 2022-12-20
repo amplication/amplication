@@ -37,7 +37,8 @@
   },
   "targetDefaults": {
     "test": {
-      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"],
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     },
     "prebuild": {
       "dependsOn": ["^prebuild"]
@@ -61,6 +62,9 @@
     },
     "docker:build": {
       "dependsOn": ["prebuild", "build", "postbuild"]
+    },
+    "test:e2e": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     }
   },
   "generators": {

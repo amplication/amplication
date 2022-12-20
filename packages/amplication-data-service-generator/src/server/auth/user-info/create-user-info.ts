@@ -9,16 +9,16 @@ import { readFile } from "@amplication/code-gen-utils";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";
-import { getUserIdType } from "../../../util/get-user-id-type";
+import { getEntityIdType } from "../../../util/get-entity-id-type";
 import pluginWrapper from "../../../plugin-wrapper";
 
 const templatePath = require.resolve("./user-info.template.ts");
 
 export async function createUserInfo(): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
+  const { serverDirectories, userEntityName } = DsgContext.getInstance;
   const authDir = `${serverDirectories.srcDirectory}/auth`;
   const template = await readFile(templatePath);
-  const templateMapping = prepareTemplateMapping();
+  const templateMapping = prepareTemplateMapping(userEntityName);
   const filePath = `${authDir}/UserInfo.ts`;
   return pluginWrapper(createUserInfoInternal, EventNames.CreateUserInfo, {
     template,
@@ -38,8 +38,8 @@ async function createUserInfoInternal({
   return [{ code: print(template).code, path: filePath }];
 }
 
-function prepareTemplateMapping() {
-  const idType = getUserIdType();
+function prepareTemplateMapping(entityName: string) {
+  const idType = getEntityIdType(entityName);
 
   const number = {
     class: "Number",

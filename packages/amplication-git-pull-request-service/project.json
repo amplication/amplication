@@ -15,7 +15,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-git-pull-request-service"],
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-git-pull-request-service"
+      ],
       "options": {
         "jestConfig": "packages/amplication-git-pull-request-service/jest.config.ts",
         "passWithNoTests": true

@@ -9,6 +9,7 @@ import {
   EventNames,
   CreateEntityServiceParams,
   CreateEntityServiceBaseParams,
+  types,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -38,6 +39,7 @@ import { relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
+import { getEntityIdType } from "../../../util/get-entity-id-type";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -196,7 +198,11 @@ async function createServiceBaseModule({
   const toManyRelations = (
     await Promise.all(
       toManyRelationFields.map(async (field) => {
-        const toManyFile = await createToManyRelationFile(field, delegateId);
+        const toManyFile = await createToManyRelationFile(
+          entity,
+          field,
+          delegateId
+        );
 
         const imports = extractImportDeclarations(toManyFile);
         const methods = getMethods(
@@ -214,7 +220,11 @@ async function createServiceBaseModule({
   const toOneRelations = (
     await Promise.all(
       toOneRelationFields.map(async (field) => {
-        const toOneFile = await createToOneRelationFile(field, delegateId);
+        const toOneFile = await createToOneRelationFile(
+          entity,
+          field,
+          delegateId
+        );
 
         const imports = extractImportDeclarations(toOneFile);
         const methods = getMethods(
@@ -339,6 +349,7 @@ export function createFieldFindOneFunctionId(
 }
 
 async function createToOneRelationFile(
+  entity: Entity,
   field: EntityLookupField,
   delegateId: namedTypes.Identifier
 ) {
@@ -347,6 +358,7 @@ async function createToOneRelationFile(
 
   interpolate(toOneFile, {
     DELEGATE: delegateId,
+    PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_ONE: createFieldFindOneFunctionId(field.name),
@@ -356,6 +368,7 @@ async function createToOneRelationFile(
 }
 
 async function createToManyRelationFile(
+  entity: Entity,
   field: EntityLookupField,
   delegateId: namedTypes.Identifier
 ) {
@@ -367,6 +380,7 @@ async function createToManyRelationFile(
 
   interpolate(toManyFile, {
     DELEGATE: delegateId,
+    PARENT_ID_TYPE: getParentIdType(entity.name),
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     PROPERTY: builders.identifier(field.name),
     FIND_MANY: createFieldFindManyFunctionId(field.name),
@@ -374,6 +388,20 @@ async function createToManyRelationFile(
   });
 
   return toManyFile;
+}
+
+function getParentIdType(entityName: string): namedTypes.Identifier {
+  const idType = getEntityIdType(entityName);
+
+  const idTypeOptions: {
+    [key in types.Id["idType"]]: namedTypes.Identifier;
+  } = {
+    AUTO_INCREMENT: builders.identifier("number"),
+    UUID: builders.identifier("string"),
+    CUID: builders.identifier("string"),
+  };
+
+  return idTypeOptions[idType];
 }
 
 function createTemplateMapping(
