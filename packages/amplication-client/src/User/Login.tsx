@@ -10,7 +10,6 @@ import queryString from "query-string";
 import { useCallback, useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import useLocalStorage from "react-use-localstorage";
 import { setToken } from "../authentication/authentication";
 import { Button } from "../Components/Button";
 import { ErrorMessage } from "../Components/ErrorMessage";
@@ -40,17 +39,10 @@ const INITIAL_VALUES: Values = {
   password: "",
 };
 
-export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
-
 const Login = () => {
   const history = useHistory();
   const location = useLocation();
   const [login, { loading, data, error }] = useMutation(DO_LOGIN);
-
-  const [, setInvitationToken] = useLocalStorage(
-    LOCAL_STORAGE_KEY_INVITATION_TOKEN,
-    undefined
-  );
 
   const content = useMemo(() => {
     const s: LocationStateInterface | undefined | null = location.state;
@@ -77,16 +69,6 @@ const Login = () => {
 
     return params.error;
   }, [location.search]);
-
-  useEffect(() => {
-    const params = queryString.parse(location.search);
-    if (params.invitation) {
-      //save the invitation token in local storage to be validated by
-      //<CompleteInvitation/> after signup or sign in
-      //we user local storage since github-passport does not support dynamic callback
-      setInvitationToken(params.invitation as string);
-    }
-  }, [setInvitationToken, location.search]);
 
   useEffect(() => {
     if (data) {
