@@ -1,7 +1,18 @@
-import { AmplicationLogger } from "@amplication/nest-logger-module";
-import { PipeTransform, Injectable, BadRequestException } from "@nestjs/common";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from "@amplication/nest-logger-module";
+import {
+  PipeTransform,
+  Injectable,
+  BadRequestException,
+  Inject,
+} from "@nestjs/common";
 import { KafkaContext } from "@nestjs/microservices";
-import { IKafkaMessageSerializer } from "@amplication/util/kafka";
+import {
+  IKafkaMessageSerializer,
+  KAFKA_SERIALIZER,
+} from "@amplication/util/kafka";
 import { DecodedKafkaContext } from "../ctx-host/DecodedKafkaContext";
 
 @Injectable()
@@ -9,8 +20,10 @@ export class ParseKafkaContextPipe
   implements PipeTransform<KafkaContext, Promise<DecodedKafkaContext>>
 {
   constructor(
+    @Inject(KAFKA_SERIALIZER)
     private serializerService: IKafkaMessageSerializer,
-    private logger: AmplicationLogger
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {}
 
   async transform(value: KafkaContext): Promise<DecodedKafkaContext> {
