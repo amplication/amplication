@@ -1,7 +1,7 @@
-import { Snackbar, TextField } from "@amplication/design-system";
+import { LimitationDialog, TextField } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -50,6 +50,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     onError: () => {
       setCommitRunning(false);
       setPendingChangesError(true);
+      setOpenLimitationDialog(true);
       resetPendingChanges();
     },
     onCompleted: (response) => {
@@ -105,6 +106,8 @@ const Commit = ({ projectId, noChanges }: Props) => {
     ]
   );
 
+  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
+
   const errorMessage = formatError(error);
 
   return (
@@ -150,7 +153,11 @@ const Commit = ({ projectId, noChanges }: Props) => {
         }}
       </Formik>
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      <LimitationDialog
+        isOpen={isOpenLimitationDialog}
+        onConfirm={() => setOpenLimitationDialog(false)}
+        onDismiss={() => setOpenLimitationDialog(false)}
+      />
     </div>
   );
 };

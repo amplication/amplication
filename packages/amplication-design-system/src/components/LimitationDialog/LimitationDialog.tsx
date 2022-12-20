@@ -1,0 +1,45 @@
+import React from "react";
+import { Dialog, Props as DialogProps } from "../Dialog/Dialog";
+import { Button, EnumButtonStyle } from "../Button/Button";
+import "./LimitationDialog.scss";
+
+const CLASS_NAME = "limitation-dialog";
+
+export type Props = DialogProps & {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onDismiss: () => void;
+};
+
+export const LimitationDialog = ({ isOpen, onConfirm, onDismiss }: Props) => {
+  return (
+    <Dialog
+      title=""
+      className={CLASS_NAME}
+      isOpen={isOpen}
+      onDismiss={onDismiss}
+    >
+      <div className={`${CLASS_NAME}__message`}>
+        <div className={`${CLASS_NAME}__message__header`}>
+          We are happy to see your project grow!
+        </div>
+        <div className={`${CLASS_NAME}__message__passed_limits_description`}>
+          You passed the workspace plan limits
+        </div>
+        <div className={`${CLASS_NAME}__message__passed_limits_details`}>
+          Allowed services per workspace: 3
+        </div>
+        <div className={`${CLASS_NAME}__message__keep_building`}>
+          Keep building without limitations by upgrading your workspace plan
+        </div>
+      </div>
+      <Button
+        className={`${CLASS_NAME}__upgrade_button`}
+        buttonStyle={EnumButtonStyle.Primary}
+        onClick={onConfirm}
+      >
+        Upgrade Now
+      </Button>
+    </Dialog>
+  );
+};

@@ -46,6 +46,7 @@ export type { Props as TextFieldProps } from "./components/TextField/TextField";
 export { Dialog } from "./components/Dialog/Dialog";
 export type { Props as DialogProps } from "./components/Dialog/Dialog";
 export { ConfirmationDialog } from "./components/ConfirmationDialog/ConfirmationDialog";
+export { LimitationDialog } from "./components/LimitationDialog/LimitationDialog";
 
 export type { Props as ConfirmationDialogProps } from "./components/ConfirmationDialog/ConfirmationDialog";
 
