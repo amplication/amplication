@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { TestingModule, Test } from "@nestjs/testing";
 import { Prisma } from "@amplication/prisma-db";
 import { ApolloError } from "apollo-server-express";
-import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { AmplicationError } from "../errors/AmplicationError";
 import {
   createRequestData,
@@ -13,9 +12,10 @@ import {
   RequestData,
   UniqueKeyException,
 } from "./GqlResolverExceptions.filter";
+import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
-const winstonErrorMock = jest.fn();
-const winstonInfoMock = jest.fn();
+const errorMock = jest.fn();
+const infoMock = jest.fn();
 const configServiceGetMock = jest.fn(() => "production");
 const prepareRequestDataMock = jest.fn(() => null);
 
@@ -54,10 +54,10 @@ describe("GqlResolverExceptionsFilter", () => {
           },
         },
         {
-          provide: WINSTON_MODULE_PROVIDER,
+          provide: AMPLICATION_LOGGER_PROVIDER,
           useValue: {
-            error: winstonErrorMock,
-            info: winstonInfoMock,
+            error: errorMock,
+            info: infoMock,
           },
         },
         GqlResolverExceptionsFilter,
@@ -121,12 +121,12 @@ describe("GqlResolverExceptionsFilter", () => {
     const host = {} as ArgumentsHost;
     expect(filter.catch(exception, host)).toEqual(expected);
     if (errorArgs) {
-      expect(winstonErrorMock).toBeCalledTimes(1);
-      expect(winstonErrorMock).toBeCalledWith(...errorArgs);
+      expect(errorMock).toBeCalledTimes(1);
+      expect(errorMock).toBeCalledWith(...errorArgs);
     }
     if (infoArgs) {
-      expect(winstonInfoMock).toBeCalledTimes(1);
-      expect(winstonInfoMock).toBeCalledWith(...infoArgs);
+      expect(infoMock).toBeCalledTimes(1);
+      expect(infoMock).toBeCalledWith(...infoArgs);
     }
   });
 });

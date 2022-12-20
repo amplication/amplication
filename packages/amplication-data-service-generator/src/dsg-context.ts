@@ -6,12 +6,24 @@ import {
 } from "@amplication/code-gen-types";
 import { EnumResourceType } from "./models";
 import winston from "winston";
-import { readPluginStaticModules } from "./read-static-modules";
+import { readPluginStaticModules } from "./util/read-static-modules";
+import {
+  USER_ENTITY_NAME,
+  USER_NAME_FIELD_NAME,
+  USER_PASSWORD_FIELD_NAME,
+  USER_ROLES_FIELD_NAME,
+} from "./server/user-entity/user-entity";
 
-const contextUtil = {
-  skipDefaultBehavior: false,
-  importStaticModules: readPluginStaticModules,
-};
+// const contextUtil = {
+//   skipDefaultBehavior: false,
+//   abortGeneration: (msg: string) => {
+//     DsgContext.utils.abortMessage = msg;
+//     DsgContext.utils.abort = true;
+//   },
+//   abort: false,
+//   abortMessage: "",
+//   importStaticModules: readPluginStaticModules,
+// };
 
 class DsgContext implements types.DsgContext {
   public appInfo!: types.AppInfo;
@@ -22,12 +34,26 @@ class DsgContext implements types.DsgContext {
   public DTOs: types.DTOs = {};
   public plugins: types.PluginMap = {};
   public logger: winston.Logger = winston.createLogger();
-  public utils: ContextUtil = contextUtil;
+  public utils: ContextUtil = {
+    skipDefaultBehavior: false,
+    abortGeneration: (msg: string) => {
+      this.utils.abortMessage = msg;
+      this.utils.abort = true;
+    },
+    abort: false,
+    abortMessage: "",
+    importStaticModules: readPluginStaticModules,
+  };
   public serviceTopics: types.ServiceTopics[] = [];
   public topics: types.Topic[] = [];
 
   public clientDirectories!: clientDirectories;
   public serverDirectories!: serverDirectories;
+
+  public userEntityName: string = USER_ENTITY_NAME;
+  public userNameFieldName: string = USER_NAME_FIELD_NAME;
+  public userPasswordFieldName: string = USER_PASSWORD_FIELD_NAME;
+  public userRolesFieldName: string = USER_ROLES_FIELD_NAME;
 
   private static instance: DsgContext;
 

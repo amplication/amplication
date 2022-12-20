@@ -15,6 +15,7 @@ import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
 import DarkModeToggle from "./DarkModeToggle";
 import "./MainLayout.scss";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   children: React.ReactNode;
@@ -60,7 +61,7 @@ const Menu = ({ children }: MenuProps) => {
 
   const handleSupportClick = useCallback(() => {
     trackEvent({
-      eventName: "supportButtonClick",
+      eventName: AnalyticsEventNames.SupportButtonClick,
     });
   }, [trackEvent]);
 

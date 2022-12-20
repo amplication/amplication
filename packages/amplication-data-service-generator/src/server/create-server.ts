@@ -1,11 +1,10 @@
 import * as path from "path";
-import { paramCase } from "param-case";
 import {
   Module,
   EventNames,
   CreateServerParams,
 } from "@amplication/code-gen-types";
-import { readStaticModules } from "../read-static-modules";
+import { readStaticModules } from "../util/read-static-modules";
 import { formatCode, formatJson } from "../util/module";
 import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
@@ -24,6 +23,9 @@ import { createDockerComposeDBFile } from "./docker-compose/create-docker-compos
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
 import { createLog } from "../create-log";
+import { createUserInfo } from "./auth/user-info/create-user-info";
+import { createTokenPayloadInterface } from "./auth/token/create-token-payload-interface";
+import { createAuthConstants } from "./auth/create-constants/create-constants";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -36,12 +38,18 @@ async function createServerInternal(
 ): Promise<Module[]> {
   const {
     serverDirectories,
-    appInfo,
     roles,
     entities,
     DTOs: dtos,
     logger,
   } = DsgContext.getInstance;
+
+  const dsgVersion = (await import("../../package.json")).version;
+  logger.info(`Running DSG Version: ${dsgVersion}`);
+  await createLog({
+    level: "info",
+    message: `Running DSG Version: ${dsgVersion}`,
+  });
 
   await createLog({
     level: "info",
@@ -57,19 +65,30 @@ async function createServerInternal(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
   );
-  const packageJsonModule = await createServerPackageJson({
-    updateProperties: [
-      {
-        name: `@${paramCase(appInfo.name)}/server`,
-        version: appInfo.version,
-      },
-    ],
-  });
+  const packageJsonModule = await createServerPackageJson();
 
   await createLog({ level: "info", message: "Creating resources..." });
   logger.info("Creating resources...");
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
+
+  await createLog({ level: "info", message: "Creating User Info..." });
+  logger.info("Creating User Info...");
+  const userInfo = await createUserInfo();
+
+  await createLog({
+    level: "info",
+    message: "Creating Token Payload Interface...",
+  });
+  logger.info("Token Payload Interface...");
+  const tokenPayloadInterface = await createTokenPayloadInterface();
+
+  await createLog({
+    level: "info",
+    message: "Creating Auth Constants...",
+  });
+  logger.info("Creating Auth Constants...");
+  const authConstants = await createAuthConstants();
 
   await createLog({ level: "info", message: "Creating Auth module..." });
   logger.info("Creating Auth module...");
@@ -102,6 +121,9 @@ async function createServerInternal(
     ...swagger,
     ...appModule,
     ...seedModule,
+    ...userInfo,
+    ...tokenPayloadInterface,
+    authConstants,
     ...authModules,
     ...messageBrokerModules,
   ];

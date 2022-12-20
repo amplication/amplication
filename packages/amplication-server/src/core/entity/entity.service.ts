@@ -11,7 +11,7 @@ import { Prisma, PrismaService } from "@amplication/prisma-db";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { camelCase } from "camel-case";
 import difference from "@extra-set/difference";
-import { isEmpty, pick, last, head, omit } from "lodash";
+import { isEmpty, pick, last, head, omit, isEqual } from "lodash";
 import {
   Entity,
   EntityField,
@@ -39,6 +39,7 @@ import {
   DEFAULT_PERMISSIONS,
   SYSTEM_DATA_TYPES,
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
+  INITIAL_ID_TYPE_FIELDS,
 } from "./constants";
 import {
   prepareDeletedItemName,
@@ -134,6 +135,10 @@ const RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE =
 
 const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
   "When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null";
+
+const UPDATED_AT = "updatedAt";
+const CREATED_AT = "createdAt";
+const PROPERTIES = "properties";
 
 const BASE_FIELD: Pick<
   EntityField,
@@ -417,6 +422,19 @@ export class EntityService {
     return await this.useLocking(args.where.id, user, async (entity) => {
       if (entity.name === USER_ENTITY_NAME) {
         throw new ConflictException(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
+      }
+
+      const relatedEntityFields = await this.prisma.entityField.findMany({
+        where: {
+          dataType: EnumDataType.Lookup,
+          properties: { path: ["relatedEntityId"], equals: args.where.id },
+          entityVersion: { versionNumber: CURRENT_VERSION_NUMBER },
+        },
+        include: { entityVersion: true },
+      });
+
+      for (const relatedEntityField of relatedEntityFields) {
+        await this.deleteField({ where: { id: relatedEntityField.id } }, user);
       }
 
       return this.prisma.entity.update({
@@ -1801,9 +1819,21 @@ export class EntityService {
     validateFieldName(data.name);
 
     // Validate the field's dataType is not a system data type
-    if (isSystemDataType(data.dataType as EnumDataType)) {
+    if (
+      isSystemDataType(data.dataType as EnumDataType) &&
+      data.dataType !== EnumDataType.Id
+    ) {
       throw new DataConflictError(
         `The data type ${data.dataType} cannot be used for non-system fields`
+      );
+    }
+
+    if (
+      data.dataType === EnumDataType.Id &&
+      isBasePropertyIdFieldPayloadChanged(data)
+    ) {
+      throw new DataConflictError(
+        "The base properties of the ID field cannot be edited"
       );
     }
 
@@ -2057,9 +2087,21 @@ export class EntityService {
       include: { entityVersion: true },
     });
 
-    if (isSystemDataType(field.dataType as EnumDataType)) {
+    if (
+      isSystemDataType(field.dataType as EnumDataType) &&
+      field.dataType !== EnumDataType.Id
+    ) {
       throw new ConflictException(
         `Cannot update entity field ${field.name} because fields with data type ${field.dataType} cannot be updated`
+      );
+    }
+
+    if (
+      field.dataType === EnumDataType.Id &&
+      isBasePropertyIdFieldPayloadChanged(args.data)
+    ) {
+      throw new DataConflictError(
+        "The base properties of the ID field cannot be edited"
       );
     }
 
@@ -2230,6 +2272,34 @@ function isReservedUserEntityFieldName(name: string): boolean {
 
 function isUserEntity(entity: Entity): boolean {
   return entity.name === USER_ENTITY_NAME;
+}
+
+/**
+ * @param data the payload from the request
+ * @return (boolean) true if the base properties of the ID field are changed,
+ * meaning that the base properties of the ID field from the payload are different
+ * from the base properties of the ID field from the initial state (INITIAL_ID_TYPE_FIELDS)
+ */
+function isBasePropertyIdFieldPayloadChanged(
+  data: EntityFieldUpdateInput
+): boolean {
+  const idTypeData = {
+    ...INITIAL_ID_TYPE_FIELDS,
+    createdAt: undefined,
+    updatedAt: undefined,
+  };
+  const idTypeDataWithoutProperties = omit(idTypeData, [
+    PROPERTIES,
+    CREATED_AT,
+    UPDATED_AT,
+  ]);
+  const dataWithoutProperties = omit(data, [
+    PROPERTIES,
+    CREATED_AT,
+    UPDATED_AT,
+  ]);
+
+  return !isEqual(dataWithoutProperties, idTypeDataWithoutProperties);
 }
 
 export function createEntityNamesWhereInput(

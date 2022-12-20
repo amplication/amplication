@@ -3,6 +3,7 @@ import winston from "winston";
 import {
   clientDirectories,
   DTOs,
+  EntityField,
   Module,
   serverDirectories,
 } from "./code-gen-types";
@@ -35,6 +36,9 @@ export interface PrintResultType {
 
 export interface ContextUtil {
   skipDefaultBehavior: boolean;
+  abortGeneration: (msg: string) => void;
+  abortMessage?: string;
+  abort: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
 export interface DsgContext extends DSGResourceData {
@@ -45,6 +49,10 @@ export interface DsgContext extends DSGResourceData {
   utils: ContextUtil;
   clientDirectories: clientDirectories;
   serverDirectories: serverDirectories;
+  userEntityName: string;
+  userNameFieldName: string;
+  userPasswordFieldName: string;
+  userRolesFieldName: string;
 }
 
 export type PluginWrapper = (args: EventParams, func: () => void) => any;
@@ -60,6 +68,8 @@ export enum EventNames {
   CreateEntityController = "CreateEntityController",
   CreateEntityControllerBase = "CreateEntityControllerBase",
   CreateEntityControllerSpec = "CreateEntityControllerSpec",
+  CreateUserInfo = "CreateUserInfo",
+  CreateTokenPayloadInterface = "CreateTokenPayloadInterface",
   CreateServerAuth = "CreateServerAuth",
   CreateAdminUI = "CreateAdminUI",
   CreateServer = "CreateServer",

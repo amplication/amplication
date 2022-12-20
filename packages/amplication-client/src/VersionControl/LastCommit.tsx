@@ -1,4 +1,4 @@
-import React, { useMemo, useContext, useEffect } from "react";
+import { useMemo, useContext, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
@@ -12,6 +12,7 @@ import { formatDistanceToNow } from "date-fns";
 import { GET_LAST_COMMIT_BUILDS } from "./hooks/commitQueries";
 import { useCommitStatus } from "./hooks/useCommitStatus";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   commits: models.Commit[];
@@ -60,7 +61,7 @@ const LastCommit = ({ projectId }: Props) => {
       id={lastCommit.id}
       label="Commit"
       eventData={{
-        eventName: "lastCommitIdClick",
+        eventName: AnalyticsEventNames.LastCommitIdClick,
       }}
     />
   );

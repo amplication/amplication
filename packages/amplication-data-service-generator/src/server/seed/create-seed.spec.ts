@@ -12,9 +12,9 @@ import {
   NEW_DATE_EXPRESSION,
   NEW_JSON_EXPRESSION,
 } from "./create-seed";
-import { DEFAULT_USER_ENTITY } from "../user-entity";
+import { DEFAULT_USER_ENTITY } from "../user-entity/user-entity";
 import { createEnumMemberName } from "../resource/dto/create-enum-dto";
-import { createEnumName } from "../prisma/create-prisma-schema";
+import { createEnumName } from "../prisma/create-prisma-schema-fields";
 import { memberExpression } from "../../util/ast";
 
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityField";

@@ -22,6 +22,11 @@ REACT_APP_SERVER_URL=http://localhost:3000",
     \\"sass\\": \\"^1.39.0\\",
     \\"web-vitals\\": \\"1.1.2\\"
   },
+  \\"overrides\\": {
+    \\"react-scripts\\": {
+      \\"@svgr/webpack\\": \\"6.5.1\\"
+    }
+  },
   \\"scripts\\": {
     \\"start\\": \\"react-scripts start\\",
     \\"build\\": \\"react-scripts build\\",
@@ -308,7 +313,7 @@ const Login = ({ theme }: any) => {
         </div>
         <div className={\`\${CLASS_NAME}__read-more\`}>
           <span>Read </span>
-          <a href=\\"https://docs.amplication.com/docs/api\\" target=\\"docs\\">
+          <a href=\\"https://docs.amplication.com/api\\" target=\\"docs\\">
             Amplication docs
           </a>
           <span> to learn more</span>
@@ -1647,7 +1652,7 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
 export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
 export const CustomerTitle = (record: TCustomer): string => {
-  return record.firstName || record.id;
+  return record.firstName || String(record.id);
 };
 ",
   "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
@@ -1753,7 +1758,7 @@ export const EmptyShow = (props: ShowProps): React.ReactElement => {
 export const EMPTY_TITLE_FIELD = \\"id\\";
 
 export const EmptyTitle = (record: TEmpty): string => {
-  return record.id || record.id;
+  return record.id || String(record.id);
 };
 ",
   "admin-ui/src/index.tsx": "import React from \\"react\\";
@@ -1942,7 +1947,7 @@ export const OrderShow = (props: ShowProps): React.ReactElement => {
 export const ORDER_TITLE_FIELD = \\"id\\";
 
 export const OrderTitle = (record: TOrder): string => {
-  return record.id || record.id;
+  return record.id || String(record.id);
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
@@ -2194,7 +2199,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
 export const ORGANIZATION_TITLE_FIELD = \\"name\\";
 
 export const OrganizationTitle = (record: TOrganization): string => {
-  return record.name || record.id;
+  return record.name || String(record.id);
 };
 ",
   "admin-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
@@ -2324,7 +2329,7 @@ export const ProfileShow = (props: ShowProps): React.ReactElement => {
 export const PROFILE_TITLE_FIELD = \\"id\\";
 
 export const ProfileTitle = (record: TProfile): string => {
-  return record.id || record.id;
+  return record.id || String(record.id);
 };
 ",
   "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
@@ -2694,7 +2699,7 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 export const USER_TITLE_FIELD = \\"username\\";
 
 export const UserTitle = (record: TUser): string => {
-  return record.username || record.id;
+  return record.username || String(record.id);
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
@@ -2937,9 +2942,12 @@ services:
     healthcheck:
       test:
         - CMD
-        - sh
-        - -c
-        - pg_isready -q -d \${DB_DB_NAME} -U \${DB_USER}
+        - pg_isready
+        - -q
+        - -d
+        - \${DB_NAME}
+        - -U
+        - \${DB_USER}
       timeout: 45s
       interval: 10s
       retries: 10
@@ -2978,9 +2986,9 @@ networks:
     driver: bridge
 ",
   "server/nest-cli.json": "{
-  \\"sourceRoot\\": \\"src\\",
+  \\"sourceRoot\\": \\"/\\",
   \\"compilerOptions\\": {
-    \\"assets\\": [\\"swagger\\"]
+    \\"assets\\": [\\"src/swagger\\", \\"prisma/generated-prisma-client\\"]
   }
 }
 ",
@@ -3006,16 +3014,16 @@ networks:
     \\"compose:down\\": \\"docker-compose down --volumes\\"
   },
   \\"dependencies\\": {
-    \\"@nestjs/common\\": \\"8.2.3\\",
+    \\"@nestjs/common\\": \\"8.4.7\\",
     \\"@nestjs/config\\": \\"1.1.5\\",
-    \\"@nestjs/core\\": \\"8.2.3\\",
+    \\"@nestjs/core\\": \\"8.4.7\\",
     \\"@nestjs/graphql\\": \\"9.1.2\\",
     \\"@nestjs/jwt\\": \\"8.0.0\\",
     \\"@nestjs/passport\\": \\"8.2.2\\",
-    \\"@nestjs/platform-express\\": \\"8.2.3\\",
+    \\"@nestjs/platform-express\\": \\"8.4.7\\",
     \\"@nestjs/serve-static\\": \\"2.2.2\\",
     \\"@nestjs/swagger\\": \\"5.1.5\\",
-    \\"@prisma/client\\": \\"3.15.2\\",
+    \\"@prisma/client\\": \\"4.6.1\\",
     \\"apollo-server-express\\": \\"3.6.1\\",
     \\"bcrypt\\": \\"5.0.1\\",
     \\"class-transformer\\": \\"0.5.1\\",
@@ -3024,7 +3032,7 @@ networks:
     \\"graphql-type-json\\": \\"0.3.2\\",
     \\"nest-access-control\\": \\"2.0.3\\",
     \\"nest-morgan\\": \\"1.0.1\\",
-    \\"nestjs-prisma\\": \\"0.16.0\\",
+    \\"nestjs-prisma\\": \\"0.19.0\\",
     \\"npm-run-all\\": \\"4.1.5\\",
     \\"passport\\": \\"0.6.0\\",
     \\"passport-http\\": \\"0.3.0\\",
@@ -3037,7 +3045,7 @@ networks:
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
-    \\"@nestjs/testing\\": \\"8.2.3\\",
+    \\"@nestjs/testing\\": \\"8.4.7\\",
     \\"@types/bcrypt\\": \\"5.0.0\\",
     \\"@types/express\\": \\"4.17.9\\",
     \\"@types/graphql-type-json\\": \\"0.3.2\\",
@@ -3048,7 +3056,7 @@ networks:
     \\"@types/supertest\\": \\"2.0.11\\",
     \\"jest\\": \\"27.0.6\\",
     \\"jest-mock-extended\\": \\"^2.0.4\\",
-    \\"prisma\\": \\"3.15.2\\",
+    \\"prisma\\": \\"4.6.1\\",
     \\"supertest\\": \\"4.0.2\\",
     \\"ts-jest\\": \\"27.0.3\\",
     \\"type-fest\\": \\"0.11.0\\",
@@ -3068,6 +3076,7 @@ networks:
 
 generator client {
   provider = \\"prisma-client-js\\"
+  output   = \\"./generated-prisma-client\\"
 }
 
 model User {
@@ -3095,7 +3104,7 @@ model User {
 }
 
 model Profile {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
@@ -3183,12 +3192,13 @@ enum EnumCustomerCustomerType {
   gold
   bronze
   regular
-}",
+}
+",
   "server/scripts/clean.ts": "/**
  * Clean all the tables and types created by Prisma in the database
  */
 
-import { PrismaClient } from \\"@prisma/client\\";
+import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 
 if (require.main === module) {
   clean().catch((error) => {
@@ -3226,7 +3236,8 @@ async function dropTypes(prisma: PrismaClient, types: string[]) {
 async function getTables(prisma: PrismaClient): Promise<string[]> {
   const results: Array<{
     tablename: string;
-  }> = await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
+  }> =
+    await prisma.$queryRaw\`SELECT tablename from pg_tables where schemaname = 'public';\`;
   return results.map((result) => result.tablename);
 }
 
@@ -3242,7 +3253,7 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
   return results.map((result) => result.typname);
 }
 ",
-  "server/scripts/customSeed.ts": "import { PrismaClient } from \\"@prisma/client\\";
+  "server/scripts/customSeed.ts": "import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 
 export async function customSeed() {
   const client = new PrismaClient();
@@ -3261,7 +3272,7 @@ export async function customSeed() {
 }
 ",
   "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
-import { PrismaClient } from \\"@prisma/client\\";
+import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
 import { customSeed } from \\"./customSeed\\";
@@ -3332,6 +3343,7 @@ import { EmptyModule } from \\"./empty/empty.module\\";
 import { ACLModule } from \\"./auth/acl.module\\";
 import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
+import { PrismaModule } from \\"./prisma/prisma.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
 import { KafkaModule } from \\"./kafka/kafka.module\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
@@ -3351,6 +3363,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     ACLModule,
     AuthModule,
     HealthModule,
+    PrismaModule,
     SecretsManagerModule,
     KafkaModule,
     MorganModule,
@@ -3431,9 +3444,7 @@ export class LoginArgs {
 }
 ",
   "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from \\"../user/user\\";
+import { User } from \\"../user/base/User\\";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
@@ -4100,8 +4111,7 @@ export class TokenService extends TokenServiceBase implements ITokenService {}
 ",
   "server/src/auth/userData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlContextType, GqlExecutionContext } from \\"@nestjs/graphql\\";
-//@ts-ignore
-import { User } from \\"@prisma/client\\";
+import { User } from \\"generated-prisma-client\\";
 
 /**
  * Access the user data from the request object i.e \`req.user\`.
@@ -4140,7 +4150,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4162,7 +4172,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4368,7 +4378,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4559,7 +4569,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4613,7 +4623,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4635,7 +4645,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4692,7 +4702,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -4859,7 +4869,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5053,7 +5063,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5261,7 +5271,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5287,7 +5297,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5309,7 +5319,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5333,7 +5343,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5357,7 +5367,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5384,7 +5394,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5429,7 +5439,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -5651,6 +5661,29 @@ describe(\\"Customer\\", () => {
       });
   });
 
+  test(\\"POST /customers existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/customers\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        birthData: CREATE_RESULT.birthData.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/customers\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -5663,7 +5696,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6083,25 +6116,19 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class CustomerModuleBase {}
 ",
@@ -6112,7 +6139,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6344,12 +6371,12 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Customer, Order, Organization } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, Customer, Order, Organization } from \\"generated-prisma-client\\";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -6391,7 +6418,7 @@ export class CustomerServiceBase {
     args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
     return this.prisma.customer
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .orders(args);
@@ -6468,7 +6495,7 @@ export class CustomerResolver extends CustomerResolverBase {
 }
 ",
   "server/src/customer/customer.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { CustomerServiceBase } from \\"./base/customer.service.base\\";
 
 @Injectable()
@@ -6577,7 +6604,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6599,7 +6626,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6642,7 +6669,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6656,7 +6683,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6710,7 +6737,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6732,7 +6759,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6789,7 +6816,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6839,7 +6866,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6853,7 +6880,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -6907,7 +6934,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7091,6 +7118,28 @@ describe(\\"Empty\\", () => {
       });
   });
 
+  test(\\"POST /empties existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/empties\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/empties\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -7103,7 +7152,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7277,25 +7326,19 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class EmptyModuleBase {}
 ",
@@ -7306,7 +7349,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -7409,12 +7452,12 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Empty } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, Empty } from \\"generated-prisma-client\\";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -7506,7 +7549,7 @@ export class EmptyResolver extends EmptyResolverBase {
 }
 ",
   "server/src/empty/empty.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { EmptyServiceBase } from \\"./base/empty.service.base\\";
 
 @Injectable()
@@ -7531,6 +7574,99 @@ export class NotFoundException extends common.NotFoundException {
   statusCode!: number;
   @ApiProperty()
   message!: string;
+}
+",
+  "server/src/filters/HttpExceptions.filter.ts": "import {
+  ArgumentsHost,
+  Catch,
+  HttpException,
+  HttpServer,
+  HttpStatus,
+} from \\"@nestjs/common\\";
+import { BaseExceptionFilter } from \\"@nestjs/core\\";
+import {
+  // @ts-ignore
+  Prisma,
+} from \\"generated-prisma-client\\";
+import { Response } from \\"express\\";
+
+export type ErrorCodesStatusMapping = {
+  [key: string]: number;
+};
+
+/**
+ * {@link PrismaClientExceptionFilter} handling {@link Prisma.PrismaClientKnownRequestError} exceptions.
+ */
+@Catch(Prisma?.PrismaClientKnownRequestError)
+export class HttpExceptionFilter extends BaseExceptionFilter {
+  /**
+   * default error codes mapping
+   *
+   * Error codes definition for Prisma Client (Query Engine)
+   * @see https://www.prisma.io/docs/reference/api-reference/error-reference#prisma-client-query-engine
+   */
+  private errorCodesStatusMapping: ErrorCodesStatusMapping = {
+    P2000: HttpStatus.BAD_REQUEST,
+    P2002: HttpStatus.CONFLICT,
+    P2025: HttpStatus.NOT_FOUND,
+  };
+
+  /**
+   * @param applicationRef
+   */
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(applicationRef?: HttpServer) {
+    super(applicationRef);
+  }
+
+  /**
+   * @param exception
+   * @param host
+   * @returns
+   */
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
+    const statusCode = this.errorCodesStatusMapping[exception.code];
+    let message;
+    if (host.getType() === \\"http\\") {
+      // for http requests (REST)
+      // Todo : Add all other exception types and also add mapping
+      const ctx = host.switchToHttp();
+      const response = ctx.getResponse<Response>();
+      if (exception.code === \\"P2002\\") {
+        // Handling Unique Key Constraint Violation Error
+        const fields = (exception.meta as { target: string[] }).target;
+        message = \`Another record with the requested (\${fields.join(
+          \\", \\"
+        )}) already exists\`;
+      } else {
+        message =
+          \`[\${exception.code}]: \` +
+          this.exceptionShortMessage(exception.message);
+      }
+      if (!Object.keys(this.errorCodesStatusMapping).includes(exception.code)) {
+        return super.catch(exception, host);
+      }
+      const errorResponse = {
+        message: message,
+        statusCode: statusCode,
+      };
+      response.status(statusCode).send(errorResponse);
+    }
+    return new HttpException({ statusCode, message }, statusCode);
+  }
+
+  /**
+   * @param exception
+   * @returns short message for the exception
+   */
+  exceptionShortMessage(message: string): string {
+    const shortMessage = message.substring(message.indexOf(\\"→\\"));
+    return shortMessage
+      .substring(shortMessage.indexOf(\\"\\\\n\\"))
+      .replace(/\\\\n/g, \\"\\")
+      .trim();
+  }
 }
 ",
   "server/src/grants.json": "[
@@ -8006,7 +8142,7 @@ export class HealthControllerBase {
 }
 ",
   "server/src/health/base/health.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
 
 @Injectable()
 export class HealthServiceBase {
@@ -8033,12 +8169,10 @@ export class HealthController extends HealthControllerBase {
 }
 ",
   "server/src/health/health.module.ts": "import { Module } from \\"@nestjs/common\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
 import { HealthController } from \\"./health.controller\\";
 import { HealthService } from \\"./health.service\\";
 
 @Module({
-  imports: [PrismaModule],
   controllers: [HealthController],
   providers: [HealthService],
   exports: [HealthService],
@@ -8046,7 +8180,7 @@ import { HealthService } from \\"./health.service\\";
 export class HealthModule {}
 ",
   "server/src/health/health.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { HealthServiceBase } from \\"./base/health.service.base\\";
 
 @Injectable()
@@ -8237,8 +8371,9 @@ export class KafkaService extends KafkaServiceBase {}
 }
 ",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
-import { NestFactory } from \\"@nestjs/core\\";
+import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
+import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
@@ -8278,6 +8413,9 @@ async function main() {
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
+
   void app.listen(PORT);
 
   return app;
@@ -8292,7 +8430,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8314,7 +8452,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8336,7 +8474,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8357,7 +8495,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8380,7 +8518,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8461,7 +8599,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8511,7 +8649,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8565,7 +8703,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8587,7 +8725,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8644,7 +8782,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8721,7 +8859,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8777,7 +8915,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8868,7 +9006,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -8894,7 +9032,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9077,6 +9215,28 @@ describe(\\"Order\\", () => {
       });
   });
 
+  test(\\"POST /orders existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/orders\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/orders\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -9089,7 +9249,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9295,25 +9455,19 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class OrderModuleBase {}
 ",
@@ -9324,7 +9478,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9470,12 +9624,12 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Order, Customer } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, Order, Customer } from \\"generated-prisma-client\\";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -9575,7 +9729,7 @@ export class OrderResolver extends OrderResolverBase {
 }
 ",
   "server/src/order/order.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { OrderServiceBase } from \\"./base/order.service.base\\";
 
 @Injectable()
@@ -9592,7 +9746,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9614,7 +9768,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9641,7 +9795,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9686,7 +9840,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9708,7 +9862,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9788,7 +9942,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9853,7 +10007,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9907,7 +10061,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9929,7 +10083,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -9986,7 +10140,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10045,7 +10199,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10113,7 +10267,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10216,7 +10370,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10242,7 +10396,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10267,7 +10421,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10294,7 +10448,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -10501,6 +10655,28 @@ describe(\\"Organization\\", () => {
       });
   });
 
+  test(\\"POST /organizations existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/organizations\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/organizations\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -10513,7 +10689,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11055,25 +11231,19 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class OrganizationModuleBase {}
 ",
@@ -11084,7 +11254,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11297,12 +11467,12 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Organization, User, Customer } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, Organization, User, Customer } from \\"generated-prisma-client\\";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11344,7 +11514,7 @@ export class OrganizationServiceBase {
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .users(args);
@@ -11355,7 +11525,7 @@ export class OrganizationServiceBase {
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .customers(args);
@@ -11366,7 +11536,7 @@ export class OrganizationServiceBase {
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .vipCustomers(args);
@@ -11427,7 +11597,7 @@ export class OrganizationResolver extends OrganizationResolverBase {
 }
 ",
   "server/src/organization/organization.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { OrganizationServiceBase } from \\"./base/organization.service.base\\";
 
 @Injectable()
@@ -11492,6 +11662,32 @@ export async function transformStringFieldUpdateInput<
   return input;
 }
 ",
+  "server/src/prisma/prisma.module.ts": "import { Global, Module } from \\"@nestjs/common\\";
+import { PrismaService } from \\"./prisma.service\\";
+
+@Global()
+@Module({
+  providers: [PrismaService],
+  exports: [PrismaService],
+})
+export class PrismaModule {}
+",
+  "server/src/prisma/prisma.service.ts": "import { Injectable, OnModuleInit, INestApplication } from \\"@nestjs/common\\";
+import { PrismaClient } from \\"generated-prisma-client\\";
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  async onModuleInit() {
+    await this.$connect();
+  }
+
+  async enableShutdownHooks(app: INestApplication) {
+    this.$on(\\"beforeExit\\", async () => {
+      await app.close();
+    });
+  }
+}
+",
   "server/src/profile/base/CreateProfileArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -11499,7 +11695,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11521,7 +11717,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11543,7 +11739,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11604,7 +11800,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11644,7 +11840,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11698,7 +11894,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11720,7 +11916,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11777,7 +11973,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11845,7 +12041,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11888,7 +12084,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11966,7 +12162,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -11992,7 +12188,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -12179,6 +12375,28 @@ describe(\\"Profile\\", () => {
       });
   });
 
+  test(\\"POST /profiles existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/profiles\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/profiles\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -12191,7 +12409,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -12416,25 +12634,19 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class ProfileModuleBase {}
 ",
@@ -12445,7 +12657,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -12627,12 +12839,12 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, Profile, User } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, Profile, User } from \\"generated-prisma-client\\";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -12732,7 +12944,7 @@ export class ProfileResolver extends ProfileResolverBase {
 }
 ",
   "server/src/profile/profile.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { ProfileServiceBase } from \\"./base/profile.service.base\\";
 
 @Injectable()
@@ -13050,7 +13262,7 @@ describe(\\"Testing the HealthServiceBase\\", () => {
   });
 });
 ",
-  "server/src/types.ts": "import { JsonValue } from \\"type-fest\\";
+  "server/src/types.ts": "import type { JsonValue } from \\"type-fest\\";
 
 export type InputJsonValue = Omit<JsonValue, \\"null\\">;
 ",
@@ -13061,7 +13273,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13083,7 +13295,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13105,7 +13317,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13127,7 +13339,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13150,7 +13362,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13177,7 +13389,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13222,7 +13434,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13247,7 +13459,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13438,7 +13650,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13641,7 +13853,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13668,7 +13880,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13722,7 +13934,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13744,7 +13956,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13801,7 +14013,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -13977,7 +14189,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -14219,7 +14431,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -14264,7 +14476,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -14427,7 +14639,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -14640,6 +14852,27 @@ describe(\\"User\\", () => {
       });
   });
 
+  test(\\"POST /users existing resource\\", async () => {
+    let agent = request(app.getHttpServer());
+    await agent
+      .post(\\"/users\\")
+      .send(CREATE_INPUT)
+      .expect(HttpStatus.CREATED)
+      .expect({
+        ...CREATE_RESULT,
+        birthDate: CREATE_RESULT.birthDate.toISOString(),
+      })
+      .then(function () {
+        agent
+          .post(\\"/users\\")
+          .send(CREATE_INPUT)
+          .expect(HttpStatus.CONFLICT)
+          .expect({
+            statusCode: HttpStatus.CONFLICT,
+          });
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });
@@ -14652,7 +14885,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -15192,25 +15425,19 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
 import { Module, forwardRef } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
 import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [
-    ACLModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
+  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
 
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  exports: [ACLModule, AuthModule, MorganModule],
 })
 export class UserModuleBase {}
 ",
@@ -15221,7 +15448,7 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
@@ -15463,12 +15690,12 @@ This code was generated by Amplication.
 Changes to this file will be lost if the code is regenerated. 
 
 There are other ways to to customize your code, see this doc to learn more
-https://docs.amplication.com/docs/how-to/custom-code
+https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from \\"nestjs-prisma\\";
-import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
+import { Prisma, User, Organization, Profile } from \\"generated-prisma-client\\";
 import { PasswordService } from \\"../../auth/password.service\\";
 import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
@@ -15535,7 +15762,7 @@ export class UserServiceBase {
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .employees(args);
@@ -15546,7 +15773,7 @@ export class UserServiceBase {
     args: Prisma.OrganizationFindManyArgs
   ): Promise<Organization[]> {
     return this.prisma.user
-      .findUnique({
+      .findUniqueOrThrow({
         where: { id: parentId },
       })
       .organizations(args);
@@ -15623,7 +15850,7 @@ export class UserResolver extends UserResolverBase {
 }
 ",
   "server/src/user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../prisma/prisma.service\\";
 import { UserServiceBase } from \\"./base/user.service.base\\";
 import { PasswordService } from \\"../auth/password.service\\";
 
@@ -16326,7 +16553,7 @@ export class JsonFilter {
   not?: InputJsonValue;
 }
 ",
-  "server/src/util/JsonNullableFilter.ts": "import { JsonValue } from \\"type-fest\\";
+  "server/src/util/JsonNullableFilter.ts": "import type { JsonValue } from \\"type-fest\\";
 import { Field, InputType } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
@@ -16699,7 +16926,11 @@ export class StringNullableFilter {
     \\"allowSyntheticDefaultImports\\": true,
     \\"resolveJsonModule\\": true,
     \\"skipLibCheck\\": true,
-    \\"strict\\": true
+    \\"strict\\": true,
+    \\"baseUrl\\": \\".\\",
+    \\"paths\\": {
+      \\"generated-prisma-client\\": [\\"prisma/generated-prisma-client/index\\"]
+    }
   },
   \\"include\\": [\\"src\\"]
 }

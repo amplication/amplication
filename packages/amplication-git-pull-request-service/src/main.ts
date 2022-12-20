@@ -1,4 +1,4 @@
-import { createNestjsKafkaConfig } from "@amplication/kafka";
+import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { NestFactory } from "@nestjs/core";
 import { MicroserviceOptions } from "@nestjs/microservices";
 import { AppModule } from "./app.module";

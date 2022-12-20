@@ -10,7 +10,7 @@ env:
 jobs:
   ci:
     name: Continuous Integration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       affected: ${{ steps.set-affected.outputs.affected }}
     steps:
@@ -62,15 +62,13 @@ jobs:
           npx nx run-many --target=prebuild --parallel=3
           npx nx run-many --target=build --parallel=3
           npx nx run-many --target=postbuild --parallel=3
-
       - name: Set Affected
         id: set-affected
         run: |
           echo ::set-output name=affected::"$(npx nx print-affected --all --type=app | jq -c .projects)"
-
   dockerize:
     name: Dockerize
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: ci
     strategy:
       matrix:
@@ -145,7 +143,6 @@ jobs:
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
-
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
         env:

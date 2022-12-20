@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-storage-gateway/src",
   "projectType": "application",
-  "implicitDependencies": ["amplication-nest-logger-module"],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -14,7 +13,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-storage-gateway"],
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-storage-gateway"
+      ],
       "options": {
         "jestConfig": "packages/amplication-storage-gateway/jest.config.ts",
         "passWithNoTests": true
@@ -40,11 +41,11 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-service:build"
+        "buildTarget": "amplication-storage-gateway:build"
       },
       "configurations": {
         "production": {
-          "buildTarget": "amplication-git-pull-service:build:production"
+          "buildTarget": "amplication-storage-gateway:build:production"
         }
       }
     },

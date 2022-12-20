@@ -20,7 +20,7 @@ import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
-import { createUserEntityIfNotExist } from "./server/user-entity";
+import { createUserEntityIfNotExist } from "./server/user-entity/user-entity";
 import { resolveTopicNames } from "./util/message-broker";
 
 export const POSTGRESQL_PLUGIN_ID = "db-postgres";
@@ -38,6 +38,7 @@ const defaultPlugins: {
       pluginId: POSTGRESQL_PLUGIN_ID,
       npm: POSTGRESQL_NPM,
       enabled: true,
+      version: "latest",
     },
   },
 ];
@@ -104,7 +105,7 @@ function dynamicServerPathCreator(serverPath: string): serverDirectories {
     baseDirectory: baseDirectory,
     srcDirectory: srcDirectory,
     scriptsDirectory: `${baseDirectory}/scripts`,
-    authDirectory: `${baseDirectory}/auth`,
+    authDirectory: `${srcDirectory}/auth`,
     messageBrokerDirectory: join(srcDirectory, "message-broker"),
   };
 }

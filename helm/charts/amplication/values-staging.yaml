@@ -34,9 +34,8 @@ amplication-client:
 
 amplication-server:
   autoscaling:
-    minReplicas: 12
-    maxReplicas: 99
-  replicaCount: 12
+    minReplicas: 2
+    maxReplicas: 10
   ingress:
     hostname: server.staging.amplication-dev.com
   config:
@@ -59,21 +58,6 @@ amplication-server:
       CODE_GENERATION_FAILURE_TOPIC: build.internal.code-generation.failure.1
 
       DSG_LOG_TOPIC: build.internal.dsg-log.1
-
-      #GCP - APPS Builder
-      DEFAULT_DISK: gcs
-      LOCAL_DISK_ROOT: /artifacts
-      CONTAINER_BUILDER_DEFAULT: cloud-build
-      GCS_BUCKET: amplication-artifacts
-
-      #GCP - APPS Deployer
-      DEPLOYER_DEFAULT: gcp
-
-      GCP_APPS_PROJECT_ID: amplication-apps
-      GCP_APPS_REGION: us-east1
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
-      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
-      GCP_APPS_DOMAIN: staging.amplication.app
 
       DOCKER_HOST: tcp://docker:2375
 
@@ -150,4 +134,4 @@ amplication-storage-gateway:
       BUILD_ARTIFACTS_BASE_FOLDER: /amplication-data/build-data
       BUILD_ARTIFACTS_CODE_FOLDER: code
       GITHUB_APP_APP_ID: "174833"
-
+      

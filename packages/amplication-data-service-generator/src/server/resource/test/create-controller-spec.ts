@@ -3,7 +3,7 @@ import * as kinds from "ast-types/gen/kinds";
 import { print } from "recast";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
-import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl";
+import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
 import { readFile, relativeImportPath } from "../../../util/module";
 import {
   interpolate,
@@ -15,7 +15,7 @@ import {
   removeTSIgnoreComments,
   removeESLintComments,
 } from "../../../util/ast";
-import { createPrismaFields } from "../../prisma/create-prisma-schema";
+import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
 import {
   CreateEntityControllerSpecParams,
   Entity,

@@ -4,3 +4,4 @@ dist
 **/src/models.ts
 **/*.stories.tsx
 coverage
+generated-prisma-client

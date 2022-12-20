@@ -3,7 +3,7 @@ import { paramCase } from "param-case";
 import { plural } from "pluralize";
 import { Module, EventNames } from "@amplication/code-gen-types";
 import { formatCode } from "../util/module";
-import { readStaticModules } from "../read-static-modules";
+import { readStaticModules } from "../util/read-static-modules";
 import { createAppModule } from "./app/create-app";
 import { createDTOModules } from "./create-dto-modules";
 import { createEntitiesComponents } from "./entity/create-entities-components";
@@ -64,14 +64,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     clientDirectories.baseDirectory
   );
 
-  const packageJson = await createAdminUIPackageJson({
-    updateProperties: [
-      {
-        name: `@${paramCase(appInfo.name)}/admin`,
-        version: appInfo.version,
-      },
-    ],
-  });
+  const packageJson = await createAdminUIPackageJson();
 
   /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
    * currently the files were manually copied to /admin/static/src/util

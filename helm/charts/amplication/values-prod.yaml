@@ -1,7 +1,7 @@
 global:
   pvc:
     name: prod-efs-claim
-    storageRequest: 5Gi
+    storageRequest: 1Gi
     storageName: efs-sc
   pv:
     name: efs-pv-prod
@@ -72,13 +72,6 @@ amplication-server:
       DSG_RUNNER_URL: http://webhook-eventsource-svc.prod-dsg.svc.cluster.local:12000/example
       #EFS
       BASE_BUILDS_FOLDER: /amplication-data/build-data
-
-      #GCP - APPS Builder
-      GCS_BUCKET: amplication-production-artifacts
-
-      GCP_APPS_PROJECT_ID: amplication-production-apps
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-production-apps-state-bucket
-      GCP_APPS_DOMAIN: amplication.app
 
       #GitHub App
       GITHUB_APP_APP_ID: "176701"

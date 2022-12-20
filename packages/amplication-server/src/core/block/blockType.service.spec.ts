@@ -5,6 +5,7 @@ import { EnumBlockType } from "../../enums/EnumBlockType";
 import { IBlock, BlockInputOutput, Block, User } from "../../models";
 import { FindManyBlockTypeArgs, CreateBlockArgs, UpdateBlockArgs } from "./dto";
 import { FindOneArgs } from "../../dto";
+import { DeleteUserArgs } from "../workspace/dto";
 
 const EXAMPLE_IBLOCK_ID = "exampleIblockId";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
@@ -19,7 +20,7 @@ const EXAMPLE_BLOCK_INPUT_OUTPUT: BlockInputOutput = {
   name: EXAMPLE_INPUT_OUTPUT_NAME,
 };
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
-const EXAMPLE_BLOCK_TYPE = EnumBlockType.ConnectorRestApi;
+const EXAMPLE_BLOCK_TYPE = EnumBlockType.ServiceSettings;
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 
@@ -80,7 +81,8 @@ describe("BlockTypeService", () => {
     IBlock,
     FindManyBlockTypeArgs,
     CreateBlockArgs,
-    UpdateBlockArgs
+    UpdateBlockArgs,
+    DeleteUserArgs
   >;
 
   beforeEach(async () => {
@@ -109,11 +111,12 @@ describe("BlockTypeService", () => {
           IBlock,
           FindManyBlockTypeArgs,
           CreateBlockArgs,
-          UpdateBlockArgs
+          UpdateBlockArgs,
+          DeleteUserArgs
         >
       >(BlockTypeService);
 
-    service.blockType = EnumBlockType.ConnectorRestApi;
+    service.blockType = EnumBlockType.ServiceSettings;
   });
 
   it("should find a block service", async () => {

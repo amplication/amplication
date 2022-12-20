@@ -4,6 +4,7 @@ import ThemeContext from "./ThemeContext";
 import MenuItem from "../Layout/MenuItem";
 import { useTracking } from "../util/analytics";
 import "./DarkModeToggle.scss";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 const CLASS_NAME = "dark-mode-toggle";
 const THEME_DARK = "dark";
@@ -19,7 +20,7 @@ const DarkModeToggle = () => {
 
     themeContext.setTheme(nextTheme);
     trackEvent({
-      eventName: "setTheme",
+      eventName: AnalyticsEventNames.ThemeSet,
       theme: nextTheme,
     });
   }, [themeContext, trackEvent]);

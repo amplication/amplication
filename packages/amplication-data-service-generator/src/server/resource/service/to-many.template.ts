@@ -1,11 +1,11 @@
-import { PrismaService } from "nestjs-prisma";
+import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   // @ts-ignore
   Prisma,
   // @ts-ignore
   RELATED_ENTITY,
-} from "@prisma/client";
+} from "generated-prisma-client";
 
 export class Mixin {
   constructor(protected readonly prisma: PrismaService) {}
@@ -14,7 +14,7 @@ export class Mixin {
     parentId: string,
     args: Prisma.ARGS
   ): Promise<RELATED_ENTITY[]> {
-    return this.prisma.DELEGATE.findUnique({
+    return this.prisma.DELEGATE.findUniqueOrThrow({
       where: { id: parentId },
     }).PROPERTY(args);
   }

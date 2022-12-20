@@ -5,7 +5,7 @@ import {
   ObjectField,
   ScalarField,
   ScalarType,
-} from "prisma-schema-dsl";
+} from "prisma-schema-dsl-types";
 import { Entity, EntityField } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../util/ast";
 import {
@@ -16,7 +16,7 @@ import {
 import {
   createEnumName,
   createPrismaFields,
-} from "../../prisma/create-prisma-schema";
+} from "../../prisma/create-prisma-schema-fields";
 import { ApiPropertyDecoratorBuilder } from "./api-property-decorator";
 import * as classTransformerUtil from "./class-transformer.util";
 import {

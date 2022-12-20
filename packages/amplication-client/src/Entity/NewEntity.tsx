@@ -1,23 +1,24 @@
-import React, { useCallback, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { Formik, Form } from "formik";
-import { gql, useMutation, Reference } from "@apollo/client";
-import { GlobalHotKeys } from "react-hotkeys";
+import { Snackbar, TextField } from "@amplication/design-system";
+import { gql, Reference, useMutation } from "@apollo/client";
+import { Form, Formik } from "formik";
 import { pascalCase } from "pascal-case";
-import { formatError } from "../util/error";
-import * as models from "../models";
-import { TextField, Snackbar } from "@amplication/design-system";
+import { useCallback, useContext, useEffect } from "react";
+import { GlobalHotKeys } from "react-hotkeys";
+import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import {
   generatePluralDisplayName,
   generateSingularDisplayName,
 } from "../Components/PluralDisplayNameField";
+import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
+import { AppContext } from "../context/appContext";
+import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
-import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 import "./NewEntity.scss";
-import { AppContext } from "../context/appContext";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -54,6 +55,7 @@ const keyMap = {
 
 const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const { trackEvent } = useTracking();
+  const history = useHistory();
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
 
@@ -63,10 +65,11 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
       onCompleted: (data) => {
         addEntity(data.createOneEntity.id);
         trackEvent({
-          eventName: "createEntity",
+          eventName: AnalyticsEventNames.EntityCreate,
           entityName: data.createOneEntity.displayName,
         });
         onSuccess();
+        history.push(`entities/${data.createOneEntity.id}`);
       },
       update(cache, { data }) {
         if (!data) return;
@@ -97,7 +100,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
       },
     }
   );
-  const history = useHistory();
 
   const handleSubmit = useCallback(
     (data: CreateEntityType) => {

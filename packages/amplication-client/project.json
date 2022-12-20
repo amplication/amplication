@@ -3,11 +3,14 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-client/src",
   "projectType": "application",
-  "implicitDependencies": [
-    "amplication-design-system",
-    "amplication-code-gen-types"
-  ],
   "targets": {
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node ./scripts/update-version.ts",
+        "cwd": "packages/amplication-client"
+      }
+    },
     "build": {
       "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
@@ -61,7 +64,7 @@
           "sourceMap": false,
           "namedChunks": false,
           "extractLicenses": true,
-          "vendorChunk": false
+          "vendorChunk": true
         }
       }
     },
@@ -74,6 +77,7 @@
         "open": true,
         "port": 3001
       },
+      "dependsOn": ["prebuild"],
       "configurations": {
         "development": {
           "buildTarget": "amplication-client:build:development"
@@ -93,7 +97,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-client"],
+      "outputs": ["{workspaceRoot}/coverage/packages/amplication-client"],
       "options": {
         "jestConfig": "packages/amplication-client/jest.config.ts",
         "passWithNoTests": true

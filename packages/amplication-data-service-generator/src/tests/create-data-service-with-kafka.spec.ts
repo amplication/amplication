@@ -1,10 +1,13 @@
-import { createDataService } from "../create-data-service";
+import {
+  DSGResourceData,
+  EnumMessagePatternConnectionOptions,
+  Topic,
+} from "@amplication/code-gen-types";
+import { createDataServiceImpl } from "../create-data-service-impl";
+import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import roles from "./roles";
-import { EnumResourceType } from "../models";
-import { DSGResourceData, Topic } from "@amplication/code-gen-types";
-import { EnumMessagePatternConnectionOptions } from "@amplication/code-gen-types/dist/models";
 
 jest.setTimeout(100000);
 
@@ -58,10 +61,11 @@ describe("createDataService", () => {
           npm: "@amplication/plugin-broker-kafka",
           enabled: true,
           pluginId: "broker-kafka",
+          version: "latest",
         },
       ],
     };
-    const modules = await createDataService(service);
+    const modules = await createDataServiceImpl(service);
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)
