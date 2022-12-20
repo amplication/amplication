@@ -10,6 +10,9 @@ class KafkaMessageJsonSerializer implements IKafkaMessageSerializer {
     if (field === undefined || field === null) {
       return undefined;
     }
+    if (!Buffer.isBuffer(field)) {
+      return field;
+    }
 
     // A field with the "leading zero byte" indicates the schema payload.
     // The "content" is possibly binary and should not be touched & parsed.

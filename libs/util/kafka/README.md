@@ -1,6 +1,6 @@
 # util-kafka
 
-This library was generated with [Nx](https://nx.dev).
+Library containing framework-agnostic utils for Kafka integration.
 
 ## Running unit tests
 
