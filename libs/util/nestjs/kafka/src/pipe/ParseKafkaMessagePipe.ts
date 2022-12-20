@@ -1,32 +1,26 @@
 import { AmplicationLogger } from "@amplication/nest-logger-module";
 import { PipeTransform, Injectable, BadRequestException } from "@nestjs/common";
-import { KafkaContext } from "@nestjs/microservices";
-import { IKafkaMessageSerializer } from "@amplication/util/kafka";
-import { DecodedKafkaContext } from "../ctx-host/DecodedKafkaContext";
+import {
+  DecodedKafkaMessage,
+  IKafkaMessageSerializer,
+  KafkaMessage,
+} from "@amplication/util/kafka";
 
 @Injectable()
 export class ParseKafkaMessagePipe
-  implements PipeTransform<KafkaContext, Promise<DecodedKafkaContext>>
+  implements PipeTransform<KafkaMessage, Promise<DecodedKafkaMessage>>
 {
   constructor(
     private serializerService: IKafkaMessageSerializer,
     private logger: AmplicationLogger
   ) {}
 
-  async transform(value: KafkaContext): Promise<DecodedKafkaContext> {
-    const message = value.getMessage();
-    const partition = value.getPartition();
-    const topic = value.getTopic();
-
+  async transform(value: KafkaMessage): Promise<DecodedKafkaMessage> {
     try {
-      const decodedMessage = await this.serializerService.deserialize(message);
-
-      return new DecodedKafkaContext([decodedMessage, partition, topic]);
+      return this.serializerService.deserialize(value);
     } catch (error) {
       this.logger.error("Failed to deserialize kafka message", {
-        message,
-        partition,
-        topic,
+        value,
       });
       throw new BadRequestException("Failed to deserialize kafka message");
     }

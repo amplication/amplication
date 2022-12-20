@@ -1,13 +1,13 @@
 import { AmplicationLogger } from "@amplication/nest-logger-module";
 import {
   DecodedKafkaMessage,
-  Json,
   KafkaMessageJsonSerializer,
 } from "@amplication/util/kafka";
+import { KafkaContext } from "@nestjs/microservices";
 import { KafkaMessage } from "@nestjs/microservices/external/kafka.interface";
-import { ParseKafkaMessagePipe } from "./ParseKafkaMessagePipe";
+import { ParseKafkaContextPipe } from "./ParseKafkaContextPipe";
 
-const createKafkaMessage = (key: string | Json, value: string | Json) => {
+const createKafkaContext = (key, value) => {
   if (typeof key !== "string") {
     key = JSON.stringify(key);
   }
@@ -23,11 +23,11 @@ const createKafkaMessage = (key: string | Json, value: string | Json) => {
     attributes: 1,
     timestamp: "",
   };
-  return message;
+  return new KafkaContext([message, 0, "topic"]);
 };
 
-describe("ParseKafkaMessagePipe", () => {
-  let target: ParseKafkaMessagePipe;
+describe("ParseKafkaContextPipe", () => {
+  let target: ParseKafkaContextPipe;
 
   const logger = {
     debug: jest.fn(),
@@ -41,7 +41,7 @@ describe("ParseKafkaMessagePipe", () => {
       const jsonSerializer = new KafkaMessageJsonSerializer();
 
       it("should return a context with decoded message", async () => {
-        target = new ParseKafkaMessagePipe(jsonSerializer, logger);
+        target = new ParseKafkaContextPipe(jsonSerializer, logger);
 
         const expectedMessage: DecodedKafkaMessage = {
           key: { name: "spaghetti", id: 9 },
@@ -49,14 +49,18 @@ describe("ParseKafkaMessagePipe", () => {
           headers: undefined,
         };
 
-        const originalMessage = createKafkaMessage(
+        const originalContext = createKafkaContext(
           expectedMessage.key,
           expectedMessage.value
         );
 
-        const result = await target.transform(originalMessage);
+        const result = await target.transform(originalContext);
 
-        expect(result).toStrictEqual(expectedMessage);
+        expect(result.getMessage()).toStrictEqual(expectedMessage);
+        expect(result.getPartition()).toStrictEqual(
+          originalContext.getPartition()
+        );
+        expect(result.getTopic()).toStrictEqual(originalContext.getTopic());
       });
     });
 
@@ -64,7 +68,7 @@ describe("ParseKafkaMessagePipe", () => {
       const jsonSerializer = new KafkaMessageJsonSerializer();
 
       it("should return a context with decoded message", async () => {
-        target = new ParseKafkaMessagePipe(jsonSerializer, logger);
+        target = new ParseKafkaContextPipe(jsonSerializer, logger);
 
         const expectedMessage: DecodedKafkaMessage = {
           key: "maccheroni",
@@ -72,14 +76,18 @@ describe("ParseKafkaMessagePipe", () => {
           headers: undefined,
         };
 
-        const originalContext = createKafkaMessage(
+        const originalContext = createKafkaContext(
           expectedMessage.key,
           expectedMessage.value
         );
 
         const result = await target.transform(originalContext);
 
-        expect(result).toStrictEqual(expectedMessage);
+        expect(result.getMessage()).toStrictEqual(expectedMessage);
+        expect(result.getPartition()).toStrictEqual(
+          originalContext.getPartition()
+        );
+        expect(result.getTopic()).toStrictEqual(originalContext.getTopic());
       });
     });
   });
