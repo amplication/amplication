@@ -91,5 +91,14 @@ describe("jsonMessageSerialiser", () => {
     });
   });
 
-  describe("when deserializing a kafka message", () => {});
+  describe("when deserializing a kafka message", () => {
+    it("the KafkaMessage is correctly deserialised", async () => {
+      const message = createMessage("repo-id", "value");
+
+      const result = await serialiser.deserialize(message);
+
+      expect(result.key).toEqual("repo-id");
+      expect(result.value).toEqual("value");
+    });
+  });
 });
