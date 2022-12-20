@@ -207,7 +207,9 @@ export const createPrismaSchemaFieldsHandlers: {
       (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
     );
 
-    const { idType } = (relatedEntityFiledId?.properties as types.Id) || "CUID";
+    const { idType } = (relatedEntityFiledId?.properties as types.Id) || {
+      idType: "CUID",
+    };
 
     return [
       PrismaSchemaDSL.createObjectField(
