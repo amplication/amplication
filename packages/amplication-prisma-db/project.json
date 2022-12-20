@@ -23,8 +23,12 @@
       "executor": "nx:run-commands",
       "outputs": ["prisma/generated-prisma-client"],
       "options": {
-        "command": "prisma generate --schema ./prisma/schema.prisma",
-        "cwd": "packages/amplication-prisma-db"
+        "commands": [
+          "PRISMA_CLIENT_OUTPUT_PATH=../../amplication-server/prisma/generated-prisma-client prisma generate --schema ./prisma/schema.prisma",
+          "PRISMA_CLIENT_OUTPUT_PATH=../../../ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client prisma generate --schema ./prisma/schema.prisma"
+        ],
+        "cwd": "packages/amplication-prisma-db",
+        "parallel": true
       }
     },
     "db:prisma:studio": {

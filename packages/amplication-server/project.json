@@ -64,12 +64,6 @@
         }
       }
     },
-    "db:prisma:generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx nx db:prisma:generate amplication-prisma-db"
-      }
-    },
     "graphql:schema:generate": {
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/**/*.ts"],
