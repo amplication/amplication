@@ -5,7 +5,7 @@ import {
   EventNames,
   types,
 } from "@amplication/code-gen-types";
-import { readFile } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders, namedTypes } from "ast-types";
 import { print } from "recast";

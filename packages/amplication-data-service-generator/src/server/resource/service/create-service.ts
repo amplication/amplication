@@ -34,7 +34,8 @@ import {
   isPasswordField,
   isToManyRelationField,
 } from "../../../util/field";
-import { readFile, relativeImportPath } from "../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
+import { relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";

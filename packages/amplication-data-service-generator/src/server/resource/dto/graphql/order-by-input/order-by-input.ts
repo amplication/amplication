@@ -5,7 +5,7 @@ import {
   types,
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
-import { readFile } from "../../../../../util/module";
+import { readFile } from "@amplication/code-gen-utils";
 import {
   interpolate,
   getClassDeclarationById,

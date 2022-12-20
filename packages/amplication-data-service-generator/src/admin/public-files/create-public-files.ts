@@ -1,6 +1,6 @@
 import path from "path";
 import { Module } from "@amplication/code-gen-types";
-import { readCode } from "../../util/module";
+import { readCode } from "@amplication/code-gen-utils";
 import manifest from "./manifest.json";
 import DsgContext from "../../dsg-context";
 

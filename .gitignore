@@ -3,7 +3,7 @@ lerna-debug.log
 .DS_Store
 .idea/
 helm/**/secrets/
-lib/
+
 *.tgz
 values-secret*
 dist/

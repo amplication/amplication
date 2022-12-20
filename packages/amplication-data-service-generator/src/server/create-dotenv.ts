@@ -7,7 +7,7 @@ import {
 import DsgContext from "../dsg-context";
 import { isEmpty } from "lodash";
 import pluginWrapper from "../plugin-wrapper";
-import { readCode } from "../util/module";
+import { readCode } from "@amplication/code-gen-utils";
 import { replacePlaceholdersInCode } from "../util/text-file-parser";
 
 const templatePath = require.resolve("./create-dotenv.template.env");
