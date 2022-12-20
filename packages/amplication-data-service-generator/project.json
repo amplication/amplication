@@ -54,7 +54,9 @@
     },
     "postbuild": {
       "executor": "nx:run-commands",
-      "outputs": ["dist/packages/amplication-data-service-generator"],
+      "outputs": [
+        "{workspaceRoot}/dist/packages/amplication-data-service-generator"
+      ],
       "options": {
         "command": "ts-node scripts/copy-files.ts",
         "cwd": "packages/amplication-data-service-generator"
@@ -63,7 +65,9 @@
     "test": {
       "dependsOn": ["prebuild", "^prebuild"],
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-data-service-generator"],
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-data-service-generator"
+      ],
       "options": {
         "jestConfig": "packages/amplication-data-service-generator/jest.config.ts",
         "passWithNoTests": true

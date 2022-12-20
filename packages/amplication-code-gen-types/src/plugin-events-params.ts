@@ -147,11 +147,18 @@ export interface CreateEntityModuleParams extends EventParams {
   entityControllerModule: string | undefined;
   entityResolverModule: string | undefined;
   moduleBaseId: namedTypes.Identifier;
+  controllerId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+  resolverId: namedTypes.Identifier;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
 }
 
 export interface CreateEntityModuleBaseParams extends EventParams {
   entityName: string;
   moduleBaseId: namedTypes.Identifier;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
 }
 
 export interface CreateEntityResolverParams extends EventParams {

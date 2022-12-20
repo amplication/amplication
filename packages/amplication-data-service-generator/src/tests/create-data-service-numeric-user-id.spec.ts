@@ -1,7 +1,7 @@
 import { types } from "@amplication/code-gen-types";
 import { createDataServiceImpl } from "../create-data-service-impl";
 import { EnumDataType, EnumResourceType } from "../models";
-import { USER_ENTITY_NAME } from "../server/user-entity";
+import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import { installedPlugins } from "./pluginInstallation";
