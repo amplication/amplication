@@ -43,7 +43,6 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
     currentWorkspace,
     errorCreateService,
     loadingCreateService,
-    addEntity,
   } = useContext(AppContext);
 
   const history = useHistory();
@@ -58,7 +57,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
     (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
       setNewService(data, eventName);
     },
-    [setNewService, addEntity]
+    [setNewService]
   );
 
   const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
