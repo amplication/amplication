@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: "amplication-data-service-generator-fs-runner",
+  displayName: "amplication-data-service-generator-runner",
   preset: "../../jest.preset.js",
   globals: {
     "ts-jest": {
@@ -13,5 +13,5 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory:
-    "../../coverage/packages/amplication-data-service-generator-fs-runner",
+    "../../coverage/packages/amplication-data-service-generator-runner",
 };

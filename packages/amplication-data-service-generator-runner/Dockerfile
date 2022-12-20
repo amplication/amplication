@@ -11,5 +11,5 @@ COPY ./dist/libs/data-service-generator/package.json .
 RUN npm i --omit-dev
 COPY ./dist/libs/data-service-generator .
 
-WORKDIR /workspace/packages/amplication-data-service-generator-fs-runner
-COPY ./dist/packages/amplication-data-service-generator-fs-runner .
+WORKDIR /workspace/packages/amplication-data-service-generator-runner
+COPY ./dist/packages/amplication-data-service-generator-runner .

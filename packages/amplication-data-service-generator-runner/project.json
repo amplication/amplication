@@ -1,7 +1,7 @@
 {
-  "name": "amplication-data-service-generator-fs-runner",
+  "name": "amplication-data-service-generator-runner",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/amplication-data-service-generator-fs-runner/src",
+  "sourceRoot": "packages/amplication-data-service-generator-runner/src",
   "projectType": "application",
   "implicitDependencies": ["data-service-generator"],
   "targets": {
@@ -11,9 +11,9 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/packages/amplication-data-service-generator-fs-runner",
-        "main": "packages/amplication-data-service-generator-fs-runner/src/main.ts",
-        "tsConfig": "packages/amplication-data-service-generator-fs-runner/tsconfig.app.json"
+        "outputPath": "dist/packages/amplication-data-service-generator-runner",
+        "main": "packages/amplication-data-service-generator-runner/src/main.ts",
+        "tsConfig": "packages/amplication-data-service-generator-runner/tsconfig.app.json"
       },
       "configurations": {
         "production": {
@@ -28,17 +28,17 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/amplication-data-service-generator-fs-runner/**/*.ts"
+          "packages/amplication-data-service-generator-runner/**/*.ts"
         ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": [
-        "coverage/packages/amplication-data-service-generator-fs-runner"
+        "coverage/packages/amplication-data-service-generator-runner"
       ],
       "options": {
-        "jestConfig": "packages/amplication-data-service-generator-fs-runner/jest.config.ts",
+        "jestConfig": "packages/amplication-data-service-generator-runner/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -46,14 +46,14 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./scripts/create-input-json.ts",
-        "cwd": "packages/amplication-data-service-generator-fs-runner"
+        "cwd": "packages/amplication-data-service-generator-runner"
       }
     },
     "generate-local-code": {
       "executor": "nx:run-commands",
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts ",
-        "cwd": "packages/amplication-data-service-generator-fs-runner"
+        "cwd": "packages/amplication-data-service-generator-runner"
       },
       "dependsOn": ["generate-example-input-json"]
     },
@@ -61,7 +61,7 @@
       "executor": "@nx-tools/nx-docker:build",
       "options": {
         "push": false,
-        "tags": ["amplication/data-service-generator:latest"]
+        "tags": ["amplication/data-service-generator-runner:latest"]
       }
     }
   },
