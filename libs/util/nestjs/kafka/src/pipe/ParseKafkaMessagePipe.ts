@@ -1,7 +1,7 @@
 import { AmplicationLogger } from "@amplication/nest-logger-module";
 import { PipeTransform, Injectable, BadRequestException } from "@nestjs/common";
 import { KafkaContext } from "@nestjs/microservices";
-import { IKafkaMessageSerializer } from "libs/util/kafka/src/types";
+import { IKafkaMessageSerializer } from "@amplication/util/kafka";
 import { DecodedKafkaContext } from "../ctx-host/DecodedKafkaContext";
 
 @Injectable()
