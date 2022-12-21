@@ -1,5 +1,4 @@
-import { PrismaService } from "../../prisma";
-import { EnumResourceType, GitRepository, Prisma } from "../../prisma";
+import { PrismaService, EnumResourceType, GitRepository, Prisma } from "../../prisma";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
