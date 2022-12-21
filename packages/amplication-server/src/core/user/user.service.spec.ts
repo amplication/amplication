@@ -1,5 +1,4 @@
-import { Prisma } from "../../prisma";
-import { PrismaService } from "../../prisma";
+import { Prisma, PrismaService } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Role } from "../../enums/Role";
 import { Account, User, UserRole } from "../../models";
