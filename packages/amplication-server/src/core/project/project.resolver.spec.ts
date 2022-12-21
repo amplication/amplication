@@ -205,7 +205,7 @@ const getPendingChangesMock = jest.fn(() => {
   return [EXAMPLE_PENDING_CHANGE];
 });
 
-xdescribe("ProjectResolver", () => {
+describe("ProjectResolver", () => {
   let app: INestApplication;
   let apolloClient: ApolloServerTestClient;
 

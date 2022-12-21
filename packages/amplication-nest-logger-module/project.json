@@ -13,7 +13,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-nest-logger-module"],
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-nest-logger-module"
+      ],
       "options": {
         "jestConfig": "packages/amplication-nest-logger-module/jest.config.ts",
         "passWithNoTests": true

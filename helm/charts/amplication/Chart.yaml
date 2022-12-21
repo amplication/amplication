@@ -30,16 +30,14 @@ dependencies:
 
   - name: postgresql
     alias: postgres
-    version: "10.16.2"
+    version: "11.9.13"
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgres.install
-
   - name: cp-helm-charts
     version: "0.6.1"
     repository: "https://confluentinc.github.io/cp-helm-charts/"
     condition: cp-helm-charts.enabled
+
 type: application
-
 version: 0.1.0
-
 appVersion: 0.5.0

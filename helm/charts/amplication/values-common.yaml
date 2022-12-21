@@ -61,9 +61,10 @@ cp-helm-charts:
 
 postgres:
   install: true
-  postgresqlPassword: postgres
-  postgresqlPostgresPassword: postgres
-  postgresqlDatabase: amplication
+  auth:
+    password: postgres
+    postgresPassword: postgres
+    database: amplication
   fullnameOverride: postgresql
   primary:
     service:

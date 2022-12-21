@@ -7,7 +7,9 @@ import {
   Commit,
   Entity,
   EntityVersion,
+  Project,
   Resource,
+  Workspace,
 } from "../../models";
 import { Environment } from "../environment/dto";
 import { Build } from "../build/dto/Build";
@@ -48,7 +50,8 @@ const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_DISPLAY_NAME = "Example Entity Name";
 const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
 const EXAMPLE_BLOCK_VERSION_ID = "exampleBlockVersionId";
-
+const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
+const EXAMPLE_PROJECT_NAME = "exampleProjectName";
 /** models mock */
 const EXAMPLE_COMMIT: Commit = {
   id: EXAMPLE_COMMIT_ID,
@@ -148,6 +151,30 @@ const EXAMPLE_BLOCK_VERSION: BlockVersion = {
   displayName: EXAMPLE_BLOCK_DISPLAY_NAME,
 };
 
+const EXAMPLE_PROJECT_2: Project = {
+  id: EXAMPLE_PROJECT_ID,
+  name: EXAMPLE_PROJECT_NAME,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const EXAMPLE_WORKSPACE: Workspace = {
+  id: EXAMPLE_WORKSPACE_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_NAME,
+  projects: [EXAMPLE_PROJECT_2],
+};
+
+const EXAMPLE_PROJECT: Project = {
+  id: EXAMPLE_PROJECT_ID,
+  name: EXAMPLE_PROJECT_NAME,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  workspace: EXAMPLE_WORKSPACE,
+  resources: [EXAMPLE_RESOURCE],
+};
+
 const EXAMPLE_PROJECT_CONFIGURATION = {};
 
 /** methods mock */
@@ -202,6 +229,11 @@ describe("ProjectService", () => {
             },
             commit: {
               create: prismaCommitCreateMock,
+            },
+            project: {
+              findMany: jest.fn(() => {
+                return [EXAMPLE_PROJECT];
+              }),
             },
           })),
         },
