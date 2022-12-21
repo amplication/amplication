@@ -1,8 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { JsonArray, JsonObject } from "type-fest";
 import { BlockService } from "./block.service";
-import { PrismaService } from "../../prisma";
-import { Prisma, EnumResourceType } from "../../prisma";
+import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { DiffModule } from "../../services/diff.module";
 import {
