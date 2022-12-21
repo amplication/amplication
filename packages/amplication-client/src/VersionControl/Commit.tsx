@@ -1,4 +1,8 @@
-import { LimitationDialog, TextField } from "@amplication/design-system";
+import {
+  LimitationDialog,
+  Snackbar,
+  TextField,
+} from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useContext, useState } from "react";
@@ -13,6 +17,8 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
 import { GET_COMMITS, GET_LAST_COMMIT } from "./hooks/commitQueries";
+
+const LIMITATION_ERROR_PREFIX = "LimitationError: ";
 
 type TCommit = {
   message: string;
@@ -34,6 +40,11 @@ const keyMap = {
 
 type TData = {
   commit: CommitType;
+};
+
+const formatLimitationError = (errorMessage: string) => {
+  const limitationError = errorMessage.split(LIMITATION_ERROR_PREFIX)[1];
+  return limitationError;
 };
 
 const Commit = ({ projectId, noChanges }: Props) => {
@@ -106,9 +117,12 @@ const Commit = ({ projectId, noChanges }: Props) => {
     ]
   );
 
-  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
-
   const errorMessage = formatError(error);
+  const isLimitationError =
+    errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
+  const limitationErrorMessage =
+    isLimitationError && formatLimitationError(errorMessage);
+  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
 
   return (
     <div className={CLASS_NAME}>
@@ -153,11 +167,16 @@ const Commit = ({ projectId, noChanges }: Props) => {
         }}
       </Formik>
 
-      <LimitationDialog
-        isOpen={isOpenLimitationDialog}
-        onConfirm={() => setOpenLimitationDialog(false)}
-        onDismiss={() => setOpenLimitationDialog(false)}
-      />
+      {error && isLimitationError ? (
+        <LimitationDialog
+          isOpen={isOpenLimitationDialog}
+          message={limitationErrorMessage}
+          onConfirm={() => setOpenLimitationDialog(false)}
+          onDismiss={() => setOpenLimitationDialog(false)}
+        />
+      ) : (
+        <Snackbar open={Boolean(error)} message={errorMessage} />
+      )}
     </div>
   );
 };
