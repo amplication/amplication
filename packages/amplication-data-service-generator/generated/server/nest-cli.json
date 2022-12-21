@@ -1,6 +1,0 @@
-{
-  "sourceRoot": "/",
-  "compilerOptions": {
-    "assets": ["src/swagger", "prisma/generated-prisma-client"]
-  }
-}
