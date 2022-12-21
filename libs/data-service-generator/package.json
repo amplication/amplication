@@ -1,7 +1,7 @@
 {
   "name": "@amplication/data-service-generator",
   "version": "1.1.2",
-  "private": true,
+  "private": false,
   "main": "./src/index.js",
   "dependencies": {
     "@amplication/code-gen-utils": "^0.0.2",
