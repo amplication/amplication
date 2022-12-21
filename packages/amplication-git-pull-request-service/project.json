@@ -38,12 +38,6 @@
         }
       }
     },
-    "db:prisma:generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx nx db:prisma:generate amplication-prisma-db"
-      }
-    },
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
