@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from '../prisma';
+import { PrismaService } from '../prisma';
 import { GitOrganizationRepository } from './git-organization.repository';
 
 @Module({
-  imports: [PrismaModule],
-  providers: [GitOrganizationRepository],
+  providers: [PrismaService],
   exports: [GitOrganizationRepository],
 })
 export class GitOrganizationModule {}
