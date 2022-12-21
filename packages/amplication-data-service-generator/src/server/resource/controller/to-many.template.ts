@@ -47,6 +47,7 @@ declare const SELECT: Select;
 export class Mixin {
   constructor(private readonly service: SERVICE) {}
 
+  @Public()
   @common.Get(FIND_MANY_PATH)
   @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
@@ -66,6 +67,7 @@ export class Mixin {
     return results;
   }
 
+  @Public()
   @common.Post(CREATE_PATH)
   async CONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
@@ -83,6 +85,7 @@ export class Mixin {
     });
   }
 
+  @Public()
   @common.Patch(UPDATE_PATH)
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
@@ -100,6 +103,7 @@ export class Mixin {
     });
   }
 
+  @Public()
   @common.Delete(DELETE_PATH)
   async DISCONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,

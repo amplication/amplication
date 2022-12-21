@@ -4839,7 +4839,7 @@ import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\
 
 export class CustomerControllerBase {
   constructor(protected readonly service: CustomerService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
   async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
@@ -4890,6 +4890,7 @@ export class CustomerControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
@@ -4928,6 +4929,7 @@ export class CustomerControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -4973,6 +4975,7 @@ export class CustomerControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5037,6 +5040,7 @@ export class CustomerControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5118,6 +5122,7 @@ export class CustomerControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/orders\\")
   async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5135,6 +5140,7 @@ export class CustomerControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/orders\\")
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5152,6 +5158,7 @@ export class CustomerControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/orders\\")
   async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5913,6 +5920,7 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { EmptyService } from \\"../empty.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
@@ -5922,7 +5930,7 @@ import { Empty } from \\"./Empty\\";
 
 export class EmptyControllerBase {
   constructor(protected readonly service: EmptyService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
   async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
@@ -5936,6 +5944,7 @@ export class EmptyControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
@@ -5951,6 +5960,7 @@ export class EmptyControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5973,6 +5983,7 @@ export class EmptyControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -6000,6 +6011,7 @@ export class EmptyControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -7163,7 +7175,6 @@ import { Order } from \\"./Order\\";
 
 export class OrderControllerBase {
   constructor(protected readonly service: OrderService) {}
-
   @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
@@ -8356,6 +8367,7 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrganizationService } from \\"../organization.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -8371,7 +8383,7 @@ import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUni
 
 export class OrganizationControllerBase {
   constructor(protected readonly service: OrganizationService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
   async create(
@@ -8388,6 +8400,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
@@ -8404,6 +8417,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8427,6 +8441,7 @@ export class OrganizationControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8455,6 +8470,7 @@ export class OrganizationControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8481,6 +8497,7 @@ export class OrganizationControllerBase {
     }
   }
 
+  @Public()
   @common.Get(\\"/:id/users\\")
   @ApiNestedQuery(UserFindManyArgs)
   async findManyUsers(
@@ -8528,6 +8545,7 @@ export class OrganizationControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/users\\")
   async connectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8545,6 +8563,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/users\\")
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8562,6 +8581,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/users\\")
   async disconnectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8579,6 +8599,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id/customers\\")
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyCustomers(
@@ -8625,6 +8646,7 @@ export class OrganizationControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/customers\\")
   async connectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8642,6 +8664,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/customers\\")
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8659,6 +8682,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/customers\\")
   async disconnectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8676,6 +8700,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id/vipCustomers\\")
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyVipCustomers(
@@ -8722,6 +8747,7 @@ export class OrganizationControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/vipCustomers\\")
   async connectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8739,6 +8765,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/vipCustomers\\")
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -8756,6 +8783,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/vipCustomers\\")
   async disconnectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9678,6 +9706,7 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { ProfileService } from \\"../profile.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
 import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
@@ -9687,7 +9716,7 @@ import { Profile } from \\"./Profile\\";
 
 export class ProfileControllerBase {
   constructor(protected readonly service: ProfileService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
   async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
@@ -9716,6 +9745,7 @@ export class ProfileControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
@@ -9738,6 +9768,7 @@ export class ProfileControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -9767,6 +9798,7 @@ export class ProfileControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -9809,6 +9841,7 @@ export class ProfileControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -11721,6 +11754,7 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { UserService } from \\"../user.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -11733,7 +11767,7 @@ import { OrganizationWhereUniqueInput } from \\"../../organization/base/Organiza
 
 export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   async create(@common.Body() data: UserCreateInput): Promise<User> {
@@ -11785,6 +11819,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
@@ -11824,6 +11859,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -11870,6 +11906,7 @@ export class UserControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -11935,6 +11972,7 @@ export class UserControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -11984,6 +12022,7 @@ export class UserControllerBase {
     }
   }
 
+  @Public()
   @common.Get(\\"/:id/employees\\")
   @ApiNestedQuery(UserFindManyArgs)
   async findManyEmployees(
@@ -12031,6 +12070,7 @@ export class UserControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/employees\\")
   async connectEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -12048,6 +12088,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/employees\\")
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -12065,6 +12106,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/employees\\")
   async disconnectEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -12082,6 +12124,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id/organizations\\")
   @ApiNestedQuery(OrganizationFindManyArgs)
   async findManyOrganizations(
@@ -12106,6 +12149,7 @@ export class UserControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/organizations\\")
   async connectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
@@ -12123,6 +12167,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/organizations\\")
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
@@ -12140,6 +12185,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/organizations\\")
   async disconnectOrganizations(
     @common.Param() params: UserWhereUniqueInput,

@@ -4878,7 +4878,7 @@ import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\
 
 export class CustomerControllerBase {
   constructor(protected readonly service: CustomerService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
   async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
@@ -4929,6 +4929,7 @@ export class CustomerControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
@@ -4967,6 +4968,7 @@ export class CustomerControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5012,6 +5014,7 @@ export class CustomerControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5076,6 +5079,7 @@ export class CustomerControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5157,6 +5161,7 @@ export class CustomerControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/orders\\")
   async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5174,6 +5179,7 @@ export class CustomerControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/orders\\")
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5191,6 +5197,7 @@ export class CustomerControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/orders\\")
   async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -5257,10 +5264,10 @@ import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { CustomerService } from \\"../customer.service\\";
-
 @graphql.Resolver(() => Customer)
 export class CustomerResolverBase {
   constructor(protected readonly service: CustomerService) {}
+
   async _customersMeta(
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -5275,6 +5282,7 @@ export class CustomerResolverBase {
   }
 
   @graphql.Query(() => [Customer])
+  @Public()
   async customers(
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -5282,6 +5290,7 @@ export class CustomerResolverBase {
   }
 
   @graphql.Query(() => Customer, { nullable: true })
+  @Public()
   async customer(
     @graphql.Args() args: CustomerFindUniqueArgs
   ): Promise<Customer | null> {
@@ -5293,6 +5302,7 @@ export class CustomerResolverBase {
   }
 
   @graphql.Mutation(() => Customer)
+  @Public()
   async createCustomer(
     @graphql.Args() args: CreateCustomerArgs
   ): Promise<Customer> {
@@ -5317,6 +5327,7 @@ export class CustomerResolverBase {
   }
 
   @graphql.Mutation(() => Customer)
+  @Public()
   async updateCustomer(
     @graphql.Args() args: UpdateCustomerArgs
   ): Promise<Customer | null> {
@@ -5350,6 +5361,7 @@ export class CustomerResolverBase {
   }
 
   @graphql.Mutation(() => Customer)
+  @Public()
   async deleteCustomer(
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
@@ -5367,6 +5379,7 @@ export class CustomerResolverBase {
 
   @Public()
   @graphql.ResolveField(() => [Order])
+  @Public()
   async orders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
@@ -5381,6 +5394,7 @@ export class CustomerResolverBase {
   }
 
   @graphql.ResolveField(() => Organization, { nullable: true })
+  @Public()
   async organization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
@@ -5393,6 +5407,7 @@ export class CustomerResolverBase {
   }
 
   @graphql.ResolveField(() => Organization, { nullable: true })
+  @Public()
   async vipOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
@@ -6139,6 +6154,7 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { EmptyService } from \\"../empty.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
@@ -6148,7 +6164,7 @@ import { Empty } from \\"./Empty\\";
 
 export class EmptyControllerBase {
   constructor(protected readonly service: EmptyService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
   async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
@@ -6162,6 +6178,7 @@ export class EmptyControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
@@ -6177,6 +6194,7 @@ export class EmptyControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -6199,6 +6217,7 @@ export class EmptyControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -6226,6 +6245,7 @@ export class EmptyControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -6289,15 +6309,16 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyFindUniqueArgs } from \\"./EmptyFindUniqueArgs\\";
 import { Empty } from \\"./Empty\\";
 import { EmptyService } from \\"../empty.service\\";
-
 @graphql.Resolver(() => Empty)
 export class EmptyResolverBase {
   constructor(protected readonly service: EmptyService) {}
+
   async _emptiesMeta(
     @graphql.Args() args: EmptyFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -6312,11 +6333,13 @@ export class EmptyResolverBase {
   }
 
   @graphql.Query(() => [Empty])
+  @Public()
   async empties(@graphql.Args() args: EmptyFindManyArgs): Promise<Empty[]> {
     return this.service.findMany(args);
   }
 
   @graphql.Query(() => Empty, { nullable: true })
+  @Public()
   async empty(
     @graphql.Args() args: EmptyFindUniqueArgs
   ): Promise<Empty | null> {
@@ -6328,6 +6351,7 @@ export class EmptyResolverBase {
   }
 
   @graphql.Mutation(() => Empty)
+  @Public()
   async deleteEmpty(
     @graphql.Args() args: DeleteEmptyArgs
   ): Promise<Empty | null> {
@@ -7555,7 +7579,6 @@ import { Order } from \\"./Order\\";
 
 export class OrderControllerBase {
   constructor(protected readonly service: OrderService) {}
-
   @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
@@ -7767,10 +7790,10 @@ import { OrderFindUniqueArgs } from \\"./OrderFindUniqueArgs\\";
 import { Order } from \\"./Order\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 import { OrderService } from \\"../order.service\\";
-
 @graphql.Resolver(() => Order)
 export class OrderResolverBase {
   constructor(protected readonly service: OrderService) {}
+
   async _ordersMeta(
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -7784,14 +7807,14 @@ export class OrderResolverBase {
     };
   }
 
-  @Public()
   @graphql.Query(() => [Order])
+  @Public()
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
     return this.service.findMany(args);
   }
 
-  @Public()
   @graphql.Query(() => Order, { nullable: true })
+  @Public()
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
@@ -7802,8 +7825,8 @@ export class OrderResolverBase {
     return result;
   }
 
-  @Public()
   @graphql.Mutation(() => Order)
+  @Public()
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
     return await this.service.create({
       ...args,
@@ -7817,8 +7840,8 @@ export class OrderResolverBase {
     });
   }
 
-  @Public()
   @graphql.Mutation(() => Order)
+  @Public()
   async updateOrder(
     @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
@@ -7843,8 +7866,8 @@ export class OrderResolverBase {
     }
   }
 
-  @Public()
   @graphql.Mutation(() => Order)
+  @Public()
   async deleteOrder(
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
@@ -7861,6 +7884,7 @@ export class OrderResolverBase {
   }
 
   @graphql.ResolveField(() => Customer, { nullable: true })
+  @Public()
   async customer(@graphql.Parent() parent: Order): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
@@ -8889,6 +8913,7 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrganizationService } from \\"../organization.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -8904,7 +8929,7 @@ import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUni
 
 export class OrganizationControllerBase {
   constructor(protected readonly service: OrganizationService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
   async create(
@@ -8921,6 +8946,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
@@ -8937,6 +8963,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8960,6 +8987,7 @@ export class OrganizationControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8988,6 +9016,7 @@ export class OrganizationControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -9014,6 +9043,7 @@ export class OrganizationControllerBase {
     }
   }
 
+  @Public()
   @common.Get(\\"/:id/users\\")
   @ApiNestedQuery(UserFindManyArgs)
   async findManyUsers(
@@ -9061,6 +9091,7 @@ export class OrganizationControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/users\\")
   async connectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9078,6 +9109,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/users\\")
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9095,6 +9127,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/users\\")
   async disconnectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9112,6 +9145,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id/customers\\")
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyCustomers(
@@ -9158,6 +9192,7 @@ export class OrganizationControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/customers\\")
   async connectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9175,6 +9210,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/customers\\")
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9192,6 +9228,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/customers\\")
   async disconnectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9209,6 +9246,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id/vipCustomers\\")
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyVipCustomers(
@@ -9255,6 +9293,7 @@ export class OrganizationControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/vipCustomers\\")
   async connectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9272,6 +9311,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/vipCustomers\\")
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9289,6 +9329,7 @@ export class OrganizationControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/vipCustomers\\")
   async disconnectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -9344,6 +9385,7 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
@@ -9355,10 +9397,10 @@ import { User } from \\"../../user/base/User\\";
 import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 import { OrganizationService } from \\"../organization.service\\";
-
 @graphql.Resolver(() => Organization)
 export class OrganizationResolverBase {
   constructor(protected readonly service: OrganizationService) {}
+
   async _organizationsMeta(
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -9373,6 +9415,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.Query(() => [Organization])
+  @Public()
   async organizations(
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
@@ -9380,6 +9423,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.Query(() => Organization, { nullable: true })
+  @Public()
   async organization(
     @graphql.Args() args: OrganizationFindUniqueArgs
   ): Promise<Organization | null> {
@@ -9391,6 +9435,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.Mutation(() => Organization)
+  @Public()
   async createOrganization(
     @graphql.Args() args: CreateOrganizationArgs
   ): Promise<Organization> {
@@ -9401,6 +9446,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.Mutation(() => Organization)
+  @Public()
   async updateOrganization(
     @graphql.Args() args: UpdateOrganizationArgs
   ): Promise<Organization | null> {
@@ -9420,6 +9466,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.Mutation(() => Organization)
+  @Public()
   async deleteOrganization(
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
@@ -9436,6 +9483,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [User])
+  @Public()
   async users(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: UserFindManyArgs
@@ -9450,6 +9498,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer])
+  @Public()
   async customers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
@@ -9464,6 +9513,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer])
+  @Public()
   async vipCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
@@ -10373,6 +10423,7 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { ProfileService } from \\"../profile.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
 import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
@@ -10382,7 +10433,7 @@ import { Profile } from \\"./Profile\\";
 
 export class ProfileControllerBase {
   constructor(protected readonly service: ProfileService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
   async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
@@ -10411,6 +10462,7 @@ export class ProfileControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
@@ -10433,6 +10485,7 @@ export class ProfileControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -10462,6 +10515,7 @@ export class ProfileControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -10504,6 +10558,7 @@ export class ProfileControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -10574,6 +10629,7 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateProfileArgs } from \\"./CreateProfileArgs\\";
 import { UpdateProfileArgs } from \\"./UpdateProfileArgs\\";
 import { DeleteProfileArgs } from \\"./DeleteProfileArgs\\";
@@ -10582,10 +10638,10 @@ import { ProfileFindUniqueArgs } from \\"./ProfileFindUniqueArgs\\";
 import { Profile } from \\"./Profile\\";
 import { User } from \\"../../user/base/User\\";
 import { ProfileService } from \\"../profile.service\\";
-
 @graphql.Resolver(() => Profile)
 export class ProfileResolverBase {
   constructor(protected readonly service: ProfileService) {}
+
   async _profilesMeta(
     @graphql.Args() args: ProfileFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -10600,6 +10656,7 @@ export class ProfileResolverBase {
   }
 
   @graphql.Query(() => [Profile])
+  @Public()
   async profiles(
     @graphql.Args() args: ProfileFindManyArgs
   ): Promise<Profile[]> {
@@ -10607,6 +10664,7 @@ export class ProfileResolverBase {
   }
 
   @graphql.Query(() => Profile, { nullable: true })
+  @Public()
   async profile(
     @graphql.Args() args: ProfileFindUniqueArgs
   ): Promise<Profile | null> {
@@ -10618,6 +10676,7 @@ export class ProfileResolverBase {
   }
 
   @graphql.Mutation(() => Profile)
+  @Public()
   async createProfile(
     @graphql.Args() args: CreateProfileArgs
   ): Promise<Profile> {
@@ -10636,6 +10695,7 @@ export class ProfileResolverBase {
   }
 
   @graphql.Mutation(() => Profile)
+  @Public()
   async updateProfile(
     @graphql.Args() args: UpdateProfileArgs
   ): Promise<Profile | null> {
@@ -10663,6 +10723,7 @@ export class ProfileResolverBase {
   }
 
   @graphql.Mutation(() => Profile)
+  @Public()
   async deleteProfile(
     @graphql.Args() args: DeleteProfileArgs
   ): Promise<Profile | null> {
@@ -10679,6 +10740,7 @@ export class ProfileResolverBase {
   }
 
   @graphql.ResolveField(() => User, { nullable: true })
+  @Public()
   async user(@graphql.Parent() parent: Profile): Promise<User | null> {
     const result = await this.service.getUser(parent.id);
 
@@ -12559,6 +12621,7 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { UserService } from \\"../user.service\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -12571,7 +12634,7 @@ import { OrganizationWhereUniqueInput } from \\"../../organization/base/Organiza
 
 export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   async create(@common.Body() data: UserCreateInput): Promise<User> {
@@ -12623,6 +12686,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
@@ -12662,6 +12726,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -12708,6 +12773,7 @@ export class UserControllerBase {
     return result;
   }
 
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -12773,6 +12839,7 @@ export class UserControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -12822,6 +12889,7 @@ export class UserControllerBase {
     }
   }
 
+  @Public()
   @common.Get(\\"/:id/employees\\")
   @ApiNestedQuery(UserFindManyArgs)
   async findManyEmployees(
@@ -12869,6 +12937,7 @@ export class UserControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/employees\\")
   async connectEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -12886,6 +12955,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/employees\\")
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -12903,6 +12973,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/employees\\")
   async disconnectEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -12920,6 +12991,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Get(\\"/:id/organizations\\")
   @ApiNestedQuery(OrganizationFindManyArgs)
   async findManyOrganizations(
@@ -12944,6 +13016,7 @@ export class UserControllerBase {
     return results;
   }
 
+  @Public()
   @common.Post(\\"/:id/organizations\\")
   async connectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
@@ -12961,6 +13034,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Patch(\\"/:id/organizations\\")
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
@@ -12978,6 +13052,7 @@ export class UserControllerBase {
     });
   }
 
+  @Public()
   @common.Delete(\\"/:id/organizations\\")
   async disconnectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
@@ -13033,6 +13108,7 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
@@ -13043,10 +13119,10 @@ import { OrganizationFindManyArgs } from \\"../../organization/base/Organization
 import { Organization } from \\"../../organization/base/Organization\\";
 import { Profile } from \\"../../profile/base/Profile\\";
 import { UserService } from \\"../user.service\\";
-
 @graphql.Resolver(() => User)
 export class UserResolverBase {
   constructor(protected readonly service: UserService) {}
+
   async _usersMeta(
     @graphql.Args() args: UserFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -13061,11 +13137,13 @@ export class UserResolverBase {
   }
 
   @graphql.Query(() => [User])
+  @Public()
   async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
     return this.service.findMany(args);
   }
 
   @graphql.Query(() => User, { nullable: true })
+  @Public()
   async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
     const result = await this.service.findOne(args);
     if (result === null) {
@@ -13075,6 +13153,7 @@ export class UserResolverBase {
   }
 
   @graphql.Mutation(() => User)
+  @Public()
   async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
     return await this.service.create({
       ...args,
@@ -13097,6 +13176,7 @@ export class UserResolverBase {
   }
 
   @graphql.Mutation(() => User)
+  @Public()
   async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
     try {
       return await this.service.update({
@@ -13128,6 +13208,7 @@ export class UserResolverBase {
   }
 
   @graphql.Mutation(() => User)
+  @Public()
   async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
     try {
       return await this.service.delete(args);
@@ -13142,6 +13223,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [User])
+  @Public()
   async employees(
     @graphql.Parent() parent: User,
     @graphql.Args() args: UserFindManyArgs
@@ -13156,6 +13238,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [Organization])
+  @Public()
   async organizations(
     @graphql.Parent() parent: User,
     @graphql.Args() args: OrganizationFindManyArgs
@@ -13170,6 +13253,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => User, { nullable: true })
+  @Public()
   async manager(@graphql.Parent() parent: User): Promise<User | null> {
     const result = await this.service.getManager(parent.id);
 
@@ -13180,6 +13264,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => Profile, { nullable: true })
+  @Public()
   async profile(@graphql.Parent() parent: User): Promise<Profile | null> {
     const result = await this.service.getProfile(parent.id);
 

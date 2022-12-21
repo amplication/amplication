@@ -47,7 +47,7 @@ declare const SELECT: Select;
 
 export class CONTROLLER_BASE {
   constructor(protected readonly service: SERVICE) {}
-
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: ENTITY })
   async CREATE_ENTITY_FUNCTION(
@@ -59,6 +59,7 @@ export class CONTROLLER_BASE {
     });
   }
 
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [ENTITY] })
   @ApiNestedQuery(FIND_MANY_ARGS)
@@ -72,6 +73,7 @@ export class CONTROLLER_BASE {
     });
   }
 
+  @Public()
   @common.Get(FINE_ONE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -90,6 +92,7 @@ export class CONTROLLER_BASE {
     return result;
   }
 
+  @Public()
   @common.Patch(UPDATE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -113,6 +116,7 @@ export class CONTROLLER_BASE {
     }
   }
 
+  @Public()
   @common.Delete(DELETE_PATH)
   @swagger.ApiOkResponse({ type: ENTITY })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })

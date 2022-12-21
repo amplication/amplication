@@ -47,10 +47,10 @@ declare interface SERVICE {
 }
 
 declare const ENTITY_NAME: string;
-
 @graphql.Resolver(() => ENTITY)
 export class RESOLVER_BASE {
   constructor(protected readonly service: SERVICE) {}
+
   async META_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<MetaQueryPayload> {
@@ -65,6 +65,7 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Query(() => [ENTITY])
+  @Public()
   async ENTITIES_QUERY(
     @graphql.Args() args: FIND_MANY_ARGS
   ): Promise<ENTITY[]> {
@@ -72,6 +73,7 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Query(() => ENTITY, { nullable: true })
+  @Public()
   async ENTITY_QUERY(
     @graphql.Args() args: FIND_ONE_ARGS
   ): Promise<ENTITY | null> {
@@ -83,6 +85,7 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Mutation(() => ENTITY)
+  @Public()
   async CREATE_MUTATION(@graphql.Args() args: CREATE_ARGS): Promise<ENTITY> {
     // @ts-ignore
     return await this.service.create({
@@ -92,6 +95,7 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Mutation(() => ENTITY)
+  @Public()
   async UPDATE_MUTATION(
     @graphql.Args() args: UPDATE_ARGS
   ): Promise<ENTITY | null> {
@@ -112,6 +116,7 @@ export class RESOLVER_BASE {
   }
 
   @graphql.Mutation(() => ENTITY)
+  @Public()
   async DELETE_MUTATION(
     @graphql.Args() args: DELETE_ARGS
   ): Promise<ENTITY | null> {
