@@ -157,7 +157,7 @@ const PLUGINS: Plugin[] = [
     icon: "icons/formatter-prettier.png",
     name: "Prettier",
     repo: "https://github.com/amplication/plugins/tree/master/plugins/formatter-prettier",
-    npm: "@amplication/formatter-prettier",
+    npm: "@amplication/plugin-formatter-prettier",
     github: "test",
     website: "test",
     category: "test",
