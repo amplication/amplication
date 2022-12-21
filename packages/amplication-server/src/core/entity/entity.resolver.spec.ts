@@ -15,7 +15,7 @@ import { ConfigService } from "@nestjs/config";
 import { Entity } from "../../models/Entity";
 import { User } from "../../models/User";
 import { EntityField } from "../../models/EntityField";
-import type {
+import {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType,
