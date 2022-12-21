@@ -156,6 +156,7 @@ jobs:
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
+            type=raw,value=${{ github.head_ref || github.ref_name }},
 
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
@@ -172,4 +173,3 @@ jobs:
      target-env: ${{ github.head_ref }}
      confirm-env: ${{ github.head_ref }}
     secrets: inherit
-
