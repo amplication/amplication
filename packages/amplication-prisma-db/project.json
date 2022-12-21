@@ -13,7 +13,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-prisma-db"],
+      "outputs": ["{workspaceRoot}/coverage/packages/amplication-prisma-db"],
       "options": {
         "jestConfig": "packages/amplication-prisma-db/jest.config.ts",
         "passWithNoTests": true
@@ -21,7 +21,7 @@
     },
     "db:prisma:generate": {
       "executor": "nx:run-commands",
-      "outputs": ["prisma/generated-prisma-client"],
+      "outputs": ["{workspaceRoot}/prisma/generated-prisma-client"],
       "options": {
         "command": "prisma generate --schema ./prisma/schema.prisma",
         "cwd": "packages/amplication-prisma-db"

@@ -15,7 +15,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/ee/packages/amplication-git-push-webhook-service"],
+      "outputs": [
+        "{workspaceRoot}/coverage/ee/packages/amplication-git-push-webhook-service"
+      ],
       "options": {
         "jestConfig": "ee/packages/amplication-git-push-webhook-service/jest.config.ts",
         "passWithNoTests": true
