@@ -7,8 +7,7 @@ import {
   ConflictException,
 } from "@nestjs/common";
 import { DataConflictError } from "../../errors/DataConflictError";
-import { Prisma } from "../../prisma";
-import { PrismaService } from "../../prisma";
+import { Prisma, PrismaService } from "../../prisma";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { camelCase } from "camel-case";
 import difference from "@extra-set/difference";
