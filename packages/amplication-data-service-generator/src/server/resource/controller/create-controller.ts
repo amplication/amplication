@@ -65,6 +65,7 @@ export async function createControllerModules(
 
   const template = await readFile(controllerTemplatePath);
   const templateBase = await readFile(controllerBaseTemplatePath);
+  const toManyTemplate = await readFile(toManyTemplatePath);
 
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
@@ -130,6 +131,7 @@ export async function createControllerModules(
       EventNames.CreateEntityControllerBase,
       {
         template: templateBase,
+        toManyTemplate: toManyTemplate,
         entityName,
         entityType,
         entityServiceModule,
@@ -191,6 +193,7 @@ async function createControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
+  toManyTemplate,
 }: CreateEntityControllerBaseParams): Promise<Module[]> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
@@ -211,7 +214,8 @@ async function createControllerBaseModule({
           entityType,
           entityDTOs.whereUniqueInput,
           DTOs,
-          serviceId
+          serviceId,
+          toManyTemplate
         )
       )
     )
@@ -266,9 +270,9 @@ async function createToManyRelationMethods(
   entityType: string,
   whereUniqueInput: NamedClassDeclaration,
   dtos: DTOs,
-  serviceId: namedTypes.Identifier
+  serviceId: namedTypes.Identifier,
+  toManyTemplate: namedTypes.File
 ) {
-  const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
@@ -294,10 +298,10 @@ async function createToManyRelationMethods(
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   };
 
-  interpolate(toManyFile, toManyMapping);
+  interpolate(toManyTemplate, toManyMapping);
 
   const classDeclaration = getClassDeclarationById(
-    toManyFile,
+    toManyTemplate,
     TO_MANY_MIXIN_ID
   );
 
