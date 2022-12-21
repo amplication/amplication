@@ -18,8 +18,7 @@ export interface AppContextInterface {
   resources: models.Resource[];
   setNewService: (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: string,
-    addEntity: (id: string) => void
+    eventName: string
   ) => void;
   setResource: (resource: models.Resource) => void;
   projectConfigurationResource: models.Resource | undefined;

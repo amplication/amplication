@@ -34,7 +34,9 @@ const createGitRepositoryFullName = (
 
 const useResources = (
   currentWorkspace: models.Workspace | undefined,
-  currentProject: models.Project | undefined
+  currentProject: models.Project | undefined,
+  addBlock: (id: string) => void,
+  addEntity: (id: string) => void
 ) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -91,8 +93,7 @@ const useResources = (
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: AnalyticsEventNames,
-    addEntity: (id: string) => void
+    eventName: AnalyticsEventNames
   ) => {
     trackEvent({
       eventName: eventName,
@@ -121,9 +122,11 @@ const useResources = (
     });
     createBroker({ variables: { data: data } }).then((result) => {
       result.data?.createMessageBroker.id &&
-        refetch().then(() =>
-          resourceRedirect(result.data?.createMessageBroker.id as string)
-        );
+        addBlock(result.data.createMessageBroker.id);
+      result.data?.createMessageBroker.id &&
+        refetch().then(() => {
+          resourceRedirect(result.data?.createMessageBroker.id as string);
+        });
     });
   };
   useEffect(() => {
