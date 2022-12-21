@@ -1,7 +1,6 @@
 import { Injectable, ConflictException } from "@nestjs/common";
 import { Workspace, User } from "../../models";
-import { Prisma } from "../../prisma";
-import { PrismaService } from "../../prisma";
+import { Prisma, PrismaService } from "../../prisma";
 import { Invitation } from "./dto/Invitation";
 import {
   FindManyWorkspaceArgs,
