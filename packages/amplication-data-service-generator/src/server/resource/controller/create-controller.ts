@@ -1,4 +1,3 @@
-import { EnumEntityAction } from "./../../../models";
 import { print } from "recast";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -33,7 +32,6 @@ import { getImportableDTOs } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
-import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
