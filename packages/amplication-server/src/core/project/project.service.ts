@@ -1,5 +1,4 @@
-import { PrismaService } from "../../prisma";
-import { EnumResourceType } from "../../prisma";
+import { PrismaService, EnumResourceType } from "../../prisma";
 import { Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
