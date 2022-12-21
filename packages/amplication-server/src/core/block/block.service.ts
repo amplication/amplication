@@ -9,11 +9,7 @@ import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
   Prisma,
-import {
-  Block as PrismaBlock,
-  BlockVersion as PrismaBlockVersion,
-  Prisma,
-  PrismaService
+  PrismaService,
 } from "../../prisma";
 import { DiffService } from "../../services/diff.service";
 import {
