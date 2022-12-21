@@ -13,3 +13,4 @@ COPY ./dist/libs/data-service-generator .
 
 WORKDIR /workspace/packages/amplication-data-service-generator-runner
 COPY ./dist/packages/amplication-data-service-generator-runner .
+RUN npm i --omit-dev
