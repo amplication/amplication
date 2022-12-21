@@ -8,7 +8,7 @@ on:
         description: If true, all docker images will be tagged as latest
         required: false
         default: false
-        
+
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_BRANCH: ${{ github.ref_name }}
@@ -150,7 +150,7 @@ jobs:
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
             type=raw,value=${{ github.head_ref || github.ref_name }},
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') && input.add-latest-tag }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') && inputs.add-latest-tag }}
 
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
