@@ -13,7 +13,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-git-utils"],
+      "outputs": ["{workspaceRoot}/coverage/packages/amplication-git-utils"],
       "options": {
         "jestConfig": "packages/amplication-git-utils/jest.config.ts",
         "passWithNoTests": true

@@ -1,0 +1,76 @@
+{
+  "migrations": [
+    {
+      "cli": "nx",
+      "version": "15.0.0-beta.1",
+      "description": "Replace implicitDependencies with namedInputs + target inputs",
+      "implementation": "./src/migrations/update-15-0-0/migrate-to-inputs",
+      "package": "nx",
+      "name": "15.0.0-migrate-to-inputs"
+    },
+    {
+      "cli": "nx",
+      "version": "15.0.0-beta.1",
+      "description": "Prefix outputs with {workspaceRoot}/{projectRoot} if needed",
+      "implementation": "./src/migrations/update-15-0-0/prefix-outputs",
+      "package": "nx",
+      "name": "15.0.0-prefix-outputs"
+    },
+    {
+      "cli": "nx",
+      "version": "15.0.12-beta.1",
+      "description": "Set project names in project.json files",
+      "implementation": "./src/migrations/update-15-1-0/set-project-names",
+      "package": "nx",
+      "name": "15.1.0-set-project-names"
+    },
+    {
+      "version": "15.0.0-beta.0",
+      "cli": "nx",
+      "description": "Stop hashing jest spec files and config files for build targets and dependent tasks",
+      "factory": "./src/migrations/update-15-0-0/add-jest-inputs",
+      "package": "@nrwl/jest",
+      "name": "add-jest-inputs"
+    },
+    {
+      "cli": "nx",
+      "version": "15.0.0-beta.0",
+      "description": "Stop hashing eslint config files for build targets and dependent tasks",
+      "factory": "./src/migrations/update-15-0-0/add-eslint-inputs",
+      "package": "@nrwl/linter",
+      "name": "add-eslint-inputs"
+    },
+    {
+      "cli": "nx",
+      "version": "15.3.0-beta.0",
+      "description": "Update projects using @nrwl/web:rollup to @nrwl/rollup:rollup for build.",
+      "factory": "./src/migrations/update-15-3-0/update-rollup-executor",
+      "package": "@nrwl/react",
+      "name": "update-rollup-executor"
+    },
+    {
+      "cli": "nx",
+      "version": "15.3.0-beta.0",
+      "description": "Install new dependencies for React projects using Webpack or Rollup.",
+      "factory": "./src/migrations/update-15-3-0/install-webpack-rollup-dependencies",
+      "package": "@nrwl/react",
+      "name": "install-webpack-rollup-dependencies"
+    },
+    {
+      "cli": "nx",
+      "version": "15.0.0-beta.0",
+      "description": "Adds babel.config.json to the hash of all tasks",
+      "factory": "./src/migrations/update-15-0-0/add-babel-inputs",
+      "package": "@nrwl/web",
+      "name": "add-babel-inputs"
+    },
+    {
+      "cli": "nx",
+      "version": "15.0.0-beta.1",
+      "description": "Update usages of rollup executors to @nrwl/rollup",
+      "factory": "./src/migrations/update-15-0-0/update-rollup-executor",
+      "package": "@nrwl/web",
+      "name": "update-rollup-executor"
+    }
+  ]
+}
