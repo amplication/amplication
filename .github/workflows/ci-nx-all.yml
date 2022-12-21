@@ -5,7 +5,7 @@ on:
     inputs:
       add-latest-tag:
         type: boolean
-        description: If true, all docker images will be tagged as latest
+        description: Add `latest` tag to built docker images
         required: false
         default: false
 
