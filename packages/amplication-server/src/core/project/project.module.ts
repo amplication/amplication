@@ -1,4 +1,4 @@
-import { PrismaModule } from "@amplication/prisma-db";
+import { PrismaModule } from "../../prisma/prisma.module";
 import { Module } from "@nestjs/common";
 import { BlockModule } from "../block/block.module";
 import { BuildModule } from "../build/build.module";

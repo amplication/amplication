@@ -14,7 +14,7 @@ import { WorkspaceResolver } from "./workspace.resolver";
 import { Resource, Workspace, User, Project } from "../../models";
 import { Invitation } from "./dto/Invitation";
 import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "@amplication/prisma-db";
+import { EnumResourceType } from "../../prisma";
 import { ProjectService } from "../project/project.service";
 import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 

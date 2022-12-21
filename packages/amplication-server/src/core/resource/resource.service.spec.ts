@@ -8,11 +8,11 @@ import {
 
 import { GitService } from "@amplication/git-utils";
 import {
+  PrismaService,
   EnumResourceType,
   GitRepository,
-  PrismaService,
   Prisma,
-} from "@amplication/prisma-db";
+} from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";

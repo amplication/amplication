@@ -3,7 +3,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { EntityField, Entity } from "../../models";
 import { EnumEntityAction } from "../../enums/EnumEntityAction";
 import { EnumEntityPermissionType } from "../../enums/EnumEntityPermissionType";
-import { Prisma } from "@amplication/prisma-db";
+import { Prisma } from "../../prisma";
 
 /**
  * This const is represent the newest version of the entity
