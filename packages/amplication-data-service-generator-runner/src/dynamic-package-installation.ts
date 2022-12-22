@@ -1,6 +1,6 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
 import { join } from "path";
-import { DynamicPackageInstallationManager } from "./DynamicPackageInstallationManager";
+import { DynamicPackageInstallationManager } from "./utils/DynamicPackageInstallationManager";
 
 export async function dynamicPackagesInstallations(
   packages: PluginInstallation[]
