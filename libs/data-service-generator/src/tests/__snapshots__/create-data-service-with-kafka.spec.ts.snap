@@ -2916,7 +2916,7 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5433
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       - migrate
   migrate:
@@ -2928,7 +2928,7 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       db:
         condition: service_healthy
