@@ -7,6 +7,7 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
+  LimitationNotification,
 } from "@amplication/design-system";
 import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
@@ -99,6 +100,10 @@ function ResourceList() {
         {pluralize(resources.length, "Resource", "Resources")}
       </div>
       {loadingResources && <CircularProgress centerToParent />}
+
+      <LimitationNotification>
+        With the current plan, you can use up to 3 services. Upgrade now
+      </LimitationNotification>
 
       <div className={`${CLASS_NAME}__content`}>
         {isEmpty(resources) && !loadingResources ? (

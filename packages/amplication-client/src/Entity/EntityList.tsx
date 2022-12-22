@@ -9,6 +9,7 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
+  LimitationNotification,
 } from "@amplication/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
@@ -112,11 +113,18 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
             Add entity
           </Button>
         </div>
+
+        <div className={`${CLASS_NAME}__separator`} />
+
         <div className={`${CLASS_NAME}__title`}>
           {data?.entities.length}{" "}
           {pluralize(data?.entities.length, "Entity", "Entities")}
         </div>
         {loading && <CircularProgress centerToParent />}
+
+        <LimitationNotification>
+          With the current plan, you can use to 7 entities. Upgrade now
+        </LimitationNotification>
 
         <div className={`${CLASS_NAME}__content`}>
           {data?.entities.map((entity) => (
