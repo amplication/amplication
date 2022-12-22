@@ -39,6 +39,11 @@
             "output": "prisma"
           },
           {
+            "glob": "**/*.node",
+            "input": "ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
             "glob": "schema.prisma",
             "input": "packages/amplication-prisma-db/prisma",
             "output": "./"
