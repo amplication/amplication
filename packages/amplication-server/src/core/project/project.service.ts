@@ -163,14 +163,14 @@ export class ProjectService {
     if (!subscriptions || subscriptions.length === 0) {
       if (workspaceServices.length > LICENSE_SERVICES_PER_WORKSPACE_LIMIT) {
         throw new Error(
-          "You have reached the maximum number of services. (Upgrade your workspace plan)"
+          `LimitationError: Allowed services per workspace: ${LICENSE_SERVICES_PER_WORKSPACE_LIMIT}`
         );
       }
 
       projectServices.map((service) => {
         if (service.entities.length > LICENSE_ENTITIES_PER_SERVICE_LIMIT) {
           throw new Error(
-            "You have reached the maximum number of entities. (Upgrade your workspace plan)"
+            `LimitationError: Allowed entities per service: ${LICENSE_ENTITIES_PER_SERVICE_LIMIT}`
           );
         }
       });

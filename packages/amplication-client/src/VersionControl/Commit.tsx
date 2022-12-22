@@ -1,7 +1,11 @@
-import { Snackbar, TextField } from "@amplication/design-system";
+import {
+  LimitationDialog,
+  Snackbar,
+  TextField,
+} from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -13,6 +17,8 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
 import { GET_COMMITS, GET_LAST_COMMIT } from "./hooks/commitQueries";
+
+const LIMITATION_ERROR_PREFIX = "LimitationError: ";
 
 type TCommit = {
   message: string;
@@ -36,6 +42,11 @@ type TData = {
   commit: CommitType;
 };
 
+const formatLimitationError = (errorMessage: string) => {
+  const limitationError = errorMessage.split(LIMITATION_ERROR_PREFIX)[1];
+  return limitationError;
+};
+
 const Commit = ({ projectId, noChanges }: Props) => {
   const history = useHistory();
   const {
@@ -50,6 +61,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     onError: () => {
       setCommitRunning(false);
       setPendingChangesError(true);
+      setOpenLimitationDialog(true);
       resetPendingChanges();
     },
     onCompleted: (response) => {
@@ -106,6 +118,11 @@ const Commit = ({ projectId, noChanges }: Props) => {
   );
 
   const errorMessage = formatError(error);
+  const isLimitationError =
+    errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
+  const limitationErrorMessage =
+    isLimitationError && formatLimitationError(errorMessage);
+  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
 
   return (
     <div className={CLASS_NAME}>
@@ -150,7 +167,16 @@ const Commit = ({ projectId, noChanges }: Props) => {
         }}
       </Formik>
 
-      <Snackbar open={Boolean(error)} message={errorMessage} />
+      {error && isLimitationError ? (
+        <LimitationDialog
+          isOpen={isOpenLimitationDialog}
+          message={limitationErrorMessage}
+          onConfirm={() => setOpenLimitationDialog(false)}
+          onDismiss={() => setOpenLimitationDialog(false)}
+        />
+      ) : (
+        <Snackbar open={Boolean(error)} message={errorMessage} />
+      )}
     </div>
   );
 };
