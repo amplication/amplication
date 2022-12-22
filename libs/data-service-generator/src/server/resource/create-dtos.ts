@@ -57,21 +57,20 @@ export function getDTONameToPath(dtos: DTOs): Record<string, string> {
 }
 
 export async function createDTOs(entities: Entity[]): Promise<DTOs> {
-  return Object.fromEntries(
-    await Promise.all(
-      entities.map(async (entity) => {
-        const entityDTOs = await createEntityDTOs(entity);
-        const entityEnumDTOs = createEntityEnumDTOs(entity);
-        const toManyDTOs = createToManyDTOs(entity);
-        const dtos = {
-          ...entityDTOs,
-          ...entityEnumDTOs,
-          ...toManyDTOs,
-        };
-        return [entity.name, dtos];
-      })
-    )
+  const entitiesDTOsMap = await Promise.all(
+    entities.map(async (entity) => {
+      const entityDTOs = await createEntityDTOs(entity);
+      const entityEnumDTOs = createEntityEnumDTOs(entity);
+      const toManyDTOs = createToManyDTOs(entity);
+      const dtos = {
+        ...entityDTOs,
+        ...entityEnumDTOs,
+        ...toManyDTOs,
+      };
+      return [entity.name, dtos];
+    })
   );
+  return Object.fromEntries(entitiesDTOsMap);
 }
 
 async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
