@@ -1,4 +1,4 @@
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { namedTypes, builders } from "ast-types";
 import { DeclarationKind } from "ast-types/gen/kinds";
 import { NamedClassDeclaration, Module } from "@amplication/code-gen-types";
@@ -87,12 +87,17 @@ export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   dtoNameToPath: Record<string, string>
 ): Module {
-  const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
-  addAutoGenerationComment(file);
-  return {
-    code: print(file).code,
-    path: dtoNameToPath[dto.id.name],
-  };
+  try {
+    const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
+    addAutoGenerationComment(file);
+    return {
+      code: print(file).code,
+      path: dtoNameToPath[dto.id.name],
+    };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 export function createDTOFile(
