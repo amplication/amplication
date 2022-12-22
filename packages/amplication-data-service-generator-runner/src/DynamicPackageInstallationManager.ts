@@ -1,8 +1,6 @@
+import download from "download";
 import { packument } from "pacote";
 import { valid } from "semver";
-import { createWriteStream } from "fs";
-import axios from "axios";
-
 export class DynamicPackageInstallationManager {
   constructor(private pluginInstallationPath: string) {}
 
@@ -18,23 +16,12 @@ export class DynamicPackageInstallationManager {
     this.validateOrThrowVersion(version);
 
     const tarball = await this.packageTarball({ name, version: validVersion });
-    await this.downloadTarball(tarball);
+    await this.downloadTarball(name, tarball);
   }
 
-  async downloadTarball(tarball: string): Promise<void> {
-    const writer = createWriteStream(this.pluginInstallationPath);
-
-    const response = await axios(tarball, {
-      method: "GET",
-      responseType: "stream",
-    });
-
-    response.data.pipe(writer);
-
-    return new Promise((resolve, reject) => {
-      writer.on("finish", resolve);
-      writer.on("error", reject);
-    });
+  async downloadTarball(packageName: string, tarball: string): Promise<void> {
+    await download(tarball, this.pluginInstallationPath, { extract: true });
+    return;
   }
 
   async packageTarball({ name, version }: PackageInstallation) {
