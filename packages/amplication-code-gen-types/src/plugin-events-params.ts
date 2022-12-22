@@ -48,7 +48,6 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   entityType: string;
   entityServiceModule: string;
   templateMapping: { [key: string]: any };
-  toManyTemplate: namedTypes.File;
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
