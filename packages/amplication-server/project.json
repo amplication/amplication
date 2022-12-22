@@ -43,6 +43,11 @@
             "glob": "prisma",
             "input": "packages/amplication-prisma-db",
             "output": "prisma"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/amplication-prisma-db/prisma",
+            "output": "./"
           }
         ]
       },
