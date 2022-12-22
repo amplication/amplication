@@ -82,7 +82,7 @@ jobs:
     name: vulnerability-scanning
     needs: ci
     runs-on: ubuntu-20.04
-    uses: amplication/amplication/.github/workflows/template-vulnerability-scan.yaml@master
+    uses: ./.github/workflows/template-vulnerability-scan.yaml@master
     with:
       scan-type: 'fs'
       format: 'sarif'
