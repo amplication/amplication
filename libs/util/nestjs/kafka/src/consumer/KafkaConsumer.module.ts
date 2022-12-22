@@ -4,7 +4,7 @@ import {
   KAFKA_SERIALIZER,
 } from "@amplication/util/kafka";
 import { Module } from "@nestjs/common";
-import { ParseKafkaMessagePipe } from "./pipe/ParseKafkaMessagePipe";
+import { ParseKafkaMessagePipe } from "../pipe/ParseKafkaMessagePipe";
 
 @Module({
   imports: [AmplicationLoggerModule],
@@ -17,4 +17,4 @@ import { ParseKafkaMessagePipe } from "./pipe/ParseKafkaMessagePipe";
   ],
   exports: [ParseKafkaMessagePipe, KAFKA_SERIALIZER],
 })
-export class KafkaMessageHelperModule {}
+export class KafkaConsumerModule {}

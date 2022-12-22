@@ -5,7 +5,7 @@ This library leverage util-kafka funtionality to satisfy nestjs specific use-cas
 
 ## Deserialisation of Kafka Message
 
-In order to use the serializer, import the `KafkaMessageHelperModule` module and add the pipe to the kafka message @Payload like:
+In order to use the serializer, import the `KafkaConsumerModule` module and add the pipe to the kafka message @Payload like:
 
 ```ts
   @EventPattern(EnvironmentVariables.instance.get(Env.DSG_LOG_TOPIC, true))
@@ -18,12 +18,11 @@ In order to use the serializer, import the `KafkaMessageHelperModule` module and
 
 ## Serialisation of Kafka Message
 
-To serialise a message with key and value, import the `KafkaMessageHelperModule` module and use the serializer:
+To produce messages with serialised key and value, import the `KafkaProducerService` and use that instead of calling the nestjs KafkaClient directly:
 
 ```ts
-    // class MyClass (readonly private serializer: IKafkaMessageSerializer)
+    // class MyClass (readonly private kafkaProducerService: KafkaProducerService)
     // ...
     // myFunction(){
-        const message = await this.serializer.serialize({ key: { id: 'a'}, value: { complexObj : { id: 2}}, headers: {}})
-        this.kafkaClient.emit(topic, message);
+       this.kafkaProducerService.emitMessage('topic-1', { key: "id-1", value: "my awesome value"});
 ```

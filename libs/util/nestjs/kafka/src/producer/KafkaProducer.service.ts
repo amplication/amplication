@@ -11,7 +11,6 @@ export const KAFKA_PRODUCER_SERVICE_NAME = "KAFKA_PRODUCER_SERVICE";
 
 @Injectable()
 export class KafkaProducerService {
-  generatePullRequestTopic: string;
   constructor(
     @Inject(ClientKafka)
     private readonly kafkaClient: ClientKafka,
