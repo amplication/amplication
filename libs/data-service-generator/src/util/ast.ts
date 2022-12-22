@@ -406,13 +406,10 @@ export function classDeclaration(
   if (!decorators.length) {
     return declaration;
   }
-  const code = [
-    ...decorators.map((decorator) => recast.print(decorator).code),
-    recast.print(declaration).code,
-  ].join("\n");
-  const ast = parse(code);
-  const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
-  return classDeclaration;
+
+  //@ts-ignore
+  declaration.decorators = decorators;
+  return declaration;
 }
 
 export function classProperty(
