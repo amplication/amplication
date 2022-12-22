@@ -5,11 +5,19 @@ import axios from "axios";
 
 export class DynamicPackageInstallationManager {
   constructor(private pluginInstallationPath: string) {}
-  async install(packageName: string, version: string) {
+
+  async installMany(packages: PackageInstallation[]): Promise<void> {
+    for (const plugin of packages) {
+      await this.install(plugin);
+    }
+    return;
+  }
+
+  async install({ name, version }: PackageInstallation): Promise<void> {
     const validVersion = valid(version);
     this.validateOrThrowVersion(version);
 
-    const tarball = await this.packageTarball(packageName, validVersion);
+    const tarball = await this.packageTarball({ name, version: validVersion });
     await this.downloadTarball(tarball);
   }
 
@@ -29,8 +37,8 @@ export class DynamicPackageInstallationManager {
     });
   }
 
-  async packageTarball(packageName: string, version: string) {
-    const fullPackageName = `${packageName}@${version}`;
+  async packageTarball({ name, version }: PackageInstallation) {
+    const fullPackageName = `${name}@${version}`;
     const response = await packument(fullPackageName);
     const latestTag = response["dist-tags"].latest;
     const latest = response.versions[latestTag];
@@ -47,4 +55,9 @@ export class DynamicPackageInstallationManager {
     // }
     return;
   }
+}
+
+export interface PackageInstallation {
+  name: string;
+  version: string;
 }

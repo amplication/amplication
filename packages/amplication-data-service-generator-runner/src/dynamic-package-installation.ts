@@ -10,11 +10,9 @@ export async function dynamicPackagesInstallations(
     join(__dirname, "..", "amplication_modules")
   );
 
-  for (const plugin of packages) {
-    const { npm, version } = plugin;
-    manager.install(npm, version);
-    // await npmInstall(tarballLink);
-  }
+  await manager.installMany(
+    packages.map(({ npm, version }) => ({ name: npm, version }))
+  );
 
   return;
 }
