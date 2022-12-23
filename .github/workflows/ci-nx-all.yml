@@ -24,12 +24,12 @@ jobs:
 
       - name: Cache node modules
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             node_modules
-            packages/amplication-client/node_modules
-            packages/amplication-data-service-generator/node_modules
+            libs/data-service-generator/node_modules
+            libs/util/code-gen-utils/node_modules
             packages/amplication-design-system/node_modules
           key: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
 
@@ -88,7 +88,7 @@ jobs:
           path: |
             node_modules
             packages/amplication-client/node_modules
-            packages/amplication-data-service-generator/node_modules
+            libs/data-service-generator/node_modules
             packages/amplication-design-system/node_modules
           key: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
 

@@ -13,7 +13,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/ee/packages/amplication-git-pull-service"],
+      "outputs": [
+        "{workspaceRoot}/coverage/ee/packages/amplication-git-pull-service"
+      ],
       "options": {
         "jestConfig": "ee/packages/amplication-git-pull-service/jest.config.ts",
         "passWithNoTests": true
@@ -59,7 +61,7 @@
     },
     "db:prisma:generate": {
       "executor": "nx:run-commands",
-      "outputs": ["prisma/generated-prisma-client"],
+      "outputs": ["{workspaceRoot}/prisma/generated-prisma-client"],
       "options": {
         "command": "prisma generate --schema ./prisma/schema.prisma",
         "cwd": "ee/packages/amplication-git-pull-service"

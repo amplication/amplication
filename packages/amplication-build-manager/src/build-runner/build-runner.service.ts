@@ -11,10 +11,6 @@ import { Env } from "../env";
 export class BuildRunnerService {
   constructor(private readonly configService: ConfigService<Env, true>) {}
 
-  getHello(): string {
-    return "Hello World!";
-  }
-
   async saveDsgResourceData(buildId: string, dsgResourceData: DSGResourceData) {
     const savePath = join(
       this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
