@@ -107,6 +107,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
             <EllipsisText
               className={`${CLASS_NAME}__description`}
               text={description}
+              maxLength={350}
             />
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
