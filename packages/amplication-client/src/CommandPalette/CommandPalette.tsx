@@ -10,6 +10,7 @@ import * as models from "../models";
 import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
 import { resourceThemeMap } from "../Resource/constants";
+import EllipsisText from "../Components/EllipsisText";
 
 export type ResourceDescriptor = Pick<
   models.Resource,
@@ -160,6 +161,8 @@ function CommandPaletteItem(suggestion: Command) {
     type,
     resourceType,
   } = suggestion;
+
+  const itemHeight = 48;
   return (
     <>
       {showResourceData && (
@@ -171,14 +174,25 @@ function CommandPaletteItem(suggestion: Command) {
                 .color
             }
           />
-          <span className="command-palette__resource-name">{resourceName}</span>
+          <EllipsisText
+            className="command-palette__resource-name"
+            text={resourceName}
+            maxLength={30}
+            maxHeight={itemHeight}
+            trigger={["hover"]}
+          />
         </>
       )}
       <Icon icon={type} />
       {highlight && highlight[0] ? (
         <span dangerouslySetInnerHTML={{ __html: highlight[0] }} />
       ) : (
-        <span>{name}</span>
+        <EllipsisText
+          text={name}
+          maxLength={100}
+          maxHeight={itemHeight}
+          trigger={["hover"]}
+        />
       )}
     </>
   );
