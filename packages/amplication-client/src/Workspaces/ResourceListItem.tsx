@@ -7,16 +7,17 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import "./ResourceListItem.scss";
 import {
   ConfirmationDialog,
-  EnumPanelStyle,
-  UserAndTime,
-  Panel,
-  HorizontalRule,
   EnumHorizontalRuleStyle,
+  EnumPanelStyle,
+  HorizontalRule,
   Icon,
+  Panel,
+  UserAndTime,
 } from "@amplication/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import classNames from "classnames";
+import EllipsisText from "../Components/EllipsisText";
 
 type Props = {
   resource: models.Resource;
@@ -83,7 +84,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
           <div className={`${CLASS_NAME}__row`}>
             <ResourceCircleBadge type={resource.resourceType} />
 
-            <span className={`${CLASS_NAME}__title`}>{name}</span>
+            <EllipsisText className={`${CLASS_NAME}__title`} text={name} />
 
             <span className="spacer" />
             {onDelete && (

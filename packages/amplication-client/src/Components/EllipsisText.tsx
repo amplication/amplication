@@ -6,7 +6,6 @@ type EllipsisTextProps = React.DetailedHTMLProps<
   HTMLSpanElement
 > & {
   text: string;
-  className?: string;
   maxLength?: number;
   maxHeight?: number;
   trigger?: ["click" | "hover"];
@@ -15,7 +14,6 @@ type EllipsisTextProps = React.DetailedHTMLProps<
 const EllipsisText = ({
   text,
   trigger = ["click"],
-  className,
   maxLength = 180,
   maxHeight,
   ...restProps
