@@ -2,7 +2,9 @@ envName: "staging"
 
 job:
   ttlSecondsAfterFinished: 1800
-  image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator-runner:master"
+  image: 
+    repository: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator-runner"
+    tag: "master"
 
 dsgJobsPv:
   name: dsg-jobs-staging-dsg

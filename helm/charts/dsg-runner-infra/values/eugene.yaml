@@ -2,7 +2,9 @@ envName: "eugene"
 
 job:
   ttlSecondsAfterFinished: 1800
-  image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator-runner:next"
+  image:
+    repository: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator-runner"
+    tag: "next"
 
 dsgJobsPv:
   name: dsg-jobs-eugene-dsg
