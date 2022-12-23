@@ -104,7 +104,10 @@ function ResourceListItem({ resource, onDelete }: Props) {
             )}
           </div>
           <div className={`${CLASS_NAME}__row`}>
-            <span className={`${CLASS_NAME}__description`}>{description}</span>
+            <EllipsisText
+              className={`${CLASS_NAME}__description`}
+              text={description}
+            />
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <div className={`${CLASS_NAME}__row`}>
