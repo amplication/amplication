@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import * as models from "../models";
@@ -18,6 +18,7 @@ import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import classNames from "classnames";
 import EllipsisText from "../Components/EllipsisText";
+import useTextOffsetHeight from "../util/useTextOffsetHeight";
 
 type Props = {
   resource: models.Resource;
@@ -27,12 +28,15 @@ type Props = {
 const CLASS_NAME = "resource-list-item";
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
+const LINE_HEIGHT = 35;
 
 function ResourceListItem({ resource, onDelete }: Props) {
   const { currentWorkspace, currentProject, setResource } =
     useContext(AppContext);
   const { id, name, description, gitRepository } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
+  const headerRowRef = useRef(null);
+  const isTitleOverflow = useTextOffsetHeight(headerRowRef, LINE_HEIGHT);
 
   const handleDelete = useCallback(
     (event) => {
@@ -81,7 +85,11 @@ function ResourceListItem({ resource, onDelete }: Props) {
           onClick={handleClick}
           panelStyle={EnumPanelStyle.Bordered}
         >
-          <div className={`${CLASS_NAME}__row`}>
+          <div
+            ref={headerRowRef}
+            className={`${CLASS_NAME}__row`}
+            style={{ alignItems: isTitleOverflow ? "flex-start" : "center" }}
+          >
             <ResourceCircleBadge type={resource.resourceType} />
 
             <EllipsisText className={`${CLASS_NAME}__title`} text={name} />
