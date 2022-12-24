@@ -9,10 +9,12 @@ import { createServer } from "./server/create-server";
 import { createDTOs } from "./server/resource/create-dtos";
 import { EnumResourceType } from "./models";
 import { defaultLogger } from "./server/logging";
+import { AlternativeImportFunction } from "./register-plugin";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
-  logger: winston.Logger = defaultLogger
+  logger: winston.Logger = defaultLogger,
+  pluginGetterFunction?: AlternativeImportFunction
 ): Promise<Module[]> {
   try {
     if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
@@ -22,7 +24,7 @@ export async function createDataService(
 
     const timer = logger.startTimer();
 
-    await prepareContext(dSGResourceData, logger);
+    await prepareContext(dSGResourceData, logger, pluginGetterFunction);
     await createLog({ level: "info", message: "Creating application..." });
     logger.info("Creating application...");
 

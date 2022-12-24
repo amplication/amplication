@@ -1,4 +1,5 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
+import { AlternativeImportFunction } from "@amplication/data-service-generator/register-plugin";
 import { join } from "path";
 import { DynamicPackageInstallationManager } from "./utils/DynamicPackageInstallationManager";
 
@@ -16,3 +17,9 @@ export async function dynamicPackagesInstallations(
 
   return;
 }
+
+export const pluginCustomPluginsGetterFunction: AlternativeImportFunction = (
+  packageName: string
+) => {
+  return join(__dirname, "..", "amplication_modules", packageName);
+};

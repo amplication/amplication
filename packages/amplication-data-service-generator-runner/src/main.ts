@@ -6,7 +6,10 @@ import {
 } from "@amplication/data-service-generator";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
-import { dynamicPackagesInstallations } from "./dynamic-package-installation";
+import {
+  dynamicPackagesInstallations,
+  pluginCustomPluginsGetterFunction,
+} from "./dynamic-package-installation";
 
 const buildSpecPath = process.env.BUILD_SPEC_PATH;
 const buildOutputPath = process.env.BUILD_OUTPUT_PATH;
@@ -38,7 +41,11 @@ export default async function generateCode(
 
     await dynamicPackagesInstallations(pluginInstallations);
 
-    const modules = await createDataService(resourceData, defaultLogger);
+    const modules = await createDataService(
+      resourceData,
+      defaultLogger,
+      pluginCustomPluginsGetterFunction
+    );
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
     await httpClient.post(

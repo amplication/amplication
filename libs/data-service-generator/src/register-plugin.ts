@@ -4,10 +4,15 @@ import {
   PluginInstallation,
   PluginMap,
 } from "@amplication/code-gen-types";
+import type { Promisable } from "type-fest";
 
 class EmptyClass {}
 
 const functionsObject = ["[object Function]", "[object AsyncFunction]"];
+
+export type AlternativeImportFunction = (
+  name: string
+) => Promisable<string | null>;
 
 /**
  * generator function that import the plugin requested by user
@@ -15,7 +20,8 @@ const functionsObject = ["[object Function]", "[object AsyncFunction]"];
  * @returns Plugin class
  */
 async function* getPluginFuncGenerator(
-  pluginList: PluginInstallation[]
+  pluginList: PluginInstallation[],
+  alternativeImport?: AlternativeImportFunction
 ): AsyncGenerator<new () => any> {
   try {
     const pluginListLength = pluginList.length;
@@ -23,7 +29,8 @@ async function* getPluginFuncGenerator(
 
     do {
       const packageName = pluginList[index].npm;
-      const func = await import(packageName);
+
+      const func = await getPlugin(packageName, alternativeImport);
 
       ++index;
       if (!func.hasOwnProperty("default")) yield EmptyClass;
@@ -36,17 +43,34 @@ async function* getPluginFuncGenerator(
   }
 }
 
+async function getPlugin(
+  packageName: string,
+  customPath: AlternativeImportFunction | undefined
+): Promise<any> {
+  if (!customPath) {
+    return await import(packageName);
+  }
+  const path = await customPath(packageName);
+  if (path) {
+    return await import(path);
+  }
+}
+
 /**
  * loop through all plugin list and set the plugin under each event
  */
 const getAllPlugins = async (
-  pluginList: PluginInstallation[]
+  pluginList: PluginInstallation[],
+  alternativeImport?: AlternativeImportFunction
 ): Promise<Events[]> => {
   if (!pluginList.length) return [];
 
   const pluginFuncsArr: Events[] = [];
 
-  for await (const pluginFunc of getPluginFuncGenerator(pluginList)) {
+  for await (const pluginFunc of getPluginFuncGenerator(
+    pluginList,
+    alternativeImport
+  )) {
     const initializeClass = new pluginFunc();
     if (!initializeClass.register) continue;
 
@@ -64,11 +88,15 @@ const getAllPlugins = async (
  * main plugin manger function. it trigger plugin import and set the structure for plugin context
  */
 const registerPlugins = async (
-  pluginList: PluginInstallation[]
+  pluginList: PluginInstallation[],
+  alternativeImport?: AlternativeImportFunction
 ): Promise<{ [K in EventNames]?: any }> => {
   const pluginMap: PluginMap = {};
 
-  const pluginFuncsArr = (await getAllPlugins(pluginList)) as Events[];
+  const pluginFuncsArr = (await getAllPlugins(
+    pluginList,
+    alternativeImport
+  )) as Events[];
   if (!pluginFuncsArr.length) return {};
 
   pluginFuncsArr.reduce(
