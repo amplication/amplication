@@ -1,5 +1,5 @@
 import { EnumEntityAction } from "./../../../models";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import {

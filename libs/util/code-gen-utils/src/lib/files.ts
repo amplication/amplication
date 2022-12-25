@@ -20,3 +20,5 @@ export const readFile = async (path: string): Promise<namedTypes.File> => {
   const code = await readCode(path);
   return parse(code) as namedTypes.File;
 };
+
+export { print } from "recast";
