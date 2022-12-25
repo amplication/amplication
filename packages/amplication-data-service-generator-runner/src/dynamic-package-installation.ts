@@ -3,12 +3,14 @@ import { AlternativeImportFunction } from "@amplication/data-service-generator/r
 import { join } from "path";
 import { DynamicPackageInstallationManager } from "./utils/DynamicPackageInstallationManager";
 
+const AMPLICATION_MODULES = "amplication_modules";
+
 export async function dynamicPackagesInstallations(
   packages: PluginInstallation[]
 ): Promise<void> {
   console.info("Installing dynamic packages");
   const manager = new DynamicPackageInstallationManager(
-    join(__dirname, "..", "amplication_modules")
+    join(__dirname, "..", AMPLICATION_MODULES)
   );
 
   await manager.installMany(
@@ -21,5 +23,5 @@ export async function dynamicPackagesInstallations(
 export const pluginCustomPluginsGetterFunction: AlternativeImportFunction = (
   packageName: string
 ) => {
-  return join(__dirname, "..", "amplication_modules", packageName);
+  return join(__dirname, "..", AMPLICATION_MODULES, packageName);
 };
