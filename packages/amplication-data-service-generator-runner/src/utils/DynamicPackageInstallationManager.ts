@@ -12,20 +12,12 @@ export class DynamicPackageInstallationManager {
 
   async install({ name, version }: PackageInstallation): Promise<void> {
     const validVersion = valid(version);
-    this.validateOrThrowVersion(version);
 
     const tarball = new Tarball(
       { name, version: validVersion },
       this.pluginInstallationPath
     );
     await tarball.download();
-  }
-
-  private validateOrThrowVersion(version: string): Promise<void> {
-    // if (validVersion === null) {
-    //   throw new Error("Invalid version"); //TODO error class
-    // }
-    return;
   }
 }
 
