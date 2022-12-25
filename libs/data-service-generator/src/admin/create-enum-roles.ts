@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { createDTOFile } from "../server/resource/dto/create-dto-module";
 import { Role, Module } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";

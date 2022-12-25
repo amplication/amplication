@@ -1,6 +1,6 @@
 import { namedTypes, builders } from "ast-types";
 import * as kinds from "ast-types/gen/kinds";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
 import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
