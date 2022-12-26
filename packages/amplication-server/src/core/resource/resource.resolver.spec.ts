@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { EnumResourceType, PrismaService } from "@amplication/prisma-db";
+import { PrismaService, EnumResourceType } from "../../prisma";
 import { BuildService } from "../build/build.service";
 import { EntityService } from "../entity/entity.service";
 import { EnvironmentService } from "../environment/environment.service";

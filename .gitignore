@@ -3,7 +3,7 @@ lerna-debug.log
 .DS_Store
 .idea/
 helm/**/secrets/
-lib/
+
 *.tgz
 values-secret*
 dist/
@@ -63,3 +63,5 @@ infra/tilt/.temp/**
 
 src/schema.graphql
 packages/amplication-data-service-generator/.tsbuildinfo
+**/prisma/generated-prisma-client
+libs/data-service-generator/.tsbuildinfo
