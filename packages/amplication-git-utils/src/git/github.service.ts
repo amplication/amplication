@@ -350,4 +350,20 @@ export class GithubService {
       })
     ).token;
   }
+  async getDefaultBranchName(
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<string> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const response = await octokit.rest.repos.get({
+      owner,
+      repo,
+    });
+    const { default_branch } = response.data;
+    if (!default_branch) {
+      throw new Error("Missing default branch");
+    }
+    return default_branch;
+  }
 }

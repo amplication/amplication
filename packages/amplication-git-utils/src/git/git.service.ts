@@ -117,4 +117,14 @@ export class GitService {
       gitResourceMeta
     );
   }
+
+  getDefaultBranchName(
+    gitProvider: EnumGitProvider,
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<string> {
+    const service = this.gitServiceFactory.getService(gitProvider);
+    return service.getDefaultBranchName(installationId, owner, repo);
+  }
 }

@@ -88,4 +88,10 @@ export interface GitClient {
     installationId: string,
     meta: GitResourceMeta
   ): Promise<string>;
+
+  getDefaultBranchName(
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<string>;
 }
