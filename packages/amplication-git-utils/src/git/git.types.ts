@@ -89,9 +89,9 @@ export interface GitClient {
     meta: GitResourceMeta
   ): Promise<string>;
 
-  getDefaultBranchName(
+  getRepository(
     installationId: string,
     owner: string,
     repo: string
-  ): Promise<string>;
+  ): Promise<RemoteGitRepository>;
 }

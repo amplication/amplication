@@ -50,4 +50,5 @@ export const TEST_GIT_REPO: RemoteGitRepository = {
   name: "repo",
   private: false,
   url: "localhost/repo",
+  defaultBranch: "main",
 };

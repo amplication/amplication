@@ -90,6 +90,7 @@ export class GithubService {
       private: repo.private,
       fullName: repo.full_name,
       admin: repo.permissions.admin,
+      defaultBranch: repo.default_branch,
     };
   }
   async getOrganizationRepos(
@@ -300,6 +301,7 @@ export class GithubService {
       private: repo.private,
       fullName: repo.full_name,
       admin: repo.permissions.admin,
+      defaultBranch: repo.default_branch,
     }));
   }
 
@@ -350,20 +352,33 @@ export class GithubService {
       })
     ).token;
   }
-  async getDefaultBranchName(
+
+  async getRepository(
     installationId: string,
     owner: string,
     repo: string
-  ): Promise<string> {
+  ): Promise<RemoteGitRepository> {
     const octokit = await this.getInstallationOctokit(installationId);
     const response = await octokit.rest.repos.get({
       owner,
       repo,
     });
-    const { default_branch } = response.data;
-    if (!default_branch) {
-      throw new Error("Missing default branch");
-    }
-    return default_branch;
+    const {
+      name,
+      html_url,
+      private: isPrivate,
+      default_branch: defaultBranch,
+      full_name: fullName,
+      permissions,
+    } = response.data;
+    const { admin } = permissions;
+    return {
+      name,
+      url: html_url,
+      private: isPrivate,
+      fullName,
+      admin,
+      defaultBranch,
+    };
   }
 }

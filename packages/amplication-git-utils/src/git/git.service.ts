@@ -118,13 +118,13 @@ export class GitService {
     );
   }
 
-  getDefaultBranchName(
+  getRepository(
     gitProvider: EnumGitProvider,
     installationId: string,
     owner: string,
     repo: string
-  ): Promise<string> {
+  ) {
     const service = this.gitServiceFactory.getService(gitProvider);
-    return service.getDefaultBranchName(installationId, owner, repo);
+    return service.getRepository(installationId, owner, repo);
   }
 }
