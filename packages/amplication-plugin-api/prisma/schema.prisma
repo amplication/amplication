@@ -8,10 +8,14 @@ generator client {
 }
 
 model User {
-  id       String @id @default(cuid())
-  username String @unique
-  password String
-  roles    Json
+  createdAt DateTime @default(now())
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
 }
 
 model Plugin {
@@ -28,10 +32,11 @@ model Plugin {
 }
 
 model PluginVersion {
-  createdAt DateTime @default(now())
-  id        String   @id @default(cuid())
-  pluginId  String?
-  settings  Json?
-  updatedAt DateTime @updatedAt
-  version   String?
+  createdAt       DateTime @default(now())
+  id              String   @id @default(cuid())
+  pluginId        String?
+  pluginIdVersion String   @unique
+  settings        Json?
+  updatedAt       DateTime @updatedAt
+  version         String?
 }

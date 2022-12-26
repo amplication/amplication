@@ -2,7 +2,19 @@
   {
     "role": "user",
     "resource": "User",
+    "action": "read:own",
+    "attributes": "*"
+  },
+  {
+    "role": "user",
+    "resource": "User",
     "action": "create:any",
+    "attributes": "*"
+  },
+  {
+    "role": "user",
+    "resource": "User",
+    "action": "update:any",
     "attributes": "*"
   },
   {
@@ -15,24 +27,6 @@
     "role": "user",
     "resource": "User",
     "action": "read:any",
-    "attributes": "*"
-  },
-  {
-    "role": "user",
-    "resource": "User",
-    "action": "update:any",
-    "attributes": "*"
-  },
-  {
-    "role": "user",
-    "resource": "User",
-    "action": "read:own",
-    "attributes": "*"
-  },
-  {
-    "role": "user",
-    "resource": "Plugin",
-    "action": "read:own",
     "attributes": "*"
   },
   {
@@ -57,12 +51,6 @@
     "role": "user",
     "resource": "Plugin",
     "action": "read:any",
-    "attributes": "*"
-  },
-  {
-    "role": "user",
-    "resource": "PluginVersion",
-    "action": "read:own",
     "attributes": "*"
   },
   {

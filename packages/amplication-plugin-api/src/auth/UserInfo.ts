@@ -1,7 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-// @ts-ignore
-// eslint-disable-next-line
-import { User } from "../user/user";
+import { User } from "../user/base/user";
 
 @ObjectType()
 export class UserInfo implements Partial<User> {
