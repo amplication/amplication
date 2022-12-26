@@ -88,4 +88,10 @@ export interface GitClient {
     installationId: string,
     meta: GitResourceMeta
   ): Promise<string>;
+
+  getRepository(
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<RemoteGitRepository>;
 }

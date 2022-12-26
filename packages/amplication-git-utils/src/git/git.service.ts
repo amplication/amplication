@@ -117,4 +117,14 @@ export class GitService {
       gitResourceMeta
     );
   }
+
+  getRepository(
+    gitProvider: EnumGitProvider,
+    installationId: string,
+    owner: string,
+    repo: string
+  ) {
+    const service = this.gitServiceFactory.getService(gitProvider);
+    return service.getRepository(installationId, owner, repo);
+  }
 }

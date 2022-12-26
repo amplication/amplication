@@ -90,6 +90,7 @@ export class GithubService {
       private: repo.private,
       fullName: repo.full_name,
       admin: repo.permissions.admin,
+      defaultBranch: repo.default_branch,
     };
   }
   async getOrganizationRepos(
@@ -300,6 +301,7 @@ export class GithubService {
       private: repo.private,
       fullName: repo.full_name,
       admin: repo.permissions.admin,
+      defaultBranch: repo.default_branch,
     }));
   }
 
@@ -349,5 +351,34 @@ export class GithubService {
         installationId: installationId,
       })
     ).token;
+  }
+
+  async getRepository(
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<RemoteGitRepository> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const response = await octokit.rest.repos.get({
+      owner,
+      repo,
+    });
+    const {
+      name,
+      html_url,
+      private: isPrivate,
+      default_branch: defaultBranch,
+      full_name: fullName,
+      permissions,
+    } = response.data;
+    const { admin } = permissions;
+    return {
+      name,
+      url: html_url,
+      private: isPrivate,
+      fullName,
+      admin,
+      defaultBranch,
+    };
   }
 }
