@@ -17,7 +17,6 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreatePluginVersionArgs } from "./CreatePluginVersionArgs";
@@ -36,12 +35,8 @@ export class PluginVersionResolverBase {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
+  @Public()
   @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: "PluginVersion",
-    action: "read",
-    possession: "any",
-  })
   async _pluginVersionsMeta(
     @graphql.Args() args: PluginVersionFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -55,13 +50,8 @@ export class PluginVersionResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [PluginVersion])
-  @nestAccessControl.UseRoles({
-    resource: "PluginVersion",
-    action: "read",
-    possession: "any",
-  })
   async pluginVersions(
     @graphql.Args() args: PluginVersionFindManyArgs
   ): Promise<PluginVersion[]> {
