@@ -103,9 +103,10 @@ export interface GitClient {
     baseBranchName?: string
   ): Promise<void>;
 
-  getBranch(    installationId: string,
+  getBranch(
+    installationId: string,
     owner: string,
-    repo: string,branch:string){
-
-  }
+    repo: string,
+    branch: string
+  );
 }
