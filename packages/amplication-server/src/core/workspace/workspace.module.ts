@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { WorkspaceService } from "./workspace.service";
 import { WorkspaceResolver } from "./workspace.resolver";
-import { PrismaModule } from "@amplication/prisma-db";
+import { PrismaModule } from "../../prisma/prisma.module";
 import { AccountModule } from "../account/account.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { MailModule } from "../mail/mail.module";

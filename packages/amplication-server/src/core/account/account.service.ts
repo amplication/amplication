@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService, Prisma, Account } from "@amplication/prisma-db";
+import { Account, Prisma } from "../../prisma";
+import { PrismaService } from "../../prisma/prisma.service";
 import { Workspace } from "../../models";
 import {
   SegmentAnalyticsService,

@@ -1,4 +1,4 @@
-import { Prisma, PrismaService } from "@amplication/prisma-db";
+import { Prisma, PrismaService } from "../../prisma";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { Account, User, UserRole } from "../../models";
 import { UserRoleArgs } from "./dto";

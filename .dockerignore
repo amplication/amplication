@@ -11,8 +11,8 @@ terraform
 docker-compose.yml
 packages/amplication-e2e-tester
 packages/amplication-server/artifacts
-packages/amplication-data-service-generator/src/tests
-packages/amplication-data-service-generator/generated
+libs/data-service-generator/src/tests
+libs/data-service-generator/generated
 
 
 **/node_modules
@@ -29,4 +29,4 @@ packages/**/lib
 **/*.spec.ts
 **/*.mock.ts
 
-!packages/amplication-data-service-generator/src/*/static
+!libs/data-service-generator/src/*/static
