@@ -9,7 +9,7 @@ import { BaseExceptionFilter } from "@nestjs/core";
 import {
   // @ts-ignore
   Prisma,
-} from "@prisma/client";
+} from "../../prisma/generated-prisma-client";
 import { Response } from "express";
 
 export type ErrorCodesStatusMapping = {

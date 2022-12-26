@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
+import {
+  Plugin,
+  PluginVersion,
+  Prisma,
+} from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginVersionServiceBase } from "./base/pluginVersion.service.base";
 import { PluginService } from "../plugin/plugin.service";
@@ -13,6 +17,11 @@ export class PluginVersionService extends PluginVersionServiceBase {
     private npmPluginVersionService: NpmPluginVersionService
   ) {
     super(prisma);
+  }
+  async upsert<T extends Prisma.PluginVersionUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.PluginVersionUpsertArgs>
+  ): Promise<PluginVersion> {
+    return this.prisma.pluginVersion.upsert(args);
   }
   /**
    * get all saved plugin from DB

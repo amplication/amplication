@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Plugin } from "@amplication/prisma-clients/amplication-plugin-api";
+import { Plugin, Prisma } from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginServiceBase } from "./base/plugin.service.base";
 import { GitPluginService } from "./github-plugin.service";
@@ -71,5 +71,10 @@ export class PluginService extends PluginServiceBase {
       console.log(error);
       return error.message;
     }
+  }
+  async upsert<T extends Prisma.PluginUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.PluginUpsertArgs>
+  ): Promise<Plugin> {
+    return this.prisma.plugin.upsert(args);
   }
 }

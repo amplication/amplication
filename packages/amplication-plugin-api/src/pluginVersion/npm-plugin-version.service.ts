@@ -1,8 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {
-  Plugin,
-  PluginVersion,
-} from "@amplication/prisma-clients/amplication-plugin-api";
+import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
 
 interface NpmVersion {

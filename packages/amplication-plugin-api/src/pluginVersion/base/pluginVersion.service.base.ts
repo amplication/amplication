@@ -10,10 +10,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import {
-  Prisma,
-  PluginVersion,
-} from "@amplication/prisma-clients/amplication-plugin-api";
+import { Prisma, PluginVersion } from "../../../prisma/generated-prisma-client";
 import { PluginVersionFindManyArgs } from "./PluginVersionFindManyArgs";
 import { PluginVersionFindUniqueArgs } from "./PluginVersionFindUniqueArgs";
 
@@ -52,10 +49,5 @@ export class PluginVersionServiceBase {
     args: Prisma.SelectSubset<T, Prisma.PluginVersionDeleteArgs>
   ): Promise<PluginVersion> {
     return this.prisma.pluginVersion.delete(args);
-  }
-  async upsert<T extends Prisma.PluginVersionUpsertArgs>(
-    args: Prisma.SelectSubset<T, Prisma.PluginVersionUpsertArgs>
-  ): Promise<PluginVersion> {
-    return this.prisma.pluginVersion.upsert(args);
   }
 }

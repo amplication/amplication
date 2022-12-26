@@ -64,14 +64,6 @@ class PluginVersion {
 
   @ApiProperty({
     required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  pluginIdVersion!: string;
-
-  @ApiProperty({
-    required: true,
   })
   @IsDate()
   @Type(() => Date)
