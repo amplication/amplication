@@ -11,6 +11,7 @@ do
     REPO_NAME="$SERVICE_NAME"
     echo "SERVICE_NAME: $SERVICE_NAME"
     echo "REPO_NAME: $REPO_NAME"
+    echo "IMAGE_TAG_ANCHOR: $IMAGE_TAG_ANCHOR"
     cmd="$(aws ecr describe-images --repository-name=$REPO_NAME --image-ids=imageTag=$IMAGE_TAG_ANCHOR)"
     if [ -z "$cmd" ]
     then
