@@ -1,8 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {
-  Plugin,
-  PluginVersion,
-} from "@amplication/prisma-clients/amplication-plugin-api";
+import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginVersionServiceBase } from "./base/pluginVersion.service.base";
 import { PluginService } from "../plugin/plugin.service";

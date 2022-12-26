@@ -1,11 +1,11 @@
 datasource postgres {
   provider = "postgresql"
-  url      = env("DB_URL")
+  url      = env("POSTGRESQL_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../../../node_modules/@amplication/prisma-clients/amplication-plugin-api"
+  output   = "./generated-prisma-client"
 }
 
 model User {
