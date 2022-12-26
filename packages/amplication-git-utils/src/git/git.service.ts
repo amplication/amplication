@@ -127,4 +127,22 @@ export class GitService {
     const service = this.gitServiceFactory.getService(gitProvider);
     return service.getRepository(installationId, owner, repo);
   }
+
+  createBranch(
+    gitProvider: EnumGitProvider,
+    installationId: string,
+    owner: string,
+    repo: string,
+    newBranchName: string,
+    baseBranchName?: string
+  ) {
+    const service = this.gitServiceFactory.getService(gitProvider);
+    return service.createBranch(
+      installationId,
+      owner,
+      repo,
+      newBranchName,
+      baseBranchName
+    );
+  }
 }
