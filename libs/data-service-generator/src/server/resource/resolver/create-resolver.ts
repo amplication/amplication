@@ -13,6 +13,7 @@ import {
   DTOs,
   EventNames,
   CreateEntityResolverToManyRelationMethodsParams,
+  CreateToOneRelationMethodsParams,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 import { readFile } from "@amplication/code-gen-utils";
@@ -319,6 +320,7 @@ async function createToOneRelationMethods(
   const toOneFile = await readFile(toOneTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
+  const methods: namedTypes.ClassMethod[] = [];
 
   const toOneMapping = {
     SERVICE: serviceId,
@@ -331,9 +333,34 @@ async function createToOneRelationMethods(
     ARGS: relatedEntityDTOs.findOneArgs.id,
   };
 
+  await pluginWrapper(
+    createToOneRelationMethodsInternal,
+    EventNames.CreateToOneRelationMethods,
+    {
+      field,
+      entityType,
+      serviceId,
+      methods,
+      toOneFile,
+      toOneMapping,
+    }
+  );
+
+  return methods;
+}
+
+async function createToOneRelationMethodsInternal({
+  field,
+  entityType,
+  serviceId,
+  methods,
+  toOneFile,
+  toOneMapping,
+}: CreateToOneRelationMethodsParams): Promise<Module[]> {
   interpolate(toOneFile, toOneMapping);
 
   const classDeclaration = getClassDeclarationById(toOneFile, MIXIN_ID);
+  const { relatedEntity } = field.properties;
 
   setEndpointPermissions(
     classDeclaration,
@@ -342,7 +369,8 @@ async function createToOneRelationMethods(
     relatedEntity
   );
 
-  return getMethods(classDeclaration);
+  methods = getMethods(classDeclaration);
+  return [];
 }
 
 async function createToManyRelationMethods(
