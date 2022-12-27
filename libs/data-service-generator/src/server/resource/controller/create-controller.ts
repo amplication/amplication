@@ -10,6 +10,7 @@ import {
   EventNames,
   CreateEntityControllerParams,
   CreateEntityControllerBaseParams,
+  CreateEntityControllerToManyRelationMethodsParams,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 import { readFile } from "@amplication/code-gen-utils";
@@ -269,6 +270,7 @@ async function createToManyRelationMethods(
   dtos: DTOs,
   serviceId: namedTypes.Identifier
 ) {
+  const methods: namedTypes.ClassMethod[] = [];
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
@@ -295,6 +297,35 @@ async function createToManyRelationMethods(
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   };
 
+  await pluginWrapper(
+    createToManyRelationMethodsInternal,
+    EventNames.CreateEntityControllerToManyRelationMethods,
+    {
+      field,
+      entity,
+      entityType,
+      whereUniqueInput,
+      dtos,
+      serviceId,
+      methods,
+      toManyFile,
+      toManyMapping,
+    }
+  );
+
+  return methods;
+}
+
+async function createToManyRelationMethodsInternal({
+  field,
+  entity,
+  entityType,
+  whereUniqueInput,
+  serviceId,
+  methods,
+  toManyFile,
+  toManyMapping,
+}: CreateEntityControllerToManyRelationMethodsParams): Promise<Module[]> {
   interpolate(toManyFile, toManyMapping);
 
   const classDeclaration = getClassDeclarationById(
@@ -302,5 +333,7 @@ async function createToManyRelationMethods(
     TO_MANY_MIXIN_ID
   );
 
-  return getMethods(classDeclaration);
+  methods = await getMethods(classDeclaration);
+
+  return [];
 }
