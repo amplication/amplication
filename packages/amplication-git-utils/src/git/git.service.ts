@@ -145,4 +145,15 @@ export class GitService {
       baseBranchName
     );
   }
+
+  isBranchExist(
+    gitProvider: EnumGitProvider,
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ) {
+    const service = this.gitServiceFactory.getService(gitProvider);
+    return service.isBranchExist(installationId, owner, repo, branch);
+  }
 }
