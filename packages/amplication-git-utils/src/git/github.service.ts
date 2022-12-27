@@ -405,4 +405,24 @@ export class GithubService {
     });
     return;
   }
+
+  async isBranchExist(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<boolean> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    try {
+      const refs = await octokit.rest.git.getRef({
+        owner,
+        repo,
+        ref: `heads/${branch}`,
+      });
+
+      return Boolean(refs.data);
+    } catch (error) {
+      return false;
+    }
+  }
 }
