@@ -94,4 +94,12 @@ export interface GitClient {
     owner: string,
     repo: string
   ): Promise<RemoteGitRepository>;
+
+  createBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    newBranchName: string,
+    baseBranchName?: string
+  ): Promise<void>;
 }

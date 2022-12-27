@@ -381,4 +381,28 @@ export class GithubService {
       defaultBranch,
     };
   }
+
+  async createBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    newBranchName: string,
+    baseBranchName?: string
+  ): Promise<void> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const repository = await this.getRepository(installationId, owner, repo);
+    const { defaultBranch } = repository;
+    const refs = await octokit.rest.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${baseBranchName || defaultBranch}`,
+    });
+    const branch = await octokit.rest.git.createRef({
+      owner,
+      repo,
+      ref: `refs/heads/${newBranchName}`,
+      sha: refs.data.object.sha,
+    });
+    return;
+  }
 }
