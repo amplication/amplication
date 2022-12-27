@@ -13,7 +13,7 @@ import {
   DTOs,
   EventNames,
   CreateEntityResolverToManyRelationMethodsParams,
-  CreateToOneRelationMethodsParams,
+  CreateEntityResolverToOneRelationMethodsParams,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 import { readFile } from "@amplication/code-gen-utils";
@@ -335,7 +335,7 @@ async function createToOneRelationMethods(
 
   await pluginWrapper(
     createToOneRelationMethodsInternal,
-    EventNames.CreateToOneRelationMethods,
+    EventNames.CreateEntityResolverToOneRelationMethods,
     {
       field,
       entityType,
@@ -356,7 +356,7 @@ async function createToOneRelationMethodsInternal({
   methods,
   toOneFile,
   toOneMapping,
-}: CreateToOneRelationMethodsParams): Promise<Module[]> {
+}: CreateEntityResolverToOneRelationMethodsParams): Promise<Module[]> {
   interpolate(toOneFile, toOneMapping);
 
   const classDeclaration = getClassDeclarationById(toOneFile, MIXIN_ID);
