@@ -2,6 +2,7 @@ import { namedTypes } from "ast-types";
 import {
   Entity,
   EntityField,
+  EntityLookupField,
   EnumDataType,
   Module,
   NamedClassDeclaration,
@@ -50,6 +51,18 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   templateMapping: { [key: string]: any };
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+}
+
+export interface CreateEntityControllerToManyRelationMethodsParams
+  extends EventParams {
+  field: EntityLookupField;
+  entity: Entity;
+  entityType: string;
+  whereUniqueInput: NamedClassDeclaration;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toManyFile: namedTypes.File;
+  toManyMapping: { [key: string]: any };
 }
 export interface CreateEntityControllerSpecParams extends EventParams {
   entity: Entity;

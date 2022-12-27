@@ -28,6 +28,7 @@ import {
   CreateUserInfoParams,
   CreateTokenPayloadInterfaceParams,
   CreateAdminUIPackageJsonParams,
+  CreateEntityControllerToManyRelationMethodsParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -61,4 +62,5 @@ export type Events = {
   [EventNames.CreateSwagger]?: PluginEventType<CreateSwaggerParams>;
   [EventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [EventNames.CreateEntityControllerSpec]?: PluginEventType<CreateEntityControllerSpecParams>;
+  [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
 };
