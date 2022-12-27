@@ -12,6 +12,13 @@ export class PluginService extends PluginServiceBase {
   ) {
     super(prisma);
   }
+
+  async upsert<T extends Prisma.PluginUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.PluginUpsertArgs>
+  ): Promise<Plugin> {
+    return this.prisma.plugin.upsert(args);
+  }
+
   /**
    * main service that trigger gitPluginService and return plugin list. It upsert the plugins to DB
    * @returns Plugin[]
@@ -68,13 +75,8 @@ export class PluginService extends PluginServiceBase {
 
       return insertedPluginArr;
     } catch (error) {
-      console.log(error);
+      console.log("githubCatalogPlugins", error);
       return error.message;
     }
-  }
-  async upsert<T extends Prisma.PluginUpsertArgs>(
-    args: Prisma.SelectSubset<T, Prisma.PluginUpsertArgs>
-  ): Promise<Plugin> {
-    return this.prisma.plugin.upsert(args);
   }
 }

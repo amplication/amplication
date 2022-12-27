@@ -29,7 +29,14 @@
         "outputPath": "dist/packages/amplication-plugin-api",
         "main": "packages/amplication-plugin-api/src/main.ts",
         "tsConfig": "packages/amplication-plugin-api/tsconfig.app.json",
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "packages/amplication-plugin-api",
+            "output": "prisma"
+          }
+        ]
       },
       "configurations": {
         "production": {
