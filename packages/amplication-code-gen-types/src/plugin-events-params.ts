@@ -75,7 +75,8 @@ export interface CreateEntityResolverToManyRelationMethodsParams
   toManyMapping: { [key: string]: any };
 }
 
-export interface CreateToOneRelationMethodsParams extends EventParams {
+export interface CreateEntityResolverToOneRelationMethodsParams
+  extends EventParams {
   field: EntityLookupField;
   entityType: string;
   serviceId: namedTypes.Identifier;

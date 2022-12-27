@@ -30,7 +30,7 @@ import {
   CreateAdminUIPackageJsonParams,
   CreateEntityControllerToManyRelationMethodsParams,
   CreateEntityResolverToManyRelationMethodsParams,
-  CreateToOneRelationMethodsParams,
+  CreateEntityResolverToOneRelationMethodsParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -66,7 +66,7 @@ export type Events = {
   [EventNames.CreateEntityControllerSpec]?: PluginEventType<CreateEntityControllerSpecParams>;
   [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToManyRelationMethods]?: PluginEventType<CreateEntityResolverToManyRelationMethodsParams>;
-  [EventNames.CreateToOneRelationMethods]?: PluginEventType<CreateToOneRelationMethodsParams>;
+  [EventNames.CreateEntityResolverToOneRelationMethods]?: PluginEventType<CreateEntityResolverToOneRelationMethodsParams>;
 
   //
 };
