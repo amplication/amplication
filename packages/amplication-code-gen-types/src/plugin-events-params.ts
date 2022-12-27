@@ -74,6 +74,15 @@ export interface CreateEntityResolverToManyRelationMethodsParams
   toManyFile: namedTypes.File;
   toManyMapping: { [key: string]: any };
 }
+
+export interface CreateToOneRelationMethodsParams extends EventParams {
+  field: EntityLookupField;
+  entityType: string;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toOneFile: namedTypes.File;
+  toOneMapping: { [key: string]: any };
+}
 export interface CreateEntityControllerSpecParams extends EventParams {
   entity: Entity;
   entityType: string;
