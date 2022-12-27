@@ -102,11 +102,4 @@ export interface GitClient {
     newBranchName: string,
     baseBranchName?: string
   ): Promise<void>;
-
-  getBranch(
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  );
 }
