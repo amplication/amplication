@@ -29,6 +29,7 @@ import {
   CreateTokenPayloadInterfaceParams,
   CreateAdminUIPackageJsonParams,
   CreateEntityControllerToManyRelationMethodsParams,
+  CreateEntityResolverToManyRelationMethodsParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -63,4 +64,5 @@ export type Events = {
   [EventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [EventNames.CreateEntityControllerSpec]?: PluginEventType<CreateEntityControllerSpecParams>;
   [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
+  [EventNames.CreateEntityResolverToManyRelationMethods]?: PluginEventType<CreateEntityResolverToManyRelationMethodsParams>;
 };
