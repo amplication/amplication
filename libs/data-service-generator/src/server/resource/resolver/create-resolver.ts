@@ -12,6 +12,7 @@ import {
   CreateEntityResolverBaseParams,
   DTOs,
   EventNames,
+  CreateEntityResolverToManyRelationMethodsParams,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 import { readFile } from "@amplication/code-gen-utils";
@@ -354,6 +355,7 @@ async function createToManyRelationMethods(
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
+  const methods: namedTypes.ClassMethod[] = [];
 
   const toManyMapping = {
     SERVICE: serviceId,
@@ -366,8 +368,32 @@ async function createToManyRelationMethods(
     ARGS: relatedEntityDTOs.findManyArgs.id,
   };
 
-  interpolate(toManyFile, toManyMapping);
+  await pluginWrapper(
+    createToManyRelationMethodsInternal,
+    EventNames.CreateEntityResolverToManyRelationMethods,
+    {
+      field,
+      entityType,
+      serviceId,
+      methods,
+      toManyFile,
+      toManyMapping,
+    }
+  );
 
+  return methods;
+}
+
+async function createToManyRelationMethodsInternal({
+  field,
+  entityType,
+  serviceId,
+  methods,
+  toManyFile,
+  toManyMapping,
+}: CreateEntityResolverToManyRelationMethodsParams): Promise<Module[]> {
+  interpolate(toManyFile, toManyMapping);
+  const { relatedEntity } = field.properties;
   const classDeclaration = getClassDeclarationById(toManyFile, MIXIN_ID);
 
   setEndpointPermissions(
@@ -377,5 +403,6 @@ async function createToManyRelationMethods(
     relatedEntity
   );
 
-  return getMethods(classDeclaration);
+  methods = getMethods(classDeclaration);
+  return [];
 }
