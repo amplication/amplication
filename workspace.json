@@ -12,6 +12,7 @@
     "amplication-git-push-webhook-service": "ee/packages/amplication-git-push-webhook-service",
     "amplication-git-utils": "packages/amplication-git-utils",
     "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
+    "amplication-plugin-api": "packages/amplication-plugin-api",
     "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-server": "packages/amplication-server",
     "amplication-storage-gateway": "packages/amplication-storage-gateway",
