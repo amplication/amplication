@@ -6,6 +6,7 @@ import {
   GET_PLUGIN_ORDER,
   UPDATE_PLUGIN_ORDER,
   GET_PLUGIN_INSTALLATION,
+  GET_PLUGIN_VERSIONS_CATALOG,
 } from "../queries/pluginsQueries";
 import * as models from "../../models";
 import { keyBy } from "lodash";
@@ -189,7 +190,17 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   const [pluginOrderObj, setPluginOrderObj] = useState<{
     [key: string]: number;
   }>();
+  const [pluginsVersion, setPluginsVersion] = useState<{}>;
   const { addBlock } = useContext(AppContext);
+  const {
+    data: pluginsVersionData,
+    loading: loadingPluginsVersionData,
+    error: errorPluginsVersionData,
+  } = useQuery<{}>(GET_PLUGIN_VERSIONS_CATALOG, {
+    context: {
+      clientName: "pluginApiHttpLink",
+    },
+  });
 
   const {
     data: pluginInstallations,

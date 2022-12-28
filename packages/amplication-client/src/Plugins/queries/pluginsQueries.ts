@@ -83,3 +83,25 @@ export const UPDATE_PLUGIN_ORDER = gql`
     }
   }
 `;
+
+export const GET_PLUGIN_VERSIONS_CATALOG = gql`
+  query {
+    plugins {
+      id
+      pluginId
+      name
+      icon
+      description
+      repo
+      npm
+      github
+      website
+      versions {
+        id
+        pluginId
+        version
+        settings
+      }
+    }
+  }
+`;
