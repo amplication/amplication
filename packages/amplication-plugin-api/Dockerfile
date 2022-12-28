@@ -7,7 +7,7 @@ RUN npm install --omit-dev
 
 COPY ./dist/packages/amplication-plugin-api .
 
-ENV PORT=3000
+ENV PORT=3005
 EXPOSE $PORT
 
 CMD ["node", "./main.js"]
