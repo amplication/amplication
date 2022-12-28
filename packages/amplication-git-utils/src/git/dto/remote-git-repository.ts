@@ -19,6 +19,9 @@ export class RemoteGitRepository {
 
   @Field(() => Boolean)
   admin: boolean | null;
+
+  @Field(() => String)
+  defaultBranch: string;
 }
 
 @ObjectType({

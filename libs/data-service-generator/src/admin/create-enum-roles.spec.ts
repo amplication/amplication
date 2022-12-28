@@ -1,5 +1,5 @@
 import { pascalCase } from "pascal-case";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { Role } from "@amplication/code-gen-types";
 import {
   createEnumRolesModule,

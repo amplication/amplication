@@ -1,4 +1,4 @@
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import {
   CreateSeedParams,

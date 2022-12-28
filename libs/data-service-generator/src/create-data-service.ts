@@ -27,23 +27,25 @@ export async function createDataService(
     logger.info("Creating application...");
 
     const context = DsgContext.getInstance;
-
+    const { appInfo, entities } = context;
+    const { settings } = appInfo;
     await createLog({ level: "info", message: "Creating DTOs..." });
     logger.info("Creating DTOs...");
-    const dtos = await createDTOs(context.entities);
+    const dtos = await createDTOs(entities);
     context.DTOs = dtos;
 
     await createLog({ level: "info", message: "Copying static modules..." });
     logger.info("Copying static modules...");
+    const serverModules = await createServer();
 
-    const modules = (
-      await Promise.all([
-        createServer(),
-        (context.appInfo.settings.adminUISettings.generateAdminUI &&
-          createAdminModules()) ||
-          [],
-      ])
-    ).flat();
+    const { adminUISettings } = settings;
+    const { generateAdminUI } = adminUISettings;
+
+    const adminUIModules =
+      (generateAdminUI && (await createAdminModules())) || [];
+
+    // Use concat for the best performance (https://jsbench.me/o8kqzo8olz/1)
+    const modules = serverModules.concat(adminUIModules);
 
     timer.done({ message: "Application creation time" });
 

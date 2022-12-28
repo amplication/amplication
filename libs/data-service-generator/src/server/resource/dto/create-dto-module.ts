@@ -1,4 +1,4 @@
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { namedTypes, builders } from "ast-types";
 import { DeclarationKind } from "ast-types/gen/kinds";
 import { NamedClassDeclaration, Module } from "@amplication/code-gen-types";

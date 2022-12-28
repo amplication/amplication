@@ -1,4 +1,4 @@
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { EnumAuthProviderType } from "../../../models";
 import { Module } from "@amplication/code-gen-types";
 import { readFile } from "@amplication/code-gen-utils";

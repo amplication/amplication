@@ -38,25 +38,10 @@
         "cwd": "libs/data-service-generator"
       }
     },
-    "prebuild": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/node_modules"],
-      "dependsOn": ["update-version"],
-      "options": {
-        "commands": ["ts-node scripts/copy-files.ts"],
-        "parallel": false,
-        "cwd": "libs/data-service-generator"
-      }
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": [
-        "^build",
-        "db:prisma:generate",
-        "^db:prisma:generate",
-        "prebuild"
-      ],
+      "dependsOn": ["^build", "update-version"],
       "options": {
         "outputPath": "dist/libs/data-service-generator",
         "tsConfig": "libs/data-service-generator/tsconfig.lib.json",
@@ -71,6 +56,7 @@
       "dependsOn": ["build"],
       "options": {
         "command": "ts-node scripts/copy-files.ts",
+        "parallel": false,
         "cwd": "libs/data-service-generator"
       }
     },

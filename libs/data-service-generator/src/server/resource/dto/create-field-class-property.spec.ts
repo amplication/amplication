@@ -2,7 +2,7 @@ import { builders, namedTypes } from "ast-types";
 import { TSTypeKind } from "ast-types/gen/kinds";
 import { ObjectField, ScalarField, ScalarType } from "prisma-schema-dsl-types";
 import { createObjectField, createScalarField } from "prisma-schema-dsl";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { Entity, EntityField, EnumDataType } from "@amplication/code-gen-types";
 import { classProperty, createGenericArray } from "../../../util/ast";
 import {

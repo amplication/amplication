@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { PermissionsService } from "./permissions.service";
-import { PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../prisma/prisma.service";
 import { User, Workspace } from "../../models";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 

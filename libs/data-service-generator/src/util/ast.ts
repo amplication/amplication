@@ -5,6 +5,7 @@ import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
 import * as recast from "recast";
+import { print } from "@amplication/code-gen-utils";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
@@ -406,13 +407,10 @@ export function classDeclaration(
   if (!decorators.length) {
     return declaration;
   }
-  const code = [
-    ...decorators.map((decorator) => recast.print(decorator).code),
-    recast.print(declaration).code,
-  ].join("\n");
-  const ast = parse(code);
-  const [classDeclaration] = ast.program.body as [namedTypes.ClassDeclaration];
-  return classDeclaration;
+
+  //@ts-ignore
+  declaration.decorators = decorators;
+  return declaration;
 }
 
 export function classProperty(
@@ -429,10 +427,10 @@ export function classProperty(
     );
   }
   const code = `class A {
-    ${decorators.map((decorator) => recast.print(decorator).code).join("\n")}
-    ${recast.print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
-    recast.print(typeAnnotation).code
-  }${defaultValue ? `= ${recast.print(defaultValue).code}` : ""}
+    ${decorators.map((decorator) => print(decorator).code).join("\n")}
+    ${print(key).code}${definitive ? "!" : ""}${optional ? "?" : ""}${
+    print(typeAnnotation).code
+  }${defaultValue ? `= ${print(defaultValue).code}` : ""}
   
   }`;
   const ast = parse(code);
@@ -698,8 +696,8 @@ function codeTemplate(
       return [
         string,
         Array.isArray(value)
-          ? value.map((item) => recast.print(item).code).join("")
-          : recast.print(value).code,
+          ? value.map((item) => print(item).code).join("")
+          : print(value).code,
       ];
     })
     .join("");
