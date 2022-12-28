@@ -90,7 +90,7 @@ export class GithubService {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
+      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     };
   }
