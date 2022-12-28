@@ -92,7 +92,6 @@ export const GET_PLUGIN_VERSIONS_CATALOG = gql`
       name
       icon
       description
-      repo
       npm
       github
       website

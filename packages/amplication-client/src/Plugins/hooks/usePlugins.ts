@@ -15,13 +15,14 @@ import { AppContext } from "../../context/appContext";
 
 export type PluginVersion = {
   version: string;
-  settings: { [key: string]: any };
+  settings: string;
   id: string;
   pluginId: string;
 };
 
 export type Plugin = {
   id: string;
+  pluginId: string;
   name: string;
   description: string;
   repo: string;
@@ -57,7 +58,9 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   const [pluginOrderObj, setPluginOrderObj] = useState<{
     [key: string]: number;
   }>();
-  const [pluginsVersion, setPluginsVersion] = useState<Plugin[]>();
+  const [pluginsVersion, setPluginsVersion] = useState<{
+    [key: string]: Plugin;
+  }>({});
   const { addBlock } = useContext(AppContext);
   const {
     data: pluginsVersionData,
@@ -66,6 +69,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   } = useQuery<{
     plugins: Plugin[];
   }>(GET_PLUGIN_VERSIONS_CATALOG, {
+    skip: !pluginsVersion,
     context: {
       clientName: "pluginApiHttpLink",
     },
@@ -109,13 +113,17 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   useEffect(() => {
     if (!pluginsVersionData || loadingPluginsVersionData) return;
 
-    setPluginsVersion(pluginsVersionData.plugins);
+    const sortedPlugins = keyBy(
+      pluginsVersionData.plugins,
+      (plugin) => plugin.pluginId
+    );
+    setPluginsVersion(sortedPlugins);
   }, [pluginsVersionData, loadingPluginsVersionData]);
 
   useEffect(() => {
     if (!errorPluginsVersionData) return;
 
-    setPluginsVersion([]);
+    setPluginsVersion({});
   }, [errorPluginsVersionData]);
 
   useEffect(() => {
@@ -130,10 +138,6 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
       setPluginOrderObj({});
     }
   }, [pluginOrderError]);
-
-  const pluginCatalog = useMemo(() => {
-    return keyBy(pluginsVersion, (plugin) => plugin.id);
-  }, []);
 
   const sortedPluginInstallation = useMemo(() => {
     if (!pluginOrder || !pluginInstallations) return undefined;
@@ -241,7 +245,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     updateError,
     createPluginInstallation,
     createError,
-    pluginCatalog,
+    pluginCatalog: pluginsVersion,
     onPluginDropped,
     pluginOrderObj,
     updatePluginOrder,

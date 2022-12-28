@@ -17,6 +17,30 @@
     }
   }
 
+  &__column {
+    display: flex;
+    margin-bottom: var(--default-spacing);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: var(--default-spacing);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__label-title {
+    @include regular-12;
+    margin-top: 7px;
+  }
+
+  &__menu {
+    width: 500px;
+    .select-menu__modal > div {
+      width: 200px;
+    }
+  }
+
   &__name {
     @include title-18;
   }

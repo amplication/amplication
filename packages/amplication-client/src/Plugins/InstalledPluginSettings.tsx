@@ -2,6 +2,11 @@ import {
   HorizontalRule,
   CodeEditor,
   Snackbar,
+  Label,
+  SelectMenu,
+  SelectMenuModal,
+  SelectMenuList,
+  SelectMenuItem,
 } from "@amplication/design-system";
 import { isValidJSON } from "@amplication/design-system/components/CodeEditor/CodeEditor";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
@@ -77,24 +82,33 @@ const InstalledPluginSettings: React.FC<Props> = ({
     setResetKey(generatedKey());
   }, []);
 
-  const handleSaveClick = useCallback(() => {
-    if (!pluginInstallation) return;
+  const handlePluginInstalledChange = useCallback(
+    (
+      changeType?: "version" | undefined,
+      data?: { version: string; settings: string }
+    ) => {
+      if (!pluginInstallation) return;
 
-    const { enabled, version, id } = pluginInstallation.PluginInstallation;
+      const { enabled, version, id } = pluginInstallation.PluginInstallation;
 
-    updatePluginInstallation({
-      variables: {
-        data: {
-          enabled,
-          version,
-          settings: JSON.parse(editorRef.current),
+      updatePluginInstallation({
+        variables: {
+          data: {
+            enabled,
+            version: changeType === "version" ? data.version : version,
+            settings:
+              changeType === "version"
+                ? JSON.parse(data.settings)
+                : JSON.parse(editorRef.current),
+          },
+          where: {
+            id: id,
+          },
         },
-        where: {
-          id: id,
-        },
-      },
-    }).catch(console.error);
-  }, [updatePluginInstallation, pluginInstallation]);
+      }).catch(console.error);
+    },
+    [updatePluginInstallation, pluginInstallation]
+  );
 
   const errorMessage = formatError(updateError);
 
@@ -114,16 +128,54 @@ const InstalledPluginSettings: React.FC<Props> = ({
             <PluginLogo plugin={plugin} />
             <div className={`${moduleClass}__name`}>{plugin.name}</div>
           </div>
-          <div className={`${moduleClass}__row`}>
+          <div className={`${moduleClass}__column`}>
             <span className={`${moduleClass}__description`}>
               {plugin.description}
             </span>
+            <div className={`${moduleClass}__row`}>
+              <div className={`${moduleClass}__label-title`}>
+                <Label text="Plugin Version" />
+              </div>
+              <SelectMenu
+                title={pluginInstallation.PluginInstallation.version}
+                buttonStyle={EnumButtonStyle.Secondary}
+                className={`${moduleClass}__menu`}
+                icon="chevron_down"
+              >
+                <SelectMenuModal>
+                  <SelectMenuList>
+                    <>
+                      {plugin.versions.map((pluginVersion) => (
+                        <SelectMenuItem
+                          closeAfterSelectionChange
+                          itemData={pluginVersion}
+                          selected={
+                            pluginVersion.version ===
+                            pluginInstallation.PluginInstallation.version
+                          }
+                          key={pluginVersion.id}
+                          onSelectionChange={(pluginVersion) => {
+                            handlePluginInstalledChange(
+                              "version",
+                              pluginVersion
+                            );
+                          }}
+                        >
+                          {pluginVersion.version}
+                        </SelectMenuItem>
+                      ))}
+                    </>
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
+            </div>
           </div>
           <HorizontalRule />
           <CodeEditor
             defaultValue={pluginInstallation?.PluginInstallation.settings}
             resetKey={resetKey}
             onChange={onEditorChange}
+            defaultLanguage={"json"}
           />
           <div className={`${moduleClass}__row`}>
             <Button
@@ -136,7 +188,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
             <Button
               className={`${moduleClass}__save`}
               buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleSaveClick}
+              onClick={() => handlePluginInstalledChange()}
               disabled={isValid}
             >
               Save
