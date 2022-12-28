@@ -183,9 +183,9 @@ export class GithubService {
     commitName: string,
     title: string,
     commitDescription: string,
-    baseBranchName: string,
     installationId: string,
-    gitResourceMeta: GitResourceMeta
+    gitResourceMeta: GitResourceMeta,
+    baseBranchName?: string | undefined
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
 
