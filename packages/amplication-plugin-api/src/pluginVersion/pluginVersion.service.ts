@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import fs from "fs";
 import {
   Plugin,
@@ -17,6 +17,7 @@ import { NpmPluginVersionService } from "./npm-plugin-version.service";
 export class PluginVersionService extends PluginVersionServiceBase {
   constructor(
     protected readonly prisma: PrismaService,
+    @Inject(forwardRef(() => PluginService))
     private pluginService: PluginService,
     private npmPluginVersionService: NpmPluginVersionService
   ) {

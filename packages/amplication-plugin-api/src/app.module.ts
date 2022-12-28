@@ -1,4 +1,4 @@
-import { Module, Scope } from "@nestjs/common";
+import { forwardRef, Module, Scope } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { MorganInterceptor, MorganModule } from "nest-morgan";
 import { UserModule } from "./user/user.module";
@@ -21,7 +21,7 @@ import { PrismaModule } from "./prisma/prisma.module";
     PrismaModule,
     UserModule,
     PluginModule,
-    PluginVersionModule,
+    forwardRef(() => PluginVersionModule),
     ACLModule,
     AuthModule,
     HealthModule,

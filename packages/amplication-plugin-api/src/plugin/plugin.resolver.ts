@@ -8,6 +8,7 @@ import { Plugin } from "./base/Plugin";
 import { PluginService } from "./plugin.service";
 import { Public } from "../decorators/public.decorator";
 import { GraphQLError } from "graphql";
+import { PluginVersion } from "../pluginVersion/base/PluginVersion";
 
 @graphql.Resolver(() => Plugin)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -41,5 +42,11 @@ export class PluginResolver extends PluginResolverBase {
         },
       });
     }
+  }
+
+  @Public()
+  @graphql.ResolveField(() => [PluginVersion], { nullable: true })
+  async versions(@graphql.Parent() parent: Plugin): Promise<PluginVersion[]> {
+    return this.service.pluginVersions(parent);
   }
 }
