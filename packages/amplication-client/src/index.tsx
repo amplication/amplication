@@ -56,7 +56,6 @@ const apolloClient = new ApolloClient({
     pluginApiHttpLink,
     authLink.concat(httpLink)
   ),
-  // link: authLink.concat(httpLink),
 });
 
 const root = ReactDOM.createRoot(
