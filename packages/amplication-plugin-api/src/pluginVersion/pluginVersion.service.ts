@@ -1,12 +1,11 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
-import fs from "fs";
 import {
   Plugin,
   PluginVersion,
   Prisma,
 } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
-import zlib from "node:zlib";
+import zlib from "zlib";
 import tar from "tar-stream";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginVersionServiceBase } from "./base/pluginVersion.service.base";
