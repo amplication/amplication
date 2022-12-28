@@ -12,6 +12,7 @@ import {
   RemoteGitRepository,
 } from "./dto/remote-git-repository";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
+import { Branch } from "./dto/branch";
 
 @Injectable()
 export class GitService {
@@ -155,5 +156,16 @@ export class GitService {
   ) {
     const service = this.gitServiceFactory.getService(gitProvider);
     return service.isBranchExist(installationId, owner, repo, branch);
+  }
+
+  getBranch(
+    gitProvider: EnumGitProvider,
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<Branch> {
+    const service = this.gitServiceFactory.getService(gitProvider);
+    return service.getBranch(installationId, owner, repo, branch);
   }
 }
