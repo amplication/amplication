@@ -7,6 +7,9 @@ interface NpmVersion {
     version: string;
     name: string;
     description: string;
+    dist: {
+      tarball: string;
+    };
   };
 }
 
@@ -21,8 +24,8 @@ export class NpmPluginVersionService {
   structurePluginVersion(
     npmVersions: NpmVersion,
     pluginId: string
-  ): PluginVersion[] {
-    const pluginVersions: PluginVersion[] = [];
+  ): (PluginVersion & { tarballUrl: string })[] {
+    const pluginVersions: (PluginVersion & { tarballUrl: string })[] = [];
 
     const now = new Date();
     for (const [key, value] of Object.entries(npmVersions)) {
@@ -34,6 +37,7 @@ export class NpmPluginVersionService {
         settings: "{}",
         updatedAt: now,
         version: value.version,
+        tarballUrl: value.dist.tarball,
       });
     }
 
@@ -46,7 +50,7 @@ export class NpmPluginVersionService {
    */
   async *getPluginVersion(
     plugins: Plugin[]
-  ): AsyncGenerator<PluginVersion[], void> {
+  ): AsyncGenerator<(PluginVersion & { tarballUrl: string })[], void> {
     try {
       const pluginLength = plugins.length;
       let index = 0;
@@ -81,9 +85,11 @@ export class NpmPluginVersionService {
    * @param plugins
    * @returns
    */
-  async updatePluginsVersion(plugins: Plugin[]): Promise<PluginVersion[]> {
+  async updatePluginsVersion(
+    plugins: Plugin[]
+  ): Promise<(PluginVersion & { tarballUrl: string })[]> {
     try {
-      const pluginsVersions: PluginVersion[] = [];
+      const pluginsVersions: (PluginVersion & { tarballUrl: string })[] = [];
 
       for await (const pluginVersionArr of this.getPluginVersion(plugins)) {
         pluginsVersions.push(...pluginVersionArr);
