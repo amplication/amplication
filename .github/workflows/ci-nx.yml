@@ -159,6 +159,7 @@ jobs:
           INPUT_PUSH: true
 
   fs-scan:
+    name: Vulnerability scanning - File system
     needs: ci
     uses: ./.github/workflows/vulnerability-scan.template.yaml
     with:
@@ -168,6 +169,7 @@ jobs:
       publish: true
 
   config-scan:
+    name: Vulnerability scanning - Config
     needs: ci
     uses: ./.github/workflows/vulnerability-scan.template.yaml
     with:
