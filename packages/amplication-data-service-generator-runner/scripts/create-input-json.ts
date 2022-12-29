@@ -17,7 +17,7 @@ function createInputJsonFile() {
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    pluginInstallations: [plugins.kafka, plugins.postgresPlugin],
+    pluginInstallations: [plugins.postgresPlugin],
   };
   const fileName = "input.json";
   const path = join(__dirname, `../${fileName}`);
