@@ -22,6 +22,7 @@ import {
   RemoteGitRepository,
 } from "./dto/remote-git-repository";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
+import { Branch } from "./dto/branch";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -176,11 +177,11 @@ export class GithubService {
   }
 
   async createPullRequest(
-    userName: string,
-    repoName: string,
+    owner: string,
+    repo: string,
     modules: PrModule[],
     commitName: string,
-    commitMessage: string,
+    title: string,
     commitDescription: string,
     baseBranchName: string,
     installationId: string,
@@ -198,8 +199,8 @@ export class GithubService {
       try {
         return (
           await this.getFile(
-            userName,
-            repoName,
+            owner,
+            repo,
             fileName,
             baseBranchName,
             installationId
@@ -267,12 +268,12 @@ export class GithubService {
     // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
 
     const pr = await octokit.createPullRequest({
-      owner: userName,
-      repo: repoName,
-      title: commitMessage,
+      owner,
+      repo,
+      title,
       body: commitDescription,
       base: baseBranchName /* optional: defaults to default branch */,
-      head: commitName,
+      head: "amplication",
       changes: [
         {
           /* optional: if `files` is not passed, an empty commit is created instead */
@@ -380,5 +381,58 @@ export class GithubService {
       admin,
       defaultBranch,
     };
+  }
+
+  async createBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    newBranchName: string,
+    baseBranchName?: string
+  ): Promise<void> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const repository = await this.getRepository(installationId, owner, repo);
+    const { defaultBranch } = repository;
+    const refs = await octokit.rest.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${baseBranchName || defaultBranch}`,
+    });
+    const branch = await octokit.rest.git.createRef({
+      owner,
+      repo,
+      ref: `refs/heads/${newBranchName}`,
+      sha: refs.data.object.sha,
+    });
+    return;
+  }
+
+  async isBranchExist(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<boolean> {
+    try {
+      const refs = await this.getBranch(installationId, owner, repo, branch);
+      return Boolean(refs);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async getBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<Branch> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const refs = await octokit.rest.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+    });
+    return { sha: refs.data.object.sha, name: branch };
   }
 }
