@@ -18,7 +18,8 @@ import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { Env } from "../../env";
 import { ConfigService } from "@nestjs/config";
-import { BillingService, FeatureType } from "../billing/billing.service";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
 
 @Injectable()
 export class ProjectService {
@@ -165,7 +166,7 @@ export class ProjectService {
 
     const servicesEntitlement = await this.billingService.getMeteredEntitlement(
       workspace.id,
-      FeatureType.Services
+      BillingFeature.Services
     );
 
     if (!servicesEntitlement.hasAccess) {
@@ -177,7 +178,7 @@ export class ProjectService {
     const entitiesPerServiceEntitlement =
       await this.billingService.getNumericEntitlement(
         workspace.id,
-        FeatureType.EntitiesPerService
+        BillingFeature.EntitiesPerService
       );
 
     projectServices.map((service) => {
@@ -233,7 +234,7 @@ export class ProjectService {
       const project = await this.findUnique({ where: { id: projectId } });
       await this.billingService.reportUsage(
         project.workspaceId,
-        FeatureType.CodeGenerationBuilds
+        BillingFeature.CodeGenerationBuilds
       );
     }
 

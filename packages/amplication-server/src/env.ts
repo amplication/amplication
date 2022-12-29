@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 export class Env {
+  static readonly CLIENT_HOST = "CLIENT_HOST";
+
   static readonly CODE_GENERATION_REQUEST_TOPIC =
     "CODE_GENERATION_REQUEST_TOPIC";
   static readonly CODE_GENERATION_SUCCESS_TOPIC =

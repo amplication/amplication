@@ -39,7 +39,8 @@ import {
   CreateLogger,
   Transports,
 } from "@amplication/nest-logger-module";
-import { BillingService, FeatureType } from "../billing/billing.service";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -381,7 +382,7 @@ export class BuildService {
         );
         await this.billingService.reportUsage(
           workspace.id,
-          FeatureType.CodePushToGit
+          BillingFeature.CodePushToGit
         );
       }
     } catch (error) {

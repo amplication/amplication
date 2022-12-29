@@ -19,9 +19,14 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import "./EntityList.scss";
 import { AppRouteProps } from "../routes/routesUtil";
 import { pluralize } from "../util/pluralize";
+import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 
 type TData = {
   entities: models.Entity[];
+};
+
+type GetWorkspaceResponse = {
+  currentWorkspace: models.Workspace;
 };
 
 type Props = AppRouteProps & {
@@ -84,6 +89,12 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     };
   }, [refetch, stopPolling, startPolling]);
 
+  const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
+    GET_CURRENT_WORKSPACE
+  );
+  const subscription =
+    getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
+
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
@@ -122,9 +133,11 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         </div>
         {loading && <CircularProgress centerToParent />}
 
-        <LimitationNotification>
-          With the current plan, you can use to 7 entities. Upgrade now
-        </LimitationNotification>
+        {!subscription && (
+          <LimitationNotification>
+            With the current plan, you can use to 7 entities. Upgrade now
+          </LimitationNotification>
+        )}
 
         <div className={`${CLASS_NAME}__content`}>
           {data?.entities.map((entity) => (

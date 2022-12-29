@@ -44,7 +44,8 @@ import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { BillingService, FeatureType } from "../billing/billing.service";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -203,7 +204,10 @@ export class ResourceService {
 
     if (this.configService.get(Env.BILLING_ENABLED)) {
       const workspace = await this.getResourceWorkspace(resource.id);
-      await this.billingService.reportUsage(workspace.id, FeatureType.Services);
+      await this.billingService.reportUsage(
+        workspace.id,
+        BillingFeature.Services
+      );
     }
 
     return resource;
@@ -400,7 +404,7 @@ export class ResourceService {
       const workspace = await this.getResourceWorkspace(resource.id);
       await this.billingService.reportUsage(
         workspace.id,
-        FeatureType.Services,
+        BillingFeature.Services,
         -1
       );
     }

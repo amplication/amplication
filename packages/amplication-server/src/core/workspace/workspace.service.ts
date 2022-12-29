@@ -28,6 +28,7 @@ import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { BillingPlan } from "../billing/BillingPlan";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -101,9 +102,8 @@ export class WorkspaceService {
     if (this.configService.get(Env.BILLING_ENABLED)) {
       await stiggClient.provisionCustomer({
         customerId: workspace.id,
-        shouldSyncFree: true,
         subscriptionParams: {
-          planId: "plan-amplication-free",
+          planId: BillingPlan.Free,
         },
       });
     }
