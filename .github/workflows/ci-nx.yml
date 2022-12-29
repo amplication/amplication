@@ -177,3 +177,12 @@ jobs:
       format: 'sarif'
       exit-code: 0
       publish: true
+
+  deploy:
+    if:  ${{ github.head_ref == 'next' }}
+    needs: dockerize
+    uses: ./.github/workflows/deploy.yml
+    with:
+     target-env: ${{ github.head_ref }}
+     confirm-env: ${{ github.head_ref }}
+    secrets: inherit
