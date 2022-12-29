@@ -78,18 +78,6 @@
         "parallel": false,
         "cwd": "libs/data-service-generator"
       }
-    },
-    "generate:test-data-service": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/generated"],
-      "options": {
-        "commands": [
-          "rimraf generated",
-          "ts-node -P tsconfig.lib.json scripts/generate-test-data-service.ts generated"
-        ],
-        "parallel": false,
-        "cwd": "libs/data-service-generator"
-      }
     }
   },
   "tags": []
