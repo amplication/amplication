@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { JsonValue } from "type-fest";
-import { Prisma, PrismaService } from "@amplication/prisma-db";
+import { PrismaService, Prisma } from "../../prisma";
 import {
   Action,
   ActionStep,

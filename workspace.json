@@ -5,16 +5,18 @@
     "amplication-build-manager": "packages/amplication-build-manager",
     "amplication-client": "packages/amplication-client",
     "amplication-code-gen-types": "packages/amplication-code-gen-types",
-    "amplication-data-service-generator": "packages/amplication-data-service-generator",
+    "amplication-data-service-generator-runner": "packages/amplication-data-service-generator-runner",
     "amplication-design-system": "packages/amplication-design-system",
     "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
     "amplication-git-push-webhook-service": "ee/packages/amplication-git-push-webhook-service",
     "amplication-git-utils": "packages/amplication-git-utils",
-    "amplication-kafka": "packages/amplication-kafka",
     "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
     "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-server": "packages/amplication-server",
-    "amplication-storage-gateway": "packages/amplication-storage-gateway"
+    "amplication-storage-gateway": "packages/amplication-storage-gateway",
+    "data-service-generator": "libs/data-service-generator",
+    "util-code-gen-utils": "libs/util/code-gen-utils",
+    "util-nestjs-kafka": "libs/util/nestjs/kafka"
   }
 }

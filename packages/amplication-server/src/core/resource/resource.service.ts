@@ -1,9 +1,9 @@
 import {
+  PrismaService,
   EnumResourceType,
   GitRepository,
   Prisma,
-  PrismaService,
-} from "@amplication/prisma-db";
+} from "../../prisma";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
@@ -42,6 +42,7 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
 import { ResourceGenSettingsCreateInput } from "./dto/ResourceGenSettingsCreateInput";
 import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { TopicService } from "../topic/topic.service";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -56,7 +57,8 @@ export class ResourceService {
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
     private readonly projectService: ProjectService,
-    private readonly serviceTopicsService: ServiceTopicsService
+    private readonly serviceTopicsService: ServiceTopicsService,
+    private readonly topicService: TopicService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -154,15 +156,19 @@ export class ResourceService {
   }
 
   /**
-   * Create a resource of type "Service", with the built-in "user" role
+   * Create a resource of type "Message Broker" with a default topic
    */
-  async createMessageBroker(args: CreateOneResourceArgs): Promise<Resource> {
+  async createMessageBroker(
+    args: CreateOneResourceArgs,
+    user: User
+  ): Promise<Resource> {
     const resource = await this.createResource({
       data: {
         ...args.data,
         resourceType: EnumResourceType.MessageBroker,
       },
     });
+    await this.topicService.createDefault(resource, user);
 
     return resource;
   }

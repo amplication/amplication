@@ -31,9 +31,9 @@ spec:
                     restartPolicy: Never
                     containers:
                       - name: dsg-container
-                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator:sha-55f8b45"
+                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator-runner:sha-398eb5c"
                         command: ["sh", "-c"]
-                        args: [ "cd /workspace/packages/amplication-data-service-generator; node ./src/generate-code.js /efs/input.json /efs/code" ]
+                        args: [ "cd /workspace/packages/amplication-data-service-generator-runner; node ./src/main.js" ]
                         env:
                           - name: BUILD_ID
                             value: null # provided in parameters
@@ -43,6 +43,10 @@ spec:
                             value: http://amplication-build-manager
                           - name: REMOTE_ENV
                             value: "true"
+                          - name: BUILD_SPEC_PATH
+                            value: "/efs/input.json"
+                          - name: BUILD_OUTPUT_PATH
+                            value: "/efs/code"
                         volumeMounts:
                           - name: persistent-storage
                             mountPath: /efs

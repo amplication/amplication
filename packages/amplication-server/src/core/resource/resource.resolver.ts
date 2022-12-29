@@ -107,7 +107,7 @@ export class ResourceResolver {
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
-    return this.resourceService.createMessageBroker(args);
+    return this.resourceService.createMessageBroker(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })

@@ -26,6 +26,11 @@ $modal-top-position: 20vh;
     display: none;
   }
 
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
   & &__header {
     @include semiBold;
     color: var(--black100);
@@ -36,13 +41,9 @@ $modal-top-position: 20vh;
     align-items: center;
     border-bottom: none;
     border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
-
-    h3 {
-      margin: 0;
-      font-weight: 600;
-      font-size: var(--title3-font-size);
-    }
+    margin-bottom: var(--large-spacing);
   }
+
   & &__body {
     background-color: transparent;
     box-sizing: border-box;

@@ -30,6 +30,7 @@ export const TEST_GIT_REPOS: RemoteGitRepos = {
       name: "ofek",
       private: true,
       url: "http://localhost/ofek",
+      defaultBranch: "main",
     },
     {
       admin: false,
@@ -37,6 +38,7 @@ export const TEST_GIT_REPOS: RemoteGitRepos = {
       name: "test",
       private: true,
       url: "http://localhost/test",
+      defaultBranch: "main",
     },
   ],
   totalRepos: 2,
@@ -50,4 +52,5 @@ export const TEST_GIT_REPO: RemoteGitRepository = {
   name: "repo",
   private: false,
   url: "localhost/repo",
+  defaultBranch: "main",
 };

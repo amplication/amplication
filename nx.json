@@ -1,5 +1,10 @@
 {
   "extends": "nx/presets/npm.json",
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  },
   "npmScope": "amplication",
   "affected": {
     "defaultBase": "master"
@@ -21,23 +26,19 @@
           "build",
           "postbuild",
           "prepare",
-          "check-format",
-          "format",
           "test",
           "db:init",
           "lint",
           "test:e2e",
-          "test:cov",
-          "db:prisma:generate",
-          "graphql:schema:generate",
-          "graphql:schema:check"
+          "test:cov"
         ]
       }
     }
   },
   "targetDefaults": {
     "test": {
-      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"],
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     },
     "prebuild": {
       "dependsOn": ["^prebuild"]
@@ -61,6 +62,9 @@
     },
     "docker:build": {
       "dependsOn": ["prebuild", "build", "postbuild"]
+    },
+    "test:e2e": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     }
   },
   "generators": {
@@ -78,6 +82,10 @@
         "linter": "eslint"
       }
     }
+  },
+  "workspaceLayout": {
+    "appsDir": "packages",
+    "libsDir": "libs"
   },
   "defaultProject": "amplication-client"
 }

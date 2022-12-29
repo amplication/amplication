@@ -10,7 +10,7 @@ import {
   BlockVersion as PrismaBlockVersion,
   Prisma,
   PrismaService,
-} from "@amplication/prisma-db";
+} from "../../prisma";
 import { DiffService } from "../../services/diff.service";
 import {
   Block,
@@ -77,25 +77,11 @@ export class BlockService {
   blockTypeAllowedParents: {
     [key in EnumBlockType]: Set<EnumBlockType | null>;
   } = {
-    [EnumBlockType.ConnectorRestApiCall]: new Set([
-      EnumBlockType.ConnectorRestApi,
-    ]),
-    [EnumBlockType.ConnectorRestApi]: new Set([EnumBlockType.Flow, null]),
     [EnumBlockType.ServiceSettings]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ProjectConfigurationSettings]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.Topic]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.ServiceTopics]: ALLOW_NO_PARENT_ONLY,
 
-    [EnumBlockType.Flow]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.ConnectorSoapApi]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.ConnectorFile]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.EntityApi]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.EntityApiEndpoint]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.FlowApi]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.Layout]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.CanvasPage]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.EntityPage]: ALLOW_NO_PARENT_ONLY,
-    [EnumBlockType.Document]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.PluginInstallation]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.PluginOrder]: ALLOW_NO_PARENT_ONLY,
   };

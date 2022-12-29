@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ResourceRole } from "../../models";
-import { PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   CreateResourceRoleArgs,

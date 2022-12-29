@@ -3,11 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-git-pull-request-service/src",
   "projectType": "application",
-  "implicitDependencies": [
-    "amplication-nest-logger-module",
-    "amplication-git-utils",
-    "amplication-kafka"
-  ],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -20,7 +15,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-git-pull-request-service"],
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-git-pull-request-service"
+      ],
       "options": {
         "jestConfig": "packages/amplication-git-pull-request-service/jest.config.ts",
         "passWithNoTests": true
