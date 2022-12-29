@@ -180,15 +180,15 @@ export class GithubService {
     owner: string,
     repo: string,
     modules: PrModule[],
-    commitName: string,
-    title: string,
-    commitDescription: string,
+    commitMessage: string,
+    prTitle: string,
+    prBody: string,
     installationId: string,
+    head: string,
     gitResourceMeta: GitResourceMeta,
     baseBranchName?: string | undefined
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
-
     const token = await this.getInstallationAuthToken(installationId);
     const octokit = new myOctokit({
       auth: token,
@@ -231,6 +231,7 @@ export class GithubService {
         `^${gitResourceMeta.serverPath || "server"}/scripts/customSeed.ts$`
       ),
     ];
+    const prHead = head || "amplication";
 
     const authFolder = "server/src/auth";
 
@@ -264,25 +265,45 @@ export class GithubService {
       })
     );
 
-    // Returns a normal Octokit PR response
-    // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
-
-    const pr = await octokit.createPullRequest({
+    const {
+      data: [existingPR],
+    } = await octokit.rest.pulls.list({
       owner,
       repo,
-      title,
-      body: commitDescription,
-      base: baseBranchName /* optional: defaults to default branch */,
-      head: "amplication",
-      changes: [
-        {
-          /* optional: if `files` is not passed, an empty commit is created instead */
-          files: files,
-          commit: commitName,
-        },
-      ],
+      baseBranchName,
+      head,
     });
-    return pr.data.html_url;
+
+    if (!existingPR) {
+      // Returns a normal Octokit PR response
+      // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
+      const pr = await octokit.createPullRequest({
+        owner,
+        repo,
+        title: prTitle,
+        body: prBody,
+        base: baseBranchName /* optional: defaults to default branch */,
+        head: prHead,
+        update: true,
+        changes: [
+          {
+            /* optional: if `files` is not passed, an empty commit is created instead */
+            files: files,
+            commit: commitMessage,
+          },
+        ],
+      });
+      return pr.data.html_url;
+    }
+    const commit = await this.createCommit(
+      installationId,
+      owner,
+      repo,
+      commitMessage,
+      prHead,
+      files
+    );
+    return existingPR.html_url;
   }
 
   private async getInstallationOctokit(
@@ -389,7 +410,7 @@ export class GithubService {
     repo: string,
     newBranchName: string,
     baseBranchName?: string
-  ): Promise<void> {
+  ): Promise<Branch> {
     const octokit = await this.getInstallationOctokit(installationId);
     const repository = await this.getRepository(installationId, owner, repo);
     const { defaultBranch } = repository;
@@ -398,13 +419,13 @@ export class GithubService {
       repo,
       ref: `heads/${baseBranchName || defaultBranch}`,
     });
-    const branch = await octokit.rest.git.createRef({
+    const { data: branch } = await octokit.rest.git.createRef({
       owner,
       repo,
       ref: `refs/heads/${newBranchName}`,
       sha: refs.data.object.sha,
     });
-    return;
+    return { name: newBranchName, sha: branch.object.sha };
   }
 
   async isBranchExist(
@@ -434,5 +455,71 @@ export class GithubService {
       ref: `heads/${branch}`,
     });
     return { sha: refs.data.object.sha, name: branch };
+  }
+
+  async createCommit(
+    installationId: string,
+    owner: string,
+    repo: string,
+    message: string,
+    branchName: string,
+    changes: any
+  ) {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const changesArray = Object.entries(changes).map(([path, content]) => ({
+      path,
+      mode: "100644",
+      content,
+    }));
+    const lastCommit = await this.getLastCommit(
+      installationId,
+      owner,
+      repo,
+      branchName
+    );
+    const { data: tree } = await octokit.rest.git.createTree({
+      owner,
+      repo,
+      base_tree: lastCommit.commit.tree.sha,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      tree: changesArray,
+    });
+    const { data: commit } = await octokit.rest.git.createCommit({
+      message,
+      owner,
+      repo,
+      tree: tree.sha,
+      parents: [lastCommit.sha],
+    });
+    await octokit.rest.git.updateRef({
+      owner,
+      repo,
+      sha: commit.sha,
+      ref: `heads/${branchName}`,
+    });
+  }
+
+  async getLastCommit(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branchName: string
+  ) {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const branch = await this.getBranch(
+      installationId,
+      owner,
+      repo,
+      branchName
+    );
+    const [lastCommit] = (
+      await octokit.rest.repos.listCommits({
+        owner,
+        repo,
+        sha: branch.sha,
+      })
+    ).data;
+    return lastCommit;
   }
 }

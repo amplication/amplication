@@ -86,6 +86,7 @@ export interface GitClient {
     commitMessage: string,
     commitDescription: string,
     installationId: string,
+    head: string,
     meta: GitResourceMeta,
     baseBranchName?: string | undefined
   ): Promise<string>;
@@ -102,7 +103,7 @@ export interface GitClient {
     repo: string,
     newBranchName: string,
     baseBranchName?: string
-  ): Promise<void>;
+  ): Promise<Branch>;
 
   getBranch(
     installationId: string,
