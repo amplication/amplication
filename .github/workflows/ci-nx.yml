@@ -78,28 +78,6 @@ jobs:
         run: |
           echo ::set-output name=affected::"$(npx nx print-affected --type=app | jq -c .projects)"
 
-  fs-scan:
-    name: Vulnerability scanning - File system
-    needs: ci
-    runs-on: ubuntu-20.04
-    uses: ./.github/workflows/vulnerability-scan.template.yaml
-    with:
-      scan-type: 'fs'
-      format: 'sarif'
-      exit-code: 0
-      publish: true
-
-  config-scan:
-    name: Vulnerability scanning - Config
-    needs: ci
-    runs-on: ubuntu-20.04
-    uses: ./.github/workflows/vulnerability-scan.template.yaml
-    with:
-      scan-type: 'config'
-      format: 'sarif'
-      exit-code: 0
-      publish: true
-
   dockerize:
     if: ${{ needs.ci.outputs.affected != '[]' }}
     name: Dockerize
@@ -179,3 +157,21 @@ jobs:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
+
+  fs-scan:
+    needs: ci
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: 'fs'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
+
+  config-scan:
+    needs: ci
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: 'config'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
