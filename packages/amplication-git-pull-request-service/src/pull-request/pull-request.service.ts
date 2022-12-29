@@ -43,7 +43,7 @@ export class PullRequestService {
       { lengthOfFile: changedFiles.length }
     );
 
-    const branch = await this.enforceBranchExist(
+    await this.validateOrCreateBranch(
       gitProvider,
       installationId,
       gitOrganizationName,
@@ -76,7 +76,7 @@ export class PullRequestService {
     });
   }
 
-  async enforceBranchExist(
+  async validateOrCreateBranch(
     gitProvider: EnumGitProvider,
     installationId: string,
     owner: string,
