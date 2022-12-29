@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import {
   EventNames,
   Module,

@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import {
   Entity,
   EntityLookupField,

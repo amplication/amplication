@@ -66,6 +66,7 @@ jobs:
         id: set-affected
         run: |
           echo ::set-output name=affected::"$(npx nx print-affected --all --type=app | jq -c .projects)"
+
   dockerize:
     name: Dockerize
     runs-on: ubuntu-20.04
