@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "ee/packages/amplication-git-push-webhook-service/src",
   "projectType": "application",
+  "implicitDependencies": ["amplication-prisma-db"],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -30,7 +31,24 @@
         "outputPath": "dist/ee/packages/amplication-git-push-webhook-service",
         "main": "ee/packages/amplication-git-push-webhook-service/src/main.ts",
         "tsConfig": "ee/packages/amplication-git-push-webhook-service/tsconfig.app.json",
-        "webpackConfig": "ee/packages/amplication-git-push-webhook-service/webpack.config.js"
+        "webpackConfig": "ee/packages/amplication-git-push-webhook-service/webpack.config.js",
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "packages/amplication-prisma-db",
+            "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/amplication-prisma-db/prisma",
+            "output": "./"
+          }
+        ]
       },
       "configurations": {
         "production": {

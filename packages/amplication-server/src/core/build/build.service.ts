@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Prisma, PrismaService } from "@amplication/prisma-db";
+import { Prisma, PrismaService } from "../../prisma";
 import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
 import { omit, orderBy } from "lodash";
 import * as CodeGenTypes from "@amplication/code-gen-types";
@@ -465,7 +465,7 @@ export class BuildService {
       async (step) => {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
-
+          //TODO: if premium then base branch "amplication"
           const createPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,

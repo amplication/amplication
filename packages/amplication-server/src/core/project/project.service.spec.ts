@@ -1,4 +1,4 @@
-import { PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../prisma/prisma.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ProjectService } from "./project.service";
 import {

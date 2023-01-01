@@ -1,8 +1,4 @@
-import {
-  PrismaClient,
-  EnumResourceType,
-  EnumBlockType,
-} from "@amplication/prisma-db";
+import { PrismaClient, EnumResourceType, EnumBlockType } from "../src/prisma";
 
 import { DEFAULT_RESOURCE_COLORS } from "../src/core/resource/constants";
 

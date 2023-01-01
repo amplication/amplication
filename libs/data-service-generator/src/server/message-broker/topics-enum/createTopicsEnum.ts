@@ -5,7 +5,8 @@ import {
 } from "@amplication/code-gen-types";
 import { pascalCase } from "pascal-case";
 import { join } from "path";
-import { print, types } from "recast";
+import { types } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
 import { EnumBuilder } from "@amplication/code-gen-utils";

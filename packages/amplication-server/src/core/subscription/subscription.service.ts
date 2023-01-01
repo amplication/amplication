@@ -5,11 +5,11 @@ import { Subscription } from "./dto/Subscription";
 import { SubscriptionData } from "./dto";
 import { CreateSubscriptionInput } from "./dto/CreateSubscriptionInput";
 import {
-  EnumSubscriptionStatus,
-  Prisma,
   PrismaService,
+  Prisma,
+  EnumSubscriptionStatus,
   Subscription as PrismaSubscription,
-} from "@amplication/prisma-db";
+} from "../../prisma";
 import { UpdateSubscriptionInput } from "./dto/UpdateSubscriptionInput";
 
 @Injectable()
