@@ -7,6 +7,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 import { DiffService } from "../diff/diff.service";
 import { PrModule } from "../types";
+import { EnumGitProvider } from "../models";
 
 @Injectable()
 export class PullRequestService {
@@ -40,6 +41,16 @@ export class PullRequestService {
       { lengthOfFile: changedFiles.length }
     );
 
+    if (base) {
+      await this.enforceBranchExist(
+        gitProvider,
+        installationId,
+        gitOrganizationName,
+        gitRepositoryName,
+        base
+      );
+    }
+
     const prUrl = await this.gitService.createPullRequest(
       gitProvider,
       gitOrganizationName,
@@ -62,5 +73,41 @@ export class PullRequestService {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });
+  }
+
+  async enforceBranchExist(
+    gitProvider: EnumGitProvider,
+    installationId: string,
+    gitOrganizationName: string,
+    gitRepositoryName: string,
+    branch: string
+  ) {
+    const { defaultBranch } = await await this.gitService.getRepository(
+      gitProvider,
+      installationId,
+      gitOrganizationName,
+      gitRepositoryName
+    );
+
+    const isBranchExist = await this.gitService.isBranchExist(
+      gitProvider,
+      installationId,
+      gitOrganizationName,
+      gitRepositoryName,
+      branch
+    );
+
+    if (!isBranchExist) {
+      console.info(`Creating new branch ${branch}`);
+
+      await this.gitService.createBranch(
+        gitProvider,
+        installationId,
+        gitOrganizationName,
+        gitRepositoryName,
+        branch,
+        defaultBranch
+      );
+    }
   }
 }
