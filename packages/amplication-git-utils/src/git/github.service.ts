@@ -186,7 +186,7 @@ export class GithubService {
     prTitle: string,
     prBody: string,
     installationId: string,
-    head: string,
+    head = "amplication",
     gitResourceMeta: GitResourceMeta,
     baseBranchName?: string | undefined
   ): Promise<string> {
@@ -233,7 +233,6 @@ export class GithubService {
         `^${gitResourceMeta.serverPath || "server"}/scripts/customSeed.ts$`
       ),
     ];
-    const prHead = head || "amplication";
 
     const authFolder = "server/src/auth";
 
@@ -285,7 +284,7 @@ export class GithubService {
         title: prTitle,
         body: prBody,
         base: baseBranchName /* optional: defaults to default branch */,
-        head: prHead,
+        head,
         update: true,
         changes: [
           {
@@ -302,7 +301,7 @@ export class GithubService {
       owner,
       repo,
       commitMessage,
-      prHead,
+      head,
       files
     );
     return existingPR.html_url;
