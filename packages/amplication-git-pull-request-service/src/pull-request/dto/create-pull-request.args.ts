@@ -1,9 +1,4 @@
-import {
-  IsBoolean,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from "class-validator";
+import { IsOptional, IsString, ValidateNested } from "class-validator";
 import { EnumGitProvider } from "../../models";
 import { CreateGitCommit } from "./create-git-commit.dto";
 import { GitResourceMeta } from "./git-resource-meta.dto";
@@ -31,7 +26,4 @@ export class CreatePullRequestArgs {
 
   @ValidateNested()
   gitResourceMeta: GitResourceMeta;
-
-  @IsBoolean()
-  smartStrategy?: boolean | undefined;
 }
