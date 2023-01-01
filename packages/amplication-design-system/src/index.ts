@@ -165,3 +165,6 @@ export type { CodeEditorProps } from "./components/CodeEditor/CodeEditor";
 
 export { LimitationNotification } from "./components/LimitationNotification/LimitationNotification";
 export type { Props as LimitationNotificationProps } from "./components/LimitationNotification/LimitationNotification";
+
+export { PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
+export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";

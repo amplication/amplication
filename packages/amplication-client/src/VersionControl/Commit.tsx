@@ -7,7 +7,7 @@ import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useContext, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
-import { useHistory } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import { SortOrder, type Commit as CommitType } from "../models";
@@ -42,6 +42,10 @@ type TData = {
   commit: CommitType;
 };
 
+type RouteMatchProps = {
+  workspace: string;
+};
+
 const formatLimitationError = (errorMessage: string) => {
   const limitationError = errorMessage.split(LIMITATION_ERROR_PREFIX)[1];
   return limitationError;
@@ -49,6 +53,13 @@ const formatLimitationError = (errorMessage: string) => {
 
 const Commit = ({ projectId, noChanges }: Props) => {
   const history = useHistory();
+  const match = useRouteMatch<RouteMatchProps>();
+
+  const redirectToPurchase = () => {
+    const path = `/${match.params.workspace}/purchase`;
+    history.push(path, { from: { pathname: history.location.pathname } });
+  };
+
   const {
     setCommitRunning,
     resetPendingChanges,
@@ -171,7 +182,10 @@ const Commit = ({ projectId, noChanges }: Props) => {
         <LimitationDialog
           isOpen={isOpenLimitationDialog}
           message={limitationErrorMessage}
-          onConfirm={() => setOpenLimitationDialog(false)}
+          onConfirm={() => {
+            redirectToPurchase();
+            setOpenLimitationDialog(false);
+          }}
           onDismiss={() => setOpenLimitationDialog(false)}
         />
       ) : (

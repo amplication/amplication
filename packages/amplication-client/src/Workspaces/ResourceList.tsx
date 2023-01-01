@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { gql, Reference, useMutation } from "@apollo/client";
+import { gql, Reference, useMutation, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { useTracking } from "../util/analytics";
@@ -18,9 +18,14 @@ import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { pluralize } from "../util/pluralize";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQueries";
 
 type TDeleteData = {
   deleteResource: models.Resource;
+};
+
+type GetWorkspaceResponse = {
+  currentWorkspace: models.Workspace;
 };
 
 const CLASS_NAME = "resource-list";
@@ -72,6 +77,12 @@ function ResourceList() {
     [deleteResource, setError, trackEvent]
   );
 
+  const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
+    GET_CURRENT_WORKSPACE
+  );
+  const subscription =
+    getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
+
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -101,9 +112,12 @@ function ResourceList() {
       </div>
       {loadingResources && <CircularProgress centerToParent />}
 
-      <LimitationNotification>
-        With the current plan, you can use up to 3 services. Upgrade now
-      </LimitationNotification>
+      {!subscription && (
+        <LimitationNotification
+          description="With the current plan, you can use up to 3 services."
+          link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+        />
+      )}
 
       <div className={`${CLASS_NAME}__content`}>
         {isEmpty(resources) && !loadingResources ? (

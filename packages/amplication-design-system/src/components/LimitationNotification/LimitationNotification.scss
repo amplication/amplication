@@ -5,5 +5,12 @@
   border: 1px dashed #444b66;
   border-radius: 8px;
   color: var(--black80);
-  height: 42px;
+  min-height: 42px;
+
+  .upgrade-link {
+    color: #53dbee;
+    text-decoration: underline;
+    font-weight: 500;
+    margin-left: 4px;
+  }
 }

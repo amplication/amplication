@@ -39,6 +39,8 @@ import {
   CreateLogger,
   Transports,
 } from "@amplication/nest-logger-module";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -154,6 +156,7 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly billingService: BillingService,
 
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
@@ -372,6 +375,16 @@ export class BuildService {
       });
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
       await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+      if (this.configService.get(Env.BILLING_ENABLED)) {
+        const workspace = await this.resourceService.getResourceWorkspace(
+          build.resourceId
+        );
+        await this.billingService.reportUsage(
+          workspace.id,
+          BillingFeature.CodePushToGit
+        );
+      }
     } catch (error) {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
       await this.actionService.logInfo(step, error);
