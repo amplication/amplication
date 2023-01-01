@@ -1,5 +1,5 @@
 import { namedTypes, builders } from "ast-types";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { Module } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,

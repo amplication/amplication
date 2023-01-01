@@ -1,7 +1,7 @@
 import { ArgumentsHost, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TestingModule, Test } from "@nestjs/testing";
-import { Prisma } from "@amplication/prisma-db";
+import { Prisma } from "../prisma";
 import { ApolloError } from "apollo-server-express";
 import { AmplicationError } from "../errors/AmplicationError";
 import {

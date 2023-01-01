@@ -13,7 +13,8 @@
         "compiler": "tsc",
         "outputPath": "dist/packages/amplication-data-service-generator-runner",
         "main": "packages/amplication-data-service-generator-runner/src/main.ts",
-        "tsConfig": "packages/amplication-data-service-generator-runner/tsconfig.app.json"
+        "tsConfig": "packages/amplication-data-service-generator-runner/tsconfig.app.json",
+        "buildableProjectDepsInPackageJsonType": "dependencies"
       },
       "configurations": {
         "production": {

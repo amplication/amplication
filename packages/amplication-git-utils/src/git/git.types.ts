@@ -1,4 +1,5 @@
 import { registerEnumType } from "@nestjs/graphql";
+import { Branch } from "./dto/branch";
 import { GithubFile } from "./dto/github-file.dto";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import {
@@ -88,4 +89,32 @@ export interface GitClient {
     installationId: string,
     meta: GitResourceMeta
   ): Promise<string>;
+
+  getRepository(
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<RemoteGitRepository>;
+
+  createBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    newBranchName: string,
+    baseBranchName?: string
+  ): Promise<void>;
+
+  getBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<Branch>;
+
+  isBranchExist(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<boolean>;
 }

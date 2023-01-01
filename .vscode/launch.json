@@ -40,7 +40,7 @@
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
       "type": "pwa-node",
-      "cwd": "${workspaceFolder}/packages/amplication-data-service-generator",
+      "cwd": "${workspaceFolder}/libs/data-service-generator",
       "console": "internalConsole"
     },
     {
@@ -48,7 +48,7 @@
       "request": "launch",
       "runtimeArgs": ["run-script", "start", "--", "--debug"],
       "runtimeExecutable": "npm",
-      "cwd": "${workspaceFolder}/packages/amplication-data-service-generator/generated",
+      "cwd": "${workspaceFolder}/libs/data-service-generator/generated",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
     },
@@ -72,9 +72,7 @@
       "type": "node",
       "request": "launch",
       "runtimeArgs": [],
-      "args": [
-        "${workspaceFolder}/packages/amplication-data-service-generator/src/index.ts"
-      ],
+      "args": ["${workspaceFolder}/libs/data-service-generator/src/index.ts"],
       "env": {
         "STATUS_UPDATE_URL": "https://2a08-77-252-192-146.eu.ngrok.io/generated-apps/update-action-step-status"
       }

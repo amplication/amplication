@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ActionService, SELECT_ID } from "./action.service";
-import { PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../prisma/prisma.service";
 import { Action } from "./dto/Action";
 import { ActionStep } from "./dto/ActionStep";
 import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";

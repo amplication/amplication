@@ -1,6 +1,7 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
-import { User } from "generated-prisma-client";
+//@ts-ignore
+import { User } from "@prisma/client";
 
 /**
  * Access the user data from the request object i.e `req.user`.
