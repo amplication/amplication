@@ -57,7 +57,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
 
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
-    history.push(path);
+    history.push(path, { from: { pathname: history.location.pathname } });
   };
 
   const {
