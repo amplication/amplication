@@ -1,25 +1,25 @@
-import React, { lazy } from "react";
-import { match } from "react-router-dom";
-import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import { isMobileOnly } from "react-device-detect";
-import CompleteInvitation from "../User/CompleteInvitation";
-import "./WorkspaceLayout.scss";
-import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
-// import WorkspaceFooter from "./WorkspaceFooter";
-import useAuthenticated from "../authentication/use-authenticated";
-import useProjectSelector from "./hooks/useProjectSelector";
-import { AppContextProvider } from "../context/appContext";
-import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
-import useResources from "./hooks/useResources";
+import React, { lazy } from "react";
+import { isMobileOnly } from "react-device-detect";
+import { match } from "react-router-dom";
+import { useTracking } from "react-tracking";
+import useAuthenticated from "../authentication/use-authenticated";
+import { AppContextProvider } from "../context/appContext";
+import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
+import ProjectEmptyState from "../Project/ProjectEmptyState";
 import { AppRouteProps } from "../routes/routesUtil";
+import CompleteInvitation from "../User/CompleteInvitation";
+import LastCommit from "../VersionControl/LastCommit";
+import PendingChanges from "../VersionControl/PendingChanges";
 import usePendingChanges, {
   PendingChangeItem,
 } from "./hooks/usePendingChanges";
-import ProjectEmptyState from "../Project/ProjectEmptyState";
-import PendingChanges from "../VersionControl/PendingChanges";
-import LastCommit from "../VersionControl/LastCommit";
+import useProjectSelector from "./hooks/useProjectSelector";
+import useResources from "./hooks/useResources";
+import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import WorkspaceFooter from "./WorkspaceFooter";
+import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
+import "./WorkspaceLayout.scss";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -81,6 +81,12 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     loadingCreateMessageBroker,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
+  const { Track } = useTracking({
+    workspaceId: currentWorkspace?.id,
+    projectId: currentProject?.id,
+    resourceId: currentResource?.id,
+  });
+
   return currentWorkspace ? (
     <AppContextProvider
       newVal={{
@@ -124,23 +130,25 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
       {isMobileOnly ? (
         <MobileMessage />
       ) : (
-        <div className={moduleClass}>
-          <WorkspaceHeader />
-          <CompleteInvitation />
-          <div className={`${moduleClass}__page_content`}>
-            <div className={`${moduleClass}__main_content`}>
-              {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+        <Track>
+          <div className={moduleClass}>
+            <WorkspaceHeader />
+            <CompleteInvitation />
+            <div className={`${moduleClass}__page_content`}>
+              <div className={`${moduleClass}__main_content`}>
+                {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+              </div>
+              <div className={`${moduleClass}__changes_menu`}>
+                {currentProject ? (
+                  <PendingChanges projectId={currentProject.id} />
+                ) : null}
+                {currentProject && <LastCommit projectId={currentProject.id} />}
+              </div>
             </div>
-            <div className={`${moduleClass}__changes_menu`}>
-              {currentProject ? (
-                <PendingChanges projectId={currentProject.id} />
-              ) : null}
-              {currentProject && <LastCommit projectId={currentProject.id} />}
-            </div>
+            <WorkspaceFooter />
+            <ScreenResolutionMessage />
           </div>
-          <WorkspaceFooter />
-          <ScreenResolutionMessage />
-        </div>
+        </Track>
       )}
     </AppContextProvider>
   ) : (
