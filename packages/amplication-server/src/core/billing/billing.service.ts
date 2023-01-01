@@ -90,6 +90,7 @@ export class BillingService {
       billingPeriod: BillingPeriod.Monthly,
       awaitPaymentConfirmation: true,
       checkoutOptions: {
+        allowPromoCodes: true,
         cancelUrl: cancelUrl,
         successUrl: successUrl,
       },
