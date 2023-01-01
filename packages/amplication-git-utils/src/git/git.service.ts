@@ -102,8 +102,9 @@ export class GitService {
     commitMessage: string,
     commitDescription: string,
     installationId: string,
+    head: string,
     gitResourceMeta: GitResourceMeta,
-    baseBranchName?: string
+    baseBranchName?: string | undefined
   ): Promise<string> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.createPullRequest(
@@ -113,9 +114,10 @@ export class GitService {
       commitName,
       commitMessage,
       commitDescription,
-      baseBranchName,
       installationId,
-      gitResourceMeta
+      head,
+      gitResourceMeta,
+      baseBranchName
     );
   }
 
@@ -136,7 +138,7 @@ export class GitService {
     repo: string,
     newBranchName: string,
     baseBranchName?: string
-  ) {
+  ): Promise<Branch> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return service.createBranch(
       installationId,

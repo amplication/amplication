@@ -15,7 +15,10 @@ const PurchasePage = (props) => {
         <div className={`${CLASS_NAME}__header`}>
           Pick the perfect plan for your needs
         </div>
-        <StiggProvider apiKey={REACT_APP_BILLING_API_KEY}>
+        <StiggProvider
+          apiKey={REACT_APP_BILLING_API_KEY}
+          customerId={props.match.params.workspace}
+        >
           <Paywall
             textOverrides={{
               entitlementsTitle: (plan) => {
