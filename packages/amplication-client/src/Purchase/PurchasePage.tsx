@@ -12,6 +12,9 @@ const PurchasePage = (props) => {
   return (
     <Modal open fullScreen>
       <div className={CLASS_NAME}>
+        <div className={`${CLASS_NAME}__header`}>
+          Pick the perfect plan for your needs
+        </div>
         <StiggProvider apiKey={REACT_APP_BILLING_API_KEY}>
           <Paywall
             textOverrides={{
