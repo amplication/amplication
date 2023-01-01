@@ -135,7 +135,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
 
         {!subscription && (
           <LimitationNotification
-            description="With the current plan, you can use to 7 entities."
+            description="With the current plan, you can use to 7 entities per service."
             link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
           />
         )}
