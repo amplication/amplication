@@ -40,6 +40,8 @@ const PurchasePage = (props) => {
                 {
                   workspaceId: props.match.params.workspace,
                   planId: plan.id,
+                  successUrl: props.location.state.from.pathname,
+                  cancelUrl: props.location.state.from.pathname,
                 }
               );
 

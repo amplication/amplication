@@ -113,9 +113,10 @@ function ResourceList() {
       {loadingResources && <CircularProgress centerToParent />}
 
       {!subscription && (
-        <LimitationNotification>
-          With the current plan, you can use up to 3 services. Upgrade now
-        </LimitationNotification>
+        <LimitationNotification
+          description="With the current plan, you can use up to 3 services."
+          link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+        />
       )}
 
       <div className={`${CLASS_NAME}__content`}>

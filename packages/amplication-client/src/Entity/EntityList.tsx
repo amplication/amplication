@@ -134,9 +134,10 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         {loading && <CircularProgress centerToParent />}
 
         {!subscription && (
-          <LimitationNotification>
-            With the current plan, you can use to 7 entities. Upgrade now
-          </LimitationNotification>
+          <LimitationNotification
+            description="With the current plan, you can use to 7 entities."
+            link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+          />
         )}
 
         <div className={`${CLASS_NAME}__content`}>

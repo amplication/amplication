@@ -19,8 +19,8 @@ export class BillingController {
     const checkoutResult = await this.billingService.provisionSubscription(
       provisionSubscriptionDto.workspaceId,
       provisionSubscriptionDto.planId,
-      clientHost,
-      clientHost
+      new URL(provisionSubscriptionDto.successUrl, clientHost).href,
+      new URL(provisionSubscriptionDto.cancelUrl, clientHost).href
     );
 
     return checkoutResult;
