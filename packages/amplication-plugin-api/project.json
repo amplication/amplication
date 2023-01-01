@@ -21,14 +21,13 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "target": "node",
         "compiler": "tsc",
         "outputPath": "dist/packages/amplication-plugin-api",
         "main": "packages/amplication-plugin-api/src/main.ts",
-        "webpackConfig": "packages/amplication-plugin-api/webpack.config.js",
         "tsConfig": "packages/amplication-plugin-api/tsconfig.app.json",
         "generatePackageJson": true,
         "assets": [
