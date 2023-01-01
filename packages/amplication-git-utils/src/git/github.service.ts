@@ -31,6 +31,8 @@ export const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
 export const GITHUB_APP_INSTALLATION_URL_VAR = "GITHUB_APP_INSTALLATION_URL";
 export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encoding received`;
 
+const fileModeCode = "100644";
+
 type DirectoryItem = components["schemas"]["content-directory"][number];
 @Injectable()
 export class GithubService {
@@ -295,7 +297,7 @@ export class GithubService {
       });
       return pr.data.html_url;
     }
-    const commit = await this.createCommit(
+    await this.createCommit(
       installationId,
       owner,
       repo,
@@ -468,7 +470,7 @@ export class GithubService {
     const octokit = await this.getInstallationOctokit(installationId);
     const changesArray = Object.entries(changes).map(([path, content]) => ({
       path,
-      mode: "100644",
+      mode: fileModeCode,
       content,
     }));
     const lastCommit = await this.getLastCommit(

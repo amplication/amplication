@@ -23,8 +23,8 @@ export class PullRequestService {
     resourceId,
     oldBuildId,
     newBuildId,
-    gitOrganizationName,
-    gitRepositoryName,
+    gitOrganizationName: owner,
+    gitRepositoryName: repo,
     installationId,
     commit,
     gitProvider,
@@ -39,22 +39,22 @@ export class PullRequestService {
     );
 
     this.logger.info(
-      "The changed files has return from the diff service listOfChangedFiles",
+      "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
 
     await this.validateOrCreateBranch(
       gitProvider,
       installationId,
-      gitOrganizationName,
-      gitRepositoryName,
+      owner,
+      repo,
       head
     );
 
     const prUrl = await this.gitService.createPullRequest(
       gitProvider,
-      gitOrganizationName,
-      gitRepositoryName,
+      owner,
+      repo,
       PullRequestService.removeFirstSlashFromPath(changedFiles),
       head,
       title,
