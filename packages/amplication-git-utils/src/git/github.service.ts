@@ -186,7 +186,7 @@ export class GithubService {
     prTitle: string,
     prBody: string,
     installationId: string,
-    head = "amplication",
+    head,
     gitResourceMeta: GitResourceMeta,
     baseBranchName?: string | undefined
   ): Promise<string> {
