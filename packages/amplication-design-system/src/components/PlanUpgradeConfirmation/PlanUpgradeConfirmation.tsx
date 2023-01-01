@@ -35,8 +35,12 @@ export const PlanUpgradeConfirmation = ({
         <div className={`${CLASS_NAME}__message__animation`}>
           <Lottie animationData={animationFull} />
         </div>
-        <div className={`${CLASS_NAME}__message__description`}>
-          You may now enjoy all the benefits of your new plan!
+        <div className={`${CLASS_NAME}__message__description_purchase`}>
+          Thank you for your purchase!
+        </div>
+        <div className={`${CLASS_NAME}__message__description_details`}>
+          An email with your order confirmation and order details is on its way
+          to you
         </div>
       </div>
       <Button
