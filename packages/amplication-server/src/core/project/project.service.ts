@@ -123,7 +123,7 @@ export class ProjectService {
   async validateSubscriptionPlanLimitationsForProject(
     projectId: string
   ): Promise<void> {
-    const projects = await this.prisma.project.findMany({
+    const project = await this.prisma.project.findUnique({
       where: {
         id: projectId,
       },
@@ -159,7 +159,6 @@ export class ProjectService {
       },
     });
 
-    const project = projects[0];
     const workspace = project.workspace;
 
     const projectServices = project.resources;
@@ -197,10 +196,6 @@ export class ProjectService {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
 
-    if (this.configService.get(Env.BILLING_ENABLED)) {
-      await this.validateSubscriptionPlanLimitationsForProject(projectId);
-    }
-
     const resources = await this.prisma.resource.findMany({
       where: {
         projectId: projectId,
@@ -216,6 +211,10 @@ export class ProjectService {
         },
       },
     });
+
+    if (this.configService.get(Env.BILLING_ENABLED)) {
+      await this.validateSubscriptionPlanLimitationsForProject(projectId);
+    }
 
     if (isEmpty(resources)) {
       throw new Error(`Invalid userId or resourceId`);
