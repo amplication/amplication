@@ -29,7 +29,6 @@ export class PullRequestService {
     commit,
     gitProvider,
     gitResourceMeta,
-    smartStrategy,
   }: CreatePullRequestArgs): Promise<string> {
     const { base, body, head, title } = commit;
     const changedFiles = await this.diffService.listOfChangedFiles(
