@@ -8,7 +8,7 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import { Loader } from "@amplication/design-system";
+import { Loader, PlanUpgradeConfirmation } from "@amplication/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
 
@@ -62,6 +62,16 @@ function App() {
     }
   }, [setInvitationToken, location.search]);
 
+  const [workspaceUpgradeConfirmation, setWorkspaceUpgradeConfirmation] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    const params = queryString.parse(location.search);
+    if (params.checkoutCompleted === "true") {
+      setWorkspaceUpgradeConfirmation(true);
+    }
+  }, [setWorkspaceUpgradeConfirmation, location.search]);
+
   //The default behavior across all <HotKeys> components
   reactHotkeys.configure({
     //Disable simulate keypress events for the keys that do not natively emit them
@@ -83,6 +93,13 @@ function App() {
         />
       )}
       {!currentWorkspaceLoading && GeneratedRoutes}
+      {workspaceUpgradeConfirmation && (
+        <PlanUpgradeConfirmation
+          isOpen={workspaceUpgradeConfirmation}
+          onConfirm={() => setWorkspaceUpgradeConfirmation(false)}
+          onDismiss={() => setWorkspaceUpgradeConfirmation(false)}
+        />
+      )}
     </ThemeProvider>
   );
 }

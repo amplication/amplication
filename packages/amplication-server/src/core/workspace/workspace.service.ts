@@ -25,6 +25,10 @@ import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
 import { Subscription } from "../subscription/dto/Subscription";
 import { GitOrganization } from "../../models/GitOrganization";
 import { ProjectService } from "../project/project.service";
+import { BillingService } from "../billing/billing.service";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { BillingPlan } from "../billing/BillingPlan";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -35,7 +39,9 @@ export class WorkspaceService {
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly configService: ConfigService,
+    private readonly billingService: BillingService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -91,6 +97,16 @@ export class WorkspaceService {
         users: args?.include?.users || true,
       },
     });
+
+    const stiggClient = await this.billingService.getStiggClient();
+    if (this.configService.get(Env.BILLING_ENABLED)) {
+      await stiggClient.provisionCustomer({
+        customerId: workspace.id,
+        subscriptionParams: {
+          planId: BillingPlan.Free,
+        },
+      });
+    }
 
     const [user] = workspace.users;
 

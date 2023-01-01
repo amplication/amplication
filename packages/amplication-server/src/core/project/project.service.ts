@@ -16,9 +16,10 @@ import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
-
-const LICENSE_SERVICES_PER_WORKSPACE_LIMIT = 3;
-const LICENSE_ENTITIES_PER_SERVICE_LIMIT = 7;
+import { Env } from "../../env";
+import { ConfigService } from "@nestjs/config";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
 
 @Injectable()
 export class ProjectService {
@@ -27,7 +28,9 @@ export class ProjectService {
     private readonly resourceService: ResourceService,
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
+    private readonly configService: ConfigService,
+    private readonly billingService: BillingService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -127,7 +130,11 @@ export class ProjectService {
       include: {
         resources: {
           include: {
-            entities: true,
+            entities: {
+              where: {
+                deletedAt: null,
+              },
+            },
           },
           where: {
             resourceType: EnumResourceType.Service,
@@ -154,27 +161,33 @@ export class ProjectService {
 
     const project = projects[0];
     const workspace = project.workspace;
-    const subscriptions = workspace.subscriptions;
-    const workspaceServices = workspace.projects.flatMap(
-      (project) => project.resources
-    );
+
     const projectServices = project.resources;
 
-    if (!subscriptions || subscriptions.length === 0) {
-      if (workspaceServices.length > LICENSE_SERVICES_PER_WORKSPACE_LIMIT) {
+    const servicesEntitlement = await this.billingService.getMeteredEntitlement(
+      workspace.id,
+      BillingFeature.Services
+    );
+
+    if (!servicesEntitlement.hasAccess) {
+      throw new Error(
+        `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
+      );
+    }
+
+    const entitiesPerServiceEntitlement =
+      await this.billingService.getNumericEntitlement(
+        workspace.id,
+        BillingFeature.EntitiesPerService
+      );
+
+    projectServices.map((service) => {
+      if (service.entities.length > entitiesPerServiceEntitlement.value) {
         throw new Error(
-          `LimitationError: Allowed services per workspace: ${LICENSE_SERVICES_PER_WORKSPACE_LIMIT}`
+          `LimitationError: Allowed entities per service: ${entitiesPerServiceEntitlement.value}`
         );
       }
-
-      projectServices.map((service) => {
-        if (service.entities.length > LICENSE_ENTITIES_PER_SERVICE_LIMIT) {
-          throw new Error(
-            `LimitationError: Allowed entities per service: ${LICENSE_ENTITIES_PER_SERVICE_LIMIT}`
-          );
-        }
-      });
-    }
+    });
   }
 
   async commit(
@@ -184,7 +197,9 @@ export class ProjectService {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
 
-    await this.validateSubscriptionPlanLimitationsForProject(projectId);
+    if (this.configService.get(Env.BILLING_ENABLED)) {
+      await this.validateSubscriptionPlanLimitationsForProject(projectId);
+    }
 
     const resources = await this.prisma.resource.findMany({
       where: {
@@ -214,6 +229,14 @@ export class ProjectService {
     /**@todo: consider discarding locked objects that have no actual changes */
 
     const commit = await this.prisma.commit.create(args);
+
+    if (this.configService.get(Env.BILLING_ENABLED)) {
+      const project = await this.findUnique({ where: { id: projectId } });
+      await this.billingService.reportUsage(
+        project.workspaceId,
+        BillingFeature.CodeGenerationBuilds
+      );
+    }
 
     await Promise.all(
       changedEntities.flatMap((change) => {

@@ -43,6 +43,10 @@ import { ResourceGenSettingsCreateInput } from "./dto/ResourceGenSettingsCreateI
 import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -58,7 +62,9 @@ export class ResourceService {
     @Inject(forwardRef(() => ProjectService))
     private readonly projectService: ProjectService,
     private readonly serviceTopicsService: ServiceTopicsService,
-    private readonly topicService: TopicService
+    private readonly topicService: TopicService,
+    private readonly configService: ConfigService,
+    private readonly billingService: BillingService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -201,6 +207,14 @@ export class ResourceService {
       user,
       generationSettings
     );
+
+    if (this.configService.get(Env.BILLING_ENABLED)) {
+      const workspace = await this.getResourceWorkspace(resource.id);
+      await this.billingService.reportUsage(
+        workspace.id,
+        BillingFeature.Services
+      );
+    }
 
     return resource;
   }
@@ -389,11 +403,23 @@ export class ResourceService {
       },
     });
 
+    if (
+      this.configService.get(Env.BILLING_ENABLED) &&
+      resource.resourceType === EnumResourceType.Service
+    ) {
+      const workspace = await this.getResourceWorkspace(resource.id);
+      await this.billingService.reportUsage(
+        workspace.id,
+        BillingFeature.Services,
+        -1
+      );
+    }
+
     if (!resource.gitRepositoryOverride) {
       return resource;
     }
 
-    return await this.deleteResourceGitRepository(resource);
+    await this.deleteResourceGitRepository(resource);
   }
 
   async deleteResourceGitRepository(resource: Resource): Promise<Resource> {
@@ -494,5 +520,21 @@ export class ResourceService {
         project: { id: projectId },
       },
     });
+  }
+
+  async getResourceWorkspace(resourceId: string) {
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId,
+      },
+      include: {
+        project: {
+          include: {
+            workspace: true,
+          },
+        },
+      },
+    });
+    return resource.project.workspace;
   }
 }
