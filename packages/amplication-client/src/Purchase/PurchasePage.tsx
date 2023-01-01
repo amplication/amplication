@@ -1,6 +1,6 @@
 import { StiggProvider, Paywall } from "@stigg/react-sdk";
 
-import { Modal } from "@amplication/design-system";
+import { Button, EnumButtonStyle, Modal } from "@amplication/design-system";
 
 import "./PurchasePage.scss";
 import axios from "axios";
@@ -58,6 +58,23 @@ const PurchasePage = (props) => {
             }}
           />
         </StiggProvider>
+      </div>
+      <div className={`${CLASS_NAME}__contact`}>
+        <div className={`${CLASS_NAME}__contact_content`}>
+          <p>Building an open-source project?</p>
+          <label>
+            Let us know if there is anything we can support you with. We will do
+            our best to help you improve your project for the community!
+          </label>
+        </div>
+        <div className={`${CLASS_NAME}__contact_btn`}>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            //onClick={handleBackToProjectClick}
+          >
+            {"Contact us"}
+          </Button>
+        </div>
       </div>
     </Modal>
   );
