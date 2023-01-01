@@ -102,6 +102,7 @@ export class GitService {
     commitMessage: string,
     commitDescription: string,
     installationId: string,
+    head: string,
     gitResourceMeta: GitResourceMeta,
     baseBranchName?: string | undefined
   ): Promise<string> {
@@ -114,6 +115,7 @@ export class GitService {
       commitMessage,
       commitDescription,
       installationId,
+      head,
       gitResourceMeta,
       baseBranchName
     );
@@ -136,7 +138,7 @@ export class GitService {
     repo: string,
     newBranchName: string,
     baseBranchName?: string
-  ) {
+  ): Promise<Branch> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return service.createBranch(
       installationId,

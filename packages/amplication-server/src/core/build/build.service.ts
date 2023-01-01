@@ -465,7 +465,7 @@ export class BuildService {
       async (step) => {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
-
+          //TODO: if premium then base branch "amplication"
           const createPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
