@@ -98,29 +98,34 @@ export class BillingService {
   }
 
   async getSubscription(workspaceId: string): Promise<Subscription> {
-    const stiggClient = await this.getStiggClient();
-    const workspace = await stiggClient.getCustomer(workspaceId);
-    const activeSub = await workspace.subscriptions.find((subscription) => {
-      return subscription.status === SubscriptionStatus.Active;
-    });
+    try {
+      const stiggClient = await this.getStiggClient();
+      const workspace = await stiggClient.getCustomer(workspaceId);
 
-    if (activeSub.plan.id === BillingPlan.Free) {
-      return null;
+      const activeSub = await workspace.subscriptions.find((subscription) => {
+        return subscription.status === SubscriptionStatus.Active;
+      });
+
+      if (activeSub.plan.id === BillingPlan.Free) {
+        return null;
+      }
+
+      const amplicationSub = {
+        id: activeSub.id,
+        status: this.mapSubscriptionStatus(activeSub.status),
+        workspaceId: workspaceId,
+        subscriptionPlan: this.mapSubscriptionPlan(
+          activeSub.plan.id as BillingPlan
+        ),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        subscriptionData: new SubscriptionData(),
+      };
+
+      return amplicationSub;
+    } catch (error) {
+      return null; //on any exception, use free plan
     }
-
-    const amplicationSub = {
-      id: activeSub.id,
-      status: this.mapSubscriptionStatus(activeSub.status),
-      workspaceId: workspaceId,
-      subscriptionPlan: this.mapSubscriptionPlan(
-        activeSub.plan.id as BillingPlan
-      ),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      subscriptionData: new SubscriptionData(),
-    };
-
-    return amplicationSub;
   }
 
   mapSubscriptionStatus(status: SubscriptionStatus): EnumSubscriptionStatus {
