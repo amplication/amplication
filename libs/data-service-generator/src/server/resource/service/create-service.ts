@@ -1,6 +1,5 @@
 import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { print } from "@amplication/code-gen-utils";
 import {
   Entity,
   EntityLookupField,
@@ -27,7 +26,7 @@ import {
   isOneToOneRelationField,
   isToManyRelationField,
 } from "../../../util/field";
-import { readFile } from "@amplication/code-gen-utils";
+import { readFile, print } from "@amplication/code-gen-utils";
 import { relativeImportPath } from "../../../util/module";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
