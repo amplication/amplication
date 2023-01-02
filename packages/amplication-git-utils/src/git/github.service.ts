@@ -271,11 +271,16 @@ export class GithubService {
     } = await octokit.rest.pulls.list({
       owner,
       repo,
-      baseBranchName,
       head,
+      base: baseBranchName,
     });
 
+    if (existingPR) {
+      console.log("existingPR", existingPR?.html_url);
+    }
+
     if (!existingPR) {
+      console.info("The PR does not exist, creating a new one");
       // Returns a normal Octokit PR response
       // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
       const pr = await octokit.createPullRequest({
@@ -296,6 +301,9 @@ export class GithubService {
       });
       return pr.data.html_url;
     }
+
+    console.info("The PR already exists, updating it");
+
     await this.createCommit(
       installationId,
       owner,
