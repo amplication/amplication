@@ -6,6 +6,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
   BillingPeriod,
+  BooleanEntitlement,
   MeteredEntitlement,
   NumericEntitlement,
   ProvisionSubscriptionResult,
@@ -72,6 +73,17 @@ export class BillingService {
   ): Promise<NumericEntitlement> {
     const stiggClient = await this.getStiggClient();
     return await stiggClient.getNumericEntitlement({
+      customerId: workspaceId,
+      featureId: feature,
+    });
+  }
+
+  async getBooleanEntitlement(
+    workspaceId: string,
+    feature: BillingFeature
+  ): Promise<BooleanEntitlement> {
+    const stiggClient = await this.getStiggClient();
+    return await stiggClient.getBooleanEntitlement({
       customerId: workspaceId,
       featureId: feature,
     });
