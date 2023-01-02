@@ -492,7 +492,7 @@ export class GithubService {
       tree: changesArray,
     });
 
-    console.log(`Created tree for for ${owner}/${repo}`);
+    console.info(`Created tree for for ${owner}/${repo}`);
 
     const { data: commit } = await octokit.rest.git.createCommit({
       message,
@@ -502,7 +502,7 @@ export class GithubService {
       parents: [lastCommit.sha],
     });
 
-    console.log(`Created commit for ${owner}/${repo}`);
+    console.info(`Created commit for ${owner}/${repo}`);
 
     await octokit.rest.git.updateRef({
       owner,
@@ -511,7 +511,7 @@ export class GithubService {
       ref: `heads/${branchName}`,
     });
 
-    console.log(`Updated branch ${branchName} for ${owner}/${repo}`);
+    console.info(`Updated branch ${branchName} for ${owner}/${repo}`);
   }
 
   async getLastCommit(
