@@ -5,6 +5,7 @@ import { Modal } from "@amplication/design-system";
 import "./PurchasePage.scss";
 import axios from "axios";
 import { REACT_APP_BILLING_API_KEY, REACT_APP_SERVER_URI } from "../env";
+import { PromoBanner } from "./PromoBanner";
 
 const CLASS_NAME = "purchase-page";
 
@@ -15,6 +16,7 @@ const PurchasePage = (props) => {
         <div className={`${CLASS_NAME}__header`}>
           Pick the perfect plan for your needs
         </div>
+        <PromoBanner />
         <StiggProvider
           apiKey={REACT_APP_BILLING_API_KEY}
           customerId={props.match.params.workspace}
