@@ -53,6 +53,8 @@ const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
 
 @Injectable()
 export class ResourceService {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
@@ -65,7 +67,9 @@ export class ResourceService {
     private readonly topicService: TopicService,
     private readonly configService: ConfigService,
     private readonly billingService: BillingService
-  ) {}
+  ) {
+    this.isBillingEnabled = this.configService.get(Env.BILLING_ENABLED);
+  }
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
     return this.prisma.resource.findUnique(args);
@@ -208,7 +212,7 @@ export class ResourceService {
       generationSettings
     );
 
-    if (this.configService.get(Env.BILLING_ENABLED)) {
+    if (this.isBillingEnabled) {
       const workspace = await this.getResourceWorkspace(resource.id);
       await this.billingService.reportUsage(
         workspace.id,
@@ -404,7 +408,7 @@ export class ResourceService {
     });
 
     if (
-      this.configService.get(Env.BILLING_ENABLED) &&
+      this.isBillingEnabled &&
       resource.resourceType === EnumResourceType.Service
     ) {
       const workspace = await this.getResourceWorkspace(resource.id);

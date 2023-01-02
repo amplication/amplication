@@ -37,12 +37,18 @@ import { BillingService } from "../billing/billing.service";
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class WorkspaceResolver {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly workspaceService: WorkspaceService,
     private readonly projectService: ProjectService,
     private readonly billingService: BillingService
-  ) {}
+  ) {
+    this.isBillingEnabled = this.configService.get<boolean>(
+      Env.BILLING_ENABLED
+    );
+  }
 
   @Query(() => Workspace, {
     nullable: true,
@@ -149,7 +155,7 @@ export class WorkspaceResolver {
 
   @ResolveField(() => Subscription, { nullable: true })
   async subscription(@Parent() workspace: Workspace): Promise<Subscription> {
-    if (this.configService.get(Env.BILLING_ENABLED)) {
+    if (this.isBillingEnabled) {
       const subscription = await this.billingService.getSubscription(
         workspace.id
       );

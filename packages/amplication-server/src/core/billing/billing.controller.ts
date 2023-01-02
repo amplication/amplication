@@ -1,15 +1,10 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { Env } from "../../env";
 import { BillingService } from "./billing.service";
 import { ProvisionSubscriptionDto } from "./ProvisionSubscriptionDto";
 
 @Controller("billing")
 export class BillingController {
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly billingService: BillingService
-  ) {}
+  constructor(private readonly billingService: BillingService) {}
 
   @Post("/provisionSubscription")
   async provisionSubscription(

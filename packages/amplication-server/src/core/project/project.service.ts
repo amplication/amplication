@@ -23,6 +23,8 @@ import { BillingFeature } from "../billing/BillingFeature";
 
 @Injectable()
 export class ProjectService {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly resourceService: ResourceService,
@@ -31,7 +33,11 @@ export class ProjectService {
     private readonly entityService: EntityService,
     private readonly configService: ConfigService,
     private readonly billingService: BillingService
-  ) {}
+  ) {
+    this.isBillingEnabled = this.configService.get<boolean>(
+      Env.BILLING_ENABLED
+    );
+  }
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
     return this.prisma.project.findMany({
@@ -212,7 +218,7 @@ export class ProjectService {
       },
     });
 
-    if (this.configService.get(Env.BILLING_ENABLED)) {
+    if (this.isBillingEnabled) {
       await this.validateSubscriptionPlanLimitationsForProject(projectId);
     }
 
@@ -229,7 +235,7 @@ export class ProjectService {
 
     const commit = await this.prisma.commit.create(args);
 
-    if (this.configService.get(Env.BILLING_ENABLED)) {
+    if (this.isBillingEnabled) {
       const project = await this.findUnique({ where: { id: projectId } });
       await this.billingService.reportUsage(
         project.workspaceId,
