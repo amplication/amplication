@@ -68,11 +68,10 @@ const PurchasePage = (props) => {
           </label>
         </div>
         <div className={`${CLASS_NAME}__contact_btn`}>
-          <Button
-            buttonStyle={EnumButtonStyle.Primary}
-            //onClick={handleBackToProjectClick}
-          >
-            {"Contact us"}
+          <Button buttonStyle={EnumButtonStyle.Primary}>
+            <a href="mailto:no-one@snai1mai1.com?subject=look at this website&body=Hi,I found this website and thought you might like it http://www.geocities.com/wowhtml/">
+              Contact us
+            </a>
           </Button>
         </div>
       </div>
