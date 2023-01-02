@@ -12,15 +12,15 @@ const CLASS_NAME = "purchase-page";
 const PurchasePage = (props) => {
   return (
     <Modal open fullScreen>
-      <div className={CLASS_NAME}>
-        <div className={`${CLASS_NAME}__header`}>
-          Pick the perfect plan for your needs
-        </div>
-        <PromoBanner />
-        <StiggProvider
-          apiKey={REACT_APP_BILLING_API_KEY}
-          customerId={props.match.params.workspace}
-        >
+      <StiggProvider
+        apiKey={REACT_APP_BILLING_API_KEY}
+        customerId={props.match.params.workspace}
+      >
+        <div className={CLASS_NAME}>
+          <div className={`${CLASS_NAME}__header`}>
+            Pick the perfect plan for your needs
+          </div>
+          <PromoBanner />
           <Paywall
             textOverrides={{
               entitlementsTitle: (plan) => {
@@ -59,8 +59,8 @@ const PurchasePage = (props) => {
               }
             }}
           />
-        </StiggProvider>
-      </div>
+        </div>
+      </StiggProvider>
     </Modal>
   );
 };
