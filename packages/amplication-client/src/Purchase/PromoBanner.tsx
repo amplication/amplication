@@ -7,15 +7,20 @@ const CLASS_NAME = "promo-banner";
 export const PromoBanner = () => {
   const [isFreePlan, setFreePlan] = useState(false);
 
-  const { stigg } = useStiggContext();
+  const { stigg, isInitialized } = useStiggContext();
+
   useEffect(() => {
     async function getCustomer() {
-      const customer = await stigg.getCustomer();
-      const subs = customer.getActiveSubscriptions();
-      setFreePlan(subs.some((sub) => sub.plan.id === "plan-amplication-free"));
+      if (isInitialized) {
+        const customer = await stigg.getCustomer();
+        const subs = customer.getActiveSubscriptions();
+        setFreePlan(
+          subs.some((sub) => sub.plan.id === "plan-amplication-free")
+        );
+      }
     }
     getCustomer();
-  }, []);
+  }, [isInitialized]);
 
   return (
     isFreePlan && (
