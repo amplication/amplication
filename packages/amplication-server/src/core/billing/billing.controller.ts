@@ -15,12 +15,11 @@ export class BillingController {
   async provisionSubscription(
     @Body() provisionSubscriptionDto: ProvisionSubscriptionDto
   ) {
-    const clientHost = this.configService.get(Env.CLIENT_HOST);
     const checkoutResult = await this.billingService.provisionSubscription(
       provisionSubscriptionDto.workspaceId,
       provisionSubscriptionDto.planId,
-      new URL(provisionSubscriptionDto.successUrl, clientHost).href,
-      new URL(provisionSubscriptionDto.cancelUrl, clientHost).href
+      provisionSubscriptionDto.cancelUrl,
+      provisionSubscriptionDto.successUrl
     );
 
     return checkoutResult;

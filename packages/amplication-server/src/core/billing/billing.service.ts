@@ -23,6 +23,7 @@ import { BillingPlan } from "./BillingPlan";
 @Injectable()
 export class BillingService {
   private readonly stiggClient: Stigg;
+  private readonly clientHost: string;
 
   constructor(
     @Inject(AMPLICATION_LOGGER_PROVIDER)
@@ -31,6 +32,7 @@ export class BillingService {
   ) {
     const stiggApiKey = configService.get(Env.BILLING_API_KEY);
     this.stiggClient = Stigg.initialize({ apiKey: stiggApiKey });
+    this.clientHost = configService.get(Env.CLIENT_HOST);
   }
 
   async getStiggClient() {
@@ -103,8 +105,8 @@ export class BillingService {
       awaitPaymentConfirmation: true,
       checkoutOptions: {
         allowPromoCodes: true,
-        cancelUrl: cancelUrl,
-        successUrl: successUrl,
+        cancelUrl: new URL(successUrl, this.clientHost).href,
+        successUrl: new URL(cancelUrl, this.clientHost).href,
       },
     });
   }
