@@ -266,20 +266,53 @@ export class GithubService {
       })
     );
 
-    const {
-      data: [existingPR],
-    } = await octokit.rest.pulls.list({
-      owner,
-      repo,
-      head,
-      base: baseBranchName,
-    });
+    const branchInfo: {
+      repository: {
+        ref: {
+          associatedPullRequests: {
+            edges: [
+              {
+                node: {
+                  url: string;
+                  number: number;
+                };
+              }
+            ];
+          };
+        };
+      };
+    } = await octokit.graphql(
+      `
+      query ($owner: String!, $repo: String!, $head: String!) {
+        repository(name: $repo, owner: $owner) {
+          ref(qualifiedName: $head) {
+            associatedPullRequests(first: 1, states: OPEN) {
+              edges {
+                node {
+                  id
+                  number
+                  url
+                }
+              }
+            }
+          }
+        }
+      }`,
+      {
+        owner,
+        repo,
+        head,
+      }
+    );
 
-    if (existingPR) {
-      console.log("existingPR", existingPR?.html_url);
+    const existingPullRequest =
+      branchInfo.repository.ref?.associatedPullRequests?.edges?.[0]?.node;
+
+    if (existingPullRequest) {
+      console.log("existingPR", existingPullRequest.url);
     }
 
-    if (!existingPR) {
+    if (!existingPullRequest) {
       console.info("The PR does not exist, creating a new one");
       // Returns a normal Octokit PR response
       // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
@@ -312,7 +345,7 @@ export class GithubService {
       head,
       files
     );
-    return existingPR.html_url;
+    return existingPullRequest.url;
   }
 
   private async getInstallationOctokit(
