@@ -2,42 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { Plugin } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
 import yaml from "js-yaml";
-
-interface PluginYml {
-  id: string;
-  name: string;
-  description: string;
-  repo: string;
-  npm: string;
-  icon: string;
-  github: string;
-  website: string;
-  type: string;
-  categories: string;
-  resourceTypes: string;
-  pluginId?: string;
-}
-
-interface PluginList {
-  name: string;
-  url: string;
-  [key: string]: any;
-}
-
-const emptyPlugin: PluginYml = {
-  id: "",
-  name: "",
-  description: "",
-  repo: "",
-  npm: "",
-  icon: "",
-  github: "",
-  website: "",
-  type: "",
-  categories: "",
-  resourceTypes: "",
-  pluginId: "",
-};
+import { PluginList, PluginYml } from "./plugin.types";
+import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
 
 @Injectable()
 export class GitPluginService {
@@ -87,9 +53,7 @@ export class GitPluginService {
    */
   async getPlugins(): Promise<Plugin[]> {
     try {
-      const response = await fetch(
-        "https://api.github.com/repos/amplication/plugin-catalog/contents/plugins"
-      );
+      const response = await fetch(AMPLICATION_GITHUB_URL);
       const pluginCatalog = await response.json();
 
       if (!pluginCatalog) throw "Failed to fetch github plugin catalog";
