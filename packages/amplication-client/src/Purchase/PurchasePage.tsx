@@ -40,10 +40,9 @@ const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
   const history = useHistory();
-
   const backUrl = () =>
     history.action !== "POP" ? history.goBack() : history.push("/");
-console.log(props.location.state.from.pathnam)
+
   return (
     <Modal open fullScreen>
       <div className={CLASS_NAME}>
