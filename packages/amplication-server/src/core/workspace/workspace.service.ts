@@ -1,6 +1,6 @@
 import { Injectable, ConflictException } from "@nestjs/common";
 import { Workspace, User } from "../../models";
-import { PrismaService, Prisma } from "@amplication/prisma-db";
+import { Prisma, PrismaService } from "../../prisma";
 import { Invitation } from "./dto/Invitation";
 import {
   FindManyWorkspaceArgs,
@@ -25,18 +25,30 @@ import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
 import { Subscription } from "../subscription/dto/Subscription";
 import { GitOrganization } from "../../models/GitOrganization";
 import { ProjectService } from "../project/project.service";
+import { BillingService } from "../billing/billing.service";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { BillingPlan } from "../billing/BillingPlan";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
 @Injectable()
 export class WorkspaceService {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly projectService: ProjectService
-  ) {}
+    private readonly projectService: ProjectService,
+    private readonly configService: ConfigService,
+    private readonly billingService: BillingService
+  ) {
+    this.isBillingEnabled = this.configService.get<boolean>(
+      Env.BILLING_ENABLED
+    );
+  }
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
     return this.prisma.workspace.findUnique(args);
@@ -91,6 +103,16 @@ export class WorkspaceService {
         users: args?.include?.users || true,
       },
     });
+
+    const stiggClient = await this.billingService.getStiggClient();
+    if (this.isBillingEnabled) {
+      await stiggClient.provisionCustomer({
+        customerId: workspace.id,
+        subscriptionParams: {
+          planId: BillingPlan.Free,
+        },
+      });
+    }
 
     const [user] = workspace.users;
 

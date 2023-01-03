@@ -18,6 +18,7 @@ const useProjectSelector = (
   const workspaceUtil = useRouteMatch([
     "/:workspace([A-Za-z0-9-]{20,})/settings",
     "/:workspace([A-Za-z0-9-]{20,})/members",
+    "/:workspace([A-Za-z0-9-]{20,})/purchase",
   ]);
   const projectMatch: {
     params: { workspace: string; project: string };

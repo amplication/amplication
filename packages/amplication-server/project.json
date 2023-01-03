@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-server/src",
   "projectType": "application",
+  "implicitDependencies": ["amplication-prisma-db"],
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -13,7 +14,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-server"],
+      "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
       "options": {
         "jestConfig": "packages/amplication-server/jest.config.ts",
         "passWithNoTests": true
@@ -21,7 +22,7 @@
     },
     "test:e2e": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-server"],
+      "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
       "options": {
         "jestConfig": "packages/amplication-server/jest.config.e2e.ts",
         "passWithNoTests": true,
@@ -42,6 +43,16 @@
             "glob": "prisma",
             "input": "packages/amplication-prisma-db",
             "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "packages/amplication-server/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/amplication-prisma-db/prisma",
+            "output": "./"
           }
         ]
       },
@@ -68,7 +79,7 @@
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/**/*.ts"],
       "dependsOn": ["^db:prisma:generate", "^prebuild"],
-      "outputs": ["packages/amplication-server/src/schema.graphql"],
+      "outputs": ["{projectRoot}/src/schema.graphql"],
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/generate-graphql-schema.ts",
         "cwd": "packages/amplication-server"

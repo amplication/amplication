@@ -22,6 +22,10 @@ import {
   RemoteGitRepository,
 } from "./dto/remote-git-repository";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
+import { Branch } from "./dto/branch";
+import { EnumPullRequestMode } from "../types";
+import { BasicPullRequest } from "./github/BasicPullRequest";
+import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -89,7 +93,8 @@ export class GithubService {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
+      admin: repo.permissions?.admin || false,
+      defaultBranch: repo.default_branch,
     };
   }
   async getOrganizationRepos(
@@ -175,18 +180,19 @@ export class GithubService {
   }
 
   async createPullRequest(
-    userName: string,
-    repoName: string,
+    mode: EnumPullRequestMode,
+    owner: string,
+    repo: string,
     modules: PrModule[],
-    commitName: string,
     commitMessage: string,
-    commitDescription: string,
-    baseBranchName: string,
+    prTitle: string,
+    prBody: string,
     installationId: string,
-    gitResourceMeta: GitResourceMeta
+    head,
+    gitResourceMeta: GitResourceMeta,
+    baseBranchName?: string | undefined
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
-
     const token = await this.getInstallationAuthToken(installationId);
     const octokit = new myOctokit({
       auth: token,
@@ -195,15 +201,17 @@ export class GithubService {
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
     await amplicationIgnoreManger.init(async (fileName) => {
       try {
-        return (
-          await this.getFile(
-            userName,
-            repoName,
-            fileName,
-            baseBranchName,
-            installationId
-          )
-        ).content;
+        if (baseBranchName) {
+          return (
+            await this.getFile(
+              owner,
+              repo,
+              fileName,
+              baseBranchName,
+              installationId
+            )
+          ).content;
+        }
       } catch (error) {
         console.log("Repository does not have a .amplicationignore file");
         return "";
@@ -262,25 +270,32 @@ export class GithubService {
       })
     );
 
-    // Returns a normal Octokit PR response
-    // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
-
-    const pr = await octokit.createPullRequest({
-      owner: userName,
-      repo: repoName,
-      title: commitMessage,
-      body: commitDescription,
-      base: baseBranchName /* optional: defaults to default branch */,
-      head: commitName,
-      changes: [
-        {
-          /* optional: if `files` is not passed, an empty commit is created instead */
-          files: files,
-          commit: commitName,
-        },
-      ],
-    });
-    return pr.data.html_url;
+    switch (mode) {
+      case EnumPullRequestMode.Accumulative:
+        return new AccumulativePullRequest().createPullRequest(
+          octokit,
+          owner,
+          repo,
+          prTitle,
+          prBody,
+          baseBranchName,
+          head,
+          files,
+          commitMessage
+        );
+      default:
+        return new BasicPullRequest().createPullRequest(
+          octokit,
+          owner,
+          repo,
+          prTitle,
+          prBody,
+          baseBranchName,
+          head,
+          files,
+          commitMessage
+        );
+    }
   }
 
   private async getInstallationOctokit(
@@ -299,7 +314,8 @@ export class GithubService {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
+      admin: repo.permissions?.admin || false,
+      defaultBranch: repo.default_branch,
     }));
   }
 
@@ -349,5 +365,87 @@ export class GithubService {
         installationId: installationId,
       })
     ).token;
+  }
+
+  async getRepository(
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<RemoteGitRepository> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const response = await octokit.rest.repos.get({
+      owner,
+      repo,
+    });
+    const {
+      name,
+      html_url,
+      private: isPrivate,
+      default_branch: defaultBranch,
+      full_name: fullName,
+      permissions,
+    } = response.data;
+    const admin = permissions.admin || false;
+    return {
+      name,
+      url: html_url,
+      private: isPrivate,
+      fullName,
+      admin,
+      defaultBranch,
+    };
+  }
+
+  async createBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    newBranchName: string,
+    baseBranchName?: string
+  ): Promise<Branch> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const repository = await this.getRepository(installationId, owner, repo);
+    const { defaultBranch } = repository;
+    const refs = await octokit.rest.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${baseBranchName || defaultBranch}`,
+    });
+    const { data: branch } = await octokit.rest.git.createRef({
+      owner,
+      repo,
+      ref: `refs/heads/${newBranchName}`,
+      sha: refs.data.object.sha,
+    });
+    return { name: newBranchName, sha: branch.object.sha };
+  }
+
+  async isBranchExist(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<boolean> {
+    try {
+      const refs = await this.getBranch(installationId, owner, repo, branch);
+      return Boolean(refs);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async getBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<Branch> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const refs = await octokit.rest.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+    });
+    return { sha: refs.data.object.sha, name: branch };
   }
 }

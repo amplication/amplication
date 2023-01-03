@@ -3,9 +3,10 @@ import { IsOptional, IsString } from "class-validator";
 export class CreateGitCommit {
   @IsString()
   @IsOptional()
-  base?: string;
+  base?: string | undefined;
+  @IsOptional()
   @IsString()
-  head!: string;
+  head?: string | undefined;
   @IsString()
   title!: string;
   @IsString()

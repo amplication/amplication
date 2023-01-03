@@ -61,9 +61,10 @@ cp-helm-charts:
 
 postgres:
   install: true
-  postgresqlPassword: postgres
-  postgresqlPostgresPassword: postgres
-  postgresqlDatabase: amplication
+  auth:
+    password: postgres
+    postgresPassword: postgres
+    database: amplication
   fullnameOverride: postgresql
   primary:
     service:
@@ -86,6 +87,7 @@ amplication-client:
       NX_REACT_APP_DATA_SOURCE: "https://server.staging.amplication-dev.com/graphql"
       NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server.staging.amplication-dev.com/github"
       NX_REACT_APP_GITHUB_AUTH_ENABLED: value
+      NX_REACT_APP_BILLING_ENABLED: false
 
 amplication-server:
   image:
@@ -125,6 +127,8 @@ amplication-server:
       GITHUB_REDIRECT_URI: "https://server.staging.amplication-dev.com/github/callback"
       CHECK_USER_ACCESS_TOPIC: authorization.internal.can-access-build.request.0
       BASE_BUILDS_FOLDER: /amplication-data/build-data
+
+      BILLING_ENABLED: false
 
 amplication-git-push-webhook-service:
   image:

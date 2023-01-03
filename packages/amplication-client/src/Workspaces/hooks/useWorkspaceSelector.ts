@@ -10,12 +10,19 @@ import { useHistory, useParams, useLocation } from "react-router-dom";
 import {
   CREATE_WORKSPACE,
   GET_CURRENT_WORKSPACE,
+  GET_WORKSPACES,
   NEW_WORKSPACE_FRAGMENT,
   SET_CURRENT_WORKSPACE,
 } from "../queries/workspaceQueries";
 import { setToken, unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
-import { CreateWorkspaceType, DType, TData, TSetData } from "./workspace";
+import {
+  CreateWorkspaceType,
+  DType,
+  TData,
+  TSetData,
+  workspacesListTData,
+} from "./workspace";
 import { useTracking } from "react-tracking";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
@@ -26,6 +33,8 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   const location = useLocation();
   const { workspace } = useParams<{ workspace?: string }>();
   const [currentWorkspace, setCurrentWorkspace] = useState<models.Workspace>();
+  const [workspacesList, setWorkspacesList] = useState<models.Workspace[]>([]);
+
   const [
     getCurrentWorkspace,
     { loading: loadingCurrentWorkspace, data, refetch },
@@ -37,6 +46,23 @@ const useWorkspaceSelector = (authenticated: boolean) => {
       }
     },
   });
+
+  const [
+    getWorkspaces,
+    { loading: loadingWorkspaces, data: workspaceListData },
+  ] = useLazyQuery<workspacesListTData>(GET_WORKSPACES, {
+    onError: (error) => {
+      if (error.message === "Unauthorized") {
+        unsetToken();
+        history.push("/login");
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (!workspaceListData || loadingWorkspaces) return;
+    setWorkspacesList(workspaceListData.workspaces);
+  }, [workspaceListData]);
 
   useEffect(() => {}, [currentWorkspace]);
 
@@ -154,6 +180,8 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     createNewWorkspaceError,
     loadingCreateNewWorkspace,
     refreshCurrentWorkspace,
+    workspacesList,
+    getWorkspaces,
   };
 };
 

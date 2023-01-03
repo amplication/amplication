@@ -1,5 +1,5 @@
 import { forwardRef, Module } from "@nestjs/common";
-import { PrismaModule, PrismaService } from "@amplication/prisma-db";
+import { PrismaService, PrismaModule } from "../../prisma";
 import { ResourceModule } from "../resource/resource.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { GitResolver } from "./git.resolver";

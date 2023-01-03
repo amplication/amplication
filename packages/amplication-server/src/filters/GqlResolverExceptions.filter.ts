@@ -8,7 +8,7 @@
 import { Catch, ArgumentsHost, Inject, HttpException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GqlExceptionFilter, GqlArgumentsHost } from "@nestjs/graphql";
-import { Prisma } from "@amplication/prisma-db";
+import { Prisma } from "../prisma";
 import { ApolloError } from "apollo-server-express";
 import { Request } from "express";
 import { AmplicationError } from "../errors/AmplicationError";
