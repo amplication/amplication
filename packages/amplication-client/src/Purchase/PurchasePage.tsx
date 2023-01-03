@@ -72,6 +72,10 @@ const PurchasePage = (props) => {
   const handleSetCurrentWorkspace = useCallback(
     (workspace: models.Workspace) => {
       setPurchaseWorkspace(workspace);
+      trackEvent({
+        eventName: AnalyticsEventNames.PricingPageChangeWorkspace,
+        workspace: workspace.id,
+      });
     },
     [setPurchaseWorkspace]
   );
@@ -125,7 +129,6 @@ const PurchasePage = (props) => {
             }}
             onPlanSelected={async ({
               plan,
-              customer,
               intentionType,
               selectedBillingPeriod,
             }) => {

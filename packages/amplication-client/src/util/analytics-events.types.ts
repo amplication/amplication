@@ -112,4 +112,5 @@ export enum AnalyticsEventNames {
   UpgradeOnResourceListClick = "UpgradeOnResourceListClick",
   UpgradeOnEntityListClick = "UpgradeOnEntityListClick",
   UpgradeOnPassedLimitsClick = "UpgradeOnPassedLimitsClick",
+  PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
 }
