@@ -13,6 +13,7 @@ import {
 } from "./dto/remote-git-repository";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import { Branch } from "./dto/branch";
+import { EnumPullRequestMode } from "../types";
 
 @Injectable()
 export class GitService {
@@ -94,6 +95,7 @@ export class GitService {
   }
 
   async createPullRequest(
+    mode: EnumPullRequestMode,
     gitProvider: EnumGitProvider,
     userName: string,
     repoName: string,
@@ -108,6 +110,7 @@ export class GitService {
   ): Promise<string> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return await service.createPullRequest(
+      mode,
       userName,
       repoName,
       modules,

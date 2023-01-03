@@ -97,6 +97,7 @@ export class BillingService {
   async provisionSubscription(
     workspaceId: string,
     planId: string,
+    billingPeriod: BillingPeriod,
     cancelUrl: string,
     successUrl: string
   ): Promise<ProvisionSubscriptionResult> {
@@ -104,7 +105,7 @@ export class BillingService {
     const stiggResponse = await stiggClient.provisionSubscription({
       customerId: workspaceId,
       planId: planId,
-      billingPeriod: BillingPeriod.Monthly,
+      billingPeriod: billingPeriod,
       awaitPaymentConfirmation: true,
       checkoutOptions: {
         allowPromoCodes: true,
@@ -121,7 +122,7 @@ export class BillingService {
     return stiggResponse;
   }
 
-  async getSubscription(workspaceId: string): Promise<Subscription> {
+  async getSubscription(workspaceId: string): Promise<Subscription | null> {
     try {
       const stiggClient = await this.getStiggClient();
       const workspace = await stiggClient.getCustomer(workspaceId);

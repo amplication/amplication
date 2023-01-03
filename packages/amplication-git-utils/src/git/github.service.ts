@@ -23,6 +23,9 @@ import {
 } from "./dto/remote-git-repository";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import { Branch } from "./dto/branch";
+import { EnumPullRequestMode } from "../types";
+import { BasicPullRequest } from "./github/BasicPullRequest";
+import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -30,8 +33,6 @@ export const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
 export const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
 export const GITHUB_APP_INSTALLATION_URL_VAR = "GITHUB_APP_INSTALLATION_URL";
 export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encoding received`;
-
-const fileModeCode = "100644";
 
 type DirectoryItem = components["schemas"]["content-directory"][number];
 @Injectable()
@@ -179,6 +180,7 @@ export class GithubService {
   }
 
   async createPullRequest(
+    mode: EnumPullRequestMode,
     owner: string,
     repo: string,
     modules: PrModule[],
@@ -199,15 +201,17 @@ export class GithubService {
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
     await amplicationIgnoreManger.init(async (fileName) => {
       try {
-        return (
-          await this.getFile(
-            owner,
-            repo,
-            fileName,
-            baseBranchName,
-            installationId
-          )
-        ).content;
+        if (baseBranchName) {
+          return (
+            await this.getFile(
+              owner,
+              repo,
+              fileName,
+              baseBranchName,
+              installationId
+            )
+          ).content;
+        }
       } catch (error) {
         console.log("Repository does not have a .amplicationignore file");
         return "";
@@ -266,45 +270,32 @@ export class GithubService {
       })
     );
 
-    const {
-      data: [existingPR],
-    } = await octokit.rest.pulls.list({
-      owner,
-      repo,
-      baseBranchName,
-      head,
-    });
-
-    if (!existingPR) {
-      // Returns a normal Octokit PR response
-      // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
-      const pr = await octokit.createPullRequest({
-        owner,
-        repo,
-        title: prTitle,
-        body: prBody,
-        base: baseBranchName /* optional: defaults to default branch */,
-        head,
-        update: true,
-        changes: [
-          {
-            /* optional: if `files` is not passed, an empty commit is created instead */
-            files: files,
-            commit: commitMessage,
-          },
-        ],
-      });
-      return pr.data.html_url;
+    switch (mode) {
+      case EnumPullRequestMode.Accumulative:
+        return new AccumulativePullRequest().createPullRequest(
+          octokit,
+          owner,
+          repo,
+          prTitle,
+          prBody,
+          baseBranchName,
+          head,
+          files,
+          commitMessage
+        );
+      default:
+        return new BasicPullRequest().createPullRequest(
+          octokit,
+          owner,
+          repo,
+          prTitle,
+          prBody,
+          baseBranchName,
+          head,
+          files,
+          commitMessage
+        );
     }
-    await this.createCommit(
-      installationId,
-      owner,
-      repo,
-      commitMessage,
-      head,
-      files
-    );
-    return existingPR.html_url;
   }
 
   private async getInstallationOctokit(
@@ -323,7 +314,7 @@ export class GithubService {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
+      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     }));
   }
@@ -394,7 +385,7 @@ export class GithubService {
       full_name: fullName,
       permissions,
     } = response.data;
-    const { admin } = permissions;
+    const admin = permissions.admin || false;
     return {
       name,
       url: html_url,
@@ -456,71 +447,5 @@ export class GithubService {
       ref: `heads/${branch}`,
     });
     return { sha: refs.data.object.sha, name: branch };
-  }
-
-  async createCommit(
-    installationId: string,
-    owner: string,
-    repo: string,
-    message: string,
-    branchName: string,
-    changes: any
-  ) {
-    const octokit = await this.getInstallationOctokit(installationId);
-    const changesArray = Object.entries(changes).map(([path, content]) => ({
-      path,
-      mode: fileModeCode,
-      content,
-    }));
-    const lastCommit = await this.getLastCommit(
-      installationId,
-      owner,
-      repo,
-      branchName
-    );
-    const { data: tree } = await octokit.rest.git.createTree({
-      owner,
-      repo,
-      base_tree: lastCommit.commit.tree.sha,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      tree: changesArray,
-    });
-    const { data: commit } = await octokit.rest.git.createCommit({
-      message,
-      owner,
-      repo,
-      tree: tree.sha,
-      parents: [lastCommit.sha],
-    });
-    await octokit.rest.git.updateRef({
-      owner,
-      repo,
-      sha: commit.sha,
-      ref: `heads/${branchName}`,
-    });
-  }
-
-  async getLastCommit(
-    installationId: string,
-    owner: string,
-    repo: string,
-    branchName: string
-  ) {
-    const octokit = await this.getInstallationOctokit(installationId);
-    const branch = await this.getBranch(
-      installationId,
-      owner,
-      repo,
-      branchName
-    );
-    const [lastCommit] = (
-      await octokit.rest.repos.listCommits({
-        owner,
-        repo,
-        sha: branch.sha,
-      })
-    ).data;
-    return lastCommit;
   }
 }
