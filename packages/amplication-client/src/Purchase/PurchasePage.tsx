@@ -86,7 +86,7 @@ const PurchasePage = (props) => {
               },
             }}
             onPlanSelected={async ({ plan, customer }) =>
-              selectedPlanAction[plan.id]()
+              selectedPlanAction[plan.id](props)
             }
           />
         </StiggProvider>
