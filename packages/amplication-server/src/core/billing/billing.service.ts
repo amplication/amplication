@@ -6,6 +6,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
   BillingPeriod,
+  BooleanEntitlement,
   MeteredEntitlement,
   NumericEntitlement,
   ProvisionSubscriptionResult,
@@ -22,6 +23,7 @@ import { BillingPlan } from "./BillingPlan";
 @Injectable()
 export class BillingService {
   private readonly stiggClient: Stigg;
+  private readonly clientHost: string;
 
   constructor(
     @Inject(AMPLICATION_LOGGER_PROVIDER)
@@ -30,6 +32,7 @@ export class BillingService {
   ) {
     const stiggApiKey = configService.get(Env.BILLING_API_KEY);
     this.stiggClient = Stigg.initialize({ apiKey: stiggApiKey });
+    this.clientHost = configService.get(Env.CLIENT_HOST);
   }
 
   async getStiggClient() {
@@ -77,6 +80,17 @@ export class BillingService {
     });
   }
 
+  async getBooleanEntitlement(
+    workspaceId: string,
+    feature: BillingFeature
+  ): Promise<BooleanEntitlement> {
+    const stiggClient = await this.getStiggClient();
+    return await stiggClient.getBooleanEntitlement({
+      customerId: workspaceId,
+      featureId: feature,
+    });
+  }
+
   async provisionSubscription(
     workspaceId: string,
     planId: string,
@@ -91,36 +105,41 @@ export class BillingService {
       awaitPaymentConfirmation: true,
       checkoutOptions: {
         allowPromoCodes: true,
-        cancelUrl: cancelUrl,
-        successUrl: successUrl,
+        cancelUrl: new URL(successUrl, this.clientHost).href,
+        successUrl: new URL(cancelUrl, this.clientHost).href,
       },
     });
   }
 
   async getSubscription(workspaceId: string): Promise<Subscription> {
-    const stiggClient = await this.getStiggClient();
-    const workspace = await stiggClient.getCustomer(workspaceId);
-    const activeSub = await workspace.subscriptions.find((subscription) => {
-      return subscription.status === SubscriptionStatus.Active;
-    });
+    try {
+      const stiggClient = await this.getStiggClient();
+      const workspace = await stiggClient.getCustomer(workspaceId);
 
-    if (activeSub.plan.id === BillingPlan.Free) {
-      return null;
+      const activeSub = await workspace.subscriptions.find((subscription) => {
+        return subscription.status === SubscriptionStatus.Active;
+      });
+
+      if (activeSub.plan.id === BillingPlan.Free) {
+        return null;
+      }
+
+      const amplicationSub = {
+        id: activeSub.id,
+        status: this.mapSubscriptionStatus(activeSub.status),
+        workspaceId: workspaceId,
+        subscriptionPlan: this.mapSubscriptionPlan(
+          activeSub.plan.id as BillingPlan
+        ),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        subscriptionData: new SubscriptionData(),
+      };
+
+      return amplicationSub;
+    } catch (error) {
+      return null; //on any exception, use free plan
     }
-
-    const amplicationSub = {
-      id: activeSub.id,
-      status: this.mapSubscriptionStatus(activeSub.status),
-      workspaceId: workspaceId,
-      subscriptionPlan: this.mapSubscriptionPlan(
-        activeSub.plan.id as BillingPlan
-      ),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      subscriptionData: new SubscriptionData(),
-    };
-
-    return amplicationSub;
   }
 
   mapSubscriptionStatus(status: SubscriptionStatus): EnumSubscriptionStatus {

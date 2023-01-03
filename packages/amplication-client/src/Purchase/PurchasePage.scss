@@ -7,10 +7,13 @@
   padding-top: 75px;
 
   &__header {
-    display: flex;
+    color: #ffffff;
     font-size: 24px;
     font-weight: 700;
-    color: #ffffff;
+    margin-bottom: 24px;
+  }
+
+  .workspace-list {
     margin-bottom: 50px;
   }
 }
@@ -99,15 +102,6 @@
   order: 2;
   font-size: 10px;
   line-height: 15px;
-}
-
-.stigg-plan-offering-container:nth-child(2)
-  .stigg-price-billing-period-text::after {
-  content: "Billed monthly";
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 15px;
-  color: #a3a8b8;
 }
 
 .stigg-plan-description {

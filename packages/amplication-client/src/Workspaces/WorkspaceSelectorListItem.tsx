@@ -32,7 +32,7 @@ function WorkspaceSelectorListItem({
       <div className={`${CLASS_NAME}__details`}>
         <span className={`${CLASS_NAME}__name`}>{workspace.name}</span>
         <span className={`${CLASS_NAME}__plan`}>
-          {workspace.subscription?.subscriptionPlan || "Community"} Plan
+          {workspace.subscription?.subscriptionPlan || "Free"} Plan
         </span>
       </div>
       {selected && (

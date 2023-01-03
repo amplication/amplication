@@ -42,6 +42,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createNewWorkspaceError,
     loadingCreateNewWorkspace,
     refreshCurrentWorkspace,
+    getWorkspaces,
+    workspacesList,
   } = useWorkspaceSelector(authenticated);
   const {
     currentProject,
@@ -120,6 +122,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         setCommitRunning,
         setPendingChangesError,
         refreshCurrentWorkspace,
+        getWorkspaces,
+        workspacesList,
         gitRepositoryFullName,
         gitRepositoryUrl,
         createMessageBroker,

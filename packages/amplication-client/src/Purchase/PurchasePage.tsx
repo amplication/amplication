@@ -1,25 +1,43 @@
 import { StiggProvider, Paywall } from "@stigg/react-sdk";
-
 import { Modal } from "@amplication/design-system";
-
 import "./PurchasePage.scss";
 import axios from "axios";
 import { REACT_APP_BILLING_API_KEY, REACT_APP_SERVER_URI } from "../env";
 import { PromoBanner } from "./PromoBanner";
+import { useCallback, useContext, useState } from "react";
+import * as models from "../models";
+import { AppContext } from "../context/appContext";
+import WorkspaceList from "../Workspaces/WorkspaceList";
 
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
+  const { currentWorkspace } = useContext(AppContext);
+
+  const [purchaseWorkspace, setPurchaseWorkspace] =
+    useState<models.Workspace>(currentWorkspace);
+
+  const handleSetCurrentWorkspace = useCallback(
+    (workspace: models.Workspace) => {
+      setPurchaseWorkspace(workspace);
+    },
+    [setPurchaseWorkspace]
+  );
+
   return (
     <Modal open fullScreen>
-      <StiggProvider
-        apiKey={REACT_APP_BILLING_API_KEY}
-        customerId={props.match.params.workspace}
-      >
-        <div className={CLASS_NAME}>
-          <div className={`${CLASS_NAME}__header`}>
-            Pick the perfect plan for your needs
-          </div>
+      <div className={CLASS_NAME}>
+        <div className={`${CLASS_NAME}__header`}>
+          Pick the perfect plan for your needs
+        </div>
+        <WorkspaceList
+          selectedWorkspace={purchaseWorkspace}
+          onWorkspaceSelected={handleSetCurrentWorkspace}
+        />
+        <StiggProvider
+          apiKey={REACT_APP_BILLING_API_KEY}
+          customerId={purchaseWorkspace.id}
+        >
           <PromoBanner />
           <Paywall
             textOverrides={{
@@ -46,7 +64,7 @@ const PurchasePage = (props) => {
               const resp = await axios.post(
                 `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
                 {
-                  workspaceId: props.match.params.workspace,
+                  workspaceId: purchaseWorkspace.id,
                   planId: plan.id,
                   successUrl: props.location.state.from.pathname,
                   cancelUrl: props.location.state.from.pathname,
@@ -59,8 +77,8 @@ const PurchasePage = (props) => {
               }
             }}
           />
-        </div>
-      </StiggProvider>
+        </StiggProvider>
+      </div>
     </Modal>
   );
 };
