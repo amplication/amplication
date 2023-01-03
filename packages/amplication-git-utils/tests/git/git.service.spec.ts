@@ -15,6 +15,7 @@ import {
   TEST_GIT_REPOS,
 } from "./git.constants";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { EnumPullRequestMode } from "@amplication/git-utils/types";
 
 describe("GitService", () => {
   let gitService: GitService;
@@ -148,7 +149,9 @@ describe("GitService", () => {
         const commitDescription = "exampleCommitDescription";
         const baseBranchName = "exampleBaseBranchName";
         const basePath = "packages";
+        const head = "amplication";
         const remoteGitOrganization = await gitService.createPullRequest(
+          EnumPullRequestMode.Basic,
           gitProvider,
           userName,
           repoName,
@@ -157,6 +160,7 @@ describe("GitService", () => {
           commitMessage,
           commitDescription,
           installationId,
+          head,
           {
             adminUIPath: basePath + "admin-ui",
             serverPath: basePath + "server",
