@@ -29,6 +29,7 @@ amplication-client:
       NX_REACT_APP_PADDLE_VENDOR_ID: "131992"
       NX_REACT_APP_FEATURE_FLAGS: '{"SHOW_DEPLOYER":true}'
       NX_REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   autoscaling:
@@ -59,7 +60,7 @@ amplication-server:
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 
@@ -95,6 +96,8 @@ amplication-server:
 
       #SEGMENT
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
+
+      BILLING_ENABLED: "true"
 
 amplication-git-push-webhook-service:
   ingress:
@@ -143,7 +146,7 @@ amplication-git-pull-request-service:
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 

@@ -1,4 +1,5 @@
 import { registerEnumType } from "@nestjs/graphql";
+import { EnumPullRequestMode } from "../types";
 import { Branch } from "./dto/branch";
 import { GithubFile } from "./dto/github-file.dto";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
@@ -79,6 +80,7 @@ export interface GitClient {
   ): Promise<GithubFile>;
 
   createPullRequest(
+    mode: EnumPullRequestMode,
     userName: string,
     repoName: string,
     modules: PrModule[],

@@ -41,6 +41,8 @@ import {
 } from "@amplication/nest-logger-module";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
+import { EnumPullRequestMode } from "@amplication/git-utils";
+import { SendPullRequestArgs } from "./dto/sendPullRequest";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -141,6 +143,8 @@ export function createInitialStepData(
 }
 @Injectable()
 export class BuildService {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -165,6 +169,10 @@ export class BuildService {
     if (!this.host) {
       throw new Error("Missing HOST_VAR in env");
     }
+
+    this.isBillingEnabled = this.configService.get<boolean>(
+      Env.BILLING_ENABLED
+    );
   }
   host: string;
 
@@ -376,7 +384,7 @@ export class BuildService {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
       await this.actionService.complete(step, EnumActionStepStatus.Success);
 
-      if (this.configService.get(Env.BILLING_ENABLED)) {
+      if (this.isBillingEnabled) {
         const workspace = await this.resourceService.getResourceWorkspace(
           build.resourceId
         );
@@ -456,7 +464,7 @@ export class BuildService {
 
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
-    const commitMessage =
+    const commitTitle =
       (commit.message &&
         `${commit.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
@@ -478,8 +486,20 @@ export class BuildService {
       async (step) => {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
-          //TODO: if premium then base branch "amplication"
-          const createPullRequestArgs = {
+
+          if (user?.workspace?.id == null) {
+            throw new Error("Missing workspace id");
+          }
+
+          const subscription = await this.billingService.getSubscription(
+            user.workspace.id
+          );
+
+          const pullRequestMode = subscription
+            ? EnumPullRequestMode.Accumulative
+            : EnumPullRequestMode.Basic;
+
+          const createPullRequestArgs: SendPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             resourceId: resource.id,
@@ -488,8 +508,7 @@ export class BuildService {
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
-              head: `amplication-build-${build.id}`,
-              title: commitMessage,
+              title: commitTitle,
               body: `Amplication build # ${build.id}.
               Commit message: ${commit.message}
               
@@ -500,6 +519,7 @@ export class BuildService {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
+            pullRequestMode,
           };
 
           await this.queueService.emitMessage(

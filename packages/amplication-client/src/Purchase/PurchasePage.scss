@@ -1,6 +1,7 @@
 .purchase-page {
   display: flex;
   flex-direction: column;
+  align-items: center;
   background-color: #22273c;
 
   &__layout {
@@ -20,13 +21,16 @@
   }
 
   &__header {
-    display: flex;
+    color: #ffffff;
     font-size: 24px;
     font-weight: 700;
-    color: #ffffff;
-    justify-content: center;
-    margin-bottom: 50px;
     margin-top: 120px;
+    margin-bottom: 24px;
+  }
+
+  .workspace-list {
+    margin-bottom: 50px;
+    margin-top: 10px;
   }
 
   &__contact {
@@ -60,6 +64,45 @@
   &__contact_pro_btn:hover {
     background-color: var(--dark-purple);
     border-color: var(--dark-purple);
+  }
+
+  &__contact {
+    padding: 80px 368px;
+    gap: 32px;
+    background: #15192c;
+
+    &_content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #ffffff;
+
+      p {
+        font-weight: 700;
+        font-size: 24px;
+        margin: 8px;
+      }
+
+      label {
+        font-size: 14px;
+      }
+    }
+
+    &_btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+
+    &_pro_btn {
+      color: var(--static-white);
+    }
+
+    &_pro_btn:hover {
+      background-color: var(--dark-purple);
+      border-color: var(--dark-purple);
+    }
   }
 }
 
@@ -147,15 +190,6 @@
   order: 2;
   font-size: 10px;
   line-height: 15px;
-}
-
-.stigg-plan-offering-container:nth-child(2)
-  .stigg-price-billing-period-text::after {
-  content: "Billed monthly";
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 15px;
-  color: #a3a8b8;
 }
 
 .stigg-plan-description {

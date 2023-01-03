@@ -1,3 +1,4 @@
+import { EnumPullRequestMode } from "@amplication/git-utils";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
 import { EnumGitProvider } from "../../models";
 import { CreateGitCommit } from "./create-git-commit.dto";
@@ -26,4 +27,7 @@ export class CreatePullRequestArgs {
 
   @ValidateNested()
   gitResourceMeta: GitResourceMeta;
+
+  @IsString()
+  pullRequestMode: EnumPullRequestMode;
 }
