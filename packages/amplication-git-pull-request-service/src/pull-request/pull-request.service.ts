@@ -1,14 +1,13 @@
-import { GitService } from "@amplication/git-utils";
+import { Branch, GitService } from "@amplication/git-utils";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
 import { Inject, Injectable } from "@nestjs/common";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 import { DiffService } from "../diff/diff.service";
-import { PrModule } from "../types";
 import { EnumGitProvider } from "../models";
-import { Branch } from "@amplication/git-utils";
+import { PrModule } from "../types";
+import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 
 @Injectable()
 export class PullRequestService {
@@ -29,6 +28,7 @@ export class PullRequestService {
     commit,
     gitProvider,
     gitResourceMeta,
+    pullRequestMode,
   }: CreatePullRequestArgs): Promise<string> {
     const { base, body, head, title } = commit;
     const changedFiles = await this.diffService.listOfChangedFiles(
@@ -51,6 +51,7 @@ export class PullRequestService {
     );
 
     const prUrl = await this.gitService.createPullRequest(
+      pullRequestMode,
       gitProvider,
       owner,
       repo,

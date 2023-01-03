@@ -23,6 +23,7 @@ import {
 } from "./dto/remote-git-repository";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import { Branch } from "./dto/branch";
+import { EnumPullRequestMode } from "../types";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -179,6 +180,7 @@ export class GithubService {
   }
 
   async createPullRequest(
+    mode: EnumPullRequestMode,
     owner: string,
     repo: string,
     modules: PrModule[],
