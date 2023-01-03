@@ -29,7 +29,7 @@ amplication-client:
       NX_REACT_APP_PADDLE_VENDOR_ID: "131992"
       NX_REACT_APP_FEATURE_FLAGS: '{"SHOW_DEPLOYER":true}'
       NX_REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
-      NX_REACT_APP_BILLING_ENABLED: true
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   autoscaling:
@@ -97,7 +97,7 @@ amplication-server:
       #SEGMENT
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
 
-      BILLING_ENABLED: true
+      BILLING_ENABLED: "true"
 
 amplication-git-push-webhook-service:
   ingress:
