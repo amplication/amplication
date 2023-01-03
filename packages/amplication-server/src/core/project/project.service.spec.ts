@@ -25,6 +25,8 @@ import { EntityService } from "../entity/entity.service";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { CURRENT_VERSION_NUMBER } from "../entity/constants";
 import { BlockService } from "../block/block.service";
+import { ConfigService } from "@nestjs/config";
+import { BillingService } from "../billing/billing.service";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -217,6 +219,21 @@ describe("ProjectService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProjectService,
+        {
+          provide: ConfigService,
+          useValue: { get: () => "" },
+        },
+        {
+          provide: BillingService,
+          useValue: {
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+            getNumericEntitlement: jest.fn(() => {
+              return {};
+            }),
+          },
+        },
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({

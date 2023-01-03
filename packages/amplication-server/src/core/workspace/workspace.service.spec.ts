@@ -12,6 +12,7 @@ import { Role } from "../../enums/Role";
 import { DeleteUserArgs } from "./dto";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
+import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -126,6 +127,20 @@ describe("WorkspaceService", () => {
           })),
         },
         ConfigService,
+        {
+          provide: BillingService,
+          useValue: {
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+            getNumericEntitlement: jest.fn(() => {
+              return {};
+            }),
+            getStiggClient: jest.fn(() => {
+              return {};
+            }),
+          },
+        },
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
