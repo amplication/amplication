@@ -23,6 +23,7 @@ import {
 } from "./dto/remote-git-repository";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import { Branch } from "./dto/branch";
+import { EnumPullRequestMode } from "../types";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -179,6 +180,7 @@ export class GithubService {
   }
 
   async createPullRequest(
+    mode: EnumPullRequestMode,
     owner: string,
     repo: string,
     modules: PrModule[],
@@ -266,16 +268,54 @@ export class GithubService {
       })
     );
 
-    const {
-      data: [existingPR],
-    } = await octokit.rest.pulls.list({
-      owner,
-      repo,
-      baseBranchName,
-      head,
-    });
+    const branchInfo: {
+      repository: {
+        ref: {
+          associatedPullRequests: {
+            edges: [
+              {
+                node: {
+                  url: string;
+                  number: number;
+                };
+              }
+            ];
+          };
+        };
+      };
+    } = await octokit.graphql(
+      `
+      query ($owner: String!, $repo: String!, $head: String!) {
+        repository(name: $repo, owner: $owner) {
+          ref(qualifiedName: $head) {
+            associatedPullRequests(first: 1, states: OPEN) {
+              edges {
+                node {
+                  id
+                  number
+                  url
+                }
+              }
+            }
+          }
+        }
+      }`,
+      {
+        owner,
+        repo,
+        head,
+      }
+    );
 
-    if (!existingPR) {
+    const existingPullRequest =
+      branchInfo.repository.ref?.associatedPullRequests?.edges?.[0]?.node;
+
+    if (existingPullRequest) {
+      console.log("existingPR", existingPullRequest.url);
+    }
+
+    if (!existingPullRequest) {
+      console.info("The PR does not exist, creating a new one");
       // Returns a normal Octokit PR response
       // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
       const pr = await octokit.createPullRequest({
@@ -296,6 +336,9 @@ export class GithubService {
       });
       return pr.data.html_url;
     }
+
+    console.info("The PR already exists, updating it");
+
     await this.createCommit(
       installationId,
       owner,
@@ -304,7 +347,7 @@ export class GithubService {
       head,
       files
     );
-    return existingPR.html_url;
+    return existingPullRequest.url;
   }
 
   private async getInstallationOctokit(
@@ -478,6 +521,11 @@ export class GithubService {
       repo,
       branchName
     );
+
+    if (changesArray.length === 0) {
+      return;
+    }
+
     const { data: tree } = await octokit.rest.git.createTree({
       owner,
       repo,
@@ -486,6 +534,9 @@ export class GithubService {
       // @ts-ignore
       tree: changesArray,
     });
+
+    console.info(`Created tree for for ${owner}/${repo}`);
+
     const { data: commit } = await octokit.rest.git.createCommit({
       message,
       owner,
@@ -493,12 +544,17 @@ export class GithubService {
       tree: tree.sha,
       parents: [lastCommit.sha],
     });
+
+    console.info(`Created commit for ${owner}/${repo}`);
+
     await octokit.rest.git.updateRef({
       owner,
       repo,
       sha: commit.sha,
       ref: `heads/${branchName}`,
     });
+
+    console.info(`Updated branch ${branchName} for ${owner}/${repo}`);
   }
 
   async getLastCommit(

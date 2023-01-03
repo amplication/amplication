@@ -41,6 +41,8 @@ import {
 } from "@amplication/nest-logger-module";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
+import { EnumPullRequestMode } from "@amplication/git-utils";
+import { SendPullRequestArgs } from "./dto/sendPullRequest";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -462,7 +464,7 @@ export class BuildService {
 
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
-    const commitMessage =
+    const commitTitle =
       (commit.message &&
         `${commit.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
@@ -485,7 +487,7 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           //TODO: if premium then base branch "amplication"
-          const createPullRequestArgs = {
+          const createPullRequestArgs: SendPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             resourceId: resource.id,
@@ -494,8 +496,7 @@ export class BuildService {
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
-              head: `amplication-build-${build.id}`,
-              title: commitMessage,
+              title: commitTitle,
               body: `Amplication build # ${build.id}.
               Commit message: ${commit.message}
               
@@ -506,6 +507,7 @@ export class BuildService {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
+            pullRequestMode: EnumPullRequestMode.Basic, //TODO change it to dynamic
           };
 
           await this.queueService.emitMessage(
