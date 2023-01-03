@@ -162,20 +162,6 @@ export class AccumulativePullRequest {
     return lastCommit;
   }
 
-  async isBranchExist(
-    octokit: Octokit,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<boolean> {
-    try {
-      const refs = await this.getBranch(octokit, owner, repo, branch);
-      return Boolean(refs);
-    } catch (error) {
-      return false;
-    }
-  }
-
   async getBranch(
     octokit: Octokit,
     owner: string,

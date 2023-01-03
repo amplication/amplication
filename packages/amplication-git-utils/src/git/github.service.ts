@@ -419,4 +419,33 @@ export class GithubService {
     });
     return { name: newBranchName, sha: branch.object.sha };
   }
+
+  async isBranchExist(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<boolean> {
+    try {
+      const refs = await this.getBranch(installationId, owner, repo, branch);
+      return Boolean(refs);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async getBranch(
+    installationId: string,
+    owner: string,
+    repo: string,
+    branch: string
+  ): Promise<Branch> {
+    const octokit = await this.getInstallationOctokit(installationId);
+    const refs = await octokit.rest.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+    });
+    return { sha: refs.data.object.sha, name: branch };
+  }
 }
