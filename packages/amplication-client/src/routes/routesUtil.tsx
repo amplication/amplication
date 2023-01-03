@@ -4,6 +4,7 @@ import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
 import * as analytics from "../util/analytics";
 import { CircularProgress } from "@amplication/design-system";
+import NotFoundPage from "../404/NotFoundPage";
 
 export type AppRouteProps = {
   moduleName: string | undefined;
@@ -41,7 +42,7 @@ const LazyRouteWrapper: React.FC<{
             <Redirect
               to={{
                 pathname: route.redirect,
-                search: "",
+                search: `?${route.path}`,
               }}
             />
           ) : route.permission ? (
@@ -91,6 +92,7 @@ export const routesGenerator: (
         {routes.map((route: RouteDef) => (
           <LazyRouteWrapper key={route.path} route={route} />
         ))}
+        <Route component={NotFoundPage} />
       </Route>
     </Switch>
   );
