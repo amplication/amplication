@@ -39,6 +39,7 @@ import {
   CreateLogger,
   Transports,
 } from "@amplication/nest-logger-module";
+import { EnumPullRequestMode } from "@amplication/git-utils";
 import { SendPullRequestArgs } from "./dto/sendPullRequest";
 
 export const HOST_VAR = "HOST";
@@ -492,6 +493,7 @@ export class BuildService {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
+            pullRequestMode: EnumPullRequestMode.Basic, //TODO change it to dynamic
           };
 
           await this.queueService.emitMessage(
