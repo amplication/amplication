@@ -1,20 +1,69 @@
 .purchase-page {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #22273c;
-  padding-top: 75px;
+
+  &__layout {
+    height: 60px;
+    width: 100%;
+    border-bottom: 1px solid #373d57;
+    position: fixed;
+    display: block;
+    background-color: var(--black2);
+    z-index: 1000;
+    &__btn {
+      margin: 13px 0px 0px 15px;
+      &.amp-button--outline {
+        border-radius: 5px !important;
+      }
+    }
+  }
 
   &__header {
     color: #ffffff;
     font-size: 24px;
     font-weight: 700;
+    margin-top: 120px;
     margin-bottom: 24px;
   }
 
   .workspace-list {
     margin-bottom: 50px;
+    margin-top: 10px;
+  }
+
+  &__contact {
+    padding: 80px 368px;
+    gap: 32px;
+    background: #15192c;
+  }
+  &__contact_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffffff;
+    p {
+      font-weight: 700;
+      font-size: 24px;
+      margin: 8px;
+    }
+    label {
+      font-size: 14px;
+    }
+  }
+  &__contact_btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+  }
+  &__contact_pro_btn {
+    color: var(--static-white);
+  }
+  &__contact_pro_btn:hover {
+    background-color: var(--dark-purple);
+    border-color: var(--dark-purple);
   }
 
   &__contact {

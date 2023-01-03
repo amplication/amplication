@@ -1,17 +1,61 @@
 import { StiggProvider, Paywall } from "@stigg/react-sdk";
-import { Button, EnumButtonStyle, Modal } from "@amplication/design-system";
-import "./PurchasePage.scss";
+import * as models from "../models";
+import { useHistory } from "react-router-dom";
+import {
+  Button,
+  EnumButtonStyle,
+  EnumIconPosition,
+  Modal,
+} from "@amplication/design-system";
 import axios from "axios";
 import { REACT_APP_BILLING_API_KEY, REACT_APP_SERVER_URI } from "../env";
-import { PromoBanner } from "./PromoBanner";
+import "./PurchasePage.scss";
 import { useCallback, useContext, useState } from "react";
-import * as models from "../models";
 import { AppContext } from "../context/appContext";
 import WorkspaceList from "../Workspaces/WorkspaceList";
+import { PromoBanner } from "./PromoBanner";
+
+const selectedPlanAction = {
+  "plan-amplication-enterprise": (
+    props,
+    purchaseWorkspace,
+    selectedBillingPeriod
+  ) => {
+    window.open(
+      "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
+      "_blank",
+      "noreferrer"
+    );
+  },
+  "plan-amplication-pro": async (
+    props,
+    purchaseWorkspace,
+    selectedBillingPeriod
+  ) => {
+    const resp = await axios.post(
+      `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
+      {
+        workspaceId: purchaseWorkspace.id,
+        planId: "plan-amplication-pro",
+        billingPeriod: selectedBillingPeriod,
+        successUrl: props.location.state.from.pathname,
+        cancelUrl: props.location.state.from.pathname,
+      }
+    );
+
+    const checkoutResult = resp.data;
+    if (checkoutResult.provisionStatus === "PaymentRequired") {
+      window.location.href = checkoutResult.checkoutUrl;
+    }
+  },
+};
 
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
+  const history = useHistory();
+  const backUrl = () =>
+    history.action !== "POP" ? history.goBack() : history.push("/");
   const { currentWorkspace } = useContext(AppContext);
 
   const [purchaseWorkspace, setPurchaseWorkspace] =
@@ -27,6 +71,17 @@ const PurchasePage = (props) => {
   return (
     <Modal open fullScreen>
       <div className={CLASS_NAME}>
+        <div className={`${CLASS_NAME}__layout`}>
+          <Button
+            className={`${CLASS_NAME}__layout__btn`}
+            buttonStyle={EnumButtonStyle.Outline}
+            icon={"arrow_left"}
+            iconPosition={EnumIconPosition.Left}
+            onClick={backUrl}
+          >
+            back
+          </Button>
+        </div>
         <div className={`${CLASS_NAME}__header`}>
           Pick the perfect plan for your needs
         </div>
@@ -60,27 +115,13 @@ const PurchasePage = (props) => {
                 priceNotSet: "Price not set",
               },
             }}
-            onPlanSelected={async ({
-              customer,
-              plan,
-              selectedBillingPeriod,
-            }) => {
-              const resp = await axios.post(
-                `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
-                {
-                  workspaceId: customer.id,
-                  planId: plan.id,
-                  billingPeriod: selectedBillingPeriod,
-                  successUrl: props.location.state.from.pathname,
-                  cancelUrl: props.location.state.from.pathname,
-                }
-              );
-
-              const checkoutResult = resp.data;
-              if (checkoutResult.provisionStatus === "PaymentRequired") {
-                window.location.href = checkoutResult.checkoutUrl;
-              }
-            }}
+            onPlanSelected={async ({ plan, customer, selectedBillingPeriod }) =>
+              selectedPlanAction[plan.id](
+                props,
+                purchaseWorkspace,
+                selectedBillingPeriod
+              )
+            }
           />
         </StiggProvider>
       </div>
