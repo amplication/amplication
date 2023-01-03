@@ -1,4 +1,6 @@
 import { StiggProvider, Paywall } from "@stigg/react-sdk";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useHistory } from "react-router-dom";
 import {
   Button,
@@ -11,7 +13,7 @@ import { REACT_APP_BILLING_API_KEY, REACT_APP_SERVER_URI } from "../env";
 import "./PurchasePage.scss";
 
 const selectedPlanAction = {
-  "plan-amplication-enterprise": () => {
+  "plan-amplication-enterprise": (props) => {
     window.open(
       "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
       "_blank",
@@ -39,9 +41,15 @@ const selectedPlanAction = {
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
+  const { trackEvent } = useTracking();
   const history = useHistory();
-  const backUrl = () =>
+
+  const backUrl = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.PricingPageClose,
+    });
     history.action !== "POP" ? history.goBack() : history.push("/");
+  };
 
   return (
     <Modal open fullScreen>
@@ -85,9 +93,21 @@ const PurchasePage = (props) => {
                 priceNotSet: "Price not set",
               },
             }}
-            onPlanSelected={async ({ plan, customer }) =>
-              selectedPlanAction[plan.id]()
-            }
+            onPlanSelected={async ({
+              plan,
+              customer,
+              intentionType,
+              selectedBillingPeriod,
+            }) => {
+              trackEvent({
+                eventName: AnalyticsEventNames.PricingPageCTAClick,
+                currentPlan: plan.basePlan.displayName,
+                type: plan.displayName,
+                action: intentionType,
+                Billing: selectedBillingPeriod,
+              });
+              selectedPlanAction[plan.id](props);
+            }}
           />
         </StiggProvider>
       </div>

@@ -2,6 +2,7 @@ import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
+import Analytics from "analytics-node";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
@@ -19,11 +20,13 @@ import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStat
 import { Subscription } from "../subscription/dto/Subscription";
 import { BillingFeature } from "./BillingFeature";
 import { BillingPlan } from "./BillingPlan";
+import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 @Injectable()
 export class BillingService {
   private readonly stiggClient: Stigg;
   private readonly clientHost: string;
+  private analytics: Analytics;
 
   constructor(
     @Inject(AMPLICATION_LOGGER_PROVIDER)
@@ -98,7 +101,7 @@ export class BillingService {
     successUrl: string
   ): Promise<ProvisionSubscriptionResult> {
     const stiggClient = await this.getStiggClient();
-    return await stiggClient.provisionSubscription({
+    const stiggResponse = await stiggClient.provisionSubscription({
       customerId: workspaceId,
       planId: planId,
       billingPeriod: BillingPeriod.Monthly,
@@ -109,6 +112,13 @@ export class BillingService {
         successUrl: new URL(cancelUrl, this.clientHost).href,
       },
     });
+    /// need to know if it's upgrade or downgrade
+    this.analytics.track({
+      userId: workspaceId,
+      event: EnumEventType.WorkspacePlanUpgradeCompleted,
+    });
+
+    return stiggResponse;
   }
 
   async getSubscription(workspaceId: string): Promise<Subscription> {

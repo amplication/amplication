@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import {
@@ -44,6 +45,7 @@ const POLL_INTERVAL = 2000;
 
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
+  const { trackEvent } = useTracking();
   const [error, setError] = useState<Error>();
   const pageTitle = "Entities";
   const [searchPhrase, setSearchPhrase] = useState<string>("");
@@ -88,6 +90,12 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
       stopPolling();
     };
   }, [refetch, stopPolling, startPolling]);
+
+  const handleEntityClick = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeOnEntityListClick,
+    });
+  };
 
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
@@ -137,6 +145,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           <LimitationNotification
             description="With the current plan, you can use to 7 entities per service."
             link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+            handleClick={handleEntityClick}
           />
         )}
 
