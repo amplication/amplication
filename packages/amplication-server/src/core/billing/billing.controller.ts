@@ -13,6 +13,7 @@ export class BillingController {
     const checkoutResult = await this.billingService.provisionSubscription(
       provisionSubscriptionDto.workspaceId,
       provisionSubscriptionDto.planId,
+      provisionSubscriptionDto.billingPeriod,
       provisionSubscriptionDto.cancelUrl,
       provisionSubscriptionDto.successUrl
     );

@@ -60,12 +60,17 @@ const PurchasePage = (props) => {
                 priceNotSet: "Price not set",
               },
             }}
-            onPlanSelected={async ({ plan, customer }) => {
+            onPlanSelected={async ({
+              customer,
+              plan,
+              selectedBillingPeriod,
+            }) => {
               const resp = await axios.post(
                 `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
                 {
-                  workspaceId: purchaseWorkspace.id,
+                  workspaceId: customer.id,
                   planId: plan.id,
+                  billingPeriod: selectedBillingPeriod,
                   successUrl: props.location.state.from.pathname,
                   cancelUrl: props.location.state.from.pathname,
                 }
