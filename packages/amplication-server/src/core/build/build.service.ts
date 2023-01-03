@@ -479,9 +479,6 @@ export class BuildService {
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
-              head: premiumUser
-                ? "amplication"
-                : `amplication-build-${build.id}`,
               title: commitTitle,
               body: `Amplication build # ${build.id}.
               Commit message: ${commit.message}
