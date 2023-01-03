@@ -25,7 +25,7 @@ amplication-client:
       NX_REACT_APP_DATA_SOURCE: "https://server-custom.amplication-dev.com/graphql"
       NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-custom.amplication-dev.com/github"
       NX_REACT_APP_GITHUB_AUTH_ENABLED: value
-      NX_REACT_APP_BILLING_ENABLED: true
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   ingress:
@@ -48,4 +48,4 @@ amplication-server:
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       GITHUB_REDIRECT_URI: "https://server-custom.amplication-dev.com/github/callback"
 
-      BILLING_ENABLED: true
+      BILLING_ENABLED: "true"
