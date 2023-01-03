@@ -221,11 +221,11 @@ export class ProjectService {
     if (this.isBillingEnabled) {
       const project = await this.findFirst({ where: { id: projectId } });
       const isIgnoreValidationCodeGeneration =
-        this.billingService.getBooleanEntitlement(
+        await this.billingService.getBooleanEntitlement(
           project.workspaceId,
           BillingFeature.IgnoreValidationCodeGeneration
         );
-      if (!isIgnoreValidationCodeGeneration) {
+      if (!isIgnoreValidationCodeGeneration.hasAccess) {
         await this.validateSubscriptionPlanLimitationsForProject(projectId);
       }
     }
