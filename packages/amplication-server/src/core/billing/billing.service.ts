@@ -94,6 +94,7 @@ export class BillingService {
   async provisionSubscription(
     workspaceId: string,
     planId: string,
+    billingPeriod: BillingPeriod,
     cancelUrl: string,
     successUrl: string
   ): Promise<ProvisionSubscriptionResult> {
@@ -101,7 +102,7 @@ export class BillingService {
     return await stiggClient.provisionSubscription({
       customerId: workspaceId,
       planId: planId,
-      billingPeriod: BillingPeriod.Monthly,
+      billingPeriod: billingPeriod,
       awaitPaymentConfirmation: true,
       checkoutOptions: {
         allowPromoCodes: true,
