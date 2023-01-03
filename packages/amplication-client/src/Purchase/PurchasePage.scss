@@ -16,6 +16,45 @@
   .workspace-list {
     margin-bottom: 50px;
   }
+
+  &__contact {
+    padding: 80px 368px;
+    gap: 32px;
+    background: #15192c;
+
+    &_content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #ffffff;
+
+      p {
+        font-weight: 700;
+        font-size: 24px;
+        margin: 8px;
+      }
+
+      label {
+        font-size: 14px;
+      }
+    }
+
+    &_btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+
+    &_pro_btn {
+      color: var(--static-white);
+    }
+
+    &_pro_btn:hover {
+      background-color: var(--dark-purple);
+      border-color: var(--dark-purple);
+    }
+  }
 }
 
 .stigg-skeleton-loader-billing-period {

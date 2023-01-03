@@ -1,5 +1,5 @@
 import { StiggProvider, Paywall } from "@stigg/react-sdk";
-import { Modal } from "@amplication/design-system";
+import { Button, EnumButtonStyle, Modal } from "@amplication/design-system";
 import "./PurchasePage.scss";
 import axios from "axios";
 import { REACT_APP_BILLING_API_KEY, REACT_APP_SERVER_URI } from "../env";
@@ -78,6 +78,27 @@ const PurchasePage = (props) => {
             }}
           />
         </StiggProvider>
+      </div>
+      <div className={`${CLASS_NAME}__contact`}>
+        <div className={`${CLASS_NAME}__contact_content`}>
+          <p>Building an open-source project?</p>
+          <label>
+            Let us know if there is anything we can support you with. We will do
+            our best to help you improve your project for the community!
+          </label>
+        </div>
+        <div className={`${CLASS_NAME}__contact_btn`}>
+          <Button buttonStyle={EnumButtonStyle.Primary}>
+            <a
+              target="_blank"
+              rel="noreferrer"
+              className={`${CLASS_NAME}__contact_pro_btn`}
+              href="mailto:sales@amplication.com?subject=Pro plan for Open Source project"
+            >
+              Contact us
+            </a>
+          </Button>
+        </div>
       </div>
     </Modal>
   );
