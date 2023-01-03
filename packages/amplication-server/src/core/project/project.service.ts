@@ -219,7 +219,15 @@ export class ProjectService {
     });
 
     if (this.isBillingEnabled) {
-      await this.validateSubscriptionPlanLimitationsForProject(projectId);
+      const project = await this.findFirst({ where: { id: projectId } });
+      const isIgnoreValidationCodeGeneration =
+        this.billingService.getBooleanEntitlement(
+          project.workspaceId,
+          BillingFeature.IgnoreValidationCodeGeneration
+        );
+      if (!isIgnoreValidationCodeGeneration) {
+        await this.validateSubscriptionPlanLimitationsForProject(projectId);
+      }
     }
 
     if (isEmpty(resources)) {
