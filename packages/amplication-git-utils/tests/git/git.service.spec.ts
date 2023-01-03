@@ -15,7 +15,7 @@ import {
   TEST_GIT_REPOS,
 } from "./git.constants";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { EnumPullRequestMode } from "@amplication/git-utils/types";
+import { EnumPullRequestMode } from "../../src/types";
 
 describe("GitService", () => {
   let gitService: GitService;
