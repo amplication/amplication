@@ -108,6 +108,14 @@ export const Routes: RouteDef[] = [
         routes: [],
         isAnalytics: true,
       },
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/purchase",
+        Component: lazy(() => import("../Purchase/PurchasePage")),
+        moduleName: "",
+        routes: [],
+        exactPath: true,
+        isAnalytics: true,
+      },
     ],
   },
   {

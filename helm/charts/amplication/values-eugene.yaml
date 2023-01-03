@@ -30,6 +30,7 @@ amplication-client:
       NX_REACT_APP_DATA_SOURCE: "https://server-eugene.amplication-dev.com/graphql"
       NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-eugene.amplication-dev.com/github"
       NX_REACT_APP_STORAGE_GATEWAY_URL: https://server-eugene.amplication-dev.com
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   autoscaling:
@@ -70,6 +71,8 @@ amplication-server:
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "fe0059c5fd76abbf7cb4"
       GITHUB_REDIRECT_URI: "https://server-eugene.amplication-dev.com/github/callback"
+
+      BILLING_ENABLED: "true"
 
 amplication-git-push-webhook-service:
   ingress:

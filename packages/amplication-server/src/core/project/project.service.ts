@@ -16,16 +16,28 @@ import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
+import { Env } from "../../env";
+import { ConfigService } from "@nestjs/config";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
 
 @Injectable()
 export class ProjectService {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly resourceService: ResourceService,
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
-    private readonly entityService: EntityService
-  ) {}
+    private readonly entityService: EntityService,
+    private readonly configService: ConfigService,
+    private readonly billingService: BillingService
+  ) {
+    this.isBillingEnabled = this.configService.get<boolean>(
+      Env.BILLING_ENABLED
+    );
+  }
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
     return this.prisma.project.findMany({
@@ -114,6 +126,75 @@ export class ProjectService {
     return [...changedEntities, ...changedBlocks];
   }
 
+  async validateSubscriptionPlanLimitationsForProject(
+    projectId: string
+  ): Promise<void> {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+      include: {
+        resources: {
+          include: {
+            entities: {
+              where: {
+                deletedAt: null,
+              },
+            },
+          },
+          where: {
+            resourceType: EnumResourceType.Service,
+            deletedAt: null,
+          },
+        },
+        workspace: {
+          include: {
+            subscriptions: true,
+            projects: {
+              include: {
+                resources: {
+                  where: {
+                    resourceType: EnumResourceType.Service,
+                    deletedAt: null,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const workspace = project.workspace;
+
+    const projectServices = project.resources;
+
+    const servicesEntitlement = await this.billingService.getMeteredEntitlement(
+      workspace.id,
+      BillingFeature.Services
+    );
+
+    if (!servicesEntitlement.hasAccess) {
+      throw new Error(
+        `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
+      );
+    }
+
+    const entitiesPerServiceEntitlement =
+      await this.billingService.getNumericEntitlement(
+        workspace.id,
+        BillingFeature.EntitiesPerService
+      );
+
+    projectServices.map((service) => {
+      if (service.entities.length > entitiesPerServiceEntitlement.value) {
+        throw new Error(
+          `LimitationError: Allowed entities per service: ${entitiesPerServiceEntitlement.value}`
+        );
+      }
+    });
+  }
+
   async commit(
     args: CreateCommitArgs,
     skipPublish?: boolean
@@ -137,6 +218,10 @@ export class ProjectService {
       },
     });
 
+    if (this.isBillingEnabled) {
+      await this.validateSubscriptionPlanLimitationsForProject(projectId);
+    }
+
     if (isEmpty(resources)) {
       throw new Error(`Invalid userId or resourceId`);
     }
@@ -149,6 +234,14 @@ export class ProjectService {
     /**@todo: consider discarding locked objects that have no actual changes */
 
     const commit = await this.prisma.commit.create(args);
+
+    if (this.isBillingEnabled) {
+      const project = await this.findUnique({ where: { id: projectId } });
+      await this.billingService.reportUsage(
+        project.workspaceId,
+        BillingFeature.CodeGenerationBuilds
+      );
+    }
 
     await Promise.all(
       changedEntities.flatMap((change) => {
