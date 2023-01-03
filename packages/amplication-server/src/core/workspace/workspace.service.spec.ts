@@ -137,7 +137,7 @@ describe("WorkspaceService", () => {
               return {};
             }),
             getStiggClient: jest.fn(() => {
-              return {};
+              return { provisionCustomer: () => undefined };
             }),
           },
         },
