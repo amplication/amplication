@@ -486,7 +486,19 @@ export class BuildService {
       async (step) => {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
-          //TODO: if premium then base branch "amplication"
+
+          if (user?.workspace?.id == null) {
+            throw new Error("Missing workspace id");
+          }
+
+          const subscription = await this.billingService.getSubscription(
+            user.workspace.id
+          );
+
+          const pullRequestMode = subscription
+            ? EnumPullRequestMode.Accumulative
+            : EnumPullRequestMode.Basic;
+
           const createPullRequestArgs: SendPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
@@ -507,7 +519,7 @@ export class BuildService {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
-            pullRequestMode: EnumPullRequestMode.Basic, //TODO change it to dynamic
+            pullRequestMode,
           };
 
           await this.queueService.emitMessage(
