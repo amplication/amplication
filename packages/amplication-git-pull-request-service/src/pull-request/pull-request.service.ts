@@ -1,4 +1,8 @@
-import { Branch, GitService } from "@amplication/git-utils";
+import {
+  Branch,
+  EnumPullRequestMode,
+  GitService,
+} from "@amplication/git-utils";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
@@ -30,7 +34,11 @@ export class PullRequestService {
     gitResourceMeta,
     pullRequestMode,
   }: CreatePullRequestArgs): Promise<string> {
-    const { base, body, head, title } = commit;
+    const { base, body, title } = commit;
+    const head =
+      commit.head || pullRequestMode === EnumPullRequestMode.Accumulative
+        ? "amplication"
+        : `amplication-build-${newBuildId}`;
     const changedFiles = await this.diffService.listOfChangedFiles(
       resourceId,
       oldBuildId,

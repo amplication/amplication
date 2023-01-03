@@ -468,8 +468,6 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
           //TODO: if premium then base branch "amplication"
-
-          const premiumUser = false;
           const createPullRequestArgs: SendPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
@@ -479,9 +477,6 @@ export class BuildService {
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
-              head: premiumUser
-                ? "amplication"
-                : `amplication-build-${build.id}`,
               title: commitTitle,
               body: `Amplication build # ${build.id}.
               Commit message: ${commit.message}
