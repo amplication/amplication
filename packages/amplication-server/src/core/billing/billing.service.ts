@@ -111,7 +111,7 @@ export class BillingService {
     });
   }
 
-  async getSubscription(workspaceId: string): Promise<Subscription> {
+  async getSubscription(workspaceId: string): Promise<Subscription | null> {
     try {
       const stiggClient = await this.getStiggClient();
       const workspace = await stiggClient.getCustomer(workspaceId);
