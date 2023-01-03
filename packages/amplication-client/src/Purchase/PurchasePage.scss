@@ -1,20 +1,20 @@
 .purchase-page {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: #22273c;
   padding-top: 75px;
 
   &__header {
-    display: flex;
-    flex-direction: column;
     color: #ffffff;
-    margin-bottom: 50px;
-    text-align: center;
-  }
-
-  &__first_line {
     font-size: 24px;
     font-weight: 700;
-    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .workspace-list {
+    margin-bottom: 50px;
   }
 }
 

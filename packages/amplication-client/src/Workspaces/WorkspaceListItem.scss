@@ -1,17 +1,22 @@
 @import "../style/index.scss";
 
-.workspaces__list__item {
-  &__header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+.workspace-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &__label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--black100);
   }
+
   &__select-menu {
     background: var(--black2);
     width: 248px;
   }
+
   &__menu {
     margin-left: 0 !important;
     gap: 8px;

@@ -10,7 +10,7 @@ import {
 } from "@amplication/design-system";
 import "./WorkspaceListItem.scss";
 
-const CLASS_NAME = "workspaces__list__item";
+const CLASS_NAME = "workspace-list";
 
 type Props = {
   selectedWorkspace: models.Workspace;
@@ -25,8 +25,8 @@ function WorkspaceList({ selectedWorkspace, onWorkspaceSelected }: Props) {
   }, []);
 
   return (
-    <div className={`${CLASS_NAME}__header`}>
-      <p>Select workspace</p>
+    <div className={CLASS_NAME}>
+      <div className={`${CLASS_NAME}__label`}>Select workspace</div>
       <SelectMenu
         title={selectedWorkspace.name}
         buttonStyle={EnumButtonStyle.Text}

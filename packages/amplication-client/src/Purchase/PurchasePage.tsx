@@ -3,6 +3,7 @@ import { Modal } from "@amplication/design-system";
 import "./PurchasePage.scss";
 import axios from "axios";
 import { REACT_APP_BILLING_API_KEY, REACT_APP_SERVER_URI } from "../env";
+import { PromoBanner } from "./PromoBanner";
 import { useCallback, useContext, useState } from "react";
 import * as models from "../models";
 import { AppContext } from "../context/appContext";
@@ -27,18 +28,17 @@ const PurchasePage = (props) => {
     <Modal open fullScreen>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__header`}>
-          <div className={`${CLASS_NAME}__first_line`}>
-            Pick the perfect plan for your needs
-          </div>
-          <WorkspaceList
-            selectedWorkspace={purchaseWorkspace}
-            onWorkspaceSelected={handleSetCurrentWorkspace}
-          ></WorkspaceList>
+          Pick the perfect plan for your needs
         </div>
+        <WorkspaceList
+          selectedWorkspace={purchaseWorkspace}
+          onWorkspaceSelected={handleSetCurrentWorkspace}
+        />
         <StiggProvider
           apiKey={REACT_APP_BILLING_API_KEY}
           customerId={purchaseWorkspace.id}
         >
+          <PromoBanner />
           <Paywall
             textOverrides={{
               entitlementsTitle: (plan) => {
