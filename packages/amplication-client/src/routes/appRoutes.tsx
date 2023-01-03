@@ -119,6 +119,15 @@ export const Routes: RouteDef[] = [
     ],
   },
   {
+    path: "/purchase",
+    routeTrackType: "purchase",
+    redirect: "/",
+    moduleName: "purchase",
+    routes: [],
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
     path: "/login",
     Component: lazy(() => import("../User/Login")),
     moduleName: "Login",
@@ -155,15 +164,6 @@ export const Routes: RouteDef[] = [
     routeTrackType: "",
     exactPath: true,
     routes: [],
-    isAnalytics: true,
-  },
-  {
-    path: "*",
-    Component: lazy(() => import("../404/NotFoundPage")),
-    moduleName: "NotFound",
-    moduleClass: "not-found-page",
-    routeTrackType: "notFound",
-    exactPath: true,
     isAnalytics: true,
   },
 ];
