@@ -16,19 +16,28 @@ import WorkspaceList from "../Workspaces/WorkspaceList";
 import { PromoBanner } from "./PromoBanner";
 
 const selectedPlanAction = {
-  "plan-amplication-enterprise": (props, purchaseWorkspace) => {
+  "plan-amplication-enterprise": (
+    props,
+    purchaseWorkspace,
+    selectedBillingPeriod
+  ) => {
     window.open(
       "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
       "_blank",
       "noreferrer"
     );
   },
-  "plan-amplication-pro": async (props, purchaseWorkspace) => {
+  "plan-amplication-pro": async (
+    props,
+    purchaseWorkspace,
+    selectedBillingPeriod
+  ) => {
     const resp = await axios.post(
       `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
       {
         workspaceId: purchaseWorkspace.id,
         planId: "plan-amplication-pro",
+        billingPeriod: selectedBillingPeriod,
         successUrl: props.location.state.from.pathname,
         cancelUrl: props.location.state.from.pathname,
       }
@@ -106,8 +115,12 @@ const PurchasePage = (props) => {
                 priceNotSet: "Price not set",
               },
             }}
-            onPlanSelected={async ({ plan, customer }) =>
-              selectedPlanAction[plan.id](props, purchaseWorkspace)
+            onPlanSelected={async ({ plan, customer, selectedBillingPeriod }) =>
+              selectedPlanAction[plan.id](
+                props,
+                purchaseWorkspace,
+                selectedBillingPeriod
+              )
             }
           />
         </StiggProvider>
