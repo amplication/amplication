@@ -5,11 +5,16 @@
 
   &__header {
     display: flex;
+    flex-direction: column;
+    color: #ffffff;
+    margin-bottom: 50px;
+    text-align: center;
+  }
+
+  &__first_line {
     font-size: 24px;
     font-weight: 700;
-    color: #ffffff;
-    justify-content: center;
-    margin-bottom: 50px;
+    gap: 12px;
   }
 }
 

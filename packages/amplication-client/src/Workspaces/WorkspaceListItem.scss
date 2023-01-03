@@ -1,0 +1,42 @@
+@import "../style/index.scss";
+
+.workspaces__list__item {
+  &__header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  &__select-menu {
+    background: var(--black2);
+    width: 248px;
+  }
+  &__menu {
+    margin-left: 0 !important;
+    gap: 8px;
+    width: 220px;
+    height: 28px;
+    background: #15192c;
+    border: $border-black20;
+    border-radius: var(--small-border-radius);
+
+    .amp-button {
+      height: 28px;
+      width: 100%;
+      justify-content: space-between;
+      padding: 5px 16px;
+
+      .menu-item-content__text {
+        max-width: 180px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+.select-menu .select-menu__modal > div {
+  width: 220px;
+}
