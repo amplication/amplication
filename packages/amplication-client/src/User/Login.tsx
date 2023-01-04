@@ -79,7 +79,8 @@ const Login = () => {
       if (from === "login") {
         from = "/";
       }
-      history.replace(from);
+
+      history.replace(`${from.pathname || from}${location.search}`);
     }
   }, [data, history, location]);
 
