@@ -86,9 +86,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
     history.replace("/login");
   }, [history, apolloClient]);
 
-  const handleUpgradeClick = () =>
-    history.push(`/${currentWorkspace?.id}/purchase`);
-
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
@@ -219,9 +216,16 @@ const WorkspaceHeader: React.FC<{}> = () => {
           <Button
             className={`${CLASS_NAME}__upgrade__btn`}
             buttonStyle={EnumButtonStyle.Outline}
-            onClick={handleUpgradeClick}
           >
-            Upgrade
+            <Link
+              className={`${CLASS_NAME}__upgrade__link`}
+              to={{
+                pathname: `/${currentWorkspace?.id}/purchase`,
+                state: { from: { pathname: window.location.pathname } },
+              }}
+            >
+              Upgrade
+            </Link>
           </Button>
           <a
             className={`${CLASS_NAME}__links__link`}
