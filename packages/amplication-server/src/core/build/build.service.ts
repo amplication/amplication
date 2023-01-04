@@ -487,12 +487,8 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          if (user?.workspace?.id == null) {
-            throw new Error("Missing workspace id");
-          }
-
           const subscription = await this.billingService.getSubscription(
-            user.workspace.id
+            project.workspaceId
           );
 
           const pullRequestMode = subscription
