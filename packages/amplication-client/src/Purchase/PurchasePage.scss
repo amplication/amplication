@@ -110,7 +110,7 @@
   display: none !important;
 }
 
-.stigg-skeleton-loader-plans-container div[class*="PlanOfferingSkeleton"] {
+.stigg-skeleton-loader-plans-container > div {
   max-width: 244px !important;
   min-width: 244px !important;
   padding-left: 24px !important;
@@ -182,14 +182,19 @@
 .stigg-price-text {
   order: 1;
   font-size: 40px !important;
-  line-height: 60px !important;
   margin-top: 4px !important;
 }
 
 .stigg-price-billing-period-text {
   order: 2;
+  font-weight: 400;
   font-size: 10px;
   line-height: 15px;
+  color: #a3a8b8;
+}
+
+.stigg-price-billing-period-text::first-letter {
+  text-transform: uppercase;
 }
 
 .stigg-plan-description {
