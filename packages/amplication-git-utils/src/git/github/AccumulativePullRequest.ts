@@ -60,7 +60,6 @@ export class AccumulativePullRequest {
     if (existingPullRequest) {
       console.log("existingPR", existingPullRequest.url);
     }
-
     if (!existingPullRequest) {
       console.info("The PR does not exist, creating a new one");
       // Returns a normal Octokit PR response
@@ -103,6 +102,7 @@ export class AccumulativePullRequest {
       mode: fileModeCode,
       content,
     }));
+
     const lastCommit = await this.getLastCommit(
       octokit,
       owner,
@@ -110,8 +110,14 @@ export class AccumulativePullRequest {
       branchName
     );
 
+    console.log(`Got last commit with url ${lastCommit.html_url}`);
+
     if (changesArray.length === 0) {
       return;
+    }
+
+    if (!lastCommit) {
+      throw new Error("No last commit found");
     }
 
     const { data: tree } = await octokit.rest.git.createTree({
@@ -152,6 +158,9 @@ export class AccumulativePullRequest {
     branchName: string
   ) {
     const branch = await this.getBranch(octokit, owner, repo, branchName);
+
+    console.log(`Got branch ${branch.name} with sha ${branch.sha}`);
+
     const [lastCommit] = (
       await octokit.rest.repos.listCommits({
         owner,
@@ -159,6 +168,7 @@ export class AccumulativePullRequest {
         sha: branch.sha,
       })
     ).data;
+
     return lastCommit;
   }
 
@@ -168,11 +178,14 @@ export class AccumulativePullRequest {
     repo: string,
     branch: string
   ): Promise<Branch> {
-    const refs = await octokit.rest.git.getRef({
+    const { data: ref } = await octokit.rest.git.getRef({
       owner,
       repo,
       ref: `heads/${branch}`,
     });
-    return { sha: refs.data.object.sha, name: branch };
+
+    console.log(`Got branch ${branch} with url ${ref.url}`);
+
+    return { sha: ref.object.sha, name: branch };
   }
 }
