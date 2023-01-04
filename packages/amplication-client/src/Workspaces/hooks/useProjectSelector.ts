@@ -86,15 +86,13 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
-    const purchaseRedirect = location.search.replace("?", "");
-
-    purchaseRedirect === "/purchase" &&
+    location.search === "?u=p" &&
       !workspaceUtil &&
-      history.push(`/${currentWorkspace?.id}${purchaseRedirect}`);
+      history.push(`/${currentWorkspace?.id}/purchase${location.search}`);
 
     !workspaceUtil &&
       currentWorkspace?.id &&
-      purchaseRedirect !== "/purchase" &&
+      location.search !== "?u=p" &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
           isFromSignup ? "/create-resource" : ""
