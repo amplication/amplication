@@ -93,6 +93,7 @@ const PurchasePage = (props) => {
           onWorkspaceSelected={handleSetCurrentWorkspace}
         />
         <StiggProvider
+          key={purchaseWorkspace.id}
           apiKey={REACT_APP_BILLING_API_KEY}
           customerId={purchaseWorkspace.id}
         >
