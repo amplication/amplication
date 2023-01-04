@@ -115,13 +115,13 @@ const PurchasePage = (props) => {
                 priceNotSet: "Price not set",
               },
             }}
-            onPlanSelected={async ({ plan, customer, selectedBillingPeriod }) =>
+            onPlanSelected={async ({ plan, selectedBillingPeriod }) => {
               selectedPlanAction[plan.id](
                 props,
                 purchaseWorkspace,
                 selectedBillingPeriod
-              )
-            }
+              );
+            }}
           />
         </StiggProvider>
       </div>
