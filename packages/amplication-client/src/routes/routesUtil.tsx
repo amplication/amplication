@@ -57,6 +57,7 @@ const LazyRouteWrapper: React.FC<{
                 to={{
                   pathname: "/login",
                   state: { from: location },
+                  search: location.search,
                 }}
               />
             )
