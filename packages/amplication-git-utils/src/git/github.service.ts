@@ -146,16 +146,16 @@ export class GithubService {
     };
   }
   async getFile(
-    userName: string,
-    repoName: string,
+    owner: string,
+    repo: string,
     path: string,
     baseBranchName: string,
     installationId: string
   ): Promise<GithubFile> {
     const octokit = await this.getInstallationOctokit(installationId);
     const content = await octokit.rest.repos.getContent({
-      owner: userName,
-      repo: repoName,
+      owner,
+      repo,
       path,
       ref: baseBranchName ? baseBranchName : undefined,
     });
@@ -212,6 +212,8 @@ export class GithubService {
             )
           ).content;
         }
+
+        return null;
       } catch (error) {
         console.log("Repository does not have a .amplicationignore file");
         return "";
