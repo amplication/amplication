@@ -92,8 +92,8 @@ export const routesGenerator: (
         {routes.map((route: RouteDef) => (
           <LazyRouteWrapper key={route.path} route={route} />
         ))}
-        <Route component={NotFoundPage} />
       </Route>
+      <Route component={NotFoundPage} />
     </Switch>
   );
 };
