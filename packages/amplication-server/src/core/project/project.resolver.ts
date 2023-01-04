@@ -15,7 +15,7 @@ import { ProjectService } from "./project.service";
 import { InjectContextValue } from "../../decorators/injectContextValue.decorator";
 import { InjectableOriginParameter } from "../../enums/InjectableOriginParameter";
 import { Roles } from "../../decorators/roles.decorator";
-import { UseFilters, UseGuards } from "@nestjs/common";
+import { Inject, UseFilters, UseGuards } from "@nestjs/common";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
@@ -28,6 +28,10 @@ import {
   FindPendingChangesArgs,
   PendingChange,
 } from "../resource/dto";
+import {
+  AmplicationLogger,
+  AMPLICATION_LOGGER_PROVIDER,
+} from "@amplication/nest-logger-module";
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -35,7 +39,9 @@ import {
 export class ProjectResolver {
   constructor(
     private projectService: ProjectService,
-    private resourceService: ResourceService
+    private resourceService: ResourceService,
+    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly logger: AmplicationLogger
   ) {}
 
   @Query(() => [Project], { nullable: false })
@@ -92,7 +98,12 @@ export class ProjectResolver {
   )
   @InjectContextValue(InjectableOriginParameter.UserId, "data.user.connect.id")
   async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
-    return this.projectService.commit(args);
+    try {
+      return await this.projectService.commit(args);
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 
   @Mutation(() => Boolean, {
