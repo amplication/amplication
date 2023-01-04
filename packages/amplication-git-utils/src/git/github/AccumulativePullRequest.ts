@@ -60,7 +60,6 @@ export class AccumulativePullRequest {
     if (existingPullRequest) {
       console.log("existingPR", existingPullRequest.url);
     }
-
     if (!existingPullRequest) {
       console.info("The PR does not exist, creating a new one");
       // Returns a normal Octokit PR response
@@ -182,7 +181,7 @@ export class AccumulativePullRequest {
     const { data: ref } = await octokit.rest.git.getRef({
       owner,
       repo,
-      ref: `refs/heads/${branch}`,
+      ref: `heads/${branch}`,
     });
 
     console.log(`Got branch ${branch} with url ${ref.url}`);
