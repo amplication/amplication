@@ -94,6 +94,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   );
   const subscription =
     getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
+  const hideBanner = true;
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
@@ -133,7 +134,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         </div>
         {loading && <CircularProgress centerToParent />}
 
-        {!subscription && (
+        {!subscription && hideBanner && (
           <LimitationNotification
             description="With the current plan, you can use to 7 entities per service."
             link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}

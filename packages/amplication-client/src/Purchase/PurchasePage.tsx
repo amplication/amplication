@@ -79,7 +79,7 @@ const PurchasePage = (props) => {
             iconPosition={EnumIconPosition.Left}
             onClick={backUrl}
           >
-            back
+            Back
           </Button>
         </div>
         <div className={`${CLASS_NAME}__header`}>
