@@ -42,7 +42,7 @@ const LazyRouteWrapper: React.FC<{
             <Redirect
               to={{
                 pathname: route.redirect,
-                search: `?${route.path}`,
+                search: `?u=p`,
               }}
             />
           ) : route.permission ? (
