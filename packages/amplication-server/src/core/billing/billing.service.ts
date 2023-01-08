@@ -98,7 +98,7 @@ export class BillingService {
     workspaceId: string,
     planId: string,
     billingPeriod: BillingPeriod,
-    isLowerThanCurrentPlan: boolean,
+    intentionType: "UPGRADE_PLAN" | "DOWNGRADE_PLAN",
     cancelUrl: string,
     successUrl: string
   ): Promise<ProvisionSubscriptionResult> {
@@ -114,12 +114,12 @@ export class BillingService {
         successUrl: new URL(cancelUrl, this.clientHost).href,
       },
     });
-    /// need to know if it's upgrade or downgrade
     this.analytics.track({
       userId: workspaceId,
-      event: isLowerThanCurrentPlan
-        ? EnumEventType.WorkspacePlanDowngradeCompleted
-        : EnumEventType.WorkspacePlanUpgradeCompleted,
+      event:
+        intentionType === "DOWNGRADE_PLAN"
+          ? EnumEventType.WorkspacePlanDowngradeCompleted
+          : EnumEventType.WorkspacePlanUpgradeCompleted,
     });
 
     return stiggResponse;

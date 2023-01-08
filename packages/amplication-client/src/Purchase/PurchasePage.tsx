@@ -22,7 +22,7 @@ const selectedPlanAction = {
     props,
     purchaseWorkspace,
     selectedBillingPeriod,
-    isLowerThanCurrentPlan
+    intentionType
   ) => {
     window.open(
       "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
@@ -34,7 +34,7 @@ const selectedPlanAction = {
     props,
     purchaseWorkspace,
     selectedBillingPeriod,
-    isLowerThanCurrentPlan
+    intentionType
   ) => {
     const resp = await axios.post(
       `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
@@ -42,7 +42,7 @@ const selectedPlanAction = {
         workspaceId: purchaseWorkspace.id,
         planId: "plan-amplication-pro",
         billingPeriod: selectedBillingPeriod,
-        isLowerThanCurrentPlan,
+        intentionType,
         successUrl: props.location.state.from.pathname,
         cancelUrl: props.location.state.from.pathname,
       }
@@ -140,7 +140,6 @@ const PurchasePage = (props) => {
               intentionType,
               selectedBillingPeriod,
             }) => {
-              console.log(plan.isLowerThanCurrentPlan);
               trackEvent({
                 eventName: AnalyticsEventNames.PricingPageCTAClick,
                 currentPlan: plan.basePlan.displayName,
@@ -152,7 +151,7 @@ const PurchasePage = (props) => {
                 props,
                 purchaseWorkspace,
                 selectedBillingPeriod,
-                isLowerThanCurrentPlan
+                intentionType
               );
             }}
           />
