@@ -20,6 +20,7 @@ import { Env } from "../../env";
 import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
+import { ValidationError } from "../../errors/ValidationError";
 
 @Injectable()
 export class ProjectService {
@@ -175,7 +176,7 @@ export class ProjectService {
     );
 
     if (!servicesEntitlement.hasAccess) {
-      throw new Error(
+      throw new ValidationError(
         `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
       );
     }
@@ -188,7 +189,7 @@ export class ProjectService {
 
     projectServices.map((service) => {
       if (service.entities.length > entitiesPerServiceEntitlement.value) {
-        throw new Error(
+        throw new ValidationError(
           `LimitationError: Allowed entities per service: ${entitiesPerServiceEntitlement.value}`
         );
       }
