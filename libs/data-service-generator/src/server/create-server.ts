@@ -126,7 +126,6 @@ async function createServerInternal(
     ...dtoModules,
     ...swagger,
     ...appModule,
-    ...gitIgnore,
     ...seedModule,
     ...userInfo,
     ...tokenPayloadInterface,
@@ -137,18 +136,10 @@ async function createServerInternal(
 
   await createLog({ level: "info", message: "Formatting code..." });
   logger.info("Formatting code...");
-  const formattedModules = createdModules.map((module) => {
-    if (module.path.includes(".gitignore")) {
-      return {
-        ...module,
-        code: module.code,
-      };
-    }
-    return {
-      ...module,
-      code: formatCode(module.code),
-    };
-  });
+  const formattedModules = createdModules.map((module) => ({
+    ...module,
+    code: formatCode(module.code),
+  }));
   const formattedJsonFiles = [...packageJsonModule].map((module) => ({
     ...module,
     code: formatJson(module.code),
@@ -173,6 +164,7 @@ async function createServerInternal(
 
   return [
     ...staticModules,
+    ...gitIgnore,
     ...formattedJsonFiles,
     ...formattedModules,
     ...prismaSchemaModule,

@@ -127,18 +127,10 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   );
 
   logger.info("Formatting code...");
-  const formattedModules = createdModules.map((module) => {
-    if (module.path.includes(".gitignore")) {
-      return {
-        ...module,
-        code: module.code,
-      };
-    }
-    return {
-      ...module,
-      code: formatCode(module.code),
-    };
-  });
+  const formattedModules = createdModules.map((module) => ({
+    ...module,
+    code: formatCode(module.code),
+  }));
   return [
     ...staticModules,
     ...gitIgnore,
