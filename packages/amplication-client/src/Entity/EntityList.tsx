@@ -20,6 +20,8 @@ import "./EntityList.scss";
 import { AppRouteProps } from "../routes/routesUtil";
 import { pluralize } from "../util/pluralize";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "../util/BillingFeature";
 
 type TData = {
   entities: models.Entity[];
@@ -94,7 +96,11 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   );
   const subscription =
     getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
-  const hideBanner = true;
+
+  const { stigg } = useStiggContext();
+  const hideNotifications = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.HideNotifications,
+  });
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
@@ -134,7 +140,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         </div>
         {loading && <CircularProgress centerToParent />}
 
-        {!subscription && hideBanner && (
+        {!subscription && !hideNotifications.hasAccess && (
           <LimitationNotification
             description="With the current plan, you can use to 7 entities per service."
             link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
