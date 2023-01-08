@@ -26,6 +26,7 @@ import { createLog } from "../create-log";
 import { createUserInfo } from "./auth/user-info/create-user-info";
 import { createTokenPayloadInterface } from "./auth/token/create-token-payload-interface";
 import { createAuthConstants } from "./auth/create-constants/create-constants";
+import { createGitIgnore } from "./gitignore/create-gitignore";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -65,6 +66,11 @@ async function createServerInternal(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
   );
+
+  await createLog({ level: "info", message: "Creating gitignore..." });
+  logger.info("Creating gitignore...");
+  const gitIgnore = await createGitIgnore();
+
   const packageJsonModule = await createServerPackageJson();
 
   await createLog({ level: "info", message: "Creating resources..." });
@@ -120,6 +126,7 @@ async function createServerInternal(
     ...dtoModules,
     ...swagger,
     ...appModule,
+    ...gitIgnore,
     ...seedModule,
     ...userInfo,
     ...tokenPayloadInterface,
@@ -130,10 +137,18 @@ async function createServerInternal(
 
   await createLog({ level: "info", message: "Formatting code..." });
   logger.info("Formatting code...");
-  const formattedModules = createdModules.map((module) => ({
-    ...module,
-    code: formatCode(module.code),
-  }));
+  const formattedModules = createdModules.map((module) => {
+    if (module.path.includes(".gitignore")) {
+      return {
+        ...module,
+        code: module.code,
+      };
+    }
+    return {
+      ...module,
+      code: formatCode(module.code),
+    };
+  });
   const formattedJsonFiles = [...packageJsonModule].map((module) => ({
     ...module,
     code: formatJson(module.code),
