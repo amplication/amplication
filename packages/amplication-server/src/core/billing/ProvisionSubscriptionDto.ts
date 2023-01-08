@@ -2,7 +2,7 @@ export class ProvisionSubscriptionDto {
   workspaceId: string;
   planId: string;
   billingPeriod: BillingPeriod;
-  isLowerThanCurrentPlan: boolean;
+  intentionType: "UPGRADE_PLAN" | "DOWNGRADE_PLAN";
   successUrl: string;
   cancelUrl: string;
 }
