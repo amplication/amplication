@@ -22,6 +22,7 @@ import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
 import { createAdminUIPackageJson } from "./package-json/create-package-json";
 import { createLog } from "../create-log";
+import { createGitIgnore } from "./gitignore/create-gitignore";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -63,6 +64,10 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     STATIC_MODULES_PATH,
     clientDirectories.baseDirectory
   );
+
+  await createLog({ level: "info", message: "Creating gitignore..." });
+  logger.info("Creating gitignore...");
+  const gitIgnore = await createGitIgnore();
 
   const packageJson = await createAdminUIPackageJson();
 
@@ -122,12 +127,21 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   );
 
   logger.info("Formatting code...");
-  const formattedModules = createdModules.map((module) => ({
-    ...module,
-    code: formatCode(module.code),
-  }));
+  const formattedModules = createdModules.map((module) => {
+    if (module.path.includes(".gitignore")) {
+      return {
+        ...module,
+        code: module.code,
+      };
+    }
+    return {
+      ...module,
+      code: formatCode(module.code),
+    };
+  });
   return [
     ...staticModules,
+    ...gitIgnore,
     ...packageJson,
     ...publicFilesModules,
     ...formattedModules,
