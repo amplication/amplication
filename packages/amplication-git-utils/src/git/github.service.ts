@@ -1,31 +1,32 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { App, Octokit } from "octokit";
-import { GithubFile } from "./dto/github-file.dto";
-import { ConverterUtil } from "../utils/convert-to-number";
 import { createAppAuth } from "@octokit/auth-app";
+import { components } from "@octokit/openapi-types";
+import { App, Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+import { join } from "path";
+import { EnumPullRequestMode } from "../types";
+import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
+import { ConverterUtil } from "../utils/convert-to-number";
+import { Branch } from "./dto/branch";
+import { GithubFile } from "./dto/github-file.dto";
+import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
+import {
+  RemoteGitRepos,
+  RemoteGitRepository,
+} from "./dto/remote-git-repository";
 import {
   AMPLICATION_IGNORED_FOLDER,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE,
 } from "./git.constants";
-import { components } from "@octokit/openapi-types";
-import { join } from "path";
-import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import {
   EnumGitOrganizationType,
   GitResourceMeta,
   PrModule,
 } from "./git.types";
-import {
-  RemoteGitRepos,
-  RemoteGitRepository,
-} from "./dto/remote-git-repository";
-import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
-import { Branch } from "./dto/branch";
-import { EnumPullRequestMode } from "../types";
-import { BasicPullRequest } from "./github/BasicPullRequest";
 import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
+import { BasicPullRequest } from "./github/BasicPullRequest";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -146,16 +147,16 @@ export class GithubService {
     };
   }
   async getFile(
-    userName: string,
-    repoName: string,
+    owner: string,
+    repo: string,
     path: string,
     baseBranchName: string,
     installationId: string
   ): Promise<GithubFile> {
     const octokit = await this.getInstallationOctokit(installationId);
     const content = await octokit.rest.repos.getContent({
-      owner: userName,
-      repo: repoName,
+      owner,
+      repo,
       path,
       ref: baseBranchName ? baseBranchName : undefined,
     });
@@ -212,6 +213,8 @@ export class GithubService {
             )
           ).content;
         }
+
+        return null;
       } catch (error) {
         console.log("Repository does not have a .amplicationignore file");
         return "";
@@ -240,7 +243,7 @@ export class GithubService {
 
     const authFolder = "server/src/auth";
 
-    const files = Object.fromEntries(
+    const files: Required<Changes["files"]> = Object.fromEntries(
       modules.map((module) => {
         // ignored file
         if (amplicationIgnoreManger.isIgnored(module.path)) {

@@ -1,7 +1,7 @@
 import { Octokit } from "octokit";
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { Branch } from "../dto";
-
-const fileModeCode = "100644";
+import { createTree } from "./github-create-tree";
 
 export class AccumulativePullRequest {
   async createPullRequest(
@@ -12,7 +12,7 @@ export class AccumulativePullRequest {
     prBody: string,
     baseBranchName: string,
     head: string,
-    files: any,
+    files: Required<Changes["files"]>,
     commitMessage: string
   ): Promise<string> {
     const branchInfo: {
@@ -60,7 +60,6 @@ export class AccumulativePullRequest {
     if (existingPullRequest) {
       console.log("existingPR", existingPullRequest.url);
     }
-
     if (!existingPullRequest) {
       console.info("The PR does not exist, creating a new one");
       // Returns a normal Octokit PR response
@@ -96,13 +95,8 @@ export class AccumulativePullRequest {
     repo: string,
     message: string,
     branchName: string,
-    changes: any
+    changes: Required<Changes["files"]>
   ) {
-    const changesArray = Object.entries(changes).map(([path, content]) => ({
-      path,
-      mode: fileModeCode,
-      content,
-    }));
     const lastCommit = await this.getLastCommit(
       octokit,
       owner,
@@ -110,18 +104,20 @@ export class AccumulativePullRequest {
       branchName
     );
 
-    if (changesArray.length === 0) {
-      return;
+    console.log(`Got last commit with url ${lastCommit.html_url}`);
+
+    if (!lastCommit) {
+      throw new Error("No last commit found");
     }
 
-    const { data: tree } = await octokit.rest.git.createTree({
+    const lastTreeSha = await createTree(
+      octokit,
       owner,
       repo,
-      base_tree: lastCommit.commit.tree.sha,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      tree: changesArray,
-    });
+      lastCommit.sha,
+      lastCommit.commit.tree.sha,
+      changes
+    );
 
     console.info(`Created tree for for ${owner}/${repo}`);
 
@@ -129,7 +125,7 @@ export class AccumulativePullRequest {
       message,
       owner,
       repo,
-      tree: tree.sha,
+      tree: lastTreeSha,
       parents: [lastCommit.sha],
     });
 
@@ -152,6 +148,11 @@ export class AccumulativePullRequest {
     branchName: string
   ) {
     const branch = await this.getBranch(octokit, owner, repo, branchName);
+
+    console.log(
+      `Got branch ${owner}/${repo}/${branch.name} with sha ${branch.sha}`
+    );
+
     const [lastCommit] = (
       await octokit.rest.repos.listCommits({
         owner,
@@ -159,6 +160,7 @@ export class AccumulativePullRequest {
         sha: branch.sha,
       })
     ).data;
+
     return lastCommit;
   }
 
@@ -168,11 +170,14 @@ export class AccumulativePullRequest {
     repo: string,
     branch: string
   ): Promise<Branch> {
-    const refs = await octokit.rest.git.getRef({
+    const { data: ref } = await octokit.rest.git.getRef({
       owner,
       repo,
       ref: `heads/${branch}`,
     });
-    return { sha: refs.data.object.sha, name: branch };
+
+    console.log(`Got branch ${owner}/${repo}/${branch} with url ${ref.url}`);
+
+    return { sha: ref.object.sha, name: branch };
   }
 }

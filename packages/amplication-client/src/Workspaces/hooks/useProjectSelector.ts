@@ -40,7 +40,9 @@ const useProjectSelector = (
     projects: models.Project[];
   }>(GET_PROJECTS, {
     skip:
-      !workspace || (currentWorkspace && currentWorkspace?.id !== workspace),
+      !workspace ||
+      (currentWorkspace && currentWorkspace?.id !== workspace) ||
+      !currentWorkspace,
     onError: (error) => {
       // if error push to ? check with @Yuval
     },
@@ -48,6 +50,7 @@ const useProjectSelector = (
 
   const projectRedirect = useCallback(
     (projectId: string, search?: string) =>
+      (currentWorkspace?.id || workspace) &&
       history.push({
         pathname: `/${currentWorkspace?.id || workspace}/${projectId}`,
         search: search || "",
@@ -83,7 +86,13 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
+    location.search === "?u=p" &&
+      !workspaceUtil &&
+      history.push(`/${currentWorkspace?.id}/purchase${location.search}`);
+
     !workspaceUtil &&
+      currentWorkspace?.id &&
+      location.search !== "?u=p" &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
           isFromSignup ? "/create-resource" : ""

@@ -57,11 +57,9 @@ const CLASS_NAME = "purchase-page";
 const PurchasePage = (props) => {
   const { trackEvent } = useTracking();
   const history = useHistory();
-
   const backUrl = () => {
-    trackEvent({
-      eventName: AnalyticsEventNames.PricingPageClose,
-    });
+    if (history.location.search === "?u=p") return history.push("/");
+
     history.action !== "POP" ? history.goBack() : history.push("/");
   };
   const { currentWorkspace } = useContext(AppContext);
@@ -91,7 +89,7 @@ const PurchasePage = (props) => {
             iconPosition={EnumIconPosition.Left}
             onClick={backUrl}
           >
-            back
+            Back
           </Button>
         </div>
         <div className={`${CLASS_NAME}__header`}>
@@ -102,6 +100,7 @@ const PurchasePage = (props) => {
           onWorkspaceSelected={handleSetCurrentWorkspace}
         />
         <StiggProvider
+          key={purchaseWorkspace.id}
           apiKey={REACT_APP_BILLING_API_KEY}
           customerId={purchaseWorkspace.id}
         >

@@ -213,6 +213,20 @@ const WorkspaceHeader: React.FC<{}> = () => {
       </div>
       <div className={`${CLASS_NAME}__right`}>
         <div className={`${CLASS_NAME}__links`}>
+          <Button
+            className={`${CLASS_NAME}__upgrade__btn`}
+            buttonStyle={EnumButtonStyle.Outline}
+          >
+            <Link
+              className={`${CLASS_NAME}__upgrade__link`}
+              to={{
+                pathname: `/${currentWorkspace?.id}/purchase`,
+                state: { from: { pathname: window.location.pathname } },
+              }}
+            >
+              Upgrade
+            </Link>
+          </Button>
           <a
             className={`${CLASS_NAME}__links__link`}
             rel="noopener noreferrer"
