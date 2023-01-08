@@ -88,8 +88,12 @@ export interface CreateServerDotEnvParams extends EventParams {
   envVariables: VariableDictionary;
 }
 
-export interface CreateServerGitIgnoreParams extends EventParams {}
-export interface CreateAdminGitIgnoreParams extends EventParams {}
+export interface CreateServerGitIgnoreParams extends EventParams {
+  gitignorePaths: string[];
+}
+export interface CreateAdminGitIgnoreParams extends EventParams {
+  gitignorePaths: string[];
+}
 
 export interface CreateServerDockerComposeParams extends EventParams {
   fileContent: string;
