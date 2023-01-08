@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
+import { PURCHASE_URL } from "../../routes/routesUtil";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQueries";
 
 const useProjectSelector = (
@@ -86,13 +87,18 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
-    location.search === "?u=p" &&
-      !workspaceUtil &&
-      history.push(`/${currentWorkspace?.id}/purchase${location.search}`);
+    const isFromPurchase = localStorage.getItem(PURCHASE_URL);
+
+    if (isFromPurchase) {
+      localStorage.removeItem(PURCHASE_URL);
+      return history.push({
+        pathname: `/${currentWorkspace?.id}/purchase`,
+        state: { source: "redirect" },
+      });
+    }
 
     !workspaceUtil &&
       currentWorkspace?.id &&
-      location.search !== "?u=p" &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
           isFromSignup ? "/create-resource" : ""
