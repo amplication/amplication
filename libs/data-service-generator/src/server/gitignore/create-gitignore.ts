@@ -4,28 +4,35 @@ import {
   Module,
 } from "@amplication/code-gen-types";
 import DsgContext from "../../dsg-context";
-import { readCode } from "@amplication/code-gen-utils";
 import pluginWrapper from "../../plugin-wrapper";
+import { formatGitignorePaths } from "../../util/format-gitignore-paths";
 
-const templatePath = require.resolve("./template.gitignore");
+const IGNORED_PATHS = [
+  "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.",
+  " ",
+  "/node_modules",
+  "/dist",
+  ".DS_Store",
+];
 
-export function createGitIgnore(
-  eventParams: CreateServerGitIgnoreParams = {}
-): Module[] {
+export function createGitIgnore(): Module[] {
   return pluginWrapper(
     createGitIgnoreModuleInternal,
     EventNames.CreateServerGitIgnore,
-    eventParams
+    { gitignorePaths: IGNORED_PATHS }
   );
 }
 
-export async function createGitIgnoreModuleInternal(): Promise<Module[]> {
+export async function createGitIgnoreModuleInternal({
+  gitignorePaths,
+}: CreateServerGitIgnoreParams): Promise<Module[]> {
+  const formattedGitignore = formatGitignorePaths(gitignorePaths);
   const context = DsgContext.getInstance;
   const { serverDirectories } = context;
   return [
     {
       path: `${serverDirectories.baseDirectory}/.gitignore`,
-      code: await readCode(templatePath),
+      code: formattedGitignore,
     },
   ];
 }
