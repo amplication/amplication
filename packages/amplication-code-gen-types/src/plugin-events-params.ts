@@ -88,6 +88,9 @@ export interface CreateServerDotEnvParams extends EventParams {
   envVariables: VariableDictionary;
 }
 
+export interface CreateServerGitIgnoreParams extends EventParams {}
+export interface CreateAdminGitIgnoreParams extends EventParams {}
+
 export interface CreateServerDockerComposeParams extends EventParams {
   fileContent: string;
   updateProperties: { [key: string]: any }[];
