@@ -19,7 +19,9 @@ import { AppContext } from "../../context/appContext";
 import MenuItem from "../../Layout/MenuItem";
 import * as models from "../../models";
 import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import "./WorkspaceHeader.scss";
+import { useTracking } from "../../util/analytics";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -37,6 +39,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
+  const { trackEvent } = useTracking();
   const isProjectRoute = useRouteMatch(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
   );
@@ -85,6 +88,12 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
     history.replace("/login");
   }, [history, apolloClient]);
+
+  const handleUpgradeClick = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
+    });
+  }, [trackEvent]);
 
   return (
     <div className={CLASS_NAME}>
@@ -216,6 +225,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           <Button
             className={`${CLASS_NAME}__upgrade__btn`}
             buttonStyle={EnumButtonStyle.Outline}
+            onClick={handleUpgradeClick}
           >
             <Link
               className={`${CLASS_NAME}__upgrade__link`}

@@ -1,4 +1,4 @@
-import { StiggProvider, Paywall } from "@stigg/react-sdk";
+import { StiggProvider, Paywall, BillingPeriod } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import * as models from "../models";
@@ -21,7 +21,8 @@ const selectedPlanAction = {
   "plan-amplication-enterprise": (
     props,
     purchaseWorkspace,
-    selectedBillingPeriod
+    selectedBillingPeriod,
+    isLowerThanCurrentPlan
   ) => {
     window.open(
       "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
@@ -32,7 +33,8 @@ const selectedPlanAction = {
   "plan-amplication-pro": async (
     props,
     purchaseWorkspace,
-    selectedBillingPeriod
+    selectedBillingPeriod,
+    isLowerThanCurrentPlan
   ) => {
     const resp = await axios.post(
       `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
@@ -40,6 +42,7 @@ const selectedPlanAction = {
         workspaceId: purchaseWorkspace.id,
         planId: "plan-amplication-pro",
         billingPeriod: selectedBillingPeriod,
+        isLowerThanCurrentPlan,
         successUrl: props.location.state.from.pathname,
         cancelUrl: props.location.state.from.pathname,
       }
@@ -126,11 +129,18 @@ const PurchasePage = (props) => {
                 priceNotSet: "Price not set",
               },
             }}
+            onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
+              trackEvent({
+                eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
+                action: billingPeriod,
+              });
+            }}
             onPlanSelected={async ({
               plan,
               intentionType,
               selectedBillingPeriod,
             }) => {
+              console.log(plan.isLowerThanCurrentPlan);
               trackEvent({
                 eventName: AnalyticsEventNames.PricingPageCTAClick,
                 currentPlan: plan.basePlan.displayName,
@@ -141,7 +151,8 @@ const PurchasePage = (props) => {
               selectedPlanAction[plan.id](
                 props,
                 purchaseWorkspace,
-                selectedBillingPeriod
+                selectedBillingPeriod,
+                isLowerThanCurrentPlan
               );
             }}
           />
