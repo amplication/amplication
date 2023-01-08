@@ -1,4 +1,6 @@
-import { StiggProvider, Paywall } from "@stigg/react-sdk";
+import { StiggProvider, Paywall, BillingPeriod } from "@stigg/react-sdk";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import * as models from "../models";
 import { useHistory } from "react-router-dom";
 import {
@@ -19,7 +21,8 @@ const selectedPlanAction = {
   "plan-amplication-enterprise": (
     props,
     purchaseWorkspace,
-    selectedBillingPeriod
+    selectedBillingPeriod,
+    intentionType
   ) => {
     window.open(
       "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
@@ -30,7 +33,8 @@ const selectedPlanAction = {
   "plan-amplication-pro": async (
     props,
     purchaseWorkspace,
-    selectedBillingPeriod
+    selectedBillingPeriod,
+    intentionType
   ) => {
     const resp = await axios.post(
       `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
@@ -38,6 +42,7 @@ const selectedPlanAction = {
         workspaceId: purchaseWorkspace.id,
         planId: "plan-amplication-pro",
         billingPeriod: selectedBillingPeriod,
+        intentionType,
         successUrl: props.location.state.from.pathname,
         cancelUrl: props.location.state.from.pathname,
       }
@@ -53,6 +58,7 @@ const selectedPlanAction = {
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
+  const { trackEvent } = useTracking();
   const history = useHistory();
   const backUrl = () => {
     if (history.location.state && history.location.state.source)
@@ -68,6 +74,10 @@ const PurchasePage = (props) => {
   const handleSetCurrentWorkspace = useCallback(
     (workspace: models.Workspace) => {
       setPurchaseWorkspace(workspace);
+      trackEvent({
+        eventName: AnalyticsEventNames.PricingPageChangeWorkspace,
+        workspace: workspace.id,
+      });
     },
     [setPurchaseWorkspace]
   );
@@ -120,11 +130,29 @@ const PurchasePage = (props) => {
                 priceNotSet: "Price not set",
               },
             }}
-            onPlanSelected={async ({ plan, selectedBillingPeriod }) => {
+            onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
+              trackEvent({
+                eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
+                action: billingPeriod,
+              });
+            }}
+            onPlanSelected={async ({
+              plan,
+              intentionType,
+              selectedBillingPeriod,
+            }) => {
+              trackEvent({
+                eventName: AnalyticsEventNames.PricingPageCTAClick,
+                currentPlan: plan.basePlan.displayName,
+                type: plan.displayName,
+                action: intentionType,
+                Billing: selectedBillingPeriod,
+              });
               selectedPlanAction[plan.id](
                 props,
                 purchaseWorkspace,
-                selectedBillingPeriod
+                selectedBillingPeriod,
+                intentionType
               );
             }}
           />
