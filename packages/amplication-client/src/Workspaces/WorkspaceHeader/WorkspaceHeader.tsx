@@ -92,6 +92,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
   const handleUpgradeClick = useCallback(() => {
     trackEvent({
       eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
+      workspace: currentWorkspace.id,
     });
   }, [trackEvent]);
 
