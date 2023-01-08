@@ -55,7 +55,8 @@ const CLASS_NAME = "purchase-page";
 const PurchasePage = (props) => {
   const history = useHistory();
   const backUrl = () => {
-    if (history.location.search === "?u=p") return history.push("/");
+    if (history.location.state && history.location.state.source)
+      return history.push("/");
 
     history.action !== "POP" ? history.goBack() : history.push("/");
   };

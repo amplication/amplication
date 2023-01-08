@@ -13,6 +13,14 @@ export type AppRouteProps = {
   innerRoutes: JSX.Element | undefined;
 };
 
+export const PURCHASE_URL = "@@purchase";
+
+const setPurchaseRoute = () => {
+  localStorage.removeItem(PURCHASE_URL);
+
+  localStorage.setItem(PURCHASE_URL, Date.now().toString());
+};
+
 const LazyRouteWrapper: React.FC<{
   route: RouteDef;
 }> = ({ route }) => {
@@ -38,11 +46,14 @@ const LazyRouteWrapper: React.FC<{
             innerRoutes: nestedRoutes,
           };
 
+          if (route.path === "/purchase" && props.history.action === "POP")
+            setPurchaseRoute();
+
           return route.redirect ? (
             <Redirect
               to={{
                 pathname: route.redirect,
-                search: `?u=p`,
+                search: "",
               }}
             />
           ) : route.permission ? (
