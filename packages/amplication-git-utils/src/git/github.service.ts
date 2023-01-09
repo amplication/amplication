@@ -237,7 +237,7 @@ export class GithubService {
       ),
     ];
 
-    const authFolder = "server/src/auth";
+    const authFolder = "server/src/auth/";
 
     const files: Required<Changes["files"]> = Object.fromEntries(
       modules.map((module) => {
