@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { PrismaModule } from "@amplication/prisma-db";
+import { PrismaModule } from "../../prisma/prisma.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { EntityModule } from "../entity/entity.module";
 import { ResourceRoleService } from "./resourceRole.service";

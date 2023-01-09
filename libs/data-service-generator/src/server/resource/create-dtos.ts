@@ -35,11 +35,13 @@ import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relati
 export function createDTOModules(dtos: DTOs): Module[] {
   const dtoNameToPath = getDTONameToPath(dtos);
   return Object.values(dtos).flatMap((entityDTOs) =>
-    Object.values(entityDTOs).map((dto) =>
-      namedTypes.TSEnumDeclaration.check(dto)
-        ? createEnumDTOModule(dto, dtoNameToPath)
-        : createDTOModule(dto, dtoNameToPath)
-    )
+    Object.values(entityDTOs).map((dto) => {
+      const isEnumDTO = namedTypes.TSEnumDeclaration.check(dto);
+      if (isEnumDTO) {
+        return createEnumDTOModule(dto, dtoNameToPath);
+      }
+      return createDTOModule(dto, dtoNameToPath);
+    })
   );
 }
 

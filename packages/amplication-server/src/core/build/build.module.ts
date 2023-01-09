@@ -1,7 +1,7 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ExceptionFiltersModule } from "../../filters/exceptionFilters.module";
-import { PrismaModule } from "@amplication/prisma-db";
+import { PrismaModule } from "../../prisma/prisma.module";
 import { GqlAuthModule } from "../../guards/gql-auth.module";
 import { EntityModule } from "../entity/entity.module";
 import { PermissionsModule } from "../permissions/permissions.module";
@@ -19,6 +19,7 @@ import { CommitModule } from "../commit/commit.module";
 import { TopicModule } from "../topic/topic.module";
 import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
 import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
+import { BillingModule } from "../billing/billing.module";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { PluginInstallationModule } from "../pluginInstallation/pluginInstallati
     forwardRef(() => CommitModule),
     TopicModule,
     ServiceTopicsModule,
+    BillingModule,
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

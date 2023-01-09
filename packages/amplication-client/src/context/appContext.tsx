@@ -18,8 +18,7 @@ export interface AppContextInterface {
   resources: models.Resource[];
   setNewService: (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: string,
-    addEntity: (id: string) => void
+    eventName: string
   ) => void;
   setResource: (resource: models.Resource) => void;
   projectConfigurationResource: models.Resource | undefined;
@@ -39,6 +38,8 @@ export interface AppContextInterface {
   setCommitRunning: (isRunning: boolean) => void;
   setPendingChangesError: (onError: boolean) => void;
   refreshCurrentWorkspace: () => void;
+  getWorkspaces: () => void;
+  workspacesList: models.Workspace[];
   gitRepositoryFullName: string;
   gitRepositoryUrl: string;
   createMessageBroker: (
@@ -80,6 +81,8 @@ const initialContext: AppContextInterface = {
   setCommitRunning: () => {},
   setPendingChangesError: () => {},
   refreshCurrentWorkspace: () => {},
+  getWorkspaces: () => {},
+  workspacesList: [],
   gitRepositoryFullName: "",
   gitRepositoryUrl: "",
   createMessageBroker: () => {},

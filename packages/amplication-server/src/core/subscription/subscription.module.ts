@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { PrismaModule } from "@amplication/prisma-db";
+import { PrismaModule } from "../../prisma/prisma.module";
 import { ConfigModule } from "@nestjs/config";
 import { PaddleService } from "./paddle.service";
 import { SubscriptionService } from "./subscription.service";

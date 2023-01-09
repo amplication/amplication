@@ -62,4 +62,6 @@ infra/tilt/.temp/**
 .env.local
 
 src/schema.graphql
+**/prisma/generated-prisma-client
+libs/data-service-generator/.tsbuildinfo
 .tsbuildinfo

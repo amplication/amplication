@@ -1,7 +1,4 @@
-import {
-  EnumSubscriptionPlan,
-  EnumSubscriptionStatus,
-} from "@amplication/prisma-db";
+import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
 import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { PaddleCreateSubscriptionEvent } from "./dto/PaddleCreateSubscriptionEvent";

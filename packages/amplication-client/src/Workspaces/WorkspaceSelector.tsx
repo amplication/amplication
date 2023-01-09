@@ -61,8 +61,7 @@ function WorkspaceSelector() {
                 {currentWorkspace.name}
               </span>
               <span className={`${CLASS_NAME}__current__plan`}>
-                {currentWorkspace.subscription?.subscriptionPlan || "Community"}{" "}
-                Plan
+                {currentWorkspace.subscription?.subscriptionPlan || "Free"} Plan
               </span>
             </div>
             <Button

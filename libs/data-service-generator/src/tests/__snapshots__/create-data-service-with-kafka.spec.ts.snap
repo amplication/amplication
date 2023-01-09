@@ -2884,7 +2884,11 @@ PORT=3000
 DB_USER=testUsername
 DB_PASSWORD=1234
 DB_PORT=5433
-DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
+DB_URL=postgres://testUsername:1234@localhost:5433/db-name
+KAFKA_BROKERS=localhost:9092
+KAFKA_ENABLE_SSL=false
+KAFKA_CLIENT_ID=sample-application
+KAFKA_GROUP_ID=sample-application",
   "server/docker-compose.db.yml": "version: \\"3\\"
 services:
   db:
@@ -2912,7 +2916,7 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5433
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       - migrate
   migrate:
@@ -2924,7 +2928,7 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       db:
         condition: service_healthy
@@ -2949,13 +2953,44 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.2.4
+    networks:
+      - internal
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+  kafka:
+    image: confluentinc/cp-kafka:5.3.1
+    networks:
+      - internal
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 9997:9997
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
 volumes:
   postgres: ~
+networks:
+  internal:
+    name: internal
+    driver: bridge
 ",
   "server/nest-cli.json": "{
-  \\"sourceRoot\\": \\"/\\",
+  \\"sourceRoot\\": \\"src\\",
   \\"compilerOptions\\": {
-    \\"assets\\": [\\"src/swagger\\", \\"prisma/generated-prisma-client\\"]
+    \\"assets\\": [\\"swagger\\"]
   }
 }
 ",
@@ -3006,7 +3041,9 @@ volumes:
     \\"passport-jwt\\": \\"4.0.0\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
-    \\"ts-node\\": \\"9.1.1\\"
+    \\"ts-node\\": \\"9.1.1\\",
+    \\"@nestjs/microservices\\": \\"8.2.3\\",
+    \\"kafkajs\\": \\"2.2.0\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -3041,7 +3078,6 @@ volumes:
 
 generator client {
   provider = \\"prisma-client-js\\"
-  output   = \\"./generated-prisma-client\\"
 }
 
 model User {
@@ -3163,7 +3199,7 @@ enum EnumCustomerCustomerType {
  * Clean all the tables and types created by Prisma in the database
  */
 
-import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
+import { PrismaClient } from \\"@prisma/client\\";
 
 if (require.main === module) {
   clean().catch((error) => {
@@ -3218,7 +3254,7 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
   return results.map((result) => result.typname);
 }
 ",
-  "server/scripts/customSeed.ts": "import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
+  "server/scripts/customSeed.ts": "import { PrismaClient } from \\"@prisma/client\\";
 
 export async function customSeed() {
   const client = new PrismaClient();
@@ -3237,7 +3273,7 @@ export async function customSeed() {
 }
 ",
   "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
-import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
+import { PrismaClient } from \\"@prisma/client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
 import { customSeed } from \\"./customSeed\\";
@@ -3310,6 +3346,7 @@ import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
 import { PrismaModule } from \\"./prisma/prisma.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
+import { KafkaModule } from \\"./kafka/kafka.module\\";
 import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
@@ -3329,6 +3366,7 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     HealthModule,
     PrismaModule,
     SecretsManagerModule,
+    KafkaModule,
     MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
@@ -4074,7 +4112,8 @@ export class TokenService extends TokenServiceBase implements ITokenService {}
 ",
   "server/src/auth/userData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlContextType, GqlExecutionContext } from \\"@nestjs/graphql\\";
-import { User } from \\"generated-prisma-client\\";
+//@ts-ignore
+import { User } from \\"@prisma/client\\";
 
 /**
  * Access the user data from the request object i.e \`req.user\`.
@@ -4158,6 +4197,7 @@ import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { Order } from \\"../../order/base/Order\\";
+
 @ObjectType()
 class Customer {
   @ApiProperty({
@@ -4332,6 +4372,7 @@ class Customer {
   @IsOptional()
   orders?: Array<Order>;
 }
+
 export { Customer };
 ",
   "server/src/customer/base/CustomerCreateInput.ts": "/*
@@ -4364,6 +4405,7 @@ import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
+
 @InputType()
 class CustomerCreateInput {
   @ApiProperty({
@@ -4523,6 +4565,7 @@ class CustomerCreateInput {
   })
   orders?: OrderCreateNestedManyWithoutCustomersInput;
 }
+
 export { CustomerCreateInput };
 ",
   "server/src/customer/base/CustomerFindManyArgs.ts": "/*
@@ -4855,6 +4898,7 @@ import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { OrderUpdateManyWithoutCustomersInput } from \\"./OrderUpdateManyWithoutCustomersInput\\";
+
 @InputType()
 class CustomerUpdateInput {
   @ApiProperty({
@@ -5017,6 +5061,7 @@ class CustomerUpdateInput {
   })
   orders?: OrderUpdateManyWithoutCustomersInput;
 }
+
 export { CustomerUpdateInput };
 ",
   "server/src/customer/base/CustomerWhereInput.ts": "/*
@@ -5045,6 +5090,7 @@ import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFilter\\";
+
 @InputType()
 class CustomerWhereInput {
   @ApiProperty({
@@ -5226,6 +5272,7 @@ class CustomerWhereInput {
   })
   orders?: OrderListRelationFilter;
 }
+
 export { CustomerWhereInput };
 ",
   "server/src/customer/base/CustomerWhereUniqueInput.ts": "/*
@@ -5242,6 +5289,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
+
 @InputType()
 class CustomerWhereUniqueInput {
   @ApiProperty({
@@ -5252,6 +5300,7 @@ class CustomerWhereUniqueInput {
   @Field(() => Number)
   id!: number;
 }
+
 export { CustomerWhereUniqueInput };
 ",
   "server/src/customer/base/DeleteCustomerArgs.ts": "/*
@@ -5338,6 +5387,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class OrderCreateNestedManyWithoutCustomersInput {
   @Field(() => [OrderWhereUniqueInput], {
@@ -5349,6 +5399,7 @@ class OrderCreateNestedManyWithoutCustomersInput {
   })
   connect?: Array<OrderWhereUniqueInput>;
 }
+
 export { OrderCreateNestedManyWithoutCustomersInput };
 ",
   "server/src/customer/base/OrderUpdateManyWithoutCustomersInput.ts": "/*
@@ -5365,6 +5416,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class OrderUpdateManyWithoutCustomersInput {
   @Field(() => [OrderWhereUniqueInput], {
@@ -5394,6 +5446,7 @@ class OrderUpdateManyWithoutCustomersInput {
   })
   set?: Array<OrderWhereUniqueInput>;
 }
+
 export { OrderUpdateManyWithoutCustomersInput };
 ",
   "server/src/customer/base/UpdateCustomerArgs.ts": "/*
@@ -6340,7 +6393,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Customer, Order, Organization } from \\"generated-prisma-client\\";
+import { Prisma, Customer, Order, Organization } from \\"@prisma/client\\";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -6598,6 +6651,7 @@ import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsDate } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
+
 @ObjectType()
 class Empty {
   @ApiProperty({
@@ -6624,6 +6678,7 @@ class Empty {
   @Field(() => Date)
   updatedAt!: Date;
 }
+
 export { Empty };
 ",
   "server/src/empty/base/EmptyCreateInput.ts": "/*
@@ -6854,6 +6909,7 @@ import { StringFilter } from \\"../../util/StringFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
+
 @InputType()
 class EmptyWhereInput {
   @ApiProperty({
@@ -6889,6 +6945,7 @@ class EmptyWhereInput {
   })
   updatedAt?: DateTimeFilter;
 }
+
 export { EmptyWhereInput };
 ",
   "server/src/empty/base/EmptyWhereUniqueInput.ts": "/*
@@ -6905,6 +6962,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+
 @InputType()
 class EmptyWhereUniqueInput {
   @ApiProperty({
@@ -6915,6 +6973,7 @@ class EmptyWhereUniqueInput {
   @Field(() => String)
   id!: string;
 }
+
 export { EmptyWhereUniqueInput };
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
@@ -7421,7 +7480,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Empty } from \\"generated-prisma-client\\";
+import { Prisma, Empty } from \\"@prisma/client\\";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -7551,7 +7610,7 @@ import { BaseExceptionFilter } from \\"@nestjs/core\\";
 import {
   // @ts-ignore
   Prisma,
-} from \\"generated-prisma-client\\";
+} from \\"@prisma/client\\";
 import { Response } from \\"express\\";
 
 export type ErrorCodesStatusMapping = {
@@ -8251,6 +8310,89 @@ export class AclValidateRequestInterceptor implements NestInterceptor {
   }
 }
 ",
+  "server/src/kafka/base/kafka.service.base.ts": "import { Inject } from \\"@nestjs/common\\";
+import { ClientKafka } from \\"@nestjs/microservices\\";
+
+export class KafkaServiceBase {
+  constructor(@Inject(\\"KAFKA_CLIENT\\") private kafkaClient: ClientKafka) {}
+
+  async onModuleInit() {
+    await this.kafkaClient.connect();
+  }
+}
+",
+  "server/src/kafka/generateKafkaClientOptions.ts": "import { KafkaOptions, Transport } from \\"@nestjs/microservices\\";
+
+export const generateKafkaClientOptions = (): KafkaOptions => {
+  if (!process.env.KAFKA_BROKERS) {
+    throw new Error(\\"KAFKA_BROKERS environment variable must be defined\\");
+  }
+
+  if (!process.env.KAFKA_ENABLE_SSL) {
+    throw new Error(\\"KAFKA_ENABLE_SSL environment variable must be defined\\");
+  }
+
+  if (!process.env.KAFKA_CLIENT_ID) {
+    throw new Error(\\"KAFKA_CLIENT_ID environment variable must be defined\\");
+  }
+
+  if (!process.env.KAFKA_GROUP_ID) {
+    throw new Error(\\"KAFKA_GROUP_ID environment variable must be defined\\");
+  }
+
+  const kafkaBrokersString = process.env.KAFKA_BROKERS;
+  const kafkaEnableSSL = process.env.KAFKA_ENABLE_SSL === \\"true\\";
+  const kafkaClientId = process.env.KAFKA_CLIENT_ID;
+  const kafkaGroupId = process.env.KAFKA_GROUP_ID;
+
+  return {
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: kafkaClientId,
+        brokers: [...kafkaBrokersString.split(\\",\\")],
+        ssl: kafkaEnableSSL,
+      },
+      producer: {
+        metadataMaxAge: 3000,
+      },
+      consumer: {
+        rebalanceTimeout: 3000,
+        groupId: kafkaGroupId,
+      },
+    },
+  };
+};
+",
+  "server/src/kafka/kafka.module.ts": "import { Module } from \\"@nestjs/common\\";
+import { ClientsModule } from \\"@nestjs/microservices\\";
+import { generateKafkaClientOptions } from \\"./generateKafkaClientOptions\\";
+import { KafkaService } from \\"./kafka.service\\";
+
+@Module({
+  imports: [
+    ClientsModule.register([
+      {
+        name: \\"KAFKA_CLIENT\\",
+        ...generateKafkaClientOptions(),
+      },
+    ]),
+  ],
+  providers: [KafkaService],
+  exports: [KafkaService, ClientsModule],
+})
+export class KafkaModule {}
+",
+  "server/src/kafka/kafka.service.ts": "import { Injectable } from \\"@nestjs/common\\";
+import { KafkaServiceBase } from \\"./base/kafka.service.base\\";
+
+@Injectable()
+export class KafkaService extends KafkaServiceBase {}
+",
+  "server/src/kafka/topics.ts": "export enum KafkaBrokerTopics {
+  GitPull = \\"git.pull\\",
+}
+",
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
@@ -8303,10 +8445,6 @@ async function main() {
 }
 
 module.exports = main();
-",
-  "server/src/message-broker/topics.ts": "export enum KafkaBrokerTopics {
-  GitPull = \\"git.pull\\",
-}
 ",
   "server/src/order/base/CreateOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8420,6 +8558,7 @@ import { Type } from \\"class-transformer\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
+
 @ObjectType()
 class Order {
   @ApiProperty({
@@ -8475,6 +8614,7 @@ class Order {
   })
   label?: \\"fragile\\" | null;
 }
+
 export { Order };
 ",
   "server/src/order/base/OrderCreateInput.ts": "/*
@@ -8495,6 +8635,7 @@ import { ValidateNested, IsEnum, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
+
 @InputType()
 class OrderCreateInput {
   @ApiProperty({
@@ -8525,6 +8666,7 @@ class OrderCreateInput {
   })
   label?: \\"fragile\\" | null;
 }
+
 export { OrderCreateInput };
 ",
   "server/src/order/base/OrderFindManyArgs.ts": "/*
@@ -8755,6 +8897,7 @@ import { ValidateNested, IsOptional, IsEnum } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
+
 @InputType()
 class OrderUpdateInput {
   @ApiProperty({
@@ -8791,6 +8934,7 @@ class OrderUpdateInput {
   })
   label?: \\"fragile\\" | null;
 }
+
 export { OrderUpdateInput };
 ",
   "server/src/order/base/OrderWhereInput.ts": "/*
@@ -8813,6 +8957,7 @@ import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { EnumOrderStatus } from \\"./EnumOrderStatus\\";
 import { EnumOrderLabel } from \\"./EnumOrderLabel\\";
+
 @InputType()
 class OrderWhereInput {
   @ApiProperty({
@@ -8882,6 +9027,7 @@ class OrderWhereInput {
   })
   label?: \\"fragile\\";
 }
+
 export { OrderWhereInput };
 ",
   "server/src/order/base/OrderWhereUniqueInput.ts": "/*
@@ -8898,6 +9044,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+
 @InputType()
 class OrderWhereUniqueInput {
   @ApiProperty({
@@ -8908,6 +9055,7 @@ class OrderWhereUniqueInput {
   @Field(() => String)
   id!: string;
 }
+
 export { OrderWhereUniqueInput };
 ",
   "server/src/order/base/UpdateOrderArgs.ts": "/*
@@ -9514,7 +9662,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Order, Customer } from \\"generated-prisma-client\\";
+import { Prisma, Order, Customer } from \\"@prisma/client\\";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -9660,6 +9808,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class CustomerCreateNestedManyWithoutOrganizationsInput {
   @Field(() => [CustomerWhereUniqueInput], {
@@ -9671,6 +9820,7 @@ class CustomerCreateNestedManyWithoutOrganizationsInput {
   })
   connect?: Array<CustomerWhereUniqueInput>;
 }
+
 export { CustomerCreateNestedManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/CustomerUpdateManyWithoutOrganizationsInput.ts": "/*
@@ -9687,6 +9837,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class CustomerUpdateManyWithoutOrganizationsInput {
   @Field(() => [CustomerWhereUniqueInput], {
@@ -9716,6 +9867,7 @@ class CustomerUpdateManyWithoutOrganizationsInput {
   })
   set?: Array<CustomerWhereUniqueInput>;
 }
+
 export { CustomerUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/DeleteOrganizationArgs.ts": "/*
@@ -9757,6 +9909,7 @@ import { IsString, IsDate, ValidateNested, IsOptional } from \\"class-validator\
 import { Type } from \\"class-transformer\\";
 import { User } from \\"../../user/base/User\\";
 import { Customer } from \\"../../customer/base/Customer\\";
+
 @ObjectType()
 class Organization {
   @ApiProperty({
@@ -9818,6 +9971,7 @@ class Organization {
   @IsOptional()
   vipCustomers?: Array<Customer>;
 }
+
 export { Organization };
 ",
   "server/src/organization/base/OrganizationCreateInput.ts": "/*
@@ -9837,6 +9991,7 @@ import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerCreateNestedManyWithoutOrganizationsInput } from \\"./CustomerCreateNestedManyWithoutOrganizationsInput\\";
+
 @InputType()
 class OrganizationCreateInput {
   @ApiProperty({
@@ -9883,6 +10038,7 @@ class OrganizationCreateInput {
   })
   vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 }
+
 export { OrganizationCreateInput };
 ",
   "server/src/organization/base/OrganizationFindManyArgs.ts": "/*
@@ -10094,6 +10250,7 @@ import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { UserUpdateManyWithoutOrganizationsInput } from \\"./UserUpdateManyWithoutOrganizationsInput\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerUpdateManyWithoutOrganizationsInput } from \\"./CustomerUpdateManyWithoutOrganizationsInput\\";
+
 @InputType()
 class OrganizationUpdateInput {
   @ApiProperty({
@@ -10143,6 +10300,7 @@ class OrganizationUpdateInput {
   })
   vipCustomers?: CustomerUpdateManyWithoutOrganizationsInput;
 }
+
 export { OrganizationUpdateInput };
 ",
   "server/src/organization/base/OrganizationWhereInput.ts": "/*
@@ -10164,6 +10322,7 @@ import { IsOptional, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { UserListRelationFilter } from \\"../../user/base/UserListRelationFilter\\";
 import { CustomerListRelationFilter } from \\"../../customer/base/CustomerListRelationFilter\\";
+
 @InputType()
 class OrganizationWhereInput {
   @ApiProperty({
@@ -10246,6 +10405,7 @@ class OrganizationWhereInput {
   })
   vipCustomers?: CustomerListRelationFilter;
 }
+
 export { OrganizationWhereInput };
 ",
   "server/src/organization/base/OrganizationWhereUniqueInput.ts": "/*
@@ -10262,6 +10422,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+
 @InputType()
 class OrganizationWhereUniqueInput {
   @ApiProperty({
@@ -10272,6 +10433,7 @@ class OrganizationWhereUniqueInput {
   @Field(() => String)
   id!: string;
 }
+
 export { OrganizationWhereUniqueInput };
 ",
   "server/src/organization/base/UpdateOrganizationArgs.ts": "/*
@@ -10313,6 +10475,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class UserCreateNestedManyWithoutOrganizationsInput {
   @Field(() => [UserWhereUniqueInput], {
@@ -10324,6 +10487,7 @@ class UserCreateNestedManyWithoutOrganizationsInput {
   })
   connect?: Array<UserWhereUniqueInput>;
 }
+
 export { UserCreateNestedManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/UserUpdateManyWithoutOrganizationsInput.ts": "/*
@@ -10340,6 +10504,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class UserUpdateManyWithoutOrganizationsInput {
   @Field(() => [UserWhereUniqueInput], {
@@ -10369,6 +10534,7 @@ class UserUpdateManyWithoutOrganizationsInput {
   })
   set?: Array<UserWhereUniqueInput>;
 }
+
 export { UserUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
@@ -11357,7 +11523,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Organization, User, Customer } from \\"generated-prisma-client\\";
+import { Prisma, Organization, User, Customer } from \\"@prisma/client\\";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11558,7 +11724,7 @@ import { PrismaService } from \\"./prisma.service\\";
 export class PrismaModule {}
 ",
   "server/src/prisma/prisma.service.ts": "import { Injectable, OnModuleInit, INestApplication } from \\"@nestjs/common\\";
-import { PrismaClient } from \\"generated-prisma-client\\";
+import { PrismaClient } from \\"@prisma/client\\";
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -11639,6 +11805,7 @@ import {
 } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { User } from \\"../../user/base/User\\";
+
 @ObjectType()
 class Profile {
   @ApiProperty({
@@ -11682,6 +11849,7 @@ class Profile {
   @IsOptional()
   user?: User | null;
 }
+
 export { Profile };
 ",
   "server/src/profile/base/ProfileCreateInput.ts": "/*
@@ -11700,6 +11868,7 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { Type } from \\"class-transformer\\";
+
 @InputType()
 class ProfileCreateInput {
   @ApiProperty({
@@ -11722,6 +11891,7 @@ class ProfileCreateInput {
   })
   user?: UserWhereUniqueInput | null;
 }
+
 export { ProfileCreateInput };
 ",
   "server/src/profile/base/ProfileFindManyArgs.ts": "/*
@@ -11941,6 +12111,7 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { Type } from \\"class-transformer\\";
+
 @InputType()
 class ProfileUpdateInput {
   @ApiProperty({
@@ -11966,6 +12137,7 @@ class ProfileUpdateInput {
   })
   user?: UserWhereUniqueInput | null;
 }
+
 export { ProfileUpdateInput };
 ",
   "server/src/profile/base/ProfileWhereInput.ts": "/*
@@ -11987,6 +12159,7 @@ import { IsOptional, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
 import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+
 @InputType()
 class ProfileWhereInput {
   @ApiProperty({
@@ -12045,6 +12218,7 @@ class ProfileWhereInput {
   })
   user?: UserWhereUniqueInput;
 }
+
 export { ProfileWhereInput };
 ",
   "server/src/profile/base/ProfileWhereUniqueInput.ts": "/*
@@ -12061,6 +12235,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
+
 @InputType()
 class ProfileWhereUniqueInput {
   @ApiProperty({
@@ -12071,6 +12246,7 @@ class ProfileWhereUniqueInput {
   @Field(() => Number)
   id!: number;
 }
+
 export { ProfileWhereUniqueInput };
 ",
   "server/src/profile/base/UpdateProfileArgs.ts": "/*
@@ -12736,7 +12912,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Profile, User } from \\"generated-prisma-client\\";
+import { Prisma, Profile, User } from \\"@prisma/client\\";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -13261,6 +13437,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class OrganizationCreateNestedManyWithoutUsersInput {
   @Field(() => [OrganizationWhereUniqueInput], {
@@ -13272,6 +13449,7 @@ class OrganizationCreateNestedManyWithoutUsersInput {
   })
   connect?: Array<OrganizationWhereUniqueInput>;
 }
+
 export { OrganizationCreateNestedManyWithoutUsersInput };
 ",
   "server/src/user/base/OrganizationUpdateManyWithoutUsersInput.ts": "/*
@@ -13288,6 +13466,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class OrganizationUpdateManyWithoutUsersInput {
   @Field(() => [OrganizationWhereUniqueInput], {
@@ -13317,6 +13496,7 @@ class OrganizationUpdateManyWithoutUsersInput {
   })
   set?: Array<OrganizationWhereUniqueInput>;
 }
+
 export { OrganizationUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/UpdateUserArgs.ts": "/*
@@ -13377,6 +13557,7 @@ import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { Profile } from \\"../../profile/base/Profile\\";
+
 @ObjectType()
 class User {
   @ApiProperty({
@@ -13533,6 +13714,7 @@ class User {
   @IsOptional()
   profile?: Profile | null;
 }
+
 export { User };
 ",
   "server/src/user/base/UserCreateInput.ts": "/*
@@ -13570,6 +13752,7 @@ import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationC
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
+
 @InputType()
 class UserCreateInput {
   @ApiProperty({
@@ -13736,6 +13919,7 @@ class UserCreateInput {
   })
   profile?: ProfileWhereUniqueInput | null;
 }
+
 export { UserCreateInput };
 ",
   "server/src/user/base/UserCreateNestedManyWithoutUsersInput.ts": "/*
@@ -13752,6 +13936,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class UserCreateNestedManyWithoutUsersInput {
   @Field(() => [UserWhereUniqueInput], {
@@ -13763,6 +13948,7 @@ class UserCreateNestedManyWithoutUsersInput {
   })
   connect?: Array<UserWhereUniqueInput>;
 }
+
 export { UserCreateNestedManyWithoutUsersInput };
 ",
   "server/src/user/base/UserFindManyArgs.ts": "/*
@@ -14109,6 +14295,7 @@ import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateM
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
+
 @InputType()
 class UserUpdateInput {
   @ApiProperty({
@@ -14314,6 +14501,7 @@ class UserUpdateInput {
   })
   profile?: ProfileWhereUniqueInput | null;
 }
+
 export { UserUpdateInput };
 ",
   "server/src/user/base/UserUpdateManyWithoutUsersInput.ts": "/*
@@ -14330,6 +14518,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 @InputType()
 class UserUpdateManyWithoutUsersInput {
   @Field(() => [UserWhereUniqueInput], {
@@ -14359,6 +14548,7 @@ class UserUpdateManyWithoutUsersInput {
   })
   set?: Array<UserWhereUniqueInput>;
 }
+
 export { UserUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/UserWhereInput.ts": "/*
@@ -14385,6 +14575,7 @@ import { EnumUserPriority } from \\"./EnumUserPriority\\";
 import { BooleanFilter } from \\"../../util/BooleanFilter\\";
 import { JsonFilter } from \\"../../util/JsonFilter\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
+
 @InputType()
 class UserWhereInput {
   @ApiProperty({
@@ -14522,6 +14713,7 @@ class UserWhereInput {
   })
   profile?: ProfileWhereUniqueInput;
 }
+
 export { UserWhereInput };
 ",
   "server/src/user/base/UserWhereUniqueInput.ts": "/*
@@ -14538,6 +14730,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsString } from \\"class-validator\\";
+
 @InputType()
 class UserWhereUniqueInput {
   @ApiProperty({
@@ -14548,6 +14741,7 @@ class UserWhereUniqueInput {
   @Field(() => String)
   id!: string;
 }
+
 export { UserWhereUniqueInput };
 ",
   "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
@@ -15587,7 +15781,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, User, Organization, Profile } from \\"generated-prisma-client\\";
+import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
 import { PasswordService } from \\"../../auth/password.service\\";
 import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
@@ -16818,11 +17012,7 @@ export class StringNullableFilter {
     \\"allowSyntheticDefaultImports\\": true,
     \\"resolveJsonModule\\": true,
     \\"skipLibCheck\\": true,
-    \\"strict\\": true,
-    \\"baseUrl\\": \\".\\",
-    \\"paths\\": {
-      \\"generated-prisma-client\\": [\\"prisma/generated-prisma-client/index\\"]
-    }
+    \\"strict\\": true
   },
   \\"include\\": [\\"src\\"]
 }

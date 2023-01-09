@@ -14,9 +14,10 @@ import { WorkspaceResolver } from "./workspace.resolver";
 import { Resource, Workspace, User, Project } from "../../models";
 import { Invitation } from "./dto/Invitation";
 import { ResourceService } from "../resource/resource.service";
-import { EnumResourceType } from "@amplication/prisma-db";
+import { EnumResourceType } from "../../prisma";
 import { ProjectService } from "../project/project.service";
 import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -142,6 +143,17 @@ describe("WorkspaceResolver", () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       providers: [
         WorkspaceResolver,
+        {
+          provide: BillingService,
+          useValue: {
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+            getNumericEntitlement: jest.fn(() => {
+              return {};
+            }),
+          },
+        },
         {
           provide: WorkspaceService,
           useClass: jest.fn(() => ({

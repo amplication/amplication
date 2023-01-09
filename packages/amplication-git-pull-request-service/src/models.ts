@@ -1646,6 +1646,7 @@ export type RemoteGitRepositoriesWhereUniqueInput = {
 export type RemoteGitRepository = {
   __typename?: 'RemoteGitRepository';
   admin: Scalars['Boolean'];
+  defaultBranch: Scalars['String'];
   fullName: Scalars['String'];
   name: Scalars['String'];
   private: Scalars['Boolean'];

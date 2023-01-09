@@ -38,25 +38,10 @@
         "cwd": "libs/data-service-generator"
       }
     },
-    "prebuild": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/node_modules"],
-      "dependsOn": ["update-version"],
-      "options": {
-        "commands": ["ts-node scripts/copy-files.ts"],
-        "parallel": false,
-        "cwd": "libs/data-service-generator"
-      }
-    },
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": [
-        "^build",
-        "db:prisma:generate",
-        "^db:prisma:generate",
-        "prebuild"
-      ],
+      "dependsOn": ["^build", "update-version"],
       "options": {
         "outputPath": "dist/libs/data-service-generator",
         "tsConfig": "libs/data-service-generator/tsconfig.lib.json",
@@ -71,6 +56,7 @@
       "dependsOn": ["build"],
       "options": {
         "command": "ts-node scripts/copy-files.ts",
+        "parallel": false,
         "cwd": "libs/data-service-generator"
       }
     },
@@ -89,18 +75,6 @@
       "outputs": ["{projectRoot}/src/tests/__snapshots__"],
       "options": {
         "commands": ["jest -u src/tests/*.spec.ts", "jest -u src/tests/server"],
-        "parallel": false,
-        "cwd": "libs/data-service-generator"
-      }
-    },
-    "generate:test-data-service": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/generated"],
-      "options": {
-        "commands": [
-          "rimraf generated",
-          "ts-node -P tsconfig.lib.json scripts/generate-test-data-service.ts generated"
-        ],
         "parallel": false,
         "cwd": "libs/data-service-generator"
       }

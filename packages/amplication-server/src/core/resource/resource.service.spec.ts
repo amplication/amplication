@@ -8,11 +8,11 @@ import {
 
 import { GitService } from "@amplication/git-utils";
 import {
+  PrismaService,
   EnumResourceType,
   GitRepository,
-  PrismaService,
   Prisma,
-} from "@amplication/prisma-db";
+} from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
@@ -47,6 +47,10 @@ import { DEFAULT_RESOURCE_COLORS } from "./constants";
 import { ProjectConfigurationSettingsService } from "../projectConfigurationSettings/projectConfigurationSettings.service";
 import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { TopicService } from "../topic/topic.service";
+import { Topic } from "../topic/dto/Topic";
+import { ConfigService } from "@nestjs/config";
+import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -252,8 +256,26 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   outputParameters: [],
 };
 
+const EXAMPLE_TOPIC: Topic = {
+  displayName: "exampleTopicDisplayName",
+  name: "exampleTopicName",
+  description: "exampleTopicDescription",
+  id: "",
+  createdAt: undefined,
+  updatedAt: undefined,
+  parentBlock: new Block(),
+  blockType: "ServiceSettings",
+  versionNumber: 0,
+  inputParameters: [],
+  outputParameters: [],
+};
+
 const serviceSettingsCreateMock = jest.fn(() => {
   return EXAMPLE_APP_SETTINGS;
+});
+
+const defaultTopicCreateMock = jest.fn(() => {
+  return EXAMPLE_TOPIC;
 });
 
 const prismaResourceCreateMock = jest.fn(() => {
@@ -342,6 +364,21 @@ describe("ResourceService", () => {
       providers: [
         ResourceService,
         {
+          provide: ConfigService,
+          useValue: { get: () => "" },
+        },
+        {
+          provide: BillingService,
+          useValue: {
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+            getNumericEntitlement: jest.fn(() => {
+              return {};
+            }),
+          },
+        },
+        {
           provide: BuildService,
           useClass: jest.fn(() => ({
             create: buildServiceCreateMock,
@@ -411,6 +448,12 @@ describe("ResourceService", () => {
           useClass: jest.fn(() => ({
             create: serviceSettingsCreateMock,
             createDefaultServiceSettings: serviceSettingsCreateMock,
+          })),
+        },
+        {
+          provide: TopicService,
+          useClass: jest.fn(() => ({
+            create: defaultTopicCreateMock,
           })),
         },
         {

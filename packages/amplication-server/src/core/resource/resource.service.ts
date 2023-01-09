@@ -1,9 +1,9 @@
 import {
+  PrismaService,
   EnumResourceType,
   GitRepository,
   Prisma,
-  PrismaService,
-} from "@amplication/prisma-db";
+} from "../../prisma";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
@@ -42,12 +42,19 @@ export const INVALID_DELETE_PROJECT_CONFIGURATION =
 import { ResourceGenSettingsCreateInput } from "./dto/ResourceGenSettingsCreateInput";
 import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
+import { TopicService } from "../topic/topic.service";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
 
 @Injectable()
 export class ResourceService {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
@@ -56,8 +63,13 @@ export class ResourceService {
     private readonly projectConfigurationSettingsService: ProjectConfigurationSettingsService,
     @Inject(forwardRef(() => ProjectService))
     private readonly projectService: ProjectService,
-    private readonly serviceTopicsService: ServiceTopicsService
-  ) {}
+    private readonly serviceTopicsService: ServiceTopicsService,
+    private readonly topicService: TopicService,
+    private readonly configService: ConfigService,
+    private readonly billingService: BillingService
+  ) {
+    this.isBillingEnabled = this.configService.get(Env.BILLING_ENABLED);
+  }
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
     return this.prisma.resource.findUnique(args);
@@ -154,15 +166,19 @@ export class ResourceService {
   }
 
   /**
-   * Create a resource of type "Service", with the built-in "user" role
+   * Create a resource of type "Message Broker" with a default topic
    */
-  async createMessageBroker(args: CreateOneResourceArgs): Promise<Resource> {
+  async createMessageBroker(
+    args: CreateOneResourceArgs,
+    user: User
+  ): Promise<Resource> {
     const resource = await this.createResource({
       data: {
         ...args.data,
         resourceType: EnumResourceType.MessageBroker,
       },
     });
+    await this.topicService.createDefault(resource, user);
 
     return resource;
   }
@@ -195,6 +211,14 @@ export class ResourceService {
       user,
       generationSettings
     );
+
+    if (this.isBillingEnabled) {
+      const workspace = await this.getResourceWorkspace(resource.id);
+      await this.billingService.reportUsage(
+        workspace.id,
+        BillingFeature.Services
+      );
+    }
 
     return resource;
   }
@@ -383,11 +407,23 @@ export class ResourceService {
       },
     });
 
+    if (
+      this.isBillingEnabled &&
+      resource.resourceType === EnumResourceType.Service
+    ) {
+      const workspace = await this.getResourceWorkspace(resource.id);
+      await this.billingService.reportUsage(
+        workspace.id,
+        BillingFeature.Services,
+        -1
+      );
+    }
+
     if (!resource.gitRepositoryOverride) {
       return resource;
     }
 
-    return await this.deleteResourceGitRepository(resource);
+    await this.deleteResourceGitRepository(resource);
   }
 
   async deleteResourceGitRepository(resource: Resource): Promise<Resource> {
@@ -488,5 +524,21 @@ export class ResourceService {
         project: { id: projectId },
       },
     });
+  }
+
+  async getResourceWorkspace(resourceId: string) {
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId,
+      },
+      include: {
+        project: {
+          include: {
+            workspace: true,
+          },
+        },
+      },
+    });
+    return resource.project.workspace;
   }
 }

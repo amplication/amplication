@@ -46,6 +46,7 @@ export type { Props as TextFieldProps } from "./components/TextField/TextField";
 export { Dialog } from "./components/Dialog/Dialog";
 export type { Props as DialogProps } from "./components/Dialog/Dialog";
 export { ConfirmationDialog } from "./components/ConfirmationDialog/ConfirmationDialog";
+export { LimitationDialog } from "./components/LimitationDialog/LimitationDialog";
 
 export type { Props as ConfirmationDialogProps } from "./components/ConfirmationDialog/ConfirmationDialog";
 
@@ -161,3 +162,9 @@ export type { Props as LoaderProps } from "./components/Loader/Loader";
 
 export { CodeEditor } from "./components/CodeEditor/CodeEditor";
 export type { CodeEditorProps } from "./components/CodeEditor/CodeEditor";
+
+export { LimitationNotification } from "./components/LimitationNotification/LimitationNotification";
+export type { Props as LimitationNotificationProps } from "./components/LimitationNotification/LimitationNotification";
+
+export { PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
+export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
