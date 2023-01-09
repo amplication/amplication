@@ -43,7 +43,7 @@ const DiscardChanges = ({
           cache.evict({
             id: cache.identify({
               id: change.originId,
-              __typename: "ServiceSettings",
+              __typename: (change.origin as models.Block).blockType,
             }),
           });
         }
@@ -52,7 +52,7 @@ const DiscardChanges = ({
     onCompleted: (data) => {
       resetPendingChanges();
       onComplete();
-      addChange(data.project.connect.id);
+      addChange(projectId); // data.project.connect.id
     },
   });
 

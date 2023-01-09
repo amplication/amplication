@@ -374,11 +374,18 @@ export class ProjectService {
       );
     }
 
-    const entityPromises = changedEntities.map((change) => {
-      return this.entityService.discardPendingChanges(change.originId, userId);
+    const currentUser = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
     });
+
+    const entityPromises = changedEntities.map((change) => {
+      return this.entityService.discardPendingChanges(change, currentUser);
+    });
+
     const blockPromises = changedBlocks.map((change) => {
-      return this.blockService.discardPendingChanges(change.originId, userId);
+      return this.blockService.discardPendingChanges(change, currentUser);
     });
 
     await Promise.all(blockPromises);
