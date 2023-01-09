@@ -18,8 +18,7 @@
   "lint-staged": {
     "*": [
       "nx format:write --files",
-      "nx affected --target=lint --fix --files",
-      "git add"
+      "nx affected --target=lint --fix --files"
     ]
   },
   "dependencies": {
