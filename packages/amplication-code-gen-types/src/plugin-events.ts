@@ -28,6 +28,8 @@ import {
   CreateUserInfoParams,
   CreateTokenPayloadInterfaceParams,
   CreateAdminUIPackageJsonParams,
+  CreateServerGitIgnoreParams,
+  CreateAdminGitIgnoreParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -38,6 +40,8 @@ export type Events = {
   [EventNames.CreateAdminUI]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
   [EventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;
+  [EventNames.CreateServerGitIgnore]?: PluginEventType<CreateServerGitIgnoreParams>;
+  [EventNames.CreateAdminGitIgnore]?: PluginEventType<CreateAdminGitIgnoreParams>;
   [EventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
   [EventNames.CreateEntityServiceBase]?: PluginEventType<CreateEntityServiceBaseParams>;
   [EventNames.CreateEntityController]?: PluginEventType<CreateEntityControllerParams>;
