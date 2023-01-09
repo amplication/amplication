@@ -1,7 +1,6 @@
-import { StiggProvider, Paywall, BillingPeriod } from "@stigg/react-sdk";
+import { Paywall, BillingPeriod } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import * as models from "../models";
 import { useHistory } from "react-router-dom";
 import {
   Button,
@@ -10,11 +9,10 @@ import {
   Modal,
 } from "@amplication/design-system";
 import axios from "axios";
-import { REACT_APP_BILLING_API_KEY, REACT_APP_SERVER_URI } from "../env";
+import { REACT_APP_SERVER_URI } from "../env";
 import "./PurchasePage.scss";
-import { useCallback, useContext, useState } from "react";
+import { useContext } from "react";
 import { AppContext } from "../context/appContext";
-import WorkspaceList from "../Workspaces/WorkspaceList";
 import { PromoBanner } from "./PromoBanner";
 
 const selectedPlanAction = {
@@ -68,20 +66,6 @@ const PurchasePage = (props) => {
   };
   const { currentWorkspace } = useContext(AppContext);
 
-  const [purchaseWorkspace, setPurchaseWorkspace] =
-    useState<models.Workspace>(currentWorkspace);
-
-  const handleSetCurrentWorkspace = useCallback(
-    (workspace: models.Workspace) => {
-      setPurchaseWorkspace(workspace);
-      trackEvent({
-        eventName: AnalyticsEventNames.PricingPageChangeWorkspace,
-        workspace: workspace.id,
-      });
-    },
-    [setPurchaseWorkspace]
-  );
-
   return (
     <Modal open fullScreen>
       <div className={CLASS_NAME}>
@@ -99,64 +83,84 @@ const PurchasePage = (props) => {
         <div className={`${CLASS_NAME}__header`}>
           Pick the perfect plan for your needs
         </div>
-        <WorkspaceList
-          selectedWorkspace={purchaseWorkspace}
-          onWorkspaceSelected={handleSetCurrentWorkspace}
+        <PromoBanner />
+        <Paywall
+          textOverrides={{
+            entitlementsTitle: (plan) => {
+              return plan.basePlan
+                ? `Everything in ${plan.basePlan.displayName} plan, plus:`
+                : `All core backend functionality:`;
+            },
+            planCTAButton: {
+              startNew: "Upgrade now",
+              upgrade: "Upgrade now",
+              custom: "Contact us",
+            },
+            price: {
+              free: {
+                price: "$0",
+                unit: "",
+              },
+              custom: "Contact Us",
+              priceNotSet: "Price not set",
+            },
+          }}
+          onPlanSelected={async ({ plan, selectedBillingPeriod }) => {
+            selectedPlanAction[plan.id](
+              props,
+              currentWorkspace,
+              selectedBillingPeriod
+            );
+          }}
         />
-        <StiggProvider
-          key={purchaseWorkspace.id}
-          apiKey={REACT_APP_BILLING_API_KEY}
-          customerId={purchaseWorkspace.id}
-        >
-          <PromoBanner />
-          <Paywall
-            textOverrides={{
-              entitlementsTitle: (plan) => {
-                return plan.basePlan
-                  ? `Everything in ${plan.basePlan.displayName} plan, plus:`
-                  : `All core backend functionality:`;
+        <PromoBanner />
+        <Paywall
+          textOverrides={{
+            entitlementsTitle: (plan) => {
+              return plan.basePlan
+                ? `Everything in ${plan.basePlan.displayName} plan, plus:`
+                : `All core backend functionality:`;
+            },
+            planCTAButton: {
+              startNew: "Upgrade now",
+              upgrade: "Upgrade now",
+              custom: "Contact us",
+            },
+            price: {
+              free: {
+                price: "$0",
+                unit: "",
               },
-              planCTAButton: {
-                startNew: "Upgrade now",
-                upgrade: "Upgrade now",
-                custom: "Contact us",
-              },
-              price: {
-                free: {
-                  price: "$0",
-                  unit: "",
-                },
-                custom: "Contact Us",
-                priceNotSet: "Price not set",
-              },
-            }}
-            onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
-              trackEvent({
-                eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
-                action: billingPeriod,
-              });
-            }}
-            onPlanSelected={async ({
-              plan,
-              intentionType,
+              custom: "Contact Us",
+              priceNotSet: "Price not set",
+            },
+          }}
+          onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
+            trackEvent({
+              eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
+              action: billingPeriod,
+            });
+          }}
+          onPlanSelected={async ({
+            plan,
+            intentionType,
+            selectedBillingPeriod,
+          }) => {
+            trackEvent({
+              eventName: AnalyticsEventNames.PricingPageCTAClick,
+              currentPlan: plan.basePlan.displayName,
+              type: plan.displayName,
+              action: intentionType,
+              Billing: selectedBillingPeriod,
+            });
+            selectedPlanAction[plan.id](
+              props,
+              currentWorkspace,
               selectedBillingPeriod,
-            }) => {
-              trackEvent({
-                eventName: AnalyticsEventNames.PricingPageCTAClick,
-                currentPlan: plan.basePlan.displayName,
-                type: plan.displayName,
-                action: intentionType,
-                Billing: selectedBillingPeriod,
-              });
-              selectedPlanAction[plan.id](
-                props,
-                purchaseWorkspace,
-                selectedBillingPeriod,
-                intentionType
-              );
-            }}
-          />
-        </StiggProvider>
+              intentionType
+            );
+          }}
+        />
       </div>
       <div className={`${CLASS_NAME}__contact`}>
         <div className={`${CLASS_NAME}__contact_content`}>

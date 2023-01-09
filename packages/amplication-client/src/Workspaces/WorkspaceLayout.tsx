@@ -1,10 +1,12 @@
 import { CircularProgress } from "@amplication/design-system";
+import { StiggProvider } from "@stigg/react-sdk";
 import React, { lazy } from "react";
 import { isMobileOnly } from "react-device-detect";
 import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import useAuthenticated from "../authentication/use-authenticated";
 import { AppContextProvider } from "../context/appContext";
+import { REACT_APP_BILLING_API_KEY } from "../env";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -134,25 +136,32 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
       {isMobileOnly ? (
         <MobileMessage />
       ) : (
-        <Track>
-          <div className={moduleClass}>
-            <WorkspaceHeader />
-            <CompleteInvitation />
-            <div className={`${moduleClass}__page_content`}>
-              <div className={`${moduleClass}__main_content`}>
-                {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+        <StiggProvider
+          apiKey={REACT_APP_BILLING_API_KEY}
+          customerId={currentWorkspace.id}
+        >
+          <Track>
+            <div className={moduleClass}>
+              <WorkspaceHeader />
+              <CompleteInvitation />
+              <div className={`${moduleClass}__page_content`}>
+                <div className={`${moduleClass}__main_content`}>
+                  {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+                </div>
+                <div className={`${moduleClass}__changes_menu`}>
+                  {currentProject ? (
+                    <PendingChanges projectId={currentProject.id} />
+                  ) : null}
+                  {currentProject && (
+                    <LastCommit projectId={currentProject.id} />
+                  )}
+                </div>
               </div>
-              <div className={`${moduleClass}__changes_menu`}>
-                {currentProject ? (
-                  <PendingChanges projectId={currentProject.id} />
-                ) : null}
-                {currentProject && <LastCommit projectId={currentProject.id} />}
-              </div>
+              <WorkspaceFooter />
+              <ScreenResolutionMessage />
             </div>
-            <WorkspaceFooter />
-            <ScreenResolutionMessage />
-          </div>
-        </Track>
+          </Track>
+        </StiggProvider>
       )}
     </AppContextProvider>
   ) : (

@@ -19,6 +19,8 @@ import { EmptyState } from "../Components/EmptyState";
 import { pluralize } from "../util/pluralize";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQueries";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "../util/BillingFeature";
 
 type TDeleteData = {
   deleteResource: models.Resource;
@@ -88,7 +90,12 @@ function ResourceList() {
   );
   const subscription =
     getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
-  const hideBanner = false;
+
+  const { stigg } = useStiggContext();
+  const hideNotifications = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.HideNotifications,
+  });
+
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -118,7 +125,7 @@ function ResourceList() {
       </div>
       {loadingResources && <CircularProgress centerToParent />}
 
-      {!subscription && hideBanner && (
+      {!subscription && !hideNotifications.hasAccess && (
         <LimitationNotification
           description="With the current plan, you can use up to 3 services."
           link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
