@@ -49,3 +49,16 @@ export const NEW_WORKSPACE_FRAGMENT = gql`
     name
   }
 `;
+
+export const GET_WORKSPACES = gql`
+  query getWorkspaces {
+    workspaces {
+      id
+      name
+      subscription {
+        id
+        subscriptionPlan
+      }
+    }
+  }
+`;

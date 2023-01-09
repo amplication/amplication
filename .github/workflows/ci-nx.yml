@@ -43,12 +43,12 @@ jobs:
 
       - name: Cache node modules
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             node_modules
-            packages/amplication-client/node_modules
             libs/data-service-generator/node_modules
+            libs/util/code-gen-utils/node_modules
             packages/amplication-design-system/node_modules
           key: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
 
@@ -170,6 +170,26 @@ jobs:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
+
+  fs-scan:
+    name: Vulnerability scanning - File system
+    needs: ci
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: 'fs'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
+
+  config-scan:
+    name: Vulnerability scanning - Config
+    needs: ci
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: 'config'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
 
   deploy:
     if:  ${{ github.head_ref == 'next' }}

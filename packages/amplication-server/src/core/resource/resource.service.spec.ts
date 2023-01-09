@@ -49,6 +49,8 @@ import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
 import { Topic } from "../topic/dto/Topic";
+import { ConfigService } from "@nestjs/config";
+import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -361,6 +363,21 @@ describe("ResourceService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ResourceService,
+        {
+          provide: ConfigService,
+          useValue: { get: () => "" },
+        },
+        {
+          provide: BillingService,
+          useValue: {
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+            getNumericEntitlement: jest.fn(() => {
+              return {};
+            }),
+          },
+        },
         {
           provide: BuildService,
           useClass: jest.fn(() => ({

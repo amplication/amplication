@@ -1,5 +1,5 @@
 import { builders } from "ast-types";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import { Entity } from "@amplication/code-gen-types";
 import { classDeclaration } from "../../../util/ast";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";

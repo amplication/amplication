@@ -30,6 +30,7 @@ amplication-client:
       NX_REACT_APP_DATA_SOURCE: "https://server-next.amplication-dev.com/graphql"
       NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-next.amplication-dev.com/github"
       NX_REACT_APP_STORAGE_GATEWAY_URL: https://server-next.amplication-dev.com
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   autoscaling:
@@ -48,7 +49,7 @@ amplication-server:
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 
@@ -67,9 +68,14 @@ amplication-server:
       GITHUB_APP_CLIENT_ID: "Iv1.ba108fc312eb8265"
       GITHUB_APP_INSTALLATION_URL: "https://github.com/apps/next-environment/installations/new?state={state}"
 
+      SENDGRID_FROM_ADDRESS: next.team@amplication.com
+      SENDGRID_INVITATION_TEMPLATE_ID: d-aaae46e4127c4d2399d242610e6c496a
+
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "4a58ad31c388c892639d"
       GITHUB_REDIRECT_URI: "https://server-next.amplication-dev.com/github/callback"
+
+      BILLING_ENABLED: "true"
 
 amplication-git-push-webhook-service:
   ingress:
@@ -111,7 +117,7 @@ amplication-git-pull-request-service:
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 

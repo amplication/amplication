@@ -150,6 +150,25 @@ const PLUGINS: Plugin[] = [
       },
     ],
   },
+  {
+    id: "formatter-prettier",
+    description:
+      "Prettier is an opinionated code formatter. It enforces a consistent style by parsing your code and re-printing it with its own rules that take the maximum line length into account, wrapping code when necessary.",
+    icon: "icons/formatter-prettier.png",
+    name: "Prettier",
+    repo: "https://github.com/amplication/plugins/tree/master/plugins/formatter-prettier",
+    npm: "@amplication/plugin-formatter-prettier",
+    github: "test",
+    website: "test",
+    category: "test",
+    type: "test",
+    versions: [
+      {
+        version: "latest",
+        settings: {},
+      },
+    ],
+  },
 ];
 
 const setPluginOrderMap = (pluginOrder: models.PluginOrderItem[]) => {

@@ -1,7 +1,7 @@
 import { parse } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import * as recast from "recast";
-import { print } from "recast";
+import { print } from "@amplication/code-gen-utils";
 import {
   classDeclaration,
   expression,
