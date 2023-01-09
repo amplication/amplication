@@ -202,15 +202,16 @@ export class GithubService {
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
     await amplicationIgnoreManger.init(async (fileName) => {
       try {
-        return (
-          await this.getFile(
-            owner,
-            repo,
-            fileName,
-            baseBranchName,
-            installationId
-          )
-        ).content;
+        const file = await this.getFile(
+          owner,
+          repo,
+          fileName,
+          undefined, // take the default branch
+          installationId
+        );
+        const { content, htmlUrl, name } = file;
+        console.log(`Got ${name} file ${htmlUrl}`);
+        return content;
       } catch (error) {
         console.log("Repository does not have a .amplicationignore file");
         return "";
