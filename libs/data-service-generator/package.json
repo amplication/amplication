@@ -1,6 +1,6 @@
 {
   "name": "@amplication/data-service-generator",
-  "version": "1.1.7",
+  "version": "1.1.9",
   "private": false,
   "main": "./src/index.js",
   "dependencies": {
@@ -30,7 +30,7 @@
     "yaml": "2.1.1"
   },
   "devDependencies": {
-    "@amplication/code-gen-types": "^1.1.7",
+    "@amplication/code-gen-types": "^1.1.19",
     "@apollo/client": "3.6.9",
     "@babel/types": "^7.19.4",
     "@prisma/client": "4.6.1",

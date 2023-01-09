@@ -1,4 +1,6 @@
-import { Paywall } from "@stigg/react-sdk";
+import { Paywall, BillingPeriod } from "@stigg/react-sdk";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useHistory } from "react-router-dom";
 import {
   Button,
@@ -17,7 +19,8 @@ const selectedPlanAction = {
   "plan-amplication-enterprise": (
     props,
     purchaseWorkspace,
-    selectedBillingPeriod
+    selectedBillingPeriod,
+    intentionType
   ) => {
     window.open(
       "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
@@ -28,7 +31,8 @@ const selectedPlanAction = {
   "plan-amplication-pro": async (
     props,
     purchaseWorkspace,
-    selectedBillingPeriod
+    selectedBillingPeriod,
+    intentionType
   ) => {
     const resp = await axios.post(
       `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
@@ -36,6 +40,7 @@ const selectedPlanAction = {
         workspaceId: purchaseWorkspace.id,
         planId: "plan-amplication-pro",
         billingPeriod: selectedBillingPeriod,
+        intentionType,
         successUrl: props.location.state.from.pathname,
         cancelUrl: props.location.state.from.pathname,
       }
@@ -51,9 +56,11 @@ const selectedPlanAction = {
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
+  const { trackEvent } = useTracking();
   const history = useHistory();
   const backUrl = () => {
-    if (history.location.search === "?u=p") return history.push("/");
+    if (history.location.state && history.location.state.source)
+      return history.push("/");
 
     history.action !== "POP" ? history.goBack() : history.push("/");
   };
@@ -103,6 +110,54 @@ const PurchasePage = (props) => {
               props,
               currentWorkspace,
               selectedBillingPeriod
+            );
+          }}
+        />
+        <PromoBanner />
+        <Paywall
+          textOverrides={{
+            entitlementsTitle: (plan) => {
+              return plan.basePlan
+                ? `Everything in ${plan.basePlan.displayName} plan, plus:`
+                : `All core backend functionality:`;
+            },
+            planCTAButton: {
+              startNew: "Upgrade now",
+              upgrade: "Upgrade now",
+              custom: "Contact us",
+            },
+            price: {
+              free: {
+                price: "$0",
+                unit: "",
+              },
+              custom: "Contact Us",
+              priceNotSet: "Price not set",
+            },
+          }}
+          onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
+            trackEvent({
+              eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
+              action: billingPeriod,
+            });
+          }}
+          onPlanSelected={async ({
+            plan,
+            intentionType,
+            selectedBillingPeriod,
+          }) => {
+            trackEvent({
+              eventName: AnalyticsEventNames.PricingPageCTAClick,
+              currentPlan: plan.basePlan.displayName,
+              type: plan.displayName,
+              action: intentionType,
+              Billing: selectedBillingPeriod,
+            });
+            selectedPlanAction[plan.id](
+              props,
+              currentWorkspace,
+              selectedBillingPeriod,
+              intentionType
             );
           }}
         />
