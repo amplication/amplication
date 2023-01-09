@@ -12,12 +12,12 @@
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
     "db:migrate:deploy": "nx run-many --target=db:migrate:deploy",
     "prepare": "husky install",
-    "precommit": "lint-staged",
+    "precommit": "lint-staged --relative",
     "help": "nx help"
   },
   "lint-staged": {
     "*": [
-      "npx nx format:write --all",
+      "nx format:write --files",
       "git add"
     ]
   },
