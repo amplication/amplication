@@ -1,5 +1,5 @@
 import { builders, namedTypes } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import {
   EventNames,
   Module,
@@ -7,7 +7,7 @@ import {
   CreateEntityModuleBaseParams,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
-import { readFile } from "@amplication/code-gen-utils";
+
 import {
   interpolate,
   removeTSIgnoreComments,

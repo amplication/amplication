@@ -1,8 +1,7 @@
-import { print } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import { EnumAuthProviderType } from "../../../models";
 import { Module } from "@amplication/code-gen-types";
 import { removeTSIgnoreComments } from "../../../util/ast";
-import { readFile } from "@amplication/code-gen-utils";
 
 export async function createTokenService(
   authDir: string,
