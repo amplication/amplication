@@ -61,6 +61,27 @@ export class BillingService {
     });
   }
 
+  async setUsage(
+    workspaceId: string,
+    feature: BillingFeature,
+    value: number
+  ): Promise<ReportUsageAck> {
+    const stiggClient = await this.getStiggClient();
+
+    const entitlement = await stiggClient.getMeteredEntitlement({
+      customerId: workspaceId,
+      featureId: feature,
+    });
+
+    const result = entitlement.currentUsage - value;
+
+    return await stiggClient.reportUsage({
+      customerId: workspaceId,
+      featureId: feature,
+      value: result,
+    });
+  }
+
   async getMeteredEntitlement(
     workspaceId: string,
     feature: BillingFeature
