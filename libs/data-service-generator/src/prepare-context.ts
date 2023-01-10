@@ -18,7 +18,7 @@ import winston from "winston";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
-import registerPlugins, { AlternativeImportFunction } from "./register-plugin";
+import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { createUserEntityIfNotExist } from "./server/user-entity/user-entity";
 import { resolveTopicNames } from "./util/message-broker";
@@ -47,7 +47,7 @@ const defaultPlugins: {
 export async function prepareContext(
   dSGResourceData: DSGResourceData,
   logger: winston.Logger,
-  alternativeImport?: AlternativeImportFunction
+  pluginInstallationPath?: string
 ): Promise<Module[]> {
   logger.info("Preparing context...");
 
@@ -66,7 +66,7 @@ export async function prepareContext(
   const pluginsWithDefaultPlugins = prepareDefaultPlugins(resourcePlugins);
   const plugins = await registerPlugins(
     pluginsWithDefaultPlugins,
-    alternativeImport
+    pluginInstallationPath
   );
 
   const [entitiesWithUserEntity] = createUserEntityIfNotExist(entities);
