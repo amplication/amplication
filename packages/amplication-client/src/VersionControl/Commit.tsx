@@ -11,6 +11,7 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import { SortOrder, type Commit as CommitType } from "../models";
+import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
@@ -53,13 +54,9 @@ const formatLimitationError = (errorMessage: string) => {
 
 const Commit = ({ projectId, noChanges }: Props) => {
   const history = useHistory();
+  const { trackEvent } = useTracking();
   const match = useRouteMatch<RouteMatchProps>();
-
-  const redirectToPurchase = () => {
-    const path = `/${match.params.workspace}/purchase`;
-    history.push(path, { from: { pathname: history.location.pathname } });
-  };
-
+  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
   const {
     setCommitRunning,
     resetPendingChanges,
@@ -68,11 +65,21 @@ const Commit = ({ projectId, noChanges }: Props) => {
     currentWorkspace,
     currentProject,
   } = useContext(AppContext);
+
+  const redirectToPurchase = () => {
+    const path = `/${match.params.workspace}/purchase`;
+    history.push(path, { from: { pathname: history.location.pathname } });
+  };
+
   const [commit, { error, loading }] = useMutation<TData>(COMMIT_CHANGES, {
     onError: () => {
       setCommitRunning(false);
       setPendingChangesError(true);
       setOpenLimitationDialog(true);
+      trackEvent({
+        eventName: AnalyticsEventNames.PassedLimitsNotificationView,
+        reason: limitationErrorMessage,
+      });
       resetPendingChanges();
     },
     onCompleted: (response) => {
@@ -106,6 +113,12 @@ const Commit = ({ projectId, noChanges }: Props) => {
     ],
   });
 
+  const errorMessage = formatError(error);
+  const isLimitationError =
+    errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
+  const limitationErrorMessage =
+    isLimitationError && formatLimitationError(errorMessage);
+
   const handleSubmit = useCallback(
     (data, { resetForm }) => {
       setCommitRunning(true);
@@ -127,13 +140,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
       resetPendingChanges,
     ]
   );
-
-  const errorMessage = formatError(error);
-  const isLimitationError =
-    errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
-  const limitationErrorMessage =
-    isLimitationError && formatLimitationError(errorMessage);
-  const [isOpenLimitationDialog, setOpenLimitationDialog] = useState(false);
 
   return (
     <div className={CLASS_NAME}>
@@ -184,9 +190,19 @@ const Commit = ({ projectId, noChanges }: Props) => {
           message={limitationErrorMessage}
           onConfirm={() => {
             redirectToPurchase();
+            trackEvent({
+              eventName: AnalyticsEventNames.UpgradeOnPassedLimitsClick,
+              reason: limitationErrorMessage,
+            });
             setOpenLimitationDialog(false);
           }}
-          onDismiss={() => setOpenLimitationDialog(false)}
+          onDismiss={() => {
+            trackEvent({
+              eventName: AnalyticsEventNames.PassedLimitsNotificationClose,
+              reason: limitationErrorMessage,
+            });
+            setOpenLimitationDialog(false);
+          }}
         />
       ) : (
         <Snackbar open={Boolean(error)} message={errorMessage} />

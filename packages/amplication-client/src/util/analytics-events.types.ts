@@ -102,4 +102,16 @@ export enum AnalyticsEventNames {
   CreateService = "CreateService",
   CreateMessageBroker = "CreateMessageBroker",
   CreateProjectConfiguration = "CreateProjectConfiguration",
+
+  // Purchase Page
+  PricingPageClose = "PricingPageClose",
+  PricingPageCTAClick = "PricingPageCTAClick",
+  PassedLimitsNotificationView = "PassedLimitsNotificationView",
+  PassedLimitsNotificationClose = "PassedLimitsNotificationClose",
+  PricingPageChangeBillingCycle = "PricingPageChangeBillingCycle",
+  UpgradeOnResourceListClick = "UpgradeOnResourceListClick",
+  UpgradeOnEntityListClick = "UpgradeOnEntityListClick",
+  UpgradeOnPassedLimitsClick = "UpgradeOnPassedLimitsClick",
+  PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
+  UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
 }

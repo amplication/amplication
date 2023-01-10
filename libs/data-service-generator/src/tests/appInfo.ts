@@ -8,6 +8,7 @@ export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".env",
   ".yml",
   ".json",
+  ".gitignore",
 ];
 
 export const appInfo: AppInfo = {

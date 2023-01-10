@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import {
@@ -20,6 +21,8 @@ import "./EntityList.scss";
 import { AppRouteProps } from "../routes/routesUtil";
 import { pluralize } from "../util/pluralize";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "../util/BillingFeature";
 
 type TData = {
   entities: models.Entity[];
@@ -44,6 +47,7 @@ const POLL_INTERVAL = 2000;
 
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
+  const { trackEvent } = useTracking();
   const [error, setError] = useState<Error>();
   const pageTitle = "Entities";
   const [searchPhrase, setSearchPhrase] = useState<string>("");
@@ -89,12 +93,22 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     };
   }, [refetch, stopPolling, startPolling]);
 
+  const handleEntityClick = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeOnEntityListClick,
+    });
+  };
+
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
   );
   const subscription =
     getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
-  const hideBanner = true;
+
+  const { stigg } = useStiggContext();
+  const hideNotifications = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.HideNotifications,
+  });
 
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
@@ -134,10 +148,11 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         </div>
         {loading && <CircularProgress centerToParent />}
 
-        {!subscription && hideBanner && (
+        {!subscription && !hideNotifications.hasAccess && (
           <LimitationNotification
             description="With the current plan, you can use to 7 entities per service."
             link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+            handleClick={handleEntityClick}
           />
         )}
 

@@ -14,6 +14,7 @@ export class BillingController {
       provisionSubscriptionDto.workspaceId,
       provisionSubscriptionDto.planId,
       provisionSubscriptionDto.billingPeriod,
+      provisionSubscriptionDto.intentionType,
       provisionSubscriptionDto.cancelUrl,
       provisionSubscriptionDto.successUrl
     );
