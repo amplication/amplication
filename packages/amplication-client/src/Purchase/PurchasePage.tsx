@@ -105,36 +105,6 @@ const PurchasePage = (props) => {
               priceNotSet: "Price not set",
             },
           }}
-          onPlanSelected={async ({ plan, selectedBillingPeriod }) => {
-            selectedPlanAction[plan.id](
-              props,
-              currentWorkspace,
-              selectedBillingPeriod
-            );
-          }}
-        />
-        <PromoBanner />
-        <Paywall
-          textOverrides={{
-            entitlementsTitle: (plan) => {
-              return plan.basePlan
-                ? `Everything in ${plan.basePlan.displayName} plan, plus:`
-                : `All core backend functionality:`;
-            },
-            planCTAButton: {
-              startNew: "Upgrade now",
-              upgrade: "Upgrade now",
-              custom: "Contact us",
-            },
-            price: {
-              free: {
-                price: "$0",
-                unit: "",
-              },
-              custom: "Contact Us",
-              priceNotSet: "Price not set",
-            },
-          }}
           onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
             trackEvent({
               eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
