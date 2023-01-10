@@ -73,7 +73,7 @@ export class BillingService {
       featureId: feature,
     });
 
-    const result = entitlement.currentUsage - value;
+    const result = value - entitlement.currentUsage;
 
     return await stiggClient.reportUsage({
       customerId: workspaceId,
