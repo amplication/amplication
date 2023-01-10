@@ -94,7 +94,7 @@
     "glob": "^8.0.3",
     "graphql-type-json": "^0.3.2",
     "json-schema": "^0.4.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "kafkajs": "^1.16.0",
     "lodash": "^4.17.21",
     "lottie-react": "^2.3.1",
