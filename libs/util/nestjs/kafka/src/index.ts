@@ -3,4 +3,3 @@ export * from "./createNestjsKafkaConfig";
 export * from "./pipe/ParseKafkaMessagePipe";
 export * from "./ctx-host/DecodedKafkaContext";
 export * from "./consumer/KafkaConsumer.module";
-export * from "./producer/KafkaProducer.module";
