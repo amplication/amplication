@@ -1,6 +1,6 @@
-import { print } from "@amplication/code-gen-utils";
+import { print, parse } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
-import { parse } from "@amplication/code-gen-utils";
+
 import { removeIdentifierFromModuleDecorator } from "./nestjs-code-generation";
 import * as recast from "recast";
 

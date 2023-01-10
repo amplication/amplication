@@ -1,11 +1,10 @@
 import { NamedClassProperty } from "@amplication/code-gen-types";
-import { parse, partialParse } from "@amplication/code-gen-utils";
+import { parse, partialParse, print } from "@amplication/code-gen-utils";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
 import * as recast from "recast";
-import { print } from "@amplication/code-gen-utils";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
