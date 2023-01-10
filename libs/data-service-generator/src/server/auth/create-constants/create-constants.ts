@@ -1,10 +1,10 @@
 import { Module } from "../../..";
 import DsgContext from "../../../dsg-context";
 import { types } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
+import { readFile, print } from "@amplication/code-gen-utils";
 import { interpolate, removeTSClassDeclares } from "../../../util/ast";
 import { builders } from "ast-types";
-import { print } from "@amplication/code-gen-utils";
+
 import { getEntityIdType } from "../../../util/get-entity-id-type";
 
 const templatePath = require.resolve("./create-constants.template.ts");

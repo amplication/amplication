@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { EnumAuthProviderType } from "../../models";
-import { print } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import {
   AppInfo,
   CreateSwaggerParams,
@@ -12,7 +12,7 @@ import {
   removeTSIgnoreComments,
   removeTSVariableDeclares,
 } from "../../util/ast";
-import { readFile } from "@amplication/code-gen-utils";
+
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 

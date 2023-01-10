@@ -1,6 +1,6 @@
 import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { print } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import {
   Entity,
   EntityField,
@@ -34,7 +34,7 @@ import {
   isPasswordField,
   isToManyRelationField,
 } from "../../../util/field";
-import { readFile } from "@amplication/code-gen-utils";
+
 import { relativeImportPath } from "../../../util/module";
 import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import pluginWrapper from "../../../plugin-wrapper";
