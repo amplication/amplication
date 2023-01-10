@@ -4,6 +4,30 @@ exports[`createDataService creates app as expected 1`] = `
 Object {
   "test-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL=http://localhost:3000",
+  "test-ui/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+ 
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+ 
+# testing
+/coverage
+ 
+# production
+/build
+ 
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+ 
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+",
   "test-ui/package.json": "{
   \\"name\\": \\"@sample-application/admin\\",
   \\"version\\": \\"0.1.3\\",
@@ -2885,6 +2909,12 @@ DB_USER=testUsername
 DB_PASSWORD=1234
 DB_PORT=5433
 DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
+  "test/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+ 
+/node_modules
+/dist
+.DS_Store
+",
   "test/docker-compose.db.yml": "version: \\"3\\"
 services:
   db:
