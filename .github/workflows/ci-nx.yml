@@ -8,11 +8,6 @@ on:
         description: Commit SHA, branch or tag name used by Nx in the affected jobs. 
         required: true
         default: next
-      add-latest-tag:
-        type: boolean
-        description: Add `latest` tag to built docker images
-        required: false
-        default: false
   pull_request:
     types: [opened, reopened, synchronize]
     paths-ignore:
@@ -161,7 +156,7 @@ jobs:
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
             type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') && inputs.add-latest-tag }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
 
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
