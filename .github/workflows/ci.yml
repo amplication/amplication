@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      nx-base:
+        type: string
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs. 
+        required: true
+        default: next
+      skip-cache:
+        type: boolean
+        description: Rerun the tasks even when the results are available in the cache. 
+        default: false
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
+  push:
+    branches: 
+      - master
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.ref_name }}
+  NX_SKIP_NX_CACHE: ${{ inputs.skip-cache }}
+  TARGET_BRANCH: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-20.04
+    outputs:
+      affected: ${{ steps.set-affected.outputs.affected }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: $TARGET_BRANCH
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Nx Workspace Lint
+        run: npx nx workspace-lint
+
+      - name: Nx Format Check
+        run: npm run format:check
+
+      - name: Lint
+        run: npx nx affected --target=lint --parallel=3
+
+      - name: Test
+        run: npx nx affected --target=test --parallel=3
+
+      - name: Build
+        run: |
+          npx nx affected --target=build --parallel=3
+          npx nx affected --target=postbuild --parallel=3
+
+      - name: Set Affected
+        id: set-affected
+        run: |
+          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app | jq -c .projects)
+          echo affected projects: $AFFECTED_PROJECTS
+          echo affected=$AFFECTED_PROJECTS >> affected-projects
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: affected-projects
+          path: affected-projects
+          if-no-files-found: error
+
+  fs-scan:
+    name: Vulnerability scanning - File system
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: 'fs'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
+
+  config-scan:
+    name: Vulnerability scanning - Config
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: 'config'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
