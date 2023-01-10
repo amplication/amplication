@@ -21,6 +21,7 @@ import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
 import { ValidationError } from "../../errors/ValidationError";
+import { FeatureUsageReport } from "./FeatureUsageReport";
 
 @Injectable()
 export class ProjectService {
@@ -127,38 +128,29 @@ export class ProjectService {
     return [...changedEntities, ...changedBlocks];
   }
 
-  async validateSubscriptionPlanLimitationsForProject(
-    projectId: string
-  ): Promise<void> {
-    const project = await this.prisma.project.findUnique({
+  async calculateUsage(
+    workspaceId: string,
+    entitiesPerService: number
+  ): Promise<FeatureUsageReport> {
+    const workspace = await this.prisma.workspace.findUnique({
       where: {
-        id: projectId,
+        id: workspaceId,
       },
       include: {
-        resources: {
+        subscriptions: true,
+        projects: {
           include: {
-            entities: {
-              where: {
-                deletedAt: null,
-              },
-            },
-          },
-          where: {
-            resourceType: EnumResourceType.Service,
-            deletedAt: null,
-          },
-        },
-        workspace: {
-          include: {
-            subscriptions: true,
-            projects: {
+            resources: {
               include: {
-                resources: {
+                entities: {
                   where: {
-                    resourceType: EnumResourceType.Service,
                     deletedAt: null,
                   },
                 },
+              },
+              where: {
+                resourceType: EnumResourceType.Service,
+                deletedAt: null,
               },
             },
           },
@@ -166,12 +158,50 @@ export class ProjectService {
       },
     });
 
-    const workspace = project.workspace;
+    const workspaceServices = workspace.projects.flatMap(
+      (project) => project.resources
+    );
 
-    const projectServices = project.resources;
+    let servicesAboveEntityPerServiceLimitCount = 0;
+    if (entitiesPerService) {
+      const servicesAboveEntityPerServiceLimit = workspaceServices.filter(
+        (service) => service.entities.length > entitiesPerService
+      );
+      servicesAboveEntityPerServiceLimitCount =
+        servicesAboveEntityPerServiceLimit.length;
+    }
 
+    return {
+      services: workspaceServices.length,
+      servicesAboveEntityPerServiceLimit:
+        servicesAboveEntityPerServiceLimitCount,
+    };
+  }
+
+  async resetUsage(workspaceId: string, entitiesPerServiceLimit: number) {
+    const usageReport = await this.calculateUsage(
+      workspaceId,
+      entitiesPerServiceLimit
+    );
+
+    await this.billingService.setUsage(
+      workspaceId,
+      BillingFeature.Services,
+      usageReport.services
+    );
+
+    await this.billingService.setUsage(
+      workspaceId,
+      BillingFeature.ServicesAboveEntitiesPerServiceLimit,
+      usageReport.servicesAboveEntityPerServiceLimit
+    );
+  }
+
+  async validateSubscriptionPlanLimitationsForProject(
+    workspaceId: string
+  ): Promise<void> {
     const servicesEntitlement = await this.billingService.getMeteredEntitlement(
-      workspace.id,
+      workspaceId,
       BillingFeature.Services
     );
 
@@ -181,19 +211,17 @@ export class ProjectService {
       );
     }
 
-    const entitiesPerServiceEntitlement =
-      await this.billingService.getNumericEntitlement(
-        workspace.id,
-        BillingFeature.EntitiesPerService
+    const servicesAboveEntitiesPerServiceLimitEntitlement =
+      await this.billingService.getMeteredEntitlement(
+        workspaceId,
+        BillingFeature.ServicesAboveEntitiesPerServiceLimit
       );
 
-    projectServices.map((service) => {
-      if (service.entities.length > entitiesPerServiceEntitlement.value) {
-        throw new ValidationError(
-          `LimitationError: Allowed entities per service: ${entitiesPerServiceEntitlement.value}`
-        );
-      }
-    });
+    if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
+      throw new ValidationError(
+        `LimitationError: Allowed entities per service: ${servicesAboveEntitiesPerServiceLimitEntitlement.usageLimit}`
+      );
+    }
   }
 
   async commit(
@@ -221,13 +249,28 @@ export class ProjectService {
 
     if (this.isBillingEnabled) {
       const project = await this.findFirst({ where: { id: projectId } });
+
+      const entitiesPerServiceEntitlement =
+        await this.billingService.getNumericEntitlement(
+          project.workspaceId,
+          BillingFeature.EntitiesPerService
+        );
+
+      await this.resetUsage(
+        project.workspaceId,
+        entitiesPerServiceEntitlement.value
+      );
+
       const isIgnoreValidationCodeGeneration =
         await this.billingService.getBooleanEntitlement(
           project.workspaceId,
           BillingFeature.IgnoreValidationCodeGeneration
         );
+
       if (!isIgnoreValidationCodeGeneration.hasAccess) {
-        await this.validateSubscriptionPlanLimitationsForProject(projectId);
+        await this.validateSubscriptionPlanLimitationsForProject(
+          project.workspaceId
+        );
       }
     }
 
