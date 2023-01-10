@@ -479,6 +479,7 @@ export class EntityService {
       where: {
         lockedByUserId: userId,
         resource: {
+          deletedAt: null,
           project: {
             id: projectId,
           },

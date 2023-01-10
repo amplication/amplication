@@ -644,6 +644,7 @@ export class BlockService {
       where: {
         lockedByUserId: userId,
         resource: {
+          deletedAt: null,
           project: {
             id: projectId,
           },
