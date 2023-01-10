@@ -2,6 +2,9 @@ envName: "eugene"
 
 job:
   ttlSecondsAfterFinished: 1800
+  image:
+    repository: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator-runner"
+    tag: "next"
 
 dsgJobsPv:
   name: dsg-jobs-eugene-dsg
@@ -20,7 +23,7 @@ amplication-build-manager:
       KAFKA_CLIENT_ID: build-manager
       KAFKA_GROUP_ID: build-manager
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
 
       CODE_GENERATION_REQUEST_TOPIC: build.internal.code-generation.request.1
       CODE_GENERATION_SUCCESS_TOPIC: build.internal.code-generation.success.1

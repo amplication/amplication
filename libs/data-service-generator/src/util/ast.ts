@@ -5,6 +5,7 @@ import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
 import { visit } from "recast";
+
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
 const ARRAY_ID = builders.identifier("Array");

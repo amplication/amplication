@@ -4,12 +4,21 @@ import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
 import * as analytics from "../util/analytics";
 import { CircularProgress } from "@amplication/design-system";
+import NotFoundPage from "../404/NotFoundPage";
 
 export type AppRouteProps = {
   moduleName: string | undefined;
   moduleClass: string;
   // eslint-disable-next-line no-undef
   innerRoutes: JSX.Element | undefined;
+};
+
+export const PURCHASE_URL = "@@purchase";
+
+const setPurchaseRoute = () => {
+  localStorage.removeItem(PURCHASE_URL);
+
+  localStorage.setItem(PURCHASE_URL, Date.now().toString());
 };
 
 const LazyRouteWrapper: React.FC<{
@@ -37,6 +46,9 @@ const LazyRouteWrapper: React.FC<{
             innerRoutes: nestedRoutes,
           };
 
+          if (route.path === "/purchase" && props.history.action === "POP")
+            setPurchaseRoute();
+
           return route.redirect ? (
             <Redirect
               to={{
@@ -56,6 +68,7 @@ const LazyRouteWrapper: React.FC<{
                 to={{
                   pathname: "/login",
                   state: { from: location },
+                  search: location.search,
                 }}
               />
             )
@@ -92,6 +105,7 @@ export const routesGenerator: (
           <LazyRouteWrapper key={route.path} route={route} />
         ))}
       </Route>
+      <Route component={NotFoundPage} />
     </Switch>
   );
 };

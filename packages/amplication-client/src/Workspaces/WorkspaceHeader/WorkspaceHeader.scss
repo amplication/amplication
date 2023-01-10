@@ -154,6 +154,12 @@ $select-menu-max-width: 300px;
     }
   }
 
+  &__upgrade__btn {
+    &.amp-button--outline {
+      border-radius: 5px !important;
+    }
+  }
+
   &__vertical_border {
     width: 1px;
     height: var(--large-spacing);

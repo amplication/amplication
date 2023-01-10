@@ -41,12 +41,7 @@
     "build": {
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": [
-        "^build",
-        "db:prisma:generate",
-        "^db:prisma:generate",
-        "update-version"
-      ],
+      "dependsOn": ["^build", "update-version"],
       "options": {
         "outputPath": "dist/libs/data-service-generator",
         "tsConfig": "libs/data-service-generator/tsconfig.lib.json",

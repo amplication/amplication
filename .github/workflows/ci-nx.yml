@@ -8,6 +8,11 @@ on:
         description: Commit SHA, branch or tag name used by Nx in the affected jobs. 
         required: true
         default: next
+      add-latest-tag:
+        type: boolean
+        description: Add `latest` tag to built docker images
+        required: false
+        default: false
   pull_request:
     types: [opened, reopened, synchronize]
     paths-ignore:
@@ -34,7 +39,7 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: ${{ github.base_ref || github.event.inputs.nx-base }}
+          main-branch-name: ${{ github.base_ref || github.event.inputs.nx-base || github.event.repository.default_branch }}
 
       - name: Cache node modules
         id: cache
@@ -98,8 +103,7 @@ jobs:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: ${{ github.base_ref || github.event.inputs.nx-base }}
-
+          main-branch-name: ${{ github.base_ref || github.event.inputs.nx-base || github.event.repository.default_branch }}
       - name: Cache node modules
         id: cache
         uses: actions/cache@v2
@@ -156,6 +160,8 @@ jobs:
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
+            type=raw,value=${{ github.head_ref || github.ref_name }},
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') && inputs.add-latest-tag }}
 
       - name: Dockerize
         run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
@@ -163,6 +169,26 @@ jobs:
           # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
+
+  fs-scan:
+    name: Vulnerability scanning - File system
+    needs: ci
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: 'fs'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
+
+  config-scan:
+    name: Vulnerability scanning - Config
+    needs: ci
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: 'config'
+      format: 'sarif'
+      exit-code: 0
+      publish: true
 
   deploy:
     if:  ${{ github.head_ref == 'next' }}
@@ -172,4 +198,3 @@ jobs:
      target-env: ${{ github.head_ref }}
      confirm-env: ${{ github.head_ref }}
     secrets: inherit
-

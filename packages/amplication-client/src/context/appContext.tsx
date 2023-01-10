@@ -38,6 +38,8 @@ export interface AppContextInterface {
   setCommitRunning: (isRunning: boolean) => void;
   setPendingChangesError: (onError: boolean) => void;
   refreshCurrentWorkspace: () => void;
+  getWorkspaces: () => void;
+  workspacesList: models.Workspace[];
   gitRepositoryFullName: string;
   gitRepositoryUrl: string;
   createMessageBroker: (
@@ -79,6 +81,8 @@ const initialContext: AppContextInterface = {
   setCommitRunning: () => {},
   setPendingChangesError: () => {},
   refreshCurrentWorkspace: () => {},
+  getWorkspaces: () => {},
+  workspacesList: [],
   gitRepositoryFullName: "",
   gitRepositoryUrl: "",
   createMessageBroker: () => {},

@@ -39,6 +39,10 @@ import {
   CreateLogger,
   Transports,
 } from "@amplication/nest-logger-module";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
+import { EnumPullRequestMode } from "@amplication/git-utils";
+import { SendPullRequestArgs } from "./dto/sendPullRequest";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -139,6 +143,8 @@ export function createInitialStepData(
 }
 @Injectable()
 export class BuildService {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -154,6 +160,7 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly billingService: BillingService,
 
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
@@ -162,6 +169,10 @@ export class BuildService {
     if (!this.host) {
       throw new Error("Missing HOST_VAR in env");
     }
+
+    this.isBillingEnabled = this.configService.get<boolean>(
+      Env.BILLING_ENABLED
+    );
   }
   host: string;
 
@@ -372,6 +383,16 @@ export class BuildService {
       });
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
       await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+      if (this.isBillingEnabled) {
+        const workspace = await this.resourceService.getResourceWorkspace(
+          build.resourceId
+        );
+        await this.billingService.reportUsage(
+          workspace.id,
+          BillingFeature.CodePushToGit
+        );
+      }
     } catch (error) {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
       await this.actionService.logInfo(step, error);
@@ -443,7 +464,7 @@ export class BuildService {
 
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
-    const commitMessage =
+    const commitTitle =
       (commit.message &&
         `${commit.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
@@ -466,7 +487,15 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          const createPullRequestArgs = {
+          const subscription = await this.billingService.getSubscription(
+            project.workspaceId
+          );
+
+          const pullRequestMode = subscription
+            ? EnumPullRequestMode.Accumulative
+            : EnumPullRequestMode.Basic;
+
+          const createPullRequestArgs: SendPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             resourceId: resource.id,
@@ -475,8 +504,7 @@ export class BuildService {
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
-              head: `amplication-build-${build.id}`,
-              title: commitMessage,
+              title: commitTitle,
               body: `Amplication build # ${build.id}.
               Commit message: ${commit.message}
               
@@ -487,6 +515,7 @@ export class BuildService {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
+            pullRequestMode,
           };
 
           await this.queueService.emitMessage(

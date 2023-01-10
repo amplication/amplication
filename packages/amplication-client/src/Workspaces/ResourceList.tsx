@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { gql, Reference, useMutation } from "@apollo/client";
+import { gql, Reference, useMutation, useQuery } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { formatError } from "../util/error";
 import { useTracking } from "../util/analytics";
@@ -7,6 +7,7 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
+  LimitationNotification,
 } from "@amplication/design-system";
 import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
@@ -17,9 +18,16 @@ import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
 import { pluralize } from "../util/pluralize";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQueries";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "../util/BillingFeature";
 
 type TDeleteData = {
   deleteResource: models.Resource;
+};
+
+type GetWorkspaceResponse = {
+  currentWorkspace: models.Workspace;
 };
 
 const CLASS_NAME = "resource-list";
@@ -38,6 +46,12 @@ function ResourceList() {
   const clearError = useCallback(() => {
     setError(null);
   }, [setError]);
+
+  const handleResourceClick = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeOnResourceListClick,
+    });
+  };
 
   const [deleteResource] = useMutation<TDeleteData>(DELETE_RESOURCE, {
     update(cache, { data }) {
@@ -71,6 +85,17 @@ function ResourceList() {
     [deleteResource, setError, trackEvent]
   );
 
+  const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
+    GET_CURRENT_WORKSPACE
+  );
+  const subscription =
+    getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
+
+  const { stigg } = useStiggContext();
+  const hideNotifications = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.HideNotifications,
+  });
+
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -99,6 +124,14 @@ function ResourceList() {
         {pluralize(resources.length, "Resource", "Resources")}
       </div>
       {loadingResources && <CircularProgress centerToParent />}
+
+      {!subscription && !hideNotifications.hasAccess && (
+        <LimitationNotification
+          description="With the current plan, you can use up to 3 services."
+          link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+          handleClick={handleResourceClick}
+        />
+      )}
 
       <div className={`${CLASS_NAME}__content`}>
         {isEmpty(resources) && !loadingResources ? (
