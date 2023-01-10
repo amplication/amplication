@@ -1,4 +1,4 @@
-import { print } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import {
   EventNames,
@@ -6,7 +6,7 @@ import {
   CreateServerAppModuleParams,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../util/module";
-import { readFile } from "@amplication/code-gen-utils";
+
 import {
   getExportedNames,
   interpolate,
