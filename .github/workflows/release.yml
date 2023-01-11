@@ -12,8 +12,8 @@ on:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  NX_BRANCH: ${{ github.event.workflow_run.head_branch}}
-  BRANCH: ${{ github.event.workflow_run.head_branch}}
+  NX_BRANCH: ${{ github.event.workflow_run.head_branch }}
+  BRANCH: ${{ github.event.workflow_run.head_branch }}
 
 jobs:
   nx:
