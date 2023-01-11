@@ -17,6 +17,6 @@ export const getEntityIdType = (entityName: string) => {
     throw new Error(`entity ${entityName} must have an id field`);
   }
 
-  const { idType } = idField.properties as types.Id;
+  const idType = idField.properties?.idType as types.Id;
   return idType ?? "CUID";
 };
