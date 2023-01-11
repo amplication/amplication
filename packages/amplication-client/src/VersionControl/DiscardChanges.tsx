@@ -23,7 +23,7 @@ const DiscardChanges = ({
 }: Props) => {
   const { trackEvent } = useTracking();
 
-  const { pendingChanges, resetPendingChanges, addChange } =
+  const { pendingChanges, resetPendingChanges, addEntity } =
     useContext(AppContext);
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
@@ -53,7 +53,7 @@ const DiscardChanges = ({
     onCompleted: (data) => {
       resetPendingChanges();
       onComplete();
-      addChange(projectId); // data.project.connect.id
+      addEntity(projectId); // data.project.connect.id
     },
   });
 

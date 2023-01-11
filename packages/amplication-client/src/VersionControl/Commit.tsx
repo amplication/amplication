@@ -64,7 +64,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     setCommitRunning,
     resetPendingChanges,
     setPendingChangesError,
-    addChange,
+    addEntity,
     currentWorkspace,
     currentProject,
   } = useContext(AppContext);
@@ -79,7 +79,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
       setCommitRunning(false);
       setPendingChangesError(false);
       resetPendingChanges();
-      addChange(response.commit.id);
+      addEntity(response.commit.id);
       const path = commitPath(
         currentWorkspace?.id,
         currentProject?.id,
