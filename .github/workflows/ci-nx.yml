@@ -8,14 +8,14 @@ on:
         description: Commit SHA, branch or tag name used by Nx in the affected jobs. 
         required: true
         default: next
-  pull_request:
-    types: [opened, reopened, synchronize]
-    paths-ignore:
-      - "**/*.md"
-      - ".all-contributorsrc"
-  push:
-    branches:
-      - "master"
+  # pull_request:
+  #   types: [opened, reopened, synchronize]
+  #   paths-ignore:
+  #     - "**/*.md"
+  #     - ".all-contributorsrc"
+  # push:
+  #   branches:
+  #     - "master"
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
