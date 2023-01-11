@@ -8,10 +8,17 @@ on:
         description: Commit SHA, branch or tag name used by Nx in the affected jobs. 
         required: true
         default: next
-      skip-cache:
+      nx-skip-cache:
         type: boolean
         description: Rerun the tasks even when the results are available in the cache. 
         default: false
+      nx-all:
+        type: string
+        description: When set to '--all' it forces Nx to consider all projects (apps and libs) as affected.
+        default: ''
+        options: 
+        - ''
+        - '--all'
   pull_request:
     types: [opened, reopened, synchronize]
     paths-ignore:
@@ -27,7 +34,8 @@ on:
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_BRANCH: ${{ github.ref_name }}
-  NX_SKIP_NX_CACHE: ${{ inputs.skip-cache }}
+  NX_FORCE_ALL: ${{ inputs.nx-all || '' }} 
+  NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache }}
   TARGET_BRANCH: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
 
 jobs:
@@ -58,23 +66,23 @@ jobs:
         run: npx nx workspace-lint
 
       - name: Nx Format Check
-        run: npm run format:check
+        run: npm run format:check $NX_FORCE_ALL
 
       - name: Lint
-        run: npx nx affected --target=lint --parallel=3
+        run: npx nx affected --target=lint --parallel=3 $NX_FORCE_ALL
 
       - name: Test
-        run: npx nx affected --target=test --parallel=3
+        run: npx nx affected --target=test --parallel=3 $NX_FORCE_ALL
 
       - name: Build
         run: |
-          npx nx affected --target=build --parallel=3
-          npx nx affected --target=postbuild --parallel=3
+          npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
+          npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
       - name: Set Affected
         id: set-affected
         run: |
-          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app | jq -c .projects)
+          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects)
           echo affected projects: $AFFECTED_PROJECTS
           echo affected=$AFFECTED_PROJECTS >> affected-projects
 
