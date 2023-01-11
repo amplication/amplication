@@ -184,13 +184,12 @@ export class GithubService {
     mode: EnumPullRequestMode,
     owner: string,
     repo: string,
-    modules: PrModule[],
+    files: Required<Changes["files"]>,
     commitMessage: string,
     prTitle: string,
     prBody: string,
     installationId: string,
     head,
-    gitResourceMeta: GitResourceMeta,
     baseBranchName?: string | undefined
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
@@ -198,77 +197,6 @@ export class GithubService {
     const octokit = new myOctokit({
       auth: token,
     });
-
-    const amplicationIgnoreManger = new AmplicationIgnoreManger();
-    await amplicationIgnoreManger.init(async (fileName) => {
-      try {
-        const file = await this.getFile(
-          owner,
-          repo,
-          fileName,
-          undefined, // take the default branch
-          installationId
-        );
-        const { content, htmlUrl, name } = file;
-        console.log(`Got ${name} file ${htmlUrl}`);
-        return content;
-      } catch (error) {
-        console.log("Repository does not have a .amplicationignore file");
-        return "";
-      }
-    });
-
-    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
-    //do not override server/scripts/customSeed.ts
-    const doNotOverride = [
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.controller.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.resolver.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.service.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.module.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/scripts/customSeed.ts$`
-      ),
-    ];
-
-    const authFolder = "server/src/auth/";
-
-    const files: Required<Changes["files"]> = Object.fromEntries(
-      modules.map((module) => {
-        // ignored file
-        if (amplicationIgnoreManger.isIgnored(module.path)) {
-          return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
-        }
-        // Deleted file
-        if (module.code === null) {
-          return [module.path, module.code];
-        }
-        // Regex ignored file
-        if (
-          !module.path.startsWith(authFolder) &&
-          doNotOverride.some((rx) => rx.test(module.path))
-        ) {
-          return [
-            module.path,
-            ({ exists }) => {
-              // do not create the file if it already exist
-              if (exists) return null;
-
-              return module.code;
-            },
-          ];
-        }
-        // Regular file
-        return [module.path, module.code];
-      })
-    );
 
     switch (mode) {
       case EnumPullRequestMode.Accumulative:

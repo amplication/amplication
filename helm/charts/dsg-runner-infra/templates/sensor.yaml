@@ -51,7 +51,7 @@ spec:
                           - name: persistent-storage
                             mountPath: /efs
                             subPathExpr: $(BUILD_ID)
-                    imagePullPolicy: Always
+                        imagePullPolicy: Always
                     volumes:
                       - name: persistent-storage
                         persistentVolumeClaim:
