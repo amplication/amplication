@@ -15,6 +15,7 @@
       "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
+      "dependsOn": ["prebuild"],
       "options": {
         "compiler": "babel",
         "outputPath": "dist/packages/amplication-client",
