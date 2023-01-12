@@ -4,15 +4,16 @@ import winston from "winston";
 import { createAdminModules } from "./admin/create-admin";
 import { createLog } from "./create-log";
 import DsgContext from "./dsg-context";
+import { EnumResourceType } from "./models";
 import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
-import { createDTOs } from "./server/resource/create-dtos";
-import { EnumResourceType } from "./models";
 import { defaultLogger } from "./server/logging";
+import { createDTOs } from "./server/resource/create-dtos";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
-  logger: winston.Logger = defaultLogger
+  logger: winston.Logger = defaultLogger,
+  pluginInstallationPath?: string
 ): Promise<Module[]> {
   try {
     if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
@@ -22,7 +23,7 @@ export async function createDataService(
 
     const timer = logger.startTimer();
 
-    await prepareContext(dSGResourceData, logger);
+    await prepareContext(dSGResourceData, logger, pluginInstallationPath);
     await createLog({ level: "info", message: "Creating application..." });
     logger.info("Creating application...");
 
