@@ -105,8 +105,8 @@ jobs:
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
-            type=raw,value=$BRANCH
-            type=raw,value=latest,enable=${{ $BRANCH == 'master') }}
+            type=raw,value=${{ github.env.BRANCH }}
+            type=raw,value=latest,enable=${{ github.env.BRANCH == 'master' }}
 
       - name: Dockerize
         run: npx nx docker:build ${{ matrix.project }}
