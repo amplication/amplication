@@ -16,7 +16,6 @@ import { join } from "path";
 import pluralize from "pluralize";
 import winston from "winston";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
-import { createLog } from "./create-log";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
@@ -65,22 +64,6 @@ export async function prepareContext(
   }
 
   const pluginsWithDefaultPlugins = prepareDefaultPlugins(resourcePlugins);
-
-  await createLog({
-    level: "info",
-    message: `The code generation process working with the plugins:`,
-  });
-  for (const plugin of pluginsWithDefaultPlugins) {
-    try {
-      await createLog({
-        level: "info",
-        message: `   ${plugin.npm}@${plugin.version}`,
-      });
-    } catch (error) {
-      logger.error(`Error to log plugin ${plugin}`);
-    }
-  }
-
   const plugins = await registerPlugins(
     pluginsWithDefaultPlugins,
     pluginInstallationPath
