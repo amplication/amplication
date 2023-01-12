@@ -90,11 +90,14 @@ const WorkspaceHeader: React.FC<{}> = () => {
   }, [history, apolloClient]);
 
   const handleUpgradeClick = useCallback(() => {
+    history.push(`/${currentWorkspace.id}/purchase`, {
+      from: { pathname: window.location.pathname },
+    });
     trackEvent({
       eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
       workspace: currentWorkspace.id,
     });
-  }, [trackEvent]);
+  }, [currentWorkspace, window.location.pathname]);
 
   return (
     <div className={CLASS_NAME}>
@@ -228,15 +231,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
             buttonStyle={EnumButtonStyle.Outline}
             onClick={handleUpgradeClick}
           >
-            <Link
-              className={`${CLASS_NAME}__upgrade__link`}
-              to={{
-                pathname: `/${currentWorkspace?.id}/purchase`,
-                state: { from: { pathname: window.location.pathname } },
-              }}
-            >
-              Upgrade
-            </Link>
+            Upgrade
           </Button>
           <a
             className={`${CLASS_NAME}__links__link`}
