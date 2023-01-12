@@ -92,21 +92,3 @@ jobs:
           name: affected-projects
           path: affected-projects
           if-no-files-found: error
-
-  fs-scan:
-    name: Vulnerability scanning - File system
-    uses: ./.github/workflows/vulnerability-scan.template.yaml
-    with:
-      scan-type: 'fs'
-      format: 'sarif'
-      exit-code: 0
-      publish: true
-
-  config-scan:
-    name: Vulnerability scanning - Config
-    uses: ./.github/workflows/vulnerability-scan.template.yaml
-    with:
-      scan-type: 'config'
-      format: 'sarif'
-      exit-code: 0
-      publish: true
