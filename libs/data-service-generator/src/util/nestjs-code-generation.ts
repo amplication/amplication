@@ -4,7 +4,7 @@
 
 import { ASTNode, builders, namedTypes } from "ast-types";
 import { findConstructor, findFirstDecoratorByName } from "./ast";
-import * as recast from "recast";
+import { visit } from "recast";
 import { USE_INTERCEPTORS_DECORATOR_NAME } from "./set-endpoint-permission";
 const MODULE_DECORATOR_NAME = "Module";
 /**
@@ -52,7 +52,7 @@ export function removeIdentifierFromModuleDecorator(
 ): void {
   const moduleDecorator = findFirstDecoratorByName(file, MODULE_DECORATOR_NAME);
 
-  recast.visit(moduleDecorator, {
+  visit(moduleDecorator, {
     visitIdentifier(path) {
       //find the identifier inside and ArrayExpression
       if (
@@ -77,7 +77,7 @@ export function removeIdentifierFromUseInterceptorDecorator(
 ): namedTypes.Decorator | boolean {
   const decoratorName = USE_INTERCEPTORS_DECORATOR_NAME;
   let decorator: namedTypes.ClassDeclaration | null = null;
-  recast.visit(node, {
+  visit(node, {
     visitDecorator(path) {
       const callee = path.get("expression", "callee");
       if (callee.value && callee.value.property?.name === decoratorName) {

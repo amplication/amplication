@@ -4,7 +4,7 @@ import { ASTNode, builders, namedTypes } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
-import * as recast from "recast";
+import { visit } from "recast";
 
 const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
@@ -133,7 +133,7 @@ export function interpolate(
   ast: ASTNode,
   mapping: { [key: string]: ASTNode | undefined }
 ): void {
-  return recast.visit(ast, {
+  return visit(ast, {
     visitIdentifier(path) {
       const { name } = path.node;
       if (mapping.hasOwnProperty(name)) {
@@ -262,7 +262,7 @@ export function transformTemplateLiteralToStringLiteral(
  * @param ast the AST to remove the comments from
  */
 export function removeTSIgnoreComments(ast: ASTNode): void {
-  recast.visit(ast, {
+  visit(ast, {
     visitComment(path) {
       if (path.value.value.includes(TS_IGNORE_TEXT)) {
         path.prune();
@@ -291,7 +291,7 @@ export function removeImportsTSIgnoreComments(file: namedTypes.File): void {
  * @param ast the AST to remove the declares from
  */
 export function removeTSVariableDeclares(ast: ASTNode): void {
-  recast.visit(ast, {
+  visit(ast, {
     visitVariableDeclaration(path) {
       if (path.get("declare").value) {
         path.prune();
@@ -306,7 +306,7 @@ export function removeTSVariableDeclares(ast: ASTNode): void {
  * @param ast the AST to remove the declares from
  */
 export function removeTSClassDeclares(ast: ASTNode): void {
-  recast.visit(ast, {
+  visit(ast, {
     visitClassDeclaration(path) {
       if (path.get("declare").value) {
         path.prune();
@@ -321,7 +321,7 @@ export function removeTSClassDeclares(ast: ASTNode): void {
  * @param ast the AST to remove the declares from
  */
 export function removeTSInterfaceDeclares(ast: ASTNode): void {
-  recast.visit(ast, {
+  visit(ast, {
     visitTSInterfaceDeclaration(path) {
       if (path.get("declare").value) {
         path.prune();
@@ -336,7 +336,7 @@ export function removeTSInterfaceDeclares(ast: ASTNode): void {
  * @param ast the AST to remove the comments from
  */
 export function removeESLintComments(ast: ASTNode): void {
-  recast.visit(ast, {
+  visit(ast, {
     visitComment(path) {
       const comment = path.value as namedTypes.Comment;
       if (comment.value.match(/^\s+eslint-disable/)) {
@@ -446,7 +446,7 @@ export function findContainedIdentifiers(
     Array.from(identifiers, (identifier) => [identifier.name, identifier])
   );
   const contained: namedTypes.Identifier[] = [];
-  recast.visit(node, {
+  visit(node, {
     visitIdentifier(path) {
       if (nameToIdentifier.hasOwnProperty(path.node.name)) {
         contained.push(path.node);
@@ -486,7 +486,7 @@ export function getClassDeclarationById(
   id: namedTypes.Identifier
 ): namedTypes.ClassDeclaration {
   let classDeclaration: namedTypes.ClassDeclaration | null = null;
-  recast.visit(node, {
+  visit(node, {
     visitClassDeclaration(path) {
       if (path.node.id && path.node.id.name === id.name) {
         classDeclaration = path.node;
@@ -573,11 +573,11 @@ export function addIdentifierToConstructorSuperCall(
   ast: ASTNode,
   identifier: namedTypes.Identifier
 ): void {
-  recast.visit(ast, {
+  visit(ast, {
     visitClassMethod(path) {
       const classMethodNode = path.node;
       if (isConstructor(classMethodNode)) {
-        recast.visit(classMethodNode, {
+        visit(classMethodNode, {
           visitCallExpression(path) {
             const callExpressionNode = path.node;
 
@@ -718,7 +718,7 @@ export function removeDecoratorByName(
   decoratorName: string
 ): boolean {
   let decorator: namedTypes.ClassDeclaration | null = null;
-  recast.visit(node, {
+  visit(node, {
     visitDecorator(path) {
       const callee = path.get("expression", "callee");
       if (callee.value && callee.value.property?.name === decoratorName) {
@@ -763,7 +763,7 @@ export function findFirstDecoratorByName(
   decoratorName: string
 ): namedTypes.Decorator {
   let decorator: namedTypes.ClassDeclaration | null = null;
-  recast.visit(node, {
+  visit(node, {
     visitDecorator(path) {
       const callee = path.get("expression", "callee");
       if (callee.value && callee.value.name === decoratorName) {
