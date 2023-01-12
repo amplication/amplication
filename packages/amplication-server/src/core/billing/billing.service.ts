@@ -2,7 +2,6 @@ import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
-import Analytics from "analytics-node";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
@@ -20,17 +19,20 @@ import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStat
 import { Subscription } from "../subscription/dto/Subscription";
 import { BillingFeature } from "./BillingFeature";
 import { BillingPlan } from "./BillingPlan";
-import { EnumEventType } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 @Injectable()
 export class BillingService {
   private readonly stiggClient: Stigg;
   private readonly clientHost: string;
-  private analytics: Analytics;
 
   constructor(
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger,
+    private readonly analytics: SegmentAnalyticsService,
     configService: ConfigService
   ) {
     const stiggApiKey = configService.get(Env.BILLING_API_KEY);
@@ -135,12 +137,12 @@ export class BillingService {
         successUrl: new URL(cancelUrl, this.clientHost).href,
       },
     });
-    this.analytics.track({
+    await this.analytics.track({
       userId: workspaceId,
       event:
         intentionType === "DOWNGRADE_PLAN"
-          ? EnumEventType.WorkspacePlanDowngradeCompleted
-          : EnumEventType.WorkspacePlanUpgradeCompleted,
+          ? EnumEventType.WorkspacePlanDowngradeRequest
+          : EnumEventType.WorkspacePlanUpgradeRequest,
     });
 
     return stiggResponse;

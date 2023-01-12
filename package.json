@@ -17,8 +17,7 @@
   },
   "lint-staged": {
     "*": [
-      "nx format:write --files",
-      "nx affected --target=lint --fix --files"
+      "nx format:write --files"
     ]
   },
   "dependencies": {
@@ -75,7 +74,7 @@
     "bcrypt": "^5.0.1",
     "chalk": "^5.1.2",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.0",
     "classnames": "^2.3.2",
     "core-js": "^3.6.5",
     "cron": "^1.8.2",
@@ -95,7 +94,7 @@
     "glob": "^8.0.3",
     "graphql-type-json": "^0.3.2",
     "json-schema": "^0.4.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "kafkajs": "^1.16.0",
     "lodash": "^4.17.21",
     "lottie-react": "^2.3.1",
@@ -188,7 +187,7 @@
     "@types/graphql-type-json": "^0.3.2",
     "@types/jest": "^27.0.2",
     "@types/json-schema": "^7.0.11",
-    "@types/jsonwebtoken": "^8.5.9",
+    "@types/jsonwebtoken": "^9.0.0",
     "@types/lodash": "^4.14.186",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^18.11.9",

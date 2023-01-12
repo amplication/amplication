@@ -197,8 +197,9 @@ export class ProjectService {
     );
   }
 
-  async validateSubscriptionPlanLimitationsForProject(
-    workspaceId: string
+  async validateSubscriptionPlanLimitationsForWorkspace(
+    workspaceId: string,
+    entitiesPerServiceLimit: number
   ): Promise<void> {
     const servicesEntitlement = await this.billingService.getMeteredEntitlement(
       workspaceId,
@@ -219,7 +220,7 @@ export class ProjectService {
 
     if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
       throw new ValidationError(
-        `LimitationError: Allowed entities per service: ${servicesAboveEntitiesPerServiceLimitEntitlement.usageLimit}`
+        `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
       );
     }
   }
@@ -268,8 +269,9 @@ export class ProjectService {
         );
 
       if (!isIgnoreValidationCodeGeneration.hasAccess) {
-        await this.validateSubscriptionPlanLimitationsForProject(
-          project.workspaceId
+        await this.validateSubscriptionPlanLimitationsForWorkspace(
+          project.workspaceId,
+          entitiesPerServiceEntitlement.value
         );
       }
     }
