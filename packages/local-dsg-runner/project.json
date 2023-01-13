@@ -13,9 +13,7 @@
         "compiler": "tsc",
         "outputPath": "dist/packages/local-dsg-runner",
         "main": "packages/local-dsg-runner/src/main.ts",
-        "tsConfig": "packages/local-dsg-runner/tsconfig.app.json",
-        "assets": ["packages/local-dsg-runner/src/assets"],
-        "webpackConfig": "packages/local-dsg-runner/webpack.config.js"
+        "tsConfig": "packages/local-dsg-runner/tsconfig.app.json"
       },
       "configurations": {
         "production": {
