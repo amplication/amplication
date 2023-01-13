@@ -53,7 +53,7 @@ jobs:
           prefix="amplication-"
           project=${project#$prefix}
 
-          if [[ $project -eq "data-service-generator-runner" ]] && [[ $project -eq "build-manager" ]];
+          if [[ "$project" == "data-service-generator-runner" ]] && [[ "$project" == "build-manager" ]];
           then
             kubectl rollout restart deployments/$project -n ${{ inputs.account-name }}-dsg
           else
