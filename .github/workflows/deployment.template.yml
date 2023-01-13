@@ -11,6 +11,11 @@ on:
         type: string
         description: Project (amplication application component) to deploy.
         required: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
 
 jobs:
   deployment:
@@ -42,9 +47,10 @@ jobs:
           prefix="amplication-"
           project=${project#$prefix}
 
-          if [[ "$project" == "data-service-generator-runner" ]] && [[ "$project" == "build-manager" ]];
+          if [[ "$project" == "build-manager" ]];
           then
             kubectl rollout restart deployments/$project -n ${{ inputs.environment-name }}-dsg
-          else
+          elif [[ "$project" != "data-service-generator-runner" ]];
+          then
             kubectl rollout restart deployments/$project -n ${{ inputs.environment-name }}
           fi;
