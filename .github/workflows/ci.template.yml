@@ -48,7 +48,7 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: ${{ github.env.BASE }}
+          main-branch-name: ${{ env.BASE }}
 
       - uses: actions/setup-node@v3
         with:
