@@ -85,7 +85,7 @@ jobs:
         run: npx nx workspace-lint
 
       - name: Nx Format Check
-        run: npm run format:check $NX_FORCE_ALL
+        run: npx nx format:check $NX_FORCE_ALL
 
       - name: Lint
         run: npx nx affected --target=lint --parallel=3 $NX_FORCE_ALL
