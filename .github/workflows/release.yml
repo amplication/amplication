@@ -125,13 +125,13 @@ jobs:
     steps:
       - id: configure-deploy-inputs
         run: |
-          if [ "${{ github.env.BRANCH }}" == "next"];
+          if [[ "${{ github.env.BRANCH }}" == "next" ]];
           then
             echo account-name="sandbox" >> $GITHUB_OUTPUT
             echo account-id="${{ github.var.AWS_SANDBOX_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
             echo aws-access-key-id="${{ github.secrets.AWS_SANDBOX_ACCESS_KEY_ID }}" >> $GITHUB_OUTPUT
             echo aws-secret-access-key="${{ github.secrets.AWS_SANDBOX_SECRET_ACCESS_KEY }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.env.BRANCH }}" == "master"];
+          elif [[ "${{ github.env.BRANCH }}" == "master" ]];
           then
             echo account-name="staging" >> $GITHUB_OUTPUT
             echo account-id="${{ github.var.AWS_STAGING_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
