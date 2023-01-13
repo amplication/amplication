@@ -77,8 +77,30 @@ jobs:
           node-version-file: 'package.json'
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
+      
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Cache other node modules
+        id: cache-other-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-other-node-modules
+        with:
+          path: |
+            libs/data-service-generator/node_modules
+            libs/util/code-gen-utils/node_modules
+            packages/amplication-cli/node_modules
+          key:  ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
 
       - name: Install Dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
       - name: Configure AWS Credentials (operations account)
@@ -115,7 +137,8 @@ jobs:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
 
-  prepare:
+  configure:
+    name: Configure deployment target environment
     runs-on: ubuntu-20.04
     outputs:
       environment: ${{ steps.environment-identifier.outputs.environment }}
@@ -131,11 +154,15 @@ jobs:
           fi;
           
   deploy: 
-    needs: [nx, dockerize, prepare]
+    name: Deployment
+    needs: [nx, dockerize, configure]
     strategy:
       matrix:
-        project: ${{ needs.nx.outputs.affected }}
+        project: ${{ fromJson(needs.nx.outputs.affected) }}
     uses: ./.github/workflows/deployment.template.yml
     with:
-      environment-name: ${{ needs.prepare.outputs.environment }}
+      environment-name: ${{ needs.configure.outputs.environment }}
       project-name: ${{ matrix.project }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
