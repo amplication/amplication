@@ -3,43 +3,32 @@ name: Reusable Deployment template
 on:
   workflow_call:
     inputs:
-      account-id:
+      environment-name: 
         type: string
-        description: The identifier of the AWS account of which EKS cluster to connect to. 
-        required: true
-      account-name:
-        type: string
-        description: The name of the AWS account of which EKS cluster to connect to. 
+        description: Environment to deploy to.
         required: true
       project-name:
         type: string
         description: Project (amplication application component) to deploy.
         required: true
-    secrets:
-      aws-access-key-id:
-        required: true
-      aws-secret-access-key:
-        required: true
-
-env:
-  aws-region: us-east-1
 
 jobs:
   deployment:
     name: Deployment
+    environment: ${{ inputs.environment-name }}
     runs-on: ubuntu-20.04
     steps:
       # currently a user is used, we want to switch over to assuming a role through GitHub OIDC 
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          aws-access-key-id: ${{ secrets.aws-access-key-id }}
-          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
-          aws-region: ${{ env.aws-region }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Fetch kubeconfig File
         run: |
-          aws eks update-kubeconfig --region us-east-1 --name amplication-${{ inputs.account-name }}
+          aws eks update-kubeconfig --region ${{ vars.AWS_REGION }} --name amplication-${{ inputs.environment-name }}
     
       # Based on the project matrix we do a rolling update of certain components of the application
       # first the 'amplication-' prefix is stripped to match the application component names expected
@@ -55,7 +44,7 @@ jobs:
 
           if [[ "$project" == "data-service-generator-runner" ]] && [[ "$project" == "build-manager" ]];
           then
-            kubectl rollout restart deployments/$project -n ${{ inputs.account-name }}-dsg
+            kubectl rollout restart deployments/$project -n ${{ inputs.environment-name }}-dsg
           else
-            kubectl rollout restart deployments/$project -n ${{ inputs.account-name }}
+            kubectl rollout restart deployments/$project -n ${{ inputs.environment-name }}
           fi;
