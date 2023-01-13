@@ -15,9 +15,9 @@ on:
       - ".all-contributorsrc"
 
 jobs:
-  fs-scan:
+  file-system-scan:
     name: Vulnerability scanning - File system
-    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    uses: ./.github/workflows/security.template.yaml
     with:
       scan-type: 'fs'
       format: 'sarif'
@@ -26,7 +26,7 @@ jobs:
 
   config-scan:
     name: Vulnerability scanning - Config
-    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    uses: ./.github/workflows/security.template.yaml
     with:
       scan-type: 'config'
       format: 'sarif'
