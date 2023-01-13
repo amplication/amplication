@@ -1,0 +1,61 @@
+name: Reusable Deployment template
+
+on:
+  workflow_call:
+    inputs:
+      account-id:
+        type: string
+        description: The identifier of the AWS account of which EKS cluster to connect to. 
+        required: true
+      account-name:
+        type: string
+        description: The name of the AWS account of which EKS cluster to connect to. 
+        required: true
+      project-name:
+        type: string
+        description: Project (amplication application component) to deploy.
+        required: true
+    secrets:
+      aws-access-key-id:
+        required: true
+      aws-secret-access-key:
+        required: true
+
+env:
+  aws-region: us-east-1
+
+jobs:
+  deployment:
+    name: Deployment
+    runs-on: ubuntu-20.04
+    steps:
+      # currently a user is used, we want to switch over to assuming a role through GitHub OIDC 
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+
+      - name: Fetch kubeconfig File
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name amplication-${{ inputs.account-name }}
+    
+      # Based on the project matrix we do a rolling update of certain components of the application
+      # first the 'amplication-' prefix is stripped to match the application component names expected
+      # in the 'amplication-manifest' repository deployments. Subsequently a rollout command with the 
+      # applicable namespace is executed for the affected project. This workflow is to be replaced when
+      # argocd image updater can be used in conjunction with argocd plugin type applications (required
+      # when using Hashicorp Vault).
+      - name: Rollout Restart Deployment(s)
+        run: |
+          project=${{ inputs.project-name }}
+          prefix="amplication-"
+          project=${project#$prefix}
+
+          if [[ $project -eq "data-service-generator-runner" ]] && [[ $project -eq "build-manager" ]];
+          then
+            kubectl rollout restart deployments/$project -n ${{ inputs.account-name }}-dsg
+          else
+            kubectl rollout restart deployments/$project -n ${{ inputs.account-name }}
+          fi;
