@@ -5,7 +5,7 @@ on:
     workflows: ["CI"]
     types:
       - completed
-    branches: 
+    branches:
       - master
       - next
       - chore/new-infra-cicd
@@ -81,14 +81,14 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Configure AWS Credentials (Management Account)
+      - name: Configure AWS Credentials (operations account)
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Login to Amazon ECR (Management Account)
+      - name: Login to Amazon ECR (operations account)
         uses: aws-actions/amazon-ecr-login@v1
         with:
           registries: "439403303254"
@@ -108,13 +108,47 @@ jobs:
             type=raw,value=${{ github.env.BRANCH }}
             type=raw,value=latest,enable=${{ github.env.BRANCH == 'master' }}
 
+      # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
         run: npx nx docker:build ${{ matrix.project }}
         env:
-          # https://www.npmjs.com/package/@nx-tools/nx-docker
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
 
-  # deploy:
-  #   needs: dockerize
-  #   uses: "new template"
+  prepare:
+    runs-on: ubuntu-20.04
+    outputs:
+      account-id: ${{ steps.configure-deploy-inputs.outputs.account-id }}
+      account-name: ${{ steps.configure-deploy-inputs.outputs.account-name }}
+      aws-access-key-id: ${{ steps.configure-deploy-inputs.outputs.aws-access-key-id }}
+      aws-secret-access-key: ${{ steps.configure-deploy-inputs.outputs.aws-secret-access-key }}
+    steps:
+      - id: configure-deploy-inputs
+        run: |
+          if [ ${{ github.env.BRANCH }} -eq "next"];
+          then
+            echo account-name="sandbox" >> $GITHUB_OUTPUT
+            echo account-id="${{ github.var.AWS_SANDBOX_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
+            echo aws-access-key-id="${{ github.secrets.AWS_SANDBOX_ACCESS_KEY_ID }}" >> $GITHUB_OUTPUT
+            echo aws-secret-access-key="${{ github.secrets.AWS_SANDBOX_SECRET_ACCESS_KEY }}" >> $GITHUB_OUTPUT
+          elif [ ${{ github.env.BRANCH }} -eq "master"];
+          then
+            echo account-name="staging" >> $GITHUB_OUTPUT
+            echo account-id="${{ github.var.AWS_STAGING_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
+            echo aws-access-key-id="${{ github.secrets.AWS_STAGING_ACCESS_KEY_ID }}" >> $GITHUB_OUTPUT
+            echo aws-secret-access-key="${{ github.secrets.AWS_STAGING_SECRET_ACCESS_KEY }}" >> $GITHUB_OUTPUT
+          fi;
+          
+  deploy: 
+    needs: [nx, dockerize, prepare]
+    strategy:
+      matrix:
+        project: ${{ needs.nx.outputs.affected }}
+    uses: ./.github/workflows/deployment.template.yml
+    with:
+      account-id: ${{ needs.prepare.outputs.account-id }}
+      account-name: ${{ needs.prepare.outputs.account-name }}
+      project-name: ${{ matrix.project }}
+    secrets:
+      aws-access-key-id: ${{ needs.prepare.outputs.aws-access-key-id }}
+      aws-secret-access-key: ${{ needs.prepare.outputs.aws-secret-access-key }}
