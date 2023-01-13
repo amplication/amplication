@@ -15,7 +15,7 @@ app.get("/api", (req, res) => {
 
 app.use("/api/code-generate", codeGenRouter);
 
-const port = process.env.port || 8900;
+const port = process.env.PORT || 8888;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
 });
