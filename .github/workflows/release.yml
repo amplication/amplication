@@ -2,7 +2,7 @@ name: Release
 
 on:
   workflow_run:
-    workflows: ["CI"]
+    workflows: ["Continuous Integration"]
     types:
       - completed
     branches:
@@ -57,11 +57,11 @@ jobs:
           echo github.event.workflow_run.event ${{ github.event.workflow_run.event }}
           echo NX_BRANCH $NX_BRANCH
           echo BRANCH $BRANCH
-          echo AFFECTED_PROJECTS ${{ steps.configure-nx.affected }}
+          echo AFFECTED_PROJECTS ${{ steps.configure-nx.outputs.affected }}
 
   dockerize:
     needs: nx
-    if: ${{ needs.nx.outputs.affected != '[]' }}
+    if: ${{ needs.nx.outputs.affected != '[]' && needs.nx.outputs.affected != ''}}
     name: Dockerize
     runs-on: ubuntu-20.04
     strategy:
