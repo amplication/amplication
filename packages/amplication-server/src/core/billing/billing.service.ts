@@ -35,9 +35,16 @@ export class BillingService {
     private readonly analytics: SegmentAnalyticsService,
     configService: ConfigService
   ) {
-    const stiggApiKey = configService.get(Env.BILLING_API_KEY);
-    this.stiggClient = Stigg.initialize({ apiKey: stiggApiKey });
-    this.clientHost = configService.get(Env.CLIENT_HOST);
+    const isBillingEnabled = Boolean(
+      configService.get<string>(Env.BILLING_ENABLED) === "true"
+    );
+
+    if (isBillingEnabled) {
+      const stiggApiKey = configService.get(Env.BILLING_API_KEY);
+
+      this.stiggClient = Stigg.initialize({ apiKey: stiggApiKey });
+      this.clientHost = configService.get(Env.CLIENT_HOST);
+    }
   }
 
   async getStiggClient() {
