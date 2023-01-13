@@ -118,25 +118,16 @@ jobs:
   prepare:
     runs-on: ubuntu-20.04
     outputs:
-      account-id: ${{ steps.configure-deploy-inputs.outputs.account-id }}
-      account-name: ${{ steps.configure-deploy-inputs.outputs.account-name }}
-      aws-access-key-id: ${{ steps.configure-deploy-inputs.outputs.aws-access-key-id }}
-      aws-secret-access-key: ${{ steps.configure-deploy-inputs.outputs.aws-secret-access-key }}
+      environment: ${{ steps.environment-identifier.outputs.environment }}
     steps:
-      - id: configure-deploy-inputs
+      - id: environment-identifier
         run: |
           if [[ "${{ env.BRANCH }}" == "next" ]];
           then
-            echo account-name="sandbox" >> $GITHUB_OUTPUT
-            echo account-id="${{ github.var.AWS_SANDBOX_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
-            echo aws-access-key-id="${{ github.secrets.AWS_SANDBOX_ACCESS_KEY_ID }}" >> $GITHUB_OUTPUT
-            echo aws-secret-access-key="${{ github.secrets.AWS_SANDBOX_SECRET_ACCESS_KEY }}" >> $GITHUB_OUTPUT
+            echo environment="sandbox" >> $GITHUB_OUTPUT
           elif [[ "${{ env.BRANCH }}" == "master" ]];
           then
-            echo account-name="staging" >> $GITHUB_OUTPUT
-            echo account-id="${{ github.var.AWS_STAGING_ACCOUNT_ID }}" >> $GITHUB_OUTPUT
-            echo aws-access-key-id="${{ github.secrets.AWS_STAGING_ACCESS_KEY_ID }}" >> $GITHUB_OUTPUT
-            echo aws-secret-access-key="${{ github.secrets.AWS_STAGING_SECRET_ACCESS_KEY }}" >> $GITHUB_OUTPUT
+            echo environment="staging" >> $GITHUB_OUTPUT
           fi;
           
   deploy: 
@@ -146,9 +137,5 @@ jobs:
         project: ${{ needs.nx.outputs.affected }}
     uses: ./.github/workflows/deployment.template.yml
     with:
-      account-id: ${{ needs.prepare.outputs.account-id }}
-      account-name: ${{ needs.prepare.outputs.account-name }}
+      environment-name: ${{ needs.prepare.outputs.environment }}
       project-name: ${{ matrix.project }}
-    secrets:
-      aws-access-key-id: ${{ needs.prepare.outputs.aws-access-key-id }}
-      aws-secret-access-key: ${{ needs.prepare.outputs.aws-secret-access-key }}
