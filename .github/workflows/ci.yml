@@ -1,4 +1,4 @@
-name: CI
+name: Continuous Integration
 
 on:
   workflow_dispatch:
@@ -30,23 +30,77 @@ on:
 
 jobs:
   ci:
-    uses: ./.github/workflows/ci.template.yml
-    with:
-      nx-head: ${{ github.head_ref || github.ref_name }}
-      nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
-      nx-skip-cache: ${{ inputs.nx-skip-cache || false }}
-      nx-all: ${{ inputs.nx-force-all || false }}
-    secrets:
-      nx-cloud-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-
-  upload-artifact:
-    name: Upload artifacts
+    name: Continuous Integration
     runs-on: ubuntu-20.04
-    needs: ci
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      NX_BRANCH: ${{ github.head_ref || github.ref_name }} 
+      NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }}  # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+      NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
+      BASE: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: ${{ env.BASE }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Cache other node modules
+        id: cache-other-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-other-node-modules
+        with:
+          path: |
+            libs/data-service-generator/node_modules
+            libs/util/code-gen-utils/node_modules
+            packages/amplication-cli/node_modules
+          key:  ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
+
+      - name: Install Dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
+      - name: Nx Workspace Lint
+        run: npx nx workspace-lint
+
+      - name: Nx Format Check
+        run: npx nx format:check $NX_FORCE_ALL
+
+      - name: Lint
+        run: npx nx affected --target=lint --parallel=3 $NX_FORCE_ALL
+
+      - name: Test
+        run: npx nx affected --target=test --parallel=3 $NX_FORCE_ALL
+
+      - name: Build
+        run: |
+          npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
+          npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
+
       - name: Set Affected
         id: set-affected
-        run: echo affected=${{ needs.ci.outputs.affected-projects }} >> affected-projects
+        run: |
+          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects)
+          echo affected projects: $AFFECTED_PROJECTS
+          echo affected=$AFFECTED_PROJECTS >> affected-projects
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
