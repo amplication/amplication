@@ -143,8 +143,6 @@ export function createInitialStepData(
 }
 @Injectable()
 export class BuildService {
-  private readonly isBillingEnabled: boolean;
-
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -169,10 +167,6 @@ export class BuildService {
     if (!this.host) {
       throw new Error("Missing HOST_VAR in env");
     }
-
-    this.isBillingEnabled = this.configService.get<boolean>(
-      Env.BILLING_ENABLED
-    );
   }
   host: string;
 
@@ -384,15 +378,13 @@ export class BuildService {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
       await this.actionService.complete(step, EnumActionStepStatus.Success);
 
-      if (this.isBillingEnabled) {
-        const workspace = await this.resourceService.getResourceWorkspace(
-          build.resourceId
-        );
-        await this.billingService.reportUsage(
-          workspace.id,
-          BillingFeature.CodePushToGit
-        );
-      }
+      const workspace = await this.resourceService.getResourceWorkspace(
+        build.resourceId
+      );
+      await this.billingService.reportUsage(
+        workspace.id,
+        BillingFeature.CodePushToGit
+      );
     } catch (error) {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
       await this.actionService.logInfo(step, error);

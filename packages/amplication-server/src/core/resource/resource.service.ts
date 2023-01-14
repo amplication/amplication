@@ -43,8 +43,6 @@ import { ResourceGenSettingsCreateInput } from "./dto/ResourceGenSettingsCreateI
 import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
-import { ConfigService } from "@nestjs/config";
-import { Env } from "../../env";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
 
@@ -53,8 +51,6 @@ const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
 
 @Injectable()
 export class ResourceService {
-  private readonly isBillingEnabled: boolean;
-
   constructor(
     private readonly prisma: PrismaService,
     private entityService: EntityService,
@@ -65,11 +61,8 @@ export class ResourceService {
     private readonly projectService: ProjectService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly topicService: TopicService,
-    private readonly configService: ConfigService,
     private readonly billingService: BillingService
-  ) {
-    this.isBillingEnabled = this.configService.get(Env.BILLING_ENABLED);
-  }
+  ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
     return this.prisma.resource.findUnique(args);
@@ -212,13 +205,14 @@ export class ResourceService {
       generationSettings
     );
 
-    if (this.isBillingEnabled) {
-      const workspace = await this.getResourceWorkspace(resource.id);
-      await this.billingService.reportUsage(
-        workspace.id,
-        BillingFeature.Services
-      );
-    }
+    const project = await this.projectService.findUnique({
+      where: { id: resource.projectId },
+    });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Services
+    );
 
     return resource;
   }
@@ -407,13 +401,12 @@ export class ResourceService {
       },
     });
 
-    if (
-      this.isBillingEnabled &&
-      resource.resourceType === EnumResourceType.Service
-    ) {
-      const workspace = await this.getResourceWorkspace(resource.id);
+    if (resource.resourceType === EnumResourceType.Service) {
+      const project = await this.projectService.findUnique({
+        where: { id: resource.projectId },
+      });
       await this.billingService.reportUsage(
-        workspace.id,
+        project.workspaceId,
         BillingFeature.Services,
         -1
       );
