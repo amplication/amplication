@@ -36,8 +36,6 @@ import { Env } from "../../env";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
-  CreateLogger,
-  Transports,
 } from "@amplication/nest-logger-module";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
