@@ -5,7 +5,7 @@ on:
     inputs:
       nx-base:
         type: string
-        description: Commit SHA, branch or tag name used by Nx in the affected jobs. 
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs.
         required: true
         default: next
   pull_request:
@@ -170,8 +170,8 @@ jobs:
     needs: ci
     uses: ./.github/workflows/vulnerability-scan.template.yaml
     with:
-      scan-type: 'fs'
-      format: 'sarif'
+      scan-type: "fs"
+      format: "sarif"
       exit-code: 0
       publish: true
 
@@ -180,16 +180,16 @@ jobs:
     needs: ci
     uses: ./.github/workflows/vulnerability-scan.template.yaml
     with:
-      scan-type: 'config'
-      format: 'sarif'
+      scan-type: "config"
+      format: "sarif"
       exit-code: 0
       publish: true
 
   deploy:
-    if:  ${{ github.head_ref == 'next' }}
+    if: ${{ github.head_ref == 'next' }}
     needs: dockerize
     uses: ./.github/workflows/deploy.yml
     with:
-     target-env: ${{ github.head_ref }}
-     confirm-env: ${{ github.head_ref }}
+      target-env: ${{ github.head_ref }}
+      confirm-env: ${{ github.head_ref }}
     secrets: inherit

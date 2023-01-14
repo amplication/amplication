@@ -36,8 +36,6 @@ import { Env } from "../../env";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
-  CreateLogger,
-  Transports,
 } from "@amplication/nest-logger-module";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
@@ -311,8 +309,11 @@ export class BuildService {
       async (step) => {
         const { resourceId, id: buildId, version: buildVersion } = build;
 
-        const [dataServiceGeneratorLogger, logPromises] =
-          this.createDataServiceLogger(build, step);
+        const logger = this.logger.child({
+          buildId: build.id,
+        });
+
+        logger.info("Preparing build generation message");
 
         const dsgResourceData = await this.getDSGResourceData(
           resourceId,
@@ -321,14 +322,13 @@ export class BuildService {
           user
         );
 
-        await Promise.all(logPromises);
+        logger.info("Writing build generation message to queue");
 
-        dataServiceGeneratorLogger.destroy();
-
-        this.queueService.emitMessage(
+        await this.queueService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
           JSON.stringify({ resourceId, buildId, dsgResourceData })
         );
+        logger.info("Build generation message sent");
 
         return null;
       },
@@ -344,27 +344,6 @@ export class BuildService {
         },
       },
     });
-  }
-
-  private createDataServiceLogger(
-    build: Build,
-    step: ActionStep
-  ): [AmplicationLogger, Array<Promise<void>>] {
-    const transport = new Transports.Console();
-    const logPromises: Array<Promise<void>> = [];
-    transport.on("logged", (info) => {
-      logPromises.push(this.createLog(step, info));
-    });
-    return [
-      CreateLogger({
-        format: this.logger.format,
-        transports: [transport],
-        defaultMeta: {
-          buildId: build.id,
-        },
-      }),
-      logPromises,
-    ];
   }
 
   public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {

@@ -11,7 +11,10 @@ export class QueueService {
     private readonly kafkaClient: ClientKafka
   ) {}
 
-  emitMessage(topic: string, message: string): void {
+  async emitMessage(topic: string, message: string): Promise<void> {
+    // Explicitly wait for kafka client to connect. https://github.com/nestjs/nest/issues/10449
+    await this.kafkaClient.connect();
+
     this.kafkaClient.emit(topic, message);
   }
 }
