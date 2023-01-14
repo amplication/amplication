@@ -20,7 +20,9 @@ on:
 jobs:
   deployment:
     name: Deployment
-    environment: ${{ inputs.environment-name }}
+    environment:
+      name: ${{ inputs.environment-name }}
+      url: ${{ vars.AMPLICATION_URL }}
     runs-on: ubuntu-20.04
     steps:
       # currently a user is used, we want to switch over to assuming a role through GitHub OIDC 
