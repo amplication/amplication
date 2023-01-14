@@ -324,7 +324,7 @@ export class BuildService {
 
         logger.info("Writing build generation message to queue");
 
-        this.queueService.emitMessage(
+        await this.queueService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
           JSON.stringify({ resourceId, buildId, dsgResourceData })
         );
