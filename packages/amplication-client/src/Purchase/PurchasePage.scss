@@ -1,3 +1,5 @@
+@import "../style/index.scss";
+
 .purchase-page {
   display: flex;
   flex-direction: column;
@@ -21,15 +23,15 @@
   }
 
   &__header {
-    color: #ffffff;
-    font-size: 24px;
-    font-weight: 700;
+    @include pageTitle;
+    //TODO: Remove overrides after design system alignment
+    font-weight: 600;
     margin-top: 120px;
-    margin-bottom: 24px;
+    margin-bottom: var(--double-spacing);
   }
 
   .workspace-list {
-    margin-bottom: 50px;
+    margin-bottom: var(--header-spacing);
     margin-top: 10px;
   }
 
@@ -38,23 +40,27 @@
     flex-direction: column;
     align-items: center;
     align-self: stretch;
-    padding: 50px 0;
-    gap: 24px;
+    padding: var(--header-spacing) 0;
+    gap: var(--double-spacing);
     background: #15192c;
 
     &__content {
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: #ffffff;
-      gap: 8px;
+      color: var(--black100);
+      gap: var(--default-spacing-small);
 
       &__header {
-        font-weight: 700;
-        font-size: 24px;
+        @include pageTitle;
+        //TODO: Remove overrides after design system alignment
+        font-weight: 600;
       }
 
       &__description {
+        @include body1;
+        //TODO: Remove overrides after design system alignment
+        color: var(--black100);
         font-size: 14px;
       }
     }
@@ -84,8 +90,8 @@
 
     &__links {
       display: flex;
-      gap: 24px;
-
+      gap: var(--double-spacing);
+      //TODO: Remove overrides after design system alignment
       size: 14px;
       text-decoration-line: underline;
     }
