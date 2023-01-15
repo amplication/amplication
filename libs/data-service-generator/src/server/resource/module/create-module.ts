@@ -50,8 +50,11 @@ export async function createModules(
     prismaModuleId,
   ]);
 
+  const providersArray = builders.arrayExpression([serviceId, resolverId]);
+
   const moduleTemplateMapping = {
     ENTITY: builders.identifier(entityType),
+    PROVIDERS_ARRAY: providersArray,
     SERVICE: serviceId,
     CONTROLLER: controllerId,
     RESOLVER: resolverId,
