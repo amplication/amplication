@@ -15,6 +15,11 @@
       "$ref": "#/definitions/RelationAllowMultiple",
       "default": false
     },
+    "FkHolder": {
+      "title": "Foreign Key Holder",
+      "$ref": "#/definitions/RelationFkHolder",
+      "default": false
+    },
     "relatedFieldId": {
       "title": "Related Field",
       "$ref": "#/definitions/EntityFieldId",
@@ -30,6 +35,9 @@
     },
     "RelationAllowMultiple": {
       "type": "boolean"
+    },
+    "RelationFkHolder": {
+      "type": "string"
     }
   }
 }

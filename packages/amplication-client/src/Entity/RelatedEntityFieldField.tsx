@@ -1,3 +1,4 @@
+import { HorizontalRule } from "@amplication/design-system";
 import { gql, useQuery } from "@apollo/client";
 import { useFormikContext } from "formik";
 import React from "react";
@@ -34,17 +35,20 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
   return (
     <div className={CLASS_NAME}>
       {data && relatedField && (
-        <EntityRelationFieldsChart
-          fixInPlace={false}
-          resourceId={data.entity.resourceId}
-          entityId={data.entity.id}
-          field={formik.values}
-          entityName={entityDisplayName}
-          relatedField={relatedField}
-          relatedEntityName={data.entity.displayName}
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          onSubmit={() => {}}
-        />
+        <>
+          <HorizontalRule />
+          <EntityRelationFieldsChart
+            fixInPlace={false}
+            resourceId={data.entity.resourceId}
+            entityId={data.entity.id}
+            field={formik.values}
+            entityName={entityDisplayName}
+            relatedField={relatedField}
+            relatedEntityName={data.entity.displayName}
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onSubmit={() => {}}
+          />
+        </>
       )}
     </div>
   );

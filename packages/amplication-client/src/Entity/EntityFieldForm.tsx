@@ -34,7 +34,7 @@ type Props = {
   onSubmit: (values: Values) => void;
   defaultValues?: Partial<models.EntityField>;
   resourceId: string;
-  entityDisplayName: string;
+  entity: models.Entity;
   isSystemDataType?: boolean;
 };
 
@@ -52,7 +52,12 @@ const FORM_SCHEMA = {
   },
 };
 
-const NON_INPUT_GRAPHQL_PROPERTIES = ["createdAt", "updatedAt", "__typename"];
+const NON_INPUT_GRAPHQL_PROPERTIES = [
+  "createdAt",
+  "updatedAt",
+  "__typename",
+  "permanentId",
+];
 
 export const INITIAL_VALUES: Values = {
   id: "",
@@ -70,7 +75,7 @@ const EntityFieldForm = ({
   onSubmit,
   defaultValues = {},
   resourceId,
-  entityDisplayName,
+  entity,
   isSystemDataType,
 }: Props) => {
   const initialValues = useMemo(() => {
@@ -170,7 +175,7 @@ const EntityFieldForm = ({
             <SchemaFields
               schema={schema}
               resourceId={resourceId}
-              entityDisplayName={entityDisplayName}
+              entity={entity}
             />
           </Form>
         );
