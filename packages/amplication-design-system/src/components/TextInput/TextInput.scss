@@ -2,7 +2,6 @@
 
 .text-input {
   position: relative;
-  max-width: var(--form-field-long);
 
   &--with-trailing-button .text-input__inner-wrapper {
     display: flex;
