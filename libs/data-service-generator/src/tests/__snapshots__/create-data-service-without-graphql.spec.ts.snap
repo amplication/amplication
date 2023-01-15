@@ -3258,8 +3258,6 @@ export async function customSeed() {
 ",
   "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
-import { Salt, parseSalt } from \\"../src/auth/password.service\\";
-import { hash } from \\"bcrypt\\";
 import { customSeed } from \\"./customSeed\\";
 
 if (require.main === module) {
@@ -3342,751 +3340,6 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
   ],
 })
 export class AppModule {}
-",
-  "server/src/auth/Credentials.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
-
-@InputType()
-export class Credentials {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String, { nullable: false })
-  username!: string;
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String, { nullable: false })
-  password!: string;
-}
-",
-  "server/src/auth/IAuthStrategy.ts": "import { UserInfo } from \\"./UserInfo\\";
-
-export interface IAuthStrategy {
-  validate: (...any: any) => Promise<UserInfo>;
-}
-",
-  "server/src/auth/ITokenService.ts": "export interface ITokenPayload {
-  id: string;
-  username: string;
-  password: string;
-}
-
-export interface ITokenService {
-  createToken: ({ id, username, password }: ITokenPayload) => Promise<string>;
-}
-",
-  "server/src/auth/LoginArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { Credentials } from \\"./Credentials\\";
-
-@ArgsType()
-export class LoginArgs {
-  @Field(() => Credentials, { nullable: false })
-  credentials!: Credentials;
-}
-",
-  "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-import { User } from \\"../user/base/User\\";
-
-@ObjectType()
-export class UserInfo implements Partial<User> {
-  @Field(() => String)
-  id!: string;
-  @Field(() => String)
-  username!: string;
-  @Field(() => [String])
-  roles!: string[];
-  @Field(() => String, { nullable: true })
-  accessToken?: string;
-}
-",
-  "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
-
-/**
- * @returns attributes not allowed to appear on given data according to given
- * attributeMatchers
- */
-export function getInvalidAttributes(
-  permission: Permission,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  data: Object
-): string[] {
-  const filteredData = permission.filter(data);
-  return Object.keys(data).filter((key) => !(key in filteredData));
-}
-",
-  "server/src/auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
-import grants from \\"../grants.json\\";
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
-",
-  "server/src/auth/auth.controller.ts": "import { Body, Controller, Post } from \\"@nestjs/common\\";
-import { ApiTags } from \\"@nestjs/swagger\\";
-import { AuthService } from \\"./auth.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@ApiTags(\\"auth\\")
-@Controller()
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-  @Post(\\"login\\")
-  async login(@Body() body: Credentials): Promise<UserInfo> {
-    return this.authService.login(body);
-  }
-}
-",
-  "server/src/auth/auth.module.ts": "import { forwardRef, Module } from \\"@nestjs/common\\";
-import { ConfigService } from \\"@nestjs/config\\";
-import { JwtModule } from \\"@nestjs/jwt\\";
-import { PassportModule } from \\"@nestjs/passport\\";
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
-import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
-import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserModule } from \\"../user/user.module\\";
-import { AuthController } from \\"./auth.controller\\";
-import { AuthResolver } from \\"./auth.resolver\\";
-import { AuthService } from \\"./auth.service\\";
-import { BasicStrategy } from \\"./basic/basic.strategy\\";
-import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
-import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
-import { PasswordService } from \\"./password.service\\";
-//@ts-ignore
-import { TokenService } from \\"./token.service\\";
-
-@Module({
-  imports: [
-    forwardRef(() => UserModule),
-    PassportModule,
-    SecretsManagerModule,
-    JwtModule.registerAsync({
-      imports: [SecretsManagerModule],
-      inject: [SecretsManagerService, ConfigService],
-      useFactory: async (
-        secretsService: SecretsManagerService,
-        configService: ConfigService
-      ) => {
-        const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
-        const expiresIn = configService.get(JWT_EXPIRATION);
-        if (!secret) {
-          throw new Error(\\"Didn't get a valid jwt secret\\");
-        }
-        if (!expiresIn) {
-          throw new Error(\\"Jwt expire in value is not valid\\");
-        }
-        return {
-          secret: secret,
-          signOptions: { expiresIn },
-        };
-      },
-    }),
-  ],
-  providers: [
-    AuthService,
-    BasicStrategy,
-    PasswordService,
-    AuthResolver,
-    JwtStrategy,
-    jwtSecretFactory,
-    TokenService,
-  ],
-  controllers: [AuthController],
-  exports: [AuthService, PasswordService],
-})
-export class AuthModule {}
-",
-  "server/src/auth/auth.resolver.ts": "import * as common from \\"@nestjs/common\\";
-import { Args, Mutation, Query, Resolver } from \\"@nestjs/graphql\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { AuthService } from \\"./auth.service\\";
-import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
-import { UserData } from \\"./userData.decorator\\";
-import { LoginArgs } from \\"./LoginArgs\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@Resolver(UserInfo)
-export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
-  @Mutation(() => UserInfo)
-  async login(@Args() args: LoginArgs): Promise<UserInfo> {
-    return this.authService.login(args.credentials);
-  }
-
-  @Query(() => UserInfo)
-  @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-  async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
-    return userInfo;
-  }
-}
-",
-  "server/src/auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../user/user.service\\";
-import { AuthService } from \\"./auth.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { PasswordService } from \\"./password.service\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { TokenService } from \\"./token.service\\";
-import { VALID_ID } from \\"../tests/auth/constants\\";
-
-const VALID_CREDENTIALS: Credentials = {
-  username: \\"Valid User\\",
-  password: \\"Valid User Password\\",
-};
-const INVALID_CREDENTIALS: Credentials = {
-  username: \\"Invalid User\\",
-  password: \\"Invalid User Password\\",
-};
-const USER: any = {
-  ...VALID_CREDENTIALS,
-  createdAt: new Date(),
-  firstName: \\"ofek\\",
-  id: VALID_ID,
-  lastName: \\"gabay\\",
-  roles: [\\"admin\\"],
-  updatedAt: new Date(),
-};
-
-const SIGN_TOKEN = \\"SIGN_TOKEN\\";
-
-const userService = {
-  findOne(args: { where: { username: string } }): any | null {
-    if (args.where.username === VALID_CREDENTIALS.username) {
-      return USER;
-    }
-    return null;
-  },
-};
-
-const passwordService = {
-  compare(password: string, encrypted: string) {
-    return true;
-  },
-};
-
-const tokenService = {
-  createToken(username: string, password: string) {
-    return SIGN_TOKEN;
-  },
-};
-
-describe(\\"AuthService\\", () => {
-  //ARRANGE
-  let service: AuthService;
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: UserService,
-          useValue: userService,
-        },
-        {
-          provide: PasswordService,
-          useValue: passwordService,
-        },
-        {
-          provide: TokenService,
-          useValue: tokenService,
-        },
-        AuthService,
-      ],
-    }).compile();
-
-    service = module.get<AuthService>(AuthService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-
-  describe(\\"Testing the authService.validateUser()\\", () => {
-    it(\\"should validate a valid user\\", async () => {
-      await expect(
-        service.validateUser(
-          VALID_CREDENTIALS.username,
-          VALID_CREDENTIALS.password
-        )
-      ).resolves.toEqual({
-        username: USER.username,
-        roles: USER.roles,
-        id: USER.id,
-      });
-    });
-
-    it(\\"should not validate a invalid user\\", async () => {
-      await expect(
-        service.validateUser(
-          INVALID_CREDENTIALS.username,
-          INVALID_CREDENTIALS.password
-        )
-      ).resolves.toBe(null);
-    });
-  });
-
-  describe(\\"Testing the authService.login()\\", () => {
-    it(\\"should return userInfo object for correct username and password\\", async () => {
-      const loginResult = await service.login(VALID_CREDENTIALS);
-      expect(loginResult).toEqual({
-        username: USER.username,
-        roles: USER.roles,
-        accessToken: SIGN_TOKEN,
-        id: USER.id,
-      });
-    });
-  });
-});
-",
-  "server/src/auth/auth.service.ts": "import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../user/user.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { PasswordService } from \\"./password.service\\";
-import { TokenService } from \\"./token.service\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@Injectable()
-export class AuthService {
-  constructor(
-    private readonly userService: UserService,
-    private readonly passwordService: PasswordService,
-    private readonly tokenService: TokenService
-  ) {}
-
-  async validateUser(
-    username: string,
-    password: string
-  ): Promise<UserInfo | null> {
-    const user = await this.userService.findOne({
-      where: { username },
-    });
-    if (user && (await this.passwordService.compare(password, user.password))) {
-      const { id, roles } = user;
-      const roleList = roles as string[];
-      return { id, username, roles: roleList };
-    }
-    return null;
-  }
-  async login(credentials: Credentials): Promise<UserInfo> {
-    const { username, password } = credentials;
-    const user = await this.validateUser(
-      credentials.username,
-      credentials.password
-    );
-    if (!user) {
-      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
-    }
-    //@ts-ignore
-    const accessToken = await this.tokenService.createToken({
-      id: user.id,
-      username,
-      password,
-    });
-    return {
-      accessToken,
-      ...user,
-    };
-  }
-}
-",
-  "server/src/auth/base/token.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from \\"../constants\\";
-import { ITokenService, ITokenPayload } from \\"../ITokenService\\";
-/**
- * TokenServiceBase is a basic http implementation of ITokenService
- */
-@Injectable()
-export class TokenServiceBase implements ITokenService {
-  /**
-   *
-   * @object { username: String, password: String }
-   * @returns a base64 string of the username and password
-   */
-  createToken({ username, password }: ITokenPayload): Promise<string> {
-    if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
-    if (!password) return Promise.reject(INVALID_PASSWORD_ERROR);
-    return Promise.resolve(
-      Buffer.from(\`\${username}:\${password}\`).toString(\\"base64\\")
-    );
-  }
-}
-",
-  "server/src/auth/basic/base/basic.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { BasicStrategy as Strategy } from \\"passport-http\\";
-import { AuthService } from \\"../../auth.service\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class BasicStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy
-{
-  constructor(protected readonly authService: AuthService) {
-    super();
-  }
-
-  async validate(username: string, password: string): Promise<UserInfo> {
-    const user = await this.authService.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-}
-",
-  "server/src/auth/basic/basic.strategy.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { AuthService } from \\"../auth.service\\";
-import { BasicStrategyBase } from \\"./base/basic.strategy.base\\";
-
-@Injectable()
-export class BasicStrategy extends BasicStrategyBase {
-  constructor(protected readonly authService: AuthService) {
-    super(authService);
-  }
-}
-",
-  "server/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
-",
-  "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
-export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
-",
-  "server/src/auth/defaultAuth.guard.ts": "import { Observable } from \\"rxjs\\";
-import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
-import { Reflector } from \\"@nestjs/core\\";
-import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
-import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
-
-@Injectable()
-export class DefaultAuthGuard extends BasicAuthGuard {
-  constructor(private readonly reflector: Reflector) {
-    super();
-  }
-
-  canActivate(
-    context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<any> {
-    const isPublic = this.reflector.get<boolean>(
-      IS_PUBLIC_KEY,
-      context.getHandler()
-    );
-
-    if (isPublic) {
-      return true;
-    }
-
-    return super.canActivate(context);
-  }
-}
-",
-  "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import { ACGuard } from \\"nest-access-control\\";
-
-export class GqlACGuard<User extends any = any> extends ACGuard<User> {
-  async getUser(context: ExecutionContext): Promise<User> {
-    const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext<{ req: { user: User } }>().req;
-    return request.user;
-  }
-}
-",
-  "server/src/auth/gqlDefaultAuth.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import type { Request } from \\"express\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { DefaultAuthGuard } from \\"./defaultAuth.guard\\";
-
-export class GqlDefaultAuthGuard extends DefaultAuthGuard {
-  // This method is required for the interface - do not delete it.
-  getRequest(context: ExecutionContext): Request {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext<{ req: Request }>().req;
-  }
-}
-",
-  "server/src/auth/gqlUserRoles.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-
-/**
- * Access the user roles from the request object i.e \`req.user.roles\`.
- *
- * You can pass an optional property key to the decorator to get it from the user object
- * e.g \`@UserRoles('permissions')\` will return the \`req.user.permissions\` instead.
- */
-export const UserRoles = createParamDecorator(
-  (data: string, context: ExecutionContext) => {
-    const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext<{ req: { user: any } }>().req;
-    if (!request.user) {
-      return null;
-    }
-    return data ? request.user[data] : request.user.roles;
-  }
-);
-",
-  "server/src/auth/jwt/base/jwt.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { ExtractJwt, Strategy } from \\"passport-jwt\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-import { UserService } from \\"../../../user/user.service\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class JwtStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy
-{
-  constructor(
-    protected readonly userService: UserService,
-    protected readonly secretOrKey: string
-  ) {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey,
-    });
-  }
-
-  async validate(payload: UserInfo): Promise<UserInfo> {
-    const { username } = payload;
-    const user = await this.userService.findOne({
-      where: { username },
-    });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    if (
-      !Array.isArray(user.roles) ||
-      typeof user.roles !== \\"object\\" ||
-      user.roles === null
-    ) {
-      throw new Error(\\"User roles is not a valid value\\");
-    }
-    return { ...user, roles: user.roles as string[] };
-  }
-}
-",
-  "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
-import { JWT_SECRET_KEY } from \\"../../constants\\";
-import { UserService } from \\"../../user/user.service\\";
-import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
-@Injectable()
-export class JwtStrategy extends JwtStrategyBase {
-  constructor(
-    protected readonly userService: UserService,
-    @Inject(JWT_SECRET_KEY) secretOrKey: string
-  ) {
-    super(userService, secretOrKey);
-  }
-}
-",
-  "server/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
-",
-  "server/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY } from \\"../../constants\\";
-import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
-
-export const jwtSecretFactory = {
-  provide: JWT_SECRET_KEY,
-  useFactory: async (
-    secretsService: SecretsManagerService
-  ): Promise<string> => {
-    const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
-    if (secret) {
-      return secret;
-    }
-    throw new Error(\\"jwtSecretFactory missing secret\\");
-  },
-  inject: [SecretsManagerService],
-};
-",
-  "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
-import { Test, TestingModule } from \\"@nestjs/testing\\";
-import { PasswordService } from \\"./password.service\\";
-import * as bcrypt from \\"bcrypt\\";
-
-const EXAMPLE_PASSWORD = \\"examplePassword\\";
-const EXAMPLE_HASHED_PASSWORD = \\"exampleHashedPassword\\";
-
-const EXAMPLE_SALT_OR_ROUNDS = 1;
-
-const configServiceGetMock = jest.fn(() => {
-  return EXAMPLE_SALT_OR_ROUNDS;
-});
-
-jest.mock(\\"bcrypt\\");
-
-//@ts-ignore
-bcrypt.hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
-
-//@ts-ignore
-bcrypt.compare.mockImplementation(async () => true);
-
-describe(\\"PasswordService\\", () => {
-  let service: PasswordService;
-
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PasswordService,
-        {
-          provide: ConfigService,
-          useClass: jest.fn(() => ({
-            get: configServiceGetMock,
-          })),
-        },
-      ],
-      imports: [],
-    }).compile();
-
-    service = module.get<PasswordService>(PasswordService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-
-  it(\\"should have salt defined\\", () => {
-    expect(service.salt).toEqual(EXAMPLE_SALT_OR_ROUNDS);
-  });
-
-  it(\\"should compare a password\\", async () => {
-    const args = {
-      password: EXAMPLE_PASSWORD,
-      hashedPassword: EXAMPLE_HASHED_PASSWORD,
-    };
-    await expect(
-      service.compare(args.password, args.hashedPassword)
-    ).resolves.toEqual(true);
-  });
-
-  it(\\"should hash a password\\", async () => {
-    await expect(service.hash(EXAMPLE_PASSWORD)).resolves.toEqual(
-      EXAMPLE_HASHED_PASSWORD
-    );
-  });
-});
-",
-  "server/src/auth/password.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { hash, compare } from \\"bcrypt\\";
-import { ConfigService } from \\"@nestjs/config\\";
-
-/** Salt or number of rounds to generate a salt */
-export type Salt = string | number;
-
-const BCRYPT_SALT_VAR = \\"BCRYPT_SALT\\";
-const UNDEFINED_SALT_OR_ROUNDS_ERROR = \`\${BCRYPT_SALT_VAR} is not defined\`;
-const SALT_OR_ROUNDS_TYPE_ERROR = \`\${BCRYPT_SALT_VAR} must be a positive integer or text\`;
-
-@Injectable()
-export class PasswordService {
-  /**
-   * the salt to be used to hash the password. if specified as a number then a
-   * salt will be generated with the specified number of rounds and used
-   */
-  salt: Salt;
-
-  constructor(private configService: ConfigService) {
-    const saltOrRounds = this.configService.get(BCRYPT_SALT_VAR);
-    this.salt = parseSalt(saltOrRounds);
-  }
-
-  /**
-   *
-   * @param password the password to be encrypted.
-   * @param encrypted the encrypted password to be compared against.
-   * @returns whether the password match the encrypted password
-   */
-  compare(password: string, encrypted: string): Promise<boolean> {
-    return compare(password, encrypted);
-  }
-
-  /**
-   * @param password the password to be encrypted
-   * @return encrypted password
-   */
-  hash(password: string): Promise<string> {
-    return hash(password, this.salt);
-  }
-}
-
-/**
- * Parses a salt environment variable value.
- * If a number string value is given tries to parse it as a number of rounds to generate a salt
- * @param value salt environment variable value
- * @returns salt or number of rounds to generate a salt
- */
-export function parseSalt(value: string | undefined): Salt {
-  if (value === undefined) {
-    throw new Error(UNDEFINED_SALT_OR_ROUNDS_ERROR);
-  }
-
-  const rounds = Number(value);
-
-  if (Number.isNaN(rounds)) {
-    return value;
-  }
-  if (!Number.isInteger(rounds) || rounds < 0) {
-    throw new Error(SALT_OR_ROUNDS_TYPE_ERROR);
-  }
-  return rounds;
-}
-",
-  "server/src/auth/token.service.ts": "import { ITokenService } from \\"./ITokenService\\";
-//@ts-ignore
-// eslint-disable-next-line import/no-unresolved
-import { TokenServiceBase } from \\"./base/token.service.base\\";
-//@ts-ignore
-export class TokenService extends TokenServiceBase implements ITokenService {}
-",
-  "server/src/auth/userData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlContextType, GqlExecutionContext } from \\"@nestjs/graphql\\";
-//@ts-ignore
-import { User } from \\"@prisma/client\\";
-
-/**
- * Access the user data from the request object i.e \`req.user\`.
- */
-function userFactory(ctx: ExecutionContext): User {
-  const contextType = ctx.getType();
-  if (contextType === \\"http\\") {
-    // do something that is only important in the context of regular HTTP requests (REST)
-    const { user } = ctx.switchToHttp().getRequest();
-    return user;
-  } else if (contextType === \\"rpc\\") {
-    // do something that is only important in the context of Microservice requests
-    throw new Error(\\"Rpc context is not implemented yet\\");
-  } else if (contextType === \\"ws\\") {
-    // do something that is only important in the context of Websockets requests
-    throw new Error(\\"Websockets context is not implemented yet\\");
-  } else if (ctx.getType<GqlContextType>() === \\"graphql\\") {
-    // do something that is only important in the context of GraphQL requests
-    const gqlExecutionContext = GqlExecutionContext.create(ctx);
-    return gqlExecutionContext.getContext().req.user;
-  }
-  throw new Error(\\"Invalid context\\");
-}
-
-export const UserData = createParamDecorator<undefined, ExecutionContext, User>(
-  (data, ctx: ExecutionContext) => userFactory(ctx)
-);
 ",
   "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
@@ -5619,20 +4872,15 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { CustomerService } from \\"../customer.service\\";
-import { Public } from \\"../../decorators/public.decorator\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
-import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
-import { Order } from \\"../../order/base/Order\\";
-import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 
 export class CustomerControllerBase {
   constructor(protected readonly service: CustomerService) {}
-  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
   async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
@@ -5683,7 +4931,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
@@ -5722,7 +4969,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5768,7 +5014,6 @@ export class CustomerControllerBase {
     return result;
   }
 
-  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5833,7 +5078,6 @@ export class CustomerControllerBase {
     }
   }
 
-  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -5881,93 +5125,6 @@ export class CustomerControllerBase {
       throw error;
     }
   }
-
-  @Public()
-  @common.Get(\\"/:id/orders\\")
-  @ApiNestedQuery(OrderFindManyArgs)
-  async findManyOrders(
-    @common.Req() request: Request,
-    @common.Param() params: CustomerWhereUniqueInput
-  ): Promise<Order[]> {
-    const query = plainToClass(OrderFindManyArgs, request.query);
-    const results = await this.service.findOrders(params.id, {
-      ...query,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
-          },
-        },
-
-        status: true,
-        label: true,
-      },
-    });
-    if (results === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(params)}\`
-      );
-    }
-    return results;
-  }
-
-  @Public()
-  @common.Post(\\"/:id/orders\\")
-  async connectOrders(
-    @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: OrderWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      orders: {
-        connect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Patch(\\"/:id/orders\\")
-  async updateOrders(
-    @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: OrderWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      orders: {
-        set: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Delete(\\"/:id/orders\\")
-  async disconnectOrders(
-    @common.Param() params: CustomerWhereUniqueInput,
-    @common.Body() body: OrderWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      orders: {
-        disconnect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
 }
 ",
   "server/src/customer/base/customer.module.base.ts": "/*
@@ -5987,7 +5144,6 @@ import { PrismaModule } from \\"nestjs-prisma\\";
 
 @Module({
   imports: [MorganModule, PrismaModule],
-
   exports: [MorganModule, PrismaModule],
 })
 export class CustomerModuleBase {}
@@ -6042,7 +5198,7 @@ export class CustomerServiceBase {
   }
 
   async findOrders(
-    parentId: PARENT_ID_TYPE,
+    parentId: number,
     args: Prisma.OrderFindManyArgs
   ): Promise<Order[]> {
     return this.prisma.customer
@@ -6052,9 +5208,7 @@ export class CustomerServiceBase {
       .orders(args);
   }
 
-  async getOrganization(
-    parentId: PARENT_ID_TYPE
-  ): Promise<Organization | null> {
+  async getOrganization(parentId: number): Promise<Organization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -6062,9 +5216,7 @@ export class CustomerServiceBase {
       .organization();
   }
 
-  async getVipOrganization(
-    parentId: PARENT_ID_TYPE
-  ): Promise<Organization | null> {
+  async getVipOrganization(parentId: number): Promise<Organization | null> {
     return this.prisma.customer
       .findUnique({
         where: { id: parentId },
@@ -6723,7 +5875,6 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { EmptyService } from \\"../empty.service\\";
-import { Public } from \\"../../decorators/public.decorator\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
@@ -6733,7 +5884,6 @@ import { Empty } from \\"./Empty\\";
 
 export class EmptyControllerBase {
   constructor(protected readonly service: EmptyService) {}
-  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
   async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
@@ -6747,7 +5897,6 @@ export class EmptyControllerBase {
     });
   }
 
-  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
@@ -6763,7 +5912,6 @@ export class EmptyControllerBase {
     });
   }
 
-  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -6786,7 +5934,6 @@ export class EmptyControllerBase {
     return result;
   }
 
-  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -6814,7 +5961,6 @@ export class EmptyControllerBase {
     }
   }
 
-  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -6858,7 +6004,6 @@ import { PrismaModule } from \\"nestjs-prisma\\";
 
 @Module({
   imports: [MorganModule, PrismaModule],
-
   exports: [MorganModule, PrismaModule],
 })
 export class EmptyModuleBase {}
@@ -7978,7 +7123,6 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrderService } from \\"../order.service\\";
-import { Public } from \\"../../decorators/public.decorator\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
@@ -7988,7 +7132,6 @@ import { Order } from \\"./Order\\";
 
 export class OrderControllerBase {
   constructor(protected readonly service: OrderService) {}
-  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   async create(@common.Body() data: OrderCreateInput): Promise<Order> {
@@ -8017,7 +7160,6 @@ export class OrderControllerBase {
     });
   }
 
-  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @ApiNestedQuery(OrderFindManyArgs)
@@ -8042,7 +7184,6 @@ export class OrderControllerBase {
     });
   }
 
-  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8074,7 +7215,6 @@ export class OrderControllerBase {
     return result;
   }
 
-  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8117,7 +7257,6 @@ export class OrderControllerBase {
     }
   }
 
-  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -8170,7 +7309,6 @@ import { PrismaModule } from \\"nestjs-prisma\\";
 
 @Module({
   imports: [MorganModule, PrismaModule],
-
   exports: [MorganModule, PrismaModule],
 })
 export class OrderModuleBase {}
@@ -8224,7 +7362,7 @@ export class OrderServiceBase {
     return this.prisma.order.delete(args);
   }
 
-  async getCustomer(parentId: PARENT_ID_TYPE): Promise<Customer | null> {
+  async getCustomer(parentId: string): Promise<Customer | null> {
     return this.prisma.order
       .findUnique({
         where: { id: parentId },
@@ -9198,23 +8336,15 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrganizationService } from \\"../organization.service\\";
-import { Public } from \\"../../decorators/public.decorator\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
-import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
-import { User } from \\"../../user/base/User\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
-import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
-import { Customer } from \\"../../customer/base/Customer\\";
-import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 
 export class OrganizationControllerBase {
   constructor(protected readonly service: OrganizationService) {}
-  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
   async create(
@@ -9231,7 +8361,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
@@ -9248,7 +8377,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -9272,7 +8400,6 @@ export class OrganizationControllerBase {
     return result;
   }
 
-  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -9301,7 +8428,6 @@ export class OrganizationControllerBase {
     }
   }
 
-  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -9327,310 +8453,6 @@ export class OrganizationControllerBase {
       throw error;
     }
   }
-
-  @Public()
-  @common.Get(\\"/:id/users\\")
-  @ApiNestedQuery(UserFindManyArgs)
-  async findManyUsers(
-    @common.Req() request: Request,
-    @common.Param() params: OrganizationWhereUniqueInput
-  ): Promise<User[]> {
-    const query = plainToClass(UserFindManyArgs, request.query);
-    const results = await this.service.findUsers(params.id, {
-      ...query,
-      select: {
-        username: true,
-        roles: true,
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
-
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    if (results === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(params)}\`
-      );
-    }
-    return results;
-  }
-
-  @Public()
-  @common.Post(\\"/:id/users\\")
-  async connectUsers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      users: {
-        connect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Patch(\\"/:id/users\\")
-  async updateUsers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      users: {
-        set: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Delete(\\"/:id/users\\")
-  async disconnectUsers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      users: {
-        disconnect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Get(\\"/:id/customers\\")
-  @ApiNestedQuery(CustomerFindManyArgs)
-  async findManyCustomers(
-    @common.Req() request: Request,
-    @common.Param() params: OrganizationWhereUniqueInput
-  ): Promise<Customer[]> {
-    const query = plainToClass(CustomerFindManyArgs, request.query);
-    const results = await this.service.findCustomers(params.id, {
-      ...query,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
-        vipOrganization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    if (results === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(params)}\`
-      );
-    }
-    return results;
-  }
-
-  @Public()
-  @common.Post(\\"/:id/customers\\")
-  async connectCustomers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      customers: {
-        connect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Patch(\\"/:id/customers\\")
-  async updateCustomers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      customers: {
-        set: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Delete(\\"/:id/customers\\")
-  async disconnectCustomers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      customers: {
-        disconnect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Get(\\"/:id/vipCustomers\\")
-  @ApiNestedQuery(CustomerFindManyArgs)
-  async findManyVipCustomers(
-    @common.Req() request: Request,
-    @common.Param() params: OrganizationWhereUniqueInput
-  ): Promise<Customer[]> {
-    const query = plainToClass(CustomerFindManyArgs, request.query);
-    const results = await this.service.findVipCustomers(params.id, {
-      ...query,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
-        vipOrganization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    if (results === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(params)}\`
-      );
-    }
-    return results;
-  }
-
-  @Public()
-  @common.Post(\\"/:id/vipCustomers\\")
-  async connectVipCustomers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      vipCustomers: {
-        connect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Patch(\\"/:id/vipCustomers\\")
-  async updateVipCustomers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      vipCustomers: {
-        set: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Delete(\\"/:id/vipCustomers\\")
-  async disconnectVipCustomers(
-    @common.Param() params: OrganizationWhereUniqueInput,
-    @common.Body() body: CustomerWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      vipCustomers: {
-        disconnect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
 }
 ",
   "server/src/organization/base/organization.module.base.ts": "/*
@@ -9650,7 +8472,6 @@ import { PrismaModule } from \\"nestjs-prisma\\";
 
 @Module({
   imports: [MorganModule, PrismaModule],
-
   exports: [MorganModule, PrismaModule],
 })
 export class OrganizationModuleBase {}
@@ -9705,7 +8526,7 @@ export class OrganizationServiceBase {
   }
 
   async findUsers(
-    parentId: PARENT_ID_TYPE,
+    parentId: string,
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.organization
@@ -9716,7 +8537,7 @@ export class OrganizationServiceBase {
   }
 
   async findCustomers(
-    parentId: PARENT_ID_TYPE,
+    parentId: string,
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
@@ -9727,7 +8548,7 @@ export class OrganizationServiceBase {
   }
 
   async findVipCustomers(
-    parentId: PARENT_ID_TYPE,
+    parentId: string,
     args: Prisma.CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.prisma.organization
@@ -10554,7 +9375,6 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { ProfileService } from \\"../profile.service\\";
-import { Public } from \\"../../decorators/public.decorator\\";
 import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
 import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
@@ -10564,7 +9384,6 @@ import { Profile } from \\"./Profile\\";
 
 export class ProfileControllerBase {
   constructor(protected readonly service: ProfileService) {}
-  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
   async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
@@ -10593,7 +9412,6 @@ export class ProfileControllerBase {
     });
   }
 
-  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
@@ -10616,7 +9434,6 @@ export class ProfileControllerBase {
     });
   }
 
-  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -10646,7 +9463,6 @@ export class ProfileControllerBase {
     return result;
   }
 
-  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -10689,7 +9505,6 @@ export class ProfileControllerBase {
     }
   }
 
-  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -10740,7 +9555,6 @@ import { PrismaModule } from \\"nestjs-prisma\\";
 
 @Module({
   imports: [MorganModule, PrismaModule],
-
   exports: [MorganModule, PrismaModule],
 })
 export class ProfileModuleBase {}
@@ -10794,7 +9608,7 @@ export class ProfileServiceBase {
     return this.prisma.profile.delete(args);
   }
 
-  async getUser(parentId: PARENT_ID_TYPE): Promise<User | null> {
+  async getUser(parentId: number): Promise<User | null> {
     return this.prisma.profile
       .findUnique({
         where: { id: parentId },
@@ -12620,20 +11434,15 @@ import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { UserService } from \\"../user.service\\";
-import { Public } from \\"../../decorators/public.decorator\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
-import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
-import { Organization } from \\"../../organization/base/Organization\\";
-import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 
 export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
-  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   async create(@common.Body() data: UserCreateInput): Promise<User> {
@@ -12685,7 +11494,6 @@ export class UserControllerBase {
     });
   }
 
-  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
@@ -12725,7 +11533,6 @@ export class UserControllerBase {
     });
   }
 
-  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -12772,7 +11579,6 @@ export class UserControllerBase {
     return result;
   }
 
-  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -12838,7 +11644,6 @@ export class UserControllerBase {
     }
   }
 
-  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -12887,187 +11692,6 @@ export class UserControllerBase {
       throw error;
     }
   }
-
-  @Public()
-  @common.Get(\\"/:id/employees\\")
-  @ApiNestedQuery(UserFindManyArgs)
-  async findManyEmployees(
-    @common.Req() request: Request,
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<User[]> {
-    const query = plainToClass(UserFindManyArgs, request.query);
-    const results = await this.service.findEmployees(params.id, {
-      ...query,
-      select: {
-        username: true,
-        roles: true,
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
-
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    if (results === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(params)}\`
-      );
-    }
-    return results;
-  }
-
-  @Public()
-  @common.Post(\\"/:id/employees\\")
-  async connectEmployees(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      employees: {
-        connect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Patch(\\"/:id/employees\\")
-  async updateEmployees(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      employees: {
-        set: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Delete(\\"/:id/employees\\")
-  async disconnectEmployees(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: UserWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      employees: {
-        disconnect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Get(\\"/:id/organizations\\")
-  @ApiNestedQuery(OrganizationFindManyArgs)
-  async findManyOrganizations(
-    @common.Req() request: Request,
-    @common.Param() params: UserWhereUniqueInput
-  ): Promise<Organization[]> {
-    const query = plainToClass(OrganizationFindManyArgs, request.query);
-    const results = await this.service.findOrganizations(params.id, {
-      ...query,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
-    if (results === null) {
-      throw new errors.NotFoundException(
-        \`No resource was found for \${JSON.stringify(params)}\`
-      );
-    }
-    return results;
-  }
-
-  @Public()
-  @common.Post(\\"/:id/organizations\\")
-  async connectOrganizations(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      organizations: {
-        connect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Patch(\\"/:id/organizations\\")
-  async updateOrganizations(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      organizations: {
-        set: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
-
-  @Public()
-  @common.Delete(\\"/:id/organizations\\")
-  async disconnectOrganizations(
-    @common.Param() params: UserWhereUniqueInput,
-    @common.Body() body: OrganizationWhereUniqueInput[]
-  ): Promise<void> {
-    const data = {
-      organizations: {
-        disconnect: body,
-      },
-    };
-    await this.service.update({
-      where: params,
-      data,
-      select: { id: true },
-    });
-  }
 }
 ",
   "server/src/user/base/user.module.base.ts": "/*
@@ -13087,7 +11711,6 @@ import { PrismaModule } from \\"nestjs-prisma\\";
 
 @Module({
   imports: [MorganModule, PrismaModule],
-
   exports: [MorganModule, PrismaModule],
 })
 export class UserModuleBase {}
@@ -13105,8 +11728,6 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
 import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
-import { PasswordService } from \\"../../auth/password.service\\";
-import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -13144,7 +11765,7 @@ export class UserServiceBase {
   }
 
   async findEmployees(
-    parentId: PARENT_ID_TYPE,
+    parentId: string,
     args: Prisma.UserFindManyArgs
   ): Promise<User[]> {
     return this.prisma.user
@@ -13155,7 +11776,7 @@ export class UserServiceBase {
   }
 
   async findOrganizations(
-    parentId: PARENT_ID_TYPE,
+    parentId: string,
     args: Prisma.OrganizationFindManyArgs
   ): Promise<Organization[]> {
     return this.prisma.user
@@ -13165,7 +11786,7 @@ export class UserServiceBase {
       .organizations(args);
   }
 
-  async getManager(parentId: PARENT_ID_TYPE): Promise<User | null> {
+  async getManager(parentId: string): Promise<User | null> {
     return this.prisma.user
       .findUnique({
         where: { id: parentId },
@@ -13173,7 +11794,7 @@ export class UserServiceBase {
       .manager();
   }
 
-  async getProfile(parentId: PARENT_ID_TYPE): Promise<Profile | null> {
+  async getProfile(parentId: string): Promise<Profile | null> {
     return this.prisma.user
       .findUnique({
         where: { id: parentId },
