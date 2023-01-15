@@ -123,8 +123,10 @@ export class BillingService {
     billingPeriod: BillingPeriod,
     intentionType: "UPGRADE_PLAN" | "DOWNGRADE_PLAN",
     cancelUrl: string,
-    successUrl: string
+    successUrl: string,
+    customerId: string
   ): Promise<ProvisionSubscriptionResult> {
+    console.log("customerId", customerId);
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
       customerId: workspaceId,
@@ -138,7 +140,10 @@ export class BillingService {
       },
     });
     await this.analytics.track({
-      userId: workspaceId,
+      userId: customerId,
+      properties: {
+        workspaceId,
+      },
       event:
         intentionType === "DOWNGRADE_PLAN"
           ? EnumEventType.WorkspacePlanDowngradeRequest

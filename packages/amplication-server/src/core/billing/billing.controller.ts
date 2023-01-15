@@ -1,4 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
+import { UserEntity } from "../../decorators/user.decorator";
+import { User } from "../../models";
 import { BillingService } from "./billing.service";
 import { ProvisionSubscriptionDto } from "./ProvisionSubscriptionDto";
 
@@ -8,15 +10,18 @@ export class BillingController {
 
   @Post("/provisionSubscription")
   async provisionSubscription(
-    @Body() provisionSubscriptionDto: ProvisionSubscriptionDto
+    @Body() provisionSubscriptionDto: ProvisionSubscriptionDto,
+    @UserEntity() currentUser: User
   ) {
+    console.log("currentUser", currentUser);
     const checkoutResult = await this.billingService.provisionSubscription(
       provisionSubscriptionDto.workspaceId,
       provisionSubscriptionDto.planId,
       provisionSubscriptionDto.billingPeriod,
       provisionSubscriptionDto.intentionType,
       provisionSubscriptionDto.cancelUrl,
-      provisionSubscriptionDto.successUrl
+      provisionSubscriptionDto.successUrl,
+      currentUser.id
     );
 
     return checkoutResult;

@@ -34,6 +34,7 @@ const selectedPlanAction = {
     selectedBillingPeriod,
     intentionType
   ) => {
+    const token = localStorage.getItem("@@TOKEN");
     const resp = await axios.post(
       `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
       {
@@ -43,6 +44,9 @@ const selectedPlanAction = {
         intentionType,
         successUrl: props.location.state.from.pathname,
         cancelUrl: props.location.state.from.pathname,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 
