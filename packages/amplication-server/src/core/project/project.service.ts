@@ -16,16 +16,30 @@ import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
+import { Env } from "../../env";
+import { ConfigService } from "@nestjs/config";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
+import { ValidationError } from "../../errors/ValidationError";
+import { FeatureUsageReport } from "./FeatureUsageReport";
 
 @Injectable()
 export class ProjectService {
+  private readonly isBillingEnabled: boolean;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly resourceService: ResourceService,
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
-    private readonly entityService: EntityService
-  ) {}
+    private readonly entityService: EntityService,
+    private readonly configService: ConfigService,
+    private readonly billingService: BillingService
+  ) {
+    this.isBillingEnabled = this.configService.get<boolean>(
+      Env.BILLING_ENABLED
+    );
+  }
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
     return this.prisma.project.findMany({
@@ -114,6 +128,103 @@ export class ProjectService {
     return [...changedEntities, ...changedBlocks];
   }
 
+  async calculateUsage(
+    workspaceId: string,
+    entitiesPerService: number
+  ): Promise<FeatureUsageReport> {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: {
+        id: workspaceId,
+      },
+      include: {
+        subscriptions: true,
+        projects: {
+          include: {
+            resources: {
+              include: {
+                entities: {
+                  where: {
+                    deletedAt: null,
+                  },
+                },
+              },
+              where: {
+                resourceType: EnumResourceType.Service,
+                deletedAt: null,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const workspaceServices = workspace.projects.flatMap(
+      (project) => project.resources
+    );
+
+    let servicesAboveEntityPerServiceLimitCount = 0;
+    if (entitiesPerService) {
+      const servicesAboveEntityPerServiceLimit = workspaceServices.filter(
+        (service) => service.entities.length > entitiesPerService
+      );
+      servicesAboveEntityPerServiceLimitCount =
+        servicesAboveEntityPerServiceLimit.length;
+    }
+
+    return {
+      services: workspaceServices.length,
+      servicesAboveEntityPerServiceLimit:
+        servicesAboveEntityPerServiceLimitCount,
+    };
+  }
+
+  async resetUsage(workspaceId: string, entitiesPerServiceLimit: number) {
+    const usageReport = await this.calculateUsage(
+      workspaceId,
+      entitiesPerServiceLimit
+    );
+
+    await this.billingService.setUsage(
+      workspaceId,
+      BillingFeature.Services,
+      usageReport.services
+    );
+
+    await this.billingService.setUsage(
+      workspaceId,
+      BillingFeature.ServicesAboveEntitiesPerServiceLimit,
+      usageReport.servicesAboveEntityPerServiceLimit
+    );
+  }
+
+  async validateSubscriptionPlanLimitationsForWorkspace(
+    workspaceId: string,
+    entitiesPerServiceLimit: number
+  ): Promise<void> {
+    const servicesEntitlement = await this.billingService.getMeteredEntitlement(
+      workspaceId,
+      BillingFeature.Services
+    );
+
+    if (!servicesEntitlement.hasAccess) {
+      throw new ValidationError(
+        `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
+      );
+    }
+
+    const servicesAboveEntitiesPerServiceLimitEntitlement =
+      await this.billingService.getMeteredEntitlement(
+        workspaceId,
+        BillingFeature.ServicesAboveEntitiesPerServiceLimit
+      );
+
+    if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
+      throw new ValidationError(
+        `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
+      );
+    }
+  }
+
   async commit(
     args: CreateCommitArgs,
     skipPublish?: boolean
@@ -137,6 +248,34 @@ export class ProjectService {
       },
     });
 
+    if (this.isBillingEnabled) {
+      const project = await this.findFirst({ where: { id: projectId } });
+
+      const entitiesPerServiceEntitlement =
+        await this.billingService.getNumericEntitlement(
+          project.workspaceId,
+          BillingFeature.EntitiesPerService
+        );
+
+      await this.resetUsage(
+        project.workspaceId,
+        entitiesPerServiceEntitlement.value
+      );
+
+      const isIgnoreValidationCodeGeneration =
+        await this.billingService.getBooleanEntitlement(
+          project.workspaceId,
+          BillingFeature.IgnoreValidationCodeGeneration
+        );
+
+      if (!isIgnoreValidationCodeGeneration.hasAccess) {
+        await this.validateSubscriptionPlanLimitationsForWorkspace(
+          project.workspaceId,
+          entitiesPerServiceEntitlement.value
+        );
+      }
+    }
+
     if (isEmpty(resources)) {
       throw new Error(`Invalid userId or resourceId`);
     }
@@ -149,6 +288,14 @@ export class ProjectService {
     /**@todo: consider discarding locked objects that have no actual changes */
 
     const commit = await this.prisma.commit.create(args);
+
+    if (this.isBillingEnabled) {
+      const project = await this.findUnique({ where: { id: projectId } });
+      await this.billingService.reportUsage(
+        project.workspaceId,
+        BillingFeature.CodeGenerationBuilds
+      );
+    }
 
     await Promise.all(
       changedEntities.flatMap((change) => {
@@ -273,11 +420,18 @@ export class ProjectService {
       );
     }
 
-    const entityPromises = changedEntities.map((change) => {
-      return this.entityService.discardPendingChanges(change.originId, userId);
+    const currentUser = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
     });
+
+    const entityPromises = changedEntities.map((change) => {
+      return this.entityService.discardPendingChanges(change, currentUser);
+    });
+
     const blockPromises = changedBlocks.map((change) => {
-      return this.blockService.discardPendingChanges(change.originId, userId);
+      return this.blockService.discardPendingChanges(change, currentUser);
     });
 
     await Promise.all(blockPromises);

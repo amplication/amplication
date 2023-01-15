@@ -2,7 +2,7 @@ import { types } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";
 import { EnumDataType } from "../models";
 
-export const getEntityIdType = (entityName: string) => {
+export const getEntityIdType = (entityName: string): types.Id["idType"] => {
   const { entities } = DsgContext.getInstance;
   const entity = entities.find((entity) => entity.name === entityName);
 
@@ -17,6 +17,7 @@ export const getEntityIdType = (entityName: string) => {
     throw new Error(`entity ${entityName} must have an id field`);
   }
 
-  const { idType } = idField.properties as types.Id;
+  const idType =
+    (idField.properties?.idType as types.Id["idType"]) || undefined;
   return idType ?? "CUID";
 };

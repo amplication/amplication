@@ -1,4 +1,4 @@
-import { EnumGitProvider } from "@amplication/git-utils";
+import { EnumGitProvider, EnumPullRequestMode } from "@amplication/git-utils";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
 import { GitCommit } from "./GitCommit";
 import { GitResourceMeta } from "./GitResourceMeta";
@@ -25,4 +25,7 @@ export class SendPullRequestArgs {
 
   @ValidateNested()
   gitResourceMeta: GitResourceMeta;
+
+  @IsString()
+  pullRequestMode: EnumPullRequestMode;
 }

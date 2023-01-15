@@ -30,6 +30,7 @@ amplication-client:
       NX_REACT_APP_DATA_SOURCE: "https://server-eugene.amplication-dev.com/graphql"
       NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-eugene.amplication-dev.com/github"
       NX_REACT_APP_STORAGE_GATEWAY_URL: https://server-eugene.amplication-dev.com
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   autoscaling:
@@ -48,7 +49,7 @@ amplication-server:
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 
@@ -70,6 +71,8 @@ amplication-server:
       #GitHub OAuth App
       GITHUB_CLIENT_ID: "fe0059c5fd76abbf7cb4"
       GITHUB_REDIRECT_URI: "https://server-eugene.amplication-dev.com/github/callback"
+
+      BILLING_ENABLED: "true"
 
 amplication-git-push-webhook-service:
   ingress:
@@ -108,7 +111,7 @@ amplication-git-pull-request-service:
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 

@@ -18,6 +18,9 @@ postgres:
   install: false
 
 amplication-client:
+  image:
+    repository: 407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-maintenance
+    tag: "latest"
   service:
     hostname: app.prod.amplication-dev.com
     certificatearn: arn:aws:acm:us-east-1:407256539111:certificate/7cf536df-6c61-4f76-bf3c-fd8f4e021721
@@ -29,6 +32,7 @@ amplication-client:
       NX_REACT_APP_PADDLE_VENDOR_ID: "131992"
       NX_REACT_APP_FEATURE_FLAGS: '{"SHOW_DEPLOYER":true}'
       NX_REACT_APP_STORAGE_GATEWAY_URL: https://server.amplication.com
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   autoscaling:
@@ -59,7 +63,7 @@ amplication-server:
       KAFKA_CLIENT_ID: amplication-server
       KAFKA_GROUP_ID: amplication-server-group
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 
@@ -95,6 +99,8 @@ amplication-server:
 
       #SEGMENT
       SEGMENT_WRITE_KEY_SECRET_NAME: projects/948093699220/secrets/segment_write_key_secret/versions/1
+
+      BILLING_ENABLED: "true"
 
 amplication-git-push-webhook-service:
   ingress:
@@ -143,7 +149,7 @@ amplication-git-pull-request-service:
       KAFKA_CLIENT_ID: git-pull-request-service
       KAFKA_GROUP_ID: git-pull-request-service-group
 
-      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.1
+      CREATE_PR_REQUEST_TOPIC: git.internal.create-pr.request.2
       CREATE_PR_SUCCESS_TOPIC: git.internal.create-pr.success.1
       CREATE_PR_FAILURE_TOPIC: git.internal.create-pr.failure.1
 

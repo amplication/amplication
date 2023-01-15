@@ -22,6 +22,7 @@ import { createDockerComposeFile } from "./docker-compose/create-docker-compose"
 import pluginWrapper from "../plugin-wrapper";
 import { createLog } from "../create-log";
 import { createAuthModules } from "./auth/create-auth";
+import { createGitIgnore } from "./gitignore/create-gitignore";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -60,6 +61,11 @@ async function createServerInternal(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
   );
+
+  await createLog({ level: "info", message: "Creating gitignore..." });
+  logger.info("Creating gitignore...");
+  const gitIgnore = await createGitIgnore();
+
   const packageJsonModule = await createServerPackageJson();
 
   await createLog({ level: "info", message: "Creating resources..." });
@@ -131,6 +137,7 @@ async function createServerInternal(
 
   return [
     ...staticModules,
+    ...gitIgnore,
     ...formattedJsonFiles,
     ...formattedModules,
     ...prismaSchemaModule,

@@ -79,7 +79,7 @@
         "cwd": "libs/data-service-generator"
       }
     },
-    "generate:test-data-service": {
+    "generate-test-data-service": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/generated"],
       "options": {

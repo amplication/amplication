@@ -6,16 +6,17 @@ export class AmplicationIgnoreManger {
   amplicationIgnoreExpressions: string[] = [];
   hasBeenInitialized = false;
 
-  async init(getFileFn: (fileName: string) => Promise<string>) {
+  async init(getFileFn: (fileName: string) => Promise<string | null>) {
     const amplicationIgnoreFile = await getFileFn(
       AmplicationIgnoreManger.AmplicationIgnoreFileName
     );
+    if (amplicationIgnoreFile) {
+      ok(typeof amplicationIgnoreFile === "string");
 
-    ok(typeof amplicationIgnoreFile === "string");
-
-    this.amplicationIgnoreExpressions = this.parseAmplicationIgnoreFile(
-      amplicationIgnoreFile
-    );
+      this.amplicationIgnoreExpressions = this.parseAmplicationIgnoreFile(
+        amplicationIgnoreFile
+      );
+    }
     this.hasBeenInitialized = true;
   }
 

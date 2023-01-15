@@ -31,13 +31,15 @@ export interface AppContextInterface {
   pendingChanges: PendingChangeItem[];
   commitRunning: boolean;
   pendingChangesIsError: boolean;
-  addEntity: (entityId: string) => void;
+  addEntity: (entityId?: string) => void;
   addBlock: (blockId: string) => void;
   addChange: (originId: string) => void;
   resetPendingChanges: () => void;
   setCommitRunning: (isRunning: boolean) => void;
   setPendingChangesError: (onError: boolean) => void;
   refreshCurrentWorkspace: () => void;
+  getWorkspaces: () => void;
+  workspacesList: models.Workspace[];
   gitRepositoryFullName: string;
   gitRepositoryUrl: string;
   createMessageBroker: (
@@ -46,6 +48,8 @@ export interface AppContextInterface {
   ) => void;
   loadingCreateMessageBroker: boolean;
   errorCreateMessageBroker: Error | undefined;
+  resetPendingChangesIndicator: boolean;
+  setResetPendingChangesIndicator: (reset: boolean) => void;
 }
 
 const initialContext: AppContextInterface = {
@@ -79,11 +83,15 @@ const initialContext: AppContextInterface = {
   setCommitRunning: () => {},
   setPendingChangesError: () => {},
   refreshCurrentWorkspace: () => {},
+  getWorkspaces: () => {},
+  workspacesList: [],
   gitRepositoryFullName: "",
   gitRepositoryUrl: "",
   createMessageBroker: () => {},
   loadingCreateMessageBroker: false,
   errorCreateMessageBroker: undefined,
+  resetPendingChangesIndicator: false,
+  setResetPendingChangesIndicator: () => {},
 };
 
 export const AppContext =

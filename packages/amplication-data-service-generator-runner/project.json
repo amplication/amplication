@@ -29,7 +29,7 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/amplication-data-service-generator-runner/**/*.ts"
+          "packages/amplication-data-service-generator-runner/src/**/*"
         ]
       }
     },
