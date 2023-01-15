@@ -43,7 +43,11 @@ async function bootstrap() {
   }
 
   // Validation
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidUnknownValues: false,
+    })
+  );
 
   // Cors
   if (process.env.CORS_ENABLE === "1") {
