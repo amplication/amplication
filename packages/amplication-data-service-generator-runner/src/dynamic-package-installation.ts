@@ -21,19 +21,19 @@ export async function dynamicPackagesInstallations(
       version: plugins.version,
     };
     await manager.install(plugin, {
-      before: async (plugin) => {
+      onBeforeInstall: async (plugin) => {
         await createLog({
           level: "info",
           message: `Installing Plugin: ${plugin.name}@${plugin.version}`,
         });
       },
-      after: async (plugin) => {
+      onAfterInstall: async (plugin) => {
         await createLog({
           level: "info",
           message: `Successfully Installed plugin: ${plugin.name}@${plugin.version}`,
         });
       },
-      crash: async (plugin) => {
+      onError: async (plugin) => {
         await createLog({
           level: "error",
           message: `Failed to installed plugin: ${plugin.name}@${plugin.version}`,

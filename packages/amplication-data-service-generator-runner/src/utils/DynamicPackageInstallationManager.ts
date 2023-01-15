@@ -7,16 +7,16 @@ export class DynamicPackageInstallationManager {
   async install(
     plugin: PackageInstallation,
     hooks: {
-      before?: HookFunction;
-      after?: HookFunction;
-      crash?: HookFunction;
+      onBeforeInstall?: HookFunction;
+      onAfterInstall?: HookFunction;
+      onError?: HookFunction;
     }
   ): Promise<void> {
-    const { after, before, crash } = hooks;
+    const { onAfterInstall, onBeforeInstall, onError } = hooks;
 
     try {
       const { name, version } = plugin;
-      before ?? (await before(plugin));
+      onBeforeInstall ?? (await onBeforeInstall(plugin));
       const validVersion = valid(version);
 
       const tarball = new Tarball(
@@ -24,9 +24,9 @@ export class DynamicPackageInstallationManager {
         this.pluginInstallationPath
       );
       await tarball.download();
-      after ?? (await after(plugin));
+      onAfterInstall ?? (await onAfterInstall(plugin));
     } catch (error) {
-      crash ?? (await crash(plugin));
+      onError ?? (await onError(plugin));
       throw error;
     }
 
