@@ -5,11 +5,9 @@ import {
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
-  BillingPeriod,
   BooleanEntitlement,
   MeteredEntitlement,
   NumericEntitlement,
-  ProvisionSubscriptionResult,
   ReportUsageAck,
 } from "@stigg/node-server-sdk";
 import { SubscriptionStatus } from "@stigg/node-server-sdk/dist/api/generated/types";
@@ -23,6 +21,8 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ProvisionSubscriptionDto } from "./ProvisionSubscriptionDto";
+import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
 
 @Injectable()
 export class BillingService {
@@ -117,16 +117,15 @@ export class BillingService {
     });
   }
 
-  async provisionSubscription(
-    workspaceId: string,
-    planId: string,
-    billingPeriod: BillingPeriod,
-    intentionType: "UPGRADE_PLAN" | "DOWNGRADE_PLAN",
-    cancelUrl: string,
-    successUrl: string,
-    customerId: string
-  ): Promise<ProvisionSubscriptionResult> {
-    console.log("customerId", customerId);
+  async provisionSubscription({
+    workspaceId,
+    planId,
+    billingPeriod,
+    intentionType,
+    cancelUrl,
+    successUrl,
+    customerId,
+  }: ProvisionSubscriptionDto): Promise<ProvisionSubscriptionResult> {
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
       customerId: workspaceId,
@@ -150,7 +149,10 @@ export class BillingService {
           : EnumEventType.WorkspacePlanUpgradeRequest,
     });
 
-    return stiggResponse;
+    return {
+      provisionStatus: stiggResponse.provisionStatus,
+      checkoutUrl: stiggResponse.checkoutUrl,
+    };
   }
 
   async getSubscription(workspaceId: string): Promise<Subscription | null> {
