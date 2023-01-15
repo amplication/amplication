@@ -1,4 +1,4 @@
-import { print } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import {
   CreateSeedParams,
@@ -9,7 +9,6 @@ import {
   Module,
   types,
 } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
 import {
   addImports,
   awaitExpression,
