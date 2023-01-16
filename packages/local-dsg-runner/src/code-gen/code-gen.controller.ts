@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import Docker from "dockerode";
+import { CodeGenerationRequest } from "./types";
 
 function generateCode(req: Request, res: Response) {
-  const { resourceId, buildId } = req.body;
+  const { resourceId, buildId } = req.body as CodeGenerationRequest;
 
   const imageName = "amplication/data-service-generator-runner";
   const containerName = `dsg-runner-${buildId}`;
+
   const hostMachineDsgFolder = `${process.cwd()}/${
     process.env.DSG_JOBS_BASE_FOLDER
   }/${buildId}`;
