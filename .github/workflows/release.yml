@@ -1,4 +1,5 @@
-name: Release
+run-name: Release ${{ github.event.workflow_run.head_branch }} by workflow ${{ github.event.workflow_run.id }}
+concurrency: ${{ github.event.workflow_run.head_branch }}
 
 on:
   workflow_run:
@@ -69,6 +70,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v3
@@ -126,8 +128,8 @@ jobs:
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
-            type=raw,value=${{ github.env.BRANCH }}
-            type=raw,value=latest,enable=${{ github.env.BRANCH == 'master' }}
+            type=raw,value=${{ env.BRANCH }}
+            type=raw,value=latest,enable=${{ env.BRANCH == 'master' }}
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
