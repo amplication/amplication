@@ -168,7 +168,7 @@ jobs:
   fs-scan:
     name: Vulnerability scanning - File system
     needs: ci
-    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    uses: ./.github/workflows/security.template.yml
     with:
       scan-type: "fs"
       format: "sarif"
@@ -178,7 +178,7 @@ jobs:
   config-scan:
     name: Vulnerability scanning - Config
     needs: ci
-    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    uses: ./.github/workflows/security.template.yml
     with:
       scan-type: "config"
       format: "sarif"

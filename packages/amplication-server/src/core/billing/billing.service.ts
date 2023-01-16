@@ -5,11 +5,9 @@ import {
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
-  BillingPeriod,
   BooleanEntitlement,
   MeteredEntitlement,
   NumericEntitlement,
-  ProvisionSubscriptionResult,
   ReportUsageAck,
 } from "@stigg/node-server-sdk";
 import { SubscriptionStatus } from "@stigg/node-server-sdk/dist/api/generated/types";
@@ -23,8 +21,10 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
 import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
+import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
 
 @Injectable()
 export class BillingService {
@@ -185,14 +185,17 @@ export class BillingService {
     }
   }
 
-  async provisionSubscription(
-    workspaceId: string,
-    planId: string,
-    billingPeriod: BillingPeriod,
-    intentionType: "UPGRADE_PLAN" | "DOWNGRADE_PLAN",
-    cancelUrl: string,
-    successUrl: string
-  ): Promise<ProvisionSubscriptionResult> {
+  async provisionSubscription({
+    workspaceId,
+    planId,
+    billingPeriod,
+    intentionType,
+    cancelUrl,
+    successUrl,
+    userId,
+  }: ProvisionSubscriptionInput & {
+    userId: string;
+  }): Promise<ProvisionSubscriptionResult> {
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
       customerId: workspaceId,
@@ -206,14 +209,20 @@ export class BillingService {
       },
     });
     await this.analytics.track({
-      userId: workspaceId,
+      userId,
+      properties: {
+        workspaceId,
+      },
       event:
         intentionType === "DOWNGRADE_PLAN"
           ? EnumEventType.WorkspacePlanDowngradeRequest
           : EnumEventType.WorkspacePlanUpgradeRequest,
     });
 
-    return stiggResponse;
+    return {
+      provisionStatus: stiggResponse.provisionStatus,
+      checkoutUrl: stiggResponse.checkoutUrl,
+    };
   }
 
   async getSubscription(workspaceId: string): Promise<Subscription | null> {

@@ -30,6 +30,8 @@ import { GitOrganization } from "../../models/GitOrganization";
 import { Subscription } from "../subscription/dto/Subscription";
 import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
+import { ProvisionSubscriptionArgs } from "./dto/ProvisionSubscriptionArgs";
+import { ProvisionSubscriptionResult } from "./dto/ProvisionSubscriptionResult";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -154,5 +156,18 @@ export class WorkspaceResolver {
     @Parent() workspace: Workspace
   ): Promise<GitOrganization[]> {
     return this.workspaceService.findManyGitOrganizations(workspace.id);
+  }
+
+  @Mutation(() => ProvisionSubscriptionResult, {
+    nullable: true,
+  })
+  async provisionSubscription(
+    @UserEntity() currentUser: User,
+    @Args() args: ProvisionSubscriptionArgs
+  ): Promise<ProvisionSubscriptionResult | null> {
+    return this.billingService.provisionSubscription({
+      ...args.data,
+      userId: currentUser.id,
+    });
   }
 }
