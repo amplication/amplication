@@ -113,7 +113,7 @@
     "passport": "^0.5.3",
     "passport-github2": "^0.1.12",
     "passport-http": "^0.3.0",
-    "passport-jwt": "^4.0.1",
+    "passport-jwt": "^4.0.0",
     "php-serialize": "^4.0.2",
     "pluralize": "^8.0.0",
     "prisma-schema-dsl": "^2.0.3",
