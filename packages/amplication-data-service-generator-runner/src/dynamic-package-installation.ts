@@ -1,5 +1,5 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
-import { createLog } from "@amplication/data-service-generator/create-log";
+import { createLog } from "@amplication/data-service-generator";
 import { join } from "path";
 import { AMPLICATION_MODULES } from "./main";
 import {
