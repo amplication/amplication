@@ -58,8 +58,9 @@
       },
       "dependsOn": ["generate-example-input-json"]
     },
-    "docker:build": {
+    "docker-build": {
       "executor": "@nx-tools/nx-docker:build",
+      "dependsOn": ["build"],
       "options": {
         "push": false,
         "tags": ["amplication/data-service-generator-runner:latest"]
