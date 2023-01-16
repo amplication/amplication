@@ -24,13 +24,12 @@ type Props = {
 };
 
 const CLASS_NAME = "resource-list-item";
-const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
+const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 function ResourceListItem({ resource, onDelete }: Props) {
-  const { currentWorkspace, currentProject, setResource } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, setResource } =
+    useContext(AppContext);
   const { id, name, description, gitRepository } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -67,7 +66,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Delete ${resource.name}`}
+        title={`Delete '${resource.name}' ?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
         message="This action cannot be undone. This will permanently delete the resource and its content. Are you sure you want to continue? "

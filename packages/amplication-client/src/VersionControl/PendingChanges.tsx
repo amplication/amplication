@@ -6,7 +6,6 @@ import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import {
   CircularProgress,
-  Dialog,
   Snackbar,
   Tooltip,
 } from "@amplication/design-system";
@@ -27,9 +26,8 @@ type Props = {
 
 const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
-  const { currentWorkspace, currentProject, pendingChanges } = useContext(
-    AppContext
-  );
+  const { currentWorkspace, currentProject, pendingChanges } =
+    useContext(AppContext);
   const {
     pendingChangesByResource,
     pendingChangesDataError,
@@ -52,18 +50,13 @@ const PendingChanges = ({ projectId }: Props) => {
     <div className={CLASS_NAME}>
       <h5 className={`${CLASS_NAME}__title`}>Pending changes</h5>
       <Commit projectId={projectId} noChanges={noChanges} />
-      <Dialog
-        className="discard-dialog"
+
+      <DiscardChanges
         isOpen={discardDialogOpen}
+        projectId={projectId}
+        onComplete={handleDiscardDialogCompleted}
         onDismiss={handleToggleDiscardDialog}
-        title="Discard Changes"
-      >
-        <DiscardChanges
-          projectId={projectId}
-          onComplete={handleDiscardDialogCompleted}
-          onCancel={handleToggleDiscardDialog}
-        />
-      </Dialog>
+      />
 
       <div className={`${CLASS_NAME}__changes-wrapper`}>
         {pendingChangesDataLoading ? (

@@ -1,9 +1,9 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { EntityVersion } from './EntityVersion'; // eslint-disable-line import/no-cycle
-import { EntityPermissionRole } from './EntityPermissionRole'; // eslint-disable-line import/no-cycle
-import { EntityPermissionField } from './EntityPermissionField'; // eslint-disable-line import/no-cycle
-import { EnumEntityAction } from './../enums/EnumEntityAction';
-import { EnumEntityPermissionType } from './../enums/EnumEntityPermissionType';
+import { Field, ObjectType } from "@nestjs/graphql";
+import { EntityVersion } from "./EntityVersion";
+import { EntityPermissionRole } from "./EntityPermissionRole";
+import { EntityPermissionField } from "./EntityPermissionField";
+import { EnumEntityAction } from "./../enums/EnumEntityAction";
+import { EnumEntityPermissionType } from "./../enums/EnumEntityPermissionType";
 
 /**
  * Defines a set of {@linkcode EntityPermissionRole} allowed to perform an
@@ -12,41 +12,41 @@ import { EnumEntityPermissionType } from './../enums/EnumEntityPermissionType';
  * for specific fields.
  */
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class EntityPermission {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   id!: string;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   entityVersionId!: string;
 
   @Field(() => EntityVersion, {
-    nullable: true
+    nullable: true,
   })
   entityVersion?: EntityVersion;
 
   @Field(() => EnumEntityAction, {
-    nullable: false
+    nullable: false,
   })
   action!: keyof typeof EnumEntityAction;
 
   @Field(() => EnumEntityPermissionType, {
-    nullable: false
+    nullable: false,
   })
   type!: keyof typeof EnumEntityPermissionType;
 
   @Field(() => [EntityPermissionRole], {
-    nullable: true
+    nullable: true,
   })
   permissionRoles?: EntityPermissionRole[] | null;
 
   @Field(() => [EntityPermissionField], {
-    nullable: true
+    nullable: true,
   })
   permissionFields?: EntityPermissionField[] | null;
 }

@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./SupportMenu.scss";
 
 const CLASS_NAME = "support-menu";
@@ -9,25 +10,25 @@ const SupportMenu = () => {
 
   const handleDocsClick = useCallback(() => {
     trackEvent({
-      eventName: "supportDocsClick",
+      eventName: AnalyticsEventNames.SupportDocsClick,
     });
   }, [trackEvent]);
 
   const handleCommunityClick = useCallback(() => {
     trackEvent({
-      eventName: "supportCommunityClick",
+      eventName: AnalyticsEventNames.SupportCommunityClick,
     });
   }, [trackEvent]);
 
   const handleFeatureRequestClick = useCallback(() => {
     trackEvent({
-      eventName: "supportFeatureRequestClick",
+      eventName: AnalyticsEventNames.SupportFeatureRequestClick,
     });
   }, [trackEvent]);
 
   const handleIssueClick = useCallback(() => {
     trackEvent({
-      eventName: "supportIssueClick",
+      eventName: AnalyticsEventNames.SupportIssueClick,
     });
   }, [trackEvent]);
 

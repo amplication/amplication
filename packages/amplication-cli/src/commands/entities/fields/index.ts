@@ -1,8 +1,8 @@
-import cli, { Table } from 'cli-ux';
-import { ConfiguredCommand } from '../../../configured-command';
-import { getFields } from '../../../api';
-import { entity } from '../../../flags/entity-flag';
-import { format } from '../../../flags/format-flag';
+import cli, { Table } from "cli-ux";
+import { ConfiguredCommand } from "../../../configured-command";
+import { getFields } from "../../../api";
+import { entity } from "../../../flags/entity-flag";
+import { format } from "../../../flags/format-flag";
 
 export const FIELD_COLUMNS: Table.table.Columns<any> = {
   id: {},
@@ -16,12 +16,12 @@ export const FIELD_COLUMNS: Table.table.Columns<any> = {
 };
 
 export default class FieldsIndex extends ConfiguredCommand {
-  static description = 'list fields for an entity';
+  static description = "list fields for an entity";
 
   static examples = [
-    'amp entities:fields',
-    'amp entities:fields -e ckm1wl4ru58969go3n3mt2zkg2',
-    'amp entities:fields --format=table',
+    "amp entities:fields",
+    "amp entities:fields -e ckm1wl4ru58969go3n3mt2zkg2",
+    "amp entities:fields --format=table",
   ];
 
   static flags = {
@@ -36,10 +36,10 @@ export default class FieldsIndex extends ConfiguredCommand {
     const { flags } = this.parse(FieldsIndex);
 
     const entityIdFlag = flags.entity;
-    let entityId = '';
+    let entityId = "";
 
     if (!entityIdFlag) {
-      entityId = await cli.prompt('entity', { required: true });
+      entityId = await cli.prompt("entity", { required: true });
     }
 
     const data = await getFields(

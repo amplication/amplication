@@ -1,12 +1,14 @@
 import { exec } from "child_process";
+import ora from "ora";
 import { satisfies } from "semver";
-import { createLogger, format, Logger, transports } from "winston";
-import * as ora from "ora";
+import { createLogger, format, transports } from "winston";
+import { argv } from "yargs";
 
 const { combine, colorize, simple } = format;
 
-const spinner = ora();
-spinner.color = "green";
+const isDebugMode = process.env.DEBUG === "true";
+
+const spinner = ora({ color: "green" });
 
 const logo = `  
             ...   :..              
@@ -25,8 +27,9 @@ const logo = `
          .^!?Y~  .YYYYYYYYYYY5:    
  `;
 
-class Task {
-  constructor(public command: string, public label: string) {}
+interface Task {
+  command: string;
+  label: string;
 }
 
 const logger = createLogger({
@@ -38,7 +41,7 @@ function preValidate() {
   const { engines } = require("../package.json");
   const { node: nodeRange, npm } = engines;
   const npm_config_user_agent = process.env.npm_config_user_agent;
-  const currentNpmVersionArray = npm_config_user_agent?.match(
+  const currentNpmVersionArray: any = npm_config_user_agent?.match(
     /npm\/[\^*\~*]*[\d\.]+/
   );
   const currentNpmVersion = currentNpmVersionArray[0]?.slice(4);
@@ -66,70 +69,64 @@ function preValidate() {
 async function runFunction(task: Task): Promise<string> {
   spinner.start(`${task.label}` + "\n");
   return new Promise((resolve, reject) => {
-    exec(task.command, (error, stdout, stderr) => {
-      error && reject(error);
+    const proc = exec(task.command, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      }
+
       if (stdout) {
         spinner.succeed(`Finished ${task.label}`);
         stdout && resolve(task.label);
       }
     });
+
+    if (isDebugMode) {
+      proc.stdout?.on("data", (data) => {
+        logger.info(data);
+      });
+    }
   });
 }
 
 const clean: Task[] = [
   {
-    command: "npm run clean",
-    label: "clean up 🧼",
+    command: "npx nx clear-cache",
+    label: "clearing Nx cache 🧼",
   },
 ];
-const bootstrap: Task[] = [
+const preparePrisma: Task[] = [
   {
-    command: "npm run bootstrap",
-    label: "bootstrapping 🚀",
+    command:
+      "npx nx run-many --target db:prisma:generate --output-style stream",
+    label: "generating Prisma client 🧬",
   },
 ];
-const buildStep: Task[] = [
+const prepareGraphQL: Task[] = [
   {
-    command: "npm run build",
-    label: "build packages 📦",
+    command:
+      "npx nx run-many --target graphql:schema:generate --output-style stream",
+    label: "generating graphql schema 🧬",
+  },
+  {
+    command: "npm run graphql-codegen",
+    label: "running graphql codegen 🧬",
   },
 ];
-const dockerCompose: Task[] = [
+const build: Task[] = [
   {
-    command: "npm run docker:dev",
-    label: "docker compose 🐳",
-  },
-];
-const prismaGeneration: Task[] = [
-  {
-    command: "npm run prisma:generate",
-    label: "generate prisma 🧬",
-  },
-];
-const graphqlGeneration: Task[] = [
-  {
-    command: "npm run generate",
-    label: "generate graphql schema 🧬",
-  },
-];
-const prismaMigration: Task[] = [
-  {
-    command: "npm run migrate:up",
-    label: "prisma migration 🏗 ",
+    command: "npx nx run-many --target build --output-style stream",
+    label: "building packages 📦",
   },
 ];
 
-const tasks: Task[][] = [
-  clean,
-  bootstrap,
-  buildStep,
-  dockerCompose,
-  prismaGeneration,
-  graphqlGeneration,
-  prismaMigration,
-];
+const tasks: Task[][] = [preparePrisma, prepareGraphQL, build];
 
 if (require.main === module) {
+  const args = argv;
+  if ((args as any).clean) {
+    tasks.unshift(clean);
+  }
+
   (async () => {
     try {
       preValidate();
@@ -147,13 +144,23 @@ if (require.main === module) {
         await Promise.all(tasksPromises);
         console.log("");
       }
-      logger.info("Finish all the process for the setup, have fun hacking 👾");
+      logger.info("Setup complete. Have fun! 👾");
       logger.info(
-        "✋ To run a specific service, go to its README file and make sure you set all necessary environment variables❗️"
+        "✋ To start developing a specific app, run:",
+        "npx nx serve <service-name>",
+        "",
+        "For example, to run the Amplication Server:",
+        "npx nx serve amplication-server",
+        "",
+        "To run the Amplication Client:",
+        "npx nx serve amplication-client"
       );
-      logger.info("Link to our docs: 'https://docs.amplication.com/docs/' 📜");
+      logger.info(
+        "Check out the Amplication Docs at https://docs.amplication.com/ 📜"
+      );
     } catch (error) {
-      spinner.fail(error.message);
+      spinner.fail();
+      console.error((error as Error).message);
     }
   })();
 }

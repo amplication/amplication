@@ -1,8 +1,9 @@
-import { TextField,Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { Form, Formik } from "formik";
-import React, { useCallback } from "react";
+import { validate } from "../util/formikValidateJsonSchema";
+import { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
@@ -11,13 +12,14 @@ import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { GET_WORKSPACE_MEMBERS } from "./MemberList";
 import "./InviteMember.scss";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Values = {
   email: string;
 };
 
 type TData = {
-  inviteUser: models.Invitation;
+  inviteUser: models.InviteUserInput;
 };
 
 const INITIAL_VALUES = {
@@ -25,6 +27,16 @@ const INITIAL_VALUES = {
 };
 
 const CLASS_NAME = "invite-member";
+
+const FORM_SCHEMA = {
+  required: ["email"],
+  properties: {
+    email: {
+      type: "string",
+      minLength: 1,
+    },
+  },
+};
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
@@ -36,7 +48,7 @@ const InviteMember = () => {
   const [inviteUser, { loading, error }] = useMutation<TData>(INVITE_USER, {
     onCompleted: (data) => {
       trackEvent({
-        eventName: "inviteUser",
+        eventName: AnalyticsEventNames.WorkspaceMemberInvite,
         email: data.inviteUser.email,
       });
     },
@@ -56,7 +68,14 @@ const InviteMember = () => {
 
   return (
     <div className={CLASS_NAME}>
-      <Formik initialValues={INITIAL_VALUES} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={INITIAL_VALUES}
+        validate={(values: models.InviteUserInput) =>
+          validate(values, FORM_SCHEMA)
+        }
+        enableReinitialize
+        onSubmit={handleSubmit}
+      >
         {(formik) => {
           const handlers = {
             SUBMIT: formik.submitForm,

@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
+import { PURCHASE_URL } from "../../routes/routesUtil";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQueries";
 
 const useProjectSelector = (
@@ -18,6 +19,7 @@ const useProjectSelector = (
   const workspaceUtil = useRouteMatch([
     "/:workspace([A-Za-z0-9-]{20,})/settings",
     "/:workspace([A-Za-z0-9-]{20,})/members",
+    "/:workspace([A-Za-z0-9-]{20,})/purchase",
   ]);
   const projectMatch: {
     params: { workspace: string; project: string };
@@ -29,15 +31,19 @@ const useProjectSelector = (
     projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
-  const [
-    currentProjectConfiguration,
-    setCurrentProjectConfiguration,
-  ] = useState<models.Resource>();
-  const { data: projectListData, loading: loadingList, refetch } = useQuery<{
+  const [currentProjectConfiguration, setCurrentProjectConfiguration] =
+    useState<models.Resource>();
+  const {
+    data: projectListData,
+    loading: loadingList,
+    refetch,
+  } = useQuery<{
     projects: models.Project[];
   }>(GET_PROJECTS, {
     skip:
-      !workspace || (currentWorkspace && currentWorkspace?.id !== workspace),
+      !workspace ||
+      (currentWorkspace && currentWorkspace?.id !== workspace) ||
+      !currentWorkspace,
     onError: (error) => {
       // if error push to ? check with @Yuval
     },
@@ -45,6 +51,7 @@ const useProjectSelector = (
 
   const projectRedirect = useCallback(
     (projectId: string, search?: string) =>
+      (currentWorkspace?.id || workspace) &&
       history.push({
         pathname: `/${currentWorkspace?.id || workspace}/${projectId}`,
         search: search || "",
@@ -52,9 +59,8 @@ const useProjectSelector = (
     [currentWorkspace?.id, history, workspace]
   );
 
-  const [setNewProject] = useMutation<models.ProjectCreateInput>(
-    CREATE_PROJECT
-  );
+  const [setNewProject] =
+    useMutation<models.ProjectCreateInput>(CREATE_PROJECT);
 
   const createProject = (data: models.ProjectCreateInput) => {
     setNewProject({ variables: data });
@@ -70,21 +76,34 @@ const useProjectSelector = (
   useEffect(() => {
     if (loadingList || !projectListData) return;
 
-    setProjectList(projectListData.projects);
+    const sortedProjects = [...projectListData.projects].sort((a, b) => {
+      return Date.parse(b.createdAt) - Date.parse(a.createdAt);
+    });
+
+    setProjectList(sortedProjects);
   }, [projectListData, loadingList]);
 
   useEffect(() => {
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
+    const isFromPurchase = localStorage.getItem(PURCHASE_URL);
+
+    if (isFromPurchase) {
+      localStorage.removeItem(PURCHASE_URL);
+      return history.push({
+        pathname: `/${currentWorkspace?.id}/purchase`,
+        state: { source: "redirect" },
+      });
+    }
+
     !workspaceUtil &&
+      currentWorkspace?.id &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
           isFromSignup ? "/create-resource" : ""
         }`
       );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentWorkspace?.id,
     history,
@@ -95,11 +114,17 @@ const useProjectSelector = (
   ]);
 
   useEffect(() => {
-    if (!project || !projectsList.length) return;
+    if (
+      !project ||
+      !projectsList.length ||
+      projectListData.projects.length !== projectsList.length
+    )
+      return;
 
     const selectedProject = projectsList.find(
       (projectDB: models.Project) => projectDB.id === project
     );
+
     if (!selectedProject) projectRedirect(projectsList[0].id);
 
     setCurrentProject(selectedProject);

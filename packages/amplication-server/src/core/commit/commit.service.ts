@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@amplication/prisma-db';
-import { FindOneCommitArgs } from './dto/FindOneCommitArgs';
-import { FindManyCommitArgs } from './dto/FindManyCommitArgs';
-import { Commit } from '../../models';
-import { PendingChange } from '../resource/dto';
-import { EntityService } from '../entity/entity.service';
-import { BlockService } from '../block/block.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../prisma/prisma.service";
+import { FindOneCommitArgs } from "./dto/FindOneCommitArgs";
+import { FindManyCommitArgs } from "./dto/FindManyCommitArgs";
+import { Commit } from "../../models";
+import { PendingChange } from "../resource/dto";
+import { EntityService } from "../entity/entity.service";
+import { BlockService } from "../block/block.service";
 @Injectable()
 export class CommitService {
   constructor(
@@ -25,7 +25,7 @@ export class CommitService {
   async getChanges(commitId: string): Promise<PendingChange[]> {
     const [changedBlocks, changedEntities] = await Promise.all([
       this.blockService.getChangedBlocksByCommit(commitId),
-      this.entityService.getChangedEntitiesByCommit(commitId)
+      this.entityService.getChangedEntitiesByCommit(commitId),
     ]);
 
     return [...changedBlocks, ...changedEntities];

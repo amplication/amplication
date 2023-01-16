@@ -7,13 +7,12 @@ export type Props = Omit<TextInputProps, "hasError"> & {
   showError?: boolean;
 };
 
-export const TextField = (props: Props) => {
-  // @ts-ignore
+export const TextField: React.FC<Props> = ({ ref, ...props }) => {
   const [field, meta] = useField(props);
   const { onChange, ...rest } = props;
 
   const handleChange = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       if (onChange) {
         onChange(event);
       }

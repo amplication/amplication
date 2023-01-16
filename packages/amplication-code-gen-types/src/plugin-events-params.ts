@@ -1,13 +1,18 @@
 import { namedTypes } from "ast-types";
-import { JsonValue } from "type-fest";
 import {
   Entity,
   EntityField,
+  EnumDataType,
   Module,
-  PrismaClientGenerator,
-  PrismaDataSource,
+  NamedClassDeclaration,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
+import {
+  Generator,
+  DataSource,
+  ScalarField,
+  ObjectField,
+} from "prisma-schema-dsl-types";
 
 export interface CreateEntityServiceBaseParams extends EventParams {
   entityName: string;
@@ -29,7 +34,7 @@ export interface CreateEntityServiceParams extends EventParams {
   template: namedTypes.File;
 }
 export interface CreateEntityControllerParams extends EventParams {
-  templatePath: string;
+  template: namedTypes.File;
   entityName: string;
   entityServiceModule: string;
   templateMapping: { [key: string]: any };
@@ -37,7 +42,7 @@ export interface CreateEntityControllerParams extends EventParams {
   serviceId: namedTypes.Identifier;
 }
 export interface CreateEntityControllerBaseParams extends EventParams {
-  baseTemplatePath: string;
+  template: namedTypes.File;
   entity: Entity;
   entityName: string;
   entityType: string;
@@ -46,11 +51,33 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
-export interface CreateAuthModulesParams extends EventParams {
+export interface CreateEntityControllerSpecParams extends EventParams {
+  entity: Entity;
+  entityType: string;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  entityServiceModulePath: string;
+  entityControllerModulePath: string;
+  entityControllerBaseModulePath: string;
+  controllerId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+}
+
+export interface CreateUserInfoParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  filePath: string;
+}
+export interface CreateTokenPayloadInterfaceParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  filePath: string;
+}
+export interface CreateServerAuthParams extends EventParams {
   srcDir: string;
 }
 
-export interface CreateAdminModulesParams extends EventParams {}
+export interface CreateAdminUIParams extends EventParams {}
 export interface CreateServerParams extends EventParams {}
 
 export type VariableDictionary = {
@@ -59,6 +86,13 @@ export type VariableDictionary = {
 
 export interface CreateServerDotEnvParams extends EventParams {
   envVariables: VariableDictionary;
+}
+
+export interface CreateServerGitIgnoreParams extends EventParams {
+  gitignorePaths: string[];
+}
+export interface CreateAdminGitIgnoreParams extends EventParams {
+  gitignorePaths: string[];
 }
 
 export interface CreateServerDockerComposeParams extends EventParams {
@@ -72,10 +106,23 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
   updateProperties: { [key: string]: any }[];
   outputFileName: string;
 }
+
+export type CreateSchemaFieldResult = (ScalarField | ObjectField)[];
+
+export type CreateSchemaFieldHandler = (
+  field: EntityField,
+  entity: Entity,
+  fieldNamesCount?: Record<string, number>
+) => CreateSchemaFieldResult;
+
+export type CreateSchemaFieldsHandlers = {
+  [key in EnumDataType]: CreateSchemaFieldHandler;
+};
 export interface CreatePrismaSchemaParams extends EventParams {
   entities: Entity[];
-  dataSource: PrismaDataSource;
-  clientGenerator: PrismaClientGenerator;
+  dataSource: DataSource;
+  clientGenerator: Generator;
+  createFieldsHandlers: CreateSchemaFieldsHandlers;
 }
 
 export interface CreateMessageBrokerParams extends EventParams {}
@@ -87,9 +134,73 @@ export interface CreateMessageBrokerClientOptionsFactoryParams
 export interface CreateMessageBrokerServiceParams extends EventParams {}
 export interface CreateMessageBrokerServiceBaseParams extends EventParams {}
 export interface CreateServerPackageJsonParams extends EventParams {
-  updateValues: { [key: string]: JsonValue };
+  fileContent: string;
+  updateProperties: { [key: string]: any }[];
+}
+
+export interface CreateAdminUIPackageJsonParams extends EventParams {
+  fileContent: string;
+  updateProperties: { [key: string]: any }[];
 }
 
 export interface CreateServerAppModuleParams extends EventParams {
   modulesFiles: Module[];
+}
+
+export interface CreateEntityModuleParams extends EventParams {
+  entityName: string;
+  entityType: string;
+  entityServiceModule: string;
+  entityControllerModule: string | undefined;
+  entityResolverModule: string | undefined;
+  moduleBaseId: namedTypes.Identifier;
+  controllerId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+  resolverId: namedTypes.Identifier;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+}
+
+export interface CreateEntityModuleBaseParams extends EventParams {
+  entityName: string;
+  moduleBaseId: namedTypes.Identifier;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+}
+
+export interface CreateEntityResolverParams extends EventParams {
+  template: namedTypes.File;
+  entityName: string;
+  entityServiceModule: string;
+  serviceId: namedTypes.Identifier;
+  resolverBaseId: namedTypes.Identifier;
+  templateMapping: { [key: string]: any };
+}
+
+export interface CreateEntityResolverBaseParams extends EventParams {
+  template: namedTypes.File;
+  entityName: string;
+  entityType: string;
+  entityServiceModule: string;
+  entity: Entity;
+  serviceId: namedTypes.Identifier;
+  resolverBaseId: namedTypes.Identifier;
+  createArgs: NamedClassDeclaration | undefined;
+  updateArgs: NamedClassDeclaration | undefined;
+  createMutationId: namedTypes.Identifier;
+  updateMutationId: namedTypes.Identifier;
+  templateMapping: { [key: string]: any };
+}
+export interface CreateSwaggerParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
+}
+
+export interface CreateSeedParams extends EventParams {
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  fileDir: string;
+  outputFileName: string;
 }

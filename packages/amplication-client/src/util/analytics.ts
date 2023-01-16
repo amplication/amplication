@@ -1,12 +1,14 @@
 import * as reactTracking from "react-tracking";
 import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
+import { AnalyticsEventNames } from "./analytics-events.types";
 
 export interface Event {
-  eventName: string;
+  eventName: AnalyticsEventNames;
   [key: string]: unknown;
 }
 
 const MISSING_EVENT_NAME = "MISSING_EVENT_NAME";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 const _hsq = (window._hsq = window._hsq || []);
 
@@ -26,6 +28,7 @@ export function dispatch(event: Partial<Event>) {
     { name: eventName, properties: rest },
   ]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const analytics = window.analytics;
     analytics.track(eventName || MISSING_EVENT_NAME, rest);
@@ -34,11 +37,12 @@ export function dispatch(event: Partial<Event>) {
 
 export function init() {
   if (REACT_APP_AMPLITUDE_API_KEY) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const analytics = window.analytics;
     analytics.load(REACT_APP_AMPLITUDE_API_KEY);
     dispatch({
-      eventName: "startAppSession",
+      eventName: AnalyticsEventNames.AppSessionStart,
     });
   }
 }
@@ -50,6 +54,7 @@ type EventProps = {
 export function identity(userId: string, props: EventProps) {
   _hsq.push(["identify", { id: userId, ...props }]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const analytics = window.analytics;
     analytics.identify(userId, props);
@@ -59,6 +64,7 @@ export function identity(userId: string, props: EventProps) {
 export function page(name?: string, props?: EventProps) {
   _hsq.push(["trackPageView"]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const analytics = window.analytics;
     analytics.page(name, props);

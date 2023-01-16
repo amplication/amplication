@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { unsetToken } from "../../authentication/authentication";
@@ -19,12 +19,15 @@ import { AppContext } from "../../context/appContext";
 import MenuItem from "../../Layout/MenuItem";
 import * as models from "../../models";
 import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import "./WorkspaceHeader.scss";
+import { useTracking } from "../../util/analytics";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const WorkspaceHeader: React.FC<{}> = () => {
   const {
     currentWorkspace,
@@ -36,6 +39,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
+  const { trackEvent } = useTracking();
   const isProjectRoute = useRouteMatch(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
   );
@@ -48,13 +52,16 @@ const WorkspaceHeader: React.FC<{}> = () => {
   const isCodeViewRoute = useRouteMatch(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view"
   );
-
+  const [versionAlert, setVersionAlert] = useState(false);
   const getSelectedEntities = useCallback(() => {
     if (
       (isResourceRoute && currentResource) ||
       (isResourceRoute && currentProjectConfiguration)
     )
-      return currentResource?.resourceType ===  models.EnumResourceType.ProjectConfiguration ?  PROJECT_CONFIGURATION_RESOURCE_NAME : currentResource?.name 
+      return currentResource?.resourceType ===
+        models.EnumResourceType.ProjectConfiguration
+        ? PROJECT_CONFIGURATION_RESOURCE_NAME
+        : currentResource?.name;
 
     if (isCommitsRoute) return "Commits";
 
@@ -67,6 +74,13 @@ const WorkspaceHeader: React.FC<{}> = () => {
     currentProjectConfiguration,
   ]);
 
+  const [version, setVersion] = useState("");
+  useEffect(() => {
+    import("../../util/version").then(({ version }) => {
+      setVersion(version);
+    });
+  }, []);
+
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
     unsetToken();
@@ -74,6 +88,16 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
     history.replace("/login");
   }, [history, apolloClient]);
+
+  const handleUpgradeClick = useCallback(() => {
+    history.push(`/${currentWorkspace.id}/purchase`, {
+      from: { pathname: window.location.pathname },
+    });
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
+      workspace: currentWorkspace.id,
+    });
+  }, [currentWorkspace, window.location.pathname]);
 
   return (
     <div className={CLASS_NAME}>
@@ -86,6 +110,26 @@ const WorkspaceHeader: React.FC<{}> = () => {
             disableHover
           />
         </div>
+        <Tooltip
+          aria-label="Version number copied successfully"
+          direction="e"
+          noDelay
+          show={versionAlert}
+        >
+          <Button
+            className={`${CLASS_NAME}__version`}
+            buttonStyle={EnumButtonStyle.Clear}
+            onClick={async () => {
+              setVersionAlert(true);
+              await navigator.clipboard.writeText(version);
+            }}
+            onMouseLeave={() => {
+              setVersionAlert(false);
+            }}
+          >
+            <span>v{version}</span>
+          </Button>
+        </Tooltip>
       </div>
       <div className={`${CLASS_NAME}__center`}>
         <div className={`${CLASS_NAME}__breadcrumbs`}>
@@ -105,7 +149,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
               </div>
               <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
                 <SelectMenu
-                  css={undefined}
                   title={
                     <p
                       className={`${CLASS_NAME}__breadcrumbs__resource__title`}
@@ -183,6 +226,13 @@ const WorkspaceHeader: React.FC<{}> = () => {
       </div>
       <div className={`${CLASS_NAME}__right`}>
         <div className={`${CLASS_NAME}__links`}>
+          <Button
+            className={`${CLASS_NAME}__upgrade__btn`}
+            buttonStyle={EnumButtonStyle.Outline}
+            onClick={handleUpgradeClick}
+          >
+            Upgrade
+          </Button>
           <a
             className={`${CLASS_NAME}__links__link`}
             rel="noopener noreferrer"
@@ -194,7 +244,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           <a
             className={`${CLASS_NAME}__links__link`}
             rel="noopener noreferrer"
-            href="https://docs.amplication.com/docs"
+            href="https://docs.amplication.com"
             target="_blank"
           >
             Docs

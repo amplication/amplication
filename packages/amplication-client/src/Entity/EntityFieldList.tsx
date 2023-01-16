@@ -28,7 +28,11 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
 
-  const { data, loading, error: errorLoading } = useQuery<TData>(GET_FIELDS, {
+  const {
+    data,
+    loading,
+    error: errorLoading,
+  } = useQuery<TData>(GET_FIELDS, {
     variables: {
       id: entityId,
       orderBy: {
@@ -79,7 +83,8 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
         />
       </div>
       <div className={`${CLASS_NAME}__title`}>
-        {data?.entity.fields?.length} {pluralize(data?.entity.fields?.length, 'Field', 'Fields')}
+        {data?.entity.fields?.length}{" "}
+        {pluralize(data?.entity.fields?.length, "Field", "Fields")}
       </div>
       {loading && <CircularProgress centerToParent />}
       {data?.entity.fields?.map((field) => (

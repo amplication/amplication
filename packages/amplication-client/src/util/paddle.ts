@@ -4,6 +4,7 @@ const PADDLE_SANDBOX_VENDOR_ID = "2673";
 
 export function init() {
   if (REACT_APP_PADDLE_VENDOR_ID) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const Paddle = window.Paddle;
 
@@ -20,6 +21,7 @@ export function createSubscription(
   workspaceId: string,
   onSuccess: () => void
 ) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   const Paddle = window.Paddle;
 
@@ -35,6 +37,7 @@ export function cancelSubscription(
   workspaceId: string,
   onSuccess: () => void
 ) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   const Paddle = window.Paddle;
 
@@ -50,6 +53,7 @@ export function updateSubscription(
   workspaceId: string,
   onSuccess: () => void
 ) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   const Paddle = window.Paddle;
 

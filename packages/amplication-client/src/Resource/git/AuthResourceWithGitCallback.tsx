@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const AuthResourceWithGitCallback = () => {
   const { trackEvent } = useTracking();
-  const [completeAuthWithGit] = useMutation<Boolean>(CREATE_GIT_ORGANIZATION, {
+  const [completeAuthWithGit] = useMutation<boolean>(CREATE_GIT_ORGANIZATION, {
     onCompleted: (data) => {
       window.opener.postMessage({ completed: true });
       // close the popup
@@ -19,7 +20,7 @@ const AuthResourceWithGitCallback = () => {
     const installationId = urlParams.get("installation_id");
     if (window.opener) {
       trackEvent({
-        eventName: "completeAuthResourceWithGitHub",
+        eventName: AnalyticsEventNames.GitHubAuthResourceComplete,
       });
       completeAuthWithGit({
         variables: {

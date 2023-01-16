@@ -14,6 +14,8 @@ import InnerTabLink from "../Layout/InnerTabLink";
 import "./TopicList.scss";
 import { AppContext } from "../context/appContext";
 import { pluralize } from "../util/pluralize";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   Topics: models.Topic[];
@@ -29,29 +31,34 @@ type Props = {
 
 export const TopicList = React.memo(
   ({ resourceId, selectFirst = false }: Props) => {
+    const { trackEvent } = useTracking();
     const [searchPhrase, setSearchPhrase] = useState<string>("");
     const { currentWorkspace, currentProject } = useContext(AppContext);
 
     const handleSearchChange = useCallback(
       (value) => {
+        trackEvent({ eventName: AnalyticsEventNames.TopicsSearch });
         setSearchPhrase(value);
       },
-      [setSearchPhrase]
+      [setSearchPhrase, trackEvent]
     );
     const history = useHistory();
 
     const { data, loading, error } = useQuery<TData>(GET_TOPICS, {
       variables: {
-        where: { 
+        where: {
           resource: { id: resourceId },
-          displayName: searchPhrase !== "" ? {
-            contains: searchPhrase,
-            mode: models.QueryMode.Insensitive,
-          } : undefined,
+          displayName:
+            searchPhrase !== ""
+              ? {
+                  contains: searchPhrase,
+                  mode: models.QueryMode.Insensitive,
+                }
+              : undefined,
         },
         orderBy: {
           [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-        }
+        },
       },
     });
 
@@ -88,7 +95,8 @@ export const TopicList = React.memo(
           onChange={handleSearchChange}
         />
         <div className={`${CLASS_NAME}__header`}>
-          {data?.Topics.length} {pluralize(data?.Topics.length, 'Topic', 'Topics')}
+          {data?.Topics.length}{" "}
+          {pluralize(data?.Topics.length, "Topic", "Topics")}
         </div>
         {loading && <CircularProgress />}
         <div className={`${CLASS_NAME}__list`}>
@@ -113,14 +121,8 @@ export const TopicList = React.memo(
 );
 
 export const GET_TOPICS = gql`
-  query Topics(
-    $where: TopicWhereInput
-    $orderBy: TopicOrderByInput
-  ) {
-    Topics(
-      where: $where
-      orderBy: $orderBy
-    ) {
+  query Topics($where: TopicWhereInput, $orderBy: TopicOrderByInput) {
+    Topics(where: $where, orderBy: $orderBy) {
       id
       name
       displayName

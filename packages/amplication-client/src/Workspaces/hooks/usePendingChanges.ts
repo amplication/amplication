@@ -14,6 +14,8 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
   const [pendingChangesMap, setPendingChangesMap] = useState<string[]>([]);
   const [pendingChanges, setPendingChanges] = useState<PendingChangeItem[]>([]);
   const [commitRunning, setCommitRunning] = useState<boolean>(false);
+  const [resetPendingChangesIndicator, setResetPendingChangesIndicator] =
+    useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const {
     data: pendingChangesData,
@@ -28,8 +30,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
   });
 
   useEffect(() => {
-    if (!pendingChangesData || !pendingChangesData.pendingChanges.length)
-      return;
+    if (!pendingChangesData) return;
 
     setPendingChanges(pendingChangesData.pendingChanges);
     setPendingChangesMap(
@@ -55,8 +56,8 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
   );
 
   const addEntity = useCallback(
-    (entityId: string) => {
-      addChange(entityId);
+    (entityId?: string) => {
+      entityId && addChange(entityId);
       refetch();
     },
     [addChange, refetch]
@@ -73,6 +74,7 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
   const resetPendingChanges = useCallback(() => {
     setPendingChanges([]);
     setPendingChangesMap([]);
+    setResetPendingChangesIndicator(true);
     refetch();
   }, [refetch]);
 
@@ -116,6 +118,8 @@ const usePendingChanges = (currentProject: models.Project | undefined) => {
     pendingChangesDataError,
     pendingChangesDataLoading,
     pendingChangesByResource,
+    resetPendingChangesIndicator,
+    setResetPendingChangesIndicator,
   };
 };
 

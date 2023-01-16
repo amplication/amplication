@@ -10,13 +10,21 @@ import { useHistory, useParams, useLocation } from "react-router-dom";
 import {
   CREATE_WORKSPACE,
   GET_CURRENT_WORKSPACE,
+  GET_WORKSPACES,
   NEW_WORKSPACE_FRAGMENT,
   SET_CURRENT_WORKSPACE,
 } from "../queries/workspaceQueries";
 import { setToken, unsetToken } from "../../authentication/authentication";
 import * as models from "../../models";
-import { CreateWorkspaceType, DType, TData, TSetData } from "./workspace";
+import {
+  CreateWorkspaceType,
+  DType,
+  TData,
+  TSetData,
+  workspacesListTData,
+} from "./workspace";
 import { useTracking } from "react-tracking";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const useWorkspaceSelector = (authenticated: boolean) => {
   const apolloClient = useApolloClient();
@@ -25,6 +33,8 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   const location = useLocation();
   const { workspace } = useParams<{ workspace?: string }>();
   const [currentWorkspace, setCurrentWorkspace] = useState<models.Workspace>();
+  const [workspacesList, setWorkspacesList] = useState<models.Workspace[]>([]);
+
   const [
     getCurrentWorkspace,
     { loading: loadingCurrentWorkspace, data, refetch },
@@ -37,15 +47,31 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     },
   });
 
+  const [
+    getWorkspaces,
+    { loading: loadingWorkspaces, data: workspaceListData },
+  ] = useLazyQuery<workspacesListTData>(GET_WORKSPACES, {
+    onError: (error) => {
+      if (error.message === "Unauthorized") {
+        unsetToken();
+        history.push("/login");
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (!workspaceListData || loadingWorkspaces) return;
+    setWorkspacesList(workspaceListData.workspaces);
+  }, [workspaceListData]);
+
   useEffect(() => {}, [currentWorkspace]);
 
   const refreshCurrentWorkspace = useCallback(() => {
     data && refetch && refetch();
   }, [refetch, data]);
 
-  const [setServerCurrentWorkspace, { data: setCurrentData }] = useMutation<
-    TSetData
-  >(SET_CURRENT_WORKSPACE);
+  const [setServerCurrentWorkspace, { data: setCurrentData }] =
+    useMutation<TSetData>(SET_CURRENT_WORKSPACE);
 
   const [
     createNewWorkspace,
@@ -53,7 +79,7 @@ const useWorkspaceSelector = (authenticated: boolean) => {
   ] = useMutation<DType>(CREATE_WORKSPACE, {
     onCompleted: (data) => {
       trackEvent({
-        eventName: "createWorkspace",
+        eventName: AnalyticsEventNames.WorkspaceCreate,
         workspaceName: data.createWorkspace.name,
       });
       handleSetCurrentWorkspace(data.createWorkspace.id);
@@ -105,7 +131,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
       history.push("/login");
 
     authenticated && !currentWorkspace && getCurrentWorkspace();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated]);
 
   useEffect(() => {
@@ -121,7 +146,6 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     data &&
       data.currentWorkspace.id === workspace &&
       setCurrentWorkspace(data.currentWorkspace);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated, data, history, loadingCurrentWorkspace, workspace]);
 
   useEffect(() => {
@@ -156,6 +180,8 @@ const useWorkspaceSelector = (authenticated: boolean) => {
     createNewWorkspaceError,
     loadingCreateNewWorkspace,
     refreshCurrentWorkspace,
+    workspacesList,
+    getWorkspaces,
   };
 };
 

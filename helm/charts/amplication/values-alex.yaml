@@ -21,10 +21,11 @@ amplication-client:
     hostname: app-alex.amplication-dev.com
   config:
     env:
-      REACT_APP_SERVER_URI: "https://server-alex.amplication-dev.com"
-      REACT_APP_DATA_SOURCE: "https://server-alex.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-alex.amplication-dev.com/github"
-      REACT_APP_STORAGE_GATEWAY_URL: https://server-alex.amplication-dev.com
+      NX_REACT_APP_SERVER_URI: "https://server-alex.amplication-dev.com"
+      NX_REACT_APP_DATA_SOURCE: "https://server-alex.amplication-dev.com/graphql"
+      NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-alex.amplication-dev.com/github"
+      NX_REACT_APP_STORAGE_GATEWAY_URL: https://server-alex.amplication-dev.com
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   ingress:
@@ -35,7 +36,7 @@ amplication-server:
       CLIENT_HOST: "https://app-alex.amplication-dev.com"
 
       #KAFKA
-      KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-alex-cp-kafka-headless:9092'
 
       #GitHub App
       GITHUB_APP_APP_ID: "217654"
@@ -46,12 +47,14 @@ amplication-server:
       GITHUB_CLIENT_ID: "b792d890f40f60170c82"
       GITHUB_REDIRECT_URI: "https://server-alex.amplication-dev.com/github/callback"
 
+      BILLING_ENABLED: "true"
+
 amplication-git-push-webhook-service:
   ingress:
     hostname: webhook-alex.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-alex-cp-kafka-headless:9092'
 
 amplication-git-pull-service:
   config:
@@ -66,7 +69,7 @@ amplication-git-pull-service:
       GIT_DEFAULT_ORIGIN_NAME: origin
       GITHUB_APP_APP_ID: "217654"
       GITHUB_APP_CLIENT_ID: "Iv1.6aca4dc2d00fbedf"
-      KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-alex-cp-kafka-headless:9092'
       KAFKA_CLIENT_ID: git-pull-service
       KAFKA_GROUP_ID: git-pull-service-group
 
@@ -75,7 +78,7 @@ amplication-git-pull-service:
 amplication-git-pull-request-service:
   config:
     env:
-      KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-alex-cp-kafka-headless:9092'
       GITHUB_APP_APP_ID: "217654"
 
 amplication-storage-gateway:
@@ -83,5 +86,5 @@ amplication-storage-gateway:
     hostname: server-alex.amplication-dev.com
   config:
     env:
-      KAFKA_BROKERS: '["amplication-alex-cp-kafka-headless:9092"]'
+      KAFKA_BROKERS: 'amplication-alex-cp-kafka-headless:9092'
       GITHUB_APP_APP_ID: "217654"

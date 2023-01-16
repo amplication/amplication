@@ -1,32 +1,33 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
-import { WorkspaceService } from './workspace.service';
-import { PrismaService } from '@amplication/prisma-db';
-import { PasswordService } from '../account/password.service';
-import { UserService } from '../user/user.service';
-import { AccountService } from '../account/account.service';
-import { ResourceService } from '../resource/resource.service';
-import { MailService } from '../mail/mail.service';
-import { Workspace, Account, User, Project } from '../../models';
-import { Role } from '../../enums/Role';
-import { DeleteUserArgs } from './dto';
-import { SubscriptionService } from '../subscription/subscription.service';
-import { ProjectService } from '../project/project.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ConfigService } from "@nestjs/config";
+import { WorkspaceService } from "./workspace.service";
+import { PrismaService } from "../../prisma/prisma.service";
+import { PasswordService } from "../account/password.service";
+import { UserService } from "../user/user.service";
+import { AccountService } from "../account/account.service";
+import { ResourceService } from "../resource/resource.service";
+import { MailService } from "../mail/mail.service";
+import { Workspace, Account, User, Project } from "../../models";
+import { Role } from "../../enums/Role";
+import { DeleteUserArgs } from "./dto";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { ProjectService } from "../project/project.service";
+import { BillingService } from "../billing/billing.service";
 
-const EXAMPLE_WORKSPACE_ID = 'exampleWorkspaceId';
-const EXAMPLE_WORKSPACE_NAME = 'exampleWorkspaceName';
+const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
+const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
 
-const EXAMPLE_ACCOUNT_ID = 'exampleAccountId';
-const EXAMPLE_EMAIL = 'exampleEmail';
-const EXAMPLE_FIRST_NAME = 'exampleFirstName';
-const EXAMPLE_LAST_NAME = 'exampleLastName';
-const EXAMPLE_PASSWORD = 'examplePassword';
+const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
+const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_FIRST_NAME = "exampleFirstName";
+const EXAMPLE_LAST_NAME = "exampleLastName";
+const EXAMPLE_PASSWORD = "examplePassword";
 
-const EXAMPLE_NONEXISTING_EMAIL = 'exampleNonexistingEmail';
+const EXAMPLE_NONEXISTING_EMAIL = "exampleNonexistingEmail";
 
-const EXAMPLE_USER_ID = 'exampleUserId';
+const EXAMPLE_USER_ID = "exampleUserId";
 
-const EXAMPLE_NEW_PASSWORD = 'exampleNewPassword';
+const EXAMPLE_NEW_PASSWORD = "exampleNewPassword";
 
 const EXAMPLE_ACCOUNT: Account = {
   id: EXAMPLE_ACCOUNT_ID,
@@ -35,7 +36,7 @@ const EXAMPLE_ACCOUNT: Account = {
   email: EXAMPLE_EMAIL,
   firstName: EXAMPLE_FIRST_NAME,
   lastName: EXAMPLE_LAST_NAME,
-  password: EXAMPLE_PASSWORD
+  password: EXAMPLE_PASSWORD,
 };
 
 const EXAMPLE_USER: User = {
@@ -43,7 +44,7 @@ const EXAMPLE_USER: User = {
   createdAt: new Date(),
   updatedAt: new Date(),
   account: EXAMPLE_ACCOUNT,
-  isOwner: true
+  isOwner: true,
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
@@ -51,16 +52,16 @@ const EXAMPLE_WORKSPACE: Workspace = {
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_WORKSPACE_NAME,
-  users: [EXAMPLE_USER]
+  users: [EXAMPLE_USER],
 };
 
 const EXAMPLE_PROJECT: Project = {
-  id: 'exampleId',
-  name: 'Example name',
-  workspaceId: 'ExampleWorkspaceId',
+  id: "exampleId",
+  name: "Example name",
+  workspaceId: "ExampleWorkspaceId",
   createdAt: new Date(),
   updatedAt: new Date(),
-  deletedAt: undefined
+  deletedAt: undefined,
 };
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
@@ -110,7 +111,7 @@ const createProjectMock = jest.fn(() => {
 
 const resourceCreateSampleResourceMock = jest.fn();
 
-describe('WorkspaceService', () => {
+describe("WorkspaceService", () => {
   let service: WorkspaceService;
 
   beforeEach(async () => {
@@ -122,10 +123,24 @@ describe('WorkspaceService', () => {
           provide: UserService,
           useClass: jest.fn().mockImplementation(() => ({
             findUser: userServiceFindUserMock,
-            delete: userServiceDeleteMock
-          }))
+            delete: userServiceDeleteMock,
+          })),
         },
         ConfigService,
+        {
+          provide: BillingService,
+          useValue: {
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+            getNumericEntitlement: jest.fn(() => {
+              return {};
+            }),
+            provisionCustomer: jest.fn(() => {
+              return {};
+            }),
+          },
+        },
         {
           provide: PrismaService,
           useClass: jest.fn().mockImplementation(() => ({
@@ -134,106 +149,106 @@ describe('WorkspaceService', () => {
               findMany: prismaWorkspaceFindManyMock,
               delete: prismaWorkspaceDeleteMock,
               update: prismaWorkspaceUpdateMock,
-              create: prismaWorkspaceCreateMock
+              create: prismaWorkspaceCreateMock,
             },
             user: {
               findMany: prismaUserFindManyMock,
-              create: prismaUserCreateMock
-            }
-          }))
+              create: prismaUserCreateMock,
+            },
+          })),
         },
         {
           provide: ResourceService,
           useClass: jest.fn().mockImplementation(() => ({
-            createSampleResource: resourceCreateSampleResourceMock
-          }))
+            createSampleResource: resourceCreateSampleResourceMock,
+          })),
         },
         {
           provide: MailService,
-          useClass: jest.fn().mockImplementation(() => ({}))
+          useClass: jest.fn().mockImplementation(() => ({})),
         },
         {
           provide: AccountService,
           useClass: jest.fn().mockImplementation(() => ({
             findAccount: accountServiceFindAccountMock,
-            createAccount: accountServiceCreateAccountMock
-          }))
+            createAccount: accountServiceCreateAccountMock,
+          })),
         },
         {
           provide: PasswordService,
           useClass: jest.fn().mockImplementation(() => ({
             generatePassword: passwordServiceGeneratePasswordMock,
-            hashPassword: passwordServiceHashPasswordMock
-          }))
+            hashPassword: passwordServiceHashPasswordMock,
+          })),
         },
         {
           provide: SubscriptionService,
-          useClass: jest.fn().mockImplementation(() => ({}))
+          useClass: jest.fn().mockImplementation(() => ({})),
         },
         {
           provide: ProjectService,
           useClass: jest.fn().mockImplementation(() => ({
-            createProject: createProjectMock
-          }))
-        }
-      ]
+            createProject: createProjectMock,
+          })),
+        },
+      ],
     }).compile();
 
     service = module.get<WorkspaceService>(WorkspaceService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('should find one workspace', async () => {
+  it("should find one workspace", async () => {
     const args = { where: { id: EXAMPLE_WORKSPACE_ID } };
     expect(await service.getWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
     expect(prismaWorkspaceFindOneMock).toBeCalledTimes(1);
     expect(prismaWorkspaceFindOneMock).toBeCalledWith(args);
   });
 
-  it('should find many workspaces', async () => {
+  it("should find many workspaces", async () => {
     const args = { where: { id: EXAMPLE_WORKSPACE_ID } };
     expect(await service.getWorkspaces(args)).toEqual([EXAMPLE_WORKSPACE]);
     expect(prismaWorkspaceFindManyMock).toBeCalledTimes(1);
     expect(prismaWorkspaceFindManyMock).toBeCalledWith(args);
   });
 
-  it('should delete an workspace', async () => {
+  it("should delete an workspace", async () => {
     const args = { where: { id: EXAMPLE_WORKSPACE_ID } };
     expect(await service.deleteWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
     expect(prismaWorkspaceDeleteMock).toBeCalledTimes(1);
     expect(prismaWorkspaceDeleteMock).toBeCalledWith(args);
   });
 
-  it('should update an workspace', async () => {
+  it("should update an workspace", async () => {
     const args = {
       data: {},
-      where: { id: EXAMPLE_WORKSPACE_ID }
+      where: { id: EXAMPLE_WORKSPACE_ID },
     };
     expect(await service.updateWorkspace(args)).toEqual(EXAMPLE_WORKSPACE);
     expect(prismaWorkspaceUpdateMock).toBeCalledTimes(1);
     expect(prismaWorkspaceUpdateMock).toBeCalledWith(args);
   });
 
-  it('should not delete a workspace owner', async () => {
+  it("should not delete a workspace owner", async () => {
     const args: DeleteUserArgs = {
-      where: { id: EXAMPLE_USER_ID }
+      where: { id: EXAMPLE_USER_ID },
     };
     await expect(service.deleteUser(EXAMPLE_USER, args)).rejects.toThrow(
       `Can't delete the workspace owner`
     );
   });
 
-  it('should create an workspace', async () => {
+  it("should create an workspace", async () => {
     const args = {
       accountId: EXAMPLE_ACCOUNT_ID,
       args: {
         data: {
-          name: EXAMPLE_WORKSPACE_NAME
-        }
-      }
+          name: EXAMPLE_WORKSPACE_NAME,
+        },
+      },
     };
     const prismaArgs = {
       ...args.args,
@@ -244,16 +259,16 @@ describe('WorkspaceService', () => {
             account: { connect: { id: args.accountId } },
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin
-              }
+                role: Role.OrganizationAdmin,
+              },
             },
-            isOwner: true
-          }
-        }
+            isOwner: true,
+          },
+        },
       },
       include: {
-        users: true
-      }
+        users: true,
+      },
     };
     expect(await service.createWorkspace(args.accountId, args.args)).toEqual(
       EXAMPLE_WORKSPACE
@@ -263,13 +278,13 @@ describe('WorkspaceService', () => {
   });
 
   /**@todo fix test*/
-  it.skip('should throw conflict exception if invited user is already in the workspace', async () => {
+  it.skip("should throw conflict exception if invited user is already in the workspace", async () => {
     const functionArgs = {
       currentUser: EXAMPLE_USER,
-      args: { data: { email: EXAMPLE_EMAIL } }
+      args: { data: { email: EXAMPLE_EMAIL } },
     };
     const accountArgs = {
-      where: { email: EXAMPLE_EMAIL }
+      where: { email: EXAMPLE_EMAIL },
     };
 
     await expect(
@@ -284,29 +299,29 @@ describe('WorkspaceService', () => {
     // expect(prismaUserFindManyMock).toBeCalledWith(existingUsersArgs);
   });
   /**@todo fix test */
-  it.skip('should create an account and invite user to workspace', async () => {
+  it.skip("should create an account and invite user to workspace", async () => {
     accountServiceFindAccountMock.mockImplementation(() => null);
 
     const functionArgs = {
       currentUser: EXAMPLE_USER,
-      args: { data: { email: EXAMPLE_NONEXISTING_EMAIL } }
+      args: { data: { email: EXAMPLE_NONEXISTING_EMAIL } },
     };
     const accountArgs = {
-      where: { email: EXAMPLE_NONEXISTING_EMAIL }
+      where: { email: EXAMPLE_NONEXISTING_EMAIL },
     };
     const userCreateArgs = {
       data: {
         workspace: { connect: { id: EXAMPLE_WORKSPACE_ID } },
-        account: { connect: { id: EXAMPLE_ACCOUNT_ID } }
-      }
+        account: { connect: { id: EXAMPLE_ACCOUNT_ID } },
+      },
     };
     const createAccountArgs = {
       data: {
-        firstName: '',
-        lastName: '',
+        firstName: "",
+        lastName: "",
         email: functionArgs.args.data.email,
-        password: EXAMPLE_NEW_PASSWORD
-      }
+        password: EXAMPLE_NEW_PASSWORD,
+      },
     };
     expect(
       await service.inviteUser(functionArgs.currentUser, functionArgs.args)

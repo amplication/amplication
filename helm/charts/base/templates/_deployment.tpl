@@ -6,7 +6,6 @@ metadata:
   labels:
     app: '{{ .Values.name }}'
 spec:
-  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: '{{ .Values.name }}'
@@ -27,7 +26,7 @@ spec:
       containers:
         - name: '{{ .Values.name }}'
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}@{{ .Values.image.tag | default .Chart.AppVersion }}"
           {{- if .Values.autoscaling.enabled }}
           resources:
             requests:

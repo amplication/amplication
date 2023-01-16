@@ -18,20 +18,21 @@ export enum EnumDialogStyle {
 }
 
 type DialogProps = {
-  /** The display style of the dialog */
   dialogStyle?: EnumDialogStyle;
-  title: string;
+  children?: React.ReactNode;
+  showCloseButton?: boolean;
 };
 export type Props = DialogProps & PrimerDialogProps;
 
-export const Dialog = ({
+export const Dialog: React.FC<Props> = ({
   isOpen,
   onDismiss,
   children,
   title,
   className,
   dialogStyle = EnumDialogStyle.Default,
-}: Props) => {
+  showCloseButton = true,
+}) => {
   //colors.primer.canvas.backdrop
   const theme = {
     colors: {
@@ -44,6 +45,8 @@ export const Dialog = ({
   };
 
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     <ThemeProvider theme={theme}>
       <PrimerDialog
         isOpen={isOpen}
@@ -56,12 +59,14 @@ export const Dialog = ({
         sx={{}}
       >
         <div className={`${CLASS_NAME}__header`}>
-          <h3>{title}</h3>
-          <Button
-            icon="close"
-            buttonStyle={EnumButtonStyle.Text}
-            onClick={onDismiss}
-          />
+          <div className={`${CLASS_NAME}__title`}>{title}</div>
+          {showCloseButton && (
+            <Button
+              icon="close"
+              buttonStyle={EnumButtonStyle.Text}
+              onClick={onDismiss}
+            />
+          )}
         </div>
         <div className={`${CLASS_NAME}__body`}>{children}</div>
       </PrimerDialog>

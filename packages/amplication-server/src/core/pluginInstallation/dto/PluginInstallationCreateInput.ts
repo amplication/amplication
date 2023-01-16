@@ -1,22 +1,34 @@
-import { Field, InputType } from '@nestjs/graphql';
-import { BlockCreateInput } from '../../block/dto/BlockCreateInput';
+import { Field, InputType } from "@nestjs/graphql";
+import { GraphQLJSONObject } from "graphql-type-json";
+import type { JsonValue } from "type-fest";
+import { BlockCreateInput } from "../../block/dto/BlockCreateInput";
 
 @InputType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class PluginInstallationCreateInput extends BlockCreateInput {
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   pluginId!: string;
 
   @Field(() => Boolean, {
-    nullable: false
+    nullable: false,
   })
   enabled: boolean;
 
   @Field(() => String, {
-    nullable: false
+    nullable: false,
   })
   npm!: string;
+
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  settings?: JsonValue;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  version!: string;
 }

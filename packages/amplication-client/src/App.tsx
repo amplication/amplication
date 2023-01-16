@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
@@ -7,7 +8,11 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import { Loader } from "@amplication/design-system";
+import { Loader, PlanUpgradeConfirmation } from "@amplication/design-system";
+import useLocalStorage from "react-use-localstorage";
+import queryString from "query-string";
+
+export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
 
 const GeneratedRoutes = routesGenerator(Routes);
 const context = {
@@ -27,10 +32,11 @@ export const enhance = track<keyof typeof context>(
 
 function App() {
   const authenticated = useAuthenticated();
+  const location = useLocation();
+
   const { currentWorkspaceLoading } = useCurrentWorkspace(authenticated);
-  const [keepLoadingAnimation, setKeepLoadingAnimation] = useState<boolean>(
-    true
-  );
+  const [keepLoadingAnimation, setKeepLoadingAnimation] =
+    useState<boolean>(true);
 
   useEffect(() => {
     initAnalytics();
@@ -40,6 +46,31 @@ function App() {
   const handleTimeout = useCallback(() => {
     setKeepLoadingAnimation(false);
   }, []);
+
+  const [, setInvitationToken] = useLocalStorage(
+    LOCAL_STORAGE_KEY_INVITATION_TOKEN,
+    undefined
+  );
+
+  useEffect(() => {
+    const params = queryString.parse(location.search);
+    if (params.invitation) {
+      //save the invitation token in local storage to be validated by
+      //<CompleteInvitation/> after signup or sign in
+      //we user local storage since github-passport does not support dynamic callback
+      setInvitationToken(params.invitation as string);
+    }
+  }, [setInvitationToken, location.search]);
+
+  const [workspaceUpgradeConfirmation, setWorkspaceUpgradeConfirmation] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    const params = queryString.parse(location.search);
+    if (params.checkoutCompleted === "true") {
+      setWorkspaceUpgradeConfirmation(true);
+    }
+  }, [setWorkspaceUpgradeConfirmation, location.search]);
 
   //The default behavior across all <HotKeys> components
   reactHotkeys.configure({
@@ -61,8 +92,14 @@ function App() {
           onTimeout={handleTimeout}
         />
       )}
-
       {!currentWorkspaceLoading && GeneratedRoutes}
+      {workspaceUpgradeConfirmation && (
+        <PlanUpgradeConfirmation
+          isOpen={workspaceUpgradeConfirmation}
+          onConfirm={() => setWorkspaceUpgradeConfirmation(false)}
+          onDismiss={() => setWorkspaceUpgradeConfirmation(false)}
+        />
+      )}
     </ThemeProvider>
   );
 }

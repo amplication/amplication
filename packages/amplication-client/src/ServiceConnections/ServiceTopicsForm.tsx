@@ -1,5 +1,4 @@
 import { HorizontalRule, ToggleField } from "@amplication/design-system";
-import omitDeep from "deepdash-es/omitDeep";
 import { Formik } from "formik";
 import React, { useMemo } from "react";
 import { Form } from "../Components/Form";
@@ -9,6 +8,10 @@ import FormikAutoSave from "../util/formikAutoSave";
 import { validate } from "../util/formikValidateJsonSchema";
 import "./ServiceTopics.scss";
 import TopicsList from "./topics/TopicsList";
+
+// This must be here unless we get rid of deepdash as it does not support ES imports
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const omitDeep = require("deepdash/omitDeep");
 
 const CLASS_NAME = "service-topics";
 
@@ -78,12 +81,13 @@ const ServiceTopicsForm = ({
             </div>
           </div>
           <HorizontalRule />
-
-          <TopicsList
-            messageBrokerId={connectedResource.id}
-            enabled={Boolean(defaultValues?.enabled || false)}
-            messagePatterns={values.patterns}
-          />
+          <div className={`${CLASS_NAME}__list`}>
+            <TopicsList
+              messageBrokerId={connectedResource.id}
+              enabled={Boolean(defaultValues?.enabled || false)}
+              messagePatterns={values.patterns}
+            />
+          </div>
         </Form>
       )}
     </Formik>

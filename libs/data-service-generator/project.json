@@ -1,0 +1,96 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "data-service-generator",
+  "sourceRoot": "libs/data-service-generator/src",
+  "projectType": "library",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "inputs": [
+        "{projectRoot}/package.json",
+        "{projectRoot}/package-lock.json"
+      ],
+      "outputs": ["{projectRoot}/node_modules"],
+      "options": {
+        "commands": ["npm ci"],
+        "parallel": false,
+        "cwd": "libs/data-service-generator"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "dependsOn": ["prebuild"],
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/data-service-generator/src/**/*"]
+      }
+    },
+    "update-version": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/node_modules"],
+      "inputs": [
+        "{projectRoot}/package.json",
+        "{projectRoot}/package-lock.json"
+      ],
+      "options": {
+        "commands": ["npm ci", "ts-node ./scripts/update-version.ts"],
+        "parallel": false,
+        "cwd": "libs/data-service-generator"
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["^build", "update-version"],
+      "options": {
+        "outputPath": "dist/libs/data-service-generator",
+        "tsConfig": "libs/data-service-generator/tsconfig.lib.json",
+        "packageJson": "libs/data-service-generator/package.json",
+        "main": "libs/data-service-generator/src/index.ts",
+        "assets": ["libs/data-service-generator/*.md"]
+      }
+    },
+    "postbuild": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/libs/data-service-generator"],
+      "dependsOn": ["build"],
+      "options": {
+        "command": "ts-node scripts/copy-files.ts",
+        "parallel": false,
+        "cwd": "libs/data-service-generator"
+      }
+    },
+    "test": {
+      "dependsOn": ["prebuild", "^prebuild"],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/data-service-generator"],
+      "options": {
+        "jestConfig": "libs/data-service-generator/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "update-snapshot": {
+      "dependsOn": ["prebuild"],
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": ["jest -u src/tests/*.spec.ts", "jest -u src/tests/server"],
+        "parallel": false,
+        "cwd": "libs/data-service-generator"
+      }
+    },
+    "generate-test-data-service": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/generated"],
+      "options": {
+        "commands": [
+          "rimraf generated",
+          "ts-node -P tsconfig.lib.json scripts/generate-test-data-service.ts generated"
+        ],
+        "parallel": false,
+        "cwd": "libs/data-service-generator"
+      }
+    }
+  },
+  "tags": []
+}

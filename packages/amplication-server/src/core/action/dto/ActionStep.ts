@@ -1,9 +1,9 @@
-import { ObjectType, Field } from '@nestjs/graphql';
-import { EnumActionStepStatus } from './EnumActionStepStatus';
-import { ActionLog } from './ActionLog';
+import { ObjectType, Field } from "@nestjs/graphql";
+import { EnumActionStepStatus } from "./EnumActionStepStatus";
+import { ActionLog } from "./ActionLog";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class ActionStep {
   @Field(() => String, {})
@@ -22,12 +22,12 @@ export class ActionStep {
   status!: keyof typeof EnumActionStepStatus;
 
   @Field(() => Date, {
-    nullable: true
+    nullable: true,
   })
   completedAt?: Date;
 
   @Field(() => [ActionLog], {
-    nullable: true
+    nullable: true,
   })
   logs?: ActionLog[] | null | undefined;
 }

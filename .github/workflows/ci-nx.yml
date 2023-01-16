@@ -1,30 +1,195 @@
-name: Continuous Integration
+name: Continuous Integration (Nx - Affected)
 
 on:
   workflow_dispatch:
+    inputs:
+      nx-base:
+        type: string
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs.
+        required: true
+        default: next
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
   push:
     branches:
-      - feature/nx
-  pull_request:
+      - "master"
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.ref_name }}
 
 jobs:
-  main:
-    name: Nx Cloud - Main Job
-    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.7
-    with:
-      number-of-agents: 3
-      init-commands: |
-        npx nx-cloud start-ci-run --stop-agents-after="build" --agent-count=3
-      parallel-commands: |
-        npx nx-cloud record -- npx nx workspace-lint
-        npx nx-cloud record -- npx nx format:check
-      parallel-commands-on-agents: |
-        npx nx affected --target=lint --parallel=3
-        npx nx affected --target=test --parallel=3 --ci --code-coverage
-        npx nx affected --target=build --parallel=3
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-20.04
+    outputs:
+      affected: ${{ steps.set-affected.outputs.affected }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-  agents:
-    name: Nx Cloud - Agents
-    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.7
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: ${{ github.base_ref || github.event.inputs.nx-base || github.event.repository.default_branch }}
+
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            libs/data-service-generator/node_modules
+            libs/util/code-gen-utils/node_modules
+            packages/amplication-design-system/node_modules
+          key: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - uses: actions/setup-node@v1
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Nx Version Print
+        run: npx nx --version
+
+      - name: Nx Workspace Lint
+        run: npx nx workspace-lint
+
+      - name: Nx Format Check
+        run: npm run format:check
+
+      - name: Lint
+        run: npx nx affected --target=lint --parallel=3
+
+      - name: Test
+        run: npx nx affected --target=test --parallel=3
+
+      - name: Build
+        run: |
+          npx nx affected --target=prebuild --parallel=3
+          npx nx affected --target=build --parallel=3
+          npx nx affected --target=postbuild --parallel=3
+
+      - name: Set Affected
+        id: set-affected
+        run: |
+          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app | jq -c .projects)
+          echo affected projects: $AFFECTED_PROJECTS
+          echo "affected=$AFFECTED_PROJECTS" >> $GITHUB_OUTPUT
+
+  dockerize:
+    if: ${{ needs.ci.outputs.affected != '[]' }}
+    name: Dockerize
+    runs-on: ubuntu-20.04
+    needs: ci
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.ci.outputs.affected) }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: ${{ github.base_ref || github.event.inputs.nx-base || github.event.repository.default_branch }}
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            packages/amplication-client/node_modules
+            libs/data-service-generator/node_modules
+            packages/amplication-design-system/node_modules
+          key: cache-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - uses: actions/setup-node@v1
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Configure AWS Credentials (Management Account)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR (Management Account)
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "439403303254"
+
+      - name: AWS Assume Role (Old Account)
+        uses: youyo/awscredswrap@v1
+        with:
+          role_arn: "arn:aws:iam::407256539111:role/ECRFullAccessRole"
+          duration_seconds: 3600
+          role_session_name: "old-account-ecr-access"
+
+      - name: Login to Amazon ECR (Old Account)
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "407256539111"
+
+      # https://github.com/docker/metadata-action
+      - name: Docker Metadata
+        uses: docker/metadata-action@v4
+        id: meta
+        with:
+          images: "407256539111.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=branch
+            type=ref,event=pr,prefix=pr-
+            type=ref,event=tag,prefix=tag-
+            type=raw,value=${{ github.run_id }},prefix=gh-
+            type=raw,value=${{ github.head_ref || github.ref_name }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
+
+      - name: Dockerize
+        run: npx nx run-many --target docker:build --projects=${{ matrix.project }}
+        env:
+          # https://www.npmjs.com/package/@nx-tools/nx-docker
+          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+          INPUT_PUSH: true
+
+  fs-scan:
+    name: Vulnerability scanning - File system
+    needs: ci
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
     with:
-      number-of-agents: 3
+      scan-type: "fs"
+      format: "sarif"
+      exit-code: 0
+      publish: true
+
+  config-scan:
+    name: Vulnerability scanning - Config
+    needs: ci
+    uses: ./.github/workflows/vulnerability-scan.template.yaml
+    with:
+      scan-type: "config"
+      format: "sarif"
+      exit-code: 0
+      publish: true
+
+  deploy:
+    if: ${{ github.head_ref == 'next' }}
+    needs: dockerize
+    uses: ./.github/workflows/deploy.yml
+    with:
+      target-env: ${{ github.head_ref }}
+      confirm-env: ${{ github.head_ref }}
+    secrets: inherit

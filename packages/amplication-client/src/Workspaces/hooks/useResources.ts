@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
@@ -33,7 +34,9 @@ const createGitRepositoryFullName = (
 
 const useResources = (
   currentWorkspace: models.Workspace | undefined,
-  currentProject: models.Project | undefined
+  currentProject: models.Project | undefined,
+  addBlock: (id: string) => void,
+  addEntity: (id: string) => void
 ) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -51,10 +54,8 @@ const useResources = (
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
   const [resources, setResources] = useState<models.Resource[]>([]);
-  const [
-    projectConfigurationResource,
-    setProjectConfigurationResource,
-  ] = useState<models.Resource | undefined>(undefined);
+  const [projectConfigurationResource, setProjectConfigurationResource] =
+    useState<models.Resource | undefined>(undefined);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(currentResource?.gitRepository)
@@ -92,8 +93,7 @@ const useResources = (
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: string,
-    addEntity: (id: string) => void
+    eventName: AnalyticsEventNames
   ) => {
     trackEvent({
       eventName: eventName,
@@ -115,16 +115,18 @@ const useResources = (
 
   const createMessageBroker = (
     data: models.ResourceCreateInput,
-    eventName: string
+    eventName: AnalyticsEventNames
   ) => {
     trackEvent({
       eventName: eventName,
     });
     createBroker({ variables: { data: data } }).then((result) => {
       result.data?.createMessageBroker.id &&
-        refetch().then(() =>
-          resourceRedirect(result.data?.createMessageBroker.id as string)
-        );
+        addBlock(result.data.createMessageBroker.id);
+      result.data?.createMessageBroker.id &&
+        refetch().then(() => {
+          resourceRedirect(result.data?.createMessageBroker.id as string);
+        });
     });
   };
   useEffect(() => {
@@ -186,7 +188,7 @@ const useResources = (
   const setResource = useCallback(
     (resource: models.Resource) => {
       trackEvent({
-        eventName: "resourceCardClick",
+        eventName: AnalyticsEventNames.ResourceCardClick,
       });
       setCurrentResource(resource);
       currentWorkspace &&

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 
@@ -8,33 +8,35 @@ import {
   EnumButtonStyle,
 } from "@amplication/design-system";
 
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useTracking } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
 import { Resource } from "../models";
 import { GET_MESSAGE_BROKER_CONNECTED_SERVICES } from "../Workspaces/queries/resourcesQueries";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   resourceId: string;
-};
-
-const EVENT_DATA: TrackEvent = {
-  eventName: "rolesTileClick",
 };
 
 function ServicesTile({ resourceId }: Props) {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
   const getResourceVars = { variables: { where: { id: resourceId } } };
-  const { data, loading, refetch } = useQuery<{ messageBrokerConnectedServices: Resource[] }>(
-    GET_MESSAGE_BROKER_CONNECTED_SERVICES, getResourceVars);
+  const { data, loading, refetch } = useQuery<{
+    messageBrokerConnectedServices: Resource[];
+  }>(GET_MESSAGE_BROKER_CONNECTED_SERVICES, getResourceVars);
   const { trackEvent } = useTracking();
 
   // eslint-disable-next-line
-  useEffect(() => { refetch(getResourceVars) }, []);
+  useEffect(() => {
+    refetch(getResourceVars);
+  }, []);
 
   const handleClick = useCallback(() => {
-    trackEvent(EVENT_DATA);
+    trackEvent({
+      eventName: AnalyticsEventNames.MessageBrokerConnectedServicesTileClick,
+    });
     history.push(
       `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/services`
     );
@@ -50,7 +52,9 @@ function ServicesTile({ resourceId }: Props) {
         ) : (
           <>
             {data?.messageBrokerConnectedServices.length}
-            {data && data?.messageBrokerConnectedServices.length > 1 ? " services" : " service"}
+            {data && data?.messageBrokerConnectedServices.length > 1
+              ? " services"
+              : " service"}
           </>
         )
       }

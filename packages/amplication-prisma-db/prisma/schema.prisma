@@ -1,5 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  output        = env("PRISMA_CLIENT_OUTPUT_PATH")
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
 }
 
 datasource db {
@@ -454,18 +456,6 @@ enum EnumBlockType {
   ProjectConfigurationSettings
   Topic
   ServiceTopics
-  Flow
-  ConnectorRestApi
-  ConnectorRestApiCall
-  ConnectorSoapApi
-  ConnectorFile
-  EntityApi
-  EntityApiEndpoint
-  FlowApi
-  Layout
-  CanvasPage
-  EntityPage
-  Document
   PluginInstallation
   PluginOrder
 }

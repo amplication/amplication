@@ -1,9 +1,0 @@
-export { ConnectorRestApi } from './ConnectorRestApi';
-export { ConnectorRestApiCreateInput } from './ConnectorRestApiCreateInput';
-export { ConnectorRestApiOrderByInput } from './ConnectorRestApiOrderByInput';
-export { ConnectorRestApiWhereInput } from './ConnectorRestApiWhereInput';
-export { CreateConnectorRestApiArgs } from './CreateConnectorRestApiArgs';
-export { EnumConnectorRestApiAuthenticationType } from './EnumConnectorRestApiAuthenticationType';
-export { FindManyConnectorRestApiArgs } from './FindManyConnectorRestApiArgs';
-export { HttpBasicAuthenticationSettings } from './HttpBasicAuthenticationSettings';
-export { PrivateKeyAuthenticationSettings } from './PrivateKeyAuthenticationSettings';

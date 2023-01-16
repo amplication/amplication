@@ -1,9 +1,11 @@
-import { Injectable, Inject } from '@nestjs/common';
-import Analytics from 'analytics-node';
-import { SegmentAnalyticsOptions } from './segmentAnalytics.interfaces';
+import { Injectable, Inject } from "@nestjs/common";
+import Analytics from "analytics-node";
+import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 
 export enum EnumEventType {
-  Signup = 'Signup'
+  Signup = "Signup",
+  WorkspacePlanUpgradeRequest = "WorkspacePlanUpgradeRequest",
+  WorkspacePlanDowngradeRequest = "WorkspacePlanDowngradeRequest",
 }
 
 export type IdentifyData = {
@@ -29,7 +31,7 @@ export class SegmentAnalyticsService {
   private analytics: Analytics;
 
   constructor(
-    @Inject('SEGMENT_ANALYTICS_OPTIONS')
+    @Inject("SEGMENT_ANALYTICS_OPTIONS")
     private options: SegmentAnalyticsOptions
   ) {
     if (options && options.segmentWriteKey && options.segmentWriteKey.length) {
@@ -44,7 +46,7 @@ export class SegmentAnalyticsService {
 
     this.analytics.identify({
       userId: userId,
-      traits: rest
+      traits: rest,
     });
   }
 

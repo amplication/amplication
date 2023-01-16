@@ -1,19 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { FindOneArgs } from '../../dto';
-import { EnumBlockType } from '../../enums/EnumBlockType';
-import { BlockService } from '../block/block.service';
-import { BlockTypeService } from '../block/blockType.service';
-import { CreatePluginOrderArgs } from './dto/CreatePluginOrderArgs';
-import { FindManyPluginOrderArgs } from './dto/FindManyPluginOrderArgs';
-import { PluginOrder } from './dto/PluginOrder';
-import { UpdatePluginOrderArgs } from './dto/UpdatePluginOrderArgs';
+import { Injectable } from "@nestjs/common";
+import { FindOneArgs } from "../../dto";
+import { EnumBlockType } from "../../enums/EnumBlockType";
+import { BlockService } from "../block/block.service";
+import { BlockTypeService } from "../block/blockType.service";
+import { CreatePluginOrderArgs } from "./dto/CreatePluginOrderArgs";
+import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
+import { FindManyPluginOrderArgs } from "./dto/FindManyPluginOrderArgs";
+import { PluginOrder } from "./dto/PluginOrder";
+import { UpdatePluginOrderArgs } from "./dto/UpdatePluginOrderArgs";
 
 @Injectable()
 export class PluginOrderService extends BlockTypeService<
   PluginOrder,
   FindManyPluginOrderArgs,
   CreatePluginOrderArgs,
-  UpdatePluginOrderArgs
+  UpdatePluginOrderArgs,
+  DeletePluginOrderArgs
 > {
   blockType = EnumBlockType.PluginOrder;
 
@@ -25,9 +27,9 @@ export class PluginOrderService extends BlockTypeService<
     const [pluginOrder] = await super.findMany({
       where: {
         resource: {
-          id: args.where.id
-        }
-      }
+          id: args.where.id,
+        },
+      },
     });
 
     return pluginOrder;

@@ -1,17 +1,15 @@
-import React from "react";
 import { SchemaField } from "./SchemaField";
 import { Schema } from "@amplication/code-gen-types";
 
 type Props = {
   schema: Schema;
-  isDisabled?: boolean;
-  resourceId: string;
   entityDisplayName: string;
+  resourceId: string;
+  isDisabled?: boolean;
 };
 
 export const SchemaFields = ({
   schema,
-  isDisabled,
   resourceId,
   entityDisplayName,
 }: Props) => {
@@ -34,7 +32,6 @@ export const SchemaFields = ({
             <SchemaField
               propertyName={name}
               propertySchema={property as Schema}
-              isDisabled={isDisabled}
               resourceId={resourceId}
               entityDisplayName={entityDisplayName}
             />

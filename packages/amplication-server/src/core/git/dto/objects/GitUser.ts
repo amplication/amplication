@@ -1,7 +1,7 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class GitUser {
   @Field(() => String, { nullable: false })

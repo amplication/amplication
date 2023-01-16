@@ -28,6 +28,7 @@
     "loglevel",
     "microservices",
     "nestjs",
+    "nrwl",
     "oclif",
     "Octokit",
     "ofek",
@@ -46,6 +47,7 @@
     "SENDGRID",
     "Signup",
     "slynova",
+    "Stigg",
     "tablename",
     "teleporter",
     "uncontained",
@@ -76,5 +78,6 @@
   },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform"
-  }
+  },
+  "prettier.configPath": ".prettierrc"
 }

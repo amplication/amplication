@@ -22,9 +22,10 @@ amplication-client:
     hostname: app-custom.amplication-dev.com
   config:
     env:
-      REACT_APP_DATA_SOURCE: "https://server-custom.amplication-dev.com/graphql"
-      REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-custom.amplication-dev.com/github"
-      REACT_APP_GITHUB_CLIENT_ID: value
+      NX_REACT_APP_DATA_SOURCE: "https://server-custom.amplication-dev.com/graphql"
+      NX_REACT_APP_GITHUB_CONTROLLER_LOGIN_URL: "https://server-custom.amplication-dev.com/github"
+      NX_REACT_APP_GITHUB_AUTH_ENABLED: value
+      NX_REACT_APP_BILLING_ENABLED: "true"
 
 amplication-server:
   ingress:
@@ -34,22 +35,6 @@ amplication-server:
 
       HOST: "https://server-custom.amplication-dev.com"
       CLIENT_HOST: 'https://app-custom.amplication-dev.com'
-
-      #GCP - APPS Builder
-
-      DEFAULT_DISK: gcs
-      LOCAL_DISK_ROOT: /artifacts
-      CONTAINER_BUILDER_DEFAULT: cloud-build
-      GCS_BUCKET: amplication-artifacts
-
-      #GCP - APPS Deployer
-      DEPLOYER_DEFAULT: gcp
-
-      GCP_APPS_PROJECT_ID: amplication-apps
-      GCP_APPS_REGION: us-east1
-      GCP_APPS_TERRAFORM_STATE_BUCKET: amplication-apps-state-bucket
-      GCP_APPS_DATABASE_INSTANCE: apps-database-instance
-      GCP_APPS_DOMAIN: staging.amplication.app
 
       DOCKER_HOST: tcp://docker:2375
 
@@ -62,3 +47,5 @@ amplication-server:
       GITHUB_CLIENT_ID: "aa4d2f3ccd7d47cbbf71"
       GITHUB_SECRET_SECRET_NAME: "projects/948093699220/secrets/github-secret-amplication-aws/versions/1"
       GITHUB_REDIRECT_URI: "https://server-custom.amplication-dev.com/github/callback"
+
+      BILLING_ENABLED: "true"

@@ -1,14 +1,15 @@
-import React, { useCallback, useRef, useContext, useState } from "react";
-import { gql, useMutation, Reference } from "@apollo/client";
-import { Formik, Form } from "formik";
+import { Snackbar, TextField } from "@amplication/design-system";
+import { gql, Reference, useMutation } from "@apollo/client";
 import classNames from "classnames";
-import { TextField, Snackbar } from "@amplication/design-system";
-import { formatError } from "../util/error";
+import { Form, Formik } from "formik";
+import { useCallback, useContext, useState } from "react";
+import { Button, EnumButtonStyle } from "../Components/Button";
+import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
-import { Button, EnumButtonStyle } from "../Components/Button";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { formatError } from "../util/error";
 import "./NewEntityField.scss";
-import { AppContext } from "../context/appContext";
 
 type Props = {
   entity: models.Entity;
@@ -28,8 +29,6 @@ const CLASS_NAME = "new-entity-field";
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
   const { trackEvent } = useTracking();
   const { addEntity } = useContext(AppContext);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
   const [createEntityField, { error, loading }] = useMutation<TData>(
@@ -73,7 +72,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
       onCompleted: (data) => {
         addEntity(entity.id);
         trackEvent({
-          eventName: "createEntityField",
+          eventName: AnalyticsEventNames.EntityFieldCreate,
           entityFieldName: data.createEntityFieldByDisplayName.displayName,
           dataType: data.createEntityFieldByDisplayName.dataType,
         });
@@ -84,7 +83,7 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
 
   const handleSubmit = useCallback(
     (data, actions) => {
-      setAutoFocus(true);
+      setAutoFocus(false);
       createEntityField({
         variables: {
           data: {
@@ -98,11 +97,11 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
             onFieldAdd(result.data.createEntityFieldByDisplayName);
           }
           actions.resetForm();
-          inputRef.current?.focus();
+          setAutoFocus(true);
         })
         .catch(console.error);
     },
-    [createEntityField, entity.id, inputRef, onFieldAdd]
+    [createEntityField, entity.id, onFieldAdd]
   );
 
   const errorMessage = formatError(error);
@@ -121,7 +120,6 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
               name="displayName"
               label="New Field Name"
               disabled={loading}
-              inputRef={inputRef}
               placeholder="Add field"
               autoComplete="off"
               autoFocus={autoFocus}

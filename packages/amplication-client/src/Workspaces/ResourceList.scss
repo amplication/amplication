@@ -6,6 +6,10 @@ $empty-state-image-size: 120px;
   flex-direction: column;
   height: 100%;
 
+  .limitation-notification {
+    margin-bottom: 8px;
+  }
+
   &__header {
     @include flexFullRowWithSpacing;
 

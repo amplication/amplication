@@ -1,7 +1,7 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field } from "@nestjs/graphql";
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class RemoteGitRepository {
   @Field(() => String)
@@ -18,10 +18,13 @@ export class RemoteGitRepository {
 
   @Field(() => Boolean)
   admin: boolean | null;
+
+  @Field(() => String)
+  defaultBranch: string;
 }
 
 @ObjectType({
-  isAbstract: true
+  isAbstract: true,
 })
 export class RemoteGitRepos {
   @Field(() => [RemoteGitRepository])

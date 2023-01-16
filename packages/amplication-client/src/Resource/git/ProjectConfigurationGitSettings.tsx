@@ -15,11 +15,8 @@ type Props = {
 const CLASS_NAME = "project-configuration-github-settings";
 
 const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
-  const {
-    currentWorkspace,
-    currentProject,
-    projectConfigurationResource,
-  } = useContext(AppContext);
+  const { currentWorkspace, currentProject, projectConfigurationResource } =
+    useContext(AppContext);
 
   const gitOrganizations = currentWorkspace?.gitOrganizations;
 
@@ -56,13 +53,11 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
         className={`${CLASS_NAME}__${gitStatusPanelClassName}`}
         panelStyle={EnumPanelStyle.Transparent}
       >
-        { projectConfigurationResource?.gitRepository && (
+        {projectConfigurationResource?.gitRepository && (
           <GithubSyncDetails
             showGitRepositoryBtn={false}
             className={isOverride ? `${CLASS_NAME}__githubSync` : ""}
-            resourceWithRepository={
-              projectConfigurationResource
-            }
+            resourceWithRepository={projectConfigurationResource}
           />
         )}
         {isEmpty(gitOrganizations) && (

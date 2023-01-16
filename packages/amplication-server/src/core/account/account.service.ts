@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService, Prisma, Account } from '@amplication/prisma-db';
-import { Workspace } from '../../models';
+import { Injectable } from "@nestjs/common";
+import { Account, Prisma } from "../../prisma";
+import { PrismaService } from "../../prisma/prisma.service";
+import { Workspace } from "../../models";
 import {
   SegmentAnalyticsService,
-  EnumEventType
-} from '../../services/segmentAnalytics/segmentAnalytics.service';
+  EnumEventType,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 @Injectable()
 export class AccountService {
   constructor(
@@ -19,11 +20,11 @@ export class AccountService {
       createdAt: account.createdAt,
       email: account.email,
       firstName: account.firstName,
-      lastName: account.lastName
+      lastName: account.lastName,
     });
     await this.analytics.track({
       userId: account.id,
-      event: EnumEventType.Signup
+      event: EnumEventType.Signup,
     });
     return account;
   }
@@ -41,13 +42,13 @@ export class AccountService {
       data: {
         currentUser: {
           connect: {
-            id: userId
-          }
-        }
+            id: userId,
+          },
+        },
       },
       where: {
-        id: accountId
-      }
+        id: accountId,
+      },
     });
   }
 
@@ -57,19 +58,19 @@ export class AccountService {
         users: {
           some: {
             accountId: accountId,
-            deletedAt: null
-          }
-        }
-      }
+            deletedAt: null,
+          },
+        },
+      },
     });
   }
 
   async setPassword(accountId: string, password: string): Promise<Account> {
     return this.prisma.account.update({
       data: {
-        password
+        password,
       },
-      where: { id: accountId }
+      where: { id: accountId },
     });
   }
 }

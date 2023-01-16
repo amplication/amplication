@@ -17,7 +17,7 @@ export const Toggle = (props: Props) => {
   const { label, onChange, onValueChange, ...rest } = props;
 
   const handleChange = useCallback(
-    (event) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       if (onChange) {
         onChange(event, event.currentTarget.checked);
       }

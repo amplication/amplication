@@ -1,8 +1,8 @@
 import { Snackbar } from "@amplication/design-system";
 import React, { useCallback } from "react";
 import { match } from "react-router-dom";
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import usePlugins, { Plugin } from "./hooks/usePlugins";
@@ -56,10 +56,10 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   );
 
   const onOrderChange = useCallback(
-    ({ id, order }: { id: string; order: number}) => {
+    ({ id, order }: { id: string; order: number }) => {
       if (!pluginInstallations) return;
 
-      if (order < 1 || order > (pluginInstallations.length)) return;
+      if (order < 1 || order > pluginInstallations.length) return;
 
       updatePluginOrder({
         variables: {
@@ -67,20 +67,24 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
             order,
           },
           where: {
-            id
+            id,
           },
         },
       }).catch(console.error);
-    } ,[pluginInstallations, updatePluginOrder])
+    },
+    [pluginInstallations, updatePluginOrder]
+  );
 
   const onEnableStateChange = useCallback(
     (pluginInstallation: models.PluginInstallation) => {
-      const { enabled, id } = pluginInstallation;
+      const { enabled, version, settings, id } = pluginInstallation;
 
       updatePluginInstallation({
         variables: {
           data: {
             enabled: !enabled,
+            version,
+            settings,
           },
           where: {
             id: id,
@@ -91,30 +95,36 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     [updatePluginInstallation]
   );
 
-  const errorMessage = formatError(createError) || formatError(updateError) || formatError(UpdatePluginOrderError);
- 
-  return (
-    pluginInstallations && pluginOrderObj ? (
-      <DndProvider backend={HTML5Backend}>
-      {pluginInstallations.length && pluginInstallations.map((installation) => (
-        <PluginsCatalogItem
-          key={installation.id}
-          plugin={pluginCatalog[installation.pluginId]}
-          pluginInstallation={installation as models.PluginInstallation}
-          onOrderChange={onOrderChange}
-          onInstall={handleInstall}
-          onEnableStateChange={onEnableStateChange}
-          order={pluginOrderObj[installation.pluginId]}
-          isDraggable
-        />
-      ))}
+  const errorMessage =
+    formatError(createError) ||
+    formatError(updateError) ||
+    formatError(UpdatePluginOrderError);
+
+  return pluginInstallations && pluginOrderObj ? (
+    <DndProvider backend={HTML5Backend}>
+      {pluginInstallations.length &&
+        pluginInstallations.map((installation) => (
+          <PluginsCatalogItem
+            key={installation.id}
+            plugin={pluginCatalog[installation.pluginId]}
+            pluginInstallation={installation as models.PluginInstallation}
+            onOrderChange={onOrderChange}
+            onInstall={handleInstall}
+            onEnableStateChange={onEnableStateChange}
+            order={pluginOrderObj[installation.pluginId]}
+            isDraggable
+          />
+        ))}
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}
       />
     </DndProvider>
-    ) : (<EmptyState image={EnumImages.PluginInstallationEmpty} message="There are no plugins to show"/>)
-    
+  ) : (
+    <EmptyState
+      image={EnumImages.PluginInstallationEmpty}
+      message="There are no plugins to show"
+    />
   );
 };
 

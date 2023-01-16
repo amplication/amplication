@@ -11,6 +11,7 @@ const useServiceConnection = (resourceId: string) => {
     data: serviceTopicsList,
     loading: loadingServiceTopics,
     error: errorServiceTopics,
+    refetch,
   } = useQuery<{
     ServiceTopicsList: models.ServiceTopics[];
   }>(GET_SERVICE_MESSAGE_BROKER_CONNECTIONS, {
@@ -22,27 +23,17 @@ const useServiceConnection = (resourceId: string) => {
   const [updateServiceTopics, { error: updateError }] = useMutation<{
     updateServiceTopics: models.ServiceTopics;
   }>(UPDATE_SERVICE_MESSAGE_BROKER_CONNECTION, {
-    refetchQueries: [
-      {
-        query: GET_SERVICE_MESSAGE_BROKER_CONNECTIONS,
-        variables: {
-          resourceId: resourceId,
-        },
-      },
-    ],
+    onCompleted() {
+      refetch();
+    },
   });
 
   const [createServiceTopics, { error: createError }] = useMutation<{
     createServiceTopics: models.ServiceTopics;
   }>(CREATE_SERVICE_MESSAGE_BROKER_CONNECTION, {
-    refetchQueries: [
-      {
-        query: GET_SERVICE_MESSAGE_BROKER_CONNECTIONS,
-        variables: {
-          resourceId: resourceId,
-        },
-      },
-    ],
+    onCompleted() {
+      refetch();
+    },
   });
 
   return {

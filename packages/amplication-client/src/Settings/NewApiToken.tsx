@@ -1,11 +1,12 @@
 import { TextField, Snackbar } from "@amplication/design-system";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
@@ -46,7 +47,7 @@ const NewApiToken = ({ onCompleted }: Props) => {
     {
       onCompleted: (data) => {
         trackEvent({
-          eventName: "createApiToken",
+          eventName: AnalyticsEventNames.ApiTokenCreate,
           tokenName: data.createApiToken.name,
         });
         onCompleted(data.createApiToken);

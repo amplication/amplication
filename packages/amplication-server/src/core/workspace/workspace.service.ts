@@ -1,7 +1,7 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { Workspace, User } from '../../models';
-import { PrismaService, Prisma } from '@amplication/prisma-db';
-import { Invitation } from './dto/Invitation';
+import { Injectable, ConflictException } from "@nestjs/common";
+import { Workspace, User } from "../../models";
+import { Prisma, PrismaService } from "../../prisma";
+import { Invitation } from "./dto/Invitation";
 import {
   FindManyWorkspaceArgs,
   UpdateOneWorkspaceArgs,
@@ -10,21 +10,23 @@ import {
   WorkspaceMember,
   DeleteUserArgs,
   RevokeInvitationArgs,
-  ResendInvitationArgs
-} from './dto';
+  ResendInvitationArgs,
+} from "./dto";
 
-import { FindOneArgs } from '../../dto';
-import { Role } from '../../enums/Role';
-import { UserService } from '../user/user.service';
-import { MailService } from '../mail/mail.service';
-import { SubscriptionService } from '../subscription/subscription.service';
-import cuid from 'cuid';
-import { addDays } from 'date-fns';
-import { isEmpty } from 'lodash';
-import { EnumWorkspaceMemberType } from './dto/EnumWorkspaceMemberType';
-import { Subscription } from '../subscription/dto/Subscription';
-import { GitOrganization } from '../../models/GitOrganization';
-import { ProjectService } from '../project/project.service';
+import { FindOneArgs } from "../../dto";
+import { Role } from "../../enums/Role";
+import { UserService } from "../user/user.service";
+import { MailService } from "../mail/mail.service";
+import { SubscriptionService } from "../subscription/subscription.service";
+import cuid from "cuid";
+import { addDays } from "date-fns";
+import { isEmpty } from "lodash";
+import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
+import { Subscription } from "../subscription/dto/Subscription";
+import { GitOrganization } from "../../models/GitOrganization";
+import { ProjectService } from "../project/project.service";
+import { BillingService } from "../billing/billing.service";
+import { BillingPlan } from "../billing/BillingPlan";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -35,7 +37,8 @@ export class WorkspaceService {
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly billingService: BillingService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -79,27 +82,29 @@ export class WorkspaceService {
             isOwner: true,
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin
-              }
-            }
-          }
-        }
+                role: Role.OrganizationAdmin,
+              },
+            },
+          },
+        },
       },
       include: {
         ...args.include,
         // Include users by default, allow to bypass it for including additional user links
-        users: args?.include?.users || true
-      }
+        users: args?.include?.users || true,
+      },
     });
+
+    await this.billingService.provisionCustomer(workspace.id, BillingPlan.Free);
 
     const [user] = workspace.users;
 
     await this.projectService.createProject(
       {
         data: {
-          name: 'Sample Project',
-          workspace: { connect: { id: workspace.id } }
-        }
+          name: "Sample Project",
+          workspace: { connect: { id: workspace.id } },
+        },
       },
       user.id
     );
@@ -120,8 +125,8 @@ export class WorkspaceService {
     const existingUsers = await this.userService.findUsers({
       where: {
         account: { email: args.data.email },
-        workspace: { id: workspace.id }
-      }
+        workspace: { id: workspace.id },
+      },
     });
 
     if (existingUsers.length) {
@@ -135,9 +140,9 @@ export class WorkspaceService {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         workspaceId_email: {
           email: args.data.email,
-          workspaceId: workspace.id
-        }
-      }
+          workspaceId: workspace.id,
+        },
+      },
     });
 
     if (existingInvitation) {
@@ -148,8 +153,8 @@ export class WorkspaceService {
 
     const currentUserAccount = await this.prisma.account.findUnique({
       where: {
-        id: account.id
-      }
+        id: account.id,
+      },
     });
 
     const invitation = await this.prisma.invitation.create({
@@ -157,23 +162,23 @@ export class WorkspaceService {
         email: args.data.email,
         workspace: {
           connect: {
-            id: workspace.id
-          }
+            id: workspace.id,
+          },
         },
         invitedByUser: {
           connect: {
-            id: currentUserId
-          }
+            id: currentUserId,
+          },
         },
         token: cuid(),
-        tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS)
-      }
+        tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS),
+      },
     });
 
     await this.mailService.sendInvitation({
       to: invitation.email,
       invitationToken: invitation.token,
-      invitedByUserFullName: currentUserAccount.email
+      invitedByUserFullName: currentUserAccount.email,
     });
 
     return invitation;
@@ -189,10 +194,10 @@ export class WorkspaceService {
       where: {
         token: args.data.token,
         tokenExpiration: {
-          gt: addDays(new Date(), -INVITATION_EXPIRATION_DAYS)
+          gt: addDays(new Date(), -INVITATION_EXPIRATION_DAYS),
         },
-        newUser: null
-      }
+        newUser: null,
+      },
     });
 
     if (!(invitations && invitations.length === 1)) {
@@ -206,8 +211,8 @@ export class WorkspaceService {
     const existingUsers = await this.userService.findUsers({
       where: {
         account: { id: account.id },
-        workspace: { id: invitation.workspaceId }
-      }
+        workspace: { id: invitation.workspaceId },
+      },
     });
 
     if (!isEmpty(existingUsers)) {
@@ -218,7 +223,7 @@ export class WorkspaceService {
 
     const workspace = await this.prisma.workspace.update({
       where: {
-        id: invitation.workspaceId
+        id: invitation.workspaceId,
       },
       data: {
         users: {
@@ -227,37 +232,37 @@ export class WorkspaceService {
             isOwner: false,
             userRoles: {
               create: {
-                role: Role.OrganizationAdmin
-              }
-            }
-          }
-        }
+                role: Role.OrganizationAdmin,
+              },
+            },
+          },
+        },
       },
       include: {
         users: {
           where: {
             account: {
-              id: account.id
-            }
-          }
-        }
-      }
+              id: account.id,
+            },
+          },
+        },
+      },
     });
 
     const [newUser] = workspace.users;
 
     await this.prisma.invitation.update({
       where: {
-        id: invitation.id
+        id: invitation.id,
       },
       data: {
         tokenExpiration: addDays(new Date(), -INVITATION_EXPIRATION_DAYS),
         newUser: {
           connect: {
-            id: newUser.id
-          }
-        }
-      }
+            id: newUser.id,
+          },
+        },
+      },
     });
 
     return workspace;
@@ -268,8 +273,8 @@ export class WorkspaceService {
       ...args,
       where: {
         ...args.where,
-        newUser: null
-      }
+        newUser: null,
+      },
     });
 
     if (!invitation) {
@@ -278,8 +283,8 @@ export class WorkspaceService {
 
     return this.prisma.invitation.delete({
       where: {
-        id: invitation.id
-      }
+        id: invitation.id,
+      },
     });
   }
 
@@ -288,15 +293,15 @@ export class WorkspaceService {
       ...args,
       where: {
         ...args.where,
-        newUser: null
+        newUser: null,
       },
       include: {
         invitedByUser: {
           include: {
-            account: true
-          }
-        }
-      }
+            account: true,
+          },
+        },
+      },
     });
 
     if (!invitation) {
@@ -305,17 +310,17 @@ export class WorkspaceService {
 
     const updatedInvitation = await this.prisma.invitation.update({
       where: {
-        id: invitation.id
+        id: invitation.id,
       },
       data: {
-        tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS)
-      }
+        tokenExpiration: addDays(new Date(), INVITATION_EXPIRATION_DAYS),
+      },
     });
 
     await this.mailService.sendInvitation({
       to: invitation.email,
       invitationToken: invitation.token,
-      invitedByUserFullName: invitation.invitedByUser.account.email
+      invitedByUserFullName: invitation.invitedByUser.account.email,
     });
 
     return updatedInvitation;
@@ -324,35 +329,31 @@ export class WorkspaceService {
   async findMembers(args: FindOneArgs): Promise<WorkspaceMember[]> {
     const users = await this.userService.findUsers({
       where: {
-        workspaceId: args.where.id
-      }
+        workspaceId: args.where.id,
+      },
     });
 
     const invitations = await this.prisma.invitation.findMany({
       where: {
         workspaceId: args.where.id,
-        newUser: null
-      }
+        newUser: null,
+      },
     });
 
     return users
-      .map(
-        (user): WorkspaceMember => {
-          return {
-            member: user,
-            type: EnumWorkspaceMemberType.User
-          };
-        }
-      )
+      .map((user): WorkspaceMember => {
+        return {
+          member: user,
+          type: EnumWorkspaceMemberType.User,
+        };
+      })
       .concat(
-        invitations.map(
-          (invitation): WorkspaceMember => {
-            return {
-              member: invitation,
-              type: EnumWorkspaceMemberType.Invitation
-            };
-          }
-        )
+        invitations.map((invitation): WorkspaceMember => {
+          return {
+            member: invitation,
+            type: EnumWorkspaceMemberType.Invitation,
+          };
+        })
       );
   }
 
@@ -360,8 +361,8 @@ export class WorkspaceService {
     const user = await this.userService.findUser({
       ...args,
       include: {
-        workspace: true
-      }
+        workspace: true,
+      },
     });
 
     if (!user) {

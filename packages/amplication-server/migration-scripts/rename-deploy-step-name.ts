@@ -1,19 +1,19 @@
 // 2020-11-24 Script to update deploy step name on ActionStep
 
-import { PrismaClient, EnumDataType } from '@amplication/prisma-db';
+import { PrismaClient } from "../src/prisma";
 
-const EXISTING_STEP_NAME = 'Deploy app';
-const NEW_STEP_NAME = 'DEPLOY_APP';
+const EXISTING_STEP_NAME = "Deploy app";
+const NEW_STEP_NAME = "DEPLOY_APP";
 
 async function main() {
   const client = new PrismaClient();
   await client.actionStep.updateMany({
     where: {
-      name: EXISTING_STEP_NAME
+      name: EXISTING_STEP_NAME,
     },
     data: {
-      name: NEW_STEP_NAME
-    }
+      name: NEW_STEP_NAME,
+    },
   });
   await client.$disconnect();
 }

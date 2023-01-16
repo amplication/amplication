@@ -11,6 +11,7 @@ do
     REPO_NAME="$SERVICE_NAME"
     echo "SERVICE_NAME: $SERVICE_NAME"
     echo "REPO_NAME: $REPO_NAME"
+    echo "IMAGE_TAG_ANCHOR: $IMAGE_TAG_ANCHOR"
     cmd="$(aws ecr describe-images --repository-name=$REPO_NAME --image-ids=imageTag=$IMAGE_TAG_ANCHOR)"
     if [ -z "$cmd" ]
     then
@@ -19,6 +20,7 @@ do
         exit 1
     else
         echo "tag already exists in the repository - $REPO_NAME"
+        echo $(aws ecr describe-images --repository-name=$REPO_NAME --image-ids=imageTag=$IMAGE_TAG_ANCHOR) | jq .imageDetails
         echo "::set-output name=image_exist::true"
     fi
 done

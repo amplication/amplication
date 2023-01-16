@@ -1,12 +1,13 @@
-import { PrismaModule } from '@amplication/prisma-db';
-import { Module } from '@nestjs/common';
-import { BlockModule } from '../block/block.module';
-import { BuildModule } from '../build/build.module';
-import { EntityModule } from '../entity/entity.module';
-import { PermissionsModule } from '../permissions/permissions.module';
-import { ResourceModule } from '../resource/resource.module';
-import { ProjectResolver } from './project.resolver';
-import { ProjectService } from './project.service';
+import { PrismaModule } from "../../prisma/prisma.module";
+import { Module } from "@nestjs/common";
+import { BillingModule } from "../billing/billing.module";
+import { BlockModule } from "../block/block.module";
+import { BuildModule } from "../build/build.module";
+import { EntityModule } from "../entity/entity.module";
+import { PermissionsModule } from "../permissions/permissions.module";
+import { ResourceModule } from "../resource/resource.module";
+import { ProjectResolver } from "./project.resolver";
+import { ProjectService } from "./project.service";
 
 @Module({
   imports: [
@@ -15,9 +16,10 @@ import { ProjectService } from './project.service';
     ResourceModule,
     BlockModule,
     EntityModule,
-    BuildModule
+    BuildModule,
+    BillingModule,
   ],
   providers: [ProjectResolver, ProjectService],
-  exports: [ProjectResolver, ProjectService]
+  exports: [ProjectResolver, ProjectService],
 })
 export class ProjectModule {}

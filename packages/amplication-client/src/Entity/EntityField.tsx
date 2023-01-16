@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useContext, useState } from "react";
+import { useCallback, useMemo, useContext, useState } from "react";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { types } from "@amplication/code-gen-types";
@@ -17,6 +17,7 @@ import {
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityField.scss";
 import { AppContext } from "../context/appContext";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   entity: models.Entity;
@@ -33,7 +34,8 @@ const EntityField = () => {
   const [lookupPendingData, setLookupPendingData] = useState<Values | null>(
     null
   );
-  const { addEntity, currentWorkspace, currentProject } = useContext(AppContext);
+  const { addEntity, currentWorkspace, currentProject } =
+    useContext(AppContext);
   const history = useHistory();
   const [error, setError] = useState<Error>();
 
@@ -49,15 +51,16 @@ const EntityField = () => {
     throw new Error("resource parameters is required in the query string");
   }
 
-  const { data, error: loadingError, loading } = useQuery<TData>(
-    GET_ENTITY_FIELD,
-    {
-      variables: {
-        entity,
-        field,
-      },
-    }
-  );
+  const {
+    data,
+    error: loadingError,
+    loading,
+  } = useQuery<TData>(GET_ENTITY_FIELD, {
+    variables: {
+      entity,
+      field,
+    },
+  });
 
   const entityField = data?.entity.fields?.[0];
   const entityDisplayName = data?.entity.displayName;
@@ -84,7 +87,7 @@ const EntityField = () => {
       onCompleted: (data) => {
         entity && addEntity(entity);
         trackEvent({
-          eventName: "updateEntityField",
+          eventName: AnalyticsEventNames.EntityFieldUpdate,
           entityFieldName: data.updateEntityField.displayName,
           dataType: data.updateEntityField.dataType,
         });
@@ -185,7 +188,7 @@ const EntityField = () => {
             )}
           </div>
           <EntityFieldForm
-            isDisabled={
+            isSystemDataType={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
             }
             onSubmit={handleSubmit}
@@ -199,7 +202,7 @@ const EntityField = () => {
         <RelatedFieldDialog
           isOpen={lookupPendingData !== null}
           onDismiss={hideRelatedFieldDialog}
-          onSubmit={handleRelatedFieldFormSubmit}
+          onSubmit={handleRelatedFieldFormSubmit as any} // TODO: address after Nx React migration
           relatedEntityId={lookupPendingData?.properties?.relatedEntityId}
           allowMultipleSelection={
             !lookupPendingData?.properties?.allowMultipleSelection
