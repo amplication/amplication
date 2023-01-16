@@ -38,6 +38,7 @@ function ResourceList() {
   const {
     resources,
     projectConfigurationResource,
+    addEntity,
     handleSearchChange,
     loadingResources,
     errorResources,
@@ -77,6 +78,9 @@ function ResourceList() {
         eventName: AnalyticsEventNames.ResourceDelete,
       });
       deleteResource({
+        onCompleted: () => {
+          addEntity();
+        },
         variables: {
           resourceId: resource.id,
         },

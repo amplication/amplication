@@ -65,6 +65,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resetPendingChanges,
     setCommitRunning,
     setPendingChangesError,
+    resetPendingChangesIndicator,
+    setResetPendingChangesIndicator,
   } = usePendingChanges(currentProject);
 
   const {
@@ -131,6 +133,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         createMessageBroker,
         errorCreateMessageBroker,
         loadingCreateMessageBroker,
+        resetPendingChangesIndicator,
+        setResetPendingChangesIndicator,
       }}
     >
       {isMobileOnly ? (

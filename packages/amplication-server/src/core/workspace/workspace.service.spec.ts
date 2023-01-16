@@ -136,8 +136,8 @@ describe("WorkspaceService", () => {
             getNumericEntitlement: jest.fn(() => {
               return {};
             }),
-            getStiggClient: jest.fn(() => {
-              return { provisionCustomer: () => undefined };
+            provisionCustomer: jest.fn(() => {
+              return {};
             }),
           },
         },
