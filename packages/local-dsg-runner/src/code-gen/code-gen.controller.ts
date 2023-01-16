@@ -20,7 +20,6 @@ function generateCode(req: Request, res: Response) {
     .createContainer({
       Image: imageName,
       name: containerName,
-      // Volumes: { [buildOutputPath]: {} },
       HostConfig: {
         Binds: [`${hostMachineDsgFolder}:${dockerDsgFolder}`],
       },
