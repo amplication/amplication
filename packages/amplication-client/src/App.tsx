@@ -12,6 +12,12 @@ import { Loader, PlanUpgradeConfirmation } from "@amplication/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
 
+declare global {
+  interface Window {
+    HubSpotConversations: any;
+  }
+}
+
 export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
 
 const GeneratedRoutes = routesGenerator(Routes);
@@ -82,6 +88,13 @@ function App() {
   });
 
   const showLoadingAnimation = keepLoadingAnimation || currentWorkspaceLoading;
+
+  window.HubSpotConversations.on("conversationClosed", (payload) => {
+    console.log(
+      `Conversation with id ${payload.conversation.conversationId} has been closed!`
+    );
+    window.HubSpotConversations.widget.remove();
+  });
 
   return (
     <ThemeProvider>
