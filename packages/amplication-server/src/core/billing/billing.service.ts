@@ -21,10 +21,10 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { ProvisionSubscriptionDto } from "./ProvisionSubscriptionDto";
 import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
 import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
+import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
 
 @Injectable()
 export class BillingService {
@@ -192,8 +192,10 @@ export class BillingService {
     intentionType,
     cancelUrl,
     successUrl,
-    customerId,
-  }: ProvisionSubscriptionDto): Promise<ProvisionSubscriptionResult> {
+    userId,
+  }: ProvisionSubscriptionInput & {
+    userId: string;
+  }): Promise<ProvisionSubscriptionResult> {
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
       customerId: workspaceId,
@@ -207,7 +209,7 @@ export class BillingService {
       },
     });
     await this.analytics.track({
-      userId: customerId,
+      userId,
       properties: {
         workspaceId,
       },

@@ -71,8 +71,9 @@ const PurchasePage = (props) => {
   const [provisionSubscription, { loading: provisionSubscriptionLoading }] =
     useMutation<DType>(PROVISION_SUBSCRIPTION, {
       onCompleted: (data) => {
-        if (data.provisionSubscription.provisionStatus === "PaymentRequired")
-          window.location.href = data.provisionSubscription.checkoutUrl;
+        const { provisionStatus, checkoutUrl } = data.provisionSubscription;
+        if (provisionStatus === "PaymentRequired")
+          window.location.href = checkoutUrl;
       },
       onError: (error: ApolloError) => {
         console.log(error);
