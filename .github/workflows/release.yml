@@ -125,7 +125,6 @@ jobs:
           images: "439403303254.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
           tags: |
             type=sha,prefix=sha-
-            type=ref,event=branch
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
