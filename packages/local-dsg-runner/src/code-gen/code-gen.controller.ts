@@ -6,10 +6,13 @@ function generateCode(req: Request, res: Response) {
 
   const imageName = "amplication/data-service-generator-runner";
   const containerName = `dsg-runner-${buildId}`;
-  const dsgJobFolder = `${process.cwd()}/${
+  const hostMachineDsgFolder = `${process.cwd()}/${
     process.env.DSG_JOBS_BASE_FOLDER
   }/${buildId}`;
+  const dockerDsgFolder = process.env.BUILD_VOLUME_PATH;
   const buildOutputPath = process.env.BUILD_OUTPUT_PATH;
+  const buildSpecPath = process.env.BUILD_SPEC_PATH;
+  const buildMangerUrl = process.env.BUILD_MANAGER_URL;
 
   const docker = new Docker();
 
@@ -17,16 +20,18 @@ function generateCode(req: Request, res: Response) {
     .createContainer({
       Image: imageName,
       name: containerName,
-      Volumes: { [buildOutputPath]: {} },
+      // Volumes: { [buildOutputPath]: {} },
       HostConfig: {
-        Binds: [`${dsgJobFolder}:${buildOutputPath}`],
-        // AutoRemove: true,
+        Binds: [`${hostMachineDsgFolder}:${dockerDsgFolder}`],
       },
-      Cmd: ["node ./src/main.js"],
+      Cmd: ["node", "./src/main.js"],
       Env: [
-        "BUILD_OUTPUT_PATH=/dsg-job/code",
+        `BUILD_OUTPUT_PATH=${buildOutputPath}`,
         `BUILD_ID=${buildId}`,
         `RESOURCE_ID=${resourceId}`,
+        `BUILD_SPEC_PATH=${buildSpecPath}`,
+        `BUILD_MANAGER_URL=${buildMangerUrl}`,
+        "REMOTE_ENV=true",
       ],
     })
     .then((container: Docker.Container) => container.start())
