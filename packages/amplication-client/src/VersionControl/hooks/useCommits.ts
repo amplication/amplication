@@ -13,9 +13,10 @@ const useCommits = () => {
     data: commitsData,
     error: commitsError,
     loading: commitsLoading,
-    refetch,
+    refetch: refetchCommits,
   } = useQuery(GET_COMMITS, {
     skip: !currentProject?.id && !commits.length,
+    notifyOnNetworkStatusChange: true,
     variables: {
       projectId: currentProject?.id,
       orderBy: {
@@ -27,8 +28,7 @@ const useCommits = () => {
   useEffect(() => {
     if (!commitsData) return;
     setCommits(commitsData.commits);
-    refetch();
-  }, [commitsData, refetch]);
+  }, [commitsData]);
 
   const getCommitIdx = (commits: Commit[], commitId: string): number =>
     commits.findIndex((commit) => commit.id === commitId);
@@ -55,9 +55,11 @@ const useCommits = () => {
 
   return {
     commits,
+    lastCommit: (commits && commits.length && commits[0]) || null,
     commitsError,
     commitsLoading,
     commitChangesByResource,
+    refetchCommits,
   };
 };
 
