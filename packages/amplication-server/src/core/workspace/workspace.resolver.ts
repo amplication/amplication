@@ -29,26 +29,17 @@ import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { GitOrganization } from "../../models/GitOrganization";
 import { Subscription } from "../subscription/dto/Subscription";
 import { ProjectService } from "../project/project.service";
-import { Env } from "../../env";
-import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class WorkspaceResolver {
-  private readonly isBillingEnabled: boolean;
-
   constructor(
-    private readonly configService: ConfigService,
     private readonly workspaceService: WorkspaceService,
     private readonly projectService: ProjectService,
     private readonly billingService: BillingService
-  ) {
-    this.isBillingEnabled = this.configService.get<boolean>(
-      Env.BILLING_ENABLED
-    );
-  }
+  ) {}
 
   @Query(() => Workspace, {
     nullable: true,
@@ -155,15 +146,7 @@ export class WorkspaceResolver {
 
   @ResolveField(() => Subscription, { nullable: true })
   async subscription(@Parent() workspace: Workspace): Promise<Subscription> {
-    if (this.isBillingEnabled) {
-      const subscription = await this.billingService.getSubscription(
-        workspace.id
-      );
-      return subscription;
-    }
-
-    const s = await this.workspaceService.getSubscription(workspace.id);
-    return s;
+    return this.billingService.getSubscription(workspace.id);
   }
 
   @ResolveField(() => [GitOrganization])
