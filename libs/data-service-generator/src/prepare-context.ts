@@ -212,8 +212,9 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
           //**@todo: in one-to-one relation, only one side should have a foreign key.
           //We currently decide randomly based on sorting the permanent ID
           //instead we should let the user decide which side holds the foreign key  */
+          //
           const isOneToOneWithoutForeignKey =
-            isOneToOne && field.permanentId > relatedField.permanentId;
+            isOneToOne && field.permanentId !== fieldProperties.FkHolder;
 
           const properties: LookupResolvedProperties = {
             ...field.properties,
