@@ -16,7 +16,7 @@ export class DynamicPackageInstallationManager {
 
     try {
       const { name, version } = plugin;
-      onBeforeInstall ?? (await onBeforeInstall(plugin));
+      onBeforeInstall && (await onBeforeInstall(plugin));
       const validVersion = valid(version);
 
       const tarball = new Tarball(
@@ -24,9 +24,9 @@ export class DynamicPackageInstallationManager {
         this.pluginInstallationPath
       );
       await tarball.download();
-      onAfterInstall ?? (await onAfterInstall(plugin));
+      onAfterInstall && (await onAfterInstall(plugin));
     } catch (error) {
-      onError ?? (await onError(plugin));
+      onError && (await onError(plugin));
       throw error;
     }
 
