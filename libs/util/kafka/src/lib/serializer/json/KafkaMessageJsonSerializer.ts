@@ -6,7 +6,10 @@ import type {
 } from "../../../types";
 
 class KafkaMessageJsonSerializer implements IKafkaMessageSerializer {
-  private deserializeField(field: Buffer | null): string | Json | undefined {
+  private deserializeField(
+    field: Buffer | null,
+    kafkaMessage: KafkaMessage
+  ): string | Json | undefined {
     if (field === undefined || field === null) {
       return undefined;
     }
@@ -34,7 +37,11 @@ class KafkaMessageJsonSerializer implements IKafkaMessageSerializer {
       try {
         result = JSON.parse(field.toString());
       } catch (e) {
-        /* empty */
+        console.warn("KafkaMessageJsonSerializer failed to parse json", {
+          field,
+          kafkaMessage,
+          error: e,
+        });
       }
     }
     return result;
@@ -46,8 +53,8 @@ class KafkaMessageJsonSerializer implements IKafkaMessageSerializer {
     const { key: originalKey, value: originalValue, headers } = message;
 
     return {
-      key: this.deserializeField(originalKey),
-      value: this.deserializeField(originalValue) ?? null,
+      key: this.deserializeField(originalKey, message),
+      value: this.deserializeField(originalValue, message) ?? null,
       headers,
     };
   }
