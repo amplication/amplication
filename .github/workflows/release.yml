@@ -1,4 +1,6 @@
 name: Release
+run-name: Release ${{ github.event.workflow_run.head_branch }} by workflow ${{ github.event.workflow_run.id }}
+concurrency: ${{ github.event.workflow_run.head_branch }}
 
 on:
   workflow_run:
@@ -43,13 +45,13 @@ jobs:
             });
             let fs = require('fs');
             fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/affected-projects.zip`, Buffer.from(download.data));
-      
+
       - name: Configure Nx Affected Projects
         id: configure-nx
-        run: | 
+        run: |
           unzip affected-projects.zip
           cat ./affected-projects >> $GITHUB_OUTPUT
-        
+
       - name: Debug
         run: |
           echo github.event.workflow_run.conclusion ${{ github.event.workflow_run.conclusion }}
@@ -69,14 +71,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-      
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
       - name: Cache global node modules
         id: cache-node-modules
         uses: actions/cache@v3
@@ -96,7 +99,7 @@ jobs:
             libs/data-service-generator/node_modules
             libs/util/code-gen-utils/node_modules
             packages/amplication-cli/node_modules
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
 
       - name: Install Dependencies
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
@@ -122,12 +125,11 @@ jobs:
           images: "439403303254.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
           tags: |
             type=sha,prefix=sha-
-            type=ref,event=branch
             type=ref,event=pr,prefix=pr-
             type=ref,event=tag,prefix=tag-
             type=raw,value=${{ github.run_id }},prefix=gh-
-            type=raw,value=${{ github.env.BRANCH }}
-            type=raw,value=latest,enable=${{ github.env.BRANCH == 'master' }}
+            type=raw,value=${{ env.BRANCH }}
+            type=raw,value=latest,enable=${{ env.BRANCH == 'master' }}
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
@@ -151,8 +153,8 @@ jobs:
           then
             echo environment="staging" >> $GITHUB_OUTPUT
           fi;
-          
-  deploy: 
+
+  deploy:
     name: Deployment
     needs: [nx, dockerize, configure]
     strategy:
