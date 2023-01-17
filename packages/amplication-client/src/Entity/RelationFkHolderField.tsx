@@ -46,7 +46,7 @@ const RelationFkHolderField = ({ entity, ...props }: Props) => {
       (entity &&
         data && [
           {
-            value: currentEntity.permanentId, //formik.values.permanentId,
+            value: currentEntity.permanentId,
             label: `${entity.displayName} (this side)`,
           },
           {
@@ -57,8 +57,6 @@ const RelationFkHolderField = ({ entity, ...props }: Props) => {
       []
     );
   }, [data]);
-
-  console.log({ entityListOptions });
 
   if (!isOneToOne) return null;
 
