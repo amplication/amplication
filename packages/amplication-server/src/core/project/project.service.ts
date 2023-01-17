@@ -2,6 +2,7 @@ import { PrismaService, EnumResourceType } from "../../prisma";
 import { Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
+import { prepareDeletedItemName } from "../../util/softDelete";
 import { ResourceService, EntityService } from "../";
 import { BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
@@ -19,6 +20,8 @@ import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
 import { BillingFeature } from "../billing/billing.types";
+
+export const INVALID_PROJECT_ID = "Invalid projectId";
 
 @Injectable()
 export class ProjectService {
@@ -70,6 +73,39 @@ export class ProjectService {
     );
 
     return project;
+  }
+
+  async deleteProject(args: FindOneArgs): Promise<Project> {
+    const project = await this.findFirst({
+      where: { id: args.where.id, deletedAt: null },
+      include: { workspace: true },
+    } as ProjectFindFirstArgs);
+
+    if (isEmpty(project)) {
+      throw new Error(INVALID_PROJECT_ID);
+    }
+
+    const archivedResources =
+      await this.resourceService.archiveProjectResources(project.id);
+    const archivedServiceCount = archivedResources.filter(
+      (r) => r.resourceType === EnumResourceType.Service
+    ).length;
+
+    if (this.billingService.isBillingEnabled) {
+      await this.billingService.reportUsage(
+        project.workspace.id,
+        BillingFeature.Services,
+        archivedServiceCount
+      );
+    }
+
+    return this.prisma.project.update({
+      where: args.where,
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date(),
+      },
+    });
   }
 
   async updateProject(args: UpdateProjectArgs): Promise<Project> {

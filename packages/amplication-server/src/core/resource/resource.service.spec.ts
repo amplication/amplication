@@ -376,11 +376,22 @@ const entityServiceBulkCreateFields = jest.fn();
 
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
-const projectServiceFindUniqueMock = jest.fn(() => EXAMPLE_PROJECT);
-
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
 });
+
+const projectServiceFindUniqueMock = jest.fn(() => ({
+  ...EXAMPLE_PROJECT,
+  resources: [EXAMPLE_RESOURCE, EXAMPLE_PROJECT_CONFIGURATION_RESOURCE],
+  workspace: {
+    id: EXAMPLE_WORKSPACE_ID,
+  },
+}));
+
+const prismaTransactionMock = jest.fn(() => [
+  EXAMPLE_RESOURCE,
+  EXAMPLE_PROJECT_CONFIGURATION_RESOURCE,
+]);
 
 jest.mock("cuid");
 // eslint-disable-next-line
@@ -443,6 +454,7 @@ describe("ResourceService", () => {
             resourceRole: {
               create: prismaResourceRoleCreateMock,
             },
+            $transaction: prismaTransactionMock,
           })),
         },
         {
@@ -646,6 +658,9 @@ describe("ResourceService", () => {
         {
           where: {
             deletedAt: null,
+            archived: {
+              not: true,
+            },
             name: {
               mode: QueryMode.Insensitive,
               startsWith: SAMPLE_SERVICE_DATA.name.toLowerCase(),
@@ -677,6 +692,9 @@ describe("ResourceService", () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
+        archived: {
+          not: true,
+        },
       },
     };
     expect(await service.resource(args)).toEqual(EXAMPLE_RESOURCE);
@@ -689,6 +707,9 @@ describe("ResourceService", () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
+        archived: {
+          not: true,
+        },
       },
     };
     expect(await service.resources(args)).toEqual([EXAMPLE_RESOURCE]);
@@ -723,6 +744,27 @@ describe("ResourceService", () => {
     await expect(service.deleteResource(args, EXAMPLE_USER)).rejects.toThrow(
       new Error(INVALID_DELETE_PROJECT_CONFIGURATION)
     );
+  });
+
+  it("should archive resources of a project", async () => {
+    const args = { where: { id: EXAMPLE_PROJECT_ID } };
+    expect(await service.archiveProjectResources(args.where.id)).toEqual(
+      expect.arrayContaining([
+        EXAMPLE_RESOURCE,
+        EXAMPLE_PROJECT_CONFIGURATION_RESOURCE,
+      ])
+    );
+    expect(prismaResourceUpdateMock).toBeCalledTimes(2);
+    expect(prismaResourceUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_RESOURCE.id },
+      data: {
+        archived: true,
+        name: prepareDeletedItemName(
+          EXAMPLE_RESOURCE.name,
+          EXAMPLE_RESOURCE.id
+        ),
+      },
+    });
   });
 
   it("should update a resource", async () => {

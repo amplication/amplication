@@ -139,6 +139,7 @@ model Resource {
   githubLastSync        DateTime?
   githubLastMessage     String?
   deletedAt             DateTime?
+  archived              Boolean          @default(false)
   gitRepositoryId       String?
   roles                 ResourceRole[]
   blocks                Block[]

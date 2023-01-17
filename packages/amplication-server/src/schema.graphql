@@ -1063,6 +1063,7 @@ type Mutation {
   deleteUser(where: WhereUniqueInput!): User
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   createProject(data: ProjectCreateInput!): Project!
+  deleteProject(where: WhereUniqueInput!): Project
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean

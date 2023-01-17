@@ -835,6 +835,7 @@ export type Mutation = {
   deleteGitOrganization: Scalars['Boolean'];
   deleteGitRepository: Resource;
   deletePluginInstallation: PluginInstallation;
+  deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
   deleteServiceTopics: ServiceTopics;
@@ -1028,6 +1029,11 @@ export type MutationDeleteGitRepositoryArgs = {
 
 
 export type MutationDeletePluginInstallationArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type MutationDeleteProjectArgs = {
   where: WhereUniqueInput;
 };
 
