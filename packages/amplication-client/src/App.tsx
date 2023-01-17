@@ -15,6 +15,7 @@ import queryString from "query-string";
 declare global {
   interface Window {
     HubSpotConversations: any;
+    hsConversationsOnReady: any;
   }
 }
 
@@ -89,12 +90,32 @@ function App() {
 
   const showLoadingAnimation = keepLoadingAnimation || currentWorkspaceLoading;
 
-  window.HubSpotConversations.on("conversationClosed", (payload) => {
-    console.log(
-      `Conversation with id ${payload.conversation.conversationId} has been closed!`
-    );
-    window.HubSpotConversations.widget.remove();
-  });
+  window.hsConversationsOnReady = [
+    () => {
+      console.log("chart is ready");
+      console.log(document.getElementById("hubspot-conversations-iframe"));
+      // document.getElementById('hubspot-conversations-iframe').contentWindow.document.querySelector("[area-label='Close live chat']").addEventListener('click', () => {
+      //   console.log('close');
+      // }, false);
+      window.HubSpotConversations.on("conversationMinimized", (payload) => {
+        console.log(
+          `Conversation with id ${payload.conversation.conversationId} has been closed!`
+        );
+        window.HubSpotConversations.widget.remove();
+      });
+      window.HubSpotConversations.on("conversationClosed", (payload) => {
+        console.log(
+          `Conversation with id ${payload.conversation.conversationId} has been closed!`
+        );
+        window.HubSpotConversations.widget.remove();
+      });
+      const handleEvent = (eventPayload) => {
+        console.log(eventPayload);
+      };
+
+      window.HubSpotConversations.on("conversationStarted", handleEvent);
+    },
+  ];
 
   return (
     <ThemeProvider>
