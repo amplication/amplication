@@ -31,7 +31,7 @@ spec:
                     restartPolicy: Never
                     containers:
                       - name: dsg-container
-                        image: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator-runner:sha-b54a993"
+                        image: {{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}
                         command: ["sh", "-c"]
                         args: [ "cd /workspace/packages/amplication-data-service-generator-runner; node ./src/main.js" ]
                         env:
@@ -51,7 +51,7 @@ spec:
                           - name: persistent-storage
                             mountPath: /efs
                             subPathExpr: $(BUILD_ID)
-                    imagePullPolicy: Always
+                        imagePullPolicy: Always
                     volumes:
                       - name: persistent-storage
                         persistentVolumeClaim:

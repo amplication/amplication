@@ -832,7 +832,10 @@ describe("EntityService", () => {
       },
     };
     expect(
-      await service.discardPendingChanges(EXAMPLE_ENTITY_ID, EXAMPLE_USER_ID)
+      await service.discardPendingChanges(
+        EXAMPLE_ENTITY_PENDING_CHANGE_UPDATE,
+        EXAMPLE_USER
+      )
     ).toEqual(EXAMPLE_ENTITY);
     expect(prismaEntityVersionFindManyMock).toBeCalledTimes(1);
     expect(prismaEntityVersionFindManyMock).toBeCalledWith(

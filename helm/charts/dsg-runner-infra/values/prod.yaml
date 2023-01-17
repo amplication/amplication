@@ -2,6 +2,9 @@ envName: "prod"
 
 job:
   ttlSecondsAfterFinished: 1800
+  image: 
+    repository: "407256539111.dkr.ecr.us-east-1.amazonaws.com/amplication-data-service-generator-runner"
+    tag: "latest"
 
 dsgJobsPv:
   name: dsg-jobs-prod-dsg

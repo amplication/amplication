@@ -1061,6 +1061,7 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   resendInvitation(where: WhereUniqueInput!): Invitation
   deleteUser(where: WhereUniqueInput!): User
+  provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   createProject(data: ProjectCreateInput!): Project!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   commit(data: CommitCreateInput!): Commit
@@ -1132,6 +1133,20 @@ input WorkspaceCreateInput {
 
 input InviteUserInput {
   email: String!
+}
+
+type ProvisionSubscriptionResult {
+  provisionStatus: String!
+  checkoutUrl: String
+}
+
+input ProvisionSubscriptionInput {
+  workspaceId: String!
+  planId: String!
+  billingPeriod: String!
+  intentionType: String!
+  successUrl: String!
+  cancelUrl: String!
 }
 
 input ProjectCreateInput {

@@ -1,6 +1,6 @@
 {
   "name": "amplication",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "scripts": {
     "postinstall": "nx run-many --target=install",
     "format:check": "npx nx format:check --all",
@@ -17,8 +17,7 @@
   },
   "lint-staged": {
     "*": [
-      "nx format:write --files",
-      "nx affected --target=lint --fix --files"
+      "nx format:write --files"
     ]
   },
   "dependencies": {
@@ -75,7 +74,7 @@
     "bcrypt": "^5.0.1",
     "chalk": "^5.1.2",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.0",
     "classnames": "^2.3.2",
     "core-js": "^3.6.5",
     "cron": "^1.8.2",
@@ -87,6 +86,7 @@
     "dir-compare": "^4.0.0",
     "dockerode": "^3.3.4",
     "dotenv": "^16.0.0",
+    "download": "^8.0.0",
     "eventsource": "^2.0.2",
     "formik": "^2.2.9",
     "fs-extra": "^9.1.0",
@@ -94,7 +94,7 @@
     "glob": "^8.0.3",
     "graphql-type-json": "^0.3.2",
     "json-schema": "^0.4.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "kafkajs": "^1.16.0",
     "lodash": "^4.17.21",
     "lottie-react": "^2.3.1",
@@ -109,6 +109,7 @@
     "octokit": "^1.8.1",
     "octokit-plugin-create-pull-request": "^3.13.1",
     "ora": "5.4.0",
+    "pacote": "^15.0.8",
     "passport": "^0.5.3",
     "passport-github2": "^0.1.12",
     "passport-http": "^0.3.0",
@@ -178,6 +179,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/cron": "^1.7.3",
     "@types/dockerode": "^2.5.34",
+    "@types/download": "^8.0.2",
     "@types/eventsource": "^1.1.9",
     "@types/express": "^4.17.14",
     "@types/fs-extra": "^9.0.13",
@@ -185,12 +187,13 @@
     "@types/graphql-type-json": "^0.3.2",
     "@types/jest": "^27.0.2",
     "@types/json-schema": "^7.0.11",
-    "@types/jsonwebtoken": "^8.5.9",
+    "@types/jsonwebtoken": "^9.0.0",
     "@types/lodash": "^4.14.186",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^18.11.9",
     "@types/node-fetch": "^2.6.2",
     "@types/normalize-path": "^3.0.0",
+    "@types/pacote": "^11.1.5",
     "@types/passport": "^1.0.11",
     "@types/passport-github": "^1.1.7",
     "@types/passport-github2": "^1.2.5",

@@ -36,8 +36,6 @@ import { Env } from "../../env";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
-  CreateLogger,
-  Transports,
 } from "@amplication/nest-logger-module";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
@@ -143,8 +141,6 @@ export function createInitialStepData(
 }
 @Injectable()
 export class BuildService {
-  private readonly isBillingEnabled: boolean;
-
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
@@ -169,10 +165,6 @@ export class BuildService {
     if (!this.host) {
       throw new Error("Missing HOST_VAR in env");
     }
-
-    this.isBillingEnabled = this.configService.get<boolean>(
-      Env.BILLING_ENABLED
-    );
   }
   host: string;
 
@@ -311,8 +303,11 @@ export class BuildService {
       async (step) => {
         const { resourceId, id: buildId, version: buildVersion } = build;
 
-        const [dataServiceGeneratorLogger, logPromises] =
-          this.createDataServiceLogger(build, step);
+        const logger = this.logger.child({
+          buildId: build.id,
+        });
+
+        logger.info("Preparing build generation message");
 
         const dsgResourceData = await this.getDSGResourceData(
           resourceId,
@@ -321,14 +316,13 @@ export class BuildService {
           user
         );
 
-        await Promise.all(logPromises);
+        logger.info("Writing build generation message to queue");
 
-        dataServiceGeneratorLogger.destroy();
-
-        this.queueService.emitMessage(
+        await this.queueService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
           JSON.stringify({ resourceId, buildId, dsgResourceData })
         );
+        logger.info("Build generation message sent");
 
         return null;
       },
@@ -344,27 +338,6 @@ export class BuildService {
         },
       },
     });
-  }
-
-  private createDataServiceLogger(
-    build: Build,
-    step: ActionStep
-  ): [AmplicationLogger, Array<Promise<void>>] {
-    const transport = new Transports.Console();
-    const logPromises: Array<Promise<void>> = [];
-    transport.on("logged", (info) => {
-      logPromises.push(this.createLog(step, info));
-    });
-    return [
-      CreateLogger({
-        format: this.logger.format,
-        transports: [transport],
-        defaultMeta: {
-          buildId: build.id,
-        },
-      }),
-      logPromises,
-    ];
   }
 
   public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
@@ -384,15 +357,13 @@ export class BuildService {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
       await this.actionService.complete(step, EnumActionStepStatus.Success);
 
-      if (this.isBillingEnabled) {
-        const workspace = await this.resourceService.getResourceWorkspace(
-          build.resourceId
-        );
-        await this.billingService.reportUsage(
-          workspace.id,
-          BillingFeature.CodePushToGit
-        );
-      }
+      const workspace = await this.resourceService.getResourceWorkspace(
+        build.resourceId
+      );
+      await this.billingService.reportUsage(
+        workspace.id,
+        BillingFeature.CodePushToGit
+      );
     } catch (error) {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
       await this.actionService.logInfo(step, error);

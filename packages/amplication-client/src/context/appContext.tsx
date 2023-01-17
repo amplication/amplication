@@ -31,7 +31,7 @@ export interface AppContextInterface {
   pendingChanges: PendingChangeItem[];
   commitRunning: boolean;
   pendingChangesIsError: boolean;
-  addEntity: (entityId: string) => void;
+  addEntity: (entityId?: string) => void;
   addBlock: (blockId: string) => void;
   addChange: (originId: string) => void;
   resetPendingChanges: () => void;
@@ -48,6 +48,8 @@ export interface AppContextInterface {
   ) => void;
   loadingCreateMessageBroker: boolean;
   errorCreateMessageBroker: Error | undefined;
+  resetPendingChangesIndicator: boolean;
+  setResetPendingChangesIndicator: (reset: boolean) => void;
 }
 
 const initialContext: AppContextInterface = {
@@ -88,6 +90,8 @@ const initialContext: AppContextInterface = {
   createMessageBroker: () => {},
   loadingCreateMessageBroker: false,
   errorCreateMessageBroker: undefined,
+  resetPendingChangesIndicator: false,
+  setResetPendingChangesIndicator: () => {},
 };
 
 export const AppContext =
