@@ -3,6 +3,7 @@ import { useFormikContext } from "formik";
 import React from "react";
 import * as models from "../models";
 import { EntityRelationFieldsChart } from "./EntityRelationFieldsChart";
+import { HorizontalRule } from "@amplication/design-system";
 import "./RelatedEntityFieldField.scss";
 
 const CLASS_NAME = "related-entity-field-field";
@@ -34,17 +35,20 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
   return (
     <div className={CLASS_NAME}>
       {data && relatedField && (
-        <EntityRelationFieldsChart
-          fixInPlace={false}
-          resourceId={data.entity.resourceId}
-          entityId={data.entity.id}
-          field={formik.values}
-          entityName={entityDisplayName}
-          relatedField={relatedField}
-          relatedEntityName={data.entity.displayName}
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          onSubmit={() => {}}
-        />
+        <>
+          <HorizontalRule />
+          <EntityRelationFieldsChart
+            fixInPlace={false}
+            resourceId={data.entity.resourceId}
+            entityId={data.entity.id}
+            field={formik.values}
+            entityName={entityDisplayName}
+            relatedField={relatedField}
+            relatedEntityName={data.entity.displayName}
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onSubmit={() => {}}
+          />
+        </>
       )}
     </div>
   );
