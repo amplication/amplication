@@ -1,9 +1,0 @@
-apiVersion: argoproj.io/v1alpha1
-kind: EventBus
-metadata:
-  name: default
-spec:
-  nats:
-    native:
-      replicas: 3 # minimal requirement is 3
-      auth: token
