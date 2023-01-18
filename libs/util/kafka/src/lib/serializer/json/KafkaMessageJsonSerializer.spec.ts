@@ -1,16 +1,11 @@
 import { KafkaMessage } from "../../../types";
+import { createKafkaMessage } from "../../../../test/kafkaMessageUtil";
 import { KafkaMessageJsonSerializer } from "./KafkaMessageJsonSerializer";
 
 jest.mock("console");
 
 describe("jsonMessageSerialiser", () => {
   let serialiser: KafkaMessageJsonSerializer;
-
-  const createMessage = (key: string, message: string): KafkaMessage => ({
-    key: Buffer.from(key, "utf8"),
-    value: Buffer.from(message, "utf8"),
-    headers: {},
-  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -38,7 +33,7 @@ describe("jsonMessageSerialiser", () => {
     });
 
     describe("and the messages contain only values", () => {
-      const message = { value: "value1" };
+      const message = { key: null, value: "value1" };
 
       it("the KafkaMessage is correctly serialised", async () => {
         const expectedMessage: KafkaMessage = {
@@ -74,7 +69,7 @@ describe("jsonMessageSerialiser", () => {
     });
 
     describe("and the messages contain only values", () => {
-      const message = { value: { a: "hello", b: 2 } };
+      const message = { key: null, value: { a: "hello", b: 2 } };
 
       it("the KafkaMessage is correctly serialised", async () => {
         const expectedMessage: KafkaMessage = {
@@ -93,7 +88,7 @@ describe("jsonMessageSerialiser", () => {
 
   describe("when deserializing a kafka message", () => {
     it("the KafkaMessage is correctly deserialised", async () => {
-      const message = createMessage("repo-id", "value");
+      const message = createKafkaMessage("repo-id", "value");
 
       const result = await serialiser.deserialize(message);
 

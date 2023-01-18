@@ -9,15 +9,11 @@ class KafkaMessageJsonSerializer implements IKafkaMessageSerializer {
   private deserializeField(
     field: Buffer | null,
     kafkaMessage: KafkaMessage
-  ): string | Json | undefined {
-    if (field === undefined || field === null) {
-      return undefined;
-    }
+  ): string | Json | null {
     if (!Buffer.isBuffer(field)) {
       return field;
     }
 
-    // A field with the "leading zero byte" indicates the schema payload.
     // The "content" is possibly binary and should not be touched & parsed.
     if (
       Buffer.isBuffer(field) &&
@@ -25,26 +21,26 @@ class KafkaMessageJsonSerializer implements IKafkaMessageSerializer {
       field.readUInt8(0) === 0
     ) {
       throw new Error(
-        "Field failed to deserialize. A field with the leading zero byte indicates the schema payload."
+        "Field failed to deserialize. The content is possibly binary and cannot be decode. A field with the leading zero byte indicates the schema payload."
       );
     }
 
-    let result = field.toString("utf8");
-    const startChar = result.charAt(0);
+    const decodedString = field.toString("utf8");
+    const startChar = decodedString.charAt(0);
 
     // only try to parse objects and arrays
     if (startChar === "{" || startChar === "[") {
       try {
-        result = JSON.parse(field.toString());
+        return JSON.parse(decodedString);
       } catch (e) {
-        console.warn("KafkaMessageJsonSerializer failed to parse json", {
+        console.error("KafkaMessageJsonSerializer failed to parse json", {
           field,
           kafkaMessage,
           error: e,
         });
       }
     }
-    return result;
+    return decodedString;
   }
 
   public async deserialize(
@@ -54,35 +50,31 @@ class KafkaMessageJsonSerializer implements IKafkaMessageSerializer {
 
     return {
       key: this.deserializeField(originalKey, message),
-      value: this.deserializeField(originalValue, message) ?? null,
+      value: this.deserializeField(originalValue, message),
       headers,
     };
   }
 
-  private serialiseField(field?: string | Json): Buffer | undefined {
-    let serialised: Buffer | undefined;
-
-    if (typeof field === "undefined") {
-      serialised = undefined;
+  private serialiseField(field: string | Json | null): Buffer | null {
+    if (field === null) {
+      return null;
     } else if (typeof field === "string") {
-      serialised = Buffer.from(field, "utf-8");
-    } else {
-      const stringVal = JSON.stringify(field);
-      serialised = Buffer.from(stringVal, "utf-8");
+      return Buffer.from(field, "utf-8");
     }
 
-    return serialised;
+    const stringVal = JSON.stringify(field);
+    return Buffer.from(stringVal, "utf-8");
   }
 
   public async serialize(message: DecodedKafkaMessage): Promise<KafkaMessage> {
     const { key: decodedKey, value: decodedValue, headers } = message;
-    const key = this.serialiseField(decodedKey) ?? null;
+    const key = this.serialiseField(decodedKey);
 
-    const value = decodedValue ? this.serialiseField(decodedValue) : null;
+    const value = this.serialiseField(decodedValue);
 
     return {
       key,
-      value: value ?? null,
+      value,
       headers,
     };
   }
