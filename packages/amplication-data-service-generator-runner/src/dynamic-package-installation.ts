@@ -6,9 +6,11 @@ import {
   DynamicPackageInstallationManager,
   PackageInstallation,
 } from "./utils/DynamicPackageInstallationManager";
+import { Logger } from "winston";
 
 export async function dynamicPackagesInstallations(
-  packages: PluginInstallation[]
+  packages: PluginInstallation[],
+  logger: Logger
 ): Promise<void> {
   console.info("Installing dynamic packages");
   const manager = new DynamicPackageInstallationManager(
@@ -22,14 +24,14 @@ export async function dynamicPackagesInstallations(
     };
     await manager.install(plugin, {
       onBeforeInstall: async (plugin) => {
-        console.log(`Installing Plugin: ${plugin.name}@${plugin.version}`);
+        logger.info(`Installing Plugin: ${plugin.name}@${plugin.version}`);
         await createLog({
           level: "info",
           message: `Installing Plugin: ${plugin.name}@${plugin.version}`,
         });
       },
       onAfterInstall: async (plugin) => {
-        console.log(
+        logger.info(
           `Successfully Installed plugin: ${plugin.name}@${plugin.version}`
         );
         await createLog({
@@ -38,7 +40,7 @@ export async function dynamicPackagesInstallations(
         });
       },
       onError: async (plugin) => {
-        console.error(
+        logger.error(
           `Failed to installed plugin: ${plugin.name}@${plugin.version}`
         );
         await createLog({

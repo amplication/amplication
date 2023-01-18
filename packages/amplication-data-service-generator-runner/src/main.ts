@@ -37,7 +37,7 @@ export default async function generateCode(
     const resourceData = await readInputJson(source);
     const { pluginInstallations } = resourceData;
 
-    await dynamicPackagesInstallations(pluginInstallations);
+    await dynamicPackagesInstallations(pluginInstallations, defaultLogger);
 
     const modules = await createDataService(
       resourceData,
