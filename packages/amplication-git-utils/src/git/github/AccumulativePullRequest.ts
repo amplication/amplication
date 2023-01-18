@@ -68,7 +68,6 @@ export class AccumulativePullRequest {
         repo,
         title: prTitle,
         body: prBody,
-        base: "amplication" /* optional: defaults to default branch */,
         head,
         update: true,
         changes: [
