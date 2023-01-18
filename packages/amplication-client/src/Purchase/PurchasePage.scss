@@ -1,3 +1,5 @@
+@import "../style/index.scss";
+
 .purchase-page {
   display: flex;
   flex-direction: column;
@@ -21,78 +23,46 @@
   }
 
   &__header {
-    color: #ffffff;
-    font-size: 24px;
-    font-weight: 700;
+    @include pageTitle;
+    //TODO: Remove overrides after design system alignment
+    font-weight: 600;
     margin-top: 120px;
-    margin-bottom: 24px;
+    margin-bottom: var(--double-spacing);
   }
 
   .workspace-list {
-    margin-bottom: 50px;
+    margin-bottom: var(--header-spacing);
     margin-top: 10px;
   }
 
   &__contact {
-    padding: 80px 368px;
-    gap: 32px;
-    background: #15192c;
-  }
-  &__contact_content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #ffffff;
-    p {
-      font-weight: 700;
-      font-size: 24px;
-      margin: 8px;
-    }
-    label {
-      font-size: 14px;
-    }
-  }
-  &__contact_btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px;
-  }
-  &__contact_pro_btn {
-    color: var(--static-white);
-  }
-  &__contact_pro_btn:hover {
-    background-color: var(--dark-purple);
-    border-color: var(--dark-purple);
-  }
-
-  &__contact {
-    padding: 80px 368px;
-    gap: 32px;
+    align-self: stretch;
+    padding: var(--header-spacing) 0;
+    gap: var(--double-spacing);
     background: #15192c;
 
-    &_content {
+    &__content {
       display: flex;
       flex-direction: column;
       align-items: center;
-      color: #ffffff;
+      color: var(--black100);
+      gap: var(--default-spacing-small);
 
-      p {
-        font-weight: 700;
-        font-size: 24px;
-        margin: 8px;
+      &__header {
+        @include pageTitle;
+        //TODO: Remove overrides after design system alignment
+        font-weight: 600;
       }
 
-      label {
+      &__description {
+        @include body1;
+        //TODO: Remove overrides after design system alignment
+        color: var(--black100);
         font-size: 14px;
       }
-    }
-
-    &_btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px;
     }
 
     &_pro_btn {
@@ -102,6 +72,28 @@
     &_pro_btn:hover {
       background-color: var(--dark-purple);
       border-color: var(--dark-purple);
+    }
+  }
+
+  &__footer {
+    margin: 80px 64px 0;
+    align-self: stretch;
+    display: flex;
+    justify-content: space-between;
+    padding: 32px 0;
+
+    border-top: 1px solid var(--black5);
+
+    &__copyright {
+      color: var(--black80);
+    }
+
+    &__links {
+      display: flex;
+      gap: var(--double-spacing);
+      //TODO: Remove overrides after design system alignment
+      size: 14px;
+      text-decoration-line: underline;
     }
   }
 }
