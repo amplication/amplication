@@ -1,6 +1,7 @@
 import { Octokit } from "octokit";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { Branch } from "../dto";
+import { BasicPullRequest } from "./BasicPullRequest";
 import { createTree } from "./github-create-tree";
 
 export class AccumulativePullRequest {
@@ -61,24 +62,17 @@ export class AccumulativePullRequest {
     }
     if (!existingPullRequest) {
       console.info("The PR does not exist, creating a new one");
-      // Returns a normal Octokit PR response
-      // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
-      const pr = await octokit.createPullRequest({
+
+      return new BasicPullRequest().createPullRequest(
+        octokit,
         owner,
         repo,
-        title: prTitle,
-        body: prBody,
+        prTitle,
+        prBody,
         head,
-        update: true,
-        changes: [
-          {
-            /* optional: if `files` is not passed, an empty commit is created instead */
-            files: files,
-            commit: commitMessage,
-          },
-        ],
-      });
-      return pr.data.html_url;
+        files,
+        commitMessage
+      );
     }
 
     console.info("The PR already exists, updating it");
