@@ -9,10 +9,6 @@ const app = express();
 
 app.use(express.json());
 
-app.get("/api", (req, res) => {
-  res.send({ message: "Welcome to local-dsg-runner!" });
-});
-
 app.use("/api/code-generate", codeGenRouter);
 
 const port = process.env.PORT || 8888;
