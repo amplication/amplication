@@ -177,7 +177,7 @@ const PurchasePage = (props) => {
           </div>
           <div className={`${CLASS_NAME}__footer__links`}>
             <a
-              href="https://amplication.com/privacy"
+              href="https://amplication.com/privacy-policy"
               className={`${CLASS_NAME}__footer__links__privacy`}
             >
               Privacy Policy
