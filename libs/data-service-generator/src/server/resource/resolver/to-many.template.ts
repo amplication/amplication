@@ -24,7 +24,6 @@ export class Mixin {
   constructor(private readonly service: SERVICE) {}
 
   @graphql.ResolveField(() => [RELATED_ENTITY])
-  @Public()
   async FIND_MANY(
     @graphql.Parent() parent: ENTITY,
     @graphql.Args() args: ARGS

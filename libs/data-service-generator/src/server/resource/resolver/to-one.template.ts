@@ -15,7 +15,6 @@ export class Mixin {
   constructor(private readonly service: SERVICE) {}
 
   @graphql.ResolveField(() => RELATED_ENTITY, { nullable: true })
-  @Public()
   async FIND_ONE(
     @graphql.Parent() parent: ENTITY
   ): Promise<RELATED_ENTITY | null> {
