@@ -1,7 +1,7 @@
 import { Paywall, BillingPeriod } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as models from "../models";
 import {
   Button,
@@ -150,16 +150,16 @@ const PurchasePage = (props) => {
             );
           }}
         />
-      </div>
-      <div className={`${CLASS_NAME}__contact`}>
-        <div className={`${CLASS_NAME}__contact_content`}>
-          <p>Building an open-source project?</p>
-          <label>
-            Let us know if there is anything we can support you with. We will do
-            our best to help you improve your project for the community!
-          </label>
-        </div>
-        <div className={`${CLASS_NAME}__contact_btn`}>
+        <div className={`${CLASS_NAME}__contact`}>
+          <div className={`${CLASS_NAME}__contact__content`}>
+            <div className={`${CLASS_NAME}__contact__content__header`}>
+              Building an open-source project?
+            </div>
+            <div className={`${CLASS_NAME}__contact__content__description`}>
+              Let us know if there is anything we can support you with. We will
+              do our best to help you improve your project for the community!
+            </div>
+          </div>
           <Button buttonStyle={EnumButtonStyle.Primary}>
             <a
               target="_blank"
@@ -170,6 +170,25 @@ const PurchasePage = (props) => {
               Contact us
             </a>
           </Button>
+        </div>
+        <div className={`${CLASS_NAME}__footer`}>
+          <div className={`${CLASS_NAME}__footer__copyright`}>
+            ©2022 amplication
+          </div>
+          <div className={`${CLASS_NAME}__footer__links`}>
+            <a
+              href="https://amplication.com/privacy-policy"
+              className={`${CLASS_NAME}__footer__links__privacy`}
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="https://amplication.com/terms"
+              className={`${CLASS_NAME}__footer__links__terms`}
+            >
+              Terms & Conditions
+            </a>
+          </div>
         </div>
       </div>
     </Modal>

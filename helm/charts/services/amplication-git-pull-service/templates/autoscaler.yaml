@@ -1,5 +1,0 @@
-{{- define "amplication-git-pull-service.autoscaling" -}}
-{{- end }}
-{{- if .Values.autoscaling.enabled }}
-{{ include "base.autoscaling" (list . "amplication-git-pull-service.autoscaling") -}}
-{{- end }}
