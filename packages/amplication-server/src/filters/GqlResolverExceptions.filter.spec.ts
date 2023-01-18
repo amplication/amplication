@@ -23,8 +23,7 @@ const EXAMPLE_ERROR_MESSAGE = "Example Error Message";
 const EXAMPLE_FIELDS = ["exampleField", "exampleOtherField"];
 const EXAMPLE_PRISMA_UNKNOWN_ERROR = new Prisma.PrismaClientKnownRequestError(
   "Example Prisma unknown error message",
-  "UNKNOWN_CODE",
-  Prisma.prismaVersion.client
+  { code: "UNKNOWN_CODE", clientVersion: Prisma.prismaVersion.client }
 );
 const EXAMPLE_ERROR = new Error(EXAMPLE_ERROR_MESSAGE);
 const EXAMPLE_QUERY = "EXAMPLE_QUERY";
@@ -84,12 +83,13 @@ describe("GqlResolverExceptionsFilter", () => {
   > = [
     [
       "PrismaClientKnownRequestError unique key",
-      new Prisma.PrismaClientKnownRequestError(
-        EXAMPLE_ERROR_MESSAGE,
-        PRISMA_CODE_UNIQUE_KEY_VIOLATION,
-        Prisma.prismaVersion.client,
-        { target: EXAMPLE_FIELDS }
-      ),
+      new Prisma.PrismaClientKnownRequestError(EXAMPLE_ERROR_MESSAGE, {
+        code: PRISMA_CODE_UNIQUE_KEY_VIOLATION,
+        clientVersion: Prisma.prismaVersion.client,
+        meta: {
+          target: EXAMPLE_FIELDS,
+        },
+      }),
       new UniqueKeyException(EXAMPLE_FIELDS),
       null,
       [new UniqueKeyException(EXAMPLE_FIELDS).message, { requestData: null }],
