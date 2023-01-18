@@ -26,6 +26,9 @@
       "@amplication/data-service-generator": [
         "libs/data-service-generator/src/index.ts"
       ],
+      "@amplication/data-service-generator/*": [
+        "libs/data-service-generator/src/*"
+      ],
       "@amplication/design-system": [
         "packages/amplication-design-system/src/index.ts"
       ],
