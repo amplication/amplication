@@ -374,7 +374,7 @@ export class GithubService {
     installationId: string,
     owner: string,
     repo: string
-  ) {
+  ): Promise<{ sha: string }> {
     const octokit = await this.getInstallationOctokit(installationId);
 
     const commits = (
