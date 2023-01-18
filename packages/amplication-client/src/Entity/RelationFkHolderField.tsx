@@ -22,9 +22,6 @@ const RelationFkHolderField = ({ entity, ...props }: Props) => {
     }
   );
 
-  const currentEntity =
-    entity && entity.fields && entity.fields.length && entity.fields[0];
-
   const relatedField =
     data &&
     data.entity &&
@@ -46,7 +43,7 @@ const RelationFkHolderField = ({ entity, ...props }: Props) => {
       (entity &&
         data && [
           {
-            value: currentEntity.permanentId,
+            value: formik.values.permanentId,
             label: `${entity.displayName} (this side)`,
           },
           {
