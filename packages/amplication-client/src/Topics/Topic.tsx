@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { AppContext } from "../context/appContext";
@@ -24,20 +24,36 @@ const Topic = () => {
   }>("/:workspace/:project/:resource/topics/:topicId");
   const [updateTopic, { error: updateError }] = useMutation(UPDATE_TOPIC);
   const { topicId, resource } = match?.params ?? {};
-  const { currentWorkspace, currentProject } = useContext(AppContext);
+  const {
+    currentWorkspace,
+    currentProject,
+    addEntity,
+    resetPendingChangesIndicator,
+    setResetPendingChangesIndicator,
+  } = useContext(AppContext);
   const history = useHistory();
 
-  const { data, error, loading } = useQuery<TData>(GET_TOPIC, {
+  const { data, error, loading, refetch } = useQuery<TData>(GET_TOPIC, {
     variables: {
       topicId,
     },
   });
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+
+    setResetPendingChangesIndicator(false);
+    refetch();
+  }, [resetPendingChangesIndicator, setResetPendingChangesIndicator]);
 
   const { trackEvent } = useTracking();
 
   const handleSubmit = useCallback(
     (data) => {
       updateTopic({
+        onCompleted: () => {
+          addEntity(topicId);
+        },
         variables: {
           where: {
             id: topicId,
