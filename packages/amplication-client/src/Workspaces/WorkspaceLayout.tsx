@@ -12,6 +12,7 @@ import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import { AppRouteProps } from "../routes/routesUtil";
 import CompleteInvitation from "../User/CompleteInvitation";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import LastCommit from "../VersionControl/LastCommit";
 import PendingChanges from "../VersionControl/PendingChanges";
 import usePendingChanges, {
@@ -38,6 +39,7 @@ type Props = AppRouteProps & {
 
 const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
   const [chatStatus, setChatStatus] = useState<boolean>(false);
+  const { trackEvent } = useTracking();
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
@@ -103,7 +105,10 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     } else {
       window.HubSpotConversations.widget.load();
     }
-
+    trackEvent({
+      eventName: AnalyticsEventNames.ChatWidgetView,
+      workspaceId: currentWorkspace.id,
+    });
     setChatStatus(true);
   };
 

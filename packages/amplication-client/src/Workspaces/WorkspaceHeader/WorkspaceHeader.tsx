@@ -100,6 +100,15 @@ const WorkspaceHeader: React.FC<{}> = () => {
     });
   }, [currentWorkspace, window.location.pathname]);
 
+  const handleContactUsClick = useCallback(() => {
+    openHubSpotChat();
+    trackEvent({
+      eventName: AnalyticsEventNames.HelpMenuItemClick,
+      Action: "Contact Us",
+      workspaceId: currentWorkspace.id,
+    });
+  }, [openHubSpotChat]);
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
@@ -237,7 +246,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           <Button
             className={`${CLASS_NAME}__contact__btn`}
             buttonStyle={EnumButtonStyle.Clear}
-            onClick={openHubSpotChat}
+            onClick={handleContactUsClick}
           >
             Contact Us
           </Button>

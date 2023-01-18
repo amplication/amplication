@@ -1,6 +1,9 @@
 import { Icon } from "@amplication/design-system";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
+import { AppContext } from "./context/appContext";
 import "./hubSpotChat.scss";
+import { useTracking } from "./util/analytics";
+import { AnalyticsEventNames } from "./util/analytics-events.types";
 
 export const onConversationsAPIReady = () => {
   window.HubSpotConversations.on("conversationClosed", (payload) => {
@@ -20,6 +23,8 @@ export const HubSpotChatComponent: React.FC<{
   chatStatus: boolean;
   setChatStatus: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ chatStatus = false, setChatStatus }) => {
+  const { trackEvent } = useTracking();
+  const { currentWorkspace } = useContext(AppContext);
   useEffect(() => {
     window.hsConversationsSettings = {
       loadImmediately: chatStatus,
@@ -40,6 +45,10 @@ export const HubSpotChatComponent: React.FC<{
 
   const handleCloseChat = useCallback(() => {
     window.HubSpotConversations.widget.remove();
+    trackEvent({
+      eventName: AnalyticsEventNames.ChatWidgetClose,
+      workspaceId: currentWorkspace.id,
+    });
     setChatStatus(false);
   }, []);
 
