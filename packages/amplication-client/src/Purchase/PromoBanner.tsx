@@ -35,7 +35,8 @@ export const PromoBanner = () => {
             Thank you for being an early adopter
           </div>
           <div className={`${CLASS_NAME}__content__description`}>
-            As a token of appreciation we offer you two month of our Pro plan
+            As a token of appreciation we offer you the first 2 months of our
+            Pro plan
           </div>
           <div className={`${CLASS_NAME}__content__free`}>FOR FREE</div>
           <div className={`${CLASS_NAME}__content__coupon`}>
