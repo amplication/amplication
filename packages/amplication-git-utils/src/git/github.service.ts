@@ -5,9 +5,7 @@ import { components } from "@octokit/openapi-types";
 import { App, Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
-import { join } from "path";
 import { EnumPullRequestMode } from "../types";
-import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { Branch } from "./dto/branch";
 import { GithubFile } from "./dto/github-file.dto";
@@ -16,15 +14,8 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
 } from "./dto/remote-git-repository";
-import {
-  AMPLICATION_IGNORED_FOLDER,
-  UNSUPPORTED_GIT_ORGANIZATION_TYPE,
-} from "./git.constants";
-import {
-  EnumGitOrganizationType,
-  GitResourceMeta,
-  PrModule,
-} from "./git.types";
+import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
+import { EnumGitOrganizationType } from "./git.types";
 import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
 import { BasicPullRequest } from "./github/BasicPullRequest";
 
