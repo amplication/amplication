@@ -317,21 +317,26 @@ export class GithubService {
     owner: string,
     repo: string,
     newBranchName: string,
-    baseBranchName?: string
+    sha?: string
   ): Promise<Branch> {
     const octokit = await this.getInstallationOctokit(installationId);
-    const repository = await this.getRepository(installationId, owner, repo);
-    const { defaultBranch } = repository;
-    const refs = await octokit.rest.git.getRef({
-      owner,
-      repo,
-      ref: `heads/${baseBranchName || defaultBranch}`,
-    });
+    let baseSha = sha;
+    if (!baseSha) {
+      const repository = await this.getRepository(installationId, owner, repo);
+      const { defaultBranch } = repository;
+
+      const refs = await octokit.rest.git.getRef({
+        owner,
+        repo,
+        ref: `heads/${defaultBranch}`,
+      });
+      baseSha = refs.data.object.sha;
+    }
     const { data: branch } = await octokit.rest.git.createRef({
       owner,
       repo,
       ref: `refs/heads/${newBranchName}`,
-      sha: refs.data.object.sha,
+      sha: baseSha,
     });
     return { name: newBranchName, sha: branch.object.sha };
   }

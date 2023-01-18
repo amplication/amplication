@@ -103,7 +103,7 @@ export interface GitClient {
     owner: string,
     repo: string,
     newBranchName: string,
-    baseBranchName?: string
+    sha?: string
   ): Promise<Branch>;
 
   getBranch(

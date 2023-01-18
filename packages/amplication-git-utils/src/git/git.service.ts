@@ -213,7 +213,7 @@ export class GitService {
     owner: string,
     repo: string,
     newBranchName: string,
-    baseBranchName?: string
+    sha?: string
   ): Promise<Branch> {
     const service = this.gitServiceFactory.getService(gitProvider);
     return service.createBranch(
@@ -221,7 +221,7 @@ export class GitService {
       owner,
       repo,
       newBranchName,
-      baseBranchName
+      sha
     );
   }
 
