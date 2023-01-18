@@ -180,8 +180,7 @@ export class GithubService {
     prTitle: string,
     prBody: string,
     installationId: string,
-    head,
-    baseBranchName?: string | undefined
+    head
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
     const token = await this.getInstallationAuthToken(installationId);
@@ -197,7 +196,6 @@ export class GithubService {
           repo,
           prTitle,
           prBody,
-          baseBranchName,
           head,
           files,
           commitMessage
@@ -209,7 +207,6 @@ export class GithubService {
           repo,
           prTitle,
           prBody,
-          baseBranchName,
           head,
           files,
           commitMessage

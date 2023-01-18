@@ -89,8 +89,7 @@ export interface GitClient {
     commitMessage: string,
     commitDescription: string,
     installationId: string,
-    head: string,
-    baseBranchName?: string | undefined
+    head: string
   ): Promise<string>;
 
   getRepository(

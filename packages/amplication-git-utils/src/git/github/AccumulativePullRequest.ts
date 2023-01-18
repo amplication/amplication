@@ -10,7 +10,6 @@ export class AccumulativePullRequest {
     repo: string,
     prTitle: string,
     prBody: string,
-    baseBranchName: string,
     head: string,
     files: Required<Changes["files"]>,
     commitMessage: string
@@ -69,7 +68,7 @@ export class AccumulativePullRequest {
         repo,
         title: prTitle,
         body: prBody,
-        base: baseBranchName /* optional: defaults to default branch */,
+        base: "amplication" /* optional: defaults to default branch */,
         head,
         update: true,
         changes: [

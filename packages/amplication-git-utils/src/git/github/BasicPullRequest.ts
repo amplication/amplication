@@ -5,7 +5,6 @@ export class BasicPullRequest {
     repo: string,
     prTitle: string,
     prBody: string,
-    baseBranchName: string,
     head: string,
     files: any,
     commitMessage: string
@@ -15,7 +14,6 @@ export class BasicPullRequest {
       repo,
       title: prTitle,
       body: prBody,
-      base: baseBranchName /* optional: defaults to default branch */,
       head,
       update: true,
       changes: [

@@ -34,7 +34,7 @@ export class PullRequestService {
     gitResourceMeta,
     pullRequestMode,
   }: CreatePullRequestArgs): Promise<string> {
-    const { base, body, title } = commit;
+    const { body, title } = commit;
     const head =
       commit.head || pullRequestMode === EnumPullRequestMode.Accumulative
         ? "amplication"
@@ -69,8 +69,7 @@ export class PullRequestService {
       body,
       installationId,
       head,
-      gitResourceMeta,
-      base
+      gitResourceMeta
     );
     this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;
