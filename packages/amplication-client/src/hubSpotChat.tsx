@@ -1,5 +1,5 @@
 import { Icon } from "@amplication/design-system";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import "./hubSpotChat.scss";
 
 export const onConversationsAPIReady = () => {
