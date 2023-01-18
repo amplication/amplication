@@ -1,3 +1,5 @@
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+
 export class BasicPullRequest {
   async createPullRequest(
     octokit: any,
@@ -6,7 +8,7 @@ export class BasicPullRequest {
     prTitle: string,
     prBody: string,
     head: string,
-    files: any,
+    files: Required<Changes["files"]>,
     commitMessage: string
   ): Promise<string> {
     const pr = await octokit.createPullRequest({
