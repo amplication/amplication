@@ -376,26 +376,108 @@ export class GithubService {
     repo: string
   ): Promise<{ sha: string }> {
     const octokit = await this.getInstallationOctokit(installationId);
-
-    const commits = (
-      await octokit.rest.repos.listCommits({
+    const { defaultBranch } = await this.getRepository(
+      installationId,
+      owner,
+      repo
+    );
+    const firstCommit: TData = await octokit.graphql(
+      `query ($owner: String!, $repo: String!, $defaultBranch: String!) {
+      repository(name: $repo, owner: $owner) {
+        ref(qualifiedName: $defaultBranch) {
+          target {
+            ... on Commit {
+              history(first: 1) {
+                nodes {
+                  oid
+                  url
+                }
+                totalCount
+                pageInfo {
+                  endCursor
+                }
+              }
+            }
+          }
+        }
+      }
+    }`,
+      {
         owner,
         repo,
-        per_page: 100,
-      })
-    ).data;
-    const firstCommit = commits[commits.length - 1];
+        defaultBranch,
+      }
+    );
+    const {
+      repository: {
+        ref: {
+          target: {
+            history: { nodes: firstCommitNodes, pageInfo, totalCount },
+          },
+        },
+      },
+    } = firstCommit;
 
-    const firstCommitDateInMilliseconds = new Date(
-      firstCommit.commit.committer.date
-    ).getTime();
-    const lastCommitDateInMilliseconds = new Date(
-      commits[0].commit.committer.date
-    ).getTime();
-
-    if (firstCommitDateInMilliseconds > lastCommitDateInMilliseconds) {
-      throw new Error("There was an error getting the first commit");
+    if (totalCount <= 1) {
+      return { sha: firstCommitNodes[0].oid };
     }
-    return firstCommit;
+
+    const cursorPrefix = pageInfo.endCursor.split(" ")[0];
+    const nextCursor = `${cursorPrefix} ${totalCount - 2}`;
+
+    const lastCommitData: TData = await octokit.graphql(
+      `query ($owner: String!, $repo: String!, $defaultBranch: String!, $nextCursor: String!) {
+        repository(name: $repo, owner: $owner) {
+          ref(qualifiedName: $defaultBranch) {
+            target {
+              ... on Commit {
+                history(first: 1, after: $nextCursor) {
+                  nodes {
+                    oid
+                    url
+                  }
+                  totalCount
+                  pageInfo {
+                    endCursor
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`,
+      { owner, repo, defaultBranch, nextCursor }
+    );
+    const {
+      repository: {
+        ref: {
+          target: {
+            history: { nodes: lastCommitNodes },
+          },
+        },
+      },
+    } = lastCommitData;
+    return { sha: lastCommitNodes[0].oid };
   }
 }
+
+type TData = {
+  repository: {
+    ref: {
+      target: {
+        history: {
+          nodes: [
+            {
+              oid: string;
+              url: string;
+            }
+          ];
+          pageInfo: {
+            endCursor: string;
+          };
+          totalCount: number;
+        };
+      };
+    };
+  };
+};
