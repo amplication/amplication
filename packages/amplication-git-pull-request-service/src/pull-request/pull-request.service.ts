@@ -90,7 +90,7 @@ export class PullRequestService {
     repo: string,
     branch: string
   ): Promise<Branch> {
-    const { defaultBranch } = await await this.gitService.getRepository(
+    const { sha } = await this.gitService.getFirstDefaultBranchCommit(
       gitProvider,
       installationId,
       owner,
@@ -112,7 +112,7 @@ export class PullRequestService {
         owner,
         repo,
         branch,
-        defaultBranch
+        sha
       );
     }
 

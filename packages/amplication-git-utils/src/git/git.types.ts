@@ -119,4 +119,10 @@ export interface GitClient {
     repo: string,
     branch: string
   ): Promise<boolean>;
+
+  getFirstDefaultBranchCommit(
+    installationId: string,
+    owner: string,
+    repo: string
+  ): Promise<{ sha: string }>;
 }

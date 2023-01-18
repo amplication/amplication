@@ -364,4 +364,33 @@ export class GithubService {
     });
     return { sha: refs.data.object.sha, name: branch };
   }
+
+  async getFirstDefaultBranchCommit(
+    installationId: string,
+    owner: string,
+    repo: string
+  ) {
+    const octokit = await this.getInstallationOctokit(installationId);
+
+    const commits = (
+      await octokit.rest.repos.listCommits({
+        owner,
+        repo,
+        per_page: 100,
+      })
+    ).data;
+    const firstCommit = commits[commits.length - 1];
+
+    const firstCommitDateInMilliseconds = new Date(
+      firstCommit.commit.committer.date
+    ).getTime();
+    const lastCommitDateInMilliseconds = new Date(
+      commits[0].commit.committer.date
+    ).getTime();
+
+    if (firstCommitDateInMilliseconds > lastCommitDateInMilliseconds) {
+      throw new Error("There was an error getting the first commit");
+    }
+    return firstCommit;
+  }
 }

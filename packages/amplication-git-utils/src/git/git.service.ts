@@ -246,4 +246,14 @@ export class GitService {
     const service = this.gitServiceFactory.getService(gitProvider);
     return service.getBranch(installationId, owner, repo, branch);
   }
+
+  getFirstDefaultBranchCommit(
+    gitProvider: EnumGitProvider,
+    installationId: string,
+    owner: string,
+    repo: string
+  ) {
+    const service = this.gitServiceFactory.getService(gitProvider);
+    return service.getFirstDefaultBranchCommit(installationId, owner, repo);
+  }
 }
