@@ -5,7 +5,7 @@
   "main": "./src/index.js",
   "dependencies": {
     "@amplication/code-gen-utils": "^0.0.3",
-    "@amplication/plugin-db-postgres": "^1.1.7",
+    "@amplication/plugin-db-postgres": "1.1.7",
     "@babel/parser": "7.14.7",
     "@extra-set/difference": "2.2.4",
     "axios": "1.2.1",
@@ -24,7 +24,7 @@
     "yaml": "2.1.1"
   },
   "devDependencies": {
-    "@amplication/code-gen-types": "^1.1.19",
+    "@amplication/code-gen-types": "^1.1.21",
     "@apollo/client": "3.6.9",
     "@babel/types": "^7.19.4",
     "@prisma/client": "4.6.1",

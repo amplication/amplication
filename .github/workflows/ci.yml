@@ -18,6 +18,8 @@ on:
         default: false
   pull_request:
     types: [opened, reopened, synchronize]
+    branches-ignore:
+      - next # To avoid duplicated executions
     paths-ignore:
       - "**/*.md"
       - ".all-contributorsrc"
