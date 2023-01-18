@@ -1,12 +1,13 @@
 import { CircularProgress } from "@amplication/design-system";
 import { StiggProvider } from "@stigg/react-sdk";
-import React, { lazy } from "react";
+import React, { lazy, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import useAuthenticated from "../authentication/use-authenticated";
 import { AppContextProvider } from "../context/appContext";
 import { REACT_APP_BILLING_API_KEY } from "../env";
+import { HubSpotChatComponent } from "../hubSpotChat";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -36,6 +37,7 @@ type Props = AppRouteProps & {
 };
 
 const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
+  const [chatStatus, setChatStatus] = useState<boolean>(false);
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
@@ -93,6 +95,18 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resourceId: currentResource?.id,
   });
 
+  const openHubSpotChat = () => {
+    const status = window.HubSpotConversations.widget.status();
+
+    if (status.loaded) {
+      window.HubSpotConversations.widget.refresh();
+    } else {
+      window.HubSpotConversations.widget.load();
+    }
+
+    setChatStatus(true);
+  };
+
   return currentWorkspace ? (
     <AppContextProvider
       newVal={{
@@ -135,6 +149,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         loadingCreateMessageBroker,
         resetPendingChangesIndicator,
         setResetPendingChangesIndicator,
+        openHubSpotChat,
       }}
     >
       {isMobileOnly ? (
@@ -162,6 +177,10 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
                 </div>
               </div>
               <WorkspaceFooter />
+              <HubSpotChatComponent
+                setChatStatus={setChatStatus}
+                chatStatus={chatStatus}
+              />
               <ScreenResolutionMessage />
             </div>
           </Track>

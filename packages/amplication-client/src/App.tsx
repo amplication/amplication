@@ -16,6 +16,7 @@ declare global {
   interface Window {
     HubSpotConversations: any;
     hsConversationsOnReady: any;
+    hsConversationsSettings: any;
   }
 }
 
@@ -40,7 +41,6 @@ export const enhance = track<keyof typeof context>(
 function App() {
   const authenticated = useAuthenticated();
   const location = useLocation();
-
   const { currentWorkspaceLoading } = useCurrentWorkspace(authenticated);
   const [keepLoadingAnimation, setKeepLoadingAnimation] =
     useState<boolean>(true);
@@ -58,6 +58,11 @@ function App() {
     LOCAL_STORAGE_KEY_INVITATION_TOKEN,
     undefined
   );
+
+  window.hsConversationsSettings = {
+    loadImmediately: false,
+    inlineEmbedSelector: "#amplication-chat",
+  };
 
   useEffect(() => {
     const params = queryString.parse(location.search);
@@ -89,33 +94,6 @@ function App() {
   });
 
   const showLoadingAnimation = keepLoadingAnimation || currentWorkspaceLoading;
-
-  window.hsConversationsOnReady = [
-    () => {
-      console.log("chart is ready");
-      console.log(document.getElementById("hubspot-conversations-iframe"));
-      // document.getElementById('hubspot-conversations-iframe').contentWindow.document.querySelector("[area-label='Close live chat']").addEventListener('click', () => {
-      //   console.log('close');
-      // }, false);
-      window.HubSpotConversations.on("conversationMinimized", (payload) => {
-        console.log(
-          `Conversation with id ${payload.conversation.conversationId} has been closed!`
-        );
-        window.HubSpotConversations.widget.remove();
-      });
-      window.HubSpotConversations.on("conversationClosed", (payload) => {
-        console.log(
-          `Conversation with id ${payload.conversation.conversationId} has been closed!`
-        );
-        window.HubSpotConversations.widget.remove();
-      });
-      const handleEvent = (eventPayload) => {
-        console.log(eventPayload);
-      };
-
-      window.HubSpotConversations.on("conversationStarted", handleEvent);
-    },
-  ];
 
   return (
     <ThemeProvider>

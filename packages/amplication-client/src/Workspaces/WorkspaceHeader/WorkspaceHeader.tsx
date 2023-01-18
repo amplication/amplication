@@ -36,6 +36,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setResource,
     resources,
     currentProjectConfiguration,
+    openHubSpotChat,
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
@@ -233,14 +234,13 @@ const WorkspaceHeader: React.FC<{}> = () => {
           >
             Upgrade
           </Button>
-          <a
-            className={`${CLASS_NAME}__links__link`}
-            rel="noopener noreferrer"
-            href="https://amplication.com/blog"
-            target="_blank"
+          <Button
+            className={`${CLASS_NAME}__contact__btn`}
+            buttonStyle={EnumButtonStyle.Clear}
+            onClick={openHubSpotChat}
           >
-            Blog
-          </a>
+            Contact Us
+          </Button>
           <a
             className={`${CLASS_NAME}__links__link`}
             rel="noopener noreferrer"
