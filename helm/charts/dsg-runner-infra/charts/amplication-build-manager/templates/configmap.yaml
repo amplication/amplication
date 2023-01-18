@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: amplication-build-manager
-data: 
-  {{- toYaml .Values.config.env | nindent 2 }}
