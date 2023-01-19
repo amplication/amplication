@@ -11,14 +11,14 @@
       "$ref": "#/definitions/EntityId",
       "default": null
     },
-    "FkHolder": {
-      "title": "Foreign Key Holder",
-      "$ref": "#/definitions/RelationFkHolder",
-      "default": false
-    },
     "allowMultipleSelection": {
       "$ref": "#/definitions/RelationAllowMultiple",
       "default": false
+    },
+    "FkHolder": {
+      "title": "Foreign Key Holder",
+      "$ref": "#/definitions/RelationFkHolder",
+      "default": null
     },
     "relatedFieldId": {
       "title": "Related Field",
@@ -37,7 +37,7 @@
       "type": "boolean"
     },
     "RelationFkHolder": {
-      "type": "string"
+      "type": ["string", "null"]
     }
   }
 }
