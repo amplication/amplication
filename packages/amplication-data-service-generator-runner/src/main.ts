@@ -6,7 +6,6 @@ import {
 } from "@amplication/data-service-generator";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
-import { dynamicPackagesInstallations } from "./dynamic-package-installation";
 
 export const AMPLICATION_MODULES = "amplication_modules";
 const buildSpecPath = process.env.BUILD_SPEC_PATH;
@@ -35,15 +34,8 @@ export default async function generateCode(
 ): Promise<void> {
   try {
     const resourceData = await readInputJson(source);
-    const { pluginInstallations } = resourceData;
 
-    await dynamicPackagesInstallations(pluginInstallations);
-
-    const modules = await createDataService(
-      resourceData,
-      defaultLogger,
-      join(__dirname, "..", AMPLICATION_MODULES)
-    );
+    const modules = await createDataService(resourceData, defaultLogger, null);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
     await httpClient.post(

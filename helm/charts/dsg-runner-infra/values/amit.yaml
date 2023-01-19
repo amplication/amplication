@@ -1,4 +1,0 @@
-envName: "amit"
-
-persistentVolume:
-  volumeHandle: fs-03a0a5ba30d788595::fsap-0369ff368700f58c3
