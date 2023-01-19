@@ -4,8 +4,6 @@ import { BasicPullRequest } from "./BasicPullRequest";
 
 export class AccumulativePullRequest extends BasePullRequest {
   async createPullRequest(
-    owner: string,
-    repo: string,
     prTitle: string,
     prBody: string,
     head: string,
@@ -45,8 +43,8 @@ export class AccumulativePullRequest extends BasePullRequest {
               }
             }`,
       {
-        owner,
-        repo,
+        owner: this.owner,
+        repo: this.repo,
         head,
       }
     );
@@ -60,20 +58,16 @@ export class AccumulativePullRequest extends BasePullRequest {
     if (!existingPullRequest) {
       console.info("The PR does not exist, creating a new one");
 
-      return new BasicPullRequest(this.octokit).createPullRequest(
-        owner,
-        repo,
-        prTitle,
-        prBody,
-        head,
-        files,
-        commitMessage
-      );
+      return new BasicPullRequest(
+        this.octokit,
+        this.owner,
+        this.repo
+      ).createPullRequest(prTitle, prBody, head, files, commitMessage);
     }
 
     console.info("The PR already exists, updating it");
 
-    await this.createCommit(owner, repo, commitMessage, head, files);
+    await this.createCommit(commitMessage, head, files);
     return existingPullRequest.url;
   }
 }

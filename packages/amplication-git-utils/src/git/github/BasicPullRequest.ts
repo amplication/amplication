@@ -3,17 +3,17 @@ import { BasePullRequest } from "./BasePullRequest";
 
 export class BasicPullRequest extends BasePullRequest {
   async createPullRequest(
-    owner: string,
-    repo: string,
     prTitle: string,
     prBody: string,
     head: string,
     files: Required<Changes["files"]>,
     commitMessage: string
   ): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const pr = await this.octokit.createPullRequest({
-      owner,
-      repo,
+      owner: this.owner,
+      repo: this.repo,
       title: prTitle,
       body: prBody,
       head,
