@@ -1,4 +1,4 @@
-import { EnvironmentVariables } from "./";
+import { EnvironmentVariables } from "./environmentVariables";
 import { AssertionError } from "assert";
 
 const STRING_ENV_KEY = "STRING_ENV_KEY";

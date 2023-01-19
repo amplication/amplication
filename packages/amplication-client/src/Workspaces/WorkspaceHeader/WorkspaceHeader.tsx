@@ -36,6 +36,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setResource,
     resources,
     currentProjectConfiguration,
+    openHubSpotChat,
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
@@ -98,6 +99,15 @@ const WorkspaceHeader: React.FC<{}> = () => {
       workspace: currentWorkspace.id,
     });
   }, [currentWorkspace, window.location.pathname]);
+
+  const handleContactUsClick = useCallback(() => {
+    openHubSpotChat();
+    trackEvent({
+      eventName: AnalyticsEventNames.HelpMenuItemClick,
+      Action: "Contact Us",
+      workspaceId: currentWorkspace.id,
+    });
+  }, [openHubSpotChat]);
 
   return (
     <div className={CLASS_NAME}>
@@ -233,14 +243,13 @@ const WorkspaceHeader: React.FC<{}> = () => {
           >
             Upgrade
           </Button>
-          <a
-            className={`${CLASS_NAME}__links__link`}
-            rel="noopener noreferrer"
-            href="https://amplication.com/blog"
-            target="_blank"
+          <Button
+            className={`${CLASS_NAME}__contact__btn`}
+            buttonStyle={EnumButtonStyle.Clear}
+            onClick={handleContactUsClick}
           >
-            Blog
-          </a>
+            Contact Us
+          </Button>
           <a
             className={`${CLASS_NAME}__links__link`}
             rel="noopener noreferrer"
