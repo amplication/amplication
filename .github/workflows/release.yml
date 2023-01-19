@@ -1,5 +1,5 @@
 name: Release
-run-name: Release ${{ github.event.workflow_run.head_branch }} by workflow ${{ github.event.workflow_run.id }}
+run-name: Release ${{ github.event.workflow_run.head_branch }} by workflow ${{ github.event.workflow_run.id }} - commit ${{ github.event.workflow_run.head_sha }} 
 concurrency: ${{ github.event.workflow_run.head_branch }}
 
 on:
@@ -71,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v3
