@@ -1,6 +1,7 @@
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+import { BasePullRequest } from "./BasePullRequest";
 
-export class BasicPullRequest {
+export class BasicPullRequest extends BasePullRequest {
   async createPullRequest(
     octokit: any,
     owner: string,
