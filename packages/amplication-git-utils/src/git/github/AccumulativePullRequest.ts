@@ -4,7 +4,6 @@ import { BasicPullRequest } from "./BasicPullRequest";
 
 export class AccumulativePullRequest extends BasePullRequest {
   async createPullRequest(
-    octokit: any,
     owner: string,
     repo: string,
     prTitle: string,
@@ -28,7 +27,7 @@ export class AccumulativePullRequest extends BasePullRequest {
           };
         };
       };
-    } = await octokit.graphql(
+    } = await this.octokit.graphql(
       `
             query ($owner: String!, $repo: String!, $head: String!) {
               repository(name: $repo, owner: $owner) {
@@ -62,7 +61,6 @@ export class AccumulativePullRequest extends BasePullRequest {
       console.info("The PR does not exist, creating a new one");
 
       return new BasicPullRequest(this.octokit).createPullRequest(
-        octokit,
         owner,
         repo,
         prTitle,
@@ -75,7 +73,7 @@ export class AccumulativePullRequest extends BasePullRequest {
 
     console.info("The PR already exists, updating it");
 
-    await this.createCommit(octokit, owner, repo, commitMessage, head, files);
+    await this.createCommit(owner, repo, commitMessage, head, files);
     return existingPullRequest.url;
   }
 }

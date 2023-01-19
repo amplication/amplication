@@ -191,7 +191,6 @@ export class GithubService {
     switch (mode) {
       case EnumPullRequestMode.Accumulative:
         return new AccumulativePullRequest(octokit).createPullRequest(
-          octokit,
           owner,
           repo,
           prTitle,
@@ -202,7 +201,6 @@ export class GithubService {
         );
       default:
         return new BasicPullRequest(octokit).createPullRequest(
-          octokit,
           owner,
           repo,
           prTitle,

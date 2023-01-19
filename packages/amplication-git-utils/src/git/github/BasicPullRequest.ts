@@ -3,7 +3,6 @@ import { BasePullRequest } from "./BasePullRequest";
 
 export class BasicPullRequest extends BasePullRequest {
   async createPullRequest(
-    octokit: any,
     owner: string,
     repo: string,
     prTitle: string,
@@ -12,7 +11,7 @@ export class BasicPullRequest extends BasePullRequest {
     files: Required<Changes["files"]>,
     commitMessage: string
   ): Promise<string> {
-    const pr = await octokit.createPullRequest({
+    const pr = await this.octokit.createPullRequest({
       owner,
       repo,
       title: prTitle,

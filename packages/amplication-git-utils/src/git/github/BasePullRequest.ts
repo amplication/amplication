@@ -7,19 +7,13 @@ export abstract class BasePullRequest {
   constructor(protected readonly octokit: Octokit) {}
 
   async createCommit(
-    octokit: Octokit,
     owner: string,
     repo: string,
     message: string,
     branchName: string,
     changes: Required<Changes["files"]>
   ) {
-    const lastCommit = await this.getLastCommit(
-      octokit,
-      owner,
-      repo,
-      branchName
-    );
+    const lastCommit = await this.getLastCommit(owner, repo, branchName);
 
     console.log(`Got last commit with url ${lastCommit.html_url}`);
 
@@ -28,7 +22,7 @@ export abstract class BasePullRequest {
     }
 
     const lastTreeSha = await createTree(
-      octokit,
+      this.octokit,
       owner,
       repo,
       lastCommit.sha,
@@ -38,7 +32,7 @@ export abstract class BasePullRequest {
 
     console.info(`Created tree for for ${owner}/${repo}`);
 
-    const { data: commit } = await octokit.rest.git.createCommit({
+    const { data: commit } = await this.octokit.rest.git.createCommit({
       message,
       owner,
       repo,
@@ -48,7 +42,7 @@ export abstract class BasePullRequest {
 
     console.info(`Created commit for ${owner}/${repo}`);
 
-    await octokit.rest.git.updateRef({
+    await this.octokit.rest.git.updateRef({
       owner,
       repo,
       sha: commit.sha,
@@ -58,20 +52,15 @@ export abstract class BasePullRequest {
     console.info(`Updated branch ${branchName} for ${owner}/${repo}`);
   }
 
-  async getLastCommit(
-    octokit: Octokit,
-    owner: string,
-    repo: string,
-    branchName: string
-  ) {
-    const branch = await this.getBranch(octokit, owner, repo, branchName);
+  async getLastCommit(owner: string, repo: string, branchName: string) {
+    const branch = await this.getBranch(owner, repo, branchName);
 
     console.log(
       `Got branch ${owner}/${repo}/${branch.name} with sha ${branch.sha}`
     );
 
     const [lastCommit] = (
-      await octokit.rest.repos.listCommits({
+      await this.octokit.rest.repos.listCommits({
         owner,
         repo,
         sha: branch.sha,
@@ -82,12 +71,11 @@ export abstract class BasePullRequest {
   }
 
   async getBranch(
-    octokit: Octokit,
     owner: string,
     repo: string,
     branch: string
   ): Promise<Branch> {
-    const { data: ref } = await octokit.rest.git.getRef({
+    const { data: ref } = await this.octokit.rest.git.getRef({
       owner,
       repo,
       ref: `heads/${branch}`,
