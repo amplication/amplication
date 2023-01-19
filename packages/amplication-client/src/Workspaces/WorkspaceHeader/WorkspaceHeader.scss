@@ -160,6 +160,16 @@ $select-menu-max-width: 300px;
     }
   }
 
+  &__contact__btn {
+    color: var(--black80) !important;
+    margin: 0px;
+    padding: 0px;
+  }
+  &__contact__btn:hover {
+    background-color: transparent !important;
+    color: var(--black100) !important;
+  }
+
   &__vertical_border {
     width: 1px;
     height: var(--large-spacing);

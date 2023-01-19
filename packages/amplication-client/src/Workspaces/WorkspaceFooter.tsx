@@ -1,20 +1,14 @@
-import React, { useContext, useMemo } from "react";
 import { Icon, SkeletonWrapper } from "@amplication/design-system";
 import { isEmpty } from "lodash";
-import { GET_LAST_COMMIT_BUILDS } from "../VersionControl/hooks/commitQueries";
+import React, { useContext, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { ClickableId } from "../Components/ClickableId";
 import { AppContext } from "../context/appContext";
 import GitRepoDetails from "../Resource/git/GitRepoDetails";
-import "./WorkspaceFooter.scss";
-import * as models from "../models";
-import { useQuery } from "@apollo/client";
-import { Link } from "react-router-dom";
-import { PUSH_TO_GITHUB_STEP_NAME } from "../VersionControl/BuildSteps";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-
-type TDataCommit = {
-  commits: models.Commit[];
-};
+import { PUSH_TO_GITHUB_STEP_NAME } from "../VersionControl/BuildSteps";
+import useCommit from "../VersionControl/hooks/useCommits";
+import "./WorkspaceFooter.scss";
 
 const CLASS_NAME = "workspace-footer";
 
@@ -29,21 +23,7 @@ const WorkspaceFooter: React.FC<unknown> = () => {
     projectConfigurationResource,
   } = useContext(AppContext);
 
-  const { data: commitsData, loading: commitsLoading } = useQuery<TDataCommit>(
-    GET_LAST_COMMIT_BUILDS,
-    {
-      variables: {
-        projectId: currentProject?.id,
-      },
-      skip: !currentProject?.id,
-    }
-  );
-
-  const lastCommit = useMemo(() => {
-    if (commitsLoading || isEmpty(commitsData?.commits)) return null;
-    const [last] = commitsData?.commits || [];
-    return last;
-  }, [commitsLoading, commitsData]);
+  const { lastCommit } = useCommit();
 
   const lastResourceBuild = useMemo(() => {
     if (!lastCommit) return null;

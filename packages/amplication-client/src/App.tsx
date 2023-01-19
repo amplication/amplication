@@ -12,6 +12,14 @@ import { Loader, PlanUpgradeConfirmation } from "@amplication/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
 
+declare global {
+  interface Window {
+    HubSpotConversations: any;
+    hsConversationsOnReady: any;
+    hsConversationsSettings: any;
+  }
+}
+
 export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
 
 const GeneratedRoutes = routesGenerator(Routes);
@@ -33,7 +41,6 @@ export const enhance = track<keyof typeof context>(
 function App() {
   const authenticated = useAuthenticated();
   const location = useLocation();
-
   const { currentWorkspaceLoading } = useCurrentWorkspace(authenticated);
   const [keepLoadingAnimation, setKeepLoadingAnimation] =
     useState<boolean>(true);
@@ -51,6 +58,11 @@ function App() {
     LOCAL_STORAGE_KEY_INVITATION_TOKEN,
     undefined
   );
+
+  window.hsConversationsSettings = {
+    loadImmediately: false,
+    inlineEmbedSelector: "#amplication-chat",
+  };
 
   useEffect(() => {
     const params = queryString.parse(location.search);

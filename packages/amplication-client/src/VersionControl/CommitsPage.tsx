@@ -9,6 +9,7 @@ import CommitResourceList from "./CommitResourceList";
 import useCommit from "./hooks/useCommits";
 import "./CommitsPage.scss";
 import { EmptyState } from "../Components/EmptyState";
+import { CircularProgress } from "@amplication/design-system";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -22,8 +23,11 @@ type Props = AppRouteProps & {
 const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   const commitId = match.params.commit;
   const history = useHistory();
+
   const { currentProject, currentWorkspace } = useContext(AppContext);
+
   const { commits, commitsError, commitsLoading } = useCommit();
+
   const currentCommit = useMemo(() => {
     return commits.find((commit) => commit.id === commitId);
   }, [commitId, commits]);
@@ -53,6 +57,8 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
     >
       {hasCommits && currentCommit ? (
         <CommitResourceList commit={currentCommit} />
+      ) : commitsLoading ? (
+        <CircularProgress centerToParent />
       ) : (
         <EmptyState
           message="There are no commits to show"

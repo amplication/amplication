@@ -1,3 +1,0 @@
-{{ include "base.rolebinding" (list . "amplication-git-push-webhook-service.rolebinding") -}}
-{{- define "amplication-git-push-webhook-service.rolebinding" -}}
-{{- end }}
