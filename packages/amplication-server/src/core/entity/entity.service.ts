@@ -1916,7 +1916,8 @@ export class EntityService {
             properties.relatedEntityId,
             entity.id,
             fieldId,
-            user
+            user,
+            properties.FkHolder
           );
         }
 
@@ -2000,7 +2001,8 @@ export class EntityService {
           properties.relatedEntityId,
           entity.id,
           field.permanentId,
-          user
+          user,
+          properties.FkHolder
         );
 
         properties.relatedFieldId = relatedFieldId;
@@ -2026,7 +2028,9 @@ export class EntityService {
     entityId: string,
     relatedEntityId: string,
     relatedFieldId: string,
-    user: User
+    user: User,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    FkHolder?: string
   ): Promise<EntityField> {
     return await this.useLocking(entityId, user, async () => {
       return this.prisma.entityField.create({
@@ -2049,6 +2053,8 @@ export class EntityService {
             allowMultipleSelection,
             relatedEntityId,
             relatedFieldId,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            FkHolder,
           },
         },
       });
@@ -2175,7 +2181,8 @@ export class EntityService {
             properties.relatedEntityId,
             entity.id,
             field.permanentId,
-            user
+            user,
+            properties.FkHolder
           );
         }
 

@@ -27,7 +27,6 @@ export type Values = {
   properties: {
     relatedEntityId?: string;
     allowMultipleSelection?: string;
-    FkHolder?: string;
   };
 };
 
