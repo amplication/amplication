@@ -50,6 +50,7 @@ export interface AppContextInterface {
   errorCreateMessageBroker: Error | undefined;
   resetPendingChangesIndicator: boolean;
   setResetPendingChangesIndicator: (reset: boolean) => void;
+  openHubSpotChat: () => void;
 }
 
 const initialContext: AppContextInterface = {
@@ -92,6 +93,7 @@ const initialContext: AppContextInterface = {
   errorCreateMessageBroker: undefined,
   resetPendingChangesIndicator: false,
   setResetPendingChangesIndicator: () => {},
+  openHubSpotChat: () => {},
 };
 
 export const AppContext =
