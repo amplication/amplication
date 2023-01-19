@@ -6,7 +6,7 @@ import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
 import { KafkaMessage } from "kafkajs";
 import { ResultMessage } from "../queue/dto/ResultMessage";
 import { StatusEnum } from "../queue/dto/StatusEnum";
-import { EnvironmentVariables } from "@amplication/util/nestjs/kafka";
+import { EnvironmentVariables } from "@amplication/util/kafka";
 import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";

@@ -43,6 +43,7 @@
       ],
       "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
       "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
+      "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],
       "@amplication/util/nestjs/kafka": ["libs/util/nestjs/kafka/src/index.ts"],
       "@primer/react/deprecated": ["node_modules/@primer/react/lib/deprecated"]
     }
