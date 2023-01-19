@@ -97,32 +97,4 @@ export interface GitClient {
     owner: string,
     repo: string
   ): Promise<RemoteGitRepository>;
-
-  createBranch(
-    installationId: string,
-    owner: string,
-    repo: string,
-    newBranchName: string,
-    sha?: string
-  ): Promise<Branch>;
-
-  getBranch(
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<Branch>;
-
-  isBranchExist(
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<boolean>;
-
-  getFirstDefaultBranchCommit(
-    installationId: string,
-    owner: string,
-    repo: string
-  ): Promise<{ sha: string }>;
 }

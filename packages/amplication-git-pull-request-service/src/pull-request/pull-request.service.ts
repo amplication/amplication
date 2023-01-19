@@ -1,15 +1,10 @@
-import {
-  Branch,
-  EnumPullRequestMode,
-  GitService,
-} from "@amplication/git-utils";
+import { EnumPullRequestMode, GitService } from "@amplication/git-utils";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
 import { Inject, Injectable } from "@nestjs/common";
 import { DiffService } from "../diff/diff.service";
-import { EnumGitProvider } from "../models";
 import { PrModule } from "../types";
 import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 
@@ -50,14 +45,6 @@ export class PullRequestService {
       { lengthOfFile: changedFiles.length }
     );
 
-    await this.validateOrCreateBranch(
-      gitProvider,
-      installationId,
-      owner,
-      repo,
-      head
-    );
-
     const prUrl = await this.gitService.createPullRequest(
       pullRequestMode,
       gitProvider,
@@ -81,47 +68,5 @@ export class PullRequestService {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });
-  }
-
-  async validateOrCreateBranch(
-    gitProvider: EnumGitProvider,
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<Branch> {
-    const { sha } = await this.gitService.getFirstDefaultBranchCommit(
-      gitProvider,
-      installationId,
-      owner,
-      repo
-    );
-
-    const isBranchExist = await this.gitService.isBranchExist(
-      gitProvider,
-      installationId,
-      owner,
-      repo,
-      branch
-    );
-
-    if (!isBranchExist) {
-      return this.gitService.createBranch(
-        gitProvider,
-        installationId,
-        owner,
-        repo,
-        branch,
-        sha
-      );
-    }
-
-    return this.gitService.getBranch(
-      gitProvider,
-      installationId,
-      owner,
-      repo,
-      branch
-    );
   }
 }
