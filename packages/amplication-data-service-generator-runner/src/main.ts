@@ -35,17 +35,7 @@ export default async function generateCode(
   try {
     const resourceData = await readInputJson(source);
 
-    const modules = await createDataService(
-      resourceData,
-      defaultLogger,
-      join(
-        __dirname,
-        "..",
-        "..",
-        "..",
-        "libs/data-service-generator/node_modules"
-      )
-    );
+    const modules = await createDataService(resourceData, defaultLogger, null);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
     await httpClient.post(
