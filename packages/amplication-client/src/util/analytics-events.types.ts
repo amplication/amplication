@@ -15,6 +15,7 @@ export enum AnalyticsEventNames {
   AccountInfoUpdate = "updateAccountInfo",
 
   // workspace
+  WorkspaceSelected = "selectWorkspace",
   WorkspaceInfoUpdate = "updateWorkspaceInfo",
   WorkspaceCreate = "createWorkspace",
   WorkspaceMemberInvite = "inviteUser",
