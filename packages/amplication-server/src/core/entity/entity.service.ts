@@ -2094,6 +2094,7 @@ export class EntityService {
     if (isReservedName(args.data?.name?.toLowerCase().trim())) {
       throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
+
     // Get field to update
     const field = await this.getField({
       where: args.where,
@@ -2117,6 +2118,8 @@ export class EntityService {
         "The base properties of the ID field cannot be edited"
       );
     }
+
+    const properties = field.properties as unknown as types.Lookup;
 
     // Delete related field in case field data type is changed from lookup
     const shouldDeleteRelated =
@@ -2158,8 +2161,6 @@ export class EntityService {
 
         // In case related field should be deleted or changed, delete the existing related field
         if (shouldDeleteRelated || shouldChangeRelated) {
-          const properties = field.properties as unknown as types.Lookup;
-
           /**@todo: when the field should be changed and we delete it, we loose the permanent ID and links to previous versions  */
           await this.deleteRelatedField(
             properties.relatedFieldId,
@@ -2186,9 +2187,35 @@ export class EntityService {
           );
         }
 
-        return this.prisma.entityField.update(
+        const updatedField = await this.prisma.entityField.update(
           omit(args, ["relatedFieldName", "relatedFieldDisplayName"])
         );
+
+        // Get related field to update
+        const relatedField = await this.getField({
+          where: {
+            permanentId: properties.relatedFieldId,
+          },
+          include: { entityVersion: true },
+        });
+
+        const relatedFieldProps =
+          relatedField.properties as unknown as types.Lookup;
+
+        relatedFieldProps.FkHolder = (
+          updatedField.properties as unknown as types.Lookup
+        )?.FkHolder;
+
+        await this.prisma.entityField.update({
+          where: {
+            id: relatedField.id,
+          },
+          data: {
+            properties: relatedFieldProps as unknown as Prisma.InputJsonValue,
+          },
+        });
+
+        return updatedField;
       }
     );
   }
