@@ -34,7 +34,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return existingPullRequest.url;
   }
 
-  async validateOrCreateBranch(branch: string): Promise<Branch> {
+  private async validateOrCreateBranch(branch: string): Promise<Branch> {
     const { sha } = await this.getFirstDefaultBranchCommit();
     const isBranchExist = await this.isBranchExist(branch);
     if (!isBranchExist) {
@@ -43,7 +43,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return this.getBranch(branch);
   }
 
-  async isBranchExist(branch: string): Promise<boolean> {
+  private async isBranchExist(branch: string): Promise<boolean> {
     try {
       const refs = await this.getBranch(branch);
       return Boolean(refs);
@@ -52,7 +52,10 @@ export class AccumulativePullRequest extends BasePullRequest {
     }
   }
 
-  async createBranch(newBranchName: string, sha?: string): Promise<Branch> {
+  private async createBranch(
+    newBranchName: string,
+    sha?: string
+  ): Promise<Branch> {
     const { octokit, owner, repo } = this;
     let baseSha = sha;
     if (!baseSha) {
@@ -75,7 +78,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return { name: newBranchName, sha: branch.object.sha };
   }
 
-  async getFirstDefaultBranchCommit(): Promise<{ sha: string }> {
+  private async getFirstDefaultBranchCommit(): Promise<{ sha: string }> {
     const { octokit, owner, repo } = this;
     const { defaultBranch } = await this.getRepository();
     const firstCommit: TData = await octokit.graphql(
@@ -157,7 +160,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return { sha: lastCommitNodes[0].oid };
   }
 
-  async existingPullRequest(
+  private async existingPullRequest(
     head: string
   ): Promise<{ url: string; number: number } | undefined> {
     const { octokit, owner, repo } = this;
@@ -206,7 +209,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return existingPullRequest;
   }
 
-  async appendCommitOnBranch(
+  private async appendCommitOnBranch(
     message: string,
     branchName: string,
     changes: Required<Changes["files"]>
@@ -248,7 +251,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     console.info(`Updated branch ${branchName} for ${owner}/${repo}`);
   }
 
-  async getLastCommit(branchName: string) {
+  private async getLastCommit(branchName: string) {
     const { owner, repo, octokit } = this;
     const branch = await this.getBranch(branchName);
 
@@ -267,7 +270,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return lastCommit;
   }
 
-  async getBranch(branch: string): Promise<Branch> {
+  private async getBranch(branch: string): Promise<Branch> {
     const { owner, repo, octokit } = this;
     const { data: ref } = await octokit.rest.git.getRef({
       owner,
@@ -280,7 +283,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return { sha: ref.object.sha, name: branch };
   }
 
-  async createTree(
+  private async createTree(
     latestCommitSha: string,
     latestCommitTreeSha: string,
     changes: Required<Changes["files"]>
@@ -372,7 +375,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return newTreeSha;
   }
 
-  async valueToTreeObject(path: string, value: string | File) {
+  private async valueToTreeObject(path: string, value: string | File) {
     const { octokit, owner, repo } = this;
     let mode = "100644";
     if (value !== null && typeof value !== "string") {
@@ -407,7 +410,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     };
   }
 
-  async createGitPullRequest({ title, head, base, body }: CreatePrDto) {
+  private async createGitPullRequest({ title, head, base, body }: CreatePrDto) {
     const { octokit, owner, repo } = this;
     const { data: pullRequest } = await octokit.rest.pulls.create({
       owner,
@@ -420,7 +423,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     return pullRequest.html_url;
   }
 
-  async getRepository(): Promise<RemoteGitRepository> {
+  private async getRepository(): Promise<RemoteGitRepository> {
     const { octokit, owner, repo } = this;
     const {
       data: {
