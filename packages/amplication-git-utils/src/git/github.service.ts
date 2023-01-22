@@ -7,7 +7,6 @@ import { createPullRequest } from "octokit-plugin-create-pull-request";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { EnumPullRequestMode } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
-import { Branch } from "./dto/branch";
 import { GithubFile } from "./dto/github-file.dto";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import {
