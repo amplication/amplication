@@ -9,11 +9,12 @@ export class BasicPullRequest extends BasePullRequest {
     files: Required<Changes["files"]>,
     commitMessage: string
   ): Promise<string> {
+    const { octokit, owner, repo } = this;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const pr = await this.octokit.createPullRequest({
-      owner: this.owner,
-      repo: this.repo,
+    const pr = await octokit.createPullRequest({
+      owner: owner,
+      repo: repo,
       title: prTitle,
       body: prBody,
       head,
