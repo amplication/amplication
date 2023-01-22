@@ -2030,7 +2030,7 @@ export class EntityService {
     relatedFieldId: string,
     user: User,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    FkHolder?: string
+    fkHolder?: string
   ): Promise<EntityField> {
     return await this.useLocking(entityId, user, async () => {
       return this.prisma.entityField.create({
@@ -2054,7 +2054,7 @@ export class EntityService {
             relatedEntityId,
             relatedFieldId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            FkHolder,
+            fkHolder,
           },
         },
       });
