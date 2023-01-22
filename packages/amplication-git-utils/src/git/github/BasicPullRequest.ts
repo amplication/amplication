@@ -13,8 +13,8 @@ export class BasicPullRequest extends BasePullRequest {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const pr = await octokit.createPullRequest({
-      owner: owner,
-      repo: repo,
+      owner,
+      repo,
       title: prTitle,
       body: prBody,
       head,
