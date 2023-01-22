@@ -33,8 +33,8 @@ const RelationFkHolderField = ({ entity, ...props }: Props) => {
     return (
       entity &&
       data &&
-      !formik.values?.properties.allowMultipleSelection &&
-      !relatedField.properties.allowMultipleSelection
+      !formik.values?.properties?.allowMultipleSelection &&
+      !relatedField.properties?.allowMultipleSelection
     );
   }, [data, formik.values]);
 
