@@ -1917,7 +1917,7 @@ export class EntityService {
             entity.id,
             fieldId,
             user,
-            properties.FkHolder
+            properties.fkHolder
           );
         }
 
@@ -2002,7 +2002,7 @@ export class EntityService {
           entity.id,
           field.permanentId,
           user,
-          properties.FkHolder
+          properties.fkHolder
         );
 
         properties.relatedFieldId = relatedFieldId;
@@ -2183,7 +2183,7 @@ export class EntityService {
             entity.id,
             field.permanentId,
             user,
-            properties.FkHolder
+            properties.fkHolder
           );
         }
 
@@ -2202,9 +2202,9 @@ export class EntityService {
         const relatedFieldProps =
           relatedField.properties as unknown as types.Lookup;
 
-        relatedFieldProps.FkHolder = (
+        relatedFieldProps.fkHolder = (
           updatedField.properties as unknown as types.Lookup
-        )?.FkHolder;
+        )?.fkHolder;
 
         await this.prisma.entityField.update({
           where: {
