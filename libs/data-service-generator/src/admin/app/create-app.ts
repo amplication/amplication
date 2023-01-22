@@ -1,5 +1,5 @@
 import * as path from "path";
-import { print } from "@amplication/code-gen-utils";
+import { print, readFile } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import { Module } from "@amplication/code-gen-types";
 import {
@@ -10,7 +10,7 @@ import {
   removeTSVariableDeclares,
 } from "../../util/ast";
 import { relativeImportPath } from "../../util/module";
-import { readFile } from "@amplication/code-gen-utils";
+
 import { jsxElement, jsxFragment } from "../util";
 import { EntityComponents } from "../types";
 import DsgContext from "../../dsg-context";

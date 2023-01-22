@@ -25,6 +25,8 @@ import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
 import { Subscription } from "../subscription/dto/Subscription";
 import { GitOrganization } from "../../models/GitOrganization";
 import { ProjectService } from "../project/project.service";
+import { BillingService } from "../billing/billing.service";
+import { BillingPlan } from "../billing/BillingPlan";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -35,7 +37,8 @@ export class WorkspaceService {
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly billingService: BillingService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -91,6 +94,8 @@ export class WorkspaceService {
         users: args?.include?.users || true,
       },
     });
+
+    await this.billingService.provisionCustomer(workspace.id, BillingPlan.Free);
 
     const [user] = workspace.users;
 

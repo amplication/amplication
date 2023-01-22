@@ -15,20 +15,25 @@ export function createEnumDTOModule(
   dto: namedTypes.TSEnumDeclaration,
   dtoNameToPath: Record<string, string>
 ): Module {
-  const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
+  try {
+    const file = createDTOFile(dto, dtoNameToPath[dto.id.name], dtoNameToPath);
 
-  file.program.body
-    .push(expressionStatement`${REGISTER_ENUM_TYPE_ID}(${dto.id}, {
-  name: "${dto.id.name}",
-});`);
+    file.program.body
+      .push(expressionStatement`${REGISTER_ENUM_TYPE_ID}(${dto.id}, {
+    name: "${dto.id.name}",
+  });`);
 
-  addImports(file, [
-    importDeclaration`import { ${REGISTER_ENUM_TYPE_ID} } from "@nestjs/graphql"`,
-  ]);
-  addAutoGenerationComment(file);
+    addImports(file, [
+      importDeclaration`import { ${REGISTER_ENUM_TYPE_ID} } from "@nestjs/graphql"`,
+    ]);
+    addAutoGenerationComment(file);
 
-  return {
-    code: print(file).code,
-    path: dtoNameToPath[dto.id.name],
-  };
+    return {
+      code: print(file).code,
+      path: dtoNameToPath[dto.id.name],
+    };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }

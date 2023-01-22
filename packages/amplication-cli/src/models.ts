@@ -871,6 +871,7 @@ export type Mutation = {
   inviteUser?: Maybe<Invitation>;
   lockEntity?: Maybe<Entity>;
   login: Auth;
+  provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
@@ -1106,6 +1107,11 @@ export type MutationLockEntityArgs = {
 
 export type MutationLoginArgs = {
   data: LoginInput;
+};
+
+
+export type MutationProvisionSubscriptionArgs = {
+  data: ProvisionSubscriptionInput;
 };
 
 
@@ -1399,6 +1405,21 @@ export type PropertySelectorInput = {
   propertyName: Scalars['String'];
 };
 
+export type ProvisionSubscriptionInput = {
+  billingPeriod: Scalars['String'];
+  cancelUrl: Scalars['String'];
+  intentionType: Scalars['String'];
+  planId: Scalars['String'];
+  successUrl: Scalars['String'];
+  workspaceId: Scalars['String'];
+};
+
+export type ProvisionSubscriptionResult = {
+  __typename?: 'ProvisionSubscriptionResult';
+  checkoutUrl?: Maybe<Scalars['String']>;
+  provisionStatus: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   PluginInstallation?: Maybe<PluginInstallation>;
@@ -1646,6 +1667,7 @@ export type RemoteGitRepositoriesWhereUniqueInput = {
 export type RemoteGitRepository = {
   __typename?: 'RemoteGitRepository';
   admin: Scalars['Boolean'];
+  defaultBranch: Scalars['String'];
   fullName: Scalars['String'];
   name: Scalars['String'];
   private: Scalars['Boolean'];

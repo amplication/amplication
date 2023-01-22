@@ -23,7 +23,7 @@ const DiscardChanges = ({
 }: Props) => {
   const { trackEvent } = useTracking();
 
-  const { pendingChanges, resetPendingChanges, addChange } =
+  const { pendingChanges, resetPendingChanges, addEntity } =
     useContext(AppContext);
   const [discardChanges, { error, loading }] = useMutation(DISCARD_CHANGES, {
     update(cache, { data }) {
@@ -40,6 +40,7 @@ const DiscardChanges = ({
           });
         } else {
           /**@todo: handle other types of blocks */
+
           cache.evict({
             id: cache.identify({
               id: change.originId,
@@ -52,7 +53,7 @@ const DiscardChanges = ({
     onCompleted: (data) => {
       resetPendingChanges();
       onComplete();
-      addChange(data.project.connect.id);
+      addEntity(projectId); // data.project.connect.id
     },
   });
 

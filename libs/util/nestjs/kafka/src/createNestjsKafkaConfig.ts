@@ -1,6 +1,6 @@
 import { KafkaOptions, Transport } from "@nestjs/microservices";
 import { ConsumerConfig } from "@nestjs/microservices/external/kafka.interface";
-import { KafkaEnvironmentVariables } from "./";
+import { KafkaEnvironmentVariables } from "@amplication/util/kafka";
 import { randomUUID } from "crypto";
 
 export function createNestjsKafkaConfig(envSuffix = ""): KafkaOptions {

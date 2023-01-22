@@ -1,25 +1,29 @@
-import React, { lazy } from "react";
-import { match } from "react-router-dom";
-import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import { isMobileOnly } from "react-device-detect";
-import CompleteInvitation from "../User/CompleteInvitation";
-import "./WorkspaceLayout.scss";
-import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
-// import WorkspaceFooter from "./WorkspaceFooter";
-import useAuthenticated from "../authentication/use-authenticated";
-import useProjectSelector from "./hooks/useProjectSelector";
-import { AppContextProvider } from "../context/appContext";
-import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import { CircularProgress } from "@amplication/design-system";
-import useResources from "./hooks/useResources";
+import { StiggProvider } from "@stigg/react-sdk";
+import React, { lazy, useState } from "react";
+import { isMobileOnly } from "react-device-detect";
+import { match } from "react-router-dom";
+import { useTracking } from "react-tracking";
+import useAuthenticated from "../authentication/use-authenticated";
+import { AppContextProvider } from "../context/appContext";
+import { REACT_APP_BILLING_API_KEY } from "../env";
+import { HubSpotChatComponent } from "../hubSpotChat";
+import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
+import ProjectEmptyState from "../Project/ProjectEmptyState";
 import { AppRouteProps } from "../routes/routesUtil";
+import CompleteInvitation from "../User/CompleteInvitation";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import LastCommit from "../VersionControl/LastCommit";
+import PendingChanges from "../VersionControl/PendingChanges";
 import usePendingChanges, {
   PendingChangeItem,
 } from "./hooks/usePendingChanges";
-import ProjectEmptyState from "../Project/ProjectEmptyState";
-import PendingChanges from "../VersionControl/PendingChanges";
-import LastCommit from "../VersionControl/LastCommit";
+import useProjectSelector from "./hooks/useProjectSelector";
+import useResources from "./hooks/useResources";
+import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import WorkspaceFooter from "./WorkspaceFooter";
+import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
+import "./WorkspaceLayout.scss";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -34,6 +38,8 @@ type Props = AppRouteProps & {
 };
 
 const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
+  const [chatStatus, setChatStatus] = useState<boolean>(false);
+  const { trackEvent } = useTracking();
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
@@ -42,6 +48,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createNewWorkspaceError,
     loadingCreateNewWorkspace,
     refreshCurrentWorkspace,
+    getWorkspaces,
+    workspacesList,
   } = useWorkspaceSelector(authenticated);
   const {
     currentProject,
@@ -61,6 +69,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resetPendingChanges,
     setCommitRunning,
     setPendingChangesError,
+    resetPendingChangesIndicator,
+    setResetPendingChangesIndicator,
   } = usePendingChanges(currentProject);
 
   const {
@@ -80,6 +90,27 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
+
+  const { Track } = useTracking({
+    workspaceId: currentWorkspace?.id,
+    projectId: currentProject?.id,
+    resourceId: currentResource?.id,
+  });
+
+  const openHubSpotChat = () => {
+    const status = window.HubSpotConversations.widget.status();
+
+    if (status.loaded) {
+      window.HubSpotConversations.widget.refresh();
+    } else {
+      window.HubSpotConversations.widget.load();
+    }
+    trackEvent({
+      eventName: AnalyticsEventNames.ChatWidgetView,
+      workspaceId: currentWorkspace.id,
+    });
+    setChatStatus(true);
+  };
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -114,33 +145,51 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         setCommitRunning,
         setPendingChangesError,
         refreshCurrentWorkspace,
+        getWorkspaces,
+        workspacesList,
         gitRepositoryFullName,
         gitRepositoryUrl,
         createMessageBroker,
         errorCreateMessageBroker,
         loadingCreateMessageBroker,
+        resetPendingChangesIndicator,
+        setResetPendingChangesIndicator,
+        openHubSpotChat,
       }}
     >
       {isMobileOnly ? (
         <MobileMessage />
       ) : (
-        <div className={moduleClass}>
-          <WorkspaceHeader />
-          <CompleteInvitation />
-          <div className={`${moduleClass}__page_content`}>
-            <div className={`${moduleClass}__main_content`}>
-              {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+        <StiggProvider
+          apiKey={REACT_APP_BILLING_API_KEY}
+          customerId={currentWorkspace.id}
+        >
+          <Track>
+            <div className={moduleClass}>
+              <WorkspaceHeader />
+              <CompleteInvitation />
+              <div className={`${moduleClass}__page_content`}>
+                <div className={`${moduleClass}__main_content`}>
+                  {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+                </div>
+                <div className={`${moduleClass}__changes_menu`}>
+                  {currentProject ? (
+                    <PendingChanges projectId={currentProject.id} />
+                  ) : null}
+                  {currentProject && (
+                    <LastCommit projectId={currentProject.id} />
+                  )}
+                </div>
+              </div>
+              <WorkspaceFooter />
+              <HubSpotChatComponent
+                setChatStatus={setChatStatus}
+                chatStatus={chatStatus}
+              />
+              <ScreenResolutionMessage />
             </div>
-            <div className={`${moduleClass}__changes_menu`}>
-              {currentProject ? (
-                <PendingChanges projectId={currentProject.id} />
-              ) : null}
-              {currentProject && <LastCommit projectId={currentProject.id} />}
-            </div>
-          </div>
-          <WorkspaceFooter />
-          <ScreenResolutionMessage />
-        </div>
+          </Track>
+        </StiggProvider>
       )}
     </AppContextProvider>
   ) : (

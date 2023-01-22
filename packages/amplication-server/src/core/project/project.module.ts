@@ -1,5 +1,6 @@
 import { PrismaModule } from "../../prisma/prisma.module";
 import { Module } from "@nestjs/common";
+import { BillingModule } from "../billing/billing.module";
 import { BlockModule } from "../block/block.module";
 import { BuildModule } from "../build/build.module";
 import { EntityModule } from "../entity/entity.module";
@@ -16,6 +17,7 @@ import { ProjectService } from "./project.service";
     BlockModule,
     EntityModule,
     BuildModule,
+    BillingModule,
   ],
   providers: [ProjectResolver, ProjectService],
   exports: [ProjectResolver, ProjectService],
