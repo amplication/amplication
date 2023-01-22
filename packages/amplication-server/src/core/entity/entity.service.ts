@@ -2119,8 +2119,6 @@ export class EntityService {
       );
     }
 
-    const properties = field.properties as unknown as types.Lookup;
-
     // Delete related field in case field data type is changed from lookup
     const shouldDeleteRelated =
       field.dataType === EnumDataType.Lookup &&
@@ -2161,6 +2159,7 @@ export class EntityService {
 
         // In case related field should be deleted or changed, delete the existing related field
         if (shouldDeleteRelated || shouldChangeRelated) {
+          const properties = field.properties as unknown as types.Lookup;
           /**@todo: when the field should be changed and we delete it, we loose the permanent ID and links to previous versions  */
           await this.deleteRelatedField(
             properties.relatedFieldId,
@@ -2191,14 +2190,17 @@ export class EntityService {
           omit(args, ["relatedFieldName", "relatedFieldDisplayName"])
         );
 
+        const updateFieldProperties =
+          updatedField.properties as unknown as types.Lookup;
+
         if (
           field.dataType === EnumDataType.Lookup &&
-          properties.fkHolder !== null
+          updateFieldProperties?.fkHolder !== null
         ) {
           // Get related field to update
           const relatedField = await this.getField({
             where: {
-              permanentId: properties.relatedFieldId,
+              permanentId: updateFieldProperties.relatedFieldId,
             },
             include: { entityVersion: true },
           });
