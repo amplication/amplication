@@ -61,7 +61,6 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   const [pluginsVersion, setPluginsVersion] = useState<{
     [key: string]: Plugin;
   }>({});
-  const { addBlock } = useContext(AppContext);
   const {
     data: pluginsVersionData,
     loading: loadingPluginsVersionData,
@@ -74,10 +73,17 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
       clientName: "pluginApiHttpLink",
     },
   });
+  const {
+    addBlock,
+    pendingChanges,
+    resetPendingChangesIndicator,
+    setResetPendingChangesIndicator,
+  } = useContext(AppContext);
 
   const {
     data: pluginInstallations,
     loading: loadingPluginInstallations,
+    refetch: refetchPluginInstallations,
     error: errorPluginInstallations,
   } = useQuery<{
     PluginInstallations: models.PluginInstallation[];
@@ -103,6 +109,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   const {
     data: pluginOrder,
     loading: loadingPluginOrder,
+    refetch: refetchPluginOrder,
     error: pluginOrderError,
   } = useQuery<{ pluginOrder: models.PluginOrder }>(GET_PLUGIN_ORDER, {
     variables: {
@@ -132,6 +139,14 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     const setPluginOrder = setPluginOrderMap(pluginOrder?.pluginOrder.order);
     setPluginOrderObj(setPluginOrder);
   }, [pluginOrder, loadingPluginOrder]);
+
+  useEffect(() => {
+    if (!resetPendingChangesIndicator) return;
+
+    setResetPendingChangesIndicator(false);
+    refetchPluginInstallations();
+    refetchPluginOrder();
+  }, [pendingChanges, resetPendingChangesIndicator]);
 
   useEffect(() => {
     if (pluginOrderError) {

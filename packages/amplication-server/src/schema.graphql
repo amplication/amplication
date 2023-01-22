@@ -52,6 +52,8 @@ type Query {
   block(where: WhereUniqueInput!): Block!
   ServiceTopics(where: WhereUniqueInput!): ServiceTopics
   ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
+  Topic(where: WhereUniqueInput!): Topic
+  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
   builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
   build(where: WhereUniqueInput!): Build!
   resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
@@ -62,8 +64,6 @@ type Query {
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
-  Topic(where: WhereUniqueInput!): Topic
-  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
@@ -867,6 +867,42 @@ input ServiceTopicsOrderByInput {
   description: SortOrder
 }
 
+type Topic implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  name: String!
+}
+
+input TopicWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: ResourceWhereInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input TopicOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
 input ResourceRoleWhereInput {
   id: String
   createdAt: DateTimeFilter
@@ -961,42 +997,6 @@ type PluginOrder implements IBlock {
   order: [PluginOrderItem!]!
 }
 
-type Topic implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  resourceId: String
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  name: String!
-}
-
-input TopicWhereInput {
-  id: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  resource: ResourceWhereInput
-  parentBlock: WhereUniqueInput
-  displayName: StringFilter
-  description: StringFilter
-}
-
-input TopicOrderByInput {
-  id: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  blockType: SortOrder
-  displayName: SortOrder
-  description: SortOrder
-}
-
 type ProjectConfigurationSettings implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -1038,6 +1038,7 @@ type RemoteGitRepository {
   private: Boolean!
   fullName: String!
   admin: Boolean!
+  defaultBranch: String!
 }
 
 input RemoteGitRepositoriesWhereUniqueInput {
@@ -1060,6 +1061,7 @@ type Mutation {
   revokeInvitation(where: WhereUniqueInput!): Invitation
   resendInvitation(where: WhereUniqueInput!): Invitation
   deleteUser(where: WhereUniqueInput!): User
+  provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   createProject(data: ProjectCreateInput!): Project!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   commit(data: CommitCreateInput!): Commit
@@ -1087,6 +1089,9 @@ type Mutation {
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
   deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
+  createTopic(data: TopicCreateInput!): Topic!
+  updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
+  deleteTopic(where: WhereUniqueInput!): Topic!
   createBuild(data: BuildCreateInput!): Build!
   createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
   deleteResourceRole(where: WhereUniqueInput!): ResourceRole
@@ -1095,9 +1100,6 @@ type Mutation {
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
-  createTopic(data: TopicCreateInput!): Topic!
-  updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
-  deleteTopic(where: WhereUniqueInput!): Topic!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -1131,6 +1133,20 @@ input WorkspaceCreateInput {
 
 input InviteUserInput {
   email: String!
+}
+
+type ProvisionSubscriptionResult {
+  provisionStatus: String!
+  checkoutUrl: String
+}
+
+input ProvisionSubscriptionInput {
+  workspaceId: String!
+  planId: String!
+  billingPeriod: String!
+  intentionType: String!
+  successUrl: String!
+  cancelUrl: String!
 }
 
 input ProjectCreateInput {
@@ -1331,6 +1347,22 @@ input ServiceTopicsUpdateInput {
   patterns: [MessagePatternCreateInput!]
 }
 
+input TopicCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  name: String
+}
+
+input TopicUpdateInput {
+  displayName: String
+  description: String
+  name: String
+}
+
 input BuildCreateInput {
   resource: WhereParentIdInput!
   message: String!
@@ -1374,22 +1406,6 @@ input PluginInstallationUpdateInput {
 
 input PluginSetOrderInput {
   order: Int!
-}
-
-input TopicCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  name: String
-}
-
-input TopicUpdateInput {
-  displayName: String
-  description: String
-  name: String
 }
 
 input ProjectConfigurationSettingsUpdateInput {

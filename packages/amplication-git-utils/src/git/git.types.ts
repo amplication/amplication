@@ -1,4 +1,6 @@
 import { registerEnumType } from "@nestjs/graphql";
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+import { EnumPullRequestMode } from "../types";
 import { Branch } from "./dto/branch";
 import { GithubFile } from "./dto/github-file.dto";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
@@ -79,15 +81,16 @@ export interface GitClient {
   ): Promise<GithubFile>;
 
   createPullRequest(
+    mode: EnumPullRequestMode,
     userName: string,
     repoName: string,
-    modules: PrModule[],
+    modules: Required<Changes["files"]>,
     commitName: string,
     commitMessage: string,
     commitDescription: string,
-    baseBranchName: string,
     installationId: string,
-    meta: GitResourceMeta
+    head: string,
+    baseBranchName?: string | undefined
   ): Promise<string>;
 
   getRepository(
@@ -102,7 +105,7 @@ export interface GitClient {
     repo: string,
     newBranchName: string,
     baseBranchName?: string
-  ): Promise<void>;
+  ): Promise<Branch>;
 
   getBranch(
     installationId: string,

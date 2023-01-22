@@ -8,9 +8,17 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import { Loader } from "@amplication/design-system";
+import { Loader, PlanUpgradeConfirmation } from "@amplication/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
+
+declare global {
+  interface Window {
+    HubSpotConversations: any;
+    hsConversationsOnReady: any;
+    hsConversationsSettings: any;
+  }
+}
 
 export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
 
@@ -33,7 +41,6 @@ export const enhance = track<keyof typeof context>(
 function App() {
   const authenticated = useAuthenticated();
   const location = useLocation();
-
   const { currentWorkspaceLoading } = useCurrentWorkspace(authenticated);
   const [keepLoadingAnimation, setKeepLoadingAnimation] =
     useState<boolean>(true);
@@ -52,6 +59,11 @@ function App() {
     undefined
   );
 
+  window.hsConversationsSettings = {
+    loadImmediately: false,
+    inlineEmbedSelector: "#amplication-chat",
+  };
+
   useEffect(() => {
     const params = queryString.parse(location.search);
     if (params.invitation) {
@@ -61,6 +73,16 @@ function App() {
       setInvitationToken(params.invitation as string);
     }
   }, [setInvitationToken, location.search]);
+
+  const [workspaceUpgradeConfirmation, setWorkspaceUpgradeConfirmation] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    const params = queryString.parse(location.search);
+    if (params.checkoutCompleted === "true") {
+      setWorkspaceUpgradeConfirmation(true);
+    }
+  }, [setWorkspaceUpgradeConfirmation, location.search]);
 
   //The default behavior across all <HotKeys> components
   reactHotkeys.configure({
@@ -83,6 +105,13 @@ function App() {
         />
       )}
       {!currentWorkspaceLoading && GeneratedRoutes}
+      {workspaceUpgradeConfirmation && (
+        <PlanUpgradeConfirmation
+          isOpen={workspaceUpgradeConfirmation}
+          onConfirm={() => setWorkspaceUpgradeConfirmation(false)}
+          onDismiss={() => setWorkspaceUpgradeConfirmation(false)}
+        />
+      )}
     </ThemeProvider>
   );
 }

@@ -16,7 +16,7 @@ import {
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
-import { BlockVersion, Commit, EntityVersion } from "../../models";
+import { BlockVersion, Commit, EntityVersion, Project } from "../../models";
 import { Block } from "../../models/Block";
 import { Entity } from "../../models/Entity";
 import { EntityField } from "../../models/EntityField";
@@ -49,12 +49,15 @@ import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
 import { Topic } from "../topic/dto/Topic";
+import { ConfigService } from "@nestjs/config";
+import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID =
   "exampleProjectConfigurationResourceId";
 const EXAMPLE_PROJECT_ID = "exampleProjectId";
+const EXAMPLE_PROJECT_NAME = "exampleProjectName";
 const EXAMPLE_RESOURCE_NAME = "exampleResourceName";
 const EXAMPLE_RESOURCE_DESCRIPTION = "exampleResourceName";
 
@@ -98,6 +101,14 @@ const EXAMPLE_PROJECT_CONFIGURATION_RESOURCE: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+};
+
+const EXAMPLE_PROJECT: Project = {
+  id: EXAMPLE_PROJECT_ID,
+  name: EXAMPLE_PROJECT_NAME,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  workspaceId: EXAMPLE_WORKSPACE_ID,
 };
 
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -344,6 +355,8 @@ const entityServiceBulkCreateFields = jest.fn();
 
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
+const projectServiceFindUniqueMock = jest.fn(() => EXAMPLE_PROJECT);
+
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
 });
@@ -361,6 +374,24 @@ describe("ResourceService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ResourceService,
+        {
+          provide: ConfigService,
+          useValue: { get: () => "" },
+        },
+        {
+          provide: BillingService,
+          useValue: {
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+            getNumericEntitlement: jest.fn(() => {
+              return {};
+            }),
+            reportUsage: jest.fn(() => {
+              return {};
+            }),
+          },
+        },
         {
           provide: BuildService,
           useClass: jest.fn(() => ({
@@ -449,7 +480,9 @@ describe("ResourceService", () => {
         },
         {
           provide: ProjectService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            findUnique: projectServiceFindUniqueMock,
+          })),
         },
       ],
     }).compile();

@@ -5,7 +5,7 @@ import {
   Prisma,
   // @ts-ignore
   RELATED_ENTITY,
-} from "generated-prisma-client";
+} from "@prisma/client";
 
 declare class PARENT_ID_TYPE {}
 

@@ -7,6 +7,7 @@ import {
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 
+export const AMPLICATION_MODULES = "amplication_modules";
 const buildSpecPath = process.env.BUILD_SPEC_PATH;
 const buildOutputPath = process.env.BUILD_OUTPUT_PATH;
 
@@ -34,7 +35,7 @@ export default async function generateCode(
   try {
     const resourceData = await readInputJson(source);
 
-    const modules = await createDataService(resourceData, defaultLogger);
+    const modules = await createDataService(resourceData, defaultLogger, null);
     await writeModules(modules, destination);
     console.log("Code generation completed successfully");
     await httpClient.post(

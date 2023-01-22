@@ -1,22 +1,16 @@
-import { useMemo, useContext, useEffect } from "react";
-import { useQuery } from "@apollo/client";
+import { useContext } from "react";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
-import * as models from "../models";
 import { Tooltip, Button, EnumButtonStyle } from "@amplication/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
-import { GET_LAST_COMMIT_BUILDS } from "./hooks/commitQueries";
 import { useCommitStatus } from "./hooks/useCommitStatus";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-
-type TData = {
-  commits: models.Commit[];
-};
+import useCommit from "./hooks/useCommits";
 
 type Props = {
   projectId: string;
@@ -25,32 +19,10 @@ type Props = {
 const CLASS_NAME = "last-commit";
 
 const LastCommit = ({ projectId }: Props) => {
-  const {
-    currentWorkspace,
-    currentProject,
-    commitRunning,
-    pendingChangesIsError,
-  } = useContext(AppContext);
+  const { currentWorkspace, currentProject, commitRunning } =
+    useContext(AppContext);
 
-  const { data, loading, refetch } = useQuery<TData>(GET_LAST_COMMIT_BUILDS, {
-    variables: {
-      projectId,
-    },
-    skip: !projectId,
-  });
-
-  useEffect(() => {
-    refetch();
-    return () => {
-      refetch();
-    };
-  }, [pendingChangesIsError, refetch, data]);
-
-  const lastCommit = useMemo(() => {
-    if (loading || isEmpty(data?.commits)) return null;
-    const [last] = data?.commits || [];
-    return last;
-  }, [loading, data]);
+  const { lastCommit } = useCommit();
 
   const { commitStatus } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
@@ -66,12 +38,10 @@ const LastCommit = ({ projectId }: Props) => {
     />
   );
 
-  const generating = commitRunning;
-
   return (
     <div
       className={classNames(`${CLASS_NAME}`, {
-        [`${CLASS_NAME}__generating`]: generating,
+        [`${CLASS_NAME}__generating`]: commitRunning,
       })}
     >
       <hr className={`${CLASS_NAME}__divider`} />
@@ -102,7 +72,7 @@ const LastCommit = ({ projectId }: Props) => {
           >
             <Button
               buttonStyle={EnumButtonStyle.Secondary}
-              disabled={generating}
+              disabled={commitRunning}
             >
               Go to view code
             </Button>

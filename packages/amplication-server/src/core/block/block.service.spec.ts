@@ -399,6 +399,7 @@ describe("BlockService", () => {
     const blocksArgs = {
       ...functionArgs.args,
       where: {
+        deletedAt: null,
         blockType: { equals: functionArgs.blockType },
       },
       include: {

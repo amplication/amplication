@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/amplication-data-service-generator-runner/src",
   "projectType": "application",
-  "implicitDependencies": ["data-service-generator"],
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
@@ -29,7 +28,7 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/amplication-data-service-generator-runner/**/*.ts"
+          "packages/amplication-data-service-generator-runner/src/**/*"
         ]
       }
     },
@@ -60,6 +59,7 @@
     },
     "docker:build": {
       "executor": "@nx-tools/nx-docker:build",
+      "dependsOn": ["build"],
       "options": {
         "push": false,
         "tags": ["amplication/data-service-generator-runner:latest"]

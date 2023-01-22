@@ -1,28 +1,32 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { App, Octokit } from "octokit";
-import { GithubFile } from "./dto/github-file.dto";
-import { ConverterUtil } from "../utils/convert-to-number";
 import { createAppAuth } from "@octokit/auth-app";
+import { components } from "@octokit/openapi-types";
+import { App, Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+import { join } from "path";
+import { EnumPullRequestMode } from "../types";
+import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
+import { ConverterUtil } from "../utils/convert-to-number";
+import { Branch } from "./dto/branch";
+import { GithubFile } from "./dto/github-file.dto";
+import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
+import {
+  RemoteGitRepos,
+  RemoteGitRepository,
+} from "./dto/remote-git-repository";
 import {
   AMPLICATION_IGNORED_FOLDER,
   UNSUPPORTED_GIT_ORGANIZATION_TYPE,
 } from "./git.constants";
-import { components } from "@octokit/openapi-types";
-import { join } from "path";
-import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import {
   EnumGitOrganizationType,
   GitResourceMeta,
   PrModule,
 } from "./git.types";
-import {
-  RemoteGitRepos,
-  RemoteGitRepository,
-} from "./dto/remote-git-repository";
-import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
-import { Branch } from "./dto/branch";
+import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
+import { BasicPullRequest } from "./github/BasicPullRequest";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -90,7 +94,7 @@ export class GithubService {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
+      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     };
   }
@@ -143,16 +147,16 @@ export class GithubService {
     };
   }
   async getFile(
-    userName: string,
-    repoName: string,
+    owner: string,
+    repo: string,
     path: string,
     baseBranchName: string,
     installationId: string
   ): Promise<GithubFile> {
     const octokit = await this.getInstallationOctokit(installationId);
     const content = await octokit.rest.repos.getContent({
-      owner: userName,
-      repo: repoName,
+      owner,
+      repo,
       path,
       ref: baseBranchName ? baseBranchName : undefined,
     });
@@ -177,112 +181,49 @@ export class GithubService {
   }
 
   async createPullRequest(
+    mode: EnumPullRequestMode,
     owner: string,
     repo: string,
-    modules: PrModule[],
-    commitName: string,
-    title: string,
-    commitDescription: string,
-    baseBranchName: string,
+    files: Required<Changes["files"]>,
+    commitMessage: string,
+    prTitle: string,
+    prBody: string,
     installationId: string,
-    gitResourceMeta: GitResourceMeta
+    head,
+    baseBranchName?: string | undefined
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
-
     const token = await this.getInstallationAuthToken(installationId);
     const octokit = new myOctokit({
       auth: token,
     });
 
-    const amplicationIgnoreManger = new AmplicationIgnoreManger();
-    await amplicationIgnoreManger.init(async (fileName) => {
-      try {
-        return (
-          await this.getFile(
-            owner,
-            repo,
-            fileName,
-            baseBranchName,
-            installationId
-          )
-        ).content;
-      } catch (error) {
-        console.log("Repository does not have a .amplicationignore file");
-        return "";
-      }
-    });
-
-    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
-    //do not override server/scripts/customSeed.ts
-    const doNotOverride = [
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.controller.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.resolver.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.service.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.module.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/scripts/customSeed.ts$`
-      ),
-    ];
-
-    const authFolder = "server/src/auth";
-
-    const files = Object.fromEntries(
-      modules.map((module) => {
-        // ignored file
-        if (amplicationIgnoreManger.isIgnored(module.path)) {
-          return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
-        }
-        // Deleted file
-        if (module.code === null) {
-          return [module.path, module.code];
-        }
-        // Regex ignored file
-        if (
-          !module.path.startsWith(authFolder) &&
-          doNotOverride.some((rx) => rx.test(module.path))
-        ) {
-          return [
-            module.path,
-            ({ exists }) => {
-              // do not create the file if it already exist
-              if (exists) return null;
-
-              return module.code;
-            },
-          ];
-        }
-        // Regular file
-        return [module.path, module.code];
-      })
-    );
-
-    // Returns a normal Octokit PR response
-    // See https://octokit.github.io/rest.js/#octokit-routes-pulls-create
-
-    const pr = await octokit.createPullRequest({
-      owner,
-      repo,
-      title,
-      body: commitDescription,
-      base: baseBranchName /* optional: defaults to default branch */,
-      head: "amplication",
-      changes: [
-        {
-          /* optional: if `files` is not passed, an empty commit is created instead */
-          files: files,
-          commit: commitName,
-        },
-      ],
-    });
-    return pr.data.html_url;
+    switch (mode) {
+      case EnumPullRequestMode.Accumulative:
+        return new AccumulativePullRequest().createPullRequest(
+          octokit,
+          owner,
+          repo,
+          prTitle,
+          prBody,
+          baseBranchName,
+          head,
+          files,
+          commitMessage
+        );
+      default:
+        return new BasicPullRequest().createPullRequest(
+          octokit,
+          owner,
+          repo,
+          prTitle,
+          prBody,
+          baseBranchName,
+          head,
+          files,
+          commitMessage
+        );
+    }
   }
 
   private async getInstallationOctokit(
@@ -301,7 +242,7 @@ export class GithubService {
       url: repo.html_url,
       private: repo.private,
       fullName: repo.full_name,
-      admin: repo.permissions.admin,
+      admin: repo.permissions?.admin || false,
       defaultBranch: repo.default_branch,
     }));
   }
@@ -372,7 +313,7 @@ export class GithubService {
       full_name: fullName,
       permissions,
     } = response.data;
-    const { admin } = permissions;
+    const admin = permissions.admin || false;
     return {
       name,
       url: html_url,
@@ -389,7 +330,7 @@ export class GithubService {
     repo: string,
     newBranchName: string,
     baseBranchName?: string
-  ): Promise<void> {
+  ): Promise<Branch> {
     const octokit = await this.getInstallationOctokit(installationId);
     const repository = await this.getRepository(installationId, owner, repo);
     const { defaultBranch } = repository;
@@ -398,13 +339,13 @@ export class GithubService {
       repo,
       ref: `heads/${baseBranchName || defaultBranch}`,
     });
-    const branch = await octokit.rest.git.createRef({
+    const { data: branch } = await octokit.rest.git.createRef({
       owner,
       repo,
       ref: `refs/heads/${newBranchName}`,
       sha: refs.data.object.sha,
     });
-    return;
+    return { name: newBranchName, sha: branch.object.sha };
   }
 
   async isBranchExist(

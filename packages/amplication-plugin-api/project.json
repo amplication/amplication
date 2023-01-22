@@ -24,12 +24,10 @@
       "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "target": "node",
-        "compiler": "tsc",
+        "webpackConfig": "packages/amplication-plugin-api/webpack.config.js",
         "outputPath": "dist/packages/amplication-plugin-api",
         "main": "packages/amplication-plugin-api/src/main.ts",
         "tsConfig": "packages/amplication-plugin-api/tsconfig.app.json",
-        "generatePackageJson": true,
         "assets": [
           {
             "glob": "prisma",
