@@ -23,6 +23,7 @@ export type Values = {
   required: boolean;
   searchable: boolean;
   description: string | null;
+  permanentId?: string | null;
   // eslint-disable-next-line @typescript-eslint/ban-types
   properties: {
     relatedEntityId?: string;
@@ -52,12 +53,7 @@ const FORM_SCHEMA = {
   },
 };
 
-const NON_INPUT_GRAPHQL_PROPERTIES = [
-  "createdAt",
-  "updatedAt",
-  "__typename",
-  "permanentId",
-];
+const NON_INPUT_GRAPHQL_PROPERTIES = ["createdAt", "updatedAt", "__typename"];
 
 export const INITIAL_VALUES: Values = {
   id: "",
