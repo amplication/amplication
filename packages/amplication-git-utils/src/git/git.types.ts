@@ -89,8 +89,7 @@ export interface GitClient {
     commitMessage: string,
     commitDescription: string,
     installationId: string,
-    head: string,
-    baseBranchName?: string | undefined
+    head: string
   ): Promise<string>;
 
   getRepository(
@@ -98,26 +97,4 @@ export interface GitClient {
     owner: string,
     repo: string
   ): Promise<RemoteGitRepository>;
-
-  createBranch(
-    installationId: string,
-    owner: string,
-    repo: string,
-    newBranchName: string,
-    baseBranchName?: string
-  ): Promise<Branch>;
-
-  getBranch(
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<Branch>;
-
-  isBranchExist(
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<boolean>;
 }
