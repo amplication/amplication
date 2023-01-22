@@ -2191,29 +2191,34 @@ export class EntityService {
           omit(args, ["relatedFieldName", "relatedFieldDisplayName"])
         );
 
-        // Get related field to update
-        const relatedField = await this.getField({
-          where: {
-            permanentId: properties.relatedFieldId,
-          },
-          include: { entityVersion: true },
-        });
+        if (
+          field.dataType === EnumDataType.Lookup &&
+          properties.fkHolder !== null
+        ) {
+          // Get related field to update
+          const relatedField = await this.getField({
+            where: {
+              permanentId: properties.relatedFieldId,
+            },
+            include: { entityVersion: true },
+          });
 
-        const relatedFieldProps =
-          relatedField.properties as unknown as types.Lookup;
+          const relatedFieldProps =
+            relatedField.properties as unknown as types.Lookup;
 
-        relatedFieldProps.fkHolder = (
-          updatedField.properties as unknown as types.Lookup
-        )?.fkHolder;
+          relatedFieldProps.fkHolder = (
+            updatedField.properties as unknown as types.Lookup
+          )?.fkHolder;
 
-        await this.prisma.entityField.update({
-          where: {
-            id: relatedField.id,
-          },
-          data: {
-            properties: relatedFieldProps as unknown as Prisma.InputJsonValue,
-          },
-        });
+          await this.prisma.entityField.update({
+            where: {
+              id: relatedField.id,
+            },
+            data: {
+              properties: relatedFieldProps as unknown as Prisma.InputJsonValue,
+            },
+          });
+        }
 
         return updatedField;
       }
