@@ -1,6 +1,5 @@
 @import "../style/index.scss";
 
-$side-min-width: 500px;
 $tabs-width: 300px;
 
 .amp-page-content {
@@ -40,10 +39,5 @@ $tabs-width: 300px;
     @media only screen and (max-width: $page-content-min-width) {
       min-width: calc(#{$page-content-min-width} - var(--menu-width));
     }
-  }
-
-  .log-container {
-    flex: 1;
-    min-width: $side-min-width;
   }
 }

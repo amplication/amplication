@@ -19,7 +19,9 @@ import { AppContext } from "../../context/appContext";
 import MenuItem from "../../Layout/MenuItem";
 import * as models from "../../models";
 import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import "./WorkspaceHeader.scss";
+import { useTracking } from "../../util/analytics";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -34,9 +36,11 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setResource,
     resources,
     currentProjectConfiguration,
+    openHubSpotChat,
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
+  const { trackEvent } = useTracking();
   const isProjectRoute = useRouteMatch(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
   );
@@ -85,6 +89,25 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
     history.replace("/login");
   }, [history, apolloClient]);
+
+  const handleUpgradeClick = useCallback(() => {
+    history.push(`/${currentWorkspace.id}/purchase`, {
+      from: { pathname: window.location.pathname },
+    });
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
+      workspace: currentWorkspace.id,
+    });
+  }, [currentWorkspace, window.location.pathname]);
+
+  const handleContactUsClick = useCallback(() => {
+    openHubSpotChat();
+    trackEvent({
+      eventName: AnalyticsEventNames.HelpMenuItemClick,
+      Action: "Contact Us",
+      workspaceId: currentWorkspace.id,
+    });
+  }, [openHubSpotChat]);
 
   return (
     <div className={CLASS_NAME}>
@@ -213,14 +236,20 @@ const WorkspaceHeader: React.FC<{}> = () => {
       </div>
       <div className={`${CLASS_NAME}__right`}>
         <div className={`${CLASS_NAME}__links`}>
-          <a
-            className={`${CLASS_NAME}__links__link`}
-            rel="noopener noreferrer"
-            href="https://amplication.com/blog"
-            target="_blank"
+          <Button
+            className={`${CLASS_NAME}__upgrade__btn`}
+            buttonStyle={EnumButtonStyle.Outline}
+            onClick={handleUpgradeClick}
           >
-            Blog
-          </a>
+            Upgrade
+          </Button>
+          <Button
+            className={`${CLASS_NAME}__contact__btn`}
+            buttonStyle={EnumButtonStyle.Clear}
+            onClick={handleContactUsClick}
+          >
+            Contact Us
+          </Button>
           <a
             className={`${CLASS_NAME}__links__link`}
             rel="noopener noreferrer"

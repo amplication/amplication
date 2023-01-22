@@ -36,9 +36,11 @@ import { Env } from "../../env";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
-  CreateLogger,
-  Transports,
 } from "@amplication/nest-logger-module";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/BillingFeature";
+import { EnumPullRequestMode } from "@amplication/git-utils";
+import { SendPullRequestArgs } from "./dto/sendPullRequest";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -154,6 +156,7 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly billingService: BillingService,
 
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
@@ -300,8 +303,11 @@ export class BuildService {
       async (step) => {
         const { resourceId, id: buildId, version: buildVersion } = build;
 
-        const [dataServiceGeneratorLogger, logPromises] =
-          this.createDataServiceLogger(build, step);
+        const logger = this.logger.child({
+          buildId: build.id,
+        });
+
+        logger.info("Preparing build generation message");
 
         const dsgResourceData = await this.getDSGResourceData(
           resourceId,
@@ -310,14 +316,13 @@ export class BuildService {
           user
         );
 
-        await Promise.all(logPromises);
+        logger.info("Writing build generation message to queue");
 
-        dataServiceGeneratorLogger.destroy();
-
-        this.queueService.emitMessage(
+        await this.queueService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
           JSON.stringify({ resourceId, buildId, dsgResourceData })
         );
+        logger.info("Build generation message sent");
 
         return null;
       },
@@ -333,27 +338,6 @@ export class BuildService {
         },
       },
     });
-  }
-
-  private createDataServiceLogger(
-    build: Build,
-    step: ActionStep
-  ): [AmplicationLogger, Array<Promise<void>>] {
-    const transport = new Transports.Console();
-    const logPromises: Array<Promise<void>> = [];
-    transport.on("logged", (info) => {
-      logPromises.push(this.createLog(step, info));
-    });
-    return [
-      CreateLogger({
-        format: this.logger.format,
-        transports: [transport],
-        defaultMeta: {
-          buildId: build.id,
-        },
-      }),
-      logPromises,
-    ];
   }
 
   public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
@@ -372,6 +356,14 @@ export class BuildService {
       });
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
       await this.actionService.complete(step, EnumActionStepStatus.Success);
+
+      const workspace = await this.resourceService.getResourceWorkspace(
+        build.resourceId
+      );
+      await this.billingService.reportUsage(
+        workspace.id,
+        BillingFeature.CodePushToGit
+      );
     } catch (error) {
       await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
       await this.actionService.logInfo(step, error);
@@ -443,7 +435,7 @@ export class BuildService {
 
     const truncateBuildId = build.id.slice(build.id.length - 8);
 
-    const commitMessage =
+    const commitTitle =
       (commit.message &&
         `${commit.message} (Amplication build ${truncateBuildId})`) ||
       `Amplication build ${truncateBuildId}`;
@@ -466,7 +458,15 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          const createPullRequestArgs = {
+          const subscription = await this.billingService.getSubscription(
+            project.workspaceId
+          );
+
+          const pullRequestMode = subscription
+            ? EnumPullRequestMode.Accumulative
+            : EnumPullRequestMode.Basic;
+
+          const createPullRequestArgs: SendPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             resourceId: resource.id,
@@ -475,8 +475,7 @@ export class BuildService {
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
-              head: `amplication-build-${build.id}`,
-              title: commitMessage,
+              title: commitTitle,
               body: `Amplication build # ${build.id}.
               Commit message: ${commit.message}
               
@@ -487,6 +486,7 @@ export class BuildService {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
+            pullRequestMode,
           };
 
           await this.queueService.emitMessage(

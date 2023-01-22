@@ -4,6 +4,30 @@ exports[`createDataService creates app as expected 1`] = `
 Object {
   "test-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL=http://localhost:3000",
+  "test-ui/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+ 
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+ 
+# testing
+/coverage
+ 
+# production
+/build
+ 
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+ 
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+",
   "test-ui/package.json": "{
   \\"name\\": \\"@sample-application/admin\\",
   \\"version\\": \\"0.1.3\\",
@@ -2885,6 +2909,12 @@ DB_USER=testUsername
 DB_PASSWORD=1234
 DB_PORT=5433
 DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
+  "test/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+ 
+/node_modules
+/dist
+.DS_Store
+",
   "test/docker-compose.db.yml": "version: \\"3\\"
 services:
   db:
@@ -2953,9 +2983,9 @@ volumes:
   postgres: ~
 ",
   "test/nest-cli.json": "{
-  \\"sourceRoot\\": \\"/\\",
+  \\"sourceRoot\\": \\"src\\",
   \\"compilerOptions\\": {
-    \\"assets\\": [\\"src/swagger\\", \\"prisma/generated-prisma-client\\"]
+    \\"assets\\": [\\"swagger\\"]
   }
 }
 ",
@@ -3041,7 +3071,6 @@ volumes:
 
 generator client {
   provider = \\"prisma-client-js\\"
-  output   = \\"./generated-prisma-client\\"
 }
 
 model User {
@@ -3163,7 +3192,7 @@ enum EnumCustomerCustomerType {
  * Clean all the tables and types created by Prisma in the database
  */
 
-import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
+import { PrismaClient } from \\"@prisma/client\\";
 
 if (require.main === module) {
   clean().catch((error) => {
@@ -3218,7 +3247,7 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
   return results.map((result) => result.typname);
 }
 ",
-  "test/scripts/customSeed.ts": "import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
+  "test/scripts/customSeed.ts": "import { PrismaClient } from \\"@prisma/client\\";
 
 export async function customSeed() {
   const client = new PrismaClient();
@@ -3237,7 +3266,7 @@ export async function customSeed() {
 }
 ",
   "test/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
-import { PrismaClient } from \\"../prisma/generated-prisma-client\\";
+import { PrismaClient } from \\"@prisma/client\\";
 import { Salt, parseSalt } from \\"../src/auth/password.service\\";
 import { hash } from \\"bcrypt\\";
 import { customSeed } from \\"./customSeed\\";
@@ -4074,7 +4103,8 @@ export class TokenService extends TokenServiceBase implements ITokenService {}
 ",
   "test/src/auth/userData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
 import { GqlContextType, GqlExecutionContext } from \\"@nestjs/graphql\\";
-import { User } from \\"generated-prisma-client\\";
+//@ts-ignore
+import { User } from \\"@prisma/client\\";
 
 /**
  * Access the user data from the request object i.e \`req.user\`.
@@ -6354,7 +6384,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Customer, Order, Organization } from \\"generated-prisma-client\\";
+import { Prisma, Customer, Order, Organization } from \\"@prisma/client\\";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -7441,7 +7471,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Empty } from \\"generated-prisma-client\\";
+import { Prisma, Empty } from \\"@prisma/client\\";
 
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -7571,7 +7601,7 @@ import { BaseExceptionFilter } from \\"@nestjs/core\\";
 import {
   // @ts-ignore
   Prisma,
-} from \\"generated-prisma-client\\";
+} from \\"@prisma/client\\";
 import { Response } from \\"express\\";
 
 export type ErrorCodesStatusMapping = {
@@ -9540,7 +9570,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Order, Customer } from \\"generated-prisma-client\\";
+import { Prisma, Order, Customer } from \\"@prisma/client\\";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11401,7 +11431,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Organization, User, Customer } from \\"generated-prisma-client\\";
+import { Prisma, Organization, User, Customer } from \\"@prisma/client\\";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11602,7 +11632,7 @@ import { PrismaService } from \\"./prisma.service\\";
 export class PrismaModule {}
 ",
   "test/src/prisma/prisma.service.ts": "import { Injectable, OnModuleInit, INestApplication } from \\"@nestjs/common\\";
-import { PrismaClient } from \\"generated-prisma-client\\";
+import { PrismaClient } from \\"@prisma/client\\";
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -12790,7 +12820,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, Profile, User } from \\"generated-prisma-client\\";
+import { Prisma, Profile, User } from \\"@prisma/client\\";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -15659,7 +15689,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
-import { Prisma, User, Organization, Profile } from \\"generated-prisma-client\\";
+import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
 import { PasswordService } from \\"../../auth/password.service\\";
 import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
@@ -16890,11 +16920,7 @@ export class StringNullableFilter {
     \\"allowSyntheticDefaultImports\\": true,
     \\"resolveJsonModule\\": true,
     \\"skipLibCheck\\": true,
-    \\"strict\\": true,
-    \\"baseUrl\\": \\".\\",
-    \\"paths\\": {
-      \\"generated-prisma-client\\": [\\"prisma/generated-prisma-client/index\\"]
-    }
+    \\"strict\\": true
   },
   \\"include\\": [\\"src\\"]
 }

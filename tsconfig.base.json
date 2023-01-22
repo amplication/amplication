@@ -26,9 +26,6 @@
       "@amplication/data-service-generator": [
         "libs/data-service-generator/src/index.ts"
       ],
-      "@amplication/data-service-generator/*": [
-        "libs/data-service-generator/src/*"
-      ],
       "@amplication/design-system": [
         "packages/amplication-design-system/src/index.ts"
       ],
@@ -50,6 +47,7 @@
       "@amplication/plugin-api/*": ["packages/amplication-plugin-api/src/*"],
       "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
       "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
+      "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],
       "@amplication/util/nestjs/kafka": ["libs/util/nestjs/kafka/src/index.ts"],
       "@primer/react/deprecated": ["node_modules/@primer/react/lib/deprecated"]
     }

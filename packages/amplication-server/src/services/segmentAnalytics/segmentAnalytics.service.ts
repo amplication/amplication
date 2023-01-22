@@ -4,6 +4,8 @@ import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 
 export enum EnumEventType {
   Signup = "Signup",
+  WorkspacePlanUpgradeRequest = "WorkspacePlanUpgradeRequest",
+  WorkspacePlanDowngradeRequest = "WorkspacePlanDowngradeRequest",
 }
 
 export type IdentifyData = {

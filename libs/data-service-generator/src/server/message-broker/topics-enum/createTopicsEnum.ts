@@ -6,10 +6,9 @@ import {
 import { pascalCase } from "pascal-case";
 import { join } from "path";
 import { types } from "recast";
-import { print } from "@amplication/code-gen-utils";
+import { print, EnumBuilder } from "@amplication/code-gen-utils";
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
-import { EnumBuilder } from "@amplication/code-gen-utils";
 
 const { builders } = types;
 const TOPIC_NAME = "topics.ts";

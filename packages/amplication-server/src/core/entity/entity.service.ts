@@ -479,6 +479,7 @@ export class EntityService {
       where: {
         lockedByUserId: userId,
         resource: {
+          deletedAt: null,
           project: {
             id: projectId,
           },
@@ -883,12 +884,14 @@ export class EntityService {
   }
 
   async discardPendingChanges(
-    entityId: string,
-    userId: string
+    entity: EntityPendingChange,
+    user: User
   ): Promise<Entity> {
+    const { originId } = entity;
+
     const entityVersions = await this.prisma.entityVersion.findMany({
       where: {
-        entity: { id: entityId },
+        entity: { id: originId },
       },
       orderBy: {
         versionNumber: Prisma.SortOrder.asc,
@@ -902,18 +905,22 @@ export class EntityService {
     const lastEntityVersion = last(entityVersions);
 
     if (!firstEntityVersion || !lastEntityVersion) {
-      throw new AmplicationError(`Entity ${entityId} has no versions `);
+      throw new AmplicationError(`Entity ${originId} has no versions `);
     }
 
-    if (firstEntityVersion.entity.lockedByUserId !== userId) {
+    if (firstEntityVersion.entity.lockedByUserId !== user.id) {
       throw new AmplicationError(
-        `Cannot discard pending changes on Entity ${entityId} since it is not currently locked by the requesting user `
+        `Cannot discard pending changes on Entity ${originId} since it is not currently locked by the requesting user `
       );
     }
 
     await this.cloneVersionData(lastEntityVersion.id, firstEntityVersion.id);
 
-    return this.releaseLock(entityId);
+    if (entity.action === EnumPendingChangeAction.Create) {
+      await this.deleteOneEntity({ where: { id: originId } }, user);
+    }
+
+    return this.releaseLock(originId);
   }
 
   private async cloneVersionData(

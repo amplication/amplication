@@ -75,6 +75,8 @@ export enum EventNames {
   CreateServer = "CreateServer",
   CreateServerAppModule = "CreateServerAppModule",
   CreateServerDotEnv = "CreateServerDotEnv",
+  CreateServerGitIgnore = "CreateServerGitIgnore",
+  CreateAdminGitIgnore = "CreateAdminGitIgnore",
   CreateMessageBroker = "CreateMessageBroker",
   CreateMessageBrokerTopicsEnum = "CreateMessageBrokerTopicsEnum",
   CreateMessageBrokerNestJSModule = "CreateMessageBrokerNestJSModule",
