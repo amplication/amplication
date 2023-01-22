@@ -19,6 +19,9 @@ const RelationFkHolderField = ({ entity, ...props }: Props) => {
         entityId: formik.values.properties.relatedEntityId,
         fieldPermanentId: formik.values.properties.relatedFieldId,
       },
+      skip:
+        !formik.values.properties?.relatedEntityId ||
+        !formik.values.properties?.relatedFieldId,
     }
   );
 
