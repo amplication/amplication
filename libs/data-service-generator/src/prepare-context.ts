@@ -209,9 +209,15 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             !fieldProperties.allowMultipleSelection &&
             !relatedFieldProperties.allowMultipleSelection;
 
-          const isOneToOneWithoutForeignKey =
-            (isOneToOne && field.permanentId !== fieldProperties.fkHolder) ||
-            (isOneToOne && field.permanentId > relatedField.permanentId);
+          let isOneToOneWithoutForeignKey = true;
+
+          if (fieldProperties.fkHolder !== null) {
+            isOneToOneWithoutForeignKey =
+              isOneToOne && field.permanentId !== fieldProperties.fkHolder;
+          } else {
+            isOneToOneWithoutForeignKey =
+              isOneToOne && field.permanentId > relatedField.permanentId;
+          }
 
           const properties: LookupResolvedProperties = {
             ...field.properties,
