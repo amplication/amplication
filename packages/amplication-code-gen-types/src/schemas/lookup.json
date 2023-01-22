@@ -15,7 +15,7 @@
       "$ref": "#/definitions/RelationAllowMultiple",
       "default": false
     },
-    "FkHolder": {
+    "fkHolder": {
       "title": "Foreign Key Holder",
       "$ref": "#/definitions/RelationFkHolder",
       "default": null
