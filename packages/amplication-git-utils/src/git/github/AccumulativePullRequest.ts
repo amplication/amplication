@@ -211,6 +211,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     branchName: string,
     changes: Required<Changes["files"]>
   ) {
+    const { octokit, owner, repo } = this;
     const lastCommit = await this.getLastCommit(branchName);
 
     console.log(`Got last commit with url ${lastCommit.html_url}`);
@@ -225,30 +226,30 @@ export class AccumulativePullRequest extends BasePullRequest {
       changes
     );
 
-    console.info(`Created tree for for ${this.owner}/${this.repo}`);
+    console.info(`Created tree for for ${owner}/${repo}`);
 
-    const { data: commit } = await this.octokit.rest.git.createCommit({
+    const { data: commit } = await octokit.rest.git.createCommit({
       message,
-      owner: this.owner,
-      repo: this.repo,
+      owner,
+      repo,
       tree: lastTreeSha,
       parents: [lastCommit.sha],
     });
 
-    console.info(`Created commit for ${this.owner}/${this.repo}`);
+    console.info(`Created commit for ${owner}/${repo}`);
 
-    await this.octokit.rest.git.updateRef({
-      owner: this.owner,
-      repo: this.repo,
+    await octokit.rest.git.updateRef({
+      owner,
+      repo,
       sha: commit.sha,
       ref: `heads/${branchName}`,
     });
 
-    console.info(`Updated branch ${branchName} for ${this.owner}/${this.repo}`);
+    console.info(`Updated branch ${branchName} for ${owner}/${repo}`);
   }
 
   async getLastCommit(branchName: string) {
-    const { owner, repo } = this;
+    const { owner, repo, octokit } = this;
     const branch = await this.getBranch(branchName);
 
     console.log(
@@ -256,7 +257,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     );
 
     const [lastCommit] = (
-      await this.octokit.rest.repos.listCommits({
+      await octokit.rest.repos.listCommits({
         owner,
         repo,
         sha: branch.sha,
@@ -267,8 +268,8 @@ export class AccumulativePullRequest extends BasePullRequest {
   }
 
   async getBranch(branch: string): Promise<Branch> {
-    const { owner, repo } = this;
-    const { data: ref } = await this.octokit.rest.git.getRef({
+    const { owner, repo, octokit } = this;
+    const { data: ref } = await octokit.rest.git.getRef({
       owner,
       repo,
       ref: `heads/${branch}`,
