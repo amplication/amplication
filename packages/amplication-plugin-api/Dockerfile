@@ -1,31 +1,13 @@
-FROM node:19.1 AS base
+FROM node:18.12.1-slim AS base
 
-WORKDIR /app
+WORKDIR /workspace/packages/amplication-plugin-api
 
-COPY package.json ./
+COPY ./dist/packages/amplication-plugin-api/package.json .
+RUN npm install --omit-dev
 
-RUN npm install
+COPY ./dist/packages/amplication-plugin-api .
 
-COPY prisma/schema.prisma ./prisma/
+ENV PORT=3005
+EXPOSE $PORT
 
-RUN npm run prisma:generate
-
-COPY . .
-
-RUN npm run build
-
-FROM node:19.1 AS prod
-
-WORKDIR /app
-
-COPY --from=base /app/node_modules/ ./node_modules
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/dist ./dist
-COPY --from=base /app/prisma ./prisma
-COPY --from=base /app/scripts ./scripts
-COPY --from=base /app/src ./src
-COPY --from=base /app/tsconfig* ./
-
-EXPOSE 3000
-
-CMD [ "node", "./dist/main"]
+CMD ["node", "./main.js"]

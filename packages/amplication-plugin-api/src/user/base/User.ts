@@ -14,7 +14,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsString, IsOptional, IsJSON } from "class-validator";
 import { Type } from "class-transformer";
 import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
+import type { JsonValue } from "type-fest";
 @ObjectType()
 class User {
   @ApiProperty({

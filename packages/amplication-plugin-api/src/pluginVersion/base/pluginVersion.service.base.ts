@@ -9,8 +9,10 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { PrismaService } from "nestjs-prisma";
-import { Prisma, PluginVersion } from "@prisma/client";
+import { PrismaService } from "../../prisma/prisma.service";
+import { Prisma, PluginVersion } from "../../../prisma/generated-prisma-client";
+import { PluginVersionFindManyArgs } from "./PluginVersionFindManyArgs";
+import { PluginVersionFindUniqueArgs } from "./PluginVersionFindUniqueArgs";
 
 export class PluginVersionServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -18,7 +20,7 @@ export class PluginVersionServiceBase {
   async count<T extends Prisma.PluginVersionFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginVersionFindManyArgs>
   ): Promise<number> {
-    return this.prisma.pluginVersion.count(args);
+    return this.prisma.pluginVersion.count(args as PluginVersionFindManyArgs);
   }
 
   async findMany<T extends Prisma.PluginVersionFindManyArgs>(
@@ -29,7 +31,9 @@ export class PluginVersionServiceBase {
   async findOne<T extends Prisma.PluginVersionFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginVersionFindUniqueArgs>
   ): Promise<PluginVersion | null> {
-    return this.prisma.pluginVersion.findUnique(args);
+    return this.prisma.pluginVersion.findUnique(
+      args as PluginVersionFindUniqueArgs
+    );
   }
   async create<T extends Prisma.PluginVersionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginVersionCreateArgs>
