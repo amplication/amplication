@@ -323,6 +323,7 @@ export class BlockService {
       where: {
         ...args.where,
         blockType: { equals: blockType },
+        deletedAt: null,
       },
       include: {
         versions: {
@@ -643,6 +644,7 @@ export class BlockService {
       where: {
         lockedByUserId: userId,
         resource: {
+          deletedAt: null,
           project: {
             id: projectId,
           },
@@ -732,10 +734,14 @@ export class BlockService {
     });
   }
 
-  async discardPendingChanges(blockId: string, userId: string): Promise<Block> {
+  async discardPendingChanges(
+    block: BlockPendingChange,
+    user: User
+  ): Promise<Block> {
+    const { originId, action } = block;
     const blockVersions = await this.prisma.blockVersion.findMany({
       where: {
-        block: { id: blockId },
+        block: { id: originId },
       },
       orderBy: {
         versionNumber: Prisma.SortOrder.asc,
@@ -749,18 +755,22 @@ export class BlockService {
     const lastBlockVersion = last(blockVersions);
 
     if (!firstBlockVersion || !lastBlockVersion) {
-      throw new Error(`Block ${blockId} has no versions `);
+      throw new Error(`Block ${originId} has no versions `);
     }
 
-    if (firstBlockVersion.block.lockedByUserId !== userId) {
+    if (firstBlockVersion.block.lockedByUserId !== user.id) {
       throw new Error(
-        `Cannot discard pending changes on block ${blockId} since it is not currently locked by the requesting user `
+        `Cannot discard pending changes on block ${originId} since it is not currently locked by the requesting user `
       );
+    }
+
+    if (action === EnumPendingChangeAction.Create) {
+      await this.delete({ where: { id: originId } }, user);
     }
 
     await this.cloneVersionData(lastBlockVersion.id, firstBlockVersion.id);
 
-    return this.releaseLock(blockId);
+    return this.releaseLock(originId);
   }
   private async cloneVersionData(
     sourceVersionId: string,

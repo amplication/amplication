@@ -5,26 +5,16 @@ import { components } from "@octokit/openapi-types";
 import { App, Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
-import { join } from "path";
 import { EnumPullRequestMode } from "../types";
-import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { ConverterUtil } from "../utils/convert-to-number";
-import { Branch } from "./dto/branch";
 import { GithubFile } from "./dto/github-file.dto";
 import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import {
   RemoteGitRepos,
   RemoteGitRepository,
 } from "./dto/remote-git-repository";
-import {
-  AMPLICATION_IGNORED_FOLDER,
-  UNSUPPORTED_GIT_ORGANIZATION_TYPE,
-} from "./git.constants";
-import {
-  EnumGitOrganizationType,
-  GitResourceMeta,
-  PrModule,
-} from "./git.types";
+import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
+import { EnumGitOrganizationType } from "./git.types";
 import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
 import { BasicPullRequest } from "./github/BasicPullRequest";
 
@@ -184,14 +174,12 @@ export class GithubService {
     mode: EnumPullRequestMode,
     owner: string,
     repo: string,
-    modules: PrModule[],
+    files: Required<Changes["files"]>,
     commitMessage: string,
     prTitle: string,
     prBody: string,
     installationId: string,
-    head,
-    gitResourceMeta: GitResourceMeta,
-    baseBranchName?: string | undefined
+    head
   ): Promise<string> {
     const myOctokit = Octokit.plugin(createPullRequest);
     const token = await this.getInstallationAuthToken(installationId);
@@ -199,98 +187,17 @@ export class GithubService {
       auth: token,
     });
 
-    const amplicationIgnoreManger = new AmplicationIgnoreManger();
-    await amplicationIgnoreManger.init(async (fileName) => {
-      try {
-        const file = await this.getFile(
-          owner,
-          repo,
-          fileName,
-          undefined, // take the default branch
-          installationId
-        );
-        const { content, htmlUrl, name } = file;
-        console.log(`Got ${name} file ${htmlUrl}`);
-        return content;
-      } catch (error) {
-        console.log("Repository does not have a .amplicationignore file");
-        return "";
-      }
-    });
-
-    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
-    //do not override server/scripts/customSeed.ts
-    const doNotOverride = [
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.controller.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.resolver.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.service.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.module.ts$`
-      ),
-      new RegExp(
-        `^${gitResourceMeta.serverPath || "server"}/scripts/customSeed.ts$`
-      ),
-    ];
-
-    const authFolder = "server/src/auth/";
-
-    const files: Required<Changes["files"]> = Object.fromEntries(
-      modules.map((module) => {
-        // ignored file
-        if (amplicationIgnoreManger.isIgnored(module.path)) {
-          return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
-        }
-        // Deleted file
-        if (module.code === null) {
-          return [module.path, module.code];
-        }
-        // Regex ignored file
-        if (
-          !module.path.startsWith(authFolder) &&
-          doNotOverride.some((rx) => rx.test(module.path))
-        ) {
-          return [
-            module.path,
-            ({ exists }) => {
-              // do not create the file if it already exist
-              if (exists) return null;
-
-              return module.code;
-            },
-          ];
-        }
-        // Regular file
-        return [module.path, module.code];
-      })
-    );
-
     switch (mode) {
       case EnumPullRequestMode.Accumulative:
-        return new AccumulativePullRequest().createPullRequest(
+        return new AccumulativePullRequest(
           octokit,
           owner,
-          repo,
-          prTitle,
-          prBody,
-          baseBranchName,
-          head,
-          files,
-          commitMessage
-        );
+          repo
+        ).createPullRequest(prTitle, prBody, head, files, commitMessage);
       default:
-        return new BasicPullRequest().createPullRequest(
-          octokit,
-          owner,
-          repo,
+        return new BasicPullRequest(octokit, owner, repo).createPullRequest(
           prTitle,
           prBody,
-          baseBranchName,
           head,
           files,
           commitMessage
@@ -394,58 +301,5 @@ export class GithubService {
       admin,
       defaultBranch,
     };
-  }
-
-  async createBranch(
-    installationId: string,
-    owner: string,
-    repo: string,
-    newBranchName: string,
-    baseBranchName?: string
-  ): Promise<Branch> {
-    const octokit = await this.getInstallationOctokit(installationId);
-    const repository = await this.getRepository(installationId, owner, repo);
-    const { defaultBranch } = repository;
-    const refs = await octokit.rest.git.getRef({
-      owner,
-      repo,
-      ref: `heads/${baseBranchName || defaultBranch}`,
-    });
-    const { data: branch } = await octokit.rest.git.createRef({
-      owner,
-      repo,
-      ref: `refs/heads/${newBranchName}`,
-      sha: refs.data.object.sha,
-    });
-    return { name: newBranchName, sha: branch.object.sha };
-  }
-
-  async isBranchExist(
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<boolean> {
-    try {
-      const refs = await this.getBranch(installationId, owner, repo, branch);
-      return Boolean(refs);
-    } catch (error) {
-      return false;
-    }
-  }
-
-  async getBranch(
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<Branch> {
-    const octokit = await this.getInstallationOctokit(installationId);
-    const refs = await octokit.rest.git.getRef({
-      owner,
-      repo,
-      ref: `heads/${branch}`,
-    });
-    return { sha: refs.data.object.sha, name: branch };
   }
 }

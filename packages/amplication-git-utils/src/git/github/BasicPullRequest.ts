@@ -1,21 +1,22 @@
-export class BasicPullRequest {
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+import { BasePullRequest } from "./BasePullRequest";
+
+export class BasicPullRequest extends BasePullRequest {
   async createPullRequest(
-    octokit: any,
-    owner: string,
-    repo: string,
     prTitle: string,
     prBody: string,
-    baseBranchName: string,
     head: string,
-    files: any,
+    files: Required<Changes["files"]>,
     commitMessage: string
   ): Promise<string> {
+    const { octokit, owner, repo } = this;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const pr = await octokit.createPullRequest({
       owner,
       repo,
       title: prTitle,
       body: prBody,
-      base: baseBranchName /* optional: defaults to default branch */,
       head,
       update: true,
       changes: [

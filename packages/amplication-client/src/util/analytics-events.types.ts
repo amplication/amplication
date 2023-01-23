@@ -15,6 +15,7 @@ export enum AnalyticsEventNames {
   AccountInfoUpdate = "updateAccountInfo",
 
   // workspace
+  WorkspaceSelected = "selectWorkspace",
   WorkspaceInfoUpdate = "updateWorkspaceInfo",
   WorkspaceCreate = "createWorkspace",
   WorkspaceMemberInvite = "inviteUser",
@@ -114,4 +115,9 @@ export enum AnalyticsEventNames {
   UpgradeOnPassedLimitsClick = "UpgradeOnPassedLimitsClick",
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
   UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
+
+  // Chat widget
+  HelpMenuItemClick = "HelpMenuItemClick",
+  ChatWidgetView = "ChatWidgetView",
+  ChatWidgetClose = "ChatWidgetClose",
 }

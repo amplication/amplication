@@ -1,16 +1,18 @@
 import { CircularProgress } from "@amplication/design-system";
 import { StiggProvider } from "@stigg/react-sdk";
-import React, { lazy } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import useAuthenticated from "../authentication/use-authenticated";
 import { AppContextProvider } from "../context/appContext";
 import { REACT_APP_BILLING_API_KEY } from "../env";
+import { HubSpotChatComponent } from "../hubSpotChat";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import { AppRouteProps } from "../routes/routesUtil";
 import CompleteInvitation from "../User/CompleteInvitation";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import LastCommit from "../VersionControl/LastCommit";
 import PendingChanges from "../VersionControl/PendingChanges";
 import usePendingChanges, {
@@ -36,6 +38,8 @@ type Props = AppRouteProps & {
 };
 
 const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
+  const [chatStatus, setChatStatus] = useState<boolean>(false);
+  const { trackEvent } = useTracking();
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
@@ -65,6 +69,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     resetPendingChanges,
     setCommitRunning,
     setPendingChangesError,
+    resetPendingChangesIndicator,
+    setResetPendingChangesIndicator,
   } = usePendingChanges(currentProject);
 
   const {
@@ -90,6 +96,30 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     projectId: currentProject?.id,
     resourceId: currentResource?.id,
   });
+
+  const openHubSpotChat = () => {
+    const status = window.HubSpotConversations.widget.status();
+
+    if (status.loaded) {
+      window.HubSpotConversations.widget.refresh();
+    } else {
+      window.HubSpotConversations.widget.load();
+    }
+    trackEvent({
+      eventName: AnalyticsEventNames.ChatWidgetView,
+      workspaceId: currentWorkspace.id,
+    });
+    setChatStatus(true);
+  };
+
+  useEffect(() => {
+    if (currentWorkspace) {
+      trackEvent({
+        eventName: AnalyticsEventNames.WorkspaceSelected,
+        workspaceId: currentWorkspace.id,
+      });
+    }
+  }, [currentWorkspace]);
 
   return currentWorkspace ? (
     <AppContextProvider
@@ -131,6 +161,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         createMessageBroker,
         errorCreateMessageBroker,
         loadingCreateMessageBroker,
+        resetPendingChangesIndicator,
+        setResetPendingChangesIndicator,
+        openHubSpotChat,
       }}
     >
       {isMobileOnly ? (
@@ -158,6 +191,10 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
                 </div>
               </div>
               <WorkspaceFooter />
+              <HubSpotChatComponent
+                setChatStatus={setChatStatus}
+                chatStatus={chatStatus}
+              />
               <ScreenResolutionMessage />
             </div>
           </Track>

@@ -46,7 +46,8 @@ const defaultPlugins: {
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
   dSGResourceData: DSGResourceData,
-  logger: winston.Logger
+  logger: winston.Logger,
+  pluginInstallationPath?: string
 ): Promise<Module[]> {
   logger.info("Preparing context...");
 
@@ -63,7 +64,10 @@ export async function prepareContext(
   }
 
   const pluginsWithDefaultPlugins = prepareDefaultPlugins(resourcePlugins);
-  const plugins = await registerPlugins(pluginsWithDefaultPlugins);
+  const plugins = await registerPlugins(
+    pluginsWithDefaultPlugins,
+    pluginInstallationPath
+  );
 
   const [entitiesWithUserEntity] = createUserEntityIfNotExist(entities);
 
@@ -205,11 +209,15 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             !fieldProperties.allowMultipleSelection &&
             !relatedFieldProperties.allowMultipleSelection;
 
-          //**@todo: in one-to-one relation, only one side should have a foreign key.
-          //We currently decide randomly based on sorting the permanent ID
-          //instead we should let the user decide which side holds the foreign key  */
-          const isOneToOneWithoutForeignKey =
-            isOneToOne && field.permanentId > relatedField.permanentId;
+          let isOneToOneWithoutForeignKey = true;
+
+          if (fieldProperties.fkHolder) {
+            isOneToOneWithoutForeignKey =
+              isOneToOne && field.permanentId !== fieldProperties.fkHolder;
+          } else {
+            isOneToOneWithoutForeignKey =
+              isOneToOne && field.permanentId > relatedField.permanentId;
+          }
 
           const properties: LookupResolvedProperties = {
             ...field.properties,

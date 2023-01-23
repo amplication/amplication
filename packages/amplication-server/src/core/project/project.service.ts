@@ -16,30 +16,20 @@ import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
-import { Env } from "../../env";
-import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/BillingFeature";
-import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "./FeatureUsageReport";
 
 @Injectable()
 export class ProjectService {
-  private readonly isBillingEnabled: boolean;
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly resourceService: ResourceService,
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
     private readonly entityService: EntityService,
-    private readonly configService: ConfigService,
     private readonly billingService: BillingService
-  ) {
-    this.isBillingEnabled = this.configService.get<boolean>(
-      Env.BILLING_ENABLED
-    );
-  }
+  ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
     return this.prisma.project.findMany({
@@ -128,10 +118,17 @@ export class ProjectService {
     return [...changedEntities, ...changedBlocks];
   }
 
-  async calculateUsage(
-    workspaceId: string,
-    entitiesPerService: number
+  async calculateMeteredUsage(
+    workspaceId: string
   ): Promise<FeatureUsageReport> {
+    const entitiesPerServiceEntitlement =
+      await this.billingService.getNumericEntitlement(
+        workspaceId,
+        BillingFeature.EntitiesPerService
+      );
+
+    const entitiesPerService = entitiesPerServiceEntitlement.value;
+
     const workspace = await this.prisma.workspace.findUnique({
       where: {
         id: workspaceId,
@@ -178,52 +175,6 @@ export class ProjectService {
     };
   }
 
-  async resetUsage(workspaceId: string, entitiesPerServiceLimit: number) {
-    const usageReport = await this.calculateUsage(
-      workspaceId,
-      entitiesPerServiceLimit
-    );
-
-    await this.billingService.setUsage(
-      workspaceId,
-      BillingFeature.Services,
-      usageReport.services
-    );
-
-    await this.billingService.setUsage(
-      workspaceId,
-      BillingFeature.ServicesAboveEntitiesPerServiceLimit,
-      usageReport.servicesAboveEntityPerServiceLimit
-    );
-  }
-
-  async validateSubscriptionPlanLimitationsForProject(
-    workspaceId: string
-  ): Promise<void> {
-    const servicesEntitlement = await this.billingService.getMeteredEntitlement(
-      workspaceId,
-      BillingFeature.Services
-    );
-
-    if (!servicesEntitlement.hasAccess) {
-      throw new ValidationError(
-        `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
-      );
-    }
-
-    const servicesAboveEntitiesPerServiceLimitEntitlement =
-      await this.billingService.getMeteredEntitlement(
-        workspaceId,
-        BillingFeature.ServicesAboveEntitiesPerServiceLimit
-      );
-
-    if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
-      throw new ValidationError(
-        `LimitationError: Allowed entities per service: ${servicesAboveEntitiesPerServiceLimitEntitlement.usageLimit}`
-      );
-    }
-  }
-
   async commit(
     args: CreateCommitArgs,
     skipPublish?: boolean
@@ -246,32 +197,16 @@ export class ProjectService {
         },
       },
     });
+    const project = await this.findFirst({ where: { id: projectId } });
 
-    if (this.isBillingEnabled) {
-      const project = await this.findFirst({ where: { id: projectId } });
+    //check if billing enabled first to skip calculation
+    if (this.billingService.isBillingEnabled) {
+      const usageReport = await this.calculateMeteredUsage(project.workspaceId);
+      await this.billingService.resetUsage(project.workspaceId, usageReport);
 
-      const entitiesPerServiceEntitlement =
-        await this.billingService.getNumericEntitlement(
-          project.workspaceId,
-          BillingFeature.EntitiesPerService
-        );
-
-      await this.resetUsage(
-        project.workspaceId,
-        entitiesPerServiceEntitlement.value
+      await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
+        project.workspaceId
       );
-
-      const isIgnoreValidationCodeGeneration =
-        await this.billingService.getBooleanEntitlement(
-          project.workspaceId,
-          BillingFeature.IgnoreValidationCodeGeneration
-        );
-
-      if (!isIgnoreValidationCodeGeneration.hasAccess) {
-        await this.validateSubscriptionPlanLimitationsForProject(
-          project.workspaceId
-        );
-      }
     }
 
     if (isEmpty(resources)) {
@@ -287,13 +222,10 @@ export class ProjectService {
 
     const commit = await this.prisma.commit.create(args);
 
-    if (this.isBillingEnabled) {
-      const project = await this.findUnique({ where: { id: projectId } });
-      await this.billingService.reportUsage(
-        project.workspaceId,
-        BillingFeature.CodeGenerationBuilds
-      );
-    }
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.CodeGenerationBuilds
+    );
 
     await Promise.all(
       changedEntities.flatMap((change) => {
@@ -418,11 +350,18 @@ export class ProjectService {
       );
     }
 
-    const entityPromises = changedEntities.map((change) => {
-      return this.entityService.discardPendingChanges(change.originId, userId);
+    const currentUser = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
     });
+
+    const entityPromises = changedEntities.map((change) => {
+      return this.entityService.discardPendingChanges(change, currentUser);
+    });
+
     const blockPromises = changedBlocks.map((change) => {
-      return this.blockService.discardPendingChanges(change.originId, userId);
+      return this.blockService.discardPendingChanges(change, currentUser);
     });
 
     await Promise.all(blockPromises);

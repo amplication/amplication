@@ -62,3 +62,12 @@ export const GET_WORKSPACES = gql`
     }
   }
 `;
+
+export const PROVISION_SUBSCRIPTION = gql`
+  mutation provisionSubscription($data: ProvisionSubscriptionInput!) {
+    provisionSubscription(data: $data) {
+      provisionStatus
+      checkoutUrl
+    }
+  }
+`;

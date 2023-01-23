@@ -4,6 +4,7 @@ import {
   PluginInstallation,
   PluginMap,
 } from "@amplication/code-gen-types";
+import { join } from "path";
 
 class EmptyClass {}
 
@@ -15,7 +16,8 @@ const functionsObject = ["[object Function]", "[object AsyncFunction]"];
  * @returns Plugin class
  */
 async function* getPluginFuncGenerator(
-  pluginList: PluginInstallation[]
+  pluginList: PluginInstallation[],
+  pluginInstallationPath?: string
 ): AsyncGenerator<new () => any> {
   try {
     const pluginListLength = pluginList.length;
@@ -23,7 +25,8 @@ async function* getPluginFuncGenerator(
 
     do {
       const packageName = pluginList[index].npm;
-      const func = await import(packageName);
+
+      const func = await getPlugin(packageName, pluginInstallationPath);
 
       ++index;
       if (!func.hasOwnProperty("default")) yield EmptyClass;
@@ -36,17 +39,34 @@ async function* getPluginFuncGenerator(
   }
 }
 
+async function getPlugin(
+  packageName: string,
+  customPath: string | undefined
+): Promise<any> {
+  if (!customPath) {
+    return await import(packageName);
+  }
+  const path = join(customPath, packageName);
+  if (path) {
+    return await import(path);
+  }
+}
+
 /**
  * loop through all plugin list and set the plugin under each event
  */
 const getAllPlugins = async (
-  pluginList: PluginInstallation[]
+  pluginList: PluginInstallation[],
+  pluginInstallationPath?: string
 ): Promise<Events[]> => {
   if (!pluginList.length) return [];
 
   const pluginFuncsArr: Events[] = [];
 
-  for await (const pluginFunc of getPluginFuncGenerator(pluginList)) {
+  for await (const pluginFunc of getPluginFuncGenerator(
+    pluginList,
+    pluginInstallationPath
+  )) {
     const initializeClass = new pluginFunc();
     if (!initializeClass.register) continue;
 
@@ -64,11 +84,15 @@ const getAllPlugins = async (
  * main plugin manger function. it trigger plugin import and set the structure for plugin context
  */
 const registerPlugins = async (
-  pluginList: PluginInstallation[]
+  pluginList: PluginInstallation[],
+  pluginInstallationPath?: string
 ): Promise<{ [K in EventNames]?: any }> => {
   const pluginMap: PluginMap = {};
 
-  const pluginFuncsArr = (await getAllPlugins(pluginList)) as Events[];
+  const pluginFuncsArr = (await getAllPlugins(
+    pluginList,
+    pluginInstallationPath
+  )) as Events[];
   if (!pluginFuncsArr.length) return {};
 
   pluginFuncsArr.reduce(

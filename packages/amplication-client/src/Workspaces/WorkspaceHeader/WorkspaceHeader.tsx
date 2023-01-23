@@ -36,6 +36,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setResource,
     resources,
     currentProjectConfiguration,
+    openHubSpotChat,
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
@@ -90,11 +91,23 @@ const WorkspaceHeader: React.FC<{}> = () => {
   }, [history, apolloClient]);
 
   const handleUpgradeClick = useCallback(() => {
+    history.push(`/${currentWorkspace.id}/purchase`, {
+      from: { pathname: window.location.pathname },
+    });
     trackEvent({
       eventName: AnalyticsEventNames.UpgradeOnTopBarClick,
       workspace: currentWorkspace.id,
     });
-  }, [trackEvent]);
+  }, [currentWorkspace, window.location.pathname]);
+
+  const handleContactUsClick = useCallback(() => {
+    openHubSpotChat();
+    trackEvent({
+      eventName: AnalyticsEventNames.HelpMenuItemClick,
+      Action: "Contact Us",
+      workspaceId: currentWorkspace.id,
+    });
+  }, [openHubSpotChat]);
 
   return (
     <div className={CLASS_NAME}>
@@ -228,24 +241,15 @@ const WorkspaceHeader: React.FC<{}> = () => {
             buttonStyle={EnumButtonStyle.Outline}
             onClick={handleUpgradeClick}
           >
-            <Link
-              className={`${CLASS_NAME}__upgrade__link`}
-              to={{
-                pathname: `/${currentWorkspace?.id}/purchase`,
-                state: { from: { pathname: window.location.pathname } },
-              }}
-            >
-              Upgrade
-            </Link>
+            Upgrade
           </Button>
-          <a
-            className={`${CLASS_NAME}__links__link`}
-            rel="noopener noreferrer"
-            href="https://amplication.com/blog"
-            target="_blank"
+          <Button
+            className={`${CLASS_NAME}__contact__btn`}
+            buttonStyle={EnumButtonStyle.Clear}
+            onClick={handleContactUsClick}
           >
-            Blog
-          </a>
+            Contact Us
+          </Button>
           <a
             className={`${CLASS_NAME}__links__link`}
             rel="noopener noreferrer"

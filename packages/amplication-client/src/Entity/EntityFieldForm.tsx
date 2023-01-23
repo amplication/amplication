@@ -23,6 +23,7 @@ export type Values = {
   required: boolean;
   searchable: boolean;
   description: string | null;
+  permanentId?: string | null;
   // eslint-disable-next-line @typescript-eslint/ban-types
   properties: {
     relatedEntityId?: string;
@@ -34,7 +35,7 @@ type Props = {
   onSubmit: (values: Values) => void;
   defaultValues?: Partial<models.EntityField>;
   resourceId: string;
-  entityDisplayName: string;
+  entity: models.Entity;
   isSystemDataType?: boolean;
 };
 
@@ -70,7 +71,7 @@ const EntityFieldForm = ({
   onSubmit,
   defaultValues = {},
   resourceId,
-  entityDisplayName,
+  entity,
   isSystemDataType,
 }: Props) => {
   const initialValues = useMemo(() => {
@@ -170,7 +171,7 @@ const EntityFieldForm = ({
             <SchemaFields
               schema={schema}
               resourceId={resourceId}
-              entityDisplayName={entityDisplayName}
+              entity={entity}
             />
           </Form>
         );
