@@ -52,7 +52,7 @@ jobs:
           if [[ "$project" == "build-manager" ]];
           then
             kubectl rollout restart deployments/$project -n ${{ inputs.environment-name }}-dsg
-          elif [[ "$project" != "data-service-generator-runner" ]];
+          elif [[ "$project" != "data-service-generator-runner" &&  "$project" != "local-dsg-runner" ]];
           then
             kubectl rollout restart deployments/$project -n ${{ inputs.environment-name }}
           fi;
