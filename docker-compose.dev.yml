@@ -64,18 +64,5 @@ services:
       timeout: 10s
       retries: 10
 
-  kafka-init-topics:
-    image: confluentinc/cp-kafka:5.3.1
-    volumes:
-      - ./temp/message.json:/data/message.json
-    depends_on:
-      kafka:
-        condition: service_healthy
-    command: "bash -c 'echo Waiting for Kafka to be ready... && \
-      cub kafka-ready -b kafka:29092 1 30 && \
-      kafka-topics --create --topic second.users --partitions 3 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
-      kafka-topics --create --topic second.messages --partitions 2 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
-      kafka-topics --create --topic first.messages --partitions 2 --replication-factor 1 --if-not-exists --zookeeper zookeeper:2181 && \
-      kafka-console-producer --broker-list kafka:29092 -topic second.users \"{}\"'"
 volumes:
   postgres: ~
