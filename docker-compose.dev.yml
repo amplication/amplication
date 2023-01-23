@@ -34,7 +34,7 @@ services:
       KAFKA_CLUSTERS_0_JMXPORT: 9997
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.2.4
+    image: confluentinc/cp-zookeeper:7.3.1
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -42,7 +42,7 @@ services:
       - "2181:2181"
 
   kafka:
-    image: confluentinc/cp-kafka:5.3.1
+    image: confluentinc/cp-kafka:7.3.1
     depends_on:
       - zookeeper
     ports:
