@@ -7,6 +7,7 @@ import {
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { dynamicPackagesInstallations } from "./dynamic-package-installation";
+import { prepareDefaultPlugins } from "./utils/defaultPlugins";
 
 export const AMPLICATION_MODULES = "amplication_modules";
 const buildSpecPath = process.env.BUILD_SPEC_PATH;
@@ -37,7 +38,9 @@ export default async function generateCode(
     const resourceData = await readInputJson(source);
     const { pluginInstallations } = resourceData;
 
-    await dynamicPackagesInstallations(pluginInstallations, defaultLogger);
+    const allPlugins = prepareDefaultPlugins(pluginInstallations);
+
+    await dynamicPackagesInstallations(allPlugins, defaultLogger);
 
     const modules = await createDataService(
       resourceData,
