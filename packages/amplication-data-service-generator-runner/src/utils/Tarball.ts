@@ -26,6 +26,12 @@ export class Tarball {
   }: PackageInstallation): Promise<string> {
     const fullPackageName = `${name}@${version}`;
     const response = await packument(fullPackageName);
+    const latestTag = response["dist-tags"].latest;
+    const latestVersion = response.versions[latestTag];
+    // check if a version was provided until we have the plugin API
+    if (!version) {
+      return latestVersion.dist.tarball;
+    }
     const requestedVersion = response.versions[version];
     if (!requestedVersion) {
       const latestTag = response["dist-tags"].latest;
