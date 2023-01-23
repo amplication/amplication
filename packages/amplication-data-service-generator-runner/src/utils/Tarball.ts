@@ -26,12 +26,15 @@ export class Tarball {
   }: PackageInstallation): Promise<string> {
     const fullPackageName = `${name}@${version}`;
     const response = await packument(fullPackageName);
-    const latestTag = response["dist-tags"].latest;
-    const latest = response.versions[latestTag];
-    if (!latest) {
-      throw new Error(`Could not find latest version for ${fullPackageName}`);
+    const requestedVersion = response.versions[version];
+    if (!requestedVersion) {
+      const latestTag = response["dist-tags"].latest;
+      const latestVersion = response.versions[latestTag];
+      throw new Error(
+        `Could not find version ${version} for ${name}, please try to install another version, or the latest version: ${latestVersion}`
+      );
     }
 
-    return latest.dist.tarball;
+    return requestedVersion.dist.tarball;
   }
 }
