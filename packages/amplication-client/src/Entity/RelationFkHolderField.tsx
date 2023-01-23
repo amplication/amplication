@@ -44,7 +44,6 @@ const RelationFkHolderField = ({ entity, ...props }: Props) => {
       return;
     }
 
-    console.log("RelationFkHolderField", formik.values);
     const relatedField =
       (data.entity?.fields &&
         data.entity.fields.length &&
