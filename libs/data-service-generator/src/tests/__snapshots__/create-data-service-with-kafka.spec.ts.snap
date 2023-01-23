@@ -3130,8 +3130,7 @@ model User {
   isCurious          Boolean
   location           String
   extendedProperties Json
-  profile            Profile?            @relation(fields: [profileId], references: [id])
-  profileId          Int?                @unique
+  profile            Profile?
 }
 
 model Profile {
@@ -3139,7 +3138,8 @@ model Profile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String
-  user      User?
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
 }
 
 model Order {
