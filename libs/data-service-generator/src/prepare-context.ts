@@ -211,7 +211,7 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
 
           let isOneToOneWithoutForeignKey = true;
 
-          if (fieldProperties.fkHolder !== null) {
+          if (fieldProperties.fkHolder) {
             isOneToOneWithoutForeignKey =
               isOneToOne && field.permanentId !== fieldProperties.fkHolder;
           } else {
