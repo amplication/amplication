@@ -1,7 +1,7 @@
 import { Paywall, BillingPeriod } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import * as models from "../models";
 import {
   Button,
@@ -136,7 +136,7 @@ const PurchasePage = (props) => {
           }) => {
             trackEvent({
               eventName: AnalyticsEventNames.PricingPageCTAClick,
-              currentPlan: plan.basePlan.displayName,
+              currentPlan: currentWorkspace.subscription || "Free",
               type: plan.displayName,
               action: intentionType,
               Billing: selectedBillingPeriod,
