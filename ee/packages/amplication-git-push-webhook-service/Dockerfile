@@ -1,15 +1,23 @@
-FROM node:18.12.1-alpine AS base
+FROM node:18.13.0-slim AS base
 
-WORKDIR /app
+ARG user=git-push-webhook-service
+ARG uid=1001
+ARG gid=$uid
 
-COPY ./dist/ee/packages/amplication-git-push-webhook-service/package.json .
+WORKDIR /workspace/packages/${user}
 
-RUN npm i --omit=dev
+COPY ./dist/ee/packages/amplication-${user}/package*.json .
+RUN npm install --omit-dev
 
-COPY ./dist/ee/packages/amplication-git-push-webhook-service .
+COPY ./dist/ee/packages/amplication-${user} .
 
-# This is required to include the Prisma client in the image
-COPY ./packages/amplication-prisma-db ./packages/amplication-prisma-db
+COPY ./packages/amplication-prisma-db ./workspace/packages/amplication-prisma-db
+
+RUN groupadd --gid ${gid} ${user}
+RUN useradd --uid ${uid} --gid ${gid} -m ${user}
+RUN chown -R ${uid}:${gid} /workspace/packages/${user}
+
+USER ${user}
 
 ENV PORT=3333
 EXPOSE $PORT
