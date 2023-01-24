@@ -32,9 +32,9 @@ env:
   BRANCH: ${{ inputs.branch }}
 
 jobs:
-  dockerize:
+  package:
     if: ${{ inputs.affected-dockerable != '[]' && inputs.affected-dockerable != ''}}
-    name: Dockerize
+    name: Package
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -76,17 +76,17 @@ jobs:
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
-      # - name: Configure AWS Credentials (operations account)
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: us-east-1
+      - name: Configure AWS Credentials (operations account)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      # - name: Login to Amazon ECR (operations account)
-      #   uses: aws-actions/amazon-ecr-login@v1
-      #   with:
-      #     registries: "439403303254"
+      - name: Login to Amazon ECR (operations account)
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "439403303254"
 
       # https://github.com/docker/metadata-action
       - name: Docker Metadata
@@ -107,7 +107,7 @@ jobs:
         run: npx nx docker:build ${{ matrix.project }}
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
-          INPUT_PUSH: false
+          INPUT_PUSH: true
 
   configure:
     name: Configure deployment target environment
