@@ -1,16 +1,22 @@
 FROM node:18.12.1-slim AS base
 
-WORKDIR /workspace/packages/amplication-plugin-api
+ARG user=amplication-plugin-api
+ARG group=nodejs
+ARG uid=1001
+ARG gid=1001
 
-COPY ./dist/packages/amplication-plugin-api/package.json .
+WORKDIR /workspace/packages/${user}
+
+COPY ./dist/packages/${user}/package.json .
 RUN npm install --omit-dev
 
-COPY ./dist/packages/amplication-plugin-api .
+COPY ./dist/packages/${user} .
 
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S amplication-plugin-api -u 1001
-RUN chown -R amplication-plugin-api:nodejs /workspace/packages/amplication-plugin-api
-USER amplication-plugin-api
+RUN groupadd -g ${gid} ${group}
+RUN useradd -u ${uid} -g ${group} -s /bin/sh -m ${user}
+RUN chown -R ${uid}:${group}  /workspace/packages/${user}
+
+USER ${uid}:${gid}
 
 ENV PORT=3005
 EXPOSE $PORT
