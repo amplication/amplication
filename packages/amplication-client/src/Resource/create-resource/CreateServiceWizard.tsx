@@ -10,7 +10,6 @@ import { serviceSettingsFieldsInitValues } from "../constants";
 import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
-import InnerTabLink from "../../Layout/InnerTabLink";
 import CreateServiceWizardFooter from "./CreateServiceWizardFooter";
 import CreateServiceWelcome from "./CreateServiceWelcome";
 import CreateServiceLoader from "./CreateServiceLoader";
