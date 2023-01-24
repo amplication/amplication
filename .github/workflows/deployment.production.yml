@@ -99,6 +99,8 @@ jobs:
 
             Image to bump from `${{ needs.preparation.outputs.base_tag }}` to `${{ github.ref_name }}`
 
+            Note: after merging you will still need to do a manual sync of the applications that are in the `argocd project` called `production-applications`. 
+
             Releases: https://github.com/amplication/amplication/releases
           labels: "release"
           reviewers: "${{ github.actor }}"
