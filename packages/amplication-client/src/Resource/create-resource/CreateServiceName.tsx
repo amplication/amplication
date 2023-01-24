@@ -14,10 +14,8 @@ type Props = AppRouteProps & {
 
 const CreateServiceName: React.FC<Props> = ({ moduleClass }) => {
   return (
-    <div className={`${moduleClass}__left`}>
-      <div className={`${moduleClass}__service_name_header`}>
-        <h2>First, we need to choose a name for the service</h2>
-      </div>
+    <div className={`${moduleClass}__service_box`}>
+      <h2>First, we need to choose a name for the service</h2>
       <div className={`${moduleClass}__description_bottom`}>
         <h3>
           Give your service a meaningful name. It will be used in the generated
@@ -25,7 +23,9 @@ const CreateServiceName: React.FC<Props> = ({ moduleClass }) => {
           e.g. Order Service, Notification Manager
         </h3>
       </div>
-      <TextInput name="Service name" label="Service name" />
+      <div className={`${moduleClass}__service_input`}>
+        <TextInput name="Service name" label="Service name" />
+      </div>
     </div>
   );
 };

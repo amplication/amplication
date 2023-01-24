@@ -17,6 +17,16 @@ $max-width: 700px;
     width: 100%;
   }
 
+  &__service_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__service_input {
+    width: 50%;
+  }
+
   &__service_name_header {
     display: flex;
     flex-direction: column;
@@ -70,6 +80,8 @@ $max-width: 700px;
   &__description_bottom {
     width: 450px;
     margin-top: 8px;
+    padding-top: 16px;
+    padding-bottom: 40px;
   }
 
   h2 {
