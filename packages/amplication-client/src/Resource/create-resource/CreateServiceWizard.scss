@@ -61,20 +61,13 @@ $max-width: 700px;
   &__description {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    width: 66%;
+    gap: 4px;
 
     .circle-badge i {
       color: var(--black5);
       font-size: 20px;
     }
-  }
-
-  &__description_top {
-    margin-top: 24px;
-    width: 450px;
-    height: 72px;
   }
 
   &__description_bottom {

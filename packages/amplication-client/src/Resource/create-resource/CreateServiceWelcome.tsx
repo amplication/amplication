@@ -1,74 +1,37 @@
-import { Loader } from "@amplication/design-system";
 import React, { useContext } from "react";
-import { useRouteMatch } from "react-router-dom";
-import "./CreateServiceWizard.scss";
-import * as models from "../../models";
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
+import { useHistory, useRouteMatch } from "react-router-dom";
+import "./CreateServiceWelcome.scss";
 import { AppContext } from "../../context/appContext";
+import { Button } from "@amplication/design-system";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 const CreateServiceWelcome: React.FC<{}> = () => {
-  const {
-    currentProject,
-    setNewService,
-    currentWorkspace,
-    errorCreateService,
-    loadingCreateService,
-  } = useContext(AppContext);
+  const { currentProject, currentWorkspace } = useContext(AppContext);
 
-  const CLASS_NAME = "create-service-wizard";
+  const CLASS_NAME = "create-service-welcome";
 
   const welcomeMatch = useRouteMatch({
     path: `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`,
     strict: true,
   });
 
-  return welcomeMatch.isExact ? (
-    <div>
-      {loadingCreateService ? (
-        <div className={`${CLASS_NAME}__processing`}>
-          <div className={`${CLASS_NAME}__processing__message_title_container`}>
-            <div className={`${CLASS_NAME}__processing__title`}>
-              All set! We’re currently generating your service.
-            </div>
-            <div className={`${CLASS_NAME}__processing__message`}>
-              It should only take a few seconds to finish. Don't go away!
-            </div>
-          </div>
-          <div className={`${CLASS_NAME}__processing__loader`}>
-            <Loader fullScreen={false} />
-          </div>
+  const history = useHistory();
 
-          <div className={`${CLASS_NAME}__processing__tagline`}>
-            <div>For a full experience, connect with a GitHub repository</div>
-            <div>
-              and get a new Pull Request every time you make changes in your
-              data model.
-            </div>
-          </div>
+  const handleStartBtnClick = () => {
+    history.push(
+      `/${currentWorkspace?.id}/${currentProject?.id}/create-resource/details/service-name`
+    );
+  };
+
+  return welcomeMatch.isExact ? (
+    <div className={CLASS_NAME}>
+      <div className={`${CLASS_NAME}__welcome`}>
+        <h2>Welcome to amplication! 🎉</h2>
+        <h3>Let’s create together your first service</h3>
+        <div className={`${CLASS_NAME}__start_btn`}>
+          <Button onClick={handleStartBtnClick}>Let's start</Button>
         </div>
-      ) : (
-        <div className={`${CLASS_NAME}__left`}>
-          <div className={`${CLASS_NAME}__description`}>
-            <ResourceCircleBadge
-              type={models.EnumResourceType.Service}
-              size="large"
-            />
-            <div className={`${CLASS_NAME}__description_top`}>
-              <h2>
-                Amplication Service Creation Wizard Let’s start building your
-                service
-              </h2>
-            </div>
-            <div className={`${CLASS_NAME}__description_bottom`}>
-              <h3>
-                Select which components to include in your service and whether
-                to use sample entities
-              </h3>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   ) : null;
 };

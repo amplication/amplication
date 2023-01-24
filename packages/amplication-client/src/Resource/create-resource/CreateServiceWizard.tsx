@@ -13,6 +13,7 @@ import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
 import CreateServiceWizardFooter from "./CreateServiceWizardFooter";
 import CreateServiceWelcome from "./CreateServiceWelcome";
+import CreateServiceLoader from "./CreateServiceLoader";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -42,11 +43,15 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
 
   return (
     <Modal open fullScreen css={moduleClass}>
-      <div className={`${moduleClass}__left`}>
-        <CreateServiceWelcome />
-        {props.innerRoutes}
-        <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
-      </div>
+      {loadingCreateService ? (
+        <CreateServiceLoader />
+      ) : (
+        <div className={`${moduleClass}__left`}>
+          <CreateServiceWelcome />
+          {props.innerRoutes}
+          <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
+        </div>
+      )}
       <CreateServiceWizardFooter />
     </Modal>
   );

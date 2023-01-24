@@ -23,12 +23,6 @@ const CreateServiceWizardFooter: React.FC<{}> = () => {
         {"Back to project"}
       </Button>
       <InnerTabLink
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/create-resource/details/service-name`}
-        icon="settings"
-      >
-        General
-      </InnerTabLink>
-      <InnerTabLink
         to={`/${currentWorkspace?.id}/${currentProject?.id}/create-resource/settings/github-sync`}
         icon="settings"
       >
