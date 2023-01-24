@@ -22,25 +22,30 @@ type Props = AppRouteProps & {
 
 const CreateServiceRepository: React.FC<Props> = ({ moduleClass }) => {
   return (
-    <Modal open fullScreen css={moduleClass}>
-      <div className={`${moduleClass}__splitWrapper`}>
-        <div className={`${moduleClass}__left`}>
-          <div className={`${moduleClass}__service_name_header`}>
-            <h2>Are you using a monorepo or polyrepo?</h2>
-          </div>
-          <div className={`${moduleClass}__description_bottom`}>
-            <h3>
-              If you are using a monorepo, you can select the folder where you
-              want to save the code of the service. “apps”, “packages”,
-              “ee/packages” all are valid. Otherwise, Amplication will push the
-              code to the root of the repo in separate folders for the server
-              and the admin-ui.
-            </h3>
-          </div>
+    <div className={`${moduleClass}__splitWrapper`}>
+      <div className={`${moduleClass}__left`}>
+        <div className={`${moduleClass}__service_name_header`}>
+          <h2>Are you using a monorepo or polyrepo?</h2>
         </div>
-        <div className={`${moduleClass}__right`}></div>
+        <div className={`${moduleClass}__description_bottom`}>
+          <h3>
+            If you are using a monorepo, you can select the folder where you
+            want to save the code of the service. “apps”, “packages”,
+            “ee/packages” all are valid. Otherwise, Amplication will push the
+            code to the root of the repo in separate folders for the server and
+            the admin-ui.
+          </h3>
+        </div>
       </div>
-    </Modal>
+      <div className={`${moduleClass}__right`}>
+        <h3>
+          If you are using a monorepo, you can select the folder where you want
+          to save the code of the service. “apps”, “packages”, “ee/packages” all
+          are valid. Otherwise, Amplication will push the code to the root of
+          the repo in separate folders for the server and the admin-ui.
+        </h3>
+      </div>
+    </div>
   );
 };
 
