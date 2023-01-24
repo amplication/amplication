@@ -34,7 +34,9 @@ export class PluginVersionService extends PluginVersionServiceBase {
   async getPlugins(): Promise<Plugin[]> {
     try {
       return await this.pluginService.findMany({});
-    } catch (error) {}
+    } catch (error) {
+      /* empty */
+    }
   }
   /**
    * fetch the settings of a specific package version from npm as part of the creation of plugin version.
@@ -44,10 +46,11 @@ export class PluginVersionService extends PluginVersionServiceBase {
    * @returns
    */
   async getPluginSettings(tarBallUrl: string): Promise<string> {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
         const extract = tar.extract();
-        extract.on("entry", async function (header, stream, next) {
+        extract.on("entry", function (header, stream, next) {
           if (header.name === "package/.amplicationrc.json") {
             stream.on("data", (chunk) => {
               const data = Buffer.from(chunk);

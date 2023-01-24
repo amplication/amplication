@@ -29,18 +29,18 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   const handleInstall = useCallback(
     (plugin: Plugin, pluginVersion: PluginVersion) => {
-      const { name, id, npm } = plugin;
+      const { name, pluginId, npm } = plugin;
       const { version, settings } = pluginVersion;
 
       createPluginInstallation({
         variables: {
           data: {
             displayName: name,
-            pluginId: id,
+            pluginId,
             enabled: true,
             npm,
             version,
-            settings,
+            settings: JSON.parse(settings),
             resource: { connect: { id: resource } },
           },
         },
@@ -83,7 +83,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
         <PluginsCatalogItem
           key={pluginId}
           plugin={plugin}
-          pluginInstallation={installedPlugins[plugin.id]}
+          pluginInstallation={installedPlugins[plugin.pluginId]}
           onInstall={handleInstall}
           onEnableStateChange={onEnableStateChange}
         />

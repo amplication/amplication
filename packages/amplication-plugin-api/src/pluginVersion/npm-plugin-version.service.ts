@@ -28,6 +28,7 @@ export class NpmPluginVersionService {
     const pluginVersions: (PluginVersion & { tarballUrl: string })[] = [];
 
     const now = new Date();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [key, value] of Object.entries(npmVersions)) {
       pluginVersions.push({
         createdAt: now,
