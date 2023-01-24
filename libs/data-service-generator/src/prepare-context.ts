@@ -6,7 +6,6 @@ import {
   EnumDataType,
   LookupResolvedProperties,
   Module,
-  PluginInstallation,
   serverDirectories,
   types,
 } from "@amplication/code-gen-types";
@@ -22,26 +21,6 @@ import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { createUserEntityIfNotExist } from "./server/user-entity/user-entity";
 import { resolveTopicNames } from "./util/message-broker";
-
-export const POSTGRESQL_PLUGIN_ID = "db-postgres";
-export const MYSQL_PLUGIN_ID = "db-mysql";
-export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
-
-const defaultPlugins: {
-  categoryPluginIds: string[];
-  defaultCategoryPlugin: PluginInstallation;
-}[] = [
-  {
-    categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID],
-    defaultCategoryPlugin: {
-      id: "placeholder-id",
-      pluginId: POSTGRESQL_PLUGIN_ID,
-      npm: POSTGRESQL_NPM,
-      enabled: true,
-      version: "latest",
-    },
-  },
-];
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -63,9 +42,8 @@ export async function prepareContext(
     throw new Error("Missing required data");
   }
 
-  const pluginsWithDefaultPlugins = prepareDefaultPlugins(resourcePlugins);
   const plugins = await registerPlugins(
-    pluginsWithDefaultPlugins,
+    resourcePlugins,
     pluginInstallationPath
   );
 
@@ -134,25 +112,6 @@ function prepareEntityPluralName(entities: Entity[]): Entity[] {
   return currentEntities;
 }
 
-function prepareDefaultPlugins(
-  installedPlugins: PluginInstallation[]
-): PluginInstallation[] {
-  const missingDefaultPlugins = defaultPlugins.flatMap((pluginCategory) => {
-    let pluginFound = false;
-    pluginCategory.categoryPluginIds.forEach((pluginId) => {
-      if (!pluginFound) {
-        pluginFound = installedPlugins.some(
-          (installedPlugin) => installedPlugin.pluginId === pluginId
-        );
-      }
-    });
-    if (!pluginFound) return [pluginCategory.defaultCategoryPlugin];
-
-    return [];
-  });
-  return [...missingDefaultPlugins, ...installedPlugins];
-}
-
 function prepareServiceTopics(dSGResourceData: DSGResourceData) {
   return resolveTopicNames(
     dSGResourceData.serviceTopics || [],
@@ -209,11 +168,15 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             !fieldProperties.allowMultipleSelection &&
             !relatedFieldProperties.allowMultipleSelection;
 
-          //**@todo: in one-to-one relation, only one side should have a foreign key.
-          //We currently decide randomly based on sorting the permanent ID
-          //instead we should let the user decide which side holds the foreign key  */
-          const isOneToOneWithoutForeignKey =
-            isOneToOne && field.permanentId > relatedField.permanentId;
+          let isOneToOneWithoutForeignKey = true;
+
+          if (fieldProperties.fkHolder) {
+            isOneToOneWithoutForeignKey =
+              isOneToOne && field.permanentId !== fieldProperties.fkHolder;
+          } else {
+            isOneToOneWithoutForeignKey =
+              isOneToOne && field.permanentId > relatedField.permanentId;
+          }
 
           const properties: LookupResolvedProperties = {
             ...field.properties,
