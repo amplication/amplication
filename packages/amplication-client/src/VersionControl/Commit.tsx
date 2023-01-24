@@ -3,7 +3,7 @@ import {
   Snackbar,
   TextField,
 } from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
+import { ApolloError, gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useContext, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
@@ -73,10 +73,15 @@ const Commit = ({ projectId, noChanges }: Props) => {
   };
 
   const [commit, { error, loading }] = useMutation<TData>(COMMIT_CHANGES, {
-    onError: () => {
+    onError: (error: ApolloError) => {
       setCommitRunning(false);
       setPendingChangesError(true);
       setOpenLimitationDialog(true);
+      const errorMessage = formatError(error);
+      const isLimitationError =
+        errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
+      const limitationErrorMessage =
+        isLimitationError && formatLimitationError(errorMessage);
       trackEvent({
         eventName: AnalyticsEventNames.PassedLimitsNotificationView,
         reason: limitationErrorMessage,
