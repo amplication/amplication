@@ -36,7 +36,7 @@ export const Routes: RouteDef[] = [
             moduleName: "CodeViewPage",
             moduleClass: "code-view-page",
             routeTrackType: "",
-            exactPath: false,
+            exactPath: true,
             isAnalytics: true,
           },
           {
@@ -67,8 +67,60 @@ export const Routes: RouteDef[] = [
             moduleName: "CreateServiceWizard",
             moduleClass: "create-service-wizard",
             routeTrackType: "",
-            exactPath: true,
+            exactPath: false,
             isAnalytics: true,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/details/service-name",
+                Component: lazy(
+                  () => import("../Resource/create-resource/CreateServiceName")
+                ),
+                moduleName: "CreateServiceName",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/settings/github-sync",
+                Component: lazy(
+                  () => import("../Resource/create-resource/CreateGithubSync")
+                ),
+                moduleName: "CreateServiceName",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/settings/repository",
+                Component: lazy(
+                  () =>
+                    import(
+                      "../Resource/create-resource/CreateServiceRepository"
+                    )
+                ),
+                moduleName: "CreateServiceRepository",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/settings/generation-settings",
+                Component: lazy(
+                  () =>
+                    import(
+                      "../Resource/create-resource/CreateGenerationSettings"
+                    )
+                ),
+                moduleName: "CreateServiceName",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+            ],
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",

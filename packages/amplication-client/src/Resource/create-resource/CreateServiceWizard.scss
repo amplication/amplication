@@ -16,6 +16,21 @@ $max-width: 700px;
     height: 100%;
   }
 
+  &__service_name_header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__test {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--black100);
+  }
+
   &__left {
     display: flex;
     flex: 1;
