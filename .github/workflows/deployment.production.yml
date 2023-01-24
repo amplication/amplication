@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Determine base tag
-        run: echo "tag=$(git tag --sort=-creatordate | grep -A 1 ${{ github.ref_name }} | tail -n 1)" >> $GITHUB_OUTPUT # ${{ github.ref_name }}
+        run: echo "tag=$(git tag --sort=-creatordate | grep -A 1 ${{ github.ref_name }} | tail -n 1)" >> $GITHUB_OUTPUT
         id: base
 
   package:
