@@ -21,7 +21,7 @@
       }
     },
     "build": {
-      "executor": "@nrwl/webpack:webpack",
+      "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "webpackConfig": "packages/amplication-plugin-api/webpack.config.js",
