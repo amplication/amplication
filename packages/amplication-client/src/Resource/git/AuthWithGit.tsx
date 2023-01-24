@@ -7,7 +7,7 @@ import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
-import "./AuthResourceWithGit.scss";
+import "./AuthWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
@@ -27,7 +27,7 @@ type Props = {
   onDone: () => void;
 };
 
-export const CLASS_NAME = "auth-app-with-github";
+export const CLASS_NAME = "auth-with-git";
 
 function AuthWithGit({ onDone }: Props) {
   const { currentProjectConfiguration, currentWorkspace } =

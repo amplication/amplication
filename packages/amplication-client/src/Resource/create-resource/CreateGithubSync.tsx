@@ -1,12 +1,7 @@
-import { Modal } from "@amplication/design-system";
 import React, { useCallback, useContext } from "react";
 import { match } from "react-router-dom";
 import "./CreateServiceWizard.scss";
-import * as models from "../../models";
-
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { AppRouteProps } from "../../routes/routesUtil";
-import CreateServiceWizardFooter from "./CreateServiceWizardFooter";
 import { AppContext } from "../../context/appContext";
 import AuthWithGit from "../git/AuthWithGit";
 
@@ -41,7 +36,7 @@ const CreateGithubSync: React.FC<Props> = ({ moduleClass }) => {
         </div>
       </div>
       <div className={`${moduleClass}__right`}>
-        <div className={`${moduleClass}__test`}>
+        <div className={`${moduleClass}__github_box`}>
           <AuthWithGit onDone={handleOnDone}></AuthWithGit>
         </div>
       </div>
