@@ -6,6 +6,6 @@ RUN uname -a
 RUN npm install -g @prisma/cli
 
 # Copy schema and migration folder
-ADD ./ ./prisma/
+COPY ./ ./prisma/
 
 CMD [ "prisma", "migrate", "up", "--experimental"]
