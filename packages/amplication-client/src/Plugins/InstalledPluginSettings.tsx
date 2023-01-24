@@ -24,7 +24,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
-import usePlugins from "./hooks/usePlugins";
+import usePlugins, { PluginVersion } from "./hooks/usePlugins";
 import "./InstalledPluginSettings.scss";
 import { PluginLogo } from "./PluginLogo";
 
@@ -55,6 +55,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
     updatePluginInstallation,
     updateError,
   } = usePlugins(currentResource.id, pluginInstallationId);
+  const [selectedVersion, setSelectedVersion] = useState(
+    pluginInstallation?.PluginInstallation.version
+  );
 
   useEffect(() => {
     editorRef.current = JSON.stringify(
@@ -82,33 +85,36 @@ const InstalledPluginSettings: React.FC<Props> = ({
     setResetKey(generatedKey());
   }, []);
 
-  const handlePluginInstalledChange = useCallback(
-    (
-      changeType?: "version" | undefined,
-      data?: { version: string; settings: string }
-    ) => {
-      if (!pluginInstallation) return;
-
-      const { enabled, version, id } = pluginInstallation.PluginInstallation;
-
-      updatePluginInstallation({
-        variables: {
-          data: {
-            enabled,
-            version: changeType === "version" ? data.version : version,
-            settings:
-              changeType === "version"
-                ? JSON.parse(data.settings)
-                : JSON.parse(editorRef.current),
-          },
-          where: {
-            id: id,
-          },
-        },
-      }).catch(console.error);
+  const handleSelectVersion = useCallback(
+    (pluginVersion: PluginVersion) => {
+      setSelectedVersion(pluginVersion.version);
+      pluginInstallation?.PluginInstallation.version !==
+        pluginVersion.version &&
+        !isValid &&
+        setIsValid(true);
+      editorRef.current = JSON.stringify(pluginVersion.settings);
     },
-    [updatePluginInstallation, pluginInstallation]
+    [setSelectedVersion, setIsValid]
   );
+
+  const handlePluginInstalledSave = useCallback(() => {
+    if (!pluginInstallation) return;
+
+    const { enabled, id } = pluginInstallation.PluginInstallation;
+
+    updatePluginInstallation({
+      variables: {
+        data: {
+          enabled,
+          version: selectedVersion,
+          settings: JSON.parse(editorRef.current),
+        },
+        where: {
+          id: id,
+        },
+      },
+    }).catch(console.error);
+  }, [updatePluginInstallation, pluginInstallation]);
 
   const errorMessage = formatError(updateError);
 
@@ -145,20 +151,14 @@ const InstalledPluginSettings: React.FC<Props> = ({
                 <SelectMenuModal>
                   <SelectMenuList>
                     <>
-                      {plugin.versions.map((pluginVersion) => (
+                      {plugin.versions.map((pluginVersion: PluginVersion) => (
                         <SelectMenuItem
                           closeAfterSelectionChange
                           itemData={pluginVersion}
-                          selected={
-                            pluginVersion.version ===
-                            pluginInstallation.PluginInstallation.version
-                          }
+                          selected={pluginVersion.version === selectedVersion}
                           key={pluginVersion.id}
                           onSelectionChange={(pluginVersion) => {
-                            handlePluginInstalledChange(
-                              "version",
-                              pluginVersion
-                            );
+                            handleSelectVersion(pluginVersion);
                           }}
                         >
                           {pluginVersion.version}
@@ -188,7 +188,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
             <Button
               className={`${moduleClass}__save`}
               buttonStyle={EnumButtonStyle.Primary}
-              onClick={() => handlePluginInstalledChange()}
+              onClick={handlePluginInstalledSave}
               disabled={isValid}
             >
               Save

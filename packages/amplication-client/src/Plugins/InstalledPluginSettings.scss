@@ -1,5 +1,8 @@
 @import "../style/index.scss";
 
+$menuWidth: 500px;
+$selectMenuWidth: 200px;
+
 .installed-plugin-settings {
   height: 100%;
   display: flex;
@@ -31,13 +34,13 @@
 
   &__label-title {
     @include regular-12;
-    margin-top: 7px;
+    margin-top: var(--default-spacing-small);
   }
 
   &__menu {
-    width: 500px;
+    width: $menuWidth;
     .select-menu__modal > div {
-      width: 200px;
+      width: $selectMenuWidth;
     }
   }
 
