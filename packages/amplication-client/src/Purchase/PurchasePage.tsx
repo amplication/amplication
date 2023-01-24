@@ -10,7 +10,7 @@ import {
   Modal,
 } from "@amplication/design-system";
 import "./PurchasePage.scss";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
 import { ApolloError, useMutation } from "@apollo/client";
@@ -61,12 +61,15 @@ const CLASS_NAME = "purchase-page";
 const PurchasePage = (props) => {
   const { trackEvent } = useTracking();
   const history = useHistory();
-  const backUrl = () => {
+  const backUrl = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.PricingPageClose,
+    });
     if (history.location.state && history.location.state.source)
       return history.push("/");
 
     history.action !== "POP" ? history.goBack() : history.push("/");
-  };
+  }, [history]);
   const { currentWorkspace } = useContext(AppContext);
   const [provisionSubscription, { loading: provisionSubscriptionLoading }] =
     useMutation<DType>(PROVISION_SUBSCRIPTION, {
