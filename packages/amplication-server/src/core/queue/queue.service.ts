@@ -1,20 +1,29 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
 
 export const QUEUE_SERVICE_NAME = "QUEUE_SERVICE";
 
 @Injectable()
-export class QueueService {
-  generatePullRequestTopic: string;
+export class QueueService implements OnModuleInit {
   constructor(
     @Inject(QUEUE_SERVICE_NAME)
     private readonly kafkaClient: ClientKafka
   ) {}
 
-  async emitMessage(topic: string, message: string): Promise<void> {
-    // Explicitly wait for kafka client to connect. https://github.com/nestjs/nest/issues/10449
+  async onModuleInit() {
     await this.kafkaClient.connect();
+  }
 
-    this.kafkaClient.emit(topic, message);
+  async emitMessage(topic: string, message: string): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      this.kafkaClient.emit(topic, message).subscribe({
+        error: (err: any) => {
+          reject(err);
+        },
+        next: () => {
+          resolve();
+        },
+      });
+    });
   }
 }
