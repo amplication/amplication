@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import "./CreateServiceWizardForm.scss";
-import { RadioButtonField, ToggleField } from "@amplication/design-system";
+import { ToggleField } from "@amplication/design-system";
 import { Form, Formik } from "formik";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { serviceSettingsFieldsInitValues } from "../constants";
@@ -50,25 +50,6 @@ export const CreateServiceWizardForm = ({ handleSubmitResource }: Props) => {
                       disabled={!formik.values.generateGraphQL}
                       name="generateAdminUI"
                       label="Admin UI"
-                    />
-                  </div>
-                </div>
-                <div
-                  className={`${CLASS_NAME}__generation_setting_resource_wrapper`}
-                >
-                  <p>Sample Entities</p>
-                  <div>
-                    <RadioButtonField
-                      label="None (start from scratch)"
-                      value="scratch"
-                      name="resourceType"
-                      checked={formik.values.resourceType === "scratch"}
-                    />
-                    <RadioButtonField
-                      label="Order Management"
-                      value="sample"
-                      name="resourceType"
-                      checked={formik.values.resourceType === "sample"}
                     />
                   </div>
                 </div>

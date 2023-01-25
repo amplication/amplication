@@ -42,6 +42,70 @@ $max-width: 700px;
     color: var(--black100);
   }
 
+  &__repo_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  &__repository_box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    height: 250px;
+  }
+
+  &__repository_options {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  &__repository_btn {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 56px 24px;
+    gap: 8px;
+    width: 248px;
+    height: 160px;
+    background: #22273c;
+    border: 1px solid #444b66;
+    border-radius: 8px;
+  }
+
+  &__repository_btn_text {
+    line-height: 18px;
+    text-align: center;
+    color: #a3a8b8;
+  }
+
+  &__repository_base_dir {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 4px;
+  }
+
+  &__repository_base_dir_input_box {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 8px;
+    background: #15192c;
+    border: 1px solid #444b66;
+    border-radius: 4px;
+    width: 520px;
+  }
+
   &__left {
     display: flex;
     flex: 1;
@@ -155,11 +219,5 @@ $max-width: 700px;
       height: 200px;
       margin: 50px;
     }
-  }
-}
-
-.auth-app-with-github {
-  .select-menu__modal {
-    right: 24.8 !important;
   }
 }

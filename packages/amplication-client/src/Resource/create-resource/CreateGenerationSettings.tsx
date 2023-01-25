@@ -19,7 +19,7 @@ type Props = AppRouteProps & {
 const CreateGenerationSettings: React.FC<Props> = ({ moduleClass }) => {
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
-  );
+  ); //todo: update appContext instead
 
   const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
     serviceSettingsFields.current = currentServiceSettings;
