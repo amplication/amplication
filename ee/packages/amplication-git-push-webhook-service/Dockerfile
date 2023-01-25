@@ -1,15 +1,16 @@
 FROM node:18.13.0-slim AS base
 
-ARG user=git-push-webhook-service
+ARG component=git-push-webhook-service
+ARG user=${component}
 ARG uid=1001
 ARG gid=$uid
 
 WORKDIR /workspace/packages/${user}
 
-COPY ./dist/ee/packages/amplication-${user}/package*.json .
+COPY ./dist/ee/packages/amplication-${component}/package*.json .
 RUN npm install --omit-dev
 
-COPY ./dist/ee/packages/amplication-${user} .
+COPY ./dist/ee/packages/amplication-${component} .
 
 COPY ./packages/amplication-prisma-db ./workspace/packages/amplication-prisma-db
 
