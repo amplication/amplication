@@ -1916,7 +1916,8 @@ export class EntityService {
             properties.relatedEntityId,
             entity.id,
             fieldId,
-            user
+            user,
+            properties.fkHolder
           );
         }
 
@@ -2000,7 +2001,8 @@ export class EntityService {
           properties.relatedEntityId,
           entity.id,
           field.permanentId,
-          user
+          user,
+          properties.fkHolder
         );
 
         properties.relatedFieldId = relatedFieldId;
@@ -2026,7 +2028,9 @@ export class EntityService {
     entityId: string,
     relatedEntityId: string,
     relatedFieldId: string,
-    user: User
+    user: User,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    fkHolder?: string
   ): Promise<EntityField> {
     return await this.useLocking(entityId, user, async () => {
       return this.prisma.entityField.create({
@@ -2049,6 +2053,8 @@ export class EntityService {
             allowMultipleSelection,
             relatedEntityId,
             relatedFieldId,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            fkHolder,
           },
         },
       });
@@ -2088,6 +2094,7 @@ export class EntityService {
     if (isReservedName(args.data?.name?.toLowerCase().trim())) {
       throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
+
     // Get field to update
     const field = await this.getField({
       where: args.where,
@@ -2153,7 +2160,6 @@ export class EntityService {
         // In case related field should be deleted or changed, delete the existing related field
         if (shouldDeleteRelated || shouldChangeRelated) {
           const properties = field.properties as unknown as types.Lookup;
-
           /**@todo: when the field should be changed and we delete it, we loose the permanent ID and links to previous versions  */
           await this.deleteRelatedField(
             properties.relatedFieldId,
@@ -2175,13 +2181,48 @@ export class EntityService {
             properties.relatedEntityId,
             entity.id,
             field.permanentId,
-            user
+            user,
+            properties.fkHolder
           );
         }
 
-        return this.prisma.entityField.update(
+        const updatedField = await this.prisma.entityField.update(
           omit(args, ["relatedFieldName", "relatedFieldDisplayName"])
         );
+
+        const updateFieldProperties =
+          updatedField.properties as unknown as types.Lookup;
+
+        if (
+          field.dataType === EnumDataType.Lookup &&
+          updateFieldProperties?.fkHolder !== null
+        ) {
+          // Get related field to update
+          const relatedField = await this.getField({
+            where: {
+              permanentId: updateFieldProperties.relatedFieldId,
+            },
+            include: { entityVersion: true },
+          });
+
+          const relatedFieldProps =
+            relatedField.properties as unknown as types.Lookup;
+
+          relatedFieldProps.fkHolder = (
+            updatedField.properties as unknown as types.Lookup
+          )?.fkHolder;
+
+          await this.prisma.entityField.update({
+            where: {
+              id: relatedField.id,
+            },
+            data: {
+              properties: relatedFieldProps as unknown as Prisma.InputJsonValue,
+            },
+          });
+        }
+
+        return updatedField;
       }
     );
   }
