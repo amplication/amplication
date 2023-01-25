@@ -4,7 +4,7 @@ ARG component=client
 ARG user=nginx
 ARG group=${user}
 
-RUN apk add --update nodejs
+RUN apk add --update-cache nodejs
 
 WORKDIR /app
 
@@ -15,7 +15,8 @@ COPY ./dist/packages/amplication-${component} .
 RUN chown -R nginx:nginx /app && chmod -R 755 /app && \
     chown -R nginx:nginx /var/cache/nginx && \
     chown -R nginx:nginx /var/log/nginx && \
-    chown -R nginx:nginx /etc/nginx/conf.d
+    chown -R nginx:nginx /etc/nginx/conf.d && \
+    chown -R nginx:nginx /etc/nginx/conf.d/default.conf
 
 RUN touch /var/run/nginx.pid && \
     chown -R nginx:nginx /var/run/nginx.pid
