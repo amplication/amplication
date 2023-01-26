@@ -4,9 +4,7 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
-import { Branch } from "../dto";
-import { CreatePrDto } from "../dto/create-pr.dto";
-import { RemoteGitRepository } from "../dto/remote-git-repository";
+import { Branch, CreatePullRequest, RemoteGitRepository } from "../../types";
 import { BasePullRequest } from "./BasePullRequest";
 
 export class AccumulativePullRequest extends BasePullRequest {
@@ -410,7 +408,12 @@ export class AccumulativePullRequest extends BasePullRequest {
     };
   }
 
-  private async createGitPullRequest({ title, head, base, body }: CreatePrDto) {
+  private async createGitPullRequest({
+    title,
+    head,
+    base,
+    body,
+  }: CreatePullRequest) {
     const { octokit, owner, repo } = this;
     const { data: pullRequest } = await octokit.rest.pulls.create({
       owner,

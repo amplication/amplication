@@ -5,16 +5,16 @@ import { components } from "@octokit/openapi-types";
 import { App, Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
-import { EnumPullRequestMode } from "../types";
-import { ConverterUtil } from "../utils/convert-to-number";
-import { GithubFile } from "./dto/github-file.dto";
-import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
 import {
+  EnumGitOrganizationType,
+  EnumPullRequestMode,
+  GithubFile,
+  RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-} from "./dto/remote-git-repository";
+} from "../types";
+import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
-import { EnumGitOrganizationType } from "./git.types";
 import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
 import { BasicPullRequest } from "./github/BasicPullRequest";
 

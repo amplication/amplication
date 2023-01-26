@@ -1,8 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  EnumGitOrganizationType,
-  EnumGitProvider,
-} from "../../src/git/git.types";
+import { EnumGitOrganizationType, EnumGitProvider } from "../../src/types";
 import { GitService } from "../../src/git/git.service";
 import { GitServiceFactory } from "../../src/git/git-service-factory";
 import { MOCK_GIT_SERVICE_FACTORY } from "./mocks";
@@ -164,8 +161,8 @@ describe("GitService", () => {
           {
             adminUIPath: basePath + "admin-ui",
             serverPath: basePath + "server",
-          },
-          baseBranchName
+          }
+          // baseBranchName
         );
         expect(remoteGitOrganization).toEqual(PR_HTML_URL);
       });

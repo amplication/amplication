@@ -1,10 +1,10 @@
-import { EnumGitOrganizationType } from "../../src/git/git.types";
-import { GithubFile } from "../../src/git/dto/github-file.dto";
-import { RemoteGitOrganization } from "../../src/git/dto/remote-git-organization.dto";
 import {
+  EnumGitOrganizationType,
+  GithubFile,
+  RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-} from "../../src/git/dto/remote-git-repository";
+} from "../../src/types";
 
 export const INSTALLATION_URL = "ExampleInstallationUrl";
 
