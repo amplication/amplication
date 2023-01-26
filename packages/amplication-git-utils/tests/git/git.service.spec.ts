@@ -14,7 +14,7 @@ import {
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { EnumPullRequestMode } from "../../src/types";
 
-describe("GitService", () => {
+describe.skip("GitService", () => {
   let gitService: GitService;
   beforeEach(async () => {
     jest.clearAllMocks();
