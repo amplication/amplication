@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EnumGitOrganizationType, EnumGitProvider } from "../../src/types";
 import { GitService } from "../../src/git/git.service";
-import { GitServiceFactory } from "../../src/git/git-service-factory";
+import { GitFactory } from "../../src/git/git-factory";
 import { MOCK_GIT_SERVICE_FACTORY } from "./mocks";
 import {
   GIT_HUB_FILE,
@@ -23,7 +23,7 @@ describe("GitService", () => {
       providers: [
         GitService,
         {
-          provide: GitServiceFactory,
+          provide: GitFactory,
           useValue: MOCK_GIT_SERVICE_FACTORY,
         },
         {
