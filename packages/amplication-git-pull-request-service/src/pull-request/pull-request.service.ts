@@ -1,18 +1,22 @@
-import { EnumPullRequestMode, GitService } from "@amplication/git-utils";
+import {
+  EnumPullRequestMode,
+  GitFactory,
+  PullRequestModule,
+} from "@amplication/git-utils";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
 import { Inject, Injectable } from "@nestjs/common";
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { DiffService } from "../diff/diff.service";
-import { PrModule } from "../types";
 import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 
 @Injectable()
 export class PullRequestService {
   constructor(
     private readonly diffService: DiffService,
-    protected readonly gitService: GitService,
+    protected readonly gitFactory: GitFactory,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {}
@@ -44,27 +48,25 @@ export class PullRequestService {
       "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
-
-    const prUrl = await this.gitService.createPullRequest(
+    const gitClient = this.gitFactory.getProvider({ provider: gitProvider });
+    const prUrl = await gitClient.createPullRequest({
       pullRequestMode,
-      gitProvider,
       owner,
-      repo,
-      PullRequestService.removeFirstSlashFromPath(changedFiles),
-      head,
-      title,
-      body,
+      repositoryUrl: repo,
+      files: PullRequestService.removeFirstSlashFromPath(changedFiles),
+      pullRequestTitle: title,
+      pullRequestBody: body,
       installationId,
       head,
-      gitResourceMeta
-    );
+      gitResourceMeta,
+    });
     this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
 
   private static removeFirstSlashFromPath(
-    changedFiles: PrModule[]
-  ): PrModule[] {
+    changedFiles: PullRequestModule[]
+  ): PullRequestModule[] | Required<Changes["files"]> {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });
