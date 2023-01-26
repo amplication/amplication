@@ -43,12 +43,8 @@ export async function createModules(
   const moduleId = createModuleId(entityType);
 
   const morganModuleId = builders.identifier("MorganModule");
-  const prismaModuleId = builders.identifier("PrismaModule");
 
-  const importArray = builders.arrayExpression([
-    morganModuleId,
-    prismaModuleId,
-  ]);
+  const importArray = builders.arrayExpression([morganModuleId]);
 
   const providersArray = builders.arrayExpression([serviceId, resolverId]);
 
