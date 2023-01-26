@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { GithubService } from "./github.service";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
-import { EnumGitProvider, GitClient } from "./git.types";
+import { EnumGitProvider, GitClient } from "../types";
 
 @Injectable()
 export class GitServiceFactory {

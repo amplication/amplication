@@ -1,23 +1,21 @@
 import { Injectable } from "@nestjs/common";
+
 import {
   EnumGitOrganizationType,
   EnumGitProvider,
+  EnumPullRequestMode,
+  GithubFile,
   GitResourceMeta,
-  PrModule,
-} from "./git.types";
-import { GithubFile } from "./dto/github-file.dto";
-import { GitServiceFactory } from "./git-service-factory";
-import {
+  PullRequestModule,
+  RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-} from "./dto/remote-git-repository";
-import { RemoteGitOrganization } from "./dto/remote-git-organization.dto";
-import { Branch } from "./dto/branch";
-import { EnumPullRequestMode } from "../types";
+} from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { join } from "path";
 import { AMPLICATION_IGNORED_FOLDER } from "./git.constants";
+import { GitServiceFactory } from "./git-service-factory";
 
 @Injectable()
 export class GitService {
@@ -103,7 +101,7 @@ export class GitService {
     gitProvider: EnumGitProvider,
     userName: string,
     repoName: string,
-    modules: PrModule[],
+    modules: PullRequestModule[],
     commitName: string,
     commitMessage: string,
     commitDescription: string,

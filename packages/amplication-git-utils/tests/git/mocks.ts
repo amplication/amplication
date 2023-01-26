@@ -1,4 +1,4 @@
-import { EnumGitProvider } from "../../src/git/git.types";
+import { EnumGitProvider } from "../../src/types";
 import { GitServiceFactory } from "../../src/git/git-service-factory";
 import { mock } from "jest-mock-extended";
 
