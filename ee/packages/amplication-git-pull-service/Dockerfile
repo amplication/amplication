@@ -14,7 +14,7 @@ COPY ./dist/ee/packages/amplication-${component} .
 
 RUN groupadd --gid ${gid} ${user}
 RUN useradd --uid ${uid} --gid ${gid} -m ${user}
-RUN chown -R ${uid}:${gid} /workspace/packages/${user}
+RUN chown -R ${uid}:${gid} /workspace/packages/
 
 USER ${user}
 

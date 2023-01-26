@@ -5,7 +5,7 @@ ARG user=${component}
 ARG uid=1001
 ARG gid=$uid
 
-RUN apk add g++ make python3
+RUN apt-get update && apt-get install -y g++ make python3
 
 WORKDIR /workspace/packages/${user}
 
@@ -14,6 +14,6 @@ RUN npm install --omit-dev
 
 RUN groupadd --gid ${gid} ${user}
 RUN useradd --uid ${uid} --gid ${gid} -m ${user}
-RUN chown -R ${uid}:${gid} /workspace/packages/${user}
+RUN chown -R ${uid}:${gid} /workspace/packages/
 
 USER ${user}
