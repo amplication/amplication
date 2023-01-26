@@ -48,8 +48,8 @@ const selectedPlanAction = {
           planId: "plan-amplication-pro",
           billingPeriod: selectedBillingPeriod,
           intentionType,
-          successUrl: props.location.state.from.pathname,
-          cancelUrl: props.location.state.from.pathname,
+          successUrl: props.location.state?.from?.pathname,
+          cancelUrl: props.location.state?.from?.pathname,
         },
       },
     });
