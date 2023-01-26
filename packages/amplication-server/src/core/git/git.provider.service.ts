@@ -14,7 +14,7 @@ import { ConnectGitRepositoryInput } from "./dto/inputs/ConnectGitRepositoryInpu
 import { CreateGitRepositoryInput } from "./dto/inputs/CreateGitRepositoryInput";
 import { RemoteGitRepositoriesWhereUniqueInput } from "./dto/inputs/RemoteGitRepositoriesWhereUniqueInput";
 import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
-import { GitService, EnumGitOrganizationType } from "@amplication/git-utils";
+import { EnumGitOrganizationType, GitFactory } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
   ResourceService,
@@ -28,7 +28,7 @@ const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
 export class GitProviderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly gitService: GitService,
+    private readonly gitFactory: GitFactory,
     private readonly resourceService: ResourceService
   ) {}
 
@@ -38,12 +38,14 @@ export class GitProviderService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
-    return await this.gitService.getReposOfOrganization(
-      args.gitProvider,
+    const gitClient = this.gitFactory.getProvider({
+      provider: args.gitProvider,
+    });
+    return await gitClient.getRepositories({
       installationId,
-      args.limit,
-      args.page
-    );
+      limit: args.limit,
+      page: args.page,
+    });
   }
 
   async createRemoteGitRepository(
@@ -55,14 +57,20 @@ export class GitProviderService {
       },
     });
 
-    const remoteRepository = await this.gitService.createGitRepository(
-      args.name,
-      args.gitProvider,
-      EnumGitOrganizationType[organization.type],
-      organization.name,
-      organization.installationId,
-      args.public
-    );
+    const gitClient = this.gitFactory.getProvider({
+      provider: args.gitProvider,
+    });
+
+    const remoteRepository = await gitClient.createRepository({
+      installationId: organization.installationId,
+      repositoryName: args.name,
+      gitOrganization: {
+        name: organization.name,
+        type: EnumGitOrganizationType[organization.type],
+      },
+      owner: organization.name,
+      isPrivateRepository: args.public,
+    });
 
     if (!remoteRepository) {
       throw new AmplicationError(
@@ -231,12 +239,10 @@ export class GitProviderService {
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
-
-    const gitRemoteOrganization =
-      await this.gitService.getGitRemoteOrganization(
-        installationId,
-        gitProvider
-      );
+    const gitClient = this.gitFactory.getProvider({ provider: gitProvider });
+    const gitRemoteOrganization = await gitClient.getGitRemoteOrganization({
+      installationId,
+    });
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {
@@ -293,24 +299,24 @@ export class GitProviderService {
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { gitProvider, workspaceId } = args.data;
-    return await this.gitService.getGitInstallationUrl(
-      gitProvider,
-      workspaceId
-    );
+    const gitClient = this.gitFactory.getProvider({ provider: gitProvider });
+    return await gitClient.getGitInstallationUrl({
+      amplicationWorkspaceId: workspaceId,
+    });
   }
 
   async deleteGitOrganization(
     args: DeleteGitOrganizationArgs
   ): Promise<boolean> {
     const { gitProvider, gitOrganizationId } = args;
+    const gitClient = this.gitFactory.getProvider({ provider: gitProvider });
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
     if (installationId) {
-      const isDelete = await this.gitService.deleteGitOrganization(
-        gitProvider,
-        installationId
-      );
+      const isDelete = await gitClient.deleteGitOrganization({
+        installationId,
+      });
       if (isDelete) {
         await this.prisma.gitOrganization.delete({
           where: {

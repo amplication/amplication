@@ -3,12 +3,7 @@ import { PrismaService, PrismaModule } from "../../prisma";
 import { ResourceModule } from "../resource/resource.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { GitResolver } from "./git.resolver";
-import {
-  GitModule,
-  GitService,
-  GithubService,
-  GitServiceFactory,
-} from "@amplication/git-utils";
+import { GitModule, GitFactory } from "@amplication/git-utils";
 import { GitProviderService } from "./git.provider.service";
 @Module({
   imports: [
@@ -17,13 +12,6 @@ import { GitProviderService } from "./git.provider.service";
     PrismaModule,
     GitModule,
   ],
-  providers: [
-    GitProviderService,
-    GitResolver,
-    GitService,
-    GithubService,
-    PrismaService,
-    GitServiceFactory,
-  ],
+  providers: [GitProviderService, GitResolver, PrismaService, GitFactory],
 })
 export class GitProviderModule {}
