@@ -15,11 +15,11 @@ import { GithubService } from "../../src/git/github.service";
 export const MOCK_GIT_SERVICE_FACTORY = mock<GitFactory>();
 
 export const MOCK_GITHUB_SERVICE = mock<GithubService>({});
-MOCK_GITHUB_SERVICE.getOrganizationRepos.mockReturnValue(
+MOCK_GITHUB_SERVICE.getRepositories.mockReturnValue(
   Promise.resolve(TEST_GIT_REPOS)
 );
 
-MOCK_GITHUB_SERVICE.createOrganizationRepository.mockReturnValue(
+MOCK_GITHUB_SERVICE.createRepository.mockReturnValue(
   Promise.resolve(TEST_GIT_REPO)
 );
 
@@ -42,5 +42,5 @@ MOCK_GITHUB_SERVICE.createPullRequest.mockReturnValue(
 );
 
 MOCK_GIT_SERVICE_FACTORY.getProvider
-  .calledWith(EnumGitProvider.Github)
+  .calledWith({ provider: EnumGitProvider.Github })
   .mockReturnValue(MOCK_GITHUB_SERVICE);
