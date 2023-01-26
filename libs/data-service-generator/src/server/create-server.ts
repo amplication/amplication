@@ -94,9 +94,10 @@ async function createServerInternal(
 
   await createLog({ level: "info", message: "Creating application module..." });
   logger.info("Creating application module...");
-  const appModule = await createAppModule({
-    modulesFiles: [...resourcesModules, ...staticModules],
-  });
+  const appModule = await createAppModule([
+    ...resourcesModules,
+    ...staticModules,
+  ]);
 
   const createdModules = [
     ...resourcesModules,
