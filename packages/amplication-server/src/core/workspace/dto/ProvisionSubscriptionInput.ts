@@ -26,12 +26,12 @@ export class ProvisionSubscriptionInput {
   intentionType: "UPGRADE_PLAN" | "DOWNGRADE_PLAN";
 
   @Field(() => String, {
-    nullable: false,
+    nullable: true,
   })
-  successUrl: string;
+  successUrl?: string;
 
   @Field(() => String, {
-    nullable: false,
+    nullable: true,
   })
-  cancelUrl: string;
+  cancelUrl?: string;
 }
