@@ -24,7 +24,7 @@
     "yaml": "2.1.1"
   },
   "devDependencies": {
-    "@amplication/code-gen-types": "^1.1.21",
+    "@amplication/code-gen-types": "^1.1.22-beta.0",
     "@apollo/client": "3.6.9",
     "@babel/types": "^7.19.4",
     "@prisma/client": "4.6.1",
