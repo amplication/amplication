@@ -1,18 +1,14 @@
-import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
 
 export const KAFKA_CLIENT = "KAFKA_CLIENT";
 
 @Injectable()
-export class QueueService implements OnModuleInit {
+export class QueueService {
   constructor(
     @Inject(KAFKA_CLIENT)
     private readonly kafkaClient: ClientKafka
   ) {}
-
-  async onModuleInit() {
-    await this.kafkaClient.connect();
-  }
 
   async emitMessage(topic: string, message: string): Promise<void> {
     return await new Promise((resolve, reject) => {
