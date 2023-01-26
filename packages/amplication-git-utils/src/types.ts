@@ -1,5 +1,3 @@
-import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
-
 export type PullRequestModule = {
   path: string;
   code: string | null;
@@ -17,6 +15,31 @@ export enum EnumGitOrganizationType {
 
 export enum EnumGitProvider {
   Github = "Github",
+}
+
+export interface Options {
+  provider?: EnumGitProvider;
+  gitOrganization?: RemoteGitOrganization;
+  pullRequestMode?: EnumPullRequestMode;
+  repositoryUrl?: string;
+  repositoryName?: string;
+  isPrivateRepository?: boolean;
+  installationId?: string;
+  organization?: string;
+  owner?: string;
+  files?: any;
+  commitSha?: string;
+  commitMessage?: string;
+  pullRequestTitle?: string;
+  pullRequestBody?: string;
+  baseBranch?: string;
+  author?: string;
+  filePath?: string;
+  gitResourceMeta?: GitResourceMeta;
+  amplicationWorkspaceId?: string;
+  limit?: number;
+  page?: number;
+  head?: string;
 }
 
 export interface RemoteGitOrganization {
@@ -64,65 +87,13 @@ export interface GitResourceMeta {
   adminUIPath: string;
 }
 
-export interface GitResourceMeta {
-  serverPath: string;
-  adminUIPath: string;
-}
-
 export interface GitClient {
-  createUserRepository(
-    installationId: string,
-    owner: string,
-    name: string,
-    isPublic: boolean
-  ): Promise<RemoteGitRepository>;
-
-  createOrganizationRepository(
-    installationId: string,
-    owner: string,
-    name: string,
-    isPublic: boolean
-  ): Promise<RemoteGitRepository>;
-
-  getOrganizationRepos(
-    installationId: string,
-    limit: number,
-    page: number
-  ): Promise<RemoteGitRepos>;
-
-  isRepoExist(installationId: string, name: string): Promise<boolean>;
-
-  getGitInstallationUrl(workspaceId: string): Promise<string>;
-
-  deleteGitOrganization(installationId: string): Promise<boolean>;
-
-  getGitRemoteOrganization(
-    installationId: string
-  ): Promise<RemoteGitOrganization>;
-
-  getFile(
-    userName: string,
-    repoName: string,
-    path: string,
-    baseBranchName: string,
-    installationId: string
-  ): Promise<GithubFile>;
-
-  createPullRequest(
-    mode: EnumPullRequestMode,
-    userName: string,
-    repoName: string,
-    modules: Required<Changes["files"]>,
-    commitName: string,
-    commitMessage: string,
-    commitDescription: string,
-    installationId: string,
-    head: string
-  ): Promise<string>;
-
-  getRepository(
-    installationId: string,
-    owner: string,
-    repo: string
-  ): Promise<RemoteGitRepository>;
+  getRepository(options: Options): Promise<RemoteGitRepository>;
+  getRepositories(options: Options): Promise<RemoteGitRepos>;
+  createRepository(options: Options): Promise<RemoteGitRepository>;
+  deleteGitOrganization(options: Options): Promise<boolean>;
+  getGitRemoteOrganization(options: Options): Promise<RemoteGitOrganization>;
+  getFile(options: Options): Promise<GithubFile>;
+  createPullRequest(options: Options): Promise<string>;
+  getGitInstallationUrl(options: Options): Promise<string>;
 }
