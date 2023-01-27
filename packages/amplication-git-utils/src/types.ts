@@ -1,3 +1,5 @@
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+
 export type PullRequestModule = {
   path: string;
   code: string | null;
@@ -27,15 +29,15 @@ export interface Options {
   installationId?: string;
   organization?: string;
   owner?: string;
-  files?: any;
-  commitSha?: string;
-  commitMessage?: string;
+  files?: Required<Changes["files"]>;
+  commit?: Commit;
   pullRequestTitle?: string;
   pullRequestBody?: string;
   baseBranch?: string;
   author?: string;
   filePath?: string;
   gitResourceMeta?: GitResourceMeta;
+  pullRequestModule?: PullRequestModule[];
   amplicationWorkspaceId?: string;
   limit?: number;
   page?: number;
@@ -50,6 +52,13 @@ export interface RemoteGitOrganization {
 export interface Branch {
   name: string;
   sha: string;
+}
+
+export interface Commit {
+  title: string;
+  body: string;
+  base?: string | undefined;
+  head?: string | undefined;
 }
 
 export interface RemoteGitRepository {
