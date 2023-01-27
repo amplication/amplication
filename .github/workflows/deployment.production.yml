@@ -30,7 +30,6 @@ jobs:
     strategy:
       matrix:
         project: ${{ fromJson(needs.nx.outputs.affected-dockerable) }}
-    environment: "production"
     needs: nx
     steps:
       - name: Checkout source code repository
@@ -44,8 +43,8 @@ jobs:
       - name: Configure AWS Credentials (operations account)
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
       - name: Login to Amazon ECR (operations account)
