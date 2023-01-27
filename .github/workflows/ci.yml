@@ -100,7 +100,7 @@ jobs:
   nx:
     name: Nx
     needs: ci
-    uses: ./.github/workflows/nx-affected.template.yml
+    uses: ./.github/workflows/nx.template.yml
     with:
       nx-head: ${{ github.head_ref || github.ref_name }}
       nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
