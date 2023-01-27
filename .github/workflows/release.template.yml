@@ -1,77 +1,48 @@
 name: Release
-run-name: Release ${{ github.event.workflow_run.head_branch }} by workflow ${{ github.event.workflow_run.id }} - commit ${{ github.event.workflow_run.head_sha }} 
-concurrency: ${{ github.event.workflow_run.head_branch }}
 
 on:
-  workflow_run:
-    workflows: ["Continuous Integration"]
-    types:
-      - completed
-    branches:
-      - master
-      - next
+  workflow_call:
+    inputs:
+      branch:
+        type: string
+        description: Name of the git branch 
+        required: true    
+      affected-apps: 
+        type: string
+        description: Nx applications affected by the changes
+        required: true
+      affected-lib: 
+        type: string
+        description: Nx libraries affected by the changes
+        required: true
+      affected-dockerable: 
+        type: string
+        description: Nx projects configured with docker:build affected by the changes
+        required: true
+      affected-deployable: 
+        type: string
+        description:  Nx projects configured with deploy affected by the changes
+        required: true
+    secrets:
+      nx-cloud-access-token: 
+        required: true
 
 env:
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-  NX_BRANCH: ${{ github.event.workflow_run.head_branch }}
-  BRANCH: ${{ github.event.workflow_run.head_branch }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.nx-cloud-access-token }}
+  BRANCH: ${{ inputs.branch }}
 
 jobs:
-  nx:
-    name: Nx Affected
-    runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    outputs:
-      affected: ${{ steps.configure-nx.outputs.affected }}
-    steps:
-      - name: Download artifact
-        id: download-artifact
-        uses: actions/github-script@v6
-        with:
-          script: |
-            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: context.payload.workflow_run.id,
-            });
-            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "affected-projects"
-            })[0];
-            let download = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact.id,
-               archive_format: 'zip',
-            });
-            let fs = require('fs');
-            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/affected-projects.zip`, Buffer.from(download.data));
-
-      - name: Configure Nx Affected Projects
-        id: configure-nx
-        run: |
-          unzip affected-projects.zip
-          cat ./affected-projects >> $GITHUB_OUTPUT
-
-      - name: Debug
-        run: |
-          echo github.event.workflow_run.conclusion ${{ github.event.workflow_run.conclusion }}
-          echo github.event.workflow_run.event ${{ github.event.workflow_run.event }}
-          echo NX_BRANCH $NX_BRANCH
-          echo BRANCH $BRANCH
-          echo AFFECTED_PROJECTS ${{ steps.configure-nx.outputs.affected }}
-
-  dockerize:
-    needs: nx
-    if: ${{ needs.nx.outputs.affected != '[]' && needs.nx.outputs.affected != ''}}
-    name: Dockerize
+  package:
+    if: ${{ inputs.affected-dockerable != '[]' && inputs.affected-dockerable != ''}}
+    name: Package
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected) }}
+        project: ${{ fromJson(inputs.affected-dockerable) }}
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v3
@@ -133,7 +104,7 @@ jobs:
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
-        run: npx nx run-many --target=docker:build --projects=${{ matrix.project }}
+        run: npx nx docker:build ${{ matrix.project }}
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
@@ -156,10 +127,11 @@ jobs:
 
   deploy:
     name: Deployment
-    needs: [nx, dockerize, configure]
+    needs: [package, configure]
+    if: ${{ inputs.affected-deployable != '[]' && inputs.affected-deployable != ''}}
     strategy:
       matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected) }}
+        project: ${{ fromJson(inputs.affected-deployable) }}
     uses: ./.github/workflows/deployment.template.yml
     with:
       environment-name: ${{ needs.configure.outputs.environment }}
