@@ -8,7 +8,6 @@ import {
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
 import { Inject, Injectable } from "@nestjs/common";
-import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { DiffService } from "../diff/diff.service";
 import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 
@@ -25,11 +24,11 @@ export class PullRequestService {
     resourceId,
     oldBuildId,
     newBuildId,
+    installationId,
+    gitProvider,
     gitOrganizationName: owner,
     gitRepositoryName: repo,
-    installationId,
     commit,
-    gitProvider,
     gitResourceMeta,
     pullRequestMode,
   }: CreatePullRequestArgs): Promise<string> {
@@ -52,8 +51,10 @@ export class PullRequestService {
     const prUrl = await gitClient.createPullRequest({
       pullRequestMode,
       owner,
-      repositoryUrl: repo,
-      files: PullRequestService.removeFirstSlashFromPath(changedFiles),
+      repositoryName: repo,
+      pullRequestModule:
+        PullRequestService.removeFirstSlashFromPath(changedFiles),
+      commit,
       pullRequestTitle: title,
       pullRequestBody: body,
       installationId,
@@ -66,7 +67,7 @@ export class PullRequestService {
 
   private static removeFirstSlashFromPath(
     changedFiles: PullRequestModule[]
-  ): PullRequestModule[] | Required<Changes["files"]> {
+  ): PullRequestModule[] {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });
