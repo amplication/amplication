@@ -364,7 +364,7 @@ jest.mock("cuid");
 // @ts-ignore
 cuid.mockImplementation(() => EXAMPLE_CUID);
 
-describe.skip("ResourceService", () => {
+describe("ResourceService", () => {
   let service: ResourceService;
 
   beforeEach(async () => {
