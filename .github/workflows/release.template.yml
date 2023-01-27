@@ -5,28 +5,35 @@ on:
     inputs:
       branch:
         type: string
-        description: Name of the git branch 
-        required: true    
-      affected-apps: 
+        description: Name of the git branch
+        required: true
+      affected-apps:
         type: string
         description: Nx applications affected by the changes
         required: true
-      affected-lib: 
+      affected-lib:
         type: string
         description: Nx libraries affected by the changes
         required: true
-      affected-dockerable: 
+      affected-dockerable:
         type: string
         description: Nx projects configured with docker:build affected by the changes
         required: true
-      affected-deployable: 
+      affected-deployable:
         type: string
-        description:  Nx projects configured with deploy affected by the changes
+        description: Nx projects configured with deploy affected by the changes
         required: true
     secrets:
-      nx-cloud-access-token: 
+      nx-cloud-access-token:
         required: true
-
+      aws-ecr-access-key-id:
+        required: true
+      aws-ecr-secret-access-key:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.nx-cloud-access-token }}
   BRANCH: ${{ inputs.branch }}
@@ -79,8 +86,8 @@ jobs:
       - name: Configure AWS Credentials (operations account)
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.aws-ecr-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-ecr-secret-access-key }}
           aws-region: us-east-1
 
       - name: Login to Amazon ECR (operations account)
