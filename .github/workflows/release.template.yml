@@ -127,7 +127,7 @@ jobs:
 
   deploy:
     name: Deployment
-    needs: [dockerize, configure]
+    needs: [package, configure]
     if: ${{ inputs.affected-deployable != '[]' && inputs.affected-deployable != ''}}
     strategy:
       matrix:
