@@ -9,15 +9,22 @@ import {
   GitClient,
   GithubFile,
   Options,
+  PullRequestModule,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
-import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
+import {
+  AMPLICATION_IGNORED_FOLDER,
+  UNSUPPORTED_GIT_ORGANIZATION_TYPE,
+} from "./git.constants";
 import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
 import { BasicPullRequest } from "./github/BasicPullRequest";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
+import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
+import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+import { join } from "lodash";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -260,24 +267,122 @@ export class GithubService implements GitClient {
     return null;
   }
 
+  async prepareFilesForPullRequest(
+    options: Options
+  ): Promise<Required<Changes["files"]>> {
+    const {
+      owner,
+      repositoryName,
+      installationId,
+      gitResourceMeta,
+      pullRequestModule,
+    } = options;
+    const amplicationIgnoreManger = new AmplicationIgnoreManger();
+    await amplicationIgnoreManger.init(async (fileName) => {
+      try {
+        const file = await this.getFile({
+          owner,
+          repositoryName,
+          filePath: fileName,
+          baseBranch: undefined, // take the default branch
+          installationId,
+        });
+        const { content, htmlUrl, name } = file;
+        console.log(`Got ${name} file ${htmlUrl}`);
+        return content;
+      } catch (error) {
+        console.log("Repository does not have a .amplicationignore file");
+        return "";
+      }
+    });
+
+    //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
+    //do not override server/scripts/customSeed.ts
+    const doNotOverride = [
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.controller.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.resolver.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.service.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/src/[^/]+/.+.module.ts$`
+      ),
+      new RegExp(
+        `^${gitResourceMeta.serverPath || "server"}/scripts/customSeed.ts$`
+      ),
+    ];
+
+    const authFolder = "server/src/auth/";
+
+    const files: Required<Changes["files"]> = Object.fromEntries(
+      pullRequestModule.map((module) => {
+        // ignored file
+        if (amplicationIgnoreManger.isIgnored(module.path)) {
+          return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
+        }
+        // Deleted file
+        if (module.code === null) {
+          return [module.path, module.code];
+        }
+        // Regex ignored file
+        if (
+          !module.path.startsWith(authFolder) &&
+          doNotOverride.some((rx) => rx.test(module.path))
+        ) {
+          return [
+            module.path,
+            ({ exists }) => {
+              // do not create the file if it already exist
+              if (exists) return null;
+
+              return module.code;
+            },
+          ];
+        }
+        // Regular file
+        return [module.path, module.code];
+      })
+    );
+    return files;
+  }
+
+  removeFirstSlashFromPath(
+    changedFiles: PullRequestModule[]
+  ): PullRequestModule[] {
+    return changedFiles.map((module) => {
+      return { ...module, path: module.path.replace(new RegExp("^/"), "") };
+    });
+  }
+
   async createPullRequest(options: Options): Promise<string> {
     const {
       pullRequestMode,
       owner,
       repositoryName,
-      files,
-      commitSha,
-      commitMessage,
+      pullRequestModule,
+      commit,
       pullRequestTitle,
       pullRequestBody,
       installationId,
-      gitResourceMeta,
       head,
+      gitResourceMeta,
     } = options;
+
     const myOctokit = Octokit.plugin(createPullRequest);
     const token = await this.getInstallationAuthToken(installationId);
     const octokit = new myOctokit({
       auth: token,
+    });
+    const files = await this.prepareFilesForPullRequest({
+      owner,
+      repositoryName,
+      installationId,
+      gitResourceMeta,
+      pullRequestModule,
     });
 
     switch (pullRequestMode) {
@@ -291,7 +396,7 @@ export class GithubService implements GitClient {
           pullRequestBody,
           head,
           files,
-          commitMessage
+          commit
         );
       default:
         return new BasicPullRequest(
@@ -303,7 +408,7 @@ export class GithubService implements GitClient {
           pullRequestBody,
           head,
           files,
-          commitMessage
+          commit
         );
     }
   }
