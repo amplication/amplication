@@ -120,7 +120,7 @@ jobs:
       affected-deployable: ${{ needs.nx.outputs.affected-deployable }}
     secrets:
       nx-cloud-access-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      aws-ecr-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
-      aws-ecr-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

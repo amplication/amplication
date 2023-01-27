@@ -26,9 +26,9 @@ on:
     secrets:
       nx-cloud-access-token:
         required: true
-      aws-ecr-access-key-id:
+      ECR_AWS_ACCESS_KEY_ID:
         required: true
-      aws-ecr-secret-access-key:
+      ECR_AWS_SECRET_ACCESS_KEY:
         required: true
       AWS_ACCESS_KEY_ID:
         required: true
@@ -86,8 +86,8 @@ jobs:
       - name: Configure AWS Credentials (operations account)
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.aws-ecr-access-key-id }}
-          aws-secret-access-key: ${{ secrets.aws-ecr-secret-access-key }}
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
       - name: Login to Amazon ECR (operations account)
