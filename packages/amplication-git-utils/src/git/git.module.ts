@@ -2,7 +2,6 @@ import { AmplicationLoggerModule } from "@amplication/nest-logger-module";
 import { Module } from "@nestjs/common";
 import { GitFactory } from "./git-factory";
 import { ConfigModule } from "@nestjs/config";
-import { GithubService } from "./github.service";
 import { SERVICE_NAME } from "./git.constants";
 
 @Module({
@@ -12,7 +11,7 @@ import { SERVICE_NAME } from "./git.constants";
       metadata: { service: SERVICE_NAME },
     }),
   ],
-  providers: [GitFactory, GithubService],
-  exports: [GitFactory, GithubService],
+  providers: [GitFactory],
+  exports: [GitFactory],
 })
 export class GitModule {}
