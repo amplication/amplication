@@ -137,6 +137,19 @@ export interface PullRequest {
   gitResourceMeta: GitResourceMeta;
 }
 
+export interface GitProvider {
+  getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
+  getRepository(repository: Repository): Promise<RemoteGitRepository>;
+  getRepositories(pagination: Pagination): Promise<RemoteGitRepos>;
+  createRepository(
+    createRepository: CreateRepository
+  ): Promise<RemoteGitRepository>;
+  deleteGitOrganization(): Promise<boolean>;
+  getGitRemoteOrganization(): Promise<RemoteGitOrganization>;
+  getFile(file: File): Promise<GithubFile>;
+  createPullRequest(pullRequest: PullRequest): Promise<string>;
+}
+
 export interface GitClient {
   getGitInstallationUrl(
     amplicationWorkspaceId: string,
