@@ -1,16 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
-import { EnumGitProvider, GitClient, Options } from "../types";
-import { ConfigService } from "@nestjs/config";
+import { EnumGitProvider, GitProviderArgs } from "../types";
 import { GithubService } from "./github.service";
 
 @Injectable()
 export class GitFactory {
-  constructor(private readonly config: ConfigService) {}
-  getProvider(options: Options): GitClient {
+  getProvider(options: GitProviderArgs) {
     switch (options.provider) {
       case EnumGitProvider.Github:
-        return new GithubService(this.config);
+        return new GithubService(options);
       default:
         throw new Error(INVALID_SOURCE_CONTROL_ERROR_MESSAGE);
     }

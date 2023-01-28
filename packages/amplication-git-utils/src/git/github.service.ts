@@ -1,18 +1,19 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { createAppAuth } from "@octokit/auth-app";
 import { components } from "@octokit/openapi-types";
 import { App, Octokit } from "octokit";
 import {
   EnumGitOrganizationType,
   EnumPullRequestMode,
-  GitClient,
   GithubFile,
-  Options,
-  PullRequestModule,
+  File,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
+  PullRequest,
+  GitProviderArgs,
+  Repository,
+  Pagination,
+  CreateRepository,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import {
@@ -34,19 +35,16 @@ export const GITHUB_APP_INSTALLATION_URL_VAR = "GITHUB_APP_INSTALLATION_URL";
 export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encoding received`;
 type DirectoryItem = components["schemas"]["content-directory"][number];
 
-export class GithubService implements GitClient {
+export class GithubService {
   private app: App;
   private gitInstallationUrl: string;
 
-  constructor(private readonly configService: ConfigService) {
-    this.gitInstallationUrl = this.configService.get(
-      GITHUB_APP_INSTALLATION_URL_VAR
-    );
+  constructor(private readonly gitProviderArgs: GitProviderArgs) {
+    this.gitInstallationUrl = process.env.GITHUB_APP_INSTALLATION_URL;
 
-    const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
-    const privateKey = this.configService
-      .get(GITHUB_APP_PRIVATE_KEY_VAR)
-      .replace(/\\n/g, "\n");
+    const appId = process.env.GITHUB_APP_APP_ID;
+    const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+    privateKey.replace(/\\n/g, "\n");
 
     this.app = new App({
       appId: appId,
@@ -57,10 +55,9 @@ export class GithubService implements GitClient {
   private async getInstallationAuthToken(
     installationId: string
   ): Promise<string> {
-    const appId = this.configService.get(GITHUB_APP_APP_ID_VAR);
-    const privateKey = this.configService
-      .get(GITHUB_APP_PRIVATE_KEY_VAR)
-      .replace(/\\n/g, "\n");
+    const appId = process.env.GITHUB_APP_APP_ID;
+    const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+    privateKey.replace(/\\n/g, "\n");
     const auth = createAppAuth({ appId, privateKey });
     // Retrieve installation access token
     return (
@@ -124,14 +121,15 @@ export class GithubService implements GitClient {
     };
   }
 
-  async getGitInstallationUrl(options: Options): Promise<string> {
-    const { amplicationWorkspaceId } = options;
+  async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     return this.gitInstallationUrl.replace("{state}", amplicationWorkspaceId);
   }
 
-  async getRepository(options: Options): Promise<RemoteGitRepository> {
-    const { installationId, owner, repositoryName } = options;
-    const octokit = await this.getInstallationOctokit(installationId);
+  async getRepository(repository: Repository): Promise<RemoteGitRepository> {
+    const { owner, repositoryName } = repository;
+    const octokit = await this.getInstallationOctokit(
+      this.gitProviderArgs.installationId
+    );
     const response = await octokit.rest.repos.get({
       owner,
       repo: repositoryName,
@@ -155,9 +153,11 @@ export class GithubService implements GitClient {
     };
   }
 
-  async getRepositories(options: Options): Promise<RemoteGitRepos> {
-    const { installationId, limit, page } = options;
-    const octokit = await this.getInstallationOctokit(installationId);
+  async getRepositories(pagination: Pagination): Promise<RemoteGitRepos> {
+    const { limit, page } = pagination;
+    const octokit = await this.getInstallationOctokit(
+      this.gitProviderArgs.installationId
+    );
     return await GithubService.getReposWithOctokitAndPagination(
       octokit,
       limit,
@@ -165,19 +165,18 @@ export class GithubService implements GitClient {
     );
   }
 
-  async createRepository(options: Options): Promise<RemoteGitRepository> {
-    const {
-      installationId,
-      gitOrganization,
-      owner,
-      repositoryName,
-      isPrivateRepository,
-    } = options;
+  async createRepository(
+    createRepository: CreateRepository
+  ): Promise<RemoteGitRepository> {
+    const { gitOrganization, owner, repositoryName, isPrivateRepository } =
+      createRepository;
 
     if (gitOrganization.type === EnumGitOrganizationType.User) {
       throw new Error(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
     }
-    const octokit = await this.getInstallationOctokit(installationId);
+    const octokit = await this.getInstallationOctokit(
+      this.gitProviderArgs.installationId
+    );
 
     const exists: boolean = await GithubService.isRepoExistWithOctokit(
       octokit,
@@ -205,12 +204,15 @@ export class GithubService implements GitClient {
     };
   }
 
-  async deleteGitOrganization(options: Options): Promise<boolean> {
-    const { installationId } = options;
-    const octokit = await this.getInstallationOctokit(installationId);
+  async deleteGitOrganization(): Promise<boolean> {
+    const octokit = await this.getInstallationOctokit(
+      this.gitProviderArgs.installationId
+    );
     const deleteInstallationRes = await octokit.rest.apps.deleteInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: ConverterUtil.convertToNumber(installationId),
+      installation_id: ConverterUtil.convertToNumber(
+        this.gitProviderArgs.installationId
+      ),
     });
 
     if (deleteInstallationRes.status != 204) {
@@ -220,14 +222,15 @@ export class GithubService implements GitClient {
     return true;
   }
 
-  async getGitRemoteOrganization(
-    options: Options
-  ): Promise<RemoteGitOrganization> {
-    const { installationId } = options;
-    const octokit = await this.getInstallationOctokit(installationId);
+  async getGitRemoteOrganization(): Promise<RemoteGitOrganization> {
+    const octokit = await this.getInstallationOctokit(
+      this.gitProviderArgs.installationId
+    );
     const gitRemoteOrganization = await octokit.rest.apps.getInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: ConverterUtil.convertToNumber(installationId),
+      installation_id: ConverterUtil.convertToNumber(
+        this.gitProviderArgs.installationId
+      ),
     });
     const { data: gitRemoteOrgs } = gitRemoteOrganization;
 
@@ -237,14 +240,15 @@ export class GithubService implements GitClient {
     };
   }
 
-  async getFile(options: Options): Promise<GithubFile> {
-    const { installationId, owner, repositoryUrl, filePath, baseBranch } =
-      options;
-    const octokit = await this.getInstallationOctokit(installationId);
+  async getFile(file: File): Promise<GithubFile> {
+    const { owner, repositoryUrl, path, baseBranch } = file;
+    const octokit = await this.getInstallationOctokit(
+      this.gitProviderArgs.installationId
+    );
     const content = await octokit.rest.repos.getContent({
       owner,
       repo: repositoryUrl,
-      path: filePath,
+      path,
       ref: baseBranch ? baseBranch : undefined,
     });
 
@@ -268,24 +272,19 @@ export class GithubService implements GitClient {
   }
 
   async prepareFilesForPullRequest(
-    options: Options
+    owner,
+    repositoryName,
+    gitResourceMeta,
+    pullRequestModule
   ): Promise<Required<Changes["files"]>> {
-    const {
-      owner,
-      repositoryName,
-      installationId,
-      gitResourceMeta,
-      pullRequestModule,
-    } = options;
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
     await amplicationIgnoreManger.init(async (fileName) => {
       try {
         const file = await this.getFile({
           owner,
-          repositoryName,
-          filePath: fileName,
+          repositoryUrl: repositoryName,
+          path: fileName,
           baseBranch: undefined, // take the default branch
-          installationId,
         });
         const { content, htmlUrl, name } = file;
         console.log(`Got ${name} file ${htmlUrl}`);
@@ -350,15 +349,7 @@ export class GithubService implements GitClient {
     return files;
   }
 
-  removeFirstSlashFromPath(
-    changedFiles: PullRequestModule[]
-  ): PullRequestModule[] {
-    return changedFiles.map((module) => {
-      return { ...module, path: module.path.replace(new RegExp("^/"), "") };
-    });
-  }
-
-  async createPullRequest(options: Options): Promise<string> {
+  async createPullRequest(pullRequest: PullRequest): Promise<string> {
     const {
       pullRequestMode,
       owner,
@@ -367,23 +358,23 @@ export class GithubService implements GitClient {
       commit,
       pullRequestTitle,
       pullRequestBody,
-      installationId,
       head,
       gitResourceMeta,
-    } = options;
+    } = pullRequest;
 
     const myOctokit = Octokit.plugin(createPullRequest);
-    const token = await this.getInstallationAuthToken(installationId);
+    const token = await this.getInstallationAuthToken(
+      this.gitProviderArgs.installationId
+    );
     const octokit = new myOctokit({
       auth: token,
     });
-    const files = await this.prepareFilesForPullRequest({
+    const files = await this.prepareFilesForPullRequest(
       owner,
       repositoryName,
-      installationId,
       gitResourceMeta,
-      pullRequestModule,
-    });
+      pullRequestModule
+    );
 
     switch (pullRequestMode) {
       case EnumPullRequestMode.Accumulative:
