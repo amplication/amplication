@@ -23,37 +23,51 @@ import { createPullRequest } from "octokit-plugin-create-pull-request";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 
 const GITHUB_FILE_TYPE = "file";
-export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
-export const GITHUB_APP_APP_ID_VAR = "GITHUB_APP_APP_ID";
-export const GITHUB_APP_PRIVATE_KEY_VAR = "GITHUB_APP_PRIVATE_KEY";
-export const GITHUB_APP_INSTALLATION_URL_VAR = "GITHUB_APP_INSTALLATION_URL";
-export const UNEXPECTED_FILE_TYPE_OR_ENCODING = `Unexpected file type or encoding received`;
+
 type DirectoryItem = components["schemas"]["content-directory"][number];
 
 export class GithubService {
   private app: App;
+  private appId: string;
+  private privateKey: string;
   private gitInstallationUrl: string;
 
   constructor(private readonly gitProviderArgs: GitProviderArgs) {
-    this.gitInstallationUrl = process.env.GITHUB_APP_INSTALLATION_URL;
-    const appId = process.env.GITHUB_APP_APP_ID;
-    const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+    this.init();
+  }
 
-    privateKey.replace(/\\n/g, "\n");
+  init(): void {
+    const {
+      GITHUB_APP_INSTALLATION_URL,
+      GITHUB_APP_APP_ID,
+      GITHUB_APP_PRIVATE_KEY,
+    } = process.env;
+    this.gitInstallationUrl = GITHUB_APP_INSTALLATION_URL;
+    this.appId = GITHUB_APP_APP_ID;
+    this.privateKey = GITHUB_APP_PRIVATE_KEY;
+
+    const privateKey = this.getFormattedPrivateKey(this.privateKey);
+    console.log("privateKey", this.privateKey);
+    console.log("appId", this.appId);
 
     this.app = new App({
-      appId: appId,
-      privateKey: privateKey,
+      appId: this.appId,
+      privateKey,
     });
+  }
+
+  private getFormattedPrivateKey(privateKey: string): string {
+    return privateKey.replace(/\\n/g, "\n");
   }
 
   private async getInstallationAuthToken(
     installationId: string
   ): Promise<string> {
-    const appId = process.env.GITHUB_APP_APP_ID;
-    const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
-    privateKey.replace(/\\n/g, "\n");
-    const auth = createAppAuth({ appId, privateKey });
+    const privateKey = this.getFormattedPrivateKey(this.privateKey);
+    const auth = createAppAuth({
+      appId: this.appId,
+      privateKey,
+    });
     // Retrieve installation access token
     return (
       await auth({
