@@ -42,5 +42,5 @@ MOCK_GITHUB_SERVICE.createPullRequest.mockReturnValue(
 );
 
 MOCK_GIT_SERVICE_FACTORY.getProvider
-  .calledWith({ provider: EnumGitProvider.Github })
+  .calledWith({ provider: EnumGitProvider.Github, installationId: "123456" })
   .mockReturnValue(MOCK_GITHUB_SERVICE);
