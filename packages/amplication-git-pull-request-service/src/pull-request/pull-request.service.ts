@@ -57,7 +57,6 @@ export class PullRequestService {
         commit,
         pullRequestTitle: title,
         pullRequestBody: body,
-
         head,
         gitResourceMeta,
       },
