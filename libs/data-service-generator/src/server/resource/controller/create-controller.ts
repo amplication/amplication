@@ -270,7 +270,6 @@ async function createToManyRelationMethods(
   dtos: DTOs,
   serviceId: namedTypes.Identifier
 ) {
-  const methods: namedTypes.ClassMethod[] = [];
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
@@ -297,43 +296,37 @@ async function createToManyRelationMethods(
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   };
 
+  const eventParams: CreateEntityControllerToManyRelationMethodsParams = {
+    field: field,
+    entity: entity,
+    entityType: entityType,
+    whereUniqueInput: whereUniqueInput,
+    serviceId: serviceId,
+    methods: [],
+    toManyFile: toManyFile,
+    toManyMapping: toManyMapping,
+  };
+
   await pluginWrapper(
     createToManyRelationMethodsInternal,
     EventNames.CreateEntityControllerToManyRelationMethods,
-    {
-      field,
-      entity,
-      entityType,
-      whereUniqueInput,
-      dtos,
-      serviceId,
-      methods,
-      toManyFile,
-      toManyMapping,
-    }
+    eventParams
   );
 
-  return methods;
+  return eventParams.methods;
 }
 
-async function createToManyRelationMethodsInternal({
-  field,
-  entity,
-  entityType,
-  whereUniqueInput,
-  serviceId,
-  methods,
-  toManyFile,
-  toManyMapping,
-}: CreateEntityControllerToManyRelationMethodsParams): Promise<Module[]> {
-  interpolate(toManyFile, toManyMapping);
+async function createToManyRelationMethodsInternal(
+  eventParams: CreateEntityControllerToManyRelationMethodsParams
+): Promise<Module[]> {
+  interpolate(eventParams.toManyFile, eventParams.toManyMapping);
 
   const classDeclaration = getClassDeclarationById(
-    toManyFile,
+    eventParams.toManyFile,
     TO_MANY_MIXIN_ID
   );
 
-  methods = await getMethods(classDeclaration);
+  eventParams.methods = await getMethods(classDeclaration);
 
   return [];
 }

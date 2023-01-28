@@ -320,7 +320,6 @@ async function createToOneRelationMethods(
   const toOneFile = await readFile(toOneTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
-  const methods: namedTypes.ClassMethod[] = [];
 
   const toOneMapping = {
     SERVICE: serviceId,
@@ -333,43 +332,43 @@ async function createToOneRelationMethods(
     ARGS: relatedEntityDTOs.findOneArgs.id,
   };
 
+  const eventParams: CreateEntityResolverToOneRelationMethodsParams = {
+    field: field,
+    entityType: entityType,
+    serviceId: serviceId,
+    methods: [],
+    toOneFile: toOneFile,
+    toOneMapping: toOneMapping,
+  };
+
   await pluginWrapper(
     createToOneRelationMethodsInternal,
     EventNames.CreateEntityResolverToOneRelationMethods,
-    {
-      field,
-      entityType,
-      serviceId,
-      methods,
-      toOneFile,
-      toOneMapping,
-    }
+    eventParams
   );
 
-  return methods;
+  return eventParams.methods;
 }
 
-async function createToOneRelationMethodsInternal({
-  field,
-  entityType,
-  serviceId,
-  methods,
-  toOneFile,
-  toOneMapping,
-}: CreateEntityResolverToOneRelationMethodsParams): Promise<Module[]> {
-  interpolate(toOneFile, toOneMapping);
+async function createToOneRelationMethodsInternal(
+  eventParams: CreateEntityResolverToOneRelationMethodsParams
+): Promise<Module[]> {
+  interpolate(eventParams.toOneFile, eventParams.toOneMapping);
 
-  const classDeclaration = getClassDeclarationById(toOneFile, MIXIN_ID);
-  const { relatedEntity } = field.properties;
+  const classDeclaration = getClassDeclarationById(
+    eventParams.toOneFile,
+    MIXIN_ID
+  );
+  const { relatedEntity } = eventParams.field.properties;
 
   setEndpointPermissions(
     classDeclaration,
-    toOneMapping["FIND_ONE"] as namedTypes.Identifier,
+    eventParams.toOneMapping["FIND_ONE"] as namedTypes.Identifier,
     EnumEntityAction.View,
     relatedEntity
   );
 
-  methods = getMethods(classDeclaration);
+  eventParams.methods = getMethods(classDeclaration);
   return [];
 }
 
@@ -383,7 +382,6 @@ async function createToManyRelationMethods(
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
-  const methods: namedTypes.ClassMethod[] = [];
 
   const toManyMapping = {
     SERVICE: serviceId,
@@ -396,41 +394,41 @@ async function createToManyRelationMethods(
     ARGS: relatedEntityDTOs.findManyArgs.id,
   };
 
+  const eventParams: CreateEntityResolverToManyRelationMethodsParams = {
+    field: field,
+    entityType: entityType,
+    serviceId: serviceId,
+    methods: [],
+    toManyFile: toManyFile,
+    toManyMapping: toManyMapping,
+  };
+
   await pluginWrapper(
     createToManyRelationMethodsInternal,
     EventNames.CreateEntityResolverToManyRelationMethods,
-    {
-      field,
-      entityType,
-      serviceId,
-      methods,
-      toManyFile,
-      toManyMapping,
-    }
+    eventParams
   );
 
-  return methods;
+  return eventParams.methods;
 }
 
-async function createToManyRelationMethodsInternal({
-  field,
-  entityType,
-  serviceId,
-  methods,
-  toManyFile,
-  toManyMapping,
-}: CreateEntityResolverToManyRelationMethodsParams): Promise<Module[]> {
-  interpolate(toManyFile, toManyMapping);
-  const { relatedEntity } = field.properties;
-  const classDeclaration = getClassDeclarationById(toManyFile, MIXIN_ID);
+async function createToManyRelationMethodsInternal(
+  eventParams: CreateEntityResolverToManyRelationMethodsParams
+): Promise<Module[]> {
+  interpolate(eventParams.toManyFile, eventParams.toManyMapping);
+  const { relatedEntity } = eventParams.field.properties;
+  const classDeclaration = getClassDeclarationById(
+    eventParams.toManyFile,
+    MIXIN_ID
+  );
 
   setEndpointPermissions(
     classDeclaration,
-    toManyMapping["FIND_MANY"] as namedTypes.Identifier,
+    eventParams.toManyMapping["FIND_MANY"] as namedTypes.Identifier,
     EnumEntityAction.Search,
     relatedEntity
   );
 
-  methods = getMethods(classDeclaration);
+  eventParams.methods = getMethods(classDeclaration);
   return [];
 }
