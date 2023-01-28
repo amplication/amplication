@@ -1,6 +1,6 @@
 import {
   EnumPullRequestMode,
-  GitFactory,
+  GitClientService,
   PullRequestModule,
 } from "@amplication/git-utils";
 import {
@@ -15,7 +15,7 @@ import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 export class PullRequestService {
   constructor(
     private readonly diffService: DiffService,
-    protected readonly gitFactory: GitFactory,
+    private readonly gitClientService: GitClientService,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {}
@@ -47,20 +47,22 @@ export class PullRequestService {
       "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
-    const gitClient = this.gitFactory.getProvider({ provider: gitProvider });
-    const prUrl = await gitClient.createPullRequest({
-      pullRequestMode,
-      owner,
-      repositoryName: repo,
-      pullRequestModule:
-        PullRequestService.removeFirstSlashFromPath(changedFiles),
-      commit,
-      pullRequestTitle: title,
-      pullRequestBody: body,
-      installationId,
-      head,
-      gitResourceMeta,
-    });
+    const prUrl = await this.gitClientService.createPullRequest(
+      {
+        pullRequestMode,
+        owner,
+        repositoryName: repo,
+        pullRequestModule:
+          PullRequestService.removeFirstSlashFromPath(changedFiles),
+        commit,
+        pullRequestTitle: title,
+        pullRequestBody: body,
+
+        head,
+        gitResourceMeta,
+      },
+      { provider: gitProvider, installationId }
+    );
     this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }

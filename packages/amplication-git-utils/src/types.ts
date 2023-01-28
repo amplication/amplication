@@ -129,7 +129,7 @@ export interface PullRequest {
   pullRequestMode: EnumPullRequestMode;
   owner: string;
   repositoryName: string;
-  pullRequestModule: PullRequestModule;
+  pullRequestModule: PullRequestModule[];
   commit: Commit;
   pullRequestTitle: string;
   pullRequestBody: string;
