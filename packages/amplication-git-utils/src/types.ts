@@ -147,7 +147,10 @@ export interface GitProvider {
   deleteGitOrganization(): Promise<boolean>;
   getGitRemoteOrganization(): Promise<RemoteGitOrganization>;
   getFile(file: File): Promise<GithubFile>;
-  createPullRequest(pullRequest: PullRequest): Promise<string>;
+  createPullRequest(
+    pullRequest: PullRequest,
+    files: Required<Changes["files"]>
+  ): Promise<string>;
 }
 
 export interface GitClient {

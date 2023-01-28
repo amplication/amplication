@@ -11,6 +11,7 @@ import {
   Repository,
   File,
 } from "../types";
+import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitFactory } from "./git-factory";
 
 export class GitClientService implements GitClient {
@@ -32,7 +33,7 @@ export class GitClientService implements GitClient {
     return gitProvider.getRepository(repository);
   }
 
-  getRepositories(
+  async getRepositories(
     pagination: Pagination,
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitRepos> {
@@ -40,7 +41,7 @@ export class GitClientService implements GitClient {
     return gitProvider.getRepositories(pagination);
   }
 
-  createRepository(
+  async createRepository(
     createRepository: CreateRepository,
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitRepository> {
@@ -48,28 +49,41 @@ export class GitClientService implements GitClient {
     return gitProvider.createRepository(createRepository);
   }
 
-  deleteGitOrganization(gitProviderArgs: GitProviderArgs): Promise<boolean> {
+  async deleteGitOrganization(
+    gitProviderArgs: GitProviderArgs
+  ): Promise<boolean> {
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
     return gitProvider.deleteGitOrganization();
   }
 
-  getGitRemoteOrganization(
+  async getGitRemoteOrganization(
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitOrganization> {
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
     return gitProvider.getGitRemoteOrganization();
   }
 
-  getFile(file: File, gitProviderArgs: GitProviderArgs): Promise<GithubFile> {
+  async getFile(
+    file: File,
+    gitProviderArgs: GitProviderArgs
+  ): Promise<GithubFile> {
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
     return gitProvider.getFile(file);
   }
 
-  createPullRequest(
+  async createPullRequest(
     pullRequest: PullRequest,
     gitProviderArgs: GitProviderArgs
   ): Promise<string> {
+    const { owner, repositoryName, pullRequestModule, gitResourceMeta } =
+      pullRequest;
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.createPullRequest(pullRequest);
+    const files = await prepareFilesForPullRequest(
+      owner,
+      repositoryName,
+      gitResourceMeta,
+      pullRequestModule
+    );
+    return gitProvider.createPullRequest(pullRequest, files);
   }
 }
