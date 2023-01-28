@@ -1,5 +1,5 @@
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
-import { GitModule } from "@amplication/git-utils";
+import { GitClientService, GitModule } from "@amplication/git-utils";
 import { Module } from "@nestjs/common";
 import { ClientsModule } from "@nestjs/microservices";
 import { DiffModule } from "../diff/diff.module";
@@ -18,7 +18,7 @@ import { KAFKA_CLIENT, QueueService } from "./queue.service";
       },
     ]),
   ],
-  providers: [QueueService, PullRequestService],
+  providers: [QueueService, PullRequestService, GitClientService],
   controllers: [PullRequestController],
 })
 export class PullRequestModule {}
