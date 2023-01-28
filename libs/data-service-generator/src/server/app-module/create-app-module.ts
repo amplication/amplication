@@ -54,10 +54,6 @@ export async function createAppModuleInternal({
     module.path.match(MODULE_PATTERN)
   );
 
-  nestModules.forEach((m) => {
-    console.log(m.code);
-  });
-
   const nestModulesWithExports = nestModules.map((module) => ({
     module,
     exports: getExportedNames(module.code),
