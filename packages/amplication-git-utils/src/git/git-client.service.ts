@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import {
   CreateRepository,
   GitClient,
@@ -14,6 +15,7 @@ import {
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitFactory } from "./git-factory";
 
+@Injectable()
 export class GitClientService implements GitClient {
   constructor(private readonly gitFactory: GitFactory) {}
 

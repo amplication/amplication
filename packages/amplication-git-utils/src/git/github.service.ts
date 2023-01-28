@@ -16,16 +16,11 @@ import {
   CreateRepository,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
-import {
-  AMPLICATION_IGNORED_FOLDER,
-  UNSUPPORTED_GIT_ORGANIZATION_TYPE,
-} from "./git.constants";
+import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
 import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
 import { BasicPullRequest } from "./github/BasicPullRequest";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
-import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
-import { join } from "lodash";
 
 const GITHUB_FILE_TYPE = "file";
 export const GITHUB_CLIENT_SECRET_VAR = "GITHUB_CLIENT_SECRET";
@@ -41,9 +36,9 @@ export class GithubService {
 
   constructor(private readonly gitProviderArgs: GitProviderArgs) {
     this.gitInstallationUrl = process.env.GITHUB_APP_INSTALLATION_URL;
-
     const appId = process.env.GITHUB_APP_APP_ID;
     const privateKey = process.env.GITHUB_APP_PRIVATE_KEY;
+
     privateKey.replace(/\\n/g, "\n");
 
     this.app = new App({

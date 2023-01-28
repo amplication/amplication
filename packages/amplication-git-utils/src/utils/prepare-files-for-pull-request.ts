@@ -1,4 +1,4 @@
-import { join } from "lodash";
+import { join } from "path";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { AMPLICATION_IGNORED_FOLDER } from "../git/git.constants";
 import { AmplicationIgnoreManger } from "./amplication-ignore-manger";
