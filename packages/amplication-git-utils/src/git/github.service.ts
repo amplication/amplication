@@ -47,8 +47,6 @@ export class GithubService {
     this.privateKey = GITHUB_APP_PRIVATE_KEY;
 
     const privateKey = this.getFormattedPrivateKey(this.privateKey);
-    console.log("privateKey", this.privateKey);
-    console.log("appId", this.appId);
 
     this.app = new App({
       appId: this.appId,
