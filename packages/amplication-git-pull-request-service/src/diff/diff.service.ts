@@ -29,6 +29,9 @@ export class DiffService {
       resourceId,
       newAmplicationBuildId
     );
+
+    DiffService.assertBuildExist(newBuildPath);
+
     // If an old build folder does not exist, we return all new files
     if (!previousAmplicationBuildId) {
       return this.getAllModulesForPath(newBuildPath);
@@ -37,6 +40,15 @@ export class DiffService {
       resourceId,
       previousAmplicationBuildId
     );
+
+    if (!existsSync(oldBuildPath)) {
+      this.logger.warn("Got a old build id but the folder does not exist", {
+        resourceId,
+        oldBuildPath,
+      });
+      return this.getAllModulesForPath(newBuildPath);
+    }
+
     this.logger.info("List of the paths", {
       resourceId,
       previousAmplicationBuildId,
@@ -49,7 +61,6 @@ export class DiffService {
     );
 
     DiffService.assertBuildExist(oldBuildPath);
-    DiffService.assertBuildExist(newBuildPath);
 
     const res = await compare(oldBuildPath, newBuildPath, {
       compareContent: true,
