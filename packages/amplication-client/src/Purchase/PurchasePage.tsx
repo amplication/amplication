@@ -1,7 +1,7 @@
-import { Paywall, BillingPeriod } from "@stigg/react-sdk";
+import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import * as models from "../models";
 import {
   Button,
@@ -54,6 +54,22 @@ const selectedPlanAction = {
       },
     });
   },
+};
+
+const UNKNOWN = "unknown";
+
+const getPlanPrice = (
+  selectedBillingPeriod: BillingPeriod,
+  pricePoints: Price[]
+) => {
+  if (!pricePoints.length) return UNKNOWN;
+
+  return pricePoints.reduce((price: string, pricePoint: Price) => {
+    if (pricePoint.billingPeriod === selectedBillingPeriod)
+      price = `${pricePoint.amount}${pricePoint.currency}`;
+
+    return price;
+  }, UNKNOWN);
 };
 
 const CLASS_NAME = "purchase-page";
@@ -139,11 +155,13 @@ const PurchasePage = (props) => {
           }) => {
             trackEvent({
               eventName: AnalyticsEventNames.PricingPageCTAClick,
-              currentPlan: plan.basePlan.displayName,
+              currentPlan: currentWorkspace.subscription || "Free",
               type: plan.displayName,
+              price: getPlanPrice(selectedBillingPeriod, plan.pricePoints),
               action: intentionType,
               Billing: selectedBillingPeriod,
             });
+
             selectedPlanAction[plan.id](
               props,
               currentWorkspace,
