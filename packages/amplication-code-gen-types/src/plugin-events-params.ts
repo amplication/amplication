@@ -177,6 +177,7 @@ export interface CreateAdminUIPackageJsonParams extends EventParams {
 export interface CreateServerAppModuleParams extends EventParams {
   modulesFiles: Module[];
   template: namedTypes.File;
+  templateMapping: { [key: string]: any };
 }
 
 export interface CreateEntityModuleParams extends EventParams {

@@ -37,19 +37,6 @@ export async function createAppModule(
   modulesFiles: Module[]
 ): Promise<Module[]> {
   const template = await readFile(appModuleTemplatePath);
-  return pluginWrapper(
-    createAppModuleInternal,
-    EventNames.CreateServerAppModule,
-    { modulesFiles, template }
-  );
-}
-
-export async function createAppModuleInternal({
-  modulesFiles,
-  template,
-}: CreateServerAppModuleParams): Promise<Module[]> {
-  const { serverDirectories } = DsgContext.getInstance;
-  const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
   const nestModules = modulesFiles.filter((module) =>
     module.path.match(MODULE_PATTERN)
   );
@@ -59,30 +46,22 @@ export async function createAppModuleInternal({
     exports: getExportedNames(module.code),
   }));
 
-  const moduleImports = nestModulesWithExports.map(({ module, exports }) => {
-    /** @todo explicitly check for "@Module" decorated classes */
-    return importNames(
-      // eslint-disable-next-line
-      // @ts-ignore
-      exports,
-      relativeImportPath(MODULE_PATH, module.path)
-    );
-  });
-
   const nestModulesIds = nestModulesWithExports.flatMap(
     /** @todo explicitly check for "@Module" decorated classes */
     ({ exports }) => exports
   );
 
   //@TODO: allow some env variable to override the autoSchemaFile: "schema.graphql" (e.g. GQL_SCHEMA_EXPORT_PATH)
-  const modules = builders.arrayExpression([
-    ...nestModulesIds,
-    MORGAN_MODULE_ID,
-    callExpression`${CONFIG_MODULE_ID}.forRoot({ isGlobal: true })`,
-    callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
+  const templateMapping = {
+    MODULES: builders.arrayExpression([
+      ...nestModulesIds,
+      MORGAN_MODULE_ID,
+
+      callExpression`${CONFIG_MODULE_ID}.forRoot({ isGlobal: true })`,
+      callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
       useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
     })`,
-    callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
+      callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
       useFactory: (configService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
@@ -96,11 +75,46 @@ export async function createAppModuleInternal({
       inject: [${CONFIG_SERVICE_ID}],
       imports: [${CONFIG_MODULE_ID}],
     })`,
-  ]);
+    ]),
+  };
 
-  interpolate(template, {
-    MODULES: modules,
+  return pluginWrapper(
+    createAppModuleInternal,
+    EventNames.CreateServerAppModule,
+    {
+      modulesFiles,
+      template,
+      templateMapping,
+    }
+  );
+}
+
+export async function createAppModuleInternal({
+  modulesFiles,
+  template,
+  templateMapping,
+}: CreateServerAppModuleParams): Promise<Module[]> {
+  const { serverDirectories } = DsgContext.getInstance;
+  const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
+  const nestModules = modulesFiles.filter((module) =>
+    module.path.match(MODULE_PATTERN)
+  );
+
+  const nestModulesWithExports = nestModules.map((module) => ({
+    module,
+    exports: getExportedNames(module.code),
+  }));
+  const moduleImports = nestModulesWithExports.map(({ module, exports }) => {
+    /** @todo explicitly check for "@Module" decorated classes */
+    return importNames(
+      // eslint-disable-next-line
+      // @ts-ignore
+      exports,
+      relativeImportPath(MODULE_PATH, module.path)
+    );
   });
+
+  interpolate(template, templateMapping);
 
   addImports(template, [
     ...moduleImports,
