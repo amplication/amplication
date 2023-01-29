@@ -1,6 +1,4 @@
-import { Injectable } from "@nestjs/common";
 import {
-  GitClient,
   GithubFile,
   GitProviderArgs,
   RemoteGitOrganization,
@@ -11,81 +9,65 @@ import {
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   CreatePullRequestArgs,
+  GitProvider,
 } from "../types";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitFactory } from "./git-factory";
 
-@Injectable()
-export class GitClientService implements GitClient {
-  constructor(private readonly gitFactory: GitFactory) {}
+export class GitClientService {
+  private provider: GitProvider;
 
-  async getGitInstallationUrl(
-    amplicationWorkspaceId: string,
-    gitProviderArgs: GitProviderArgs
-  ): Promise<string> {
-    const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.getGitInstallationUrl(amplicationWorkspaceId);
+  static createProvider(gitProviderArgs: GitProviderArgs): GitClientService {
+    const serviceInstance = new this();
+    serviceInstance.provider = GitFactory.getProvider(gitProviderArgs);
+    return serviceInstance;
+  }
+
+  async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
+    return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
   async getRepository(
-    getRepositoryArgs: GetRepositoryArgs,
-    gitProviderArgs: GitProviderArgs
+    getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.getRepository(getRepositoryArgs);
+    return this.provider.getRepository(getRepositoryArgs);
   }
 
   async getRepositories(
-    getRepositoriesArgs: GetRepositoriesArgs,
-    gitProviderArgs: GitProviderArgs
+    getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.getRepositories(getRepositoriesArgs);
+    return this.provider.getRepositories(getRepositoriesArgs);
   }
 
   async createRepository(
-    createRepositoryArgs: CreateRepositoryArgs,
-    gitProviderArgs: GitProviderArgs
+    createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.createRepository(createRepositoryArgs);
+    return this.provider.createRepository(createRepositoryArgs);
   }
 
-  async deleteGitOrganization(
-    gitProviderArgs: GitProviderArgs
-  ): Promise<boolean> {
-    const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.deleteGitOrganization();
+  async deleteGitOrganization(): Promise<boolean> {
+    return this.provider.deleteGitOrganization();
   }
 
-  async getOrganization(
-    gitProviderArgs: GitProviderArgs
-  ): Promise<RemoteGitOrganization> {
-    const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.getOrganization();
+  async getOrganization(): Promise<RemoteGitOrganization> {
+    return this.provider.getOrganization();
   }
 
-  async getFile(
-    file: File,
-    gitProviderArgs: GitProviderArgs
-  ): Promise<GithubFile> {
-    const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.getFile(file);
+  async getFile(file: File): Promise<GithubFile> {
+    return this.provider.getFile(file);
   }
 
   async createPullRequest(
-    createPullRequestArgs: CreatePullRequestArgs,
-    gitProviderArgs: GitProviderArgs
+    createPullRequestArgs: CreatePullRequestArgs
   ): Promise<string> {
     const { owner, repositoryName, pullRequestModule, gitResourceMeta } =
       createPullRequestArgs;
-    const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
     const files = await prepareFilesForPullRequest(
       owner,
       repositoryName,
       gitResourceMeta,
       pullRequestModule
     );
-    return gitProvider.createPullRequest(createPullRequestArgs, files);
+    return this.provider.createPullRequest(createPullRequestArgs, files);
   }
 }

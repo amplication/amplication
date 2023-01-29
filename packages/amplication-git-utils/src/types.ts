@@ -19,31 +19,6 @@ export enum EnumGitProvider {
   Github = "Github",
 }
 
-export interface Options {
-  provider?: EnumGitProvider;
-  gitOrganization?: RemoteGitOrganization;
-  pullRequestMode?: EnumPullRequestMode;
-  repositoryUrl?: string;
-  repositoryName?: string;
-  isPrivateRepository?: boolean;
-  installationId?: string;
-  organization?: string;
-  owner?: string;
-  files?: Required<Changes["files"]>;
-  commit?: Commit;
-  pullRequestTitle?: string;
-  pullRequestBody?: string;
-  baseBranch?: string;
-  author?: string;
-  filePath?: string;
-  gitResourceMeta?: GitResourceMeta;
-  pullRequestModule?: PullRequestModule[];
-  amplicationWorkspaceId?: string;
-  limit?: number;
-  page?: number;
-  head?: string;
-}
-
 export interface GitProviderArgs {
   provider: EnumGitProvider;
   installationId: string | null;
@@ -154,33 +129,5 @@ export interface GitProvider {
   createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs,
     files: Required<Changes["files"]>
-  ): Promise<string>;
-}
-
-export interface GitClient {
-  getGitInstallationUrl(
-    amplicationWorkspaceId: string,
-    gitProviderArgs: GitProviderArgs
-  ): Promise<string>;
-  getRepository(
-    getRepositoryArgs: GetRepositoryArgs,
-    gitProviderArgs: GitProviderArgs
-  ): Promise<RemoteGitRepository>;
-  getRepositories(
-    getRepositoriesArgs: GetRepositoriesArgs,
-    gitProviderArgs: GitProviderArgs
-  ): Promise<RemoteGitRepos>;
-  createRepository(
-    createRepositoryArgs: CreateRepositoryArgs,
-    gitProviderArgs: GitProviderArgs
-  ): Promise<RemoteGitRepository>;
-  deleteGitOrganization(gitProviderArgs: GitProviderArgs): Promise<boolean>;
-  getOrganization(
-    gitProviderArgs: GitProviderArgs
-  ): Promise<RemoteGitOrganization>;
-  getFile(file: File, gitProviderArgs: GitProviderArgs): Promise<GithubFile>;
-  createPullRequest(
-    createPullRequestArgs: CreatePullRequestArgs,
-    gitProviderArgs: GitProviderArgs
   ): Promise<string>;
 }
