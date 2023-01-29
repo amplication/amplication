@@ -22,15 +22,14 @@ import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import "./WorkspaceHeader.scss";
 import { useTracking } from "../../util/analytics";
+import { version } from "../../util/version";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-const WorkspaceHeader: React.FC<{
-  version: string;
-}> = ({ version }) => {
+const WorkspaceHeader: React.FC<{}> = () => {
   const {
     currentWorkspace,
     currentProject,

@@ -11,6 +11,7 @@ import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
 import { Loader, PlanUpgradeConfirmation } from "@amplication/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
+import { version } from "./util/version";
 
 declare global {
   interface Window {
@@ -34,7 +35,7 @@ export const enhance = track<keyof typeof context>(
   context,
 
   {
-    dispatch,
+    dispatch: (event: Partial<Event>) => dispatch(event, version),
   }
 );
 

@@ -39,13 +39,6 @@ type Props = AppRouteProps & {
 
 const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
   const [chatStatus, setChatStatus] = useState<boolean>(false);
-  const [version, setVersion] = useState("");
-  useEffect(() => {
-    import("../util/version").then(({ version }) => {
-      setVersion(version);
-    });
-  }, []);
-  const { trackEvent } = useTracking();
   const authenticated = useAuthenticated();
   const {
     currentWorkspace,
@@ -97,11 +90,10 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     loadingCreateMessageBroker,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
-  const { Track } = useTracking({
+  const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
     workspaceId: currentWorkspace?.id,
     projectId: currentProject?.id,
     resourceId: currentResource?.id,
-    version,
   });
 
   const openHubSpotChat = () => {
@@ -182,7 +174,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         >
           <Track>
             <div className={moduleClass}>
-              <WorkspaceHeader version={version} />
+              <WorkspaceHeader />
               <CompleteInvitation />
               <div className={`${moduleClass}__page_content`}>
                 <div className={`${moduleClass}__main_content`}>

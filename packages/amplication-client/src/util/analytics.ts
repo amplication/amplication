@@ -21,8 +21,9 @@ export const useTracking: () => Omit<
   trackEvent: (event: Event) => void;
 } = reactTracking.useTracking;
 
-export function dispatch(event: Partial<Event>) {
+export function dispatch(event: Partial<Event>, version?: string) {
   const { eventName, ...rest } = event;
+  const versionObj = version ? { version } : {};
   _hsq.push([
     "trackCustomBehavioralEvent",
     { name: eventName, properties: rest },
@@ -31,7 +32,10 @@ export function dispatch(event: Partial<Event>) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const analytics = window.analytics;
-    analytics.track(eventName || MISSING_EVENT_NAME, rest);
+    analytics.track(eventName || MISSING_EVENT_NAME, {
+      ...versionObj,
+      ...rest,
+    });
   }
 }
 
