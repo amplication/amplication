@@ -4,10 +4,7 @@ import { readFileSync } from "fs";
 import { utimes, open } from "fs/promises";
 import { sync } from "glob";
 import { join } from "path";
-import {
-  BUILD_ARTIFACTS_BASE_FOLDER,
-  DEFAULT_BUILDS_FOLDER,
-} from "../constants";
+import { BUILD_ARTIFACTS_BASE_FOLDER } from "../constants";
 import { FileMeta } from "./dto/FileMeta";
 import { NodeTypeEnum } from "./dto/NodeTypeEnum";
 
@@ -26,8 +23,7 @@ export class StorageService {
       true
     >
   ) {
-    const buildsFolder = configService.get<string>(BUILD_ARTIFACTS_BASE_FOLDER);
-    this.buildsFolder = buildsFolder || DEFAULT_BUILDS_FOLDER;
+    this.buildsFolder = configService.get<string>(BUILD_ARTIFACTS_BASE_FOLDER);
   }
 
   getBuildFilesList(resourceId: string, buildId: string, relativePath = "") {

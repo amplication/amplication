@@ -81,7 +81,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
         eventName: AnalyticsEventNames.PassedLimitsNotificationView,
         reason: limitationErrorMessage,
       });
-      resetPendingChanges();
     },
     onCompleted: (response) => {
       setCommitRunning(false);
