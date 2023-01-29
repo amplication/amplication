@@ -12,6 +12,7 @@ import { PrModule } from "../types";
 import { mapDiffSetToPrModule } from "./diffset-mapper";
 import { BuildPathFactory } from "./build-path-factory";
 import { deleteFilesVisitor } from "./delete-files";
+import { MissingBuildFiles } from "../errors/MissingBuildFiles";
 
 @Injectable()
 export class DiffService {
@@ -30,7 +31,7 @@ export class DiffService {
       newAmplicationBuildId
     );
 
-    DiffService.assertBuildExist(newBuildPath);
+    DiffService.validateIfBuildExist(newBuildPath, newAmplicationBuildId);
 
     // If an old build folder does not exist, we return all new files
     if (!previousAmplicationBuildId) {
@@ -60,7 +61,7 @@ export class DiffService {
       "Cant get the same build id"
     );
 
-    DiffService.assertBuildExist(oldBuildPath);
+    DiffService.validateIfBuildExist(oldBuildPath, previousAmplicationBuildId);
 
     const res = await compare(oldBuildPath, newBuildPath, {
       compareContent: true,
@@ -100,7 +101,14 @@ export class DiffService {
     return await Promise.all(files);
   }
 
-  private static assertBuildExist(buildPath) {
-    assert(existsSync(buildPath));
+  private static validateIfBuildExist(
+    buildPath: string,
+    buildId: string
+  ): void {
+    const isExisting = existsSync(buildPath);
+    if (isExisting === false) {
+      throw new MissingBuildFiles(buildId);
+    }
+    return;
   }
 }
