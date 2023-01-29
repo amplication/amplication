@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import {
-  CreateRepository,
   GitClient,
   GithubFile,
   GitProviderArgs,
-  Pagination,
-  PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  Repository,
   File,
+  GetRepositoryArgs,
+  GetRepositoriesArgs,
+  CreateRepositoryArgs,
+  CreatePullRequestArgs,
 } from "../types";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitFactory } from "./git-factory";
@@ -28,27 +28,27 @@ export class GitClientService implements GitClient {
   }
 
   async getRepository(
-    repository: Repository,
+    getRepositoryArgs: GetRepositoryArgs,
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitRepository> {
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.getRepository(repository);
+    return gitProvider.getRepository(getRepositoryArgs);
   }
 
   async getRepositories(
-    pagination: Pagination,
+    getRepositoriesArgs: GetRepositoriesArgs,
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitRepos> {
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.getRepositories(pagination);
+    return gitProvider.getRepositories(getRepositoriesArgs);
   }
 
   async createRepository(
-    createRepository: CreateRepository,
+    createRepositoryArgs: CreateRepositoryArgs,
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitRepository> {
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.createRepository(createRepository);
+    return gitProvider.createRepository(createRepositoryArgs);
   }
 
   async deleteGitOrganization(
@@ -58,11 +58,11 @@ export class GitClientService implements GitClient {
     return gitProvider.deleteGitOrganization();
   }
 
-  async getGitRemoteOrganization(
+  async getOrganization(
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitOrganization> {
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
-    return gitProvider.getGitRemoteOrganization();
+    return gitProvider.getOrganization();
   }
 
   async getFile(
@@ -74,11 +74,11 @@ export class GitClientService implements GitClient {
   }
 
   async createPullRequest(
-    pullRequest: PullRequest,
+    createPullRequestArgs: CreatePullRequestArgs,
     gitProviderArgs: GitProviderArgs
   ): Promise<string> {
     const { owner, repositoryName, pullRequestModule, gitResourceMeta } =
-      pullRequest;
+      createPullRequestArgs;
     const gitProvider = this.gitFactory.getProvider(gitProviderArgs);
     const files = await prepareFilesForPullRequest(
       owner,
@@ -86,6 +86,6 @@ export class GitClientService implements GitClient {
       gitResourceMeta,
       pullRequestModule
     );
-    return gitProvider.createPullRequest(pullRequest, files);
+    return gitProvider.createPullRequest(createPullRequestArgs, files);
   }
 }

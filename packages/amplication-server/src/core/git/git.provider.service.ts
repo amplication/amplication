@@ -244,11 +244,10 @@ export class GitProviderService {
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
 
-    const gitRemoteOrganization =
-      await this.gitClientService.getGitRemoteOrganization({
-        installationId,
-        provider: gitProvider,
-      });
+    const gitRemoteOrganization = await this.gitClientService.getOrganization({
+      installationId,
+      provider: gitProvider,
+    });
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {

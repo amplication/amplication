@@ -9,11 +9,11 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  PullRequest,
   GitProviderArgs,
-  Repository,
-  Pagination,
-  CreateRepository,
+  GetRepositoryArgs,
+  GetRepositoriesArgs,
+  CreateRepositoryArgs,
+  CreatePullRequestArgs,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -132,8 +132,10 @@ export class GithubService {
     return this.gitInstallationUrl.replace("{state}", amplicationWorkspaceId);
   }
 
-  async getRepository(repository: Repository): Promise<RemoteGitRepository> {
-    const { owner, repositoryName } = repository;
+  async getRepository(
+    getRepositoriesArgs: GetRepositoryArgs
+  ): Promise<RemoteGitRepository> {
+    const { owner, repositoryName } = getRepositoriesArgs;
     const octokit = await this.getInstallationOctokit(
       this.gitProviderArgs.installationId
     );
@@ -160,8 +162,10 @@ export class GithubService {
     };
   }
 
-  async getRepositories(pagination: Pagination): Promise<RemoteGitRepos> {
-    const { limit, page } = pagination;
+  async getRepositories(
+    getRepositoriesArgs: GetRepositoriesArgs
+  ): Promise<RemoteGitRepos> {
+    const { limit, page } = getRepositoriesArgs;
     const octokit = await this.getInstallationOctokit(
       this.gitProviderArgs.installationId
     );
@@ -173,10 +177,10 @@ export class GithubService {
   }
 
   async createRepository(
-    createRepository: CreateRepository
+    createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
     const { gitOrganization, owner, repositoryName, isPrivateRepository } =
-      createRepository;
+      createRepositoryArgs;
 
     if (gitOrganization.type === EnumGitOrganizationType.User) {
       throw new Error(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
@@ -230,7 +234,7 @@ export class GithubService {
     return true;
   }
 
-  async getGitRemoteOrganization(): Promise<RemoteGitOrganization> {
+  async getOrganization(): Promise<RemoteGitOrganization> {
     const octokit = await this.getInstallationOctokit(
       this.gitProviderArgs.installationId
     );
@@ -280,7 +284,7 @@ export class GithubService {
   }
 
   async createPullRequest(
-    pullRequest: PullRequest,
+    createPullRequestArgs: CreatePullRequestArgs,
     files: Required<Changes["files"]>
   ): Promise<string> {
     const {
@@ -291,7 +295,7 @@ export class GithubService {
       pullRequestTitle,
       pullRequestBody,
       head,
-    } = pullRequest;
+    } = createPullRequestArgs;
 
     const myOctokit = Octokit.plugin(createPullRequest);
     const token = await this.getInstallationAuthToken(

@@ -101,19 +101,19 @@ export interface GitResourceMeta {
   adminUIPath: string;
 }
 
-export interface Repository {
+export interface GetRepositoryArgs {
   owner: string;
   repositoryName: string;
 }
 
-export interface CreateRepository {
+export interface CreateRepositoryArgs {
   gitOrganization: RemoteGitOrganization;
   owner: string;
   repositoryName: string;
   isPrivateRepository: boolean;
 }
 
-export interface Pagination {
+export interface GetRepositoriesArgs {
   limit: number;
   page: number;
 }
@@ -125,7 +125,7 @@ export interface File {
   path: string;
 }
 
-export interface PullRequest {
+export interface CreatePullRequestArgs {
   pullRequestMode: EnumPullRequestMode;
   owner: string;
   repositoryName: string;
@@ -139,16 +139,20 @@ export interface PullRequest {
 
 export interface GitProvider {
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  getRepository(repository: Repository): Promise<RemoteGitRepository>;
-  getRepositories(pagination: Pagination): Promise<RemoteGitRepos>;
+  getRepository(
+    getRepositoryArgs: GetRepositoryArgs
+  ): Promise<RemoteGitRepository>;
+  getRepositories(
+    getRepositoriesArgs: GetRepositoriesArgs
+  ): Promise<RemoteGitRepos>;
   createRepository(
-    createRepository: CreateRepository
+    createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository>;
   deleteGitOrganization(): Promise<boolean>;
-  getGitRemoteOrganization(): Promise<RemoteGitOrganization>;
+  getOrganization(): Promise<RemoteGitOrganization>;
   getFile(file: File): Promise<GithubFile>;
   createPullRequest(
-    pullRequest: PullRequest,
+    createPullRequestArgs: CreatePullRequestArgs,
     files: Required<Changes["files"]>
   ): Promise<string>;
 }
@@ -159,24 +163,24 @@ export interface GitClient {
     gitProviderArgs: GitProviderArgs
   ): Promise<string>;
   getRepository(
-    repository: Repository,
+    getRepositoryArgs: GetRepositoryArgs,
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitRepository>;
   getRepositories(
-    pagination: Pagination,
+    getRepositoriesArgs: GetRepositoriesArgs,
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitRepos>;
   createRepository(
-    createRepository: CreateRepository,
+    createRepositoryArgs: CreateRepositoryArgs,
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitRepository>;
   deleteGitOrganization(gitProviderArgs: GitProviderArgs): Promise<boolean>;
-  getGitRemoteOrganization(
+  getOrganization(
     gitProviderArgs: GitProviderArgs
   ): Promise<RemoteGitOrganization>;
   getFile(file: File, gitProviderArgs: GitProviderArgs): Promise<GithubFile>;
   createPullRequest(
-    pullRequest: PullRequest,
+    createPullRequestArgs: CreatePullRequestArgs,
     gitProviderArgs: GitProviderArgs
   ): Promise<string>;
 }
