@@ -1,7 +1,7 @@
 import { Paywall, BillingPeriod } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import * as models from "../models";
 import {
   Button,
@@ -10,50 +10,15 @@ import {
   Modal,
 } from "@amplication/design-system";
 import "./PurchasePage.scss";
-import { useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
 import { ApolloError, useMutation } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
+import { PurchaseLoader } from "./PurchaseLoader";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
-};
-
-const selectedPlanAction = {
-  "plan-amplication-enterprise": (
-    props,
-    purchaseWorkspace,
-    selectedBillingPeriod,
-    intentionType,
-    provisionSubscription
-  ) => {
-    window.open(
-      "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
-      "_blank",
-      "noreferrer"
-    );
-  },
-  "plan-amplication-pro": async (
-    props,
-    purchaseWorkspace,
-    selectedBillingPeriod,
-    intentionType,
-    provisionSubscription
-  ) => {
-    provisionSubscription({
-      variables: {
-        data: {
-          workspaceId: purchaseWorkspace.id,
-          planId: "plan-amplication-pro",
-          billingPeriod: selectedBillingPeriod,
-          intentionType,
-          successUrl: props.location.state?.from?.pathname,
-          cancelUrl: props.location.state?.from?.pathname,
-        },
-      },
-    });
-  },
 };
 
 const CLASS_NAME = "purchase-page";
@@ -80,9 +45,56 @@ const PurchasePage = (props) => {
       },
     });
 
+  const [isLoading, setLoading] = useState(false);
+
+  const upgradeToPro = useCallback(
+    async (selectedBillingPeriod, intentionType) => {
+      await provisionSubscription({
+        variables: {
+          data: {
+            workspaceId: currentWorkspace.id,
+            planId: "plan-amplication-pro",
+            billingPeriod: selectedBillingPeriod,
+            intentionType,
+            successUrl: props.location.state?.from?.pathname,
+            cancelUrl: props.location.state?.from?.pathname,
+          },
+        },
+      });
+    },
+    [props.location.state, provisionSubscription, currentWorkspace.id]
+  );
+
+  const onPlanSelected = useCallback(
+    async ({ plan, intentionType, selectedBillingPeriod }) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.PricingPageCTAClick,
+        currentPlan: plan.basePlan.displayName,
+        type: plan.displayName,
+        action: intentionType,
+        Billing: selectedBillingPeriod,
+      });
+      switch (plan.id) {
+        case "plan-amplication-enterprise":
+          window.open(
+            "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
+            "_blank",
+            "noreferrer"
+          );
+          break;
+        case "plan-amplication-pro":
+          setLoading(true);
+          await upgradeToPro(selectedBillingPeriod, intentionType);
+          break;
+      }
+    },
+    [upgradeToPro]
+  );
+
   return (
     <Modal open fullScreen>
       <div className={CLASS_NAME}>
+        {isLoading && <PurchaseLoader />}
         <div className={`${CLASS_NAME}__layout`}>
           <Button
             className={`${CLASS_NAME}__layout__btn`}
@@ -129,26 +141,7 @@ const PurchasePage = (props) => {
               action: billingPeriod,
             });
           }}
-          onPlanSelected={async ({
-            plan,
-            intentionType,
-            selectedBillingPeriod,
-          }) => {
-            trackEvent({
-              eventName: AnalyticsEventNames.PricingPageCTAClick,
-              currentPlan: plan.basePlan.displayName,
-              type: plan.displayName,
-              action: intentionType,
-              Billing: selectedBillingPeriod,
-            });
-            selectedPlanAction[plan.id](
-              props,
-              currentWorkspace,
-              selectedBillingPeriod,
-              intentionType,
-              provisionSubscription
-            );
-          }}
+          onPlanSelected={onPlanSelected}
         />
         <div className={`${CLASS_NAME}__contact`}>
           <div className={`${CLASS_NAME}__contact__content`}>
