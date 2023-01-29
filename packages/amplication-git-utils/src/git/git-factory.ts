@@ -1,11 +1,9 @@
-import { Injectable } from "@nestjs/common";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
 import { EnumGitProvider, GitProvider, GitProviderArgs } from "../types";
 import { GithubService } from "./github.service";
 
-@Injectable()
 export class GitFactory {
-  getProvider(options: GitProviderArgs): GitProvider {
+  public static getProvider(options: GitProviderArgs): GitProvider {
     switch (options.provider) {
       case EnumGitProvider.Github:
         return new GithubService(options);
