@@ -56,11 +56,12 @@ const selectedPlanAction = {
   },
 };
 
+const UNKNOWN = "unknown";
+
 const getPlanPrice = (
   selectedBillingPeriod: BillingPeriod,
   pricePoints: Price[]
 ) => {
-  const UNKNOWN = "unknown";
   if (!pricePoints.length) return UNKNOWN;
 
   return pricePoints.reduce((price: string, pricePoint: Price) => {
