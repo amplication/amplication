@@ -49,8 +49,8 @@ export class DiffService {
       "Cant get the same build id"
     );
 
-    DiffService.assertBuildExist(oldBuildPath, previousAmplicationBuildId);
-    DiffService.assertBuildExist(newBuildPath, newAmplicationBuildId);
+    DiffService.validateIfBuildExist(oldBuildPath, previousAmplicationBuildId);
+    DiffService.validateIfBuildExist(newBuildPath, newAmplicationBuildId);
 
     const res = await compare(oldBuildPath, newBuildPath, {
       compareContent: true,
@@ -90,7 +90,10 @@ export class DiffService {
     return await Promise.all(files);
   }
 
-  private static assertBuildExist(buildPath: string, buildId: string): void {
+  private static validateIfBuildExist(
+    buildPath: string,
+    buildId: string
+  ): void {
     const isExisting = existsSync(buildPath);
     if (isExisting === false) {
       throw new MissingBuildFiles(buildId);
