@@ -1,6 +1,7 @@
 import * as reactTracking from "react-tracking";
 import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 import { AnalyticsEventNames } from "./analytics-events.types";
+import { version } from "../util/version";
 
 export interface Event {
   eventName: AnalyticsEventNames;
@@ -21,7 +22,7 @@ export const useTracking: () => Omit<
   trackEvent: (event: Event) => void;
 } = reactTracking.useTracking;
 
-export function dispatch(event: Partial<Event>, version?: string) {
+export function dispatch(event: Partial<Event>) {
   const { eventName, ...rest } = event;
   const versionObj = version ? { version } : {};
   _hsq.push([

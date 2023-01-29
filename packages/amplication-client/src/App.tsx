@@ -35,7 +35,7 @@ export const enhance = track<keyof typeof context>(
   context,
 
   {
-    dispatch: (event: Partial<Event>) => dispatch(event, version),
+    dispatch,
   }
 );
 
