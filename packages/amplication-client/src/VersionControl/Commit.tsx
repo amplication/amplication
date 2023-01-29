@@ -76,10 +76,10 @@ const Commit = ({ projectId, noChanges }: Props) => {
     onError: (error: ApolloError) => {
       setCommitRunning(false);
       setPendingChangesError(true);
-      setOpenLimitationDialog(true);
       const errorMessage = formatError(error);
       const isLimitationError =
         errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
+      setOpenLimitationDialog(isLimitationError);
       const limitationErrorMessage =
         isLimitationError && formatLimitationError(errorMessage);
       trackEvent({
