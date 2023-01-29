@@ -1,5 +1,5 @@
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
-import { GitClientService, GitModule } from "@amplication/git-utils";
+import { GitClientService } from "@amplication/git-utils";
 import { Module } from "@nestjs/common";
 import { ClientsModule } from "@nestjs/microservices";
 import { DiffModule } from "../diff/diff.module";
@@ -10,7 +10,6 @@ import { KAFKA_CLIENT, QueueService } from "./queue.service";
 @Module({
   imports: [
     DiffModule,
-    GitModule,
     ClientsModule.registerAsync([
       {
         name: KAFKA_CLIENT,
