@@ -40,13 +40,13 @@ export class GitProviderService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
-    const pagination = {
+    const paginationArgs = {
       limit: args.limit,
       page: args.page,
     };
     const gitProviderArgs = { provider: args.gitProvider, installationId };
-    const gitClientProvider = GitClientService.createProvider(gitProviderArgs);
-    return gitClientProvider.getRepositories(pagination);
+    const gitClientService = new GitClientService(gitProviderArgs);
+    return gitClientService.getRepositories(paginationArgs);
   }
 
   async createRemoteGitRepository(
@@ -70,8 +70,8 @@ export class GitProviderService {
       installationId: organization.installationId,
       provider: args.gitProvider,
     };
-    const gitClientProvider = GitClientService.createProvider(gitProviderArgs);
-    const remoteRepository = await gitClientProvider.createRepository(
+    const gitClientService = new GitClientService(gitProviderArgs);
+    const remoteRepository = await gitClientService.createRepository(
       repository
     );
 
@@ -242,11 +242,11 @@ export class GitProviderService {
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
-    const gitClientProvider = GitClientService.createProvider({
+    const gitClientService = new GitClientService({
       provider: gitProvider,
       installationId,
     });
-    const gitRemoteOrganization = await gitClientProvider.getOrganization();
+    const gitRemoteOrganization = await gitClientService.getOrganization();
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {
@@ -303,11 +303,11 @@ export class GitProviderService {
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { gitProvider, workspaceId } = args.data;
-    const gitClientProvider = GitClientService.createProvider({
+    const gitClientService = new GitClientService({
       provider: gitProvider,
       installationId: null,
     });
-    return await gitClientProvider.getGitInstallationUrl(workspaceId);
+    return await gitClientService.getGitInstallationUrl(workspaceId);
   }
 
   async deleteGitOrganization(
@@ -318,12 +318,12 @@ export class GitProviderService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
-    const gitClientProvider = GitClientService.createProvider({
+    const gitClientService = new GitClientService({
       provider: gitProvider,
       installationId,
     });
     if (installationId) {
-      const isDelete = await gitClientProvider.deleteGitOrganization();
+      const isDelete = await gitClientService.deleteGitOrganization();
       if (isDelete) {
         await this.prisma.gitOrganization.delete({
           where: {
