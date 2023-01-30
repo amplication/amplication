@@ -46,6 +46,7 @@ async function createServerInternal(
   } = DsgContext.getInstance;
 
   const { DSG_VERSION: dsgVersion } = process.env;
+
   logger.info(`Running DSG Version: ${dsgVersion}`);
   await createLog({
     level: "info",

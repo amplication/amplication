@@ -115,6 +115,7 @@ jobs:
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
+          INPUT_BUILD_ARGS: GIT_REF=${{ github.ref }}
 
   configure:
     name: Configure deployment target environment

@@ -110,7 +110,8 @@
       "dependsOn": ["build"],
       "options": {
         "push": false,
-        "tags": ["amplication/data-service-generator-runner:latest"]
+        "tags": ["amplication/data-service-generator-runner:latest"],
+        "build-args": ["GIT_REF=latest-local-unicorn-🦄"]
       }
     }
   },
