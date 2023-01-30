@@ -119,7 +119,6 @@ const NewApiToken = ({ onCompleted }: Props) => {
                 name="name"
                 label="Token Name"
                 disabled={loading}
-                autoFocus
                 hideLabel
                 placeholder="Token Name"
                 autoComplete="off"
