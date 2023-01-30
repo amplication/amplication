@@ -9,7 +9,6 @@ import { EnvironmentModule } from "../environment/environment.module";
 import { ResourceService } from "./resource.service";
 import { ResourceResolver } from "./resource.resolver";
 import { CommitModule } from "../commit/commit.module";
-import { GitModule } from "@amplication/git-utils";
 import { ServiceSettingsModule } from "../serviceSettings/serviceSettings.module";
 import { ProjectConfigurationSettingsModule } from "../projectConfigurationSettings/projectConfigurationSettings.module";
 import { ProjectModule } from "../project/project.module";
@@ -30,7 +29,6 @@ import { BillingModule } from "../billing/billing.module";
     EnvironmentModule,
     CommitModule,
     BlockModule,
-    GitModule,
     ProjectConfigurationSettingsModule,
     forwardRef(() => ProjectModule),
     BillingModule,

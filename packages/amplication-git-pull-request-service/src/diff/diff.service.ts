@@ -8,7 +8,7 @@ import { compare } from "dir-compare";
 import { sync } from "fast-glob";
 import { existsSync, readFileSync } from "fs";
 import { normalize } from "path";
-import { PrModule } from "../types";
+import { PullRequestModule } from "@amplication/git-utils";
 import { mapDiffSetToPrModule } from "./diffset-mapper";
 import { BuildPathFactory } from "./build-path-factory";
 import { deleteFilesVisitor } from "./delete-files";
@@ -25,7 +25,7 @@ export class DiffService {
     resourceId: string,
     previousAmplicationBuildId: string | undefined,
     newAmplicationBuildId: string
-  ): Promise<PrModule[]> {
+  ): Promise<PullRequestModule[]> {
     const newBuildPath = this.buildsPathFactory.get(
       resourceId,
       newAmplicationBuildId

@@ -4,7 +4,12 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
-import { Branch, CreatePullRequest, RemoteGitRepository } from "../../types";
+import {
+  Branch,
+  Commit,
+  CreatePullRequest,
+  RemoteGitRepository,
+} from "../../types";
 import { BasePullRequest } from "./BasePullRequest";
 
 export class AccumulativePullRequest extends BasePullRequest {
@@ -13,10 +18,11 @@ export class AccumulativePullRequest extends BasePullRequest {
     prBody: string,
     head: string,
     files: Required<Changes["files"]>,
-    commitMessage: string
+    commit: Commit
   ): Promise<string> {
+    const { body } = commit;
     await this.validateOrCreateBranch(head);
-    await this.appendCommitOnBranch(commitMessage, head, files);
+    await this.appendCommitOnBranch(body, head, files);
     const repository = await this.getRepository();
     const existingPullRequest = await this.existingPullRequest(head);
     if (!existingPullRequest) {

@@ -1,5 +1,5 @@
+import { PullRequestModule } from "@amplication/git-utils";
 import { DiffSet } from "dir-compare";
-import { PrModule } from "../types";
 import { DiffVisitorFn } from "./diff.types";
 
 /**
@@ -13,7 +13,7 @@ import { DiffVisitorFn } from "./diff.types";
 export function mapDiffSetToPrModule(
   diffSet: DiffSet,
   visitors: DiffVisitorFn[] = []
-): PrModule[] {
+): PullRequestModule[] {
   const modules = diffSet.flatMap((diff) => {
     for (const visitor of visitors) {
       const result = visitor(diff);
