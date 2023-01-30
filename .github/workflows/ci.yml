@@ -1,16 +1,17 @@
 name: Continuous Integration
+concurrency: ${{ github.ref }}
 
 on:
   workflow_dispatch:
     inputs:
       nx-base:
         type: string
-        description: Commit SHA, branch or tag name used by Nx in the affected jobs. 
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs.
         required: true
         default: next
       nx-skip-cache:
         type: boolean
-        description: Rerun the tasks even when the results are available in the cache. 
+        description: Rerun the tasks even when the results are available in the cache.
         default: false
       nx-force-all:
         type: boolean
@@ -22,23 +23,23 @@ on:
       - "**/*.md"
       - ".all-contributorsrc"
   push:
-    branches: 
+    branches:
       - master
       - next
     paths-ignore:
       - "**/*.md"
       - ".all-contributorsrc"
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.head_ref || github.ref_name }}
+  NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+  NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
+  BASE: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
 
 jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-20.04
-    env:
-      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      NX_BRANCH: ${{ github.head_ref || github.ref_name }} 
-      NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }}  # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
-      NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
-      BASE: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -50,10 +51,10 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-      
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
       - name: Cache global node modules
         id: cache-node-modules
         uses: actions/cache@v3
@@ -73,7 +74,7 @@ jobs:
             libs/data-service-generator/node_modules
             libs/util/code-gen-utils/node_modules
             packages/amplication-cli/node_modules
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
 
       - name: Install Dependencies
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
@@ -96,16 +97,30 @@ jobs:
           npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
           npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
-      - name: Set Affected
-        id: set-affected
-        run: |
-          export AFFECTED_PROJECTS=$(npx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects)
-          echo affected projects: $AFFECTED_PROJECTS
-          echo affected=$AFFECTED_PROJECTS >> affected-projects
+  nx:
+    name: Nx
+    needs: ci
+    uses: ./.github/workflows/nx.template.yml
+    with:
+      nx-head: ${{ github.head_ref || github.ref_name }}
+      nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
+      nx-skip-cache: ${{ inputs.nx-force-all || false }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+      nx-force-all: ${{ inputs.nx-skip-cache || false }}
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: affected-projects
-          path: affected-projects
-          if-no-files-found: error
+  release:
+    name: Release
+    needs: nx
+    uses: ./.github/workflows/release.template.yml
+    if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
+    with:
+      branch: ${{ github.ref_name }}
+      affected-apps: ${{ needs.nx.outputs.affected-apps }}
+      affected-lib: ${{ needs.nx.outputs.affected-lib }}
+      affected-dockerable: ${{ needs.nx.outputs.affected-dockerable }}
+      affected-deployable: ${{ needs.nx.outputs.affected-deployable }}
+    secrets:
+      nx-cloud-access-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
