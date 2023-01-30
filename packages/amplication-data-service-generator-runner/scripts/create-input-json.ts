@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { EnumResourceType } from "../src/models";
 import { appInfo } from "../src/tests/appInfo";
 import entities from "../src/tests/entities";
@@ -18,8 +20,24 @@ function createInputJsonFile() {
     resourceType: EnumResourceType.Service,
     pluginInstallations: [],
   };
-  const fileName = "input.json";
-  const path = join(__dirname, `../${fileName}`);
-  writeFileSync(path, format(JSON.stringify(object), { parser: "json" }));
-  console.log(`Finish writing the ${fileName} file`);
+  const buildSpecPath = process.env.BUILD_SPEC_PATH;
+
+  if (!buildSpecPath) {
+    throw new Error("SOURCE is not defined");
+  }
+
+  const relativePath = join(process.cwd(), buildSpecPath);
+
+  fs.mkdir(path.dirname(relativePath), { recursive: true }, (err) => {
+    if (err) {
+      console.error;
+      throw err;
+    }
+  });
+
+  writeFileSync(
+    relativePath,
+    format(JSON.stringify(object), { parser: "json" })
+  );
+  console.log(`Finish writing the ${relativePath} file`);
 }
