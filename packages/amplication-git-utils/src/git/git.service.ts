@@ -1,5 +1,5 @@
 import {
-  GithubFile,
+  GitFile,
   GitProviderArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
@@ -11,16 +11,15 @@ import {
   CreatePullRequestArgs,
   GitProvider,
 } from "../types";
+import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitFactory } from "./git-factory";
 
 export class GitClientService {
   private provider: GitProvider;
 
-  static createProvider(gitProviderArgs: GitProviderArgs): GitClientService {
-    const serviceInstance = new this();
-    serviceInstance.provider = GitFactory.getProvider(gitProviderArgs);
-    return serviceInstance;
+  constructor(gitProviderArgs: GitProviderArgs) {
+    this.provider = GitFactory.getProvider(gitProviderArgs);
   }
 
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -53,21 +52,45 @@ export class GitClientService {
     return this.provider.getOrganization();
   }
 
-  async getFile(file: File): Promise<GithubFile> {
-    return this.provider.getFile(file);
-  }
-
   async createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs
   ): Promise<string> {
     const { owner, repositoryName, pullRequestModule, gitResourceMeta } =
       createPullRequestArgs;
-    const files = await prepareFilesForPullRequest(
+    const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
-      repositoryName,
+      repositoryName
+    );
+    const files = await prepareFilesForPullRequest(
       gitResourceMeta,
-      pullRequestModule
+      pullRequestModule,
+      amplicationIgnoreManger
     );
     return this.provider.createPullRequest(createPullRequestArgs, files);
+  }
+
+  async getFile(file: File): Promise<GitFile> {
+    return this.provider.getFile(file);
+  }
+
+  private async manageAmplicationIgnoreFile(owner, repositoryName) {
+    const amplicationIgnoreManger = new AmplicationIgnoreManger();
+    await amplicationIgnoreManger.init(async (fileName) => {
+      try {
+        const file = await this.getFile({
+          owner,
+          repositoryUrl: repositoryName,
+          path: fileName,
+          baseBranch: undefined, // take the default branch
+        });
+        const { content, htmlUrl, name } = file;
+        console.log(`Got ${name} file ${htmlUrl}`);
+        return content;
+      } catch (error) {
+        console.log("Repository does not have a .amplicationignore file");
+        return "";
+      }
+    });
+    return amplicationIgnoreManger;
   }
 }
