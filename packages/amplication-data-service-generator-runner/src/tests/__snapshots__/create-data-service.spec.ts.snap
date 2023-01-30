@@ -2904,11 +2904,7 @@ export class StringNullableFilter {
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
 JWT_SECRET_KEY=Change_ME!!!
 JWT_EXPIRATION=2d
-PORT=3000
-DB_USER=testUsername
-DB_PASSWORD=1234
-DB_PORT=5433
-DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
+PORT=3000",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -2916,18 +2912,6 @@ DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
 .DS_Store
 ",
   "server/docker-compose.db.yml": "version: \\"3\\"
-services:
-  db:
-    image: postgres:12
-    ports:
-      - \${DB_PORT}:5432
-    environment:
-      POSTGRES_USER: \${DB_USER}
-      POSTGRES_PASSWORD: \${DB_PASSWORD}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-volumes:
-  postgres: ~
 ",
   "server/docker-compose.yml": "version: \\"3\\"
 services:
@@ -2942,7 +2926,6 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       - migrate
   migrate:
@@ -2954,33 +2937,9 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       db:
         condition: service_healthy
-  db:
-    image: postgres:12
-    ports:
-      - \${DB_PORT}:5432
-    environment:
-      POSTGRES_USER: \${DB_USER}
-      POSTGRES_PASSWORD: \${DB_PASSWORD}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        - CMD
-        - pg_isready
-        - -q
-        - -d
-        - \${DB_NAME}
-        - -U
-        - \${DB_USER}
-      timeout: 45s
-      interval: 10s
-      retries: 10
-volumes:
-  postgres: ~
 ",
   "server/nest-cli.json": "{
   \\"sourceRoot\\": \\"src\\",
@@ -4156,7 +4115,7 @@ class CreateCustomerArgs {
   data!: CustomerCreateInput;
 }
 
-export { CreateCustomerArgs };
+export { CreateCustomerArgs as CreateCustomerArgs };
 ",
   "server/src/customer/base/Customer.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4364,7 +4323,7 @@ class Customer {
   orders?: Array<Order>;
 }
 
-export { Customer };
+export { Customer as Customer };
 ",
   "server/src/customer/base/CustomerCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4557,7 +4516,7 @@ class CustomerCreateInput {
   orders?: OrderCreateNestedManyWithoutCustomersInput;
 }
 
-export { CustomerCreateInput };
+export { CustomerCreateInput as CustomerCreateInput };
 ",
   "server/src/customer/base/CustomerFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4611,7 +4570,7 @@ class CustomerFindManyArgs {
   take?: number;
 }
 
-export { CustomerFindManyArgs };
+export { CustomerFindManyArgs as CustomerFindManyArgs };
 ",
   "server/src/customer/base/CustomerFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4633,7 +4592,7 @@ class CustomerFindUniqueArgs {
   where!: CustomerWhereUniqueInput;
 }
 
-export { CustomerFindUniqueArgs };
+export { CustomerFindUniqueArgs as CustomerFindUniqueArgs };
 ",
   "server/src/customer/base/CustomerListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4690,7 +4649,7 @@ class CustomerListRelationFilter {
   })
   none?: CustomerWhereInput;
 }
-export { CustomerListRelationFilter };
+export { CustomerListRelationFilter as CustomerListRelationFilter };
 ",
   "server/src/customer/base/CustomerOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4857,7 +4816,7 @@ class CustomerOrderByInput {
   vipOrganizationId?: SortOrder;
 }
 
-export { CustomerOrderByInput };
+export { CustomerOrderByInput as CustomerOrderByInput };
 ",
   "server/src/customer/base/CustomerUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5053,7 +5012,7 @@ class CustomerUpdateInput {
   orders?: OrderUpdateManyWithoutCustomersInput;
 }
 
-export { CustomerUpdateInput };
+export { CustomerUpdateInput as CustomerUpdateInput };
 ",
   "server/src/customer/base/CustomerWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5264,7 +5223,7 @@ class CustomerWhereInput {
   orders?: OrderListRelationFilter;
 }
 
-export { CustomerWhereInput };
+export { CustomerWhereInput as CustomerWhereInput };
 ",
   "server/src/customer/base/CustomerWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5292,7 +5251,7 @@ class CustomerWhereUniqueInput {
   id!: number;
 }
 
-export { CustomerWhereUniqueInput };
+export { CustomerWhereUniqueInput as CustomerWhereUniqueInput };
 ",
   "server/src/customer/base/DeleteCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5314,7 +5273,7 @@ class DeleteCustomerArgs {
   where!: CustomerWhereUniqueInput;
 }
 
-export { DeleteCustomerArgs };
+export { DeleteCustomerArgs as DeleteCustomerArgs };
 ",
   "server/src/customer/base/EnumCustomerCustomerType.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5391,7 +5350,7 @@ class OrderCreateNestedManyWithoutCustomersInput {
   connect?: Array<OrderWhereUniqueInput>;
 }
 
-export { OrderCreateNestedManyWithoutCustomersInput };
+export { OrderCreateNestedManyWithoutCustomersInput as OrderCreateNestedManyWithoutCustomersInput };
 ",
   "server/src/customer/base/OrderUpdateManyWithoutCustomersInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5438,7 +5397,7 @@ class OrderUpdateManyWithoutCustomersInput {
   set?: Array<OrderWhereUniqueInput>;
 }
 
-export { OrderUpdateManyWithoutCustomersInput };
+export { OrderUpdateManyWithoutCustomersInput as OrderUpdateManyWithoutCustomersInput };
 ",
   "server/src/customer/base/UpdateCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5463,7 +5422,7 @@ class UpdateCustomerArgs {
   data!: CustomerUpdateInput;
 }
 
-export { UpdateCustomerArgs };
+export { UpdateCustomerArgs as UpdateCustomerArgs };
 ",
   "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -6625,7 +6584,7 @@ class DeleteEmptyArgs {
   where!: EmptyWhereUniqueInput;
 }
 
-export { DeleteEmptyArgs };
+export { DeleteEmptyArgs as DeleteEmptyArgs };
 ",
   "server/src/empty/base/Empty.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6670,7 +6629,7 @@ class Empty {
   updatedAt!: Date;
 }
 
-export { Empty };
+export { Empty as Empty };
 ",
   "server/src/empty/base/EmptyCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6684,7 +6643,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 class EmptyCreateInput {}
-export { EmptyCreateInput };
+export { EmptyCreateInput as EmptyCreateInput };
 ",
   "server/src/empty/base/EmptyFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6738,7 +6697,7 @@ class EmptyFindManyArgs {
   take?: number;
 }
 
-export { EmptyFindManyArgs };
+export { EmptyFindManyArgs as EmptyFindManyArgs };
 ",
   "server/src/empty/base/EmptyFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6760,7 +6719,7 @@ class EmptyFindUniqueArgs {
   where!: EmptyWhereUniqueInput;
 }
 
-export { EmptyFindUniqueArgs };
+export { EmptyFindUniqueArgs as EmptyFindUniqueArgs };
 ",
   "server/src/empty/base/EmptyListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6817,7 +6776,7 @@ class EmptyListRelationFilter {
   })
   none?: EmptyWhereInput;
 }
-export { EmptyListRelationFilter };
+export { EmptyListRelationFilter as EmptyListRelationFilter };
 ",
   "server/src/empty/base/EmptyOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6867,7 +6826,7 @@ class EmptyOrderByInput {
   updatedAt?: SortOrder;
 }
 
-export { EmptyOrderByInput };
+export { EmptyOrderByInput as EmptyOrderByInput };
 ",
   "server/src/empty/base/EmptyUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6881,7 +6840,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 class EmptyUpdateInput {}
-export { EmptyUpdateInput };
+export { EmptyUpdateInput as EmptyUpdateInput };
 ",
   "server/src/empty/base/EmptyWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6937,7 +6896,7 @@ class EmptyWhereInput {
   updatedAt?: DateTimeFilter;
 }
 
-export { EmptyWhereInput };
+export { EmptyWhereInput as EmptyWhereInput };
 ",
   "server/src/empty/base/EmptyWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6965,7 +6924,7 @@ class EmptyWhereUniqueInput {
   id!: string;
 }
 
-export { EmptyWhereUniqueInput };
+export { EmptyWhereUniqueInput as EmptyWhereUniqueInput };
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -8374,7 +8333,7 @@ class CreateOrderArgs {
   data!: OrderCreateInput;
 }
 
-export { CreateOrderArgs };
+export { CreateOrderArgs as CreateOrderArgs };
 ",
   "server/src/order/base/DeleteOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8396,7 +8355,7 @@ class DeleteOrderArgs {
   where!: OrderWhereUniqueInput;
 }
 
-export { DeleteOrderArgs };
+export { DeleteOrderArgs as DeleteOrderArgs };
 ",
   "server/src/order/base/EnumOrderLabel.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8523,7 +8482,7 @@ class Order {
   label?: \\"fragile\\" | null;
 }
 
-export { Order };
+export { Order as Order };
 ",
   "server/src/order/base/OrderCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8575,7 +8534,7 @@ class OrderCreateInput {
   label?: \\"fragile\\" | null;
 }
 
-export { OrderCreateInput };
+export { OrderCreateInput as OrderCreateInput };
 ",
   "server/src/order/base/OrderFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8629,7 +8588,7 @@ class OrderFindManyArgs {
   take?: number;
 }
 
-export { OrderFindManyArgs };
+export { OrderFindManyArgs as OrderFindManyArgs };
 ",
   "server/src/order/base/OrderFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8651,7 +8610,7 @@ class OrderFindUniqueArgs {
   where!: OrderWhereUniqueInput;
 }
 
-export { OrderFindUniqueArgs };
+export { OrderFindUniqueArgs as OrderFindUniqueArgs };
 ",
   "server/src/order/base/OrderListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8708,7 +8667,7 @@ class OrderListRelationFilter {
   })
   none?: OrderWhereInput;
 }
-export { OrderListRelationFilter };
+export { OrderListRelationFilter as OrderListRelationFilter };
 ",
   "server/src/order/base/OrderOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8785,7 +8744,7 @@ class OrderOrderByInput {
   label?: SortOrder;
 }
 
-export { OrderOrderByInput };
+export { OrderOrderByInput as OrderOrderByInput };
 ",
   "server/src/order/base/OrderUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8843,7 +8802,7 @@ class OrderUpdateInput {
   label?: \\"fragile\\" | null;
 }
 
-export { OrderUpdateInput };
+export { OrderUpdateInput as OrderUpdateInput };
 ",
   "server/src/order/base/OrderWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8936,7 +8895,7 @@ class OrderWhereInput {
   label?: \\"fragile\\";
 }
 
-export { OrderWhereInput };
+export { OrderWhereInput as OrderWhereInput };
 ",
   "server/src/order/base/OrderWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8964,7 +8923,7 @@ class OrderWhereUniqueInput {
   id!: string;
 }
 
-export { OrderWhereUniqueInput };
+export { OrderWhereUniqueInput as OrderWhereUniqueInput };
 ",
   "server/src/order/base/UpdateOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8989,7 +8948,7 @@ class UpdateOrderArgs {
   data!: OrderUpdateInput;
 }
 
-export { UpdateOrderArgs };
+export { UpdateOrderArgs as UpdateOrderArgs };
 ",
   "server/src/order/base/order.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -9700,7 +9659,7 @@ class CreateOrganizationArgs {
   data!: OrganizationCreateInput;
 }
 
-export { CreateOrganizationArgs };
+export { CreateOrganizationArgs as CreateOrganizationArgs };
 ",
   "server/src/organization/base/CustomerCreateNestedManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9729,7 +9688,7 @@ class CustomerCreateNestedManyWithoutOrganizationsInput {
   connect?: Array<CustomerWhereUniqueInput>;
 }
 
-export { CustomerCreateNestedManyWithoutOrganizationsInput };
+export { CustomerCreateNestedManyWithoutOrganizationsInput as CustomerCreateNestedManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/CustomerUpdateManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9776,7 +9735,7 @@ class CustomerUpdateManyWithoutOrganizationsInput {
   set?: Array<CustomerWhereUniqueInput>;
 }
 
-export { CustomerUpdateManyWithoutOrganizationsInput };
+export { CustomerUpdateManyWithoutOrganizationsInput as CustomerUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/DeleteOrganizationArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9798,7 +9757,7 @@ class DeleteOrganizationArgs {
   where!: OrganizationWhereUniqueInput;
 }
 
-export { DeleteOrganizationArgs };
+export { DeleteOrganizationArgs as DeleteOrganizationArgs };
 ",
   "server/src/organization/base/Organization.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9880,7 +9839,7 @@ class Organization {
   vipCustomers?: Array<Customer>;
 }
 
-export { Organization };
+export { Organization as Organization };
 ",
   "server/src/organization/base/OrganizationCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9947,7 +9906,7 @@ class OrganizationCreateInput {
   vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 }
 
-export { OrganizationCreateInput };
+export { OrganizationCreateInput as OrganizationCreateInput };
 ",
   "server/src/organization/base/OrganizationFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10001,7 +9960,7 @@ class OrganizationFindManyArgs {
   take?: number;
 }
 
-export { OrganizationFindManyArgs };
+export { OrganizationFindManyArgs as OrganizationFindManyArgs };
 ",
   "server/src/organization/base/OrganizationFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10023,7 +9982,7 @@ class OrganizationFindUniqueArgs {
   where!: OrganizationWhereUniqueInput;
 }
 
-export { OrganizationFindUniqueArgs };
+export { OrganizationFindUniqueArgs as OrganizationFindUniqueArgs };
 ",
   "server/src/organization/base/OrganizationListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10080,7 +10039,7 @@ class OrganizationListRelationFilter {
   })
   none?: OrganizationWhereInput;
 }
-export { OrganizationListRelationFilter };
+export { OrganizationListRelationFilter as OrganizationListRelationFilter };
 ",
   "server/src/organization/base/OrganizationOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10139,7 +10098,7 @@ class OrganizationOrderByInput {
   name?: SortOrder;
 }
 
-export { OrganizationOrderByInput };
+export { OrganizationOrderByInput as OrganizationOrderByInput };
 ",
   "server/src/organization/base/OrganizationUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10209,7 +10168,7 @@ class OrganizationUpdateInput {
   vipCustomers?: CustomerUpdateManyWithoutOrganizationsInput;
 }
 
-export { OrganizationUpdateInput };
+export { OrganizationUpdateInput as OrganizationUpdateInput };
 ",
   "server/src/organization/base/OrganizationWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10314,7 +10273,7 @@ class OrganizationWhereInput {
   vipCustomers?: CustomerListRelationFilter;
 }
 
-export { OrganizationWhereInput };
+export { OrganizationWhereInput as OrganizationWhereInput };
 ",
   "server/src/organization/base/OrganizationWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10342,7 +10301,7 @@ class OrganizationWhereUniqueInput {
   id!: string;
 }
 
-export { OrganizationWhereUniqueInput };
+export { OrganizationWhereUniqueInput as OrganizationWhereUniqueInput };
 ",
   "server/src/organization/base/UpdateOrganizationArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10367,7 +10326,7 @@ class UpdateOrganizationArgs {
   data!: OrganizationUpdateInput;
 }
 
-export { UpdateOrganizationArgs };
+export { UpdateOrganizationArgs as UpdateOrganizationArgs };
 ",
   "server/src/organization/base/UserCreateNestedManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10396,7 +10355,7 @@ class UserCreateNestedManyWithoutOrganizationsInput {
   connect?: Array<UserWhereUniqueInput>;
 }
 
-export { UserCreateNestedManyWithoutOrganizationsInput };
+export { UserCreateNestedManyWithoutOrganizationsInput as UserCreateNestedManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/UserUpdateManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10443,7 +10402,7 @@ class UserUpdateManyWithoutOrganizationsInput {
   set?: Array<UserWhereUniqueInput>;
 }
 
-export { UserUpdateManyWithoutOrganizationsInput };
+export { UserUpdateManyWithoutOrganizationsInput as UserUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -11667,7 +11626,7 @@ class CreateProfileArgs {
   data!: ProfileCreateInput;
 }
 
-export { CreateProfileArgs };
+export { CreateProfileArgs as CreateProfileArgs };
 ",
   "server/src/profile/base/DeleteProfileArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11689,7 +11648,7 @@ class DeleteProfileArgs {
   where!: ProfileWhereUniqueInput;
 }
 
-export { DeleteProfileArgs };
+export { DeleteProfileArgs as DeleteProfileArgs };
 ",
   "server/src/profile/base/Profile.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11758,7 +11717,7 @@ class Profile {
   user?: User | null;
 }
 
-export { Profile };
+export { Profile as Profile };
 ",
   "server/src/profile/base/ProfileCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11800,7 +11759,7 @@ class ProfileCreateInput {
   user?: UserWhereUniqueInput | null;
 }
 
-export { ProfileCreateInput };
+export { ProfileCreateInput as ProfileCreateInput };
 ",
   "server/src/profile/base/ProfileFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11854,7 +11813,7 @@ class ProfileFindManyArgs {
   take?: number;
 }
 
-export { ProfileFindManyArgs };
+export { ProfileFindManyArgs as ProfileFindManyArgs };
 ",
   "server/src/profile/base/ProfileFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11876,7 +11835,7 @@ class ProfileFindUniqueArgs {
   where!: ProfileWhereUniqueInput;
 }
 
-export { ProfileFindUniqueArgs };
+export { ProfileFindUniqueArgs as ProfileFindUniqueArgs };
 ",
   "server/src/profile/base/ProfileListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11933,7 +11892,7 @@ class ProfileListRelationFilter {
   })
   none?: ProfileWhereInput;
 }
-export { ProfileListRelationFilter };
+export { ProfileListRelationFilter as ProfileListRelationFilter };
 ",
   "server/src/profile/base/ProfileOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12001,7 +11960,7 @@ class ProfileOrderByInput {
   userId?: SortOrder;
 }
 
-export { ProfileOrderByInput };
+export { ProfileOrderByInput as ProfileOrderByInput };
 ",
   "server/src/profile/base/ProfileUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12046,7 +12005,7 @@ class ProfileUpdateInput {
   user?: UserWhereUniqueInput | null;
 }
 
-export { ProfileUpdateInput };
+export { ProfileUpdateInput as ProfileUpdateInput };
 ",
   "server/src/profile/base/ProfileWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12127,7 +12086,7 @@ class ProfileWhereInput {
   user?: UserWhereUniqueInput;
 }
 
-export { ProfileWhereInput };
+export { ProfileWhereInput as ProfileWhereInput };
 ",
   "server/src/profile/base/ProfileWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12155,7 +12114,7 @@ class ProfileWhereUniqueInput {
   id!: number;
 }
 
-export { ProfileWhereUniqueInput };
+export { ProfileWhereUniqueInput as ProfileWhereUniqueInput };
 ",
   "server/src/profile/base/UpdateProfileArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12180,7 +12139,7 @@ class UpdateProfileArgs {
   data!: ProfileUpdateInput;
 }
 
-export { UpdateProfileArgs };
+export { UpdateProfileArgs as UpdateProfileArgs };
 ",
   "server/src/profile/base/profile.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -13262,7 +13221,7 @@ class CreateUserArgs {
   data!: UserCreateInput;
 }
 
-export { CreateUserArgs };
+export { CreateUserArgs as CreateUserArgs };
 ",
   "server/src/user/base/DeleteUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13284,7 +13243,7 @@ class DeleteUserArgs {
   where!: UserWhereUniqueInput;
 }
 
-export { DeleteUserArgs };
+export { DeleteUserArgs as DeleteUserArgs };
 ",
   "server/src/user/base/EnumUserInterests.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13358,7 +13317,7 @@ class OrganizationCreateNestedManyWithoutUsersInput {
   connect?: Array<OrganizationWhereUniqueInput>;
 }
 
-export { OrganizationCreateNestedManyWithoutUsersInput };
+export { OrganizationCreateNestedManyWithoutUsersInput as OrganizationCreateNestedManyWithoutUsersInput };
 ",
   "server/src/user/base/OrganizationUpdateManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13405,7 +13364,7 @@ class OrganizationUpdateManyWithoutUsersInput {
   set?: Array<OrganizationWhereUniqueInput>;
 }
 
-export { OrganizationUpdateManyWithoutUsersInput };
+export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/UpdateUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13430,7 +13389,7 @@ class UpdateUserArgs {
   data!: UserUpdateInput;
 }
 
-export { UpdateUserArgs };
+export { UpdateUserArgs as UpdateUserArgs };
 ",
   "server/src/user/base/User.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13623,7 +13582,7 @@ class User {
   profile?: Profile | null;
 }
 
-export { User };
+export { User as User };
 ",
   "server/src/user/base/UserCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13828,7 +13787,7 @@ class UserCreateInput {
   profile?: ProfileWhereUniqueInput | null;
 }
 
-export { UserCreateInput };
+export { UserCreateInput as UserCreateInput };
 ",
   "server/src/user/base/UserCreateNestedManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13857,7 +13816,7 @@ class UserCreateNestedManyWithoutUsersInput {
   connect?: Array<UserWhereUniqueInput>;
 }
 
-export { UserCreateNestedManyWithoutUsersInput };
+export { UserCreateNestedManyWithoutUsersInput as UserCreateNestedManyWithoutUsersInput };
 ",
   "server/src/user/base/UserFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13911,7 +13870,7 @@ class UserFindManyArgs {
   take?: number;
 }
 
-export { UserFindManyArgs };
+export { UserFindManyArgs as UserFindManyArgs };
 ",
   "server/src/user/base/UserFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13933,7 +13892,7 @@ class UserFindUniqueArgs {
   where!: UserWhereUniqueInput;
 }
 
-export { UserFindUniqueArgs };
+export { UserFindUniqueArgs as UserFindUniqueArgs };
 ",
   "server/src/user/base/UserListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13990,7 +13949,7 @@ class UserListRelationFilter {
   })
   none?: UserWhereInput;
 }
-export { UserListRelationFilter };
+export { UserListRelationFilter as UserListRelationFilter };
 ",
   "server/src/user/base/UserOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -14166,7 +14125,7 @@ class UserOrderByInput {
   profileId?: SortOrder;
 }
 
-export { UserOrderByInput };
+export { UserOrderByInput as UserOrderByInput };
 ",
   "server/src/user/base/UserUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -14410,7 +14369,7 @@ class UserUpdateInput {
   profile?: ProfileWhereUniqueInput | null;
 }
 
-export { UserUpdateInput };
+export { UserUpdateInput as UserUpdateInput };
 ",
   "server/src/user/base/UserUpdateManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -14457,7 +14416,7 @@ class UserUpdateManyWithoutUsersInput {
   set?: Array<UserWhereUniqueInput>;
 }
 
-export { UserUpdateManyWithoutUsersInput };
+export { UserUpdateManyWithoutUsersInput as UserUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/UserWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -14622,7 +14581,7 @@ class UserWhereInput {
   profile?: ProfileWhereUniqueInput;
 }
 
-export { UserWhereInput };
+export { UserWhereInput as UserWhereInput };
 ",
   "server/src/user/base/UserWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -14650,7 +14609,7 @@ class UserWhereUniqueInput {
   id!: string;
 }
 
-export { UserWhereUniqueInput };
+export { UserWhereUniqueInput as UserWhereUniqueInput };
 ",
   "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
