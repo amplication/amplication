@@ -1,8 +1,7 @@
-import { EnumResourceType } from "@amplication/data-service-generator/models";
-import { appInfo } from "@amplication/data-service-generator/tests/appInfo";
-import { plugins } from "@amplication/data-service-generator/tests/constants/example-plugins";
-import entities from "@amplication/data-service-generator/tests/entities";
-import roles from "@amplication/data-service-generator/tests/roles";
+import { EnumResourceType } from "../src/models";
+import { appInfo } from "../src/tests/appInfo";
+import entities from "../src/tests/entities";
+import roles from "../src/tests/roles";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { format } from "prettier";

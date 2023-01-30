@@ -1,12 +1,12 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
-import { createLog } from "@amplication/data-service-generator";
 import { join } from "path";
 import { AMPLICATION_MODULES } from "./main";
 import {
   DynamicPackageInstallationManager,
   PackageInstallation,
-} from "./utils/DynamicPackageInstallationManager";
+} from "./utils/dynamic-installation/DynamicPackageInstallationManager";
 import { Logger } from "winston";
+import { createLog } from "./create-log";
 
 export async function dynamicPackagesInstallations(
   packages: PluginInstallation[],
