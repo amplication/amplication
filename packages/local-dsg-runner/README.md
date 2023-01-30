@@ -51,3 +51,7 @@ local-dsg-runner
 ```
 npx nx serve local-dsg-runner
 ```
+
+#### Troubleshooting issues in DSG
+
+By default, the `local-dsg-runner` automatically clean up exited continers. If you need to read the logs of a failing job, change the .env `AUTOREMOVE_CONTAINER` environment variable to `false` and the container won't be removed from Docker Desktop (or Podman Desktop) 
