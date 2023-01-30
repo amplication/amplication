@@ -46,11 +46,11 @@ export class PullRequestService {
       "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
-    const gitClientProvider = GitClientService.createProvider({
+    const gitClientService = new GitClientService({
       provider: gitProvider,
       installationId,
     });
-    const prUrl = await gitClientProvider.createPullRequest({
+    const prUrl = await gitClientService.createPullRequest({
       pullRequestMode,
       owner,
       repositoryName: repo,
