@@ -1,6 +1,6 @@
 import {
   EnumGitOrganizationType,
-  GithubFile,
+  GitFile,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -10,7 +10,7 @@ export const INSTALLATION_URL = "ExampleInstallationUrl";
 
 export const PR_HTML_URL = "ExamplePrHtmlUrl";
 
-export const GIT_HUB_FILE: GithubFile = {
+export const GIT_HUB_FILE: GitFile = {
   name: "exampleGithubFileName",
   path: "examplePath",
   content: "exampleContent",

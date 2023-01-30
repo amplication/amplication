@@ -64,7 +64,7 @@ export interface CreatePullRequest {
   base?: string | undefined;
 }
 
-export interface GithubFile {
+export interface GitFile {
   name: string | null;
   path: string | null;
   content: string;
@@ -125,7 +125,7 @@ export interface GitProvider {
   ): Promise<RemoteGitRepository>;
   deleteGitOrganization(): Promise<boolean>;
   getOrganization(): Promise<RemoteGitOrganization>;
-  getFile(file: File): Promise<GithubFile>;
+  getFile(file: File): Promise<GitFile>;
   createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs,
     files: Required<Changes["files"]>

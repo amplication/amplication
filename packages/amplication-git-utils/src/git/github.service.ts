@@ -4,7 +4,7 @@ import { App, Octokit } from "octokit";
 import {
   EnumGitOrganizationType,
   EnumPullRequestMode,
-  GithubFile,
+  GitFile,
   File,
   RemoteGitOrganization,
   RemoteGitRepos,
@@ -14,6 +14,7 @@ import {
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   CreatePullRequestArgs,
+  GitProvider,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -26,7 +27,7 @@ const GITHUB_FILE_TYPE = "file";
 
 type DirectoryItem = components["schemas"]["content-directory"][number];
 
-export class GithubService {
+export class GithubService implements GitProvider {
   private app: App;
   private appId: string;
   private privateKey: string;
@@ -252,7 +253,7 @@ export class GithubService {
     };
   }
 
-  async getFile(file: File): Promise<GithubFile> {
+  async getFile(file: File): Promise<GitFile> {
     const { owner, repositoryUrl, path, baseBranch } = file;
     const octokit = await this.getInstallationOctokit(
       this.gitProviderArgs.installationId
@@ -271,7 +272,7 @@ export class GithubService {
         // Convert base64 results to UTF-8 string
         const buff = Buffer.from(item.content, "base64");
 
-        const file: GithubFile = {
+        const file: GitFile = {
           content: buff.toString("utf-8"),
           htmlUrl: item.html_url,
           name: item.name,

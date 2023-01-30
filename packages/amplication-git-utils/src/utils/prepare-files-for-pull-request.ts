@@ -1,32 +1,12 @@
 import { join } from "path";
 import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { AMPLICATION_IGNORED_FOLDER } from "../git/git.constants";
-import { AmplicationIgnoreManger } from "./amplication-ignore-manger";
 
 export async function prepareFilesForPullRequest(
-  owner,
-  repositoryName,
   gitResourceMeta,
-  pullRequestModule
+  pullRequestModule,
+  amplicationIgnoreManger
 ): Promise<Required<Changes["files"]>> {
-  const amplicationIgnoreManger = new AmplicationIgnoreManger();
-  await amplicationIgnoreManger.init(async (fileName) => {
-    try {
-      const file = await this.getFile({
-        owner,
-        repositoryUrl: repositoryName,
-        path: fileName,
-        baseBranch: undefined, // take the default branch
-      });
-      const { content, htmlUrl, name } = file;
-      console.log(`Got ${name} file ${htmlUrl}`);
-      return content;
-    } catch (error) {
-      console.log("Repository does not have a .amplicationignore file");
-      return "";
-    }
-  });
-
   //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
   //do not override server/scripts/customSeed.ts
   const doNotOverride = [
