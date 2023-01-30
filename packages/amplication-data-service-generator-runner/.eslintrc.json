@@ -1,13 +1,26 @@
 {
   "extends": ["../../.eslintrc.json"],
-  "ignorePatterns": ["!**/*"],
+  "ignorePatterns": [
+    "!**/*",
+    "test",
+    "src/tests/__snapshots__",
+    "scripts",
+    // Static and template files should not be linted
+    "src/**/*.template.*",
+    "src/**/static/**/*",
+    // React Admin UI public files
+    "src/admin/public-files"
+  ],
+  "parserOptions": {
+    "project": "packages/amplication-data-service-generator-runner/tsconfig.*?.json",
+    "sourceType": "module"
+  },
   "overrides": [
     {
       // Templates
       "files": ["*.template.ts", "*.template.tsx"],
       "rules": {
         "@typescript-eslint/no-empty-interface": "off",
-        "import/no-unresolved": "off",
         "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/naming-convention": [
@@ -47,13 +60,6 @@
       }
     },
     {
-      // Static files
-      "files": ["**/static/**/*.ts"],
-      "rules": {
-        "import/no-unresolved": "off"
-      }
-    },
-    {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {}
     },
@@ -67,12 +73,12 @@
     }
   ],
   "rules": {
+    "no-case-declarations": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "import/no-cycle": "off",
-    "import/no-unresolved": "error",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/naming-convention": [
       "error",
