@@ -1,7 +1,7 @@
-import { Paywall, BillingPeriod } from "@stigg/react-sdk";
+import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import * as models from "../models";
 import {
   Button,
@@ -10,7 +10,7 @@ import {
   Modal,
 } from "@amplication/design-system";
 import "./PurchasePage.scss";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
 import { ApolloError, useMutation } from "@apollo/client";
@@ -56,17 +56,36 @@ const selectedPlanAction = {
   },
 };
 
+const UNKNOWN = "unknown";
+
+const getPlanPrice = (
+  selectedBillingPeriod: BillingPeriod,
+  pricePoints: Price[]
+) => {
+  if (!pricePoints.length) return UNKNOWN;
+
+  return pricePoints.reduce((price: string, pricePoint: Price) => {
+    if (pricePoint.billingPeriod === selectedBillingPeriod)
+      price = `${pricePoint.amount}${pricePoint.currency}`;
+
+    return price;
+  }, UNKNOWN);
+};
+
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
   const { trackEvent } = useTracking();
   const history = useHistory();
-  const backUrl = () => {
+  const backUrl = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.PricingPageClose,
+    });
     if (history.location.state && history.location.state.source)
       return history.push("/");
 
     history.action !== "POP" ? history.goBack() : history.push("/");
-  };
+  }, [history]);
   const { currentWorkspace } = useContext(AppContext);
   const [provisionSubscription, { loading: provisionSubscriptionLoading }] =
     useMutation<DType>(PROVISION_SUBSCRIPTION, {
@@ -136,11 +155,13 @@ const PurchasePage = (props) => {
           }) => {
             trackEvent({
               eventName: AnalyticsEventNames.PricingPageCTAClick,
-              currentPlan: plan.basePlan.displayName,
+              currentPlan: currentWorkspace.subscription || "Free",
               type: plan.displayName,
+              price: getPlanPrice(selectedBillingPeriod, plan.pricePoints),
               action: intentionType,
               Billing: selectedBillingPeriod,
             });
+
             selectedPlanAction[plan.id](
               props,
               currentWorkspace,
