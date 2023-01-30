@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { unsetToken } from "../../authentication/authentication";

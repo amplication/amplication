@@ -27,7 +27,7 @@ export function dispatch(event: Partial<Event>) {
   const versionObj = version ? { version } : {};
   _hsq.push([
     "trackCustomBehavioralEvent",
-    { name: eventName, properties: rest },
+    { name: eventName, properties: { ...versionObj, ...rest } },
   ]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

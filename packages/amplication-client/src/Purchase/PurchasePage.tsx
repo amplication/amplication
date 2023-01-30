@@ -1,7 +1,7 @@
 import { Paywall, BillingPeriod } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import * as models from "../models";
 import {
   Button,
