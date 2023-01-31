@@ -32,13 +32,6 @@ export interface Branch {
   sha: string;
 }
 
-export interface Commit {
-  title: string;
-  body: string;
-  base?: string | undefined;
-  head?: string | undefined;
-}
-
 export interface RemoteGitRepository {
   name: string | null;
   url: string | null;
@@ -91,32 +84,55 @@ export interface File {
 }
 
 export interface CreatePullRequestArgs {
-  pullRequestMode: EnumPullRequestMode;
   owner: string;
   repositoryName: string;
-  pullRequestModule: PullRequestModule[];
-  commit: Commit;
-  pullRequestTitle: string;
-  pullRequestBody: string;
   branchName: string;
-  gitResourceMeta: GitResourceMeta;
-}
-
-export interface CreateGitPullRequest {
-  title: string;
-  body: string;
-  head: string;
-  base?: string | undefined;
-}
-
-export interface CreateBasicPullRequestArgs {
-  owner: string;
-  repositoryName: string;
+  commitMessage: string;
   pullRequestTitle: string;
   pullRequestBody: string;
+  pullRequestMode: EnumPullRequestMode;
+  gitResourceMeta: GitResourceMeta;
+  pullRequestModule: PullRequestModule[];
+}
+
+export interface CreatePullRequestFromFiles {
+  owner: string;
+  repositoryName: string;
   branchName: string; // head
+  commitMessage: string;
+  pullRequestTitle: string;
+  pullRequestBody: string;
   files: any | any[];
-  commit: Commit;
+}
+
+export interface CreateBranchIfNotExistsArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+}
+
+export interface GetPullRequestFomBranchArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+}
+
+export interface CreatePullRequestFomBranchArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+  defaultBranchName: string;
+  pullRequestTitle: string;
+  pullRequestBody: string;
+  pullRequestUrl: string;
+}
+
+export interface CreateCommitArgs {
+  owner: string;
+  repositoryName: string;
+  commitMessage: string;
+  branchName: string;
+  changes: any | any[];
 }
 
 export interface GitProvider {
@@ -133,11 +149,18 @@ export interface GitProvider {
   deleteGitOrganization(): Promise<boolean>;
   getOrganization(): Promise<RemoteGitOrganization>;
   getFile(file: File): Promise<GitFile>;
-  createBasicPullRequest: (
-    createBasicPullRequestArgs: CreateBasicPullRequestArgs
+  createPullRequestFromFiles: (
+    createPullRequestFromFiles: CreatePullRequestFromFiles
   ) => Promise<string>;
-  createPullRequest(
-    createPullRequestArgs: CreatePullRequestArgs,
-    files: any | any[]
-  ): Promise<string>;
+  createBranchIfNotExists: (
+    createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
+  ) => Promise<Branch>;
+  createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
+  // getRepository: () => Promise<any>
+  getPullRequestForBranch: (
+    getPullRequestFomBranchArgs: GetPullRequestFomBranchArgs
+  ) => Promise<{ url: string; number: number } | undefined>;
+  createPullRequestForBranch: (
+    createPullRequestForBranch: CreatePullRequestFomBranchArgs
+  ) => Promise<string>;
 }

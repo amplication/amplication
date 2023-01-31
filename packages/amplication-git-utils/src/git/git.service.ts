@@ -59,13 +59,13 @@ export class GitClientService {
     const {
       owner,
       repositoryName,
+      branchName,
+      commitMessage,
       pullRequestTitle,
       pullRequestBody,
-      pullRequestModule,
-      gitResourceMeta,
       pullRequestMode,
-      branchName,
-      commit,
+      gitResourceMeta,
+      pullRequestModule,
     } = createPullRequestArgs;
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
@@ -76,26 +76,51 @@ export class GitClientService {
       pullRequestModule,
       amplicationIgnoreManger
     );
-    switch (pullRequestMode) {
-      case EnumPullRequestMode.Basic:
-        this.provider.createBasicPullRequest({
+
+    if (pullRequestMode === EnumPullRequestMode.Basic) {
+      return this.provider.createPullRequestFromFiles({
+        owner,
+        repositoryName,
+        branchName,
+        commitMessage,
+        pullRequestTitle,
+        pullRequestBody,
+        files,
+      });
+    }
+
+    if (pullRequestMode === EnumPullRequestMode.Accumulative) {
+      await this.provider.createBranchIfNotExists({
+        owner,
+        repositoryName,
+        branchName,
+      }),
+        await this.provider.createCommit({
           owner,
           repositoryName,
-          pullRequestTitle,
-          pullRequestBody,
+          commitMessage,
           branchName,
-          files,
-          commit,
+          changes: files,
         });
-        break;
-      case EnumPullRequestMode.Accumulative:
-        //
-        break;
-      default: {
-        throw new Error("Invalid pull request mode");
-      }
+      const { defaultBranch } = await this.provider.getRepository({
+        owner,
+        repositoryName,
+      });
+      const { url } = await this.provider.getPullRequestForBranch({
+        owner,
+        repositoryName,
+        branchName,
+      });
+      return this.provider.createPullRequestForBranch({
+        owner,
+        repositoryName,
+        pullRequestTitle,
+        pullRequestBody,
+        branchName,
+        defaultBranchName: defaultBranch,
+        pullRequestUrl: url,
+      });
     }
-    return this.provider.createPullRequest(createPullRequestArgs, files);
   }
 
   async getFile(file: File): Promise<GitFile> {
