@@ -80,11 +80,10 @@ export class AccumulativePullRequest extends BasePullRequest {
 
   private async getFirstDefaultBranchCommit(): Promise<{ sha: string }> {
     const { octokit, owner, repo } = this;
-    const { defaultBranch } = await this.getRepository();
     const firstCommit: TData = await octokit.graphql(
-      `query ($owner: String!, $repo: String!, $defaultBranch: String!) {
+      `query ($owner: String!, $repo: String!) {
       repository(name: $repo, owner: $owner) {
-        ref(qualifiedName: $defaultBranch) {
+        defaultBranchRef {
           target {
             ... on Commit {
               history(first: 1) {
@@ -105,7 +104,6 @@ export class AccumulativePullRequest extends BasePullRequest {
       {
         owner,
         repo,
-        defaultBranch,
       }
     );
     const {
@@ -126,9 +124,9 @@ export class AccumulativePullRequest extends BasePullRequest {
     const nextCursor = `${cursorPrefix} ${totalCount - 2}`;
 
     const lastCommitData: TData = await octokit.graphql(
-      `query ($owner: String!, $repo: String!, $defaultBranch: String!, $nextCursor: String!) {
+      `query ($owner: String!, $repo: String!, $nextCursor: String!) {
         repository(name: $repo, owner: $owner) {
-          ref(qualifiedName: $defaultBranch) {
+          defaultBranchRef {
             target {
               ... on Commit {
                 history(first: 1, after: $nextCursor) {
@@ -146,7 +144,7 @@ export class AccumulativePullRequest extends BasePullRequest {
           }
         }
       }`,
-      { owner, repo, defaultBranch, nextCursor }
+      { owner, repo, nextCursor }
     );
     const {
       repository: {
