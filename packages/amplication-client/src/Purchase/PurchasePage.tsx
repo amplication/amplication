@@ -41,7 +41,10 @@ const getPlanPrice = (
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
+  const { currentWorkspace, openHubSpotChat } = useContext(AppContext);
+
   const { trackEvent } = useTracking();
+
   const history = useHistory();
   const backUrl = useCallback(() => {
     trackEvent({
@@ -52,7 +55,7 @@ const PurchasePage = (props) => {
 
     history.action !== "POP" ? history.goBack() : history.push("/");
   }, [history]);
-  const { currentWorkspace } = useContext(AppContext);
+
   const [provisionSubscription, { loading: provisionSubscriptionLoading }] =
     useMutation<DType>(PROVISION_SUBSCRIPTION, {
       onCompleted: (data) => {
@@ -64,6 +67,15 @@ const PurchasePage = (props) => {
         console.log(error);
       },
     });
+
+  const handleContactUsClick = useCallback(() => {
+    openHubSpotChat();
+    trackEvent({
+      eventName: AnalyticsEventNames.ContactUsButtonClick,
+      Action: "Contact Us",
+      workspaceId: currentWorkspace.id,
+    });
+  }, [openHubSpotChat, currentWorkspace.id]);
 
   const [isLoading, setLoading] = useState(false);
 
@@ -97,11 +109,7 @@ const PurchasePage = (props) => {
       });
       switch (plan.id) {
         case "plan-amplication-enterprise":
-          window.open(
-            "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
-            "_blank",
-            "noreferrer"
-          );
+          handleContactUsClick();
           break;
         case "plan-amplication-pro":
           setLoading(true);
@@ -109,7 +117,7 @@ const PurchasePage = (props) => {
           break;
       }
     },
-    [upgradeToPro]
+    [upgradeToPro, handleContactUsClick]
   );
 
   return (
@@ -174,15 +182,11 @@ const PurchasePage = (props) => {
               do our best to help you improve your project for the community!
             </div>
           </div>
-          <Button buttonStyle={EnumButtonStyle.Primary}>
-            <a
-              target="_blank"
-              rel="noreferrer"
-              className={`${CLASS_NAME}__contact_pro_btn`}
-              href="mailto:sales@amplication.com?subject=Pro plan for Open Source project"
-            >
-              Contact us
-            </a>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleContactUsClick}
+          >
+            Contact Us
           </Button>
         </div>
         <div className={`${CLASS_NAME}__footer`}>
