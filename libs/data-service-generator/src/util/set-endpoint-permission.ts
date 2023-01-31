@@ -26,33 +26,30 @@ export function setEndpointPermissions(
       entityPermission.type === EnumEntityPermissionType.Public
   );
 
-  if (publicAction) {
-    const classMethod = getClassMethodById(classDeclaration, methodId);
-    assert(classMethod);
+  if (!publicAction) return;
 
-    if (
-      action === EnumEntityAction.Search ||
-      action === EnumEntityAction.View
-    ) {
-      removeIdentifierFromUseInterceptorDecorator(
-        classMethod,
-        ACL_FILTER_RESPONSE_INTERCEPTOR_NAME
-      );
-    }
+  const classMethod = getClassMethodById(classDeclaration, methodId);
+  assert(classMethod);
 
-    if (
-      action === EnumEntityAction.Create ||
-      action === EnumEntityAction.Update
-    ) {
-      removeIdentifierFromUseInterceptorDecorator(
-        classMethod,
-        ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME
-      );
-    }
-
-    removeDecoratorByName(classMethod, USE_ROLES_DECORATOR_NAME);
-
-    const publicDecorator = createPublicDecorator();
-    classMethod.decorators?.unshift(publicDecorator);
+  if (action === EnumEntityAction.Search || action === EnumEntityAction.View) {
+    removeIdentifierFromUseInterceptorDecorator(
+      classMethod,
+      ACL_FILTER_RESPONSE_INTERCEPTOR_NAME
+    );
   }
+
+  if (
+    action === EnumEntityAction.Create ||
+    action === EnumEntityAction.Update
+  ) {
+    removeIdentifierFromUseInterceptorDecorator(
+      classMethod,
+      ACL_VALIDATE_REQUEST_INTERCEPTOR_NAME
+    );
+  }
+
+  removeDecoratorByName(classMethod, USE_ROLES_DECORATOR_NAME);
+
+  const publicDecorator = createPublicDecorator();
+  classMethod.decorators?.unshift(publicDecorator);
 }

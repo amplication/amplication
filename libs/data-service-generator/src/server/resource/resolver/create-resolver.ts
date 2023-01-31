@@ -49,6 +49,7 @@ import {
 import { createDataMapping } from "../controller/create-data-mapping";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 import DsgContext from "../../../dsg-context";
+import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -255,6 +256,43 @@ async function createResolverBaseModule({
       )
     )
   ).flat();
+
+  const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+    {
+      methodId: templateMapping["CREATE_MUTATION"] as namedTypes.Identifier,
+      action: EnumEntityAction.Create,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["ENTITIES_QUERY"] as namedTypes.Identifier,
+      action: EnumEntityAction.Search,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["META_QUERY"] as namedTypes.Identifier,
+      action: EnumEntityAction.Search,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["ENTITY_QUERY"] as namedTypes.Identifier,
+      action: EnumEntityAction.View,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["UPDATE_MUTATION"] as namedTypes.Identifier,
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping["DELETE_MUTATION"] as namedTypes.Identifier,
+      action: EnumEntityAction.Delete,
+      entity: entity,
+    },
+  ];
+
+  methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+    setEndpointPermissions(classDeclaration, methodId, action, entity);
+  });
 
   classDeclaration.body.body.push(
     ...toManyRelationMethods,

@@ -11,6 +11,7 @@ import {
   CreateEntityControllerParams,
   CreateEntityControllerBaseParams,
   CreateEntityControllerToManyRelationMethodsParams,
+  EnumEntityAction,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 
@@ -41,7 +42,13 @@ import {
   createFieldFindManyFunctionId,
   createServiceId,
 } from "../service/create-service";
+import { setEndpointPermissions } from "libs/data-service-generator/src/util/set-endpoint-permission";
 
+export type MethodsIdsActionEntityTriplet = {
+  methodId: namedTypes.Identifier;
+  action: EnumEntityAction;
+  entity: Entity;
+};
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
 
@@ -224,6 +231,48 @@ async function createControllerBaseModule({
     relativeImportPath(moduleBasePath, entityServiceModule)
   );
 
+  const methodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+    {
+      methodId: templateMapping[
+        "CREATE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.Create,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping[
+        "FIND_MANY_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.Search,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping[
+        "FIND_ONE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.View,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping[
+        "UPDATE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: templateMapping[
+        "DELETE_ENTITY_FUNCTION"
+      ] as namedTypes.Identifier,
+      action: EnumEntityAction.Delete,
+      entity: entity,
+    },
+  ];
+
+  methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+    setEndpointPermissions(classDeclaration, methodId, action, entity);
+  });
+
   classDeclaration.body.body.push(...toManyRelationMethods);
 
   const dtoNameToPath = getDTONameToPath(DTOs);
@@ -319,12 +368,42 @@ async function createToManyRelationMethods(
 async function createToManyRelationMethodsInternal(
   eventParams: CreateEntityControllerToManyRelationMethodsParams
 ): Promise<Module[]> {
-  interpolate(eventParams.toManyFile, eventParams.toManyMapping);
+  const { toManyFile, toManyMapping, entity, field } = eventParams;
+  const { relatedEntity } = field.properties;
+
+  interpolate(toManyFile, toManyMapping);
 
   const classDeclaration = getClassDeclarationById(
     eventParams.toManyFile,
     TO_MANY_MIXIN_ID
   );
+
+  const toManyMethodsIdsActionPairs: MethodsIdsActionEntityTriplet[] = [
+    {
+      methodId: toManyMapping["FIND_MANY"],
+      action: EnumEntityAction.Search,
+      entity: relatedEntity,
+    },
+    {
+      methodId: toManyMapping["UPDATE"],
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: toManyMapping["CONNECT"],
+      action: EnumEntityAction.Update,
+      entity: entity,
+    },
+    {
+      methodId: toManyMapping["DISCONNECT"],
+      action: EnumEntityAction.Delete,
+      entity: entity,
+    },
+  ];
+
+  toManyMethodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+    setEndpointPermissions(classDeclaration, methodId, action, entity);
+  });
 
   eventParams.methods = await getMethods(classDeclaration);
 
