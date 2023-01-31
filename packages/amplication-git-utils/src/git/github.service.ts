@@ -254,15 +254,15 @@ export class GithubService implements GitProvider {
   }
 
   async getFile(file: File): Promise<GitFile> {
-    const { owner, repositoryUrl, path, baseBranch } = file;
+    const { owner, repositoryName, path, baseBranchName } = file;
     const octokit = await this.getInstallationOctokit(
       this.gitProviderArgs.installationId
     );
     const content = await octokit.rest.repos.getContent({
       owner,
-      repo: repositoryUrl,
+      repo: repositoryName,
       path,
-      ref: baseBranch ? baseBranch : undefined,
+      ref: baseBranchName ? baseBranchName : undefined,
     });
 
     if (!Array.isArray(content)) {

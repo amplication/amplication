@@ -7,7 +7,7 @@ import {
 import {
   Branch,
   Commit,
-  CreatePullRequest,
+  CreateGitPullRequest,
   RemoteGitRepository,
 } from "../../types";
 import { BasePullRequest } from "./BasePullRequest";
@@ -419,7 +419,7 @@ export class AccumulativePullRequest extends BasePullRequest {
     head,
     base,
     body,
-  }: CreatePullRequest) {
+  }: CreateGitPullRequest) {
     const { octokit, owner, repo } = this;
     const { data: pullRequest } = await octokit.rest.pulls.create({
       owner,

@@ -10,6 +10,7 @@ import {
   CreateRepositoryArgs,
   CreatePullRequestArgs,
   GitProvider,
+  EnumPullRequestMode,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -55,8 +56,13 @@ export class GitClientService {
   async createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs
   ): Promise<string> {
-    const { owner, repositoryName, pullRequestModule, gitResourceMeta } =
-      createPullRequestArgs;
+    const {
+      owner,
+      repositoryName,
+      pullRequestModule,
+      gitResourceMeta,
+      pullRequestMode,
+    } = createPullRequestArgs;
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
       repositoryName
@@ -66,6 +72,17 @@ export class GitClientService {
       pullRequestModule,
       amplicationIgnoreManger
     );
+    switch (pullRequestMode) {
+      case EnumPullRequestMode.Basic:
+        //
+        break;
+      case EnumPullRequestMode.Accumulative:
+        //
+        break;
+      default: {
+        throw new Error("Invalid pull request mode");
+      }
+    }
     return this.provider.createPullRequest(createPullRequestArgs, files);
   }
 
@@ -79,9 +96,9 @@ export class GitClientService {
       try {
         const file = await this.getFile({
           owner,
-          repositoryUrl: repositoryName,
+          repositoryName,
           path: fileName,
-          baseBranch: undefined, // take the default branch
+          baseBranchName: undefined, // take the default branch
         });
         const { content, htmlUrl, name } = file;
         console.log(`Got ${name} file ${htmlUrl}`);

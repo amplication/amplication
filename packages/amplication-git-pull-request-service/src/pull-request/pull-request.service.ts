@@ -59,7 +59,7 @@ export class PullRequestService {
       commit,
       pullRequestTitle: title,
       pullRequestBody: body,
-      head,
+      head, // amplication branch name
       gitResourceMeta,
     });
     this.logger.info("Opened a new pull request", { prUrl });

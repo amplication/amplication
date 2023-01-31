@@ -54,14 +54,6 @@ export interface RemoteGitRepos {
   currentPage: number | null;
   pageSize: number | null;
 }
-
-export interface CreatePullRequest {
-  title: string;
-  body: string;
-  head: string;
-  base?: string | undefined;
-}
-
 export interface GitFile {
   name: string | null;
   path: string | null;
@@ -93,8 +85,8 @@ export interface GetRepositoriesArgs {
 
 export interface File {
   owner: string;
-  repositoryUrl: string;
-  baseBranch: string;
+  repositoryName: string;
+  baseBranchName: string;
   path: string;
 }
 
@@ -108,6 +100,13 @@ export interface CreatePullRequestArgs {
   pullRequestBody: string;
   head: string;
   gitResourceMeta: GitResourceMeta;
+}
+
+export interface CreateGitPullRequest {
+  title: string;
+  body: string;
+  head: string;
+  base?: string | undefined;
 }
 
 export interface GitProvider {
