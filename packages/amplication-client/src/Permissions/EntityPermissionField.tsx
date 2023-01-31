@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useContext } from "react";
 import { gql, useMutation } from "@apollo/client";
-import difference from "@extra-set/difference";
 import { cloneDeep } from "lodash";
 
 import * as models from "../models";
@@ -95,8 +94,12 @@ export const EntityPermissionField = ({
 
   const handleRoleSelectionChange = useCallback(
     (newSelectedRoleIds: Set<string>) => {
-      const addedRoleIds = difference(newSelectedRoleIds, selectedRoleIds);
-      const removedRoleIds = difference(selectedRoleIds, newSelectedRoleIds);
+      const addedRoleIds = new Set(
+        [...newSelectedRoleIds].filter((x) => !selectedRoleIds.has(x))
+      );
+      const removedRoleIds = new Set(
+        [...selectedRoleIds].filter((x) => !newSelectedRoleIds.has(x))
+      );
 
       const addPermissionRoles = Array.from(addedRoleIds, (id) => {
         const permissionRole = permission.permissionRoles?.find(
