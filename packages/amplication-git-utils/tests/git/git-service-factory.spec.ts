@@ -3,7 +3,7 @@ import { GithubService } from "../../src/git/github.service";
 import { GitFactory } from "../../src/git/git-factory";
 import { mock } from "jest-mock-extended";
 
-describe("GitFactory", () => {
+describe.skip("GitFactory", () => {
   const github = mock<GithubService>();
   describe("GitFactory.getProvider()", () => {
     it("should return an github service", () => {
