@@ -6,7 +6,7 @@ export async function prepareFilesForPullRequest(
   gitResourceMeta,
   pullRequestModule,
   amplicationIgnoreManger
-): Promise<Required<Changes["files"]>> {
+): Promise<any | any[]> {
   //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
   //do not override server/scripts/customSeed.ts
   const doNotOverride = [

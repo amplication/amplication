@@ -286,7 +286,7 @@ export class GithubService implements GitProvider {
 
   async createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs,
-    files: Required<Changes["files"]>
+    files: any | any[]
   ): Promise<string> {
     const {
       pullRequestMode,

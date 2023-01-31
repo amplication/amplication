@@ -1,5 +1,3 @@
-import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
-
 export type PullRequestModule = {
   path: string;
   code: string | null;
@@ -128,6 +126,6 @@ export interface GitProvider {
   getFile(file: File): Promise<GitFile>;
   createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs,
-    files: Required<Changes["files"]>
+    files: any | any[]
   ): Promise<string>;
 }
