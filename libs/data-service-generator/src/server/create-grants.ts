@@ -1,4 +1,3 @@
-import difference from "@extra-set/difference";
 import {
   Entity,
   Role,
@@ -104,7 +103,9 @@ export function createGrants(entities: Entity[], roles: Role[]): Grant[] {
           for (const { resourceRole } of permission.permissionRoles) {
             const fields = roleToFields[resourceRole.name] || new Set();
             /** Set of fields allowed other roles */
-            const forbiddenFields = difference(fieldsWithRoles, fields);
+            const forbiddenFields = new Set(
+              [...fieldsWithRoles].filter((x) => !fields.has(x))
+            );
             const attributes = createAttributes([
               ALL_ATTRIBUTES_ALLOWED,
               ...Array.from(forbiddenFields, (field: string) =>

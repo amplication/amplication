@@ -1145,8 +1145,8 @@ input ProvisionSubscriptionInput {
   planId: String!
   billingPeriod: String!
   intentionType: String!
-  successUrl: String!
-  cancelUrl: String!
+  successUrl: String
+  cancelUrl: String
 }
 
 input ProjectCreateInput {

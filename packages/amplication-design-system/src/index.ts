@@ -157,8 +157,15 @@ export {
   EnumHorizontalRuleStyle,
 } from "./components/HorizontalRule/HorizontalRule";
 
-export { Loader } from "./components/Loader/Loader";
-export type { Props as LoaderProps } from "./components/Loader/Loader";
+export {
+  FullScreenLoader,
+  Props as FullScreenLoaderProps,
+} from "./components/Loader/FullScreenLoader";
+export {
+  Loader,
+  Props as LoaderProps,
+  AnimationType,
+} from "./components/Loader/Loader";
 
 export { CodeEditor } from "./components/CodeEditor/CodeEditor";
 export type { CodeEditorProps } from "./components/CodeEditor/CodeEditor";
