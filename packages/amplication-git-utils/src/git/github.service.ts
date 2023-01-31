@@ -15,13 +15,14 @@ import {
   CreateRepositoryArgs,
   CreatePullRequestArgs,
   GitProvider,
+  CreateBasicPullRequestArgs,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
 import { AccumulativePullRequest } from "./github/AccumulativePullRequest";
 import { BasicPullRequest } from "./github/BasicPullRequest";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
-import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
+import { createBasicPullRequestWithOctokit } from "./github/create-basic-pull-request";
 
 const GITHUB_FILE_TYPE = "file";
 
@@ -284,6 +285,38 @@ export class GithubService implements GitProvider {
     return null;
   }
 
+  async createBasicPullRequest(
+    createBasicPullRequestArgs: CreateBasicPullRequestArgs
+  ): Promise<string> {
+    const {
+      owner,
+      repositoryName,
+      pullRequestTitle,
+      pullRequestBody,
+      branchName,
+      files,
+      commit,
+    } = createBasicPullRequestArgs;
+    const myOctokit = Octokit.plugin(createPullRequest);
+    const token = await this.getInstallationAuthToken(
+      this.gitProviderArgs.installationId
+    );
+    const octokit = new myOctokit({
+      auth: token,
+    });
+
+    return createBasicPullRequestWithOctokit(
+      octokit,
+      owner,
+      repositoryName,
+      pullRequestTitle,
+      pullRequestBody,
+      branchName,
+      files,
+      commit
+    );
+  }
+
   async createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs,
     files: any | any[]
@@ -295,7 +328,7 @@ export class GithubService implements GitProvider {
       commit,
       pullRequestTitle,
       pullRequestBody,
-      head,
+      branchName,
     } = createPullRequestArgs;
 
     const myOctokit = Octokit.plugin(createPullRequest);
@@ -315,7 +348,7 @@ export class GithubService implements GitProvider {
         ).createPullRequest(
           pullRequestTitle,
           pullRequestBody,
-          head,
+          branchName,
           files,
           commit
         );
@@ -327,7 +360,7 @@ export class GithubService implements GitProvider {
         ).createPullRequest(
           pullRequestTitle,
           pullRequestBody,
-          head,
+          branchName,
           files,
           commit
         );

@@ -59,9 +59,13 @@ export class GitClientService {
     const {
       owner,
       repositoryName,
+      pullRequestTitle,
+      pullRequestBody,
       pullRequestModule,
       gitResourceMeta,
       pullRequestMode,
+      branchName,
+      commit,
     } = createPullRequestArgs;
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
@@ -74,7 +78,15 @@ export class GitClientService {
     );
     switch (pullRequestMode) {
       case EnumPullRequestMode.Basic:
-        //
+        this.provider.createBasicPullRequest({
+          owner,
+          repositoryName,
+          pullRequestTitle,
+          pullRequestBody,
+          branchName,
+          files,
+          commit,
+        });
         break;
       case EnumPullRequestMode.Accumulative:
         //

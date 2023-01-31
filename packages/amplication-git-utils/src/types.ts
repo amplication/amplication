@@ -98,7 +98,7 @@ export interface CreatePullRequestArgs {
   commit: Commit;
   pullRequestTitle: string;
   pullRequestBody: string;
-  head: string;
+  branchName: string;
   gitResourceMeta: GitResourceMeta;
 }
 
@@ -107,6 +107,16 @@ export interface CreateGitPullRequest {
   body: string;
   head: string;
   base?: string | undefined;
+}
+
+export interface CreateBasicPullRequestArgs {
+  owner: string;
+  repositoryName: string;
+  pullRequestTitle: string;
+  pullRequestBody: string;
+  branchName: string; // head
+  files: any | any[];
+  commit: Commit;
 }
 
 export interface GitProvider {
@@ -123,6 +133,9 @@ export interface GitProvider {
   deleteGitOrganization(): Promise<boolean>;
   getOrganization(): Promise<RemoteGitOrganization>;
   getFile(file: File): Promise<GitFile>;
+  createBasicPullRequest: (
+    createBasicPullRequestArgs: CreateBasicPullRequestArgs
+  ) => Promise<string>;
   createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs,
     files: any | any[]
