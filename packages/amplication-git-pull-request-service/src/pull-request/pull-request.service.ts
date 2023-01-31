@@ -51,16 +51,16 @@ export class PullRequestService {
       installationId,
     });
     const prUrl = await gitClientService.createPullRequest({
-      pullRequestMode,
       owner,
       repositoryName: repo,
-      pullRequestModule:
-        PullRequestService.removeFirstSlashFromPath(changedFiles),
-      commit,
+      branchName: head,
+      commitMessage: commit.body,
       pullRequestTitle: title,
       pullRequestBody: body,
-      head, // amplication branch name
+      pullRequestMode,
       gitResourceMeta,
+      pullRequestModule:
+        PullRequestService.removeFirstSlashFromPath(changedFiles),
     });
     this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;
