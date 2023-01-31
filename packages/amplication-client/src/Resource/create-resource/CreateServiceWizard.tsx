@@ -5,6 +5,7 @@ import {
   Modal,
   Snackbar,
   Loader,
+  AnimationType,
 } from "@amplication/design-system";
 import React, {
   MutableRefObject,
@@ -109,7 +110,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass }) => {
             </div>
           </div>
           <div className={`${moduleClass}__processing__loader`}>
-            <Loader fullScreen={false} />
+            <Loader animationType={AnimationType.Full} />
           </div>
 
           <div className={`${moduleClass}__processing__tagline`}>
