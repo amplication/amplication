@@ -63,7 +63,7 @@ const EntityField = () => {
   });
 
   const entityField = data?.entity.fields?.[0];
-  const entityDisplayName = data?.entity.displayName;
+  const entityRecord = data?.entity;
 
   const [updateEntityField, { error: updateError }] = useMutation<UpdateData>(
     UPDATE_ENTITY_FIELD,
@@ -114,7 +114,7 @@ const EntityField = () => {
         }
       }
 
-      const { id, ...rest } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
+      const { id, permanentId, ...rest } = data; // eslint-disable-line @typescript-eslint/no-unused-vars
       updateEntityField({
         variables: {
           where: {
@@ -132,7 +132,7 @@ const EntityField = () => {
       if (!lookupPendingData) {
         throw new Error("lookupPendingData must be defined");
       }
-      const { id, ...rest } = lookupPendingData; // eslint-disable-line @typescript-eslint/no-unused-vars
+      const { id, permanentId, ...rest } = lookupPendingData; // eslint-disable-line @typescript-eslint/no-unused-vars
       updateEntityField({
         variables: {
           where: {
@@ -194,7 +194,7 @@ const EntityField = () => {
             onSubmit={handleSubmit}
             defaultValues={defaultValues}
             resourceId={resource}
-            entityDisplayName={entityDisplayName || ""}
+            entity={entityRecord}
           />
         </>
       )}
@@ -236,6 +236,7 @@ const GET_ENTITY_FIELD = gql`
         unique
         searchable
         description
+        permanentId
       }
     }
   }

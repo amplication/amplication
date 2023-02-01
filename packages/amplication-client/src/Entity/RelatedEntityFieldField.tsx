@@ -1,8 +1,9 @@
 import { gql, useQuery } from "@apollo/client";
 import { useFormikContext } from "formik";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as models from "../models";
 import { EntityRelationFieldsChart } from "./EntityRelationFieldsChart";
+import { HorizontalRule } from "@amplication/design-system";
 import "./RelatedEntityFieldField.scss";
 
 const CLASS_NAME = "related-entity-field-field";
@@ -13,7 +14,9 @@ type Props = {
 
 const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
   const formik = useFormikContext<models.EntityField>();
-
+  const [entityField, setEntityField] = useState<models.EntityField | null>(
+    null
+  );
   const { data } = useQuery<{ entity: models.Entity }>(
     GET_ENTITY_FIELD_BY_PERMANENT_ID,
     {
@@ -24,27 +27,35 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
     }
   );
 
-  const relatedField =
-    data &&
-    data.entity &&
-    data.entity.fields &&
-    data.entity.fields.length &&
-    data.entity.fields[0];
+  useEffect(() => {
+    if (!data) return;
+
+    const relatedField =
+      (data.entity?.fields &&
+        data.entity.fields.length &&
+        data.entity.fields[0]) ||
+      undefined;
+
+    setEntityField(relatedField);
+  }, [data, formik.values]);
 
   return (
     <div className={CLASS_NAME}>
-      {data && relatedField && (
-        <EntityRelationFieldsChart
-          fixInPlace={false}
-          resourceId={data.entity.resourceId}
-          entityId={data.entity.id}
-          field={formik.values}
-          entityName={entityDisplayName}
-          relatedField={relatedField}
-          relatedEntityName={data.entity.displayName}
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          onSubmit={() => {}}
-        />
+      {entityField && (
+        <>
+          <HorizontalRule />
+          <EntityRelationFieldsChart
+            fixInPlace={false}
+            resourceId={data.entity.resourceId}
+            entityId={data.entity.id}
+            field={formik.values}
+            entityName={entityDisplayName}
+            relatedField={entityField}
+            relatedEntityName={data.entity.displayName}
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onSubmit={() => {}}
+          />
+        </>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 {
   "name": "amplication",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "scripts": {
     "postinstall": "nx run-many --target=install",
     "format:check": "npx nx format:check --all",
@@ -10,6 +10,7 @@
     "clean": "nx clear-cache",
     "graphql-codegen": "graphql-codegen",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
+    "docker:dev:cleanup": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose down",
     "db:migrate:deploy": "nx run-many --target=db:migrate:deploy",
     "prepare": "husky install",
     "precommit": "lint-staged --relative",
@@ -28,7 +29,6 @@
     "@codebrew/nestjs-storage": "^0.1.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@extra-set/difference": "^2.2.11",
     "@google-cloud/cloudbuild": "^2.6.0",
     "@google-cloud/secret-manager": "^3.12.0",
     "@google-cloud/storage": "^5.20.5",

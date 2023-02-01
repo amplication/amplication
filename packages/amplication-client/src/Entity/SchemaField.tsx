@@ -7,13 +7,15 @@ import RelationAllowMultipleField from "../Components/RelationAllowMultipleField
 import { Schema } from "@amplication/code-gen-types";
 import OptionSet from "../Entity/OptionSet";
 import { JSONSchema7 } from "json-schema";
+import RelationFkHolderField from "./RelationFkHolderField";
+import * as models from "../models";
 
 type Props = {
   propertyName: string;
   propertySchema: Schema;
   isDisabled?: boolean;
   resourceId: string;
-  entityDisplayName: string;
+  entity: models.Entity;
   isSystemData?: boolean;
 };
 
@@ -21,7 +23,7 @@ export const SchemaField = ({
   propertyName,
   propertySchema,
   resourceId,
-  entityDisplayName,
+  entity,
 }: Props) => {
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
@@ -80,16 +82,25 @@ export const SchemaField = ({
             />
           );
         }
+        case "#/definitions/RelationFkHolder": {
+          return (
+            <RelationFkHolderField
+              entity={entity}
+              label={label}
+              name={fieldName}
+            />
+          );
+        }
         case "#/definitions/EntityFieldId": {
           return (
-            <RelatedEntityFieldField entityDisplayName={entityDisplayName} />
+            <RelatedEntityFieldField entityDisplayName={entity.displayName} />
           );
         }
         case "#/definitions/RelationAllowMultiple": {
           return (
             <RelationAllowMultipleField
               fieldName={fieldName}
-              entityDisplayName={entityDisplayName}
+              entityDisplayName={entity.displayName}
             />
           );
         }
