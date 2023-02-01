@@ -34,12 +34,12 @@ export async function prepareFilesForPullRequest(
     if (amplicationIgnoreManger.isIgnored(module.path)) {
       return {
         file: join(AMPLICATION_IGNORED_FOLDER, module.path),
-        content: module.code,
+        content: module.content,
       };
     }
     // Deleted file
-    if (module.code === null) {
-      return { path: module.path, content: module.code };
+    if (module.content === null) {
+      return { path: module.path, content: module.content };
     }
     // Regex ignored file
     if (
@@ -51,12 +51,12 @@ export async function prepareFilesForPullRequest(
         // do not create the file if it already exist
         if (exists) return null;
 
-        return module.code;
+        return module.content;
       };
       return { path, content };
     }
     // Regular file
-    return { path: module.path, content: module.code };
+    return { path: module.path, content: module.content };
   });
   return files;
 }
