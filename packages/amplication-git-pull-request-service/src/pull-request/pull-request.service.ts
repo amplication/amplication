@@ -1,7 +1,7 @@
 import {
   EnumPullRequestMode,
   GitClientService,
-  PullRequestModule,
+  File,
 } from "@amplication/git-utils";
 import {
   AmplicationLogger,
@@ -59,16 +59,13 @@ export class PullRequestService {
       pullRequestBody: body,
       pullRequestMode,
       gitResourceMeta,
-      pullRequestModule:
-        PullRequestService.removeFirstSlashFromPath(changedFiles),
+      files: PullRequestService.removeFirstSlashFromPath(changedFiles),
     });
     this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
 
-  private static removeFirstSlashFromPath(
-    changedFiles: PullRequestModule[]
-  ): PullRequestModule[] {
+  private static removeFirstSlashFromPath(changedFiles: File[]): File[] {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });
