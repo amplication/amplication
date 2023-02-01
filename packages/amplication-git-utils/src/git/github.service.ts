@@ -352,13 +352,15 @@ export class GithubService implements GitProvider {
       owner,
       repositoryName
     );
-    const refs = await this.getBranch(owner, repositoryName, branchName);
-
-    if (refs.sha !== sha) {
-      return this.createBranch(owner, repositoryName, branchName, sha);
+    const isBranchExist = await this.isBranchExist(
+      owner,
+      repositoryName,
+      branchName
+    );
+    if (!isBranchExist) {
+      return this.getBranch(owner, repositoryName, branchName);
     }
-
-    return refs;
+    return this.createBranch(owner, repositoryName, branchName, sha);
   }
 
   async createCommit({
@@ -480,6 +482,19 @@ export class GithubService implements GitProvider {
       base: defaultBranchName,
     });
     return pullRequest.html_url;
+  }
+
+  private async isBranchExist(
+    owner: string,
+    repositoryName: string,
+    branch: string
+  ): Promise<boolean> {
+    try {
+      const refs = await this.getBranch(owner, repositoryName, branch);
+      return Boolean(refs);
+    } catch (error) {
+      return false;
+    }
   }
 
   private async getBranch(
