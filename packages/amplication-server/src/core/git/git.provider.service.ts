@@ -45,7 +45,9 @@ export class GitProviderService {
       page: args.page,
     };
     const gitProviderArgs = { provider: args.gitProvider, installationId };
-    const gitClientService = new GitClientService(gitProviderArgs);
+    const gitClientService = await new GitClientService().create(
+      gitProviderArgs
+    );
     return gitClientService.getRepositories(paginationArgs);
   }
 
@@ -70,7 +72,9 @@ export class GitProviderService {
       installationId: organization.installationId,
       provider: args.gitProvider,
     };
-    const gitClientService = new GitClientService(gitProviderArgs);
+    const gitClientService = await new GitClientService().create(
+      gitProviderArgs
+    );
     const remoteRepository = await gitClientService.createRepository(
       repository
     );
@@ -242,10 +246,11 @@ export class GitProviderService {
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
-    const gitClientService = new GitClientService({
+    const gitClientService = await new GitClientService().create({
       provider: gitProvider,
       installationId,
     });
+
     const gitRemoteOrganization = await gitClientService.getOrganization();
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
@@ -303,7 +308,7 @@ export class GitProviderService {
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { gitProvider, workspaceId } = args.data;
-    const gitClientService = new GitClientService({
+    const gitClientService = await new GitClientService().create({
       provider: gitProvider,
       installationId: null,
     });
@@ -318,7 +323,7 @@ export class GitProviderService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
-    const gitClientService = new GitClientService({
+    const gitClientService = await new GitClientService().create({
       provider: gitProvider,
       installationId,
     });
