@@ -43,10 +43,6 @@ export class GithubService implements GitProvider {
   private octokit: Octokit;
 
   constructor(private readonly gitProviderArgs: GitProviderArgs) {
-    this.init();
-  }
-
-  init(): void {
     const {
       GITHUB_APP_INSTALLATION_URL,
       GITHUB_APP_APP_ID,
@@ -62,18 +58,14 @@ export class GithubService implements GitProvider {
       appId: this.appId,
       privateKey,
     });
-
-    this.createOctokitToken();
   }
 
-  private async createOctokitToken() {
-    const myOctokit = Octokit.plugin(createPullRequest);
-    const token = await this.getInstallationAuthToken(
-      this.gitProviderArgs.installationId
-    );
-    this.octokit = new myOctokit({
-      auth: token,
-    });
+  async init(): Promise<void> {
+    if (this.gitProviderArgs.installationId) {
+      this.octokit = await this.getInstallationOctokit(
+        this.gitProviderArgs.installationId
+      );
+    }
   }
 
   private getFormattedPrivateKey(privateKey: string): string {
@@ -104,10 +96,10 @@ export class GithubService implements GitProvider {
     return await this.app.getInstallationOctokit(installationIdNumber);
   }
 
-  private static async getOrganizationReposWithOctokit(
-    octokit: Octokit
-  ): Promise<RemoteGitRepository[]> {
-    const results = await octokit.request("GET /installation/repositories");
+  private async getOrganizationRepositories(): Promise<RemoteGitRepository[]> {
+    const results = await this.octokit.request(
+      "GET /installation/repositories"
+    );
     return results.data.repositories.map((repo) => ({
       name: repo.name,
       url: repo.html_url,
@@ -118,20 +110,18 @@ export class GithubService implements GitProvider {
     }));
   }
 
-  private static async isRepoExistWithOctokit(
-    octokit: Octokit,
+  private async isRepositoryInOrganizationRepositories(
     name: string
   ): Promise<boolean> {
-    const repos = await GithubService.getOrganizationReposWithOctokit(octokit);
+    const repos = await this.getOrganizationRepositories();
     return repos.map((repo) => repo.name).includes(name);
   }
 
-  private static async getReposWithOctokitAndPagination(
-    octokit: Octokit,
+  private async getRepositoriesWithPagination(
     limit = 10,
     page = 1
   ): Promise<RemoteGitRepos> {
-    const results = await octokit.request(
+    const results = await this.octokit.request(
       `GET /installation/repositories?per_page=${limit}&page=${page}`
     );
     const repos = results.data.repositories.map((repo) => ({
@@ -186,14 +176,7 @@ export class GithubService implements GitProvider {
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
     const { limit, page } = getRepositoriesArgs;
-    const octokit = await this.getInstallationOctokit(
-      this.gitProviderArgs.installationId
-    );
-    return await GithubService.getReposWithOctokitAndPagination(
-      octokit,
-      limit,
-      page
-    );
+    return await this.getRepositoriesWithPagination(limit, page);
   }
 
   async createRepository(
@@ -206,19 +189,14 @@ export class GithubService implements GitProvider {
       throw new Error(UNSUPPORTED_GIT_ORGANIZATION_TYPE);
     }
 
-    const octokit = await this.getInstallationOctokit(
-      this.gitProviderArgs.installationId
-    );
-
-    const exists: boolean = await GithubService.isRepoExistWithOctokit(
-      octokit,
+    const exists: boolean = await this.isRepositoryInOrganizationRepositories(
       repositoryName
     );
     if (exists) {
       return null;
     }
 
-    const { data: repo } = await octokit.rest.repos.createInOrg({
+    const { data: repo } = await this.octokit.rest.repos.createInOrg({
       name: repositoryName,
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -237,15 +215,13 @@ export class GithubService implements GitProvider {
   }
 
   async deleteGitOrganization(): Promise<boolean> {
-    const octokit = await this.getInstallationOctokit(
-      this.gitProviderArgs.installationId
-    );
-    const deleteInstallationRes = await octokit.rest.apps.deleteInstallation({
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: ConverterUtil.convertToNumber(
-        this.gitProviderArgs.installationId
-      ),
-    });
+    const deleteInstallationRes =
+      await this.octokit.rest.apps.deleteInstallation({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        installation_id: ConverterUtil.convertToNumber(
+          this.gitProviderArgs.installationId
+        ),
+      });
 
     if (deleteInstallationRes.status != 204) {
       return false;
@@ -255,10 +231,7 @@ export class GithubService implements GitProvider {
   }
 
   async getOrganization(): Promise<RemoteGitOrganization> {
-    const octokit = await this.getInstallationOctokit(
-      this.gitProviderArgs.installationId
-    );
-    const gitRemoteOrganization = await octokit.rest.apps.getInstallation({
+    const gitRemoteOrganization = await this.octokit.rest.apps.getInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
       installation_id: ConverterUtil.convertToNumber(
         this.gitProviderArgs.installationId
@@ -274,10 +247,8 @@ export class GithubService implements GitProvider {
 
   async getFile(file: GetFileArgs): Promise<GitFile> {
     const { owner, repositoryName, path, baseBranchName } = file;
-    const octokit = await this.getInstallationOctokit(
-      this.gitProviderArgs.installationId
-    );
-    const content = await octokit.rest.repos.getContent({
+
+    const content = await this.octokit.rest.repos.getContent({
       owner,
       repo: repositoryName,
       path,
@@ -316,15 +287,16 @@ export class GithubService implements GitProvider {
       commitMessage,
     } = createPullRequestFromFilesArgs;
     // We are not using this.octokit, instead we are using a local octokit client because we need the plugin
-    const myOctokit = Octokit.plugin(createPullRequest);
+    const octokitWithPlugins = Octokit.plugin(createPullRequest);
     const token = await this.getInstallationAuthToken(
       this.gitProviderArgs.installationId
     );
-    const octokit = new myOctokit({
+    const octokit = new octokitWithPlugins({
       auth: token,
     });
 
-    const gitHubFils = this.convertFilesToGitHubFiles(files);
+    const gitHubFiles = this.convertFilesToGitHubFiles(files);
+    console.warn("files", files);
     const pr = await octokit.createPullRequest({
       owner,
       repo: repositoryName,
@@ -335,7 +307,7 @@ export class GithubService implements GitProvider {
       changes: [
         {
           /* optional: if `files` is not passed, an empty commit is created instead */
-          files: gitHubFils,
+          files: gitHubFiles,
           commit: commitMessage,
         },
       ],
@@ -502,6 +474,9 @@ export class GithubService implements GitProvider {
     repositoryName: string,
     branchName: string
   ): Promise<Branch> {
+    if (!branchName) {
+      throw new Error("Branch name is required");
+    }
     const { data: ref } = await this.octokit.rest.git.getRef({
       owner,
       repo: repositoryName,

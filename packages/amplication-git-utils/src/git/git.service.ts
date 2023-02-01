@@ -19,8 +19,9 @@ import { GitFactory } from "./git-factory";
 export class GitClientService {
   private provider: GitProvider;
 
-  constructor(gitProviderArgs: GitProviderArgs) {
-    this.provider = GitFactory.getProvider(gitProviderArgs);
+  async create(gitProviderArgs: GitProviderArgs): Promise<GitClientService> {
+    this.provider = await GitFactory.getProvider(gitProviderArgs);
+    return this;
   }
 
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -71,6 +72,7 @@ export class GitClientService {
       owner,
       repositoryName
     );
+    // console.log("files before", files);
     const preparedFiles = await prepareFilesForPullRequest(
       gitResourceMeta,
       files,
@@ -78,6 +80,7 @@ export class GitClientService {
     );
 
     if (pullRequestMode === EnumPullRequestMode.Basic) {
+      console.log(pullRequestMode, "pullRequestMode");
       return this.provider.createPullRequestFromFiles({
         owner,
         repositoryName,

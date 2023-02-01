@@ -136,6 +136,7 @@ export interface CreateCommitArgs {
 }
 
 export interface GitProvider {
+  init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
