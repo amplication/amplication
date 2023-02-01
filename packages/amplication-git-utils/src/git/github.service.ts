@@ -470,21 +470,16 @@ export class GithubService implements GitProvider {
     pullRequestTitle,
     pullRequestBody,
     defaultBranchName,
-    pullRequestUrl,
   }: CreatePullRequestForBranchArgs): Promise<string> {
-    if (pullRequestUrl) {
-      const { data: pullRequest } = await this.octokit.rest.pulls.create({
-        owner,
-        repo: repositoryName,
-        title: pullRequestTitle,
-        body: pullRequestBody,
-        head: branchName,
-        base: defaultBranchName,
-      });
-      return pullRequest.html_url;
-    }
-    console.info(`The PR already exists, ${pullRequestUrl}`);
-    return pullRequestUrl;
+    const { data: pullRequest } = await this.octokit.rest.pulls.create({
+      owner,
+      repo: repositoryName,
+      title: pullRequestTitle,
+      body: pullRequestBody,
+      head: branchName,
+      base: defaultBranchName,
+    });
+    return pullRequest.html_url;
   }
 
   private async getBranch(

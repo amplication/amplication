@@ -125,7 +125,6 @@ export interface CreatePullRequestForBranchArgs {
   defaultBranchName: string;
   pullRequestTitle: string;
   pullRequestBody: string;
-  pullRequestUrl: string;
 }
 
 export interface CreateCommitArgs {

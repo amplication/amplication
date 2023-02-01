@@ -111,15 +111,17 @@ export class GitClientService {
         repositoryName,
         branchName,
       });
-      return this.provider.createPullRequestForBranch({
-        owner,
-        repositoryName,
-        pullRequestTitle,
-        pullRequestBody,
-        branchName,
-        defaultBranchName: defaultBranch,
-        pullRequestUrl: url,
-      });
+      if (!url) {
+        return this.provider.createPullRequestForBranch({
+          owner,
+          repositoryName,
+          pullRequestTitle,
+          pullRequestBody,
+          branchName,
+          defaultBranchName: defaultBranch,
+        });
+      }
+      return url;
     }
   }
 
