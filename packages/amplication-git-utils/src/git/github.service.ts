@@ -4,7 +4,6 @@ import { App, Octokit } from "octokit";
 import {
   EnumGitOrganizationType,
   GitFile,
-  File,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -13,12 +12,14 @@ import {
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   GitProvider,
-  CreatePullRequestFromFiles,
+  CreatePullRequestFromFilesArgs,
   Branch,
   CreateBranchIfNotExistsArgs,
   CreateCommitArgs,
-  GetPullRequestFomBranchArgs,
-  CreatePullRequestFomBranchArgs,
+  GetPullRequestForBranchArgs,
+  CreatePullRequestForBranchArgs,
+  GetFileArgs,
+  File,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -271,7 +272,7 @@ export class GithubService implements GitProvider {
     };
   }
 
-  async getFile(file: File): Promise<GitFile> {
+  async getFile(file: GetFileArgs): Promise<GitFile> {
     const { owner, repositoryName, path, baseBranchName } = file;
     const octokit = await this.getInstallationOctokit(
       this.gitProviderArgs.installationId
@@ -303,7 +304,7 @@ export class GithubService implements GitProvider {
   }
 
   async createPullRequestFromFiles(
-    createPullRequestFromFiles: CreatePullRequestFromFiles
+    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ): Promise<string> {
     const {
       owner,
@@ -313,7 +314,7 @@ export class GithubService implements GitProvider {
       branchName,
       files,
       commitMessage,
-    } = createPullRequestFromFiles;
+    } = createPullRequestFromFilesArgs;
     const myOctokit = Octokit.plugin(createPullRequest);
     const token = await this.getInstallationAuthToken(
       this.gitProviderArgs.installationId
@@ -322,6 +323,7 @@ export class GithubService implements GitProvider {
       auth: token,
     });
 
+    const gitHubFils = this.convertFilesToGitHubFiles(files);
     const pr = await octokit.createPullRequest({
       owner,
       repo: repositoryName,
@@ -332,7 +334,7 @@ export class GithubService implements GitProvider {
       changes: [
         {
           /* optional: if `files` is not passed, an empty commit is created instead */
-          files: files,
+          files: gitHubFils,
           commit: commitMessage,
         },
       ],
@@ -363,8 +365,9 @@ export class GithubService implements GitProvider {
     repositoryName,
     commitMessage,
     branchName,
-    changes,
+    files,
   }: CreateCommitArgs): Promise<void> {
+    const gitHubFils = this.convertFilesToGitHubFiles(files);
     const lastCommit = await this.getLastCommit(
       owner,
       repositoryName,
@@ -382,7 +385,7 @@ export class GithubService implements GitProvider {
       repositoryName,
       lastCommit.sha,
       lastCommit.commit.tree.sha,
-      changes
+      gitHubFils
     );
 
     console.info(`Created tree for for ${owner}/${repositoryName}`);
@@ -411,7 +414,7 @@ export class GithubService implements GitProvider {
     owner,
     repositoryName,
     branchName,
-  }: GetPullRequestFomBranchArgs): Promise<
+  }: GetPullRequestForBranchArgs): Promise<
     { url: string; number: number } | undefined
   > {
     const branchInfo: {
@@ -467,7 +470,7 @@ export class GithubService implements GitProvider {
     pullRequestBody,
     defaultBranchName,
     pullRequestUrl,
-  }: CreatePullRequestFomBranchArgs): Promise<string> {
+  }: CreatePullRequestForBranchArgs): Promise<string> {
     if (pullRequestUrl) {
       const { data: pullRequest } = await this.octokit.rest.pulls.create({
         owner,
@@ -767,6 +770,13 @@ export class GithubService implements GitProvider {
       mode: mode,
       sha: blobSha,
     };
+  }
+
+  private convertFilesToGitHubFiles(files: File[]): Required<Changes["files"]> {
+    return files.reduce((acc, file) => {
+      acc[file.path] = file.content;
+      return acc;
+    }, {} as Required<Changes["files"]>);
   }
 }
 

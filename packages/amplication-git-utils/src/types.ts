@@ -1,8 +1,3 @@
-export type PullRequestModule = {
-  path: string;
-  code: string | null;
-};
-
 export enum EnumPullRequestMode {
   Basic = "Basic",
   Accumulative = "Accumulative",
@@ -47,6 +42,12 @@ export interface RemoteGitRepos {
   currentPage: number | null;
   pageSize: number | null;
 }
+
+export type File = {
+  path: string;
+  content: string | null;
+};
+
 export interface GitFile {
   name: string | null;
   path: string | null;
@@ -76,7 +77,7 @@ export interface GetRepositoriesArgs {
   page: number;
 }
 
-export interface File {
+export interface GetFileArgs {
   owner: string;
   repositoryName: string;
   baseBranchName: string;
@@ -92,17 +93,17 @@ export interface CreatePullRequestArgs {
   pullRequestBody: string;
   pullRequestMode: EnumPullRequestMode;
   gitResourceMeta: GitResourceMeta;
-  pullRequestModule: PullRequestModule[];
+  files: File[];
 }
 
-export interface CreatePullRequestFromFiles {
+export interface CreatePullRequestFromFilesArgs {
   owner: string;
   repositoryName: string;
   branchName: string; // head
   commitMessage: string;
   pullRequestTitle: string;
   pullRequestBody: string;
-  files: any | any[];
+  files: File[];
 }
 
 export interface CreateBranchIfNotExistsArgs {
@@ -111,13 +112,13 @@ export interface CreateBranchIfNotExistsArgs {
   branchName: string;
 }
 
-export interface GetPullRequestFomBranchArgs {
+export interface GetPullRequestForBranchArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
 }
 
-export interface CreatePullRequestFomBranchArgs {
+export interface CreatePullRequestForBranchArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
@@ -132,7 +133,7 @@ export interface CreateCommitArgs {
   repositoryName: string;
   commitMessage: string;
   branchName: string;
-  changes: any | any[];
+  files: File[];
 }
 
 export interface GitProvider {
@@ -148,9 +149,9 @@ export interface GitProvider {
   ): Promise<RemoteGitRepository>;
   deleteGitOrganization(): Promise<boolean>;
   getOrganization(): Promise<RemoteGitOrganization>;
-  getFile(file: File): Promise<GitFile>;
+  getFile(file: GetFileArgs): Promise<GitFile>;
   createPullRequestFromFiles: (
-    createPullRequestFromFiles: CreatePullRequestFromFiles
+    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ) => Promise<string>;
   createBranchIfNotExists: (
     createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
@@ -158,9 +159,9 @@ export interface GitProvider {
   createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
   // getRepository: () => Promise<any>
   getPullRequestForBranch: (
-    getPullRequestFomBranchArgs: GetPullRequestFomBranchArgs
+    getPullRequestForBranchArgs: GetPullRequestForBranchArgs
   ) => Promise<{ url: string; number: number } | undefined>;
   createPullRequestForBranch: (
-    createPullRequestForBranch: CreatePullRequestFomBranchArgs
+    createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
   ) => Promise<string>;
 }

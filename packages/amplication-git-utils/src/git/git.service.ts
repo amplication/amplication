@@ -4,13 +4,13 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  File,
   GetRepositoryArgs,
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   CreatePullRequestArgs,
   GitProvider,
   EnumPullRequestMode,
+  GetFileArgs,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -65,15 +65,15 @@ export class GitClientService {
       pullRequestBody,
       pullRequestMode,
       gitResourceMeta,
-      pullRequestModule,
+      files,
     } = createPullRequestArgs;
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
       repositoryName
     );
-    const files = await prepareFilesForPullRequest(
+    const preparedFiles = await prepareFilesForPullRequest(
       gitResourceMeta,
-      pullRequestModule,
+      files,
       amplicationIgnoreManger
     );
 
@@ -85,7 +85,7 @@ export class GitClientService {
         commitMessage,
         pullRequestTitle,
         pullRequestBody,
-        files,
+        files: preparedFiles,
       });
     }
 
@@ -100,7 +100,7 @@ export class GitClientService {
           repositoryName,
           commitMessage,
           branchName,
-          changes: files,
+          files: preparedFiles,
         });
       const { defaultBranch } = await this.provider.getRepository({
         owner,
@@ -123,7 +123,7 @@ export class GitClientService {
     }
   }
 
-  async getFile(file: File): Promise<GitFile> {
+  async getFile(file: GetFileArgs): Promise<GitFile> {
     return this.provider.getFile(file);
   }
 
