@@ -315,6 +315,7 @@ export class GithubService implements GitProvider {
       files,
       commitMessage,
     } = createPullRequestFromFilesArgs;
+    // We are not using this.octokit, instead we are using a local octokit client because we need the plugin
     const myOctokit = Octokit.plugin(createPullRequest);
     const token = await this.getInstallationAuthToken(
       this.gitProviderArgs.installationId
