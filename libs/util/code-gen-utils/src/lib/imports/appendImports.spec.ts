@@ -13,6 +13,7 @@ const {
 } = builders;
 describe("Testing the functionality of append imports", () => {
   it("should append the imports to the end of the imports section of a typescript file", () => {
+    // ARRANGE
     const file: namedTypes.File = builders.file(
       program([
         importDeclaration(
@@ -31,6 +32,8 @@ describe("Testing the functionality of append imports", () => {
         ]),
       ])
     );
+
+    // ACT
     appendImports(file, [
       importDeclaration(
         [importSpecifier(identifier("ofek"))],
@@ -38,6 +41,8 @@ describe("Testing the functionality of append imports", () => {
       ),
     ]);
     const code = print(file).code;
+
+    // ASSERT
     expect(code).toBe(
       `import { first } from "import";
 import { second } from "import";
@@ -46,6 +51,7 @@ const a = 1;`
     );
   });
   it("should put the import in the start of the file if there are no imports", () => {
+    // ARRANGE
     const file: namedTypes.File = builders.file(
       program([
         variableDeclaration("const", [
@@ -56,6 +62,8 @@ const a = 1;`
         ]),
       ])
     );
+
+    // ACT
     appendImports(file, [
       importDeclaration(
         [importSpecifier(identifier("ofek"))],
@@ -63,6 +71,8 @@ const a = 1;`
       ),
     ]);
     const code = print(file).code;
+
+    // ASSERT
     expect(code).toBe(
       `import { ofek } from "test";
 const a = 1;`
