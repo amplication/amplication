@@ -32,16 +32,14 @@ export async function prepareFilesForPullRequest(
   const files: File[] = pullRequestModule.map((module) => {
     // ignored file
     if (amplicationIgnoreManger.isIgnored(module.path)) {
-      return [
-        {
-          file: join(AMPLICATION_IGNORED_FOLDER, module.path),
-          content: module.code,
-        },
-      ];
+      return {
+        file: join(AMPLICATION_IGNORED_FOLDER, module.path),
+        content: module.code,
+      };
     }
     // Deleted file
     if (module.code === null) {
-      return [{ path: module.path, code: module.code }];
+      return { path: module.path, content: module.code };
     }
     // Regex ignored file
     if (
@@ -55,10 +53,10 @@ export async function prepareFilesForPullRequest(
 
         return module.code;
       };
-      return [{ path, content }];
+      return { path, content };
     }
     // Regular file
-    return [{ path: module.path, code: module.code }];
+    return { path: module.path, content: module.code };
   });
   return files;
 }
