@@ -2,7 +2,7 @@
 
 ## Continuous Integration
 
-The `continuous integration` workflow is responsible for linting, testing, building and evaluating the projects that are affected by a change.
+The `continuous integration` workflow is responsible for linting, testing, building and evaluating projects that are affected by a change, and in some cases deploying them to an environment.
 
 It is triggered in the following way:
 
@@ -10,13 +10,32 @@ It is triggered in the following way:
 2. on commits on a branch with an open PR.
 3. manually (it supports Nx all, to force ci steps for all projects, and Nx skip cache options).
 
-## Release
+### Release
 
-The `release` workflow is in charge of building and pushing new docker images and forcing the deployment in the new clusters by leveraging the new deployment.template.yml
+On a successfully completed `continuous integration` step for `master` and `next` branches the `release` step will ship the built affected application to the environments, leveraging `release.template.yml`.
 
-It is triggered in the following way:
+The `release.template.yml` is in charge of building and pushing new docker images and deploying in the new clusters by leveraging the new `deployment.template.yml` and it is executed only on a successfully completed `continuous integration` step for `master` and `next` branches.
 
-1. on a successfully completed `continuous integration` workflow for `master` and `next` branches.
+> ⚠️ In order to package a project with docker, the project needs to have `docker:build` nx target defined in its `project.json`
+
+> ⚠️ In order to deploy a project, the project needs to have `deploy` nx target defined in its `project.json` as follow:
+  ```json
+  {
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+    // ...
+  "targets": {
+    // ...
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/git-pull-service"]
+      }
+    },
+    "deploy": { "executor": "nx:run-commands" }
+    // ...
+  }
+  ```
 
 ## Development
 
