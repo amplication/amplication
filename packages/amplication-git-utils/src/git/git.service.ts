@@ -1,15 +1,14 @@
 import {
-  GitFile,
   GitProviderArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  File,
   GetRepositoryArgs,
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   CreatePullRequestArgs,
   GitProvider,
+  EnumPullRequestMode,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -18,8 +17,9 @@ import { GitFactory } from "./git-factory";
 export class GitClientService {
   private provider: GitProvider;
 
-  constructor(gitProviderArgs: GitProviderArgs) {
-    this.provider = GitFactory.getProvider(gitProviderArgs);
+  async create(gitProviderArgs: GitProviderArgs): Promise<GitClientService> {
+    this.provider = await GitFactory.getProvider(gitProviderArgs);
+    return this;
   }
 
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -55,33 +55,84 @@ export class GitClientService {
   async createPullRequest(
     createPullRequestArgs: CreatePullRequestArgs
   ): Promise<string> {
-    const { owner, repositoryName, pullRequestModule, gitResourceMeta } =
-      createPullRequestArgs;
+    const {
+      owner,
+      repositoryName,
+      branchName,
+      commitMessage,
+      pullRequestTitle,
+      pullRequestBody,
+      pullRequestMode,
+      gitResourceMeta,
+      files,
+    } = createPullRequestArgs;
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
       repositoryName
     );
-    const files = await prepareFilesForPullRequest(
+    const preparedFiles = await prepareFilesForPullRequest(
       gitResourceMeta,
-      pullRequestModule,
+      files,
       amplicationIgnoreManger
     );
-    return this.provider.createPullRequest(createPullRequestArgs, files);
-  }
 
-  async getFile(file: File): Promise<GitFile> {
-    return this.provider.getFile(file);
+    if (pullRequestMode === EnumPullRequestMode.Basic) {
+      return this.provider.createPullRequestFromFiles({
+        owner,
+        repositoryName,
+        branchName,
+        commitMessage,
+        pullRequestTitle,
+        pullRequestBody,
+        files: preparedFiles,
+      });
+    }
+
+    if (pullRequestMode === EnumPullRequestMode.Accumulative) {
+      await this.provider.createBranchIfNotExists({
+        owner,
+        repositoryName,
+        branchName,
+      }),
+        await this.provider.createCommit({
+          owner,
+          repositoryName,
+          commitMessage,
+          branchName,
+          files: preparedFiles,
+        });
+      const { defaultBranch } = await this.provider.getRepository({
+        owner,
+        repositoryName,
+      });
+      const existingPullRequest = await this.provider.getPullRequestForBranch({
+        owner,
+        repositoryName,
+        branchName,
+      });
+      if (!existingPullRequest) {
+        return this.provider.createPullRequestForBranch({
+          owner,
+          repositoryName,
+          pullRequestTitle,
+          pullRequestBody,
+          branchName,
+          defaultBranchName: defaultBranch,
+        });
+      }
+      return existingPullRequest.url;
+    }
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
     await amplicationIgnoreManger.init(async (fileName) => {
       try {
-        const file = await this.getFile({
+        const file = await this.provider.getFile({
           owner,
-          repositoryUrl: repositoryName,
+          repositoryName,
           path: fileName,
-          baseBranch: undefined, // take the default branch
+          baseBranchName: undefined, // take the default branch
         });
         const { content, htmlUrl, name } = file;
         console.log(`Got ${name} file ${htmlUrl}`);

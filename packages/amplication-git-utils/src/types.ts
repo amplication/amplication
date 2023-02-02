@@ -1,10 +1,3 @@
-import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
-
-export type PullRequestModule = {
-  path: string;
-  code: string | null;
-};
-
 export enum EnumPullRequestMode {
   Basic = "Basic",
   Accumulative = "Accumulative",
@@ -34,13 +27,6 @@ export interface Branch {
   sha: string;
 }
 
-export interface Commit {
-  title: string;
-  body: string;
-  base?: string | undefined;
-  head?: string | undefined;
-}
-
 export interface RemoteGitRepository {
   name: string | null;
   url: string | null;
@@ -57,12 +43,17 @@ export interface RemoteGitRepos {
   pageSize: number | null;
 }
 
-export interface CreatePullRequest {
-  title: string;
-  body: string;
-  head: string;
-  base?: string | undefined;
-}
+export type File = {
+  path: string;
+  content: string | null;
+};
+
+export type UpdateFile = {
+  path: string;
+  content: string | null | UpdateFileFn;
+};
+
+export type UpdateFileFn = ({ exists }: { exists: boolean }) => string | null;
 
 export interface GitFile {
   name: string | null;
@@ -93,26 +84,66 @@ export interface GetRepositoriesArgs {
   page: number;
 }
 
-export interface File {
+export interface GetFileArgs {
   owner: string;
-  repositoryUrl: string;
-  baseBranch: string;
+  repositoryName: string;
+  baseBranchName: string;
   path: string;
 }
 
 export interface CreatePullRequestArgs {
-  pullRequestMode: EnumPullRequestMode;
   owner: string;
   repositoryName: string;
-  pullRequestModule: PullRequestModule[];
-  commit: Commit;
+  branchName: string;
+  commitMessage: string;
   pullRequestTitle: string;
   pullRequestBody: string;
-  head: string;
+  pullRequestMode: EnumPullRequestMode;
   gitResourceMeta: GitResourceMeta;
+  files: File[];
+}
+
+export interface CreatePullRequestFromFilesArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string; // head
+  commitMessage: string;
+  pullRequestTitle: string;
+  pullRequestBody: string;
+  files: UpdateFile[];
+}
+
+export interface CreateBranchIfNotExistsArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+}
+
+export interface GetPullRequestForBranchArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+}
+
+export interface CreatePullRequestForBranchArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+  defaultBranchName: string;
+  pullRequestTitle: string;
+  pullRequestBody: string;
+}
+
+export interface CreateCommitArgs {
+  owner: string;
+  repositoryName: string;
+  commitMessage: string;
+  branchName: string;
+  files: UpdateFile[];
 }
 
 export interface GitProvider {
+  init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
@@ -125,9 +156,18 @@ export interface GitProvider {
   ): Promise<RemoteGitRepository>;
   deleteGitOrganization(): Promise<boolean>;
   getOrganization(): Promise<RemoteGitOrganization>;
-  getFile(file: File): Promise<GitFile>;
-  createPullRequest(
-    createPullRequestArgs: CreatePullRequestArgs,
-    files: Required<Changes["files"]>
-  ): Promise<string>;
+  getFile(file: GetFileArgs): Promise<GitFile>;
+  createPullRequestFromFiles: (
+    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
+  ) => Promise<string>;
+  createBranchIfNotExists: (
+    createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
+  ) => Promise<Branch>;
+  createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
+  getPullRequestForBranch: (
+    getPullRequestForBranchArgs: GetPullRequestForBranchArgs
+  ) => Promise<{ url: string; number: number } | undefined>;
+  createPullRequestForBranch: (
+    createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
+  ) => Promise<string>;
 }

@@ -1,7 +1,7 @@
 import {
   EnumPullRequestMode,
   GitClientService,
-  PullRequestModule,
+  File,
 } from "@amplication/git-utils";
 import {
   AmplicationLogger,
@@ -46,29 +46,26 @@ export class PullRequestService {
       "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
-    const gitClientService = new GitClientService({
+    const gitClientService = await new GitClientService().create({
       provider: gitProvider,
       installationId,
     });
     const prUrl = await gitClientService.createPullRequest({
-      pullRequestMode,
       owner,
       repositoryName: repo,
-      pullRequestModule:
-        PullRequestService.removeFirstSlashFromPath(changedFiles),
-      commit,
+      branchName: head,
+      commitMessage: commit.body,
       pullRequestTitle: title,
       pullRequestBody: body,
-      head,
+      pullRequestMode,
       gitResourceMeta,
+      files: PullRequestService.removeFirstSlashFromPath(changedFiles),
     });
     this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
 
-  private static removeFirstSlashFromPath(
-    changedFiles: PullRequestModule[]
-  ): PullRequestModule[] {
+  private static removeFirstSlashFromPath(changedFiles: File[]): File[] {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });

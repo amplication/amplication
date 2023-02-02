@@ -1,12 +1,13 @@
 import { join } from "path";
-import { Changes } from "octokit-plugin-create-pull-request/dist-types/types";
 import { AMPLICATION_IGNORED_FOLDER } from "../git/git.constants";
+import { File, GitResourceMeta, UpdateFile } from "../types";
+import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 
 export async function prepareFilesForPullRequest(
-  gitResourceMeta,
-  pullRequestModule,
-  amplicationIgnoreManger
-): Promise<Required<Changes["files"]>> {
+  gitResourceMeta: GitResourceMeta,
+  pullRequestModule: File[],
+  amplicationIgnoreManger: AmplicationIgnoreManger
+): Promise<UpdateFile[]> {
   //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
   //do not override server/scripts/customSeed.ts
   const doNotOverride = [
@@ -29,34 +30,35 @@ export async function prepareFilesForPullRequest(
 
   const authFolder = "server/src/auth/";
 
-  const files: Required<Changes["files"]> = Object.fromEntries(
-    pullRequestModule.map((module) => {
-      // ignored file
-      if (amplicationIgnoreManger.isIgnored(module.path)) {
-        return [join(AMPLICATION_IGNORED_FOLDER, module.path), module.code];
-      }
-      // Deleted file
-      if (module.code === null) {
-        return [module.path, module.code];
-      }
-      // Regex ignored file
-      if (
-        !module.path.startsWith(authFolder) &&
-        doNotOverride.some((rx) => rx.test(module.path))
-      ) {
-        return [
-          module.path,
-          ({ exists }) => {
-            // do not create the file if it already exist
-            if (exists) return null;
+  const files: UpdateFile[] = pullRequestModule.map((module) => {
+    // ignored file
+    if (amplicationIgnoreManger.isIgnored(module.path)) {
+      return {
+        path: join(AMPLICATION_IGNORED_FOLDER, module.path),
+        content: module.content,
+      };
+    }
+    // Deleted file
+    if (module.content === null) {
+      return { path: module.path, content: module.content };
+    }
+    // Regex ignored file
+    if (
+      !module.path.startsWith(authFolder) &&
+      doNotOverride.some((rx) => rx.test(module.path))
+    ) {
+      return {
+        path: module.path,
+        content: ({ exists }) => {
+          // do not create the file if it already exist
+          if (exists) return null;
 
-            return module.code;
-          },
-        ];
-      }
-      // Regular file
-      return [module.path, module.code];
-    })
-  );
+          return module.content;
+        },
+      };
+    }
+    // Regular file
+    return { path: module.path, content: module.content };
+  });
   return files;
 }

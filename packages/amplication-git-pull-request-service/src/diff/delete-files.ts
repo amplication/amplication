@@ -1,8 +1,8 @@
-import { PullRequestModule } from "@amplication/git-utils";
+import { File } from "@amplication/git-utils";
 import { Difference } from "dir-compare";
 import { join } from "path";
 
-export function deleteFilesVisitor(diff: Difference): PullRequestModule | null {
+export function deleteFilesVisitor(diff: Difference): File | null {
   const { state, name1, type1, type2, relativePath } = diff;
   if (!name1) {
     return null;
@@ -12,7 +12,7 @@ export function deleteFilesVisitor(diff: Difference): PullRequestModule | null {
 
     return {
       path: path,
-      code: null,
+      content: null,
     };
   }
   return null;
