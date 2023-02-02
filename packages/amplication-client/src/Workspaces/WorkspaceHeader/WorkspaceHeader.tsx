@@ -5,6 +5,7 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
+  Dialog,
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
 import React, { useCallback, useContext, useState } from "react";
@@ -22,6 +23,7 @@ import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import "./WorkspaceHeader.scss";
 import { useTracking } from "../../util/analytics";
+import ProfileForm from "../../Profile/ProfileForm";
 import { version } from "../../util/version";
 
 const CLASS_NAME = "workspace-header";
@@ -76,6 +78,15 @@ const WorkspaceHeader: React.FC<{}> = () => {
     currentProjectConfiguration,
   ]);
 
+  const [version, setVersion] = useState("");
+  const [showProfileFormDialog, setShowProfileFormDialog] =
+    useState<boolean>(false);
+  useEffect(() => {
+    import("../../util/version").then(({ version }) => {
+      setVersion(version);
+    });
+  }, []);
+
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
     unsetToken();
@@ -103,189 +114,206 @@ const WorkspaceHeader: React.FC<{}> = () => {
     });
   }, [openHubSpotChat]);
 
+  const handleShowProfileForm = useCallback(() => {
+    setShowProfileFormDialog(!showProfileFormDialog);
+  }, [showProfileFormDialog, setShowProfileFormDialog]);
+
   return (
-    <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__left`}>
-        <div className={`${CLASS_NAME}__logo`}>
-          <MenuItem
-            title="Home"
-            icon="logo"
-            to={`/${currentWorkspace?.id}/${currentProject?.id}`}
-            disableHover
-          />
-        </div>
-        <Tooltip
-          aria-label="Version number copied successfully"
-          direction="e"
-          noDelay
-          show={versionAlert}
-        >
-          <Button
-            className={`${CLASS_NAME}__version`}
-            buttonStyle={EnumButtonStyle.Clear}
-            onClick={async () => {
-              setVersionAlert(true);
-              await navigator.clipboard.writeText(version);
-            }}
-            onMouseLeave={() => {
-              setVersionAlert(false);
-            }}
+    <>
+      <Dialog
+        className="new-entity-dialog"
+        isOpen={showProfileFormDialog}
+        onDismiss={handleShowProfileForm}
+        title="User Profile"
+      >
+        <ProfileForm />
+      </Dialog>
+      <div className={CLASS_NAME}>
+        <div className={`${CLASS_NAME}__left`}>
+          <div className={`${CLASS_NAME}__logo`}>
+            <MenuItem
+              title="Home"
+              icon="logo"
+              to={`/${currentWorkspace?.id}/${currentProject?.id}`}
+              disableHover
+            />
+          </div>
+          <Tooltip
+            aria-label="Version number copied successfully"
+            direction="e"
+            noDelay
+            show={versionAlert}
           >
-            <span>v{version}</span>
-          </Button>
-        </Tooltip>
-      </div>
-      <div className={`${CLASS_NAME}__center`}>
-        <div className={`${CLASS_NAME}__breadcrumbs`}>
-          {currentProject && (
-            <>
-              <div
-                className={`${CLASS_NAME}__breadcrumbs__project ${
-                  isProjectRoute ? "highlight" : ""
-                }`}
-              >
-                <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
-                  {currentProject?.name}
-                </Link>
-              </div>
-              <div>
-                <hr className={`${CLASS_NAME}__vertical_border`} />
-              </div>
-              <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
-                <SelectMenu
-                  title={
-                    <p
-                      className={`${CLASS_NAME}__breadcrumbs__resource__title`}
-                    >
-                      {getSelectedEntities() || "Resource List"}
-                    </p>
-                  }
-                  buttonStyle={EnumButtonStyle.Text}
-                  buttonClassName={isResourceRoute ? "highlight" : ""}
-                  icon="chevron_down"
-                  openIcon="chevron_up"
-                  className={`${CLASS_NAME}__breadcrumbs__menu`}
+            <Button
+              className={`${CLASS_NAME}__version`}
+              buttonStyle={EnumButtonStyle.Clear}
+              onClick={async () => {
+                setVersionAlert(true);
+                await navigator.clipboard.writeText(version);
+              }}
+              onMouseLeave={() => {
+                setVersionAlert(false);
+              }}
+            >
+              <span>v{version}</span>
+            </Button>
+          </Tooltip>
+        </div>
+        <div className={`${CLASS_NAME}__center`}>
+          <div className={`${CLASS_NAME}__breadcrumbs`}>
+            {currentProject && (
+              <>
+                <div
+                  className={`${CLASS_NAME}__breadcrumbs__project ${
+                    isProjectRoute ? "highlight" : ""
+                  }`}
                 >
-                  <SelectMenuModal align="right">
-                    <SelectMenuList>
-                      {resources.length > 0 && (
-                        <>
-                          {resources.length &&
-                            resources.map((resource: models.Resource) => (
-                              <SelectMenuItem
-                                closeAfterSelectionChange
-                                selected={currentResource?.id === resource.id}
-                                key={resource.id}
-                                onSelectionChange={() => {
-                                  setResource(resource);
-                                }}
-                              >
-                                <div
-                                  className={`${CLASS_NAME}__breadcrumbs__resource__item`}
+                  <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
+                    {currentProject?.name}
+                  </Link>
+                </div>
+                <div>
+                  <hr className={`${CLASS_NAME}__vertical_border`} />
+                </div>
+                <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
+                  <SelectMenu
+                    title={
+                      <p
+                        className={`${CLASS_NAME}__breadcrumbs__resource__title`}
+                      >
+                        {getSelectedEntities() || "Resource List"}
+                      </p>
+                    }
+                    buttonStyle={EnumButtonStyle.Text}
+                    buttonClassName={isResourceRoute ? "highlight" : ""}
+                    icon="chevron_down"
+                    openIcon="chevron_up"
+                    className={`${CLASS_NAME}__breadcrumbs__menu`}
+                  >
+                    <SelectMenuModal align="right">
+                      <SelectMenuList>
+                        {resources.length > 0 && (
+                          <>
+                            {resources.length &&
+                              resources.map((resource: models.Resource) => (
+                                <SelectMenuItem
+                                  closeAfterSelectionChange
+                                  selected={currentResource?.id === resource.id}
+                                  key={resource.id}
+                                  onSelectionChange={() => {
+                                    setResource(resource);
+                                  }}
                                 >
-                                  <ResourceCircleBadge
-                                    type={
-                                      resource.resourceType as models.EnumResourceType
-                                    }
-                                    size="xsmall"
-                                  />
                                   <div
-                                    className={`${CLASS_NAME}__breadcrumbs__resource__text`}
+                                    className={`${CLASS_NAME}__breadcrumbs__resource__item`}
                                   >
+                                    <ResourceCircleBadge
+                                      type={
+                                        resource.resourceType as models.EnumResourceType
+                                      }
+                                      size="xsmall"
+                                    />
                                     <div
-                                      className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                                      className={`${CLASS_NAME}__breadcrumbs__resource__text`}
                                     >
-                                      {resource.name}
-                                    </div>
-                                    <div
-                                      className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
-                                    >
-                                      {resource.description}
+                                      <div
+                                        className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                                      >
+                                        {resource.name}
+                                      </div>
+                                      <div
+                                        className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
+                                      >
+                                        {resource.description}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </SelectMenuItem>
-                            ))}
+                                </SelectMenuItem>
+                              ))}
 
-                          <HorizontalRule />
-                        </>
-                      )}
+                            <HorizontalRule />
+                          </>
+                        )}
 
-                      <HeaderMenuStaticOptions
-                        currentProjectConfigurationId={
-                          currentProjectConfiguration?.id
-                        }
-                        currentProjectId={currentProject.id}
-                        currentWorkspaceId={currentWorkspace?.id}
-                        history={history}
-                        path={isCommitsRoute?.url}
-                      />
-                    </SelectMenuList>
-                  </SelectMenuModal>
-                </SelectMenu>
-              </div>
-            </>
-          )}
+                        <HeaderMenuStaticOptions
+                          currentProjectConfigurationId={
+                            currentProjectConfiguration?.id
+                          }
+                          currentProjectId={currentProject.id}
+                          currentWorkspaceId={currentWorkspace?.id}
+                          history={history}
+                          path={isCommitsRoute?.url}
+                        />
+                      </SelectMenuList>
+                    </SelectMenuModal>
+                  </SelectMenu>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-      <div className={`${CLASS_NAME}__right`}>
-        <div className={`${CLASS_NAME}__links`}>
-          <Button
-            className={`${CLASS_NAME}__upgrade__btn`}
-            buttonStyle={EnumButtonStyle.Outline}
-            onClick={handleUpgradeClick}
-          >
-            Upgrade
-          </Button>
-          <Button
-            className={`${CLASS_NAME}__contact__btn`}
-            buttonStyle={EnumButtonStyle.Clear}
-            onClick={handleContactUsClick}
-          >
-            Contact Us
-          </Button>
-          <a
-            className={`${CLASS_NAME}__links__link`}
-            rel="noopener noreferrer"
-            href="https://docs.amplication.com"
-            target="_blank"
-          >
-            Docs
-          </a>
-        </div>
-        <hr className={`${CLASS_NAME}__vertical_border`} />
-
-        <CommandPalette
-          trigger={
-            <Tooltip
-              className="amp-menu-item__tooltip"
-              aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
-              direction="sw"
-              noDelay
+        <div className={`${CLASS_NAME}__right`}>
+          <div className={`${CLASS_NAME}__links`}>
+            <Button
+              className={`${CLASS_NAME}__upgrade__btn`}
+              buttonStyle={EnumButtonStyle.Outline}
+              onClick={handleUpgradeClick}
             >
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="search"
-                iconSize="small"
-              />
-            </Tooltip>
-          }
-        />
-        <hr className={`${CLASS_NAME}__vertical_border`} />
+              Upgrade
+            </Button>
+            <Button
+              className={`${CLASS_NAME}__contact__btn`}
+              buttonStyle={EnumButtonStyle.Clear}
+              onClick={handleContactUsClick}
+            >
+              Contact Us
+            </Button>
+            <a
+              className={`${CLASS_NAME}__links__link`}
+              rel="noopener noreferrer"
+              href="https://docs.amplication.com"
+              target="_blank"
+            >
+              Docs
+            </a>
+          </div>
+          <hr className={`${CLASS_NAME}__vertical_border`} />
 
-        <a className={`${CLASS_NAME}__user_badge_wrapper`} href="/user/profile">
-          <UserBadge />
-        </a>
+          <CommandPalette
+            trigger={
+              <Tooltip
+                className="amp-menu-item__tooltip"
+                aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
+                direction="sw"
+                noDelay
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  icon="search"
+                  iconSize="small"
+                />
+              </Tooltip>
+            }
+          />
+          <hr className={`${CLASS_NAME}__vertical_border`} />
 
-        <hr className={`${CLASS_NAME}__vertical_border`} />
+          <div
+            className={`${CLASS_NAME}__user_badge_wrapper`}
+            onClick={handleShowProfileForm}
+          >
+            <UserBadge />
+          </div>
 
-        <Button
-          buttonStyle={EnumButtonStyle.Text}
-          icon="log_out"
-          onClick={handleSignOut}
-        />
+          <hr className={`${CLASS_NAME}__vertical_border`} />
+
+          <Button
+            buttonStyle={EnumButtonStyle.Text}
+            icon="log_out"
+            onClick={handleSignOut}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
