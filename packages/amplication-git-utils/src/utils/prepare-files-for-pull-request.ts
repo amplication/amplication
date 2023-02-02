@@ -1,11 +1,12 @@
 import { join } from "path";
 import { AMPLICATION_IGNORED_FOLDER } from "../git/git.constants";
-import { File } from "../types";
+import { File, GitResourceMeta } from "../types";
+import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 
 export async function prepareFilesForPullRequest(
-  gitResourceMeta,
+  gitResourceMeta: GitResourceMeta,
   pullRequestModule,
-  amplicationIgnoreManger
+  amplicationIgnoreManger: AmplicationIgnoreManger
 ): Promise<File[]> {
   //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
   //do not override server/scripts/customSeed.ts
