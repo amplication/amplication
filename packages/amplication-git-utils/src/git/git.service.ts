@@ -1,5 +1,4 @@
 import {
-  GitFile,
   GitProviderArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
@@ -10,7 +9,6 @@ import {
   CreatePullRequestArgs,
   GitProvider,
   EnumPullRequestMode,
-  GetFileArgs,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";

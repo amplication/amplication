@@ -164,7 +164,6 @@ export interface GitProvider {
     createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
   ) => Promise<Branch>;
   createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
-  // getRepository: () => Promise<any>
   getPullRequestForBranch: (
     getPullRequestForBranchArgs: GetPullRequestForBranchArgs
   ) => Promise<{ url: string; number: number } | undefined>;
