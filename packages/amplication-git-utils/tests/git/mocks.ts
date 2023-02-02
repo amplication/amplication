@@ -1,5 +1,5 @@
-import { EnumGitProvider } from "../../src/git/git.types";
-import { GitServiceFactory } from "../../src/git/git-service-factory";
+import { EnumGitProvider } from "../../src/types";
+import { GitFactory } from "../../src/git/git-factory";
 import { mock } from "jest-mock-extended";
 
 import {
@@ -12,14 +12,14 @@ import {
 } from "./git.constants";
 import { GithubService } from "../../src/git/github.service";
 
-export const MOCK_GIT_SERVICE_FACTORY = mock<GitServiceFactory>();
+export const MOCK_GIT_SERVICE_FACTORY = mock<GitFactory>();
 
 export const MOCK_GITHUB_SERVICE = mock<GithubService>({});
-MOCK_GITHUB_SERVICE.getOrganizationRepos.mockReturnValue(
+MOCK_GITHUB_SERVICE.getRepositories.mockReturnValue(
   Promise.resolve(TEST_GIT_REPOS)
 );
 
-MOCK_GITHUB_SERVICE.createOrganizationRepository.mockReturnValue(
+MOCK_GITHUB_SERVICE.createRepository.mockReturnValue(
   Promise.resolve(TEST_GIT_REPO)
 );
 
@@ -41,6 +41,6 @@ MOCK_GITHUB_SERVICE.createPullRequest.mockReturnValue(
   Promise.resolve(PR_HTML_URL)
 );
 
-MOCK_GIT_SERVICE_FACTORY.getService
-  .calledWith(EnumGitProvider.Github)
+MOCK_GIT_SERVICE_FACTORY.getProvider
+  .calledWith({ provider: EnumGitProvider.Github, installationId: "123456" })
   .mockReturnValue(MOCK_GITHUB_SERVICE);
