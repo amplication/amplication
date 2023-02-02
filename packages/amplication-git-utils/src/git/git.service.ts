@@ -126,15 +126,11 @@ export class GitClientService {
     }
   }
 
-  async getFile(file: GetFileArgs): Promise<GitFile> {
-    return this.provider.getFile(file);
-  }
-
   private async manageAmplicationIgnoreFile(owner, repositoryName) {
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
     await amplicationIgnoreManger.init(async (fileName) => {
       try {
-        const file = await this.getFile({
+        const file = await this.provider.getFile({
           owner,
           repositoryName,
           path: fileName,
