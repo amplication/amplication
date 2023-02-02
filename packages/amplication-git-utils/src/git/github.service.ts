@@ -296,7 +296,6 @@ export class GithubService implements GitProvider {
     });
 
     const gitHubFiles = this.convertFilesToGitHubFiles(files);
-    console.warn("files", files);
     const pr = await octokit.createPullRequest({
       owner,
       repo: repositoryName,

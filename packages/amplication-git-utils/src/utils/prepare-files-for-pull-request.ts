@@ -46,14 +46,15 @@ export async function prepareFilesForPullRequest(
       !module.path.startsWith(authFolder) &&
       doNotOverride.some((rx) => rx.test(module.path))
     ) {
-      const path = module.path;
-      const content = ({ exists }) => {
-        // do not create the file if it already exist
-        if (exists) return null;
+      return {
+        path: module.path,
+        content: ({ exists }) => {
+          // do not create the file if it already exist
+          if (exists) return null;
 
-        return module.content;
+          return module.content;
+        },
       };
-      return { path, content };
     }
     // Regular file
     return { path: module.path, content: module.content };

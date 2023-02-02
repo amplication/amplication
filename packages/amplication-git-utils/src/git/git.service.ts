@@ -72,7 +72,6 @@ export class GitClientService {
       owner,
       repositoryName
     );
-    // console.log("files before", files);
     const preparedFiles = await prepareFilesForPullRequest(
       gitResourceMeta,
       files,
