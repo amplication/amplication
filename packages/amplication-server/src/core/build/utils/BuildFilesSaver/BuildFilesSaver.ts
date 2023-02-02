@@ -7,10 +7,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { outputFile, remove } from "fs-extra";
 import { join, normalize } from "path";
-import {
-  BASE_BUILDS_FOLDER,
-  DEFAULT_BUILDS_FOLDER,
-} from "../../../../constants";
+import { BASE_BUILDS_FOLDER } from "../../../../constants";
 import { AmplicationError } from "../../../../errors/AmplicationError";
 @Injectable()
 export class BuildFilesSaver {
@@ -20,11 +17,9 @@ export class BuildFilesSaver {
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {
-    const envFilePath = configService.get<string>(BASE_BUILDS_FOLDER);
-
-    this.baseBuildsPath = envFilePath
-      ? normalize(envFilePath)
-      : DEFAULT_BUILDS_FOLDER;
+    this.baseBuildsPath = normalize(
+      configService.get<string>(BASE_BUILDS_FOLDER)
+    );
   }
   async saveFiles(relativePath: string, modules: Module[]): Promise<void> {
     this.logger.info(

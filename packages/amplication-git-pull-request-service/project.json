@@ -57,7 +57,8 @@
         "push": false,
         "tags": ["amplication/git-pull-request-service:latest"]
       }
-    }
+    },
+    "deploy": { "executor": "nx:run-commands" }
   },
   "tags": []
 }
