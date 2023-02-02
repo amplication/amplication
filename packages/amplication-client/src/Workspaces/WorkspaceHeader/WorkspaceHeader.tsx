@@ -78,14 +78,8 @@ const WorkspaceHeader: React.FC<{}> = () => {
     currentProjectConfiguration,
   ]);
 
-  const [version, setVersion] = useState("");
   const [showProfileFormDialog, setShowProfileFormDialog] =
     useState<boolean>(false);
-  useEffect(() => {
-    import("../../util/version").then(({ version }) => {
-      setVersion(version);
-    });
-  }, []);
 
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
