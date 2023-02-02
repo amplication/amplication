@@ -184,5 +184,6 @@ $select-menu-max-width: 300px;
 
   &__user_badge_wrapper {
     padding: var(--user-badge-spacing);
+    cursor: pointer;
   }
 }

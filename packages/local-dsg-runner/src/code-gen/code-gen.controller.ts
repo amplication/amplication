@@ -8,13 +8,16 @@ function generateCode(req: Request, res: Response) {
   const imageName = "amplication/data-service-generator-runner";
   const containerName = `dsg-runner-${buildId}`;
 
-  const hostMachineDsgFolder = `${process.cwd()}/${
-    process.env.DSG_JOBS_BASE_FOLDER
-  }/${buildId}`;
-  const dockerDsgFolder = process.env.BUILD_VOLUME_PATH;
-  const buildOutputPath = process.env.BUILD_OUTPUT_PATH;
-  const buildSpecPath = process.env.BUILD_SPEC_PATH;
-  const buildMangerUrl = process.env.BUILD_MANAGER_URL;
+  const {
+    DSG_JOBS_BASE_FOLDER: dsgJogsBaseFolder,
+    BUILD_VOLUME_PATH: dockerDsgFolder,
+    BUILD_OUTPUT_PATH: buildOutputPath,
+    BUILD_SPEC_PATH: buildSpecPath,
+    BUILD_MANAGER_URL: buildMangerUrl,
+    AUTOREMOVE_CONTAINER: autoRemove,
+  } = process.env;
+
+  const hostMachineDsgFolder = `${process.cwd()}/${dsgJogsBaseFolder}/${buildId}`;
 
   const docker = new Docker();
 
@@ -24,6 +27,7 @@ function generateCode(req: Request, res: Response) {
       name: containerName,
       HostConfig: {
         Binds: [`${hostMachineDsgFolder}:${dockerDsgFolder}`],
+        AutoRemove: Boolean(autoRemove),
       },
       Cmd: ["node", "./src/main.js"],
       Env: [

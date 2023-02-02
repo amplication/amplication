@@ -109,7 +109,8 @@
         "push": false,
         "tags": ["amplication/client:latest"]
       }
-    }
+    },
+    "deploy": { "executor": "nx:run-commands" }
   },
   "tags": []
 }
