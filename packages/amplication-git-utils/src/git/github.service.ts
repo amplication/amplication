@@ -329,9 +329,9 @@ export class GithubService implements GitProvider {
       branchName
     );
     if (!isBranchExist) {
-      return this.getBranch(owner, repositoryName, branchName);
+      return this.createBranch(owner, repositoryName, branchName, sha);
     }
-    return this.createBranch(owner, repositoryName, branchName, sha);
+    return this.getBranch(owner, repositoryName, branchName);
   }
 
   async createCommit({

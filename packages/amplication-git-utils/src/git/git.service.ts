@@ -107,12 +107,12 @@ export class GitClientService {
         owner,
         repositoryName,
       });
-      const { url } = await this.provider.getPullRequestForBranch({
+      const existingPullRequest = await this.provider.getPullRequestForBranch({
         owner,
         repositoryName,
         branchName,
       });
-      if (!url) {
+      if (!existingPullRequest) {
         return this.provider.createPullRequestForBranch({
           owner,
           repositoryName,
@@ -122,7 +122,7 @@ export class GitClientService {
           defaultBranchName: defaultBranch,
         });
       }
-      return url;
+      return existingPullRequest.url;
     }
   }
 
