@@ -16,26 +16,30 @@ On a successfully completed `continuous integration` step for `master` and `
 
 The `release.template.yml` is in charge of building and pushing new docker images and deploying in the new clusters by leveraging the new `deployment.template.yml` and it is executed only on a successfully completed `continuous integration` step for `master` and `next` branches.
 
-> ⚠️ In order to package a project with docker, the project needs to have `docker:build` nx target defined in its `project.json`
+> In order to package a project with docker, the project needs to have `docker:build` nx target defined in its `project.json`
 
-> ⚠️ In order to deploy a project, the project needs to have `deploy` nx target defined in its `project.json` as follow:
-  ```json
-  {
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-    // ...
-  "targets": {
-    // ...
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
-      "options": {
-        "push": false,
-        "tags": ["amplication/git-pull-service"]
-      }
-    },
-    "deploy": { "executor": "nx:run-commands" }
-    // ...
-  }
-  ```
+> In order to deploy a project, the project needs to have `deploy` nx target defined in its `project.json` 
+
+Example
+```json
+{
+"$schema": "../../../node_modules/nx/schemas/project-schema.json",
+// ...
+"targets": {
+// ...
+"docker:build": {
+    "executor": "@nx-tools/nx-docker:build",
+    "options": {
+    "push": false,
+    "tags": ["amplication/git-pull-service"]
+    }
+},
+"deploy": { "executor": "nx:run-commands" }
+// ...
+}
+```
+
+> ⚠️ Pull requests containing changes to any workflow template needs to target `master` to become effective since the any workflow using of these template will reference the latest `master` version of them 
 
 ## Development
 
