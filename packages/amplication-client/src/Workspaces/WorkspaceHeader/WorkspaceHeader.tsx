@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { unsetToken } from "../../authentication/authentication";
@@ -22,6 +22,7 @@ import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import "./WorkspaceHeader.scss";
 import { useTracking } from "../../util/analytics";
+import { version } from "../../util/version";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -74,13 +75,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
     isResourceRoute,
     currentProjectConfiguration,
   ]);
-
-  const [version, setVersion] = useState("");
-  useEffect(() => {
-    import("../../util/version").then(({ version }) => {
-      setVersion(version);
-    });
-  }, []);
 
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
