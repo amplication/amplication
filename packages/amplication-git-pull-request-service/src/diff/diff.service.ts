@@ -8,7 +8,7 @@ import { compare } from "dir-compare";
 import { sync } from "fast-glob";
 import { existsSync, readFileSync } from "fs";
 import { normalize } from "path";
-import { PrModule } from "../types";
+import { File } from "@amplication/git-utils";
 import { mapDiffSetToPrModule } from "./diffset-mapper";
 import { BuildPathFactory } from "./build-path-factory";
 import { deleteFilesVisitor } from "./delete-files";
@@ -25,7 +25,7 @@ export class DiffService {
     resourceId: string,
     previousAmplicationBuildId: string | undefined,
     newAmplicationBuildId: string
-  ): Promise<PrModule[]> {
+  ): Promise<File[]> {
     const newBuildPath = this.buildsPathFactory.get(
       resourceId,
       newAmplicationBuildId
@@ -94,7 +94,7 @@ export class DiffService {
         const code = await readFileSync(fullPath).toString("utf8");
         return {
           path,
-          code,
+          content: code,
         };
       }
     );
