@@ -8,7 +8,11 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import { Loader, PlanUpgradeConfirmation } from "@amplication/design-system";
+import {
+  AnimationType,
+  FullScreenLoader,
+  PlanUpgradeConfirmation,
+} from "@amplication/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
 
@@ -98,8 +102,8 @@ function App() {
   return (
     <ThemeProvider>
       {showLoadingAnimation && (
-        <Loader
-          fullScreen
+        <FullScreenLoader
+          animationType={AnimationType.Full}
           minimumLoadTimeMS={MIN_ANIMATION_TIME}
           onTimeout={handleTimeout}
         />

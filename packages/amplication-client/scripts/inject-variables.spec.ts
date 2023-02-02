@@ -1,5 +1,5 @@
 import fs from "fs";
-import { getReactAppEnv, injectVariables } from "./inject-variables";
+import { injectVariables } from "./inject-variables";
 
 const NX_REACT_APP_EXAMPLE_VAR = "NX_REACT_APP_EXAMPLE_VAR";
 const NX_REACT_APP_OTHER_EXAMPLE_VAR = "REACT_APP_OTHER_EXAMPLE_VAR";
@@ -19,14 +19,14 @@ const EXAMPLE_HTML = `<html>
 <body>
 </body>
 </html>`;
-const UPDATED_HTML = `<html>
-<head>
-<script>Object.assign(window, ${JSON.stringify(
-  EXAMPLE_REACT_APP_ENV_VARS
-)})</script></head>
-<body>
-</body>
-</html>`;
+// const UPDATED_HTML = `<html>
+// <head>
+// <script>Object.assign(window, ${JSON.stringify(
+//   EXAMPLE_REACT_APP_ENV_VARS
+// )})</script></head>
+// <body>
+// </body>
+// </html>`;
 const EXAMPLE_HTML_FILE_PATH = "/example/index.html";
 
 const readFileMock = jest.fn();

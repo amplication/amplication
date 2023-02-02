@@ -1,43 +1,27 @@
-import classNames from "classnames";
-import React, { useEffect } from "react";
-import "./Loader.scss";
-
+import React from "react";
 import Lottie, { LottieComponentProps } from "lottie-react";
+
 import animationFull from "../../assets/amplication-loader-full.json";
+import animationTiny from "../../assets/amplication-loader-tiny.json";
 
-const CLASS_NAME = "amp-loader";
+export enum AnimationType {
+  Full = "full",
+  Tiny = "tiny",
+}
 
-export type Props = Omit<LottieComponentProps, "animationData"> & {
-  minimumLoadTimeMS?: number;
-  fullScreen?: boolean;
-  onTimeout?: () => void;
+const getAnimation = (animationType: AnimationType) => {
+  switch (animationType) {
+    case AnimationType.Full:
+      return animationFull;
+    case AnimationType.Tiny:
+      return animationTiny;
+  }
 };
 
-export const Loader: React.FC<Props> = ({
-  className,
-  minimumLoadTimeMS,
-  fullScreen,
-  onTimeout,
-  ...rest
-}) => {
-  useEffect(() => {
-    if (!minimumLoadTimeMS) return;
-    const timer = setTimeout(() => {
-      onTimeout && onTimeout();
-    }, minimumLoadTimeMS);
+export type Props = Omit<LottieComponentProps, "animationData"> & {
+  animationType: AnimationType;
+};
 
-    return () => clearTimeout(timer);
-  }, [onTimeout, minimumLoadTimeMS]);
-
-  return (
-    <div
-      className={classNames(CLASS_NAME, className, {
-        [`${CLASS_NAME}--fullscreen`]: fullScreen,
-      })}
-    >
-      <div className={`${CLASS_NAME}__animation`}>
-        <Lottie animationData={animationFull} {...rest} />
-      </div>
-    </div>
-  );
+export const Loader: React.FC<Props> = ({ animationType, ...props }) => {
+  return <Lottie animationData={getAnimation(animationType)} {...props} />;
 };
