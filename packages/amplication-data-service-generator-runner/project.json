@@ -64,7 +64,8 @@
         "push": false,
         "tags": ["amplication/data-service-generator-runner:latest"]
       }
-    }
+    },
+    "deploy": { "executor": "nx:run-commands" }
   },
   "tags": []
 }
