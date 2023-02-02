@@ -1,0 +1,19 @@
+@import "../style/index.scss";
+
+.ellipsis {
+  &__button {
+    position: relative;
+    z-index: auto;
+    background-color: transparent;
+    border: none;
+    text-decoration: none;
+    font-weight: bolder;
+    padding: 0;
+    color: var(--black60);
+
+    &:hover {
+      color: var(--primary);
+      cursor: pointer;
+    }
+  }
+}

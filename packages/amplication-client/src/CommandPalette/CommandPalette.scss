@@ -2,6 +2,7 @@
 $command-palette-width: 675px;
 $icon-font-size-medium: 24px;
 $item-height: 48px;
+$overflow-scrollbar-width: 4px;
 
 .command-palette {
   &__overlay {
@@ -113,4 +114,8 @@ $item-height: 48px;
     color: var(--black80);
     margin-right: var(--default-spacing);
   }
+}
+
+::-webkit-scrollbar {
+  width: $overflow-scrollbar-width !important;
 }
