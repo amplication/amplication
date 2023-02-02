@@ -48,6 +48,13 @@ export type File = {
   content: string | null;
 };
 
+export type UpdateFile = {
+  path: string;
+  content: string | null | UpdateFileFn;
+};
+
+export type UpdateFileFn = ({ exists }: { exists: boolean }) => string | null;
+
 export interface GitFile {
   name: string | null;
   path: string | null;
@@ -103,7 +110,7 @@ export interface CreatePullRequestFromFilesArgs {
   commitMessage: string;
   pullRequestTitle: string;
   pullRequestBody: string;
-  files: File[];
+  files: UpdateFile[];
 }
 
 export interface CreateBranchIfNotExistsArgs {
@@ -132,7 +139,7 @@ export interface CreateCommitArgs {
   repositoryName: string;
   commitMessage: string;
   branchName: string;
-  files: File[];
+  files: UpdateFile[];
 }
 
 export interface GitProvider {

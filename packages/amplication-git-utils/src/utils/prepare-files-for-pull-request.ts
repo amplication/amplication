@@ -1,13 +1,13 @@
 import { join } from "path";
 import { AMPLICATION_IGNORED_FOLDER } from "../git/git.constants";
-import { File, GitResourceMeta } from "../types";
+import { File, GitResourceMeta, UpdateFile } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 
 export async function prepareFilesForPullRequest(
   gitResourceMeta: GitResourceMeta,
-  pullRequestModule,
+  pullRequestModule: File[],
   amplicationIgnoreManger: AmplicationIgnoreManger
-): Promise<File[]> {
+): Promise<UpdateFile[]> {
   //do not override files in 'server/src/[entity]/[entity].[controller/resolver/service/module].ts'
   //do not override server/scripts/customSeed.ts
   const doNotOverride = [
@@ -30,11 +30,11 @@ export async function prepareFilesForPullRequest(
 
   const authFolder = "server/src/auth/";
 
-  const files: File[] = pullRequestModule.map((module) => {
+  const files: UpdateFile[] = pullRequestModule.map((module) => {
     // ignored file
     if (amplicationIgnoreManger.isIgnored(module.path)) {
       return {
-        file: join(AMPLICATION_IGNORED_FOLDER, module.path),
+        path: join(AMPLICATION_IGNORED_FOLDER, module.path),
         content: module.content,
       };
     }

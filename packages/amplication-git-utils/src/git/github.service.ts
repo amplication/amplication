@@ -19,7 +19,7 @@ import {
   GetPullRequestForBranchArgs,
   CreatePullRequestForBranchArgs,
   GetFileArgs,
-  File,
+  UpdateFile,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -754,7 +754,9 @@ export class GithubService implements GitProvider {
     };
   }
 
-  private convertFilesToGitHubFiles(files: File[]): Required<Changes["files"]> {
+  private convertFilesToGitHubFiles(
+    files: UpdateFile[]
+  ): Required<Changes["files"]> {
     return files.reduce((acc, file) => {
       acc[file.path] = file.content;
       return acc;
