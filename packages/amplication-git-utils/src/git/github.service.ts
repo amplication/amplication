@@ -473,9 +473,6 @@ export class GithubService implements GitProvider {
     repositoryName: string,
     branchName: string
   ): Promise<Branch> {
-    if (!branchName) {
-      throw new Error("Branch name is required");
-    }
     const { data: ref } = await this.octokit.rest.git.getRef({
       owner,
       repo: repositoryName,
