@@ -55,7 +55,8 @@
         "push": false,
         "tags": ["amplication/storage-gateway:latest"]
       }
-    }
+    },
+    "deploy": { "executor": "nx:run-commands" }
   },
   "tags": []
 }
