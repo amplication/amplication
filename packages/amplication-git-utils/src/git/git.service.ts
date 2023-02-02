@@ -79,7 +79,6 @@ export class GitClientService {
     );
 
     if (pullRequestMode === EnumPullRequestMode.Basic) {
-      console.log(pullRequestMode, "pullRequestMode");
       return this.provider.createPullRequestFromFiles({
         owner,
         repositoryName,
