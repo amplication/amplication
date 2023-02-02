@@ -1407,10 +1407,10 @@ export type PropertySelectorInput = {
 
 export type ProvisionSubscriptionInput = {
   billingPeriod: Scalars['String'];
-  cancelUrl: Scalars['String'];
+  cancelUrl?: InputMaybe<Scalars['String']>;
   intentionType: Scalars['String'];
   planId: Scalars['String'];
-  successUrl: Scalars['String'];
+  successUrl?: InputMaybe<Scalars['String']>;
   workspaceId: Scalars['String'];
 };
 

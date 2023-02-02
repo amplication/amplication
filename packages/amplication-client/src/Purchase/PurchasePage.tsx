@@ -11,6 +11,7 @@ import {
 } from "@amplication/design-system";
 import "./PurchasePage.scss";
 import { useCallback, useContext, useState } from "react";
+import { Helmet } from "react-helmet";
 
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
@@ -119,9 +120,12 @@ const PurchasePage = (props) => {
     },
     [upgradeToPro, handleContactUsClick]
   );
-
+  const pageTitle = "Pricing & Plans";
   return (
     <Modal open fullScreen>
+      <Helmet>
+        <title>{`Amplication${pageTitle ? ` | ${pageTitle}` : ""}`}</title>
+      </Helmet>
       <div className={CLASS_NAME}>
         {isLoading && <PurchaseLoader />}
         <div className={`${CLASS_NAME}__layout`}>
