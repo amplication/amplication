@@ -53,7 +53,6 @@ export async function createAppModule(
 
   //@TODO: allow some env variable to override the autoSchemaFile: "schema.graphql" (e.g. GQL_SCHEMA_EXPORT_PATH)
   const templateMapping = {
-    CUSTOM_IMPORTS: builders.identifier("CUSTOM_IMPORTS"),
     MODULES: builders.arrayExpression([
       ...nestModulesIds,
       MORGAN_MODULE_ID,
