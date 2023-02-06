@@ -1,7 +1,7 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { CircleBadge } from "@amplication/design-system";
 import { gql } from "@apollo/client";
-import React, { useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
@@ -19,6 +19,8 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { TopicsTile } from "./TopicsTile";
 import { ServicesTile } from "./ServicesTile";
+import { Field, Form, Formik } from "formik";
+import FormikAutoSave from "../util/formikAutoSave";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -33,6 +35,17 @@ const CLASS_NAME = "resource-home";
 const ResourceHome = ({ match, innerRoutes }: Props) => {
   const resourceId = match.params.resource;
   const { currentResource } = useContext(AppContext);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleBlur = () => {
+    setIsEditing(false);
+  };
+
+  const handleSubmit = (data) => {
+    console.log("====================================");
+    console.log(data);
+    console.log("====================================");
+  };
 
   return (
     <>
@@ -50,7 +63,34 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
           >
-            {currentResource?.name}
+            {currentResource?.resourceType === "ProjectConfiguration" ? (
+              isEditing ? (
+                <Formik
+                  initialValues={{ projectName: currentResource?.name }}
+                  onSubmit={handleSubmit}
+                >
+                  {({ handleSubmit }) => (
+                    <Form onSubmit={handleSubmit}>
+                      <FormikAutoSave debounceMS={1000} />
+                      <Field
+                        name="projectName"
+                        as="input"
+                        onBlur={handleBlur}
+                      />
+                    </Form>
+                  )}
+                </Formik>
+              ) : (
+                <span
+                  className={`${CLASS_NAME}__header-text`}
+                  onClick={() => setIsEditing(true)}
+                >
+                  {currentResource?.name}
+                </span>
+              )
+            ) : (
+              currentResource?.name
+            )}
             <CircleBadge
               name={currentResource?.name || ""}
               color={

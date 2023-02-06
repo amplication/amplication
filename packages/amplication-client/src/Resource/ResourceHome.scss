@@ -29,6 +29,10 @@ $circle-badge-border: 2px;
     justify-content: center;
   }
 
+  &__header-text:hover {
+    cursor: pointer;
+  }
+
   .circle-badge {
     width: $application-badge-size-large;
     height: $application-badge-size-large;
