@@ -1,7 +1,5 @@
 @import "../style/index.scss";
 
-$tabs-width: 300px;
-
 .amp-page-content {
   display: flex;
   flex: 1;
@@ -14,13 +12,13 @@ $tabs-width: 300px;
   &__tabs {
     display: flex;
     flex-direction: column;
-    width: $tabs-width;
     background: var(--page-content-tab-background);
     border-radius: var(--default-border-radius);
     border: $border-black10;
-    padding: var(--large-spacing);
+    padding: var(--large-spacing) 0 var(--large-spacing) var(--large-spacing);
     box-sizing: border-box;
     overflow-y: auto;
+    scrollbar-gutter: stable;
     @include scrollbars(16px, var(--black60), transparent);
 
     .sub-list {
