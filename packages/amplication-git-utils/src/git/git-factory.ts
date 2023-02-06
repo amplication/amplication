@@ -1,5 +1,6 @@
+import { GitProvider } from "../GitProvider";
+import { EnumGitProvider, GitProviderArgs } from "../types";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
-import { EnumGitProvider, GitProvider, GitProviderArgs } from "../types";
 import { GithubService } from "./github.service";
 
 export class GitFactory {

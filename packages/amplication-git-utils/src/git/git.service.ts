@@ -1,14 +1,14 @@
+import { GitProvider } from "../GitProvider";
 import {
+  CreatePullRequestArgs,
+  CreateRepositoryArgs,
+  EnumPullRequestMode,
+  GetRepositoriesArgs,
+  GetRepositoryArgs,
   GitProviderArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  GetRepositoryArgs,
-  GetRepositoriesArgs,
-  CreateRepositoryArgs,
-  CreatePullRequestArgs,
-  GitProvider,
-  EnumPullRequestMode,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
