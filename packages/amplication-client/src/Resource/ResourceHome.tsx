@@ -1,7 +1,7 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { CircleBadge } from "@amplication/design-system";
-import { gql } from "@apollo/client";
-import React, { useCallback, useContext, useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+import React, { useContext, useState } from "react";
 import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
@@ -21,6 +21,12 @@ import { TopicsTile } from "./TopicsTile";
 import { ServicesTile } from "./ServicesTile";
 import { Field, Form, Formik } from "formik";
 import FormikAutoSave from "../util/formikAutoSave";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import * as models from "../models";
+import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
+import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
+import { formatError } from "../util/error";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -30,21 +36,47 @@ type Props = AppRouteProps & {
   }>;
 };
 
+type TData = {
+  updateResource: models.Resource;
+};
+
 const CLASS_NAME = "resource-home";
 
 const ResourceHome = ({ match, innerRoutes }: Props) => {
   const resourceId = match.params.resource;
   const { currentResource } = useContext(AppContext);
   const [isEditing, setIsEditing] = useState(false);
+  const { trackEvent } = useTracking();
+  const [updateResource, { error: updateError }] = useMutation<TData>(
+    UPDATE_RESOURCE,
+    {
+      refetchQueries: [
+        {
+          query: GET_PROJECTS,
+        },
+      ],
+    }
+  );
+  const errorMessage = formatError(updateError);
 
   const handleBlur = () => {
     setIsEditing(false);
   };
 
   const handleSubmit = (data) => {
-    console.log("====================================");
-    console.log(data);
-    console.log("====================================");
+    const { name } = data;
+    trackEvent({
+      eventName: AnalyticsEventNames.ResourceInfoUpdate,
+    });
+    updateResource({
+      variables: {
+        data: {
+          name,
+        },
+        resourceId: resourceId,
+      },
+    }).catch(console.error);
+    setIsEditing(false);
   };
 
   return (
@@ -66,17 +98,13 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
             {currentResource?.resourceType === "ProjectConfiguration" ? (
               isEditing ? (
                 <Formik
-                  initialValues={{ projectName: currentResource?.name }}
+                  initialValues={{ name: currentResource?.name }}
                   onSubmit={handleSubmit}
                 >
                   {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                       <FormikAutoSave debounceMS={1000} />
-                      <Field
-                        name="projectName"
-                        as="input"
-                        onBlur={handleBlur}
-                      />
+                      <Field name="name" as="input" onBlur={handleBlur} />
                     </Form>
                   )}
                 </Formik>
