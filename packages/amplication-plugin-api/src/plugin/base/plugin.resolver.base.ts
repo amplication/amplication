@@ -53,7 +53,7 @@ export class PluginResolverBase {
   @Public()
   @graphql.Query(() => [Plugin])
   async plugins(@graphql.Args() args: PluginFindManyArgs): Promise<Plugin[]> {
-    return this.service.findMany(args);
+    return await this.service.findMany(args);
   }
 
   @Public()
