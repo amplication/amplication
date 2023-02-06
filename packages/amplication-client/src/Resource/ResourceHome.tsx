@@ -27,6 +27,7 @@ import * as models from "../models";
 import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import { formatError } from "../util/error";
+import { Icon } from "@amplication/design-system";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -46,6 +47,8 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
   const resourceId = match.params.resource;
   const { currentResource } = useContext(AppContext);
   const [isEditing, setIsEditing] = useState(false);
+  const [showTick, setShowTick] = useState(false);
+
   const { trackEvent } = useTracking();
   const [updateResource, { error: updateError }] = useMutation<TData>(
     UPDATE_RESOURCE,
@@ -77,6 +80,10 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
       },
     }).catch(console.error);
     setIsEditing(false);
+    setShowTick(true);
+    setTimeout(() => {
+      setShowTick(false);
+    }, 2000);
   };
 
   return (
@@ -114,6 +121,7 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                   onClick={() => setIsEditing(true)}
                 >
                   {currentResource?.name}
+                  {showTick && <Icon icon={"check"} size="medium" />}
                 </span>
               )
             ) : (
