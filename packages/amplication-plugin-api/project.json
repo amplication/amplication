@@ -131,7 +131,7 @@
         "push": false,
         "tags": ["amplication/git-pull-service:latest"]
       }
-    }
+    },
     "deploy": { "executor": "nx:run-commands" }
   },
   "tags": []
