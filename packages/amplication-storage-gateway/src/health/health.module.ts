@@ -9,8 +9,8 @@ import { StorageModule } from "../storage/storage.module";
   imports: [
     QueueModule,
     StorageModule,
-    AmplicationLoggerModule.register({
-      metadata: { service: "storage-gateway-service" },
+    AmplicationLoggerModule.forRoot({
+      serviceName: "storage-gateway-service",
     }),
   ],
   controllers: [HealthController],

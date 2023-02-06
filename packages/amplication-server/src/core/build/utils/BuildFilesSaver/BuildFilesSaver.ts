@@ -1,8 +1,5 @@
 import { Module } from "@amplication/code-gen-types";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { outputFile, remove } from "fs-extra";
@@ -14,7 +11,7 @@ export class BuildFilesSaver {
   private baseBuildsPath: string;
   constructor(
     configService: ConfigService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
     this.baseBuildsPath = normalize(

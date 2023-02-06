@@ -4,6 +4,7 @@ import { AppModule } from "./app.module";
 import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { MicroserviceOptions } from "@nestjs/microservices";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 
 async function bootstrap() {
   /**
@@ -30,7 +31,9 @@ async function bootstrap() {
     console.info("Cloud tracing is enabled");
   }
 
-  const app = await NestFactory.create(AppModule, {});
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(AmplicationLogger));
+
   app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
 
   await app.startAllMicroservices();

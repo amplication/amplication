@@ -15,17 +15,14 @@ import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.f
 import { GitHubAuthGuard } from "./github.guard";
 import { GitHubRequest } from "./types";
 import { stringifyUrl } from "query-string";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 
 @Controller("/")
 export class AuthController {
   private host: string;
   constructor(
     private readonly authService: AuthService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
     this.host = process.env.CLIENT_HOST || "http://localhost:3001";
@@ -49,10 +46,9 @@ export class AuthController {
     const user: AuthUser = request.user as AuthUser;
     const isNew = request.isNew;
 
-    this.logger.log({
-      level: "info",
-      message: `receive login callback from github account_id=${user.account.id}`,
-    });
+    this.logger.info(
+      `receive login callback from github account_id=${user.account.id}`
+    );
 
     const token = await this.authService.prepareToken(user);
     const url = stringifyUrl({
