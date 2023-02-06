@@ -147,6 +147,7 @@ type GitOrganization {
 
 enum EnumGitProvider {
   Github
+  Bitbucket
 }
 
 enum EnumGitOrganizationType {
