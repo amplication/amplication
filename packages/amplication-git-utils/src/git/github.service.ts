@@ -11,7 +11,7 @@ import {
 import { IGitProvider } from "../IGitProvider";
 import {
   Branch,
-  CreateBranchIfNotExistsArgs,
+  OneBranchArgs,
   CreateCommitArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
@@ -27,6 +27,7 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   UpdateFile,
+  CreateBranchArgs,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -314,26 +315,6 @@ export class GithubService implements IGitProvider {
     return pr.data.html_url;
   }
 
-  async createBranchIfNotExists({
-    owner,
-    repositoryName,
-    branchName,
-  }: CreateBranchIfNotExistsArgs): Promise<Branch> {
-    const { sha } = await this.getFirstDefaultBranchCommit(
-      owner,
-      repositoryName
-    );
-    const isBranchExist = await this.isBranchExist(
-      owner,
-      repositoryName,
-      branchName
-    );
-    if (!isBranchExist) {
-      return this.createBranch(owner, repositoryName, branchName, sha);
-    }
-    return this.getBranch(owner, repositoryName, branchName);
-  }
-
   async createCommit({
     owner,
     repositoryName,
@@ -455,24 +436,20 @@ export class GithubService implements IGitProvider {
     return pullRequest.html_url;
   }
 
-  private async isBranchExist(
-    owner: string,
-    repositoryName: string,
-    branch: string
-  ): Promise<boolean> {
+  async isBranchExists(args: OneBranchArgs): Promise<boolean> {
     try {
-      const refs = await this.getBranch(owner, repositoryName, branch);
+      const refs = await this.getBranch(args);
       return Boolean(refs);
     } catch (error) {
       return false;
     }
   }
 
-  private async getBranch(
-    owner: string,
-    repositoryName: string,
-    branchName: string
-  ): Promise<Branch> {
+  async getBranch({
+    owner,
+    repositoryName,
+    branchName,
+  }: OneBranchArgs): Promise<Branch> {
     const { data: ref } = await this.octokit.rest.git.getRef({
       owner,
       repo: repositoryName,
@@ -486,13 +463,13 @@ export class GithubService implements IGitProvider {
     return { sha: ref.object.sha, name: branchName };
   }
 
-  private async createBranch(
-    owner: string,
-    repositoryName: string,
-    newBranchName: string,
-    sha?: string
-  ): Promise<Branch> {
-    let baseSha = sha;
+  async createBranch({
+    owner,
+    repositoryName,
+    branchName,
+    pointingSha,
+  }: CreateBranchArgs): Promise<Branch> {
+    let baseSha = pointingSha;
     if (!baseSha) {
       const repository = await this.getRepository({ owner, repositoryName });
       const { defaultBranch } = repository;
@@ -507,24 +484,21 @@ export class GithubService implements IGitProvider {
     const { data: branch } = await this.octokit.rest.git.createRef({
       owner,
       repo: repositoryName,
-      ref: `refs/heads/${newBranchName}`,
+      ref: `refs/heads/${branchName}`,
       sha: baseSha,
     });
-    return { name: newBranchName, sha: branch.object.sha };
+    return { name: branchName, sha: branch.object.sha };
   }
 
-  private async getFirstDefaultBranchCommit(
-    owner: string,
-    repositoryName: string
-  ): Promise<{ sha: string }> {
-    const { defaultBranch } = await this.getRepository({
-      owner,
-      repositoryName,
-    });
+  async getFirstCommitOnBranch({
+    branchName,
+    owner,
+    repositoryName,
+  }: OneBranchArgs): Promise<{ sha: string }> {
     const firstCommit: TData = await this.octokit.graphql(
-      `query ($owner: String!, $repo: String!, $defaultBranch: String!) {
+      `query ($owner: String!, $repo: String!, $branchName: String!) {
       repository(name: $repo, owner: $owner) {
-        ref(qualifiedName: $defaultBranch) {
+        ref(qualifiedName: $branchName) {
           target {
             ... on Commit {
               history(first: 1) {
@@ -545,7 +519,7 @@ export class GithubService implements IGitProvider {
       {
         owner,
         repo: repositoryName,
-        defaultBranch,
+        branchName,
       }
     );
     const {
@@ -566,9 +540,9 @@ export class GithubService implements IGitProvider {
     const nextCursor = `${cursorPrefix} ${totalCount - 2}`;
 
     const lastCommitData: TData = await this.octokit.graphql(
-      `query ($owner: String!, $repo: String!, $defaultBranch: String!, $nextCursor: String!) {
+      `query ($owner: String!, $repo: String!, $branchName: String!, $nextCursor: String!) {
         repository(name: $repo, owner: $owner) {
-          ref(qualifiedName: $defaultBranch) {
+          ref(qualifiedName: $branchName) {
             target {
               ... on Commit {
                 history(first: 1, after: $nextCursor) {
@@ -586,7 +560,7 @@ export class GithubService implements IGitProvider {
           }
         }
       }`,
-      { owner, repo: repositoryName, defaultBranch, nextCursor }
+      { owner, repo: repositoryName, branchName, nextCursor }
     );
     const {
       repository: {
@@ -605,7 +579,7 @@ export class GithubService implements IGitProvider {
     repositoryName: string,
     branchName: string
   ) {
-    const branch = await this.getBranch(owner, repositoryName, branchName);
+    const branch = await this.getBranch({ owner, repositoryName, branchName });
 
     console.log(
       `Got branch ${owner}/${repositoryName}/${branch.name} with sha ${branch.sha}`

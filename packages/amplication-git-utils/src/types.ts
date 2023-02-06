@@ -113,12 +113,6 @@ export interface CreatePullRequestFromFilesArgs {
   files: UpdateFile[];
 }
 
-export interface CreateBranchIfNotExistsArgs {
-  owner: string;
-  repositoryName: string;
-  branchName: string;
-}
-
 export interface GetPullRequestForBranchArgs {
   owner: string;
   repositoryName: string;
@@ -140,4 +134,20 @@ export interface CreateCommitArgs {
   commitMessage: string;
   branchName: string;
   files: UpdateFile[];
+}
+
+export interface OneBranchArgs extends FindOneRepositoryArgs {
+  branchName: string;
+}
+export interface FindOneRepositoryArgs {
+  owner: string;
+  repositoryName: string;
+}
+
+export interface CreateBranchArgs extends OneBranchArgs {
+  pointingSha: string;
+}
+
+export interface Commit {
+  sha: string;
 }

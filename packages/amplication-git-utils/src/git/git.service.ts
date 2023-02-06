@@ -6,6 +6,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitProviderArgs,
+  OneBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -89,7 +90,7 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      await this.provider.createBranchIfNotExists({
+      await this.createBranchIfNotExists({
         owner,
         repositoryName,
         branchName,
@@ -122,6 +123,19 @@ export class GitClientService {
       }
       return existingPullRequest.url;
     }
+  }
+
+  private async createBranchIfNotExists(args: OneBranchArgs) {
+    const isBranchExist = this.provider.isBranchExists(args);
+    if (!isBranchExist) {
+      const { defaultBranch } = await this.getRepository(args);
+      const { sha } = await this.provider.getFirstCommitOnBranch({
+        ...args,
+        branchName: defaultBranch,
+      });
+      return this.provider.createBranch({ ...args, pointingSha: sha });
+    }
+    return this.provider.getBranch(args);
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {
