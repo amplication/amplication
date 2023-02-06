@@ -126,7 +126,7 @@ export class GitClientService {
   }
 
   private async createBranchIfNotExists(args: OneBranchArgs) {
-    const isBranchExist = this.provider.isBranchExists(args);
+    const isBranchExist = await this.provider.isBranchExists(args);
     if (!isBranchExist) {
       const { defaultBranch } = await this.getRepository(args);
       const { sha } = await this.provider.getFirstCommitOnBranch({
