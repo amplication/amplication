@@ -8,7 +8,7 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
-import { IGitProvider } from "../IGitProvider";
+import { GitProvider } from "../GitProvider";
 import {
   Branch,
   OneBranchArgs,
@@ -36,7 +36,7 @@ const GITHUB_FILE_TYPE = "file";
 
 type DirectoryItem = components["schemas"]["content-directory"][number];
 
-export class GithubService implements IGitProvider {
+export class GithubService implements GitProvider {
   private app: App;
   private appId: string;
   private privateKey: string;

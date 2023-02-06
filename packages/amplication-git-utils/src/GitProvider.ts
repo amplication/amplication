@@ -17,7 +17,7 @@ import {
   RemoteGitRepository,
 } from "./types";
 
-export interface IGitProvider {
+export interface GitProvider {
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(
