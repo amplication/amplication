@@ -1,4 +1,4 @@
-import { IGitProvider } from "../IGitProvider";
+import { GitProvider } from "../GitProvider";
 import {
   CreatePullRequestArgs,
   CreateRepositoryArgs,
@@ -15,7 +15,7 @@ import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-requ
 import { GitFactory } from "./git-factory";
 
 export class GitClientService {
-  private provider: IGitProvider;
+  private provider: GitProvider;
 
   async create(gitProviderArgs: GitProviderArgs): Promise<GitClientService> {
     this.provider = await GitFactory.getProvider(gitProviderArgs);
