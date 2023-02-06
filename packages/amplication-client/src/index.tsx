@@ -4,6 +4,7 @@ import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import {
   ApolloClient,
+  ApolloLink,
   InMemoryCache,
   createHttpLink,
   ApolloProvider,
@@ -13,7 +14,7 @@ import { getToken, setToken } from "./authentication/authentication";
 import "@amplication/design-system/icons";
 import "./index.scss";
 import App from "./App";
-import { REACT_APP_DATA_SOURCE } from "./env";
+import { REACT_APP_DATA_SOURCE, PLUGIN_API_DATA_SOURCE } from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,10 @@ const httpLink = createHttpLink({
   uri: REACT_APP_DATA_SOURCE,
 });
 
+const pluginApiHttpLink = createHttpLink({
+  uri: PLUGIN_API_DATA_SOURCE,
+});
+
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const token = getToken();
@@ -46,7 +51,11 @@ const authLink = setContext((_, { headers }) => {
 
 const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
-  link: authLink.concat(httpLink),
+  link: ApolloLink.split(
+    (operation) => operation.getContext().clientName === "pluginApiHttpLink",
+    pluginApiHttpLink,
+    authLink.concat(httpLink)
+  ),
 });
 
 const root = ReactDOM.createRoot(
