@@ -1,12 +1,13 @@
+import { IGitProvider } from "../IGitProvider";
+import { EnumGitProvider, GitProviderArgs } from "../types";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
-import { EnumGitProvider, GitProvider, GitProviderArgs } from "../types";
 import { GithubService } from "./github.service";
 
 export class GitFactory {
   public static async getProvider(
     gitProviderArgs: GitProviderArgs
-  ): Promise<GitProvider> {
-    let gitProvider: GitProvider;
+  ): Promise<IGitProvider> {
+    let gitProvider: IGitProvider;
 
     switch (gitProviderArgs.provider) {
       case EnumGitProvider.Github:

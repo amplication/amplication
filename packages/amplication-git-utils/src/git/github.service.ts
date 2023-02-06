@@ -1,41 +1,41 @@
 import { createAppAuth } from "@octokit/auth-app";
 import { components } from "@octokit/openapi-types";
 import { App, Octokit } from "octokit";
+import { createPullRequest } from "octokit-plugin-create-pull-request";
 import {
-  EnumGitOrganizationType,
-  GitFile,
-  RemoteGitOrganization,
-  RemoteGitRepos,
-  RemoteGitRepository,
-  GitProviderArgs,
-  GetRepositoryArgs,
-  GetRepositoriesArgs,
-  CreateRepositoryArgs,
-  GitProvider,
-  CreatePullRequestFromFilesArgs,
+  Changes,
+  File as OctokitFile,
+  TreeParameter,
+  UpdateFunctionFile,
+} from "octokit-plugin-create-pull-request/dist-types/types";
+import { IGitProvider } from "../IGitProvider";
+import {
   Branch,
   CreateBranchIfNotExistsArgs,
   CreateCommitArgs,
-  GetPullRequestForBranchArgs,
   CreatePullRequestForBranchArgs,
+  CreatePullRequestFromFilesArgs,
+  CreateRepositoryArgs,
+  EnumGitOrganizationType,
   GetFileArgs,
+  GetPullRequestForBranchArgs,
+  GetRepositoriesArgs,
+  GetRepositoryArgs,
+  GitFile,
+  GitProviderArgs,
+  RemoteGitOrganization,
+  RemoteGitRepos,
+  RemoteGitRepository,
   UpdateFile,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
-import { createPullRequest } from "octokit-plugin-create-pull-request";
-import {
-  Changes,
-  TreeParameter,
-  UpdateFunctionFile,
-  File as OctokitFile,
-} from "octokit-plugin-create-pull-request/dist-types/types";
 
 const GITHUB_FILE_TYPE = "file";
 
 type DirectoryItem = components["schemas"]["content-directory"][number];
 
-export class GithubService implements GitProvider {
+export class GithubService implements IGitProvider {
   private app: App;
   private appId: string;
   private privateKey: string;

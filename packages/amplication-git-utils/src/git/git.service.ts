@@ -1,21 +1,21 @@
+import { IGitProvider } from "../IGitProvider";
 import {
+  CreatePullRequestArgs,
+  CreateRepositoryArgs,
+  EnumPullRequestMode,
+  GetRepositoriesArgs,
+  GetRepositoryArgs,
   GitProviderArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  GetRepositoryArgs,
-  GetRepositoriesArgs,
-  CreateRepositoryArgs,
-  CreatePullRequestArgs,
-  GitProvider,
-  EnumPullRequestMode,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitFactory } from "./git-factory";
 
 export class GitClientService {
-  private provider: GitProvider;
+  private provider: IGitProvider;
 
   async create(gitProviderArgs: GitProviderArgs): Promise<GitClientService> {
     this.provider = await GitFactory.getProvider(gitProviderArgs);
