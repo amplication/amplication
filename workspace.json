@@ -19,6 +19,7 @@
     "local-data-service-generator-controller": "packages/local-data-service-generator-controller",
     "util-code-gen-utils": "libs/util/code-gen-utils",
     "util-kafka": "libs/util/kafka",
+    "util-logging": "libs/util/logging",
     "util-nestjs-kafka": "libs/util/nestjs/kafka"
   }
 }
