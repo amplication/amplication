@@ -14,7 +14,7 @@ import { getToken, setToken } from "./authentication/authentication";
 import "@amplication/design-system/icons";
 import "./index.scss";
 import App from "./App";
-import { REACT_APP_DATA_SOURCE, PLUGIN_API_DATA_SOURCE } from "./env";
+import { REACT_APP_DATA_SOURCE, REACT_APP_PLUGIN_API_DATA_SOURCE } from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient();
@@ -34,7 +34,7 @@ const httpLink = createHttpLink({
 });
 
 const pluginApiHttpLink = createHttpLink({
-  uri: PLUGIN_API_DATA_SOURCE,
+  uri: REACT_APP_PLUGIN_API_DATA_SOURCE,
 });
 
 const authLink = setContext((_, { headers }) => {
