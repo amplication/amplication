@@ -5,8 +5,6 @@ import {
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService,
 } from "./resource.service";
-
-import { GitService } from "@amplication/git-utils";
 import {
   PrismaService,
   EnumResourceType,
@@ -439,7 +437,7 @@ describe("ResourceService", () => {
           })),
         },
         {
-          provide: GitService,
+          provide: "GitHub",
           useValue: {},
         },
         {
