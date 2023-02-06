@@ -10,6 +10,7 @@ export enum EnumGitOrganizationType {
 
 export enum EnumGitProvider {
   Github = "Github",
+  Bitbucket = "Bitbucket",
 }
 
 export interface GitProviderArgs {

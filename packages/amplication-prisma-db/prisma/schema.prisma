@@ -532,6 +532,7 @@ enum EnumResourceType {
 
 enum EnumGitProvider {
   Github
+  Bitbucket
 }
 
 enum EnumGitOrganizationType {
