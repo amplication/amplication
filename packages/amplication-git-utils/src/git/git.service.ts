@@ -1,8 +1,9 @@
-import { GitProvider } from "../GitProvider";
+import { GitProvider } from "../git-provider.interface.ts";
 import {
   CreatePullRequestArgs,
   CreateRepositoryArgs,
   EnumPullRequestMode,
+  GetBranchArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitProviderArgs,
@@ -89,7 +90,7 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      await this.provider.createBranchIfNotExists({
+      await this.createBranchIfNotExists({
         owner,
         repositoryName,
         branchName,
@@ -122,6 +123,19 @@ export class GitClientService {
       }
       return existingPullRequest.url;
     }
+  }
+
+  private async createBranchIfNotExists(args: GetBranchArgs) {
+    const branch = await this.provider.getBranch(args);
+    if (!branch) {
+      const { defaultBranch } = await this.getRepository(args);
+      const { sha } = await this.provider.getFirstCommitOnBranch({
+        ...args,
+        branchName: defaultBranch,
+      });
+      return this.provider.createBranch({ ...args, pointingSha: sha });
+    }
+    return branch;
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {

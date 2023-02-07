@@ -1,6 +1,7 @@
 import {
   Branch,
-  CreateBranchIfNotExistsArgs,
+  Commit,
+  CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
@@ -10,6 +11,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
+  GetBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -33,9 +35,6 @@ export interface GitProvider {
   createPullRequestFromFiles: (
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ) => Promise<string>;
-  createBranchIfNotExists: (
-    createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
-  ) => Promise<Branch>;
   createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
   getPullRequestForBranch: (
     getPullRequestForBranchArgs: GetPullRequestForBranchArgs
@@ -43,4 +42,7 @@ export interface GitProvider {
   createPullRequestForBranch: (
     createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
   ) => Promise<string>;
+  getBranch: (args: GetBranchArgs) => Promise<Branch>;
+  createBranch: (args: CreateBranchArgs) => Promise<Branch>;
+  getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
 }
