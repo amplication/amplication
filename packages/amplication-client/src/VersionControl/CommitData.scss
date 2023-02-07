@@ -26,7 +26,7 @@ $metadata-width: 180px;
   }
 
   .user-avatar {
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
   }
 }
