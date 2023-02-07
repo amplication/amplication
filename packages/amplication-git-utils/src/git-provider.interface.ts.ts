@@ -28,10 +28,10 @@ export interface GitProvider {
   ): Promise<RemoteGitRepos>;
   createRepository(
     createRepositoryArgs: CreateRepositoryArgs
-  ): Promise<RemoteGitRepository>;
+  ): Promise<RemoteGitRepository | null>;
   deleteGitOrganization(): Promise<boolean>;
   getOrganization(): Promise<RemoteGitOrganization>;
-  getFile(file: GetFileArgs): Promise<GitFile>;
+  getFile(file: GetFileArgs): Promise<GitFile | null>;
   createPullRequestFromFiles: (
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ) => Promise<string>;
@@ -42,7 +42,7 @@ export interface GitProvider {
   createPullRequestForBranch: (
     createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
   ) => Promise<string>;
-  getBranch: (args: GetBranchArgs) => Promise<Branch>;
+  getBranch: (args: GetBranchArgs) => Promise<Branch | null>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
   getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
   getMyCommitsList: (args: GetBranchArgs) => Promise<Commit[]>;
