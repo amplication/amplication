@@ -1,12 +1,12 @@
-import { GitProvider } from "../GitProvider";
+import { GitProvider } from "../git-provider.interface.ts";
 import {
   CreatePullRequestArgs,
   CreateRepositoryArgs,
   EnumPullRequestMode,
+  GetBranchArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitProviderArgs,
-  GetBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,

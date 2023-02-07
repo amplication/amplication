@@ -8,15 +8,16 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
-import { GitProvider } from "../GitProvider";
+import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
-  GetBranchArgs,
+  CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   EnumGitOrganizationType,
+  GetBranchArgs,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
@@ -27,7 +28,6 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   UpdateFile,
-  CreateBranchArgs,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
