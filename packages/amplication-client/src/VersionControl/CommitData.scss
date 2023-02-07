@@ -15,11 +15,18 @@ $metadata-width: 180px;
     &__message {
       @include regular-12;
       color: var(--black100);
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     &__created {
       @include regular-10;
       color: var(--black80);
     }
+  }
+
+  .user-avatar {
+    margin-left: var(--default-spacing-small);
+    margin-right: var(--default-spacing-small);
   }
 }
