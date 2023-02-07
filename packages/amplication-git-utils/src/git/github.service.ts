@@ -553,31 +553,24 @@ export class GithubService implements GitProvider {
     return pullRequest.html_url;
   }
 
-  async isBranchExists(args: GetBranchArgs): Promise<boolean> {
-    try {
-      const refs = await this.getBranch(args);
-      return Boolean(refs);
-    } catch (error) {
-      return false;
-    }
-  }
-
   async getBranch({
     owner,
     repositoryName,
     branchName,
-  }: GetBranchArgs): Promise<Branch> {
-    const { data: ref } = await this.octokit.rest.git.getRef({
-      owner,
-      repo: repositoryName,
-      ref: `heads/${branchName}`,
-    });
-
-    console.log(
-      `Got branch ${owner}/${repositoryName}/${branchName} with url ${ref.url}`
-    );
-
-    return { sha: ref.object.sha, name: branchName };
+  }: GetBranchArgs): Promise<Branch | null> {
+    try {
+      const { data: ref } = await this.octokit.rest.git.getRef({
+        owner,
+        repo: repositoryName,
+        ref: `heads/${branchName}`,
+      });
+      console.log(
+        `Got branch ${owner}/${repositoryName}/${branchName} with url ${ref.url}`
+      );
+      return { sha: ref.object.sha, name: branchName };
+    } catch (error) {
+      return null;
+    }
   }
 
   async createBranch({

@@ -120,8 +120,8 @@ export class GitClientService {
   }
 
   private async createBranchIfNotExists(args: GetBranchArgs): Promise<Branch> {
-    const isBranchExist = await this.provider.isBranchExists(args);
-    if (!isBranchExist) {
+    const branch = await this.provider.getBranch(args);
+    if (!branch) {
       const { defaultBranch } = await this.provider.getRepository(args);
       const { sha } = await this.provider.getFirstCommitOnBranch({
         ...args,
@@ -135,7 +135,7 @@ export class GitClientService {
 
       return branch;
     }
-    return this.provider.getBranch(args);
+    return branch;
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {
