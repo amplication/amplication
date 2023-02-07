@@ -90,7 +90,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
       setSelectedVersion(pluginVersion.version);
       pluginInstallation?.PluginInstallation.version !==
         pluginVersion.version && setIsValid(false);
-      editorRef.current = JSON.stringify(pluginVersion.settings);
+      editorRef.current = pluginVersion.settings;
     },
     [setSelectedVersion, setIsValid]
   );
@@ -99,7 +99,6 @@ const InstalledPluginSettings: React.FC<Props> = ({
     if (!pluginInstallation) return;
 
     const { enabled, id } = pluginInstallation.PluginInstallation;
-
     updatePluginInstallation({
       variables: {
         data: {
@@ -112,7 +111,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
         },
       },
     }).catch(console.error);
-  }, [updatePluginInstallation, pluginInstallation]);
+  }, [updatePluginInstallation, pluginInstallation, selectedVersion]);
 
   const errorMessage = formatError(updateError);
 
