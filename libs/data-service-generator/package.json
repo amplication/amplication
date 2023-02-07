@@ -5,8 +5,6 @@
   "main": "./src/index.js",
   "dependencies": {
     "@amplication/code-gen-utils": "^0.0.3",
-    "@amplication/plugin-auth": "^1.0.5-beta.5",
-    "@amplication/plugin-auth-basic": "1.2.2",
     "@amplication/plugin-db-postgres": "1.1.7",
     "@babel/parser": "7.14.7",
     "axios": "1.2.1",
