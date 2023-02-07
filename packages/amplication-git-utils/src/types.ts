@@ -151,3 +151,8 @@ export interface CreateBranchArgs extends OneBranchArgs {
 export interface Commit {
   sha: string;
 }
+
+export interface AmplicationBotData {
+  id: string;
+  login: string;
+}

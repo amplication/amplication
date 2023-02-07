@@ -1,5 +1,6 @@
 import { GitProvider } from "../GitProvider";
 import {
+  Branch,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
   EnumPullRequestMode,
@@ -25,12 +26,6 @@ export class GitClientService {
 
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
-  }
-
-  async getRepository(
-    getRepositoryArgs: GetRepositoryArgs
-  ): Promise<RemoteGitRepository> {
-    return this.provider.getRepository(getRepositoryArgs);
   }
 
   async getRepositories(
@@ -94,14 +89,14 @@ export class GitClientService {
         owner,
         repositoryName,
         branchName,
-      }),
-        await this.provider.createCommit({
-          owner,
-          repositoryName,
-          commitMessage,
-          branchName,
-          files: preparedFiles,
-        });
+      });
+      await this.provider.createCommit({
+        owner,
+        repositoryName,
+        commitMessage,
+        branchName,
+        files: preparedFiles,
+      });
       const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
@@ -125,15 +120,21 @@ export class GitClientService {
     }
   }
 
-  private async createBranchIfNotExists(args: OneBranchArgs) {
+  private async createBranchIfNotExists(args: OneBranchArgs): Promise<Branch> {
     const isBranchExist = await this.provider.isBranchExists(args);
     if (!isBranchExist) {
-      const { defaultBranch } = await this.getRepository(args);
+      const { defaultBranch } = await this.provider.getRepository(args);
       const { sha } = await this.provider.getFirstCommitOnBranch({
         ...args,
         branchName: defaultBranch,
       });
-      return this.provider.createBranch({ ...args, pointingSha: sha });
+      const branch = this.provider.createBranch({ ...args, pointingSha: sha });
+      const amplicationCommits = await this.provider.getMyCommitsList({
+        ...args,
+        branchName: defaultBranch,
+      });
+
+      return branch;
     }
     return this.provider.getBranch(args);
   }

@@ -10,8 +10,10 @@ import {
 } from "octokit-plugin-create-pull-request/dist-types/types";
 import { GitProvider } from "../GitProvider";
 import {
+  AmplicationBotData,
   Branch,
-  OneBranchArgs,
+  Commit,
+  CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
@@ -23,11 +25,11 @@ import {
   GetRepositoryArgs,
   GitFile,
   GitProviderArgs,
+  OneBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
   UpdateFile,
-  CreateBranchArgs,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -59,6 +61,121 @@ export class GithubService implements GitProvider {
       appId: this.appId,
       privateKey,
     });
+  }
+  async getMyCommitsList(args: OneBranchArgs): Promise<Commit[]> {
+    const { branchName, owner, repositoryName } = args;
+    const botData = await this.getAmplicationBotData();
+
+    let moreCommitsPagination = true;
+    let commitsList: Commit[] = [];
+    let cursor: string | undefined = undefined;
+
+    do {
+      const { commits, hasNextPage, endCursor } =
+        await this.paginatedCommitsList({
+          botData,
+          branchName,
+          owner,
+          repositoryName,
+          cursor,
+        });
+      moreCommitsPagination = hasNextPage;
+      commitsList = commitsList.concat(commits); // The list is in ascending order ( newest commits are first )
+      cursor = endCursor;
+    } while (moreCommitsPagination);
+
+    return commitsList;
+  }
+
+  private async paginatedCommitsList(
+    args: OneBranchArgs & {
+      cursor: string | undefined;
+      botData: AmplicationBotData;
+    }
+  ): Promise<{ commits: Commit[]; hasNextPage: boolean; endCursor: string }> {
+    const { branchName, owner, repositoryName, cursor, botData } = args;
+
+    const data: {
+      repository: {
+        ref: {
+          target: {
+            history: {
+              nodes: {
+                oid: string;
+              }[];
+              pageInfo: {
+                hasNextPage: boolean;
+                endCursor: string;
+              };
+            };
+          };
+        };
+      };
+    } = await this.octokit.graphql(
+      `query ($owner: String!, $repo: String!, $branch: String!, $author: ID!) {
+        repository(name: $repo, owner: $owner) {
+          ref(qualifiedName: $branch) {
+            target {
+              ... on Commit {
+                history(author:{id: $author},first:100 ${
+                  cursor ? `,after:"${cursor}"` : ""
+                }) {
+                  nodes {
+                    oid
+                  }
+                  pageInfo {
+                    hasNextPage
+                    endCursor
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`,
+      {
+        owner,
+        repo: repositoryName,
+        branch: branchName,
+        author: botData.id,
+      }
+    );
+    const {
+      repository: {
+        ref: {
+          target: {
+            history: {
+              nodes,
+              pageInfo: { endCursor, hasNextPage },
+            },
+          },
+        },
+      },
+    } = data;
+    return {
+      commits: nodes.map(({ oid }) => ({
+        sha: oid,
+      })),
+      hasNextPage,
+      endCursor,
+    };
+  }
+
+  async getAmplicationBotData(): Promise<AmplicationBotData> {
+    const data: { viewer: { id: string; login: string } } = await this.octokit
+      .graphql(`{
+      viewer{
+        id
+        login
+      }
+    }`);
+    const {
+      viewer: { id, login },
+    } = data;
+    return {
+      login,
+      id,
+    };
   }
 
   async init(): Promise<void> {
