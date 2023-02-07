@@ -11,7 +11,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  OneBranchArgs,
+  GetBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -42,8 +42,8 @@ export interface GitProvider {
   createPullRequestForBranch: (
     createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
   ) => Promise<string>;
-  isBranchExists: (args: OneBranchArgs) => Promise<boolean>;
-  getBranch: (args: OneBranchArgs) => Promise<Branch>;
+  isBranchExists: (args: GetBranchArgs) => Promise<boolean>;
+  getBranch: (args: GetBranchArgs) => Promise<Branch>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
-  getFirstCommitOnBranch: (args: OneBranchArgs) => Promise<Commit>;
+  getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
 }

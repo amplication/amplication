@@ -11,7 +11,7 @@ import {
 import { GitProvider } from "../GitProvider";
 import {
   Branch,
-  OneBranchArgs,
+  GetBranchArgs,
   CreateCommitArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
@@ -436,7 +436,7 @@ export class GithubService implements GitProvider {
     return pullRequest.html_url;
   }
 
-  async isBranchExists(args: OneBranchArgs): Promise<boolean> {
+  async isBranchExists(args: GetBranchArgs): Promise<boolean> {
     try {
       const refs = await this.getBranch(args);
       return Boolean(refs);
@@ -449,7 +449,7 @@ export class GithubService implements GitProvider {
     owner,
     repositoryName,
     branchName,
-  }: OneBranchArgs): Promise<Branch> {
+  }: GetBranchArgs): Promise<Branch> {
     const { data: ref } = await this.octokit.rest.git.getRef({
       owner,
       repo: repositoryName,
@@ -494,7 +494,7 @@ export class GithubService implements GitProvider {
     branchName,
     owner,
     repositoryName,
-  }: OneBranchArgs): Promise<{ sha: string }> {
+  }: GetBranchArgs): Promise<{ sha: string }> {
     const firstCommit: TData = await this.octokit.graphql(
       `query ($owner: String!, $repo: String!, $branchName: String!) {
       repository(name: $repo, owner: $owner) {

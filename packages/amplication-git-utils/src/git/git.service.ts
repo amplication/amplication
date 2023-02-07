@@ -6,7 +6,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitProviderArgs,
-  OneBranchArgs,
+  GetBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -125,7 +125,7 @@ export class GitClientService {
     }
   }
 
-  private async createBranchIfNotExists(args: OneBranchArgs) {
+  private async createBranchIfNotExists(args: GetBranchArgs) {
     const isBranchExist = await this.provider.isBranchExists(args);
     if (!isBranchExist) {
       const { defaultBranch } = await this.getRepository(args);

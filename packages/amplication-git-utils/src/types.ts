@@ -136,7 +136,7 @@ export interface CreateCommitArgs {
   files: UpdateFile[];
 }
 
-export interface OneBranchArgs extends FindOneRepositoryArgs {
+export interface GetBranchArgs extends FindOneRepositoryArgs {
   branchName: string;
 }
 export interface FindOneRepositoryArgs {
@@ -144,7 +144,7 @@ export interface FindOneRepositoryArgs {
   repositoryName: string;
 }
 
-export interface CreateBranchArgs extends OneBranchArgs {
+export interface CreateBranchArgs extends GetBranchArgs {
   pointingSha: string;
 }
 
