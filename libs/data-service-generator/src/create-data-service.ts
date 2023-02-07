@@ -28,12 +28,8 @@ export async function createDataService(
     logger.info("Creating application...");
 
     const context = DsgContext.getInstance;
-    const { appInfo, entities } = context;
+    const { appInfo } = context;
     const { settings } = appInfo;
-    await createLog({ level: "info", message: "Creating DTOs..." });
-    logger.info("Creating DTOs...");
-    const dtos = await createDTOs(entities);
-    context.DTOs = dtos;
 
     await createLog({ level: "info", message: "Copying static modules..." });
     logger.info("Copying static modules...");

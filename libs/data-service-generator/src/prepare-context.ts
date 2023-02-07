@@ -19,7 +19,6 @@ import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
-import { createUserEntityIfNotExist } from "./server/user-entity/user-entity";
 import { resolveTopicNames } from "./util/message-broker";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
@@ -47,11 +46,7 @@ export async function prepareContext(
     pluginInstallationPath
   );
 
-  const [entitiesWithUserEntity] = createUserEntityIfNotExist(entities);
-
-  const entitiesWithPluralName = prepareEntityPluralName(
-    entitiesWithUserEntity
-  );
+  const entitiesWithPluralName = prepareEntityPluralName(entities);
 
   const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
 

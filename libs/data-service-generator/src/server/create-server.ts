@@ -6,7 +6,7 @@ import {
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../util/read-static-modules";
 import { formatCode, formatJson } from "@amplication/code-gen-utils";
-import { createDTOModules } from "./resource/create-dtos";
+import { createDTOModules, createDTOs } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -33,12 +33,15 @@ export function createServer(): Promise<Module[]> {
 async function createServerInternal(
   eventParams: CreateServerParams
 ): Promise<Module[]> {
-  const {
-    serverDirectories,
-    entities,
-    DTOs: dtos,
-    logger,
-  } = DsgContext.getInstance;
+  const { serverDirectories, entities, logger } = DsgContext.getInstance;
+
+  const context = DsgContext.getInstance;
+
+  await createLog({ level: "info", message: "Creating DTOs..." });
+  logger.info("Creating DTOs...");
+
+  const dtos = await createDTOs(context.entities);
+  context.DTOs = dtos;
 
   const dsgVersion = (await import("../../package.json")).version;
   logger.info(`Running DSG Version: ${dsgVersion}`);
