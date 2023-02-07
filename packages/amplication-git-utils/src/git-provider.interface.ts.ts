@@ -42,7 +42,6 @@ export interface GitProvider {
   createPullRequestForBranch: (
     createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
   ) => Promise<string>;
-  isBranchExists: (args: GetBranchArgs) => Promise<boolean>;
   getBranch: (args: GetBranchArgs) => Promise<Branch>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
   getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
