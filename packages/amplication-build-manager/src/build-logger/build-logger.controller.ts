@@ -13,7 +13,7 @@ export class BuildLoggerController {
 
   @Post("create-log")
   async completeCodeGenerationStep(@Body() logEntry: LogEntry): Promise<void> {
-    this.queueService.emitMessage(
+    await this.queueService.emitMessage(
       this.configService.get(Env.DSG_LOG_TOPIC),
       JSON.stringify(logEntry)
     );

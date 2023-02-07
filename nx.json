@@ -31,7 +31,8 @@
           "lint",
           "test:e2e",
           "test:cov"
-        ]
+        ],
+        "accessToken": "ZjczM2RhYjEtYzdmOS00MDVhLThkYWEtMDU4MmJkMTQ1ZWZjfHJlYWQ="
       }
     }
   },

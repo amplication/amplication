@@ -156,14 +156,4 @@ export const Routes: RouteDef[] = [
     exactPath: true,
     isAnalytics: true,
   },
-  {
-    path: "/user/profile",
-    Component: lazy(() => import("../Profile/ProfilePage")),
-    permission: true,
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: true,
-    routes: [],
-    isAnalytics: true,
-  },
 ];
