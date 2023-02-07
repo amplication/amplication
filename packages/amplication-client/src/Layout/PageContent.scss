@@ -1,5 +1,7 @@
 @import "../style/index.scss";
 
+$tabs-width: 300px;
+
 .amp-page-content {
   display: flex;
   flex: 1;
@@ -12,6 +14,7 @@
   &__tabs {
     display: flex;
     flex-direction: column;
+    width: $tabs-width;
     background: var(--page-content-tab-background);
     border-radius: var(--default-border-radius);
     border: $border-black10;
