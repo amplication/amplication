@@ -1,13 +1,12 @@
-import { GitProvider } from "../GitProvider";
+import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
   EnumPullRequestMode,
+  GetBranchArgs,
   GetRepositoriesArgs,
-  GetRepositoryArgs,
   GitProviderArgs,
-  OneBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -120,7 +119,7 @@ export class GitClientService {
     }
   }
 
-  private async createBranchIfNotExists(args: OneBranchArgs): Promise<Branch> {
+  private async createBranchIfNotExists(args: GetBranchArgs): Promise<Branch> {
     const isBranchExist = await this.provider.isBranchExists(args);
     if (!isBranchExist) {
       const { defaultBranch } = await this.provider.getRepository(args);

@@ -8,7 +8,7 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
-import { GitProvider } from "../GitProvider";
+import { GitProvider } from "../git-provider.interface.ts";
 import {
   AmplicationBotData,
   Branch,
@@ -19,13 +19,13 @@ import {
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   EnumGitOrganizationType,
+  GetBranchArgs,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
   GitProviderArgs,
-  OneBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -62,7 +62,7 @@ export class GithubService implements GitProvider {
       privateKey,
     });
   }
-  async getMyCommitsList(args: OneBranchArgs): Promise<Commit[]> {
+  async getMyCommitsList(args: GetBranchArgs): Promise<Commit[]> {
     const { branchName, owner, repositoryName } = args;
     const botData = await this.getAmplicationBotData();
 
@@ -88,7 +88,7 @@ export class GithubService implements GitProvider {
   }
 
   private async paginatedCommitsList(
-    args: OneBranchArgs & {
+    args: GetBranchArgs & {
       cursor: string | undefined;
       botData: AmplicationBotData;
     }
@@ -553,7 +553,7 @@ export class GithubService implements GitProvider {
     return pullRequest.html_url;
   }
 
-  async isBranchExists(args: OneBranchArgs): Promise<boolean> {
+  async isBranchExists(args: GetBranchArgs): Promise<boolean> {
     try {
       const refs = await this.getBranch(args);
       return Boolean(refs);
@@ -566,7 +566,7 @@ export class GithubService implements GitProvider {
     owner,
     repositoryName,
     branchName,
-  }: OneBranchArgs): Promise<Branch> {
+  }: GetBranchArgs): Promise<Branch> {
     const { data: ref } = await this.octokit.rest.git.getRef({
       owner,
       repo: repositoryName,
@@ -611,7 +611,7 @@ export class GithubService implements GitProvider {
     branchName,
     owner,
     repositoryName,
-  }: OneBranchArgs): Promise<{ sha: string }> {
+  }: GetBranchArgs): Promise<{ sha: string }> {
     const firstCommit: TData = await this.octokit.graphql(
       `query ($owner: String!, $repo: String!, $branchName: String!) {
       repository(name: $repo, owner: $owner) {
