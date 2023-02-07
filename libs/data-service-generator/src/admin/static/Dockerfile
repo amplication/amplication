@@ -2,7 +2,7 @@
 FROM node:18.13.0-slim AS base
 
 # instantiate environment variable
-ARG REACT_APP_SERVER_URL
+ARG REACT_APP_SERVER_URL=http://localhost:3000
 
 # set the environment variable that points to the server
 ENV REACT_APP_SERVER_URL=$REACT_APP_SERVER_URL
@@ -44,7 +44,7 @@ RUN chown -R nginx:nginx /var/run/nginx.pid \
 USER nginx
 
 # expose a specific port on the docker container
-ENV PORT=8080
+ENV PORT=80
 EXPOSE ${PORT}
 
 # start the server using the previously build application

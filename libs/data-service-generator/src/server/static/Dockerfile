@@ -43,12 +43,13 @@ RUN groupadd --gid ${gid} ${user}
 RUN useradd --uid ${uid} --gid ${gid} -m ${user}
 
 # copy over the bundled code from the build stage
-COPY  --from=base /app/node_modules/ ./node_modules
-COPY  --from=base /app/package.json ./package.json
-COPY  --from=base /app/dist ./dist
-COPY  --from=base /app/prisma ./prisma
-COPY  --from=base /app/scripts ./scripts
-COPY  --from=base /app/tsconfig* ./
+COPY --from=base /app/node_modules/ ./node_modules
+COPY --from=base /app/package.json ./package.json
+COPY --from=base /app/dist ./dist
+COPY --from=base /app/prisma ./prisma/
+COPY --from=base /app/scripts ./scripts
+COPY --from=base /app/src ./src
+COPY --from=base /app/tsconfig* ./
 
 # change ownership of the workspace directory
 RUN chown -R ${uid}:${gid} /app/
@@ -64,4 +65,4 @@ ENV PORT=3000
 EXPOSE ${PORT}
 
 # start the server using the previously build application
-CMD [ "node", "./dist/main.js"]
+CMD [ "node", "./dist/main.js" ]
