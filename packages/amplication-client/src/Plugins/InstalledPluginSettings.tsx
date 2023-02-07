@@ -45,7 +45,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const { currentProject, currentWorkspace, currentResource } =
     useContext(AppContext);
   const editorRef: React.MutableRefObject<string | null> = useRef();
-  const [isValid, setIsValid] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(true);
   const [resetKey, setResetKey] = useState<string>();
 
   const {
@@ -89,9 +89,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
     (pluginVersion: PluginVersion) => {
       setSelectedVersion(pluginVersion.version);
       pluginInstallation?.PluginInstallation.version !==
-        pluginVersion.version &&
-        !isValid &&
-        setIsValid(true);
+        pluginVersion.version && setIsValid(false);
       editorRef.current = JSON.stringify(pluginVersion.settings);
     },
     [setSelectedVersion, setIsValid]
@@ -143,7 +141,10 @@ const InstalledPluginSettings: React.FC<Props> = ({
                 <Label text="Plugin Version" />
               </div>
               <SelectMenu
-                title={pluginInstallation.PluginInstallation.version}
+                title={
+                  selectedVersion ||
+                  pluginInstallation.PluginInstallation.version
+                }
                 buttonStyle={EnumButtonStyle.Secondary}
                 className={`${moduleClass}__menu`}
                 icon="chevron_down"
