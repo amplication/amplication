@@ -8,7 +8,6 @@ import { EnumResourceType } from "./models";
 import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
 import { defaultLogger } from "./server/logging";
-import { createDTOs } from "./server/resource/create-dtos";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
