@@ -1,7 +1,7 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { CircleBadge } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
@@ -64,27 +64,30 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
 
   const handleBlur = () => {
     setIsEditing(false);
+    setShowTick(false);
   };
 
-  const handleSubmit = (data) => {
-    const { name } = data;
-    trackEvent({
-      eventName: AnalyticsEventNames.ResourceInfoUpdate,
-    });
-    updateResource({
-      variables: {
-        data: {
-          name,
+  const handleSubmit = useCallback(
+    (data) => {
+      const { name } = data;
+      trackEvent({
+        eventName: AnalyticsEventNames.ResourceInfoUpdate,
+      });
+      updateResource({
+        variables: {
+          data: {
+            name,
+          },
+          resourceId: resourceId,
         },
-        resourceId: resourceId,
-      },
-    }).catch(console.error);
-    setIsEditing(false);
-    setShowTick(true);
-    setTimeout(() => {
-      setShowTick(false);
-    }, 2000);
-  };
+      }).catch(console.error);
+      setShowTick(true);
+      setTimeout(() => {
+        setShowTick(false);
+      }, 3000);
+    },
+    [updateResource, resourceId, trackEvent]
+  );
 
   return (
     <>
@@ -102,8 +105,8 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
           >
-            {currentResource?.resourceType === "ProjectConfiguration" ? (
-              isEditing ? (
+            {isEditing ? (
+              <div className={`${CLASS_NAME}__header-input-container`}>
                 <Formik
                   initialValues={{ name: currentResource?.name }}
                   onSubmit={handleSubmit}
@@ -111,21 +114,25 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                   {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                       <FormikAutoSave debounceMS={1000} />
-                      <Field name="name" as="input" onBlur={handleBlur} />
+                      <Field
+                        autoFocus={true}
+                        className={`${CLASS_NAME}__header-input`}
+                        name="name"
+                        as="input"
+                        onBlur={handleBlur}
+                      />
                     </Form>
                   )}
                 </Formik>
-              ) : (
-                <span
-                  className={`${CLASS_NAME}__header-text`}
-                  onClick={() => setIsEditing(true)}
-                >
-                  {currentResource?.name}
-                  {showTick && <Icon icon={"check"} size="medium" />}
-                </span>
-              )
+                {showTick && <Icon icon={"check"} size="medium" />}
+              </div>
             ) : (
-              currentResource?.name
+              <span
+                className={`${CLASS_NAME}__header-text`}
+                onClick={() => setIsEditing(true)}
+              >
+                {currentResource?.name}
+              </span>
             )}
             <CircleBadge
               name={currentResource?.name || ""}

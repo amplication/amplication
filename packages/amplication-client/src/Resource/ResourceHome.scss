@@ -32,6 +32,25 @@ $circle-badge-border: 2px;
   &__header-text:hover {
     cursor: pointer;
   }
+  &__header .amp-icon {
+    color: #31c587;
+  }
+  &__header-input-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__header-input {
+    text-align: center;
+    outline: none;
+    border: none;
+    background: none;
+    font-size: inherit;
+    font-family: inherit;
+  }
 
   .circle-badge {
     width: $application-badge-size-large;
