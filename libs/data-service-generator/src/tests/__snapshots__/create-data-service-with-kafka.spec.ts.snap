@@ -982,13 +982,11 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { JsonValue } from \\"type-fest\\";
-import { Organization } from \\"../organization/Organization\\";
+  "admin-ui/src/api/user/User.ts": "import { Organization } from \\"../organization/Organization\\";
+import { JsonValue } from \\"type-fest\\";
 import { Profile } from \\"../profile/Profile\\";
 
 export type User = {
-  username: string;
-  roles: JsonValue;
   id: string;
   name: string;
   bio: string;
@@ -1007,16 +1005,13 @@ export type User = {
   profile?: Profile | null;
 };
 ",
-  "admin-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from \\"../../types\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
+import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserCreateInput = {
-  username: string;
-  password: string;
-  roles: InputJsonValue;
   name: string;
   bio: string;
   email: string;
@@ -1067,9 +1062,6 @@ export type UserListRelationFilter = {
   "admin-ui/src/api/user/UserOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type UserOrderByInput = {
-  username?: SortOrder;
-  password?: SortOrder;
-  roles?: SortOrder;
   id?: SortOrder;
   name?: SortOrder;
   bio?: SortOrder;
@@ -1086,16 +1078,13 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "admin-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from \\"../../types\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
+import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserUpdateInput = {
-  username?: string;
-  password?: string;
-  roles?: InputJsonValue;
   name?: string;
   bio?: string;
   email?: string;
@@ -2456,33 +2445,23 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
-  PasswordInput,
-  SelectArrayInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
+  SelectArrayInput,
   BooleanInput,
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ProfileTitle } from \\"../profile/ProfileTitle\\";
-import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
-        <TextInput label=\\"Username\\" source=\\"username\\" />
-        <PasswordInput label=\\"Password\\" source=\\"password\\" />
-        <SelectArrayInput
-          source=\\"roles\\"
-          choices={ROLES_OPTIONS}
-          optionText=\\"label\\"
-          optionValue=\\"value\\"
-        />
         <TextInput label=\\"Name\\" source=\\"name\\" />
         <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
         <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
@@ -2547,33 +2526,23 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
-  PasswordInput,
-  SelectArrayInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
+  SelectArrayInput,
   BooleanInput,
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ProfileTitle } from \\"../profile/ProfileTitle\\";
-import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <TextInput label=\\"Username\\" source=\\"username\\" />
-        <PasswordInput label=\\"Password\\" source=\\"password\\" />
-        <SelectArrayInput
-          source=\\"roles\\"
-          choices={ROLES_OPTIONS}
-          optionText=\\"label\\"
-          optionValue=\\"value\\"
-        />
         <TextInput label=\\"Name\\" source=\\"name\\" />
         <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
         <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
@@ -2654,8 +2623,6 @@ export const UserList = (props: ListProps): React.ReactElement => {
       pagination={<Pagination />}
     >
       <Datagrid rowClick=\\"show\\">
-        <TextField label=\\"Username\\" source=\\"username\\" />
-        <TextField label=\\"Roles\\" source=\\"roles\\" />
         <TextField label=\\"Id\\" source=\\"id\\" />
         <TextField label=\\"Name\\" source=\\"name\\" />
         <TextField label=\\"Bio\\" source=\\"bio\\" />
@@ -2695,8 +2662,6 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
-        <TextField label=\\"Username\\" source=\\"username\\" />
-        <TextField label=\\"Roles\\" source=\\"roles\\" />
         <TextField label=\\"Id\\" source=\\"id\\" />
         <TextField label=\\"Name\\" source=\\"name\\" />
         <TextField label=\\"Bio\\" source=\\"bio\\" />
@@ -2722,10 +2687,10 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 ",
   "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from \\"../api/user/User\\";
 
-export const USER_TITLE_FIELD = \\"username\\";
+export const USER_TITLE_FIELD = \\"name\\";
 
 export const UserTitle = (record: TUser): string => {
-  return record.username || String(record.id);
+  return record.name || String(record.id);
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
@@ -2902,18 +2867,7 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000
-DB_USER=testUsername
-DB_PASSWORD=1234
-DB_PORT=5433
-DB_URL=postgres://testUsername:1234@localhost:5433/db-name
-JWT_SECRET_KEY=Change_ME!!!
-JWT_EXPIRATION=2d
-KAFKA_BROKERS=localhost:9092
-KAFKA_ENABLE_SSL=false
-KAFKA_CLIENT_ID=sample-application
-KAFKA_GROUP_ID=sample-application",
-
+PORT=3000",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -2958,8 +2912,8 @@ services:
 }
 ",
   "server/package.json": "{
-  \\"name\\": \\"server-template\\",
-  \\"version\\": \\"0.16.1\\",
+  \\"name\\": \\"@sample-application/server\\",
+  \\"version\\": \\"0.1.3\\",
   \\"private\\": true,
   \\"scripts\\": {
     \\"start\\": \\"nest start\\",
@@ -2979,13 +2933,11 @@ services:
     \\"compose:down\\": \\"docker-compose down --volumes\\"
   },
   \\"dependencies\\": {
-    \\"@nestjs/common\\": \\"8.2.3\\",
+    \\"@nestjs/common\\": \\"8.4.7\\",
     \\"@nestjs/config\\": \\"1.1.5\\",
-    \\"@nestjs/core\\": \\"8.2.3\\",
+    \\"@nestjs/core\\": \\"8.4.7\\",
     \\"@nestjs/graphql\\": \\"9.1.2\\",
-    \\"@nestjs/jwt\\": \\"8.0.0\\",
-    \\"@nestjs/passport\\": \\"8.2.2\\",
-    \\"@nestjs/platform-express\\": \\"8.2.3\\",
+    \\"@nestjs/platform-express\\": \\"8.4.7\\",
     \\"@nestjs/serve-static\\": \\"2.2.2\\",
     \\"@nestjs/swagger\\": \\"5.1.5\\",
     \\"@prisma/client\\": \\"4.6.1\\",
@@ -2999,23 +2951,18 @@ services:
     \\"nest-morgan\\": \\"1.0.1\\",
     \\"nestjs-prisma\\": \\"0.19.0\\",
     \\"npm-run-all\\": \\"4.1.5\\",
-    \\"passport\\": \\"0.6.0\\",
-    \\"passport-http\\": \\"0.3.0\\",
-    \\"passport-jwt\\": \\"4.0.0\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
     \\"ts-node\\": \\"9.1.1\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
-    \\"@nestjs/testing\\": \\"8.2.3\\",
+    \\"@nestjs/testing\\": \\"8.4.7\\",
     \\"@types/bcrypt\\": \\"5.0.0\\",
     \\"@types/express\\": \\"4.17.9\\",
     \\"@types/graphql-type-json\\": \\"0.3.2\\",
     \\"@types/jest\\": \\"26.0.19\\",
     \\"@types/normalize-path\\": \\"3.0.0\\",
-    \\"@types/passport-http\\": \\"0.3.9\\",
-    \\"@types/passport-jwt\\": \\"3.0.6\\",
     \\"@types/supertest\\": \\"2.0.11\\",
     \\"jest\\": \\"27.0.6\\",
     \\"jest-mock-extended\\": \\"^2.0.4\\",
@@ -3042,9 +2989,6 @@ generator client {
 }
 
 model User {
-  username           String              @unique
-  password           String
-  roles              Json
   id                 String              @id @default(cuid())
   name               String
   bio                String
@@ -3219,16 +3163,6 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
 
 export async function customSeed() {
   const client = new PrismaClient();
-  const username = \\"admin\\";
-
-  //replace this sample code to populate your database
-  //with data that is required for your service to start
-  await client.user.update({
-    where: { username: username },
-    data: {
-      username,
-    },
-  });
 
   client.$disconnect();
 }
@@ -3236,9 +3170,6 @@ export async function customSeed() {
   "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
 import { customSeed } from \\"./customSeed\\";
-import { Salt, parseSalt } from \\"../src/auth/password.service\\";
-import { hash } from \\"bcrypt\\";
-import { EnumUserPriority } from \\"../src/user/base/EnumUserPriority\\";
 
 if (require.main === module) {
   dotenv.config();
@@ -3248,48 +3179,12 @@ if (require.main === module) {
   if (!BCRYPT_SALT) {
     throw new Error(\\"BCRYPT_SALT environment variable must be defined\\");
   }
-  const salt = parseSalt(BCRYPT_SALT);
-
-  seed(salt).catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
 }
 
-async function seed(bcryptSalt: Salt) {
+async function seed() {
   console.info(\\"Seeding database...\\");
 
   const client = new PrismaClient();
-
-  const data = {
-    username: \\"admin\\",
-    password: await hash(\\"admin\\", bcryptSalt),
-    roles: [\\"user\\"],
-    name: \\"\\",
-    bio: \\"\\",
-    email: \\"example@example.com\\",
-    age: 0,
-    birthDate: new Date(),
-    score: 0,
-    interests: [],
-    priority: EnumUserPriority.High,
-    isCurious: false,
-    location: \\"(32.085300, 34.781769)\\",
-
-    extendedProperties: {
-      foo: \\"bar\\",
-    },
-  };
-
-  await client.user.upsert({
-    where: {
-      username: data.username,
-    },
-
-    update: {},
-    create: data,
-  });
-
   void client.$disconnect();
 
   console.info(\\"Seeding database with custom seed...\\");
@@ -3356,749 +3251,6 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
   ],
 })
 export class AppModule {}
-",
-  "server/src/auth/Credentials.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
-
-@InputType()
-export class Credentials {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String, { nullable: false })
-  username!: string;
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String, { nullable: false })
-  password!: string;
-}
-",
-  "server/src/auth/IAuthStrategy.ts": "import { UserInfo } from \\"./UserInfo\\";
-
-export interface IAuthStrategy {
-  validate: (...any: any) => Promise<UserInfo>;
-}
-",
-  "server/src/auth/ITokenService.ts": "export interface ITokenPayload {
-  id: string;
-  username: string;
-  password: string;
-}
-
-export interface ITokenService {
-  createToken: ({ id, username, password }: ITokenPayload) => Promise<string>;
-}
-",
-  "server/src/auth/LoginArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { Credentials } from \\"./Credentials\\";
-
-@ArgsType()
-export class LoginArgs {
-  @Field(() => Credentials, { nullable: false })
-  credentials!: Credentials;
-}
-",
-  "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-import { User } from \\"../user/base/user\\";
-
-@ObjectType()
-export class UserInfo implements Partial<User> {
-  @Field(() => String)
-  id!: string;
-  @Field(() => String)
-  username!: string;
-  @Field(() => [String])
-  roles!: string[];
-  @Field(() => String, { nullable: true })
-  accessToken?: string;
-}
-",
-  "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
-
-/**
- * @returns attributes not allowed to appear on given data according to given
- * attributeMatchers
- */
-export function getInvalidAttributes(
-  permission: Permission,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  data: Object
-): string[] {
-  const filteredData = permission.filter(data);
-  return Object.keys(data).filter((key) => !(key in filteredData));
-}
-",
-  "server/src/auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
-import grants from \\"../grants.json\\";
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
-",
-  "server/src/auth/auth.controller.ts": "import { Body, Controller, Post } from \\"@nestjs/common\\";
-import { ApiTags } from \\"@nestjs/swagger\\";
-import { AuthService } from \\"./auth.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@ApiTags(\\"auth\\")
-@Controller()
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-  @Post(\\"login\\")
-  async login(@Body() body: Credentials): Promise<UserInfo> {
-    return this.authService.login(body);
-  }
-}
-",
-  "server/src/auth/auth.module.ts": "import { forwardRef, Module } from \\"@nestjs/common\\";
-import { ConfigService } from \\"@nestjs/config\\";
-import { JwtModule } from \\"@nestjs/jwt\\";
-import { PassportModule } from \\"@nestjs/passport\\";
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
-import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
-import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserModule } from \\"../user/user.module\\";
-import { AuthController } from \\"./auth.controller\\";
-import { AuthResolver } from \\"./auth.resolver\\";
-import { AuthService } from \\"./auth.service\\";
-import { BasicStrategy } from \\"./basic/basic.strategy\\";
-import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
-import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
-import { PasswordService } from \\"./password.service\\";
-//@ts-ignore
-import { TokenService } from \\"./token.service\\";
-
-@Module({
-  imports: [
-    forwardRef(() => UserModule),
-    PassportModule,
-    SecretsManagerModule,
-    JwtModule.registerAsync({
-      imports: [SecretsManagerModule],
-      inject: [SecretsManagerService, ConfigService],
-      useFactory: async (
-        secretsService: SecretsManagerService,
-        configService: ConfigService
-      ) => {
-        const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
-        const expiresIn = configService.get(JWT_EXPIRATION);
-        if (!secret) {
-          throw new Error(\\"Didn't get a valid jwt secret\\");
-        }
-        if (!expiresIn) {
-          throw new Error(\\"Jwt expire in value is not valid\\");
-        }
-        return {
-          secret: secret,
-          signOptions: { expiresIn },
-        };
-      },
-    }),
-  ],
-  providers: [
-    AuthService,
-    BasicStrategy,
-    PasswordService,
-    AuthResolver,
-    JwtStrategy,
-    jwtSecretFactory,
-    TokenService,
-  ],
-  controllers: [AuthController],
-  exports: [AuthService, PasswordService],
-})
-export class AuthModule {}
-",
-  "server/src/auth/auth.resolver.ts": "import * as common from \\"@nestjs/common\\";
-import { Args, Mutation, Query, Resolver } from \\"@nestjs/graphql\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { AuthService } from \\"./auth.service\\";
-import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
-import { UserData } from \\"./userData.decorator\\";
-import { LoginArgs } from \\"./LoginArgs\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@Resolver(UserInfo)
-export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
-  @Mutation(() => UserInfo)
-  async login(@Args() args: LoginArgs): Promise<UserInfo> {
-    return this.authService.login(args.credentials);
-  }
-
-  @Query(() => UserInfo)
-  @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-  async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
-    return userInfo;
-  }
-}
-",
-  "server/src/auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../user/user.service\\";
-import { AuthService } from \\"./auth.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { PasswordService } from \\"./password.service\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { TokenService } from \\"./token.service\\";
-import { VALID_ID } from \\"../tests/auth/constants\\";
-
-const VALID_CREDENTIALS: Credentials = {
-  username: \\"Valid User\\",
-  password: \\"Valid User Password\\",
-};
-const INVALID_CREDENTIALS: Credentials = {
-  username: \\"Invalid User\\",
-  password: \\"Invalid User Password\\",
-};
-const USER: any = {
-  ...VALID_CREDENTIALS,
-  createdAt: new Date(),
-  firstName: \\"ofek\\",
-  id: VALID_ID,
-  lastName: \\"gabay\\",
-  roles: [\\"admin\\"],
-  updatedAt: new Date(),
-};
-
-const SIGN_TOKEN = \\"SIGN_TOKEN\\";
-
-const userService = {
-  findOne(args: { where: { username: string } }): any | null {
-    if (args.where.username === VALID_CREDENTIALS.username) {
-      return USER;
-    }
-    return null;
-  },
-};
-
-const passwordService = {
-  compare(password: string, encrypted: string) {
-    return true;
-  },
-};
-
-const tokenService = {
-  createToken(username: string, password: string) {
-    return SIGN_TOKEN;
-  },
-};
-
-describe(\\"AuthService\\", () => {
-  //ARRANGE
-  let service: AuthService;
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: UserService,
-          useValue: userService,
-        },
-        {
-          provide: PasswordService,
-          useValue: passwordService,
-        },
-        {
-          provide: TokenService,
-          useValue: tokenService,
-        },
-        AuthService,
-      ],
-    }).compile();
-
-    service = module.get<AuthService>(AuthService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-
-  describe(\\"Testing the authService.validateUser()\\", () => {
-    it(\\"should validate a valid user\\", async () => {
-      await expect(
-        service.validateUser(
-          VALID_CREDENTIALS.username,
-          VALID_CREDENTIALS.password
-        )
-      ).resolves.toEqual({
-        username: USER.username,
-        roles: USER.roles,
-        id: USER.id,
-      });
-    });
-
-    it(\\"should not validate a invalid user\\", async () => {
-      await expect(
-        service.validateUser(
-          INVALID_CREDENTIALS.username,
-          INVALID_CREDENTIALS.password
-        )
-      ).resolves.toBe(null);
-    });
-  });
-
-  describe(\\"Testing the authService.login()\\", () => {
-    it(\\"should return userInfo object for correct username and password\\", async () => {
-      const loginResult = await service.login(VALID_CREDENTIALS);
-      expect(loginResult).toEqual({
-        username: USER.username,
-        roles: USER.roles,
-        accessToken: SIGN_TOKEN,
-        id: USER.id,
-      });
-    });
-  });
-});
-",
-  "server/src/auth/auth.service.ts": "import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../user/user.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { PasswordService } from \\"./password.service\\";
-import { TokenService } from \\"./token.service\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@Injectable()
-export class AuthService {
-  constructor(
-    private readonly userService: UserService,
-    private readonly passwordService: PasswordService,
-    private readonly tokenService: TokenService
-  ) {}
-
-  async validateUser(
-    username: string,
-    password: string
-  ): Promise<UserInfo | null> {
-    const user = await this.userService.findOne({
-      where: { username },
-    });
-    if (user && (await this.passwordService.compare(password, user.password))) {
-      const { id, roles } = user;
-      const roleList = roles as string[];
-      return { id, username, roles: roleList };
-    }
-    return null;
-  }
-  async login(credentials: Credentials): Promise<UserInfo> {
-    const { username, password } = credentials;
-    const user = await this.validateUser(
-      credentials.username,
-      credentials.password
-    );
-    if (!user) {
-      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
-    }
-    //@ts-ignore
-    const accessToken = await this.tokenService.createToken({
-      id: user.id,
-      username,
-      password,
-    });
-    return {
-      accessToken,
-      ...user,
-    };
-  }
-}
-",
-  "server/src/auth/base/token.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from \\"../constants\\";
-import { ITokenService, ITokenPayload } from \\"../ITokenService\\";
-/**
- * TokenServiceBase is a basic http implementation of ITokenService
- */
-@Injectable()
-export class TokenServiceBase implements ITokenService {
-  /**
-   *
-   * @object { username: String, password: String }
-   * @returns a base64 string of the username and password
-   */
-  createToken({ username, password }: ITokenPayload): Promise<string> {
-    if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
-    if (!password) return Promise.reject(INVALID_PASSWORD_ERROR);
-    return Promise.resolve(
-      Buffer.from(\`\${username}:\${password}\`).toString(\\"base64\\")
-    );
-  }
-}
-",
-  "server/src/auth/basic/base/basic.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { BasicStrategy as Strategy } from \\"passport-http\\";
-import { AuthService } from \\"../../auth.service\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class BasicStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
-  constructor(protected readonly authService: AuthService) {
-    super();
-  }
-
-  async validate(username: string, password: string): Promise<UserInfo> {
-    const user = await this.authService.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-}
-",
-  "server/src/auth/basic/basic.strategy.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { AuthService } from \\"../auth.service\\";
-import { BasicStrategyBase } from \\"./base/basic.strategy.base\\";
-
-@Injectable()
-export class BasicStrategy extends BasicStrategyBase {
-  constructor(protected readonly authService: AuthService) {
-    super(authService);
-  }
-}
-",
-  "server/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
-",
-  "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
-export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
-",
-  "server/src/auth/defaultAuth.guard.ts": "import { Observable } from \\"rxjs\\";
-import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
-import { Reflector } from \\"@nestjs/core\\";
-import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
-import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
-
-@Injectable()
-export class DefaultAuthGuard extends BasicAuthGuard {
-  constructor(private readonly reflector: Reflector) {
-    super();
-  }
-
-  canActivate(
-    context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<any> {
-    const isPublic = this.reflector.get<boolean>(
-      IS_PUBLIC_KEY,
-      context.getHandler()
-    );
-
-    if (isPublic) {
-      return true;
-    }
-
-    return super.canActivate(context);
-  }
-}
-",
-  "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import { ACGuard } from \\"nest-access-control\\";
-
-export class GqlACGuard<User extends any = any> extends ACGuard<User> {
-  async getUser(context: ExecutionContext): Promise<User> {
-    const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext<{ req: { user: User } }>().req;
-    return request.user;
-  }
-}
-",
-  "server/src/auth/gqlDefaultAuth.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import type { Request } from \\"express\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { DefaultAuthGuard } from \\"./defaultAuth.guard\\";
-
-export class GqlDefaultAuthGuard extends DefaultAuthGuard {
-  // This method is required for the interface - do not delete it.
-  getRequest(context: ExecutionContext): Request {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext<{ req: Request }>().req;
-  }
-}
-",
-  "server/src/auth/gqlUserRoles.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-
-/**
- * Access the user roles from the request object i.e \`req.user.roles\`.
- *
- * You can pass an optional property key to the decorator to get it from the user object
- * e.g \`@UserRoles('permissions')\` will return the \`req.user.permissions\` instead.
- */
-export const UserRoles = createParamDecorator(
-  (data: string, context: ExecutionContext) => {
-    const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext<{ req: { user: any } }>().req;
-    if (!request.user) {
-      return null;
-    }
-    return data ? request.user[data] : request.user.roles;
-  }
-);
-",
-  "server/src/auth/jwt/base/jwt.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { ExtractJwt, Strategy } from \\"passport-jwt\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-import { UserService } from \\"../../../user/user.service\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class JwtStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy {
-  constructor(
-    protected readonly userService: UserService,
-    protected readonly secretOrKey: string
-  ) {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey,
-    });
-  }
-
-  async validate(payload: UserInfo): Promise<UserInfo> {
-    const { username } = payload;
-    const user = await this.userService.findOne({
-      where: { username },
-    });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    if (
-      !Array.isArray(user.roles) ||
-      typeof user.roles !== \\"object\\" ||
-      user.roles === null
-    ) {
-      throw new Error(\\"User roles is not a valid value\\");
-    }
-    return { ...user, roles: user.roles as string[] };
-  }
-}
-",
-  "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
-import { JWT_SECRET_KEY } from \\"../../constants\\";
-import { UserService } from \\"../../user/user.service\\";
-import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
-@Injectable()
-export class JwtStrategy extends JwtStrategyBase {
-  constructor(
-    protected readonly userService: UserService,
-    @Inject(JWT_SECRET_KEY) secretOrKey: string
-  ) {
-    super(userService, secretOrKey);
-  }
-}
-",
-  "server/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
-",
-  "server/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY } from \\"../../constants\\";
-import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
-
-export const jwtSecretFactory = {
-  provide: JWT_SECRET_KEY,
-  useFactory: async (
-    secretsService: SecretsManagerService
-  ): Promise<string> => {
-    const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
-    if (secret) {
-      return secret;
-    }
-    throw new Error(\\"jwtSecretFactory missing secret\\");
-  },
-  inject: [SecretsManagerService],
-};
-",
-  "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
-import { Test, TestingModule } from \\"@nestjs/testing\\";
-import { PasswordService } from \\"./password.service\\";
-import * as bcrypt from \\"bcrypt\\";
-
-const EXAMPLE_PASSWORD = \\"examplePassword\\";
-const EXAMPLE_HASHED_PASSWORD = \\"exampleHashedPassword\\";
-
-const EXAMPLE_SALT_OR_ROUNDS = 1;
-
-const configServiceGetMock = jest.fn(() => {
-  return EXAMPLE_SALT_OR_ROUNDS;
-});
-
-jest.mock(\\"bcrypt\\");
-
-//@ts-ignore
-bcrypt.hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
-
-//@ts-ignore
-bcrypt.compare.mockImplementation(async () => true);
-
-describe(\\"PasswordService\\", () => {
-  let service: PasswordService;
-
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PasswordService,
-        {
-          provide: ConfigService,
-          useClass: jest.fn(() => ({
-            get: configServiceGetMock,
-          })),
-        },
-      ],
-      imports: [],
-    }).compile();
-
-    service = module.get<PasswordService>(PasswordService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-
-  it(\\"should have salt defined\\", () => {
-    expect(service.salt).toEqual(EXAMPLE_SALT_OR_ROUNDS);
-  });
-
-  it(\\"should compare a password\\", async () => {
-    const args = {
-      password: EXAMPLE_PASSWORD,
-      hashedPassword: EXAMPLE_HASHED_PASSWORD,
-    };
-    await expect(
-      service.compare(args.password, args.hashedPassword)
-    ).resolves.toEqual(true);
-  });
-
-  it(\\"should hash a password\\", async () => {
-    await expect(service.hash(EXAMPLE_PASSWORD)).resolves.toEqual(
-      EXAMPLE_HASHED_PASSWORD
-    );
-  });
-});
-",
-  "server/src/auth/password.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { hash, compare } from \\"bcrypt\\";
-import { ConfigService } from \\"@nestjs/config\\";
-
-/** Salt or number of rounds to generate a salt */
-export type Salt = string | number;
-
-const BCRYPT_SALT_VAR = \\"BCRYPT_SALT\\";
-const UNDEFINED_SALT_OR_ROUNDS_ERROR = \`\${BCRYPT_SALT_VAR} is not defined\`;
-const SALT_OR_ROUNDS_TYPE_ERROR = \`\${BCRYPT_SALT_VAR} must be a positive integer or text\`;
-
-@Injectable()
-export class PasswordService {
-  /**
-   * the salt to be used to hash the password. if specified as a number then a
-   * salt will be generated with the specified number of rounds and used
-   */
-  salt: Salt;
-
-  constructor(private configService: ConfigService) {
-    const saltOrRounds = this.configService.get(BCRYPT_SALT_VAR);
-    this.salt = parseSalt(saltOrRounds);
-  }
-
-  /**
-   *
-   * @param password the password to be encrypted.
-   * @param encrypted the encrypted password to be compared against.
-   * @returns whether the password match the encrypted password
-   */
-  compare(password: string, encrypted: string): Promise<boolean> {
-    return compare(password, encrypted);
-  }
-
-  /**
-   * @param password the password to be encrypted
-   * @return encrypted password
-   */
-  hash(password: string): Promise<string> {
-    return hash(password, this.salt);
-  }
-}
-
-/**
- * Parses a salt environment variable value.
- * If a number string value is given tries to parse it as a number of rounds to generate a salt
- * @param value salt environment variable value
- * @returns salt or number of rounds to generate a salt
- */
-export function parseSalt(value: string | undefined): Salt {
-  if (value === undefined) {
-    throw new Error(UNDEFINED_SALT_OR_ROUNDS_ERROR);
-  }
-
-  const rounds = Number(value);
-
-  if (Number.isNaN(rounds)) {
-    return value;
-  }
-  if (!Number.isInteger(rounds) || rounds < 0) {
-    throw new Error(SALT_OR_ROUNDS_TYPE_ERROR);
-  }
-  return rounds;
-}
-",
-  "server/src/auth/token.service.ts": "import { ITokenService } from \\"./ITokenService\\";
-//@ts-ignore
-// eslint-disable-next-line import/no-unresolved
-import { TokenServiceBase } from \\"./base/token.service.base\\";
-//@ts-ignore
-export class TokenService extends TokenServiceBase implements ITokenService {}
-",
-  "server/src/auth/userData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlContextType, GqlExecutionContext } from \\"@nestjs/graphql\\";
-//@ts-ignore
-import { User } from \\"@prisma/client\\";
-
-/**
- * Access the user data from the request object i.e \`req.user\`.
- */
-function userFactory(ctx: ExecutionContext): User {
-  const contextType = ctx.getType();
-  if (contextType === \\"http\\") {
-    // do something that is only important in the context of regular HTTP requests (REST)
-    const { user } = ctx.switchToHttp().getRequest();
-    return user;
-  } else if (contextType === \\"rpc\\") {
-    // do something that is only important in the context of Microservice requests
-    throw new Error(\\"Rpc context is not implemented yet\\");
-  } else if (contextType === \\"ws\\") {
-    // do something that is only important in the context of Websockets requests
-    throw new Error(\\"Websockets context is not implemented yet\\");
-  } else if (ctx.getType<GqlContextType>() === \\"graphql\\") {
-    // do something that is only important in the context of GraphQL requests
-    const gqlExecutionContext = GqlExecutionContext.create(ctx);
-    return gqlExecutionContext.getContext().req.user;
-  }
-  throw new Error(\\"Invalid context\\");
-}
-
-export const UserData = createParamDecorator<undefined, ExecutionContext, User>(
-  (data, ctx: ExecutionContext) => userFactory(ctx)
-);
 ",
   "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
@@ -5433,9 +4585,20 @@ class UpdateCustomerArgs {
 export { UpdateCustomerArgs };
 ",
   "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { CustomerController } from \\"../customer.controller\\";
 import { CustomerService } from \\"../customer.service\\";
 
@@ -5515,6 +4678,38 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Customer\\", () => {
   let app: INestApplication;
 
@@ -5527,8 +4722,17 @@ describe(\\"Customer\\", () => {
         },
       ],
       controllers: [CustomerController],
-      imports: [MorganModule.forRoot()],
-    }).compile();
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -5630,36 +4834,22 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { CustomerService } from \\"../customer.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
 import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
+import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
+import { Order } from \\"../../order/base/Order\\";
+import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
 
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class CustomerControllerBase {
-  constructor(
-    protected readonly service: CustomerService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: CustomerService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
     return await this.service.create({
       data: {
@@ -5708,18 +4898,9 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
     return this.service.findMany({
@@ -5755,18 +4936,9 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
@@ -5809,18 +4981,9 @@ export class CustomerControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() data: CustomerUpdateInput
@@ -5885,14 +5048,6 @@ export class CustomerControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
@@ -5937,6 +5092,90 @@ export class CustomerControllerBase {
       throw error;
     }
   }
+
+  @Public()
+  @common.Get(\\"/:id/orders\\")
+  @ApiNestedQuery(OrderFindManyArgs)
+  async findManyOrders(
+    @common.Req() request: Request,
+    @common.Param() params: CustomerWhereUniqueInput
+  ): Promise<Order[]> {
+    const query = plainToClass(OrderFindManyArgs, request.query);
+    const results = await this.service.findOrders(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+
+        customer: {
+          select: {
+            id: true,
+          },
+        },
+
+        status: true,
+        label: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post(\\"/:id/orders\\")
+  async connectOrders(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: OrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch(\\"/:id/orders\\")
+  async updateOrders(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: OrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete(\\"/:id/orders\\")
+  async disconnectOrders(
+    @common.Param() params: CustomerWhereUniqueInput,
+    @common.Body() body: OrderWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      orders: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
 }
 ",
   "server/src/customer/base/customer.module.base.ts": "/*
@@ -5950,20 +5189,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
+
 @Module({
-  imports: [
-    ACLModule,
-    AuthModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class CustomerModuleBase {}
 ",
@@ -5982,33 +5213,21 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateCustomerArgs } from \\"./CreateCustomerArgs\\";
 import { UpdateCustomerArgs } from \\"./UpdateCustomerArgs\\";
 import { DeleteCustomerArgs } from \\"./DeleteCustomerArgs\\";
 import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
 import { CustomerFindUniqueArgs } from \\"./CustomerFindUniqueArgs\\";
 import { Customer } from \\"./Customer\\";
+import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
+import { Order } from \\"../../order/base/Order\\";
+import { Organization } from \\"../../organization/base/Organization\\";
 import { CustomerService } from \\"../customer.service\\";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Customer)
 export class CustomerResolverBase {
-  constructor(
-    protected readonly service: CustomerService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: CustomerService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _customersMeta(
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -6022,26 +5241,14 @@ export class CustomerResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Customer])
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async customers(
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Customer, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async customer(
     @graphql.Args() args: CustomerFindUniqueArgs
   ): Promise<Customer | null> {
@@ -6052,13 +5259,7 @@ export class CustomerResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Customer)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createCustomer(
     @graphql.Args() args: CreateCustomerArgs
   ): Promise<Customer> {
@@ -6082,13 +5283,7 @@ export class CustomerResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Customer)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateCustomer(
     @graphql.Args() args: UpdateCustomerArgs
   ): Promise<Customer | null> {
@@ -6122,11 +5317,6 @@ export class CustomerResolverBase {
   }
 
   @graphql.Mutation(() => Customer)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteCustomer(
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
@@ -6140,6 +5330,45 @@ export class CustomerResolverBase {
       }
       throw error;
     }
+  }
+
+  @Public()
+  @graphql.ResolveField(() => [Order])
+  async orders(
+    @graphql.Parent() parent: Customer,
+    @graphql.Args() args: OrderFindManyArgs
+  ): Promise<Order[]> {
+    const results = await this.service.findOrders(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => Organization, { nullable: true })
+  async organization(
+    @graphql.Parent() parent: Customer
+  ): Promise<Organization | null> {
+    const result = await this.service.getOrganization(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
+  }
+
+  @graphql.ResolveField(() => Organization, { nullable: true })
+  async vipOrganization(
+    @graphql.Parent() parent: Customer
+  ): Promise<Organization | null> {
+    const result = await this.service.getVipOrganization(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }
 ",
@@ -6222,23 +5451,18 @@ export class CustomerServiceBase {
 ",
   "server/src/customer/customer.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerControllerBase } from \\"./base/customer.controller.base\\";
 
 @swagger.ApiTags(\\"customers\\")
 @common.Controller(\\"customers\\")
 export class CustomerController extends CustomerControllerBase {
-  constructor(
-    protected readonly service: CustomerService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: CustomerService) {
+    super(service);
   }
 }
 ",
   "server/src/customer/customer.module.ts": "import { Module } from \\"@nestjs/common\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { CustomerModuleBase } from \\"./base/customer.module.base\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerController } from \\"./customer.controller\\";
@@ -6247,32 +5471,20 @@ import { CustomerResolver } from \\"./customer.resolver\\";
 @Module({
   imports: [CustomerModuleBase],
   controllers: [CustomerController],
-  providers: [
-    nestAccessControl.RolesBuilder,
-    CustomerService,
-    CustomerResolver,
-  ],
+  providers: [CustomerService, CustomerResolver],
   exports: [CustomerService],
 })
 export class CustomerModule {}
 ",
   "server/src/customer/customer.resolver.ts": "import * as graphql from \\"@nestjs/graphql\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
 import { CustomerResolverBase } from \\"./base/customer.resolver.base\\";
 import { Customer } from \\"./base/Customer\\";
 import { CustomerService } from \\"./customer.service\\";
 
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Customer)
 export class CustomerResolver extends CustomerResolverBase {
-  constructor(
-    protected readonly service: CustomerService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: CustomerService) {
+    super(service);
   }
 }
 ",
@@ -6742,9 +5954,20 @@ class EmptyWhereUniqueInput {
 export { EmptyWhereUniqueInput };
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { EmptyController } from \\"../empty.controller\\";
 import { EmptyService } from \\"../empty.service\\";
 
@@ -6788,6 +6011,38 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Empty\\", () => {
   let app: INestApplication;
 
@@ -6800,8 +6055,17 @@ describe(\\"Empty\\", () => {
         },
       ],
       controllers: [EmptyController],
-      imports: [MorganModule.forRoot()],
-    }).compile();
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -6899,11 +6163,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { EmptyService } from \\"../empty.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
@@ -6911,24 +6171,10 @@ import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
 
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class EmptyControllerBase {
-  constructor(
-    protected readonly service: EmptyService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: EmptyService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
     return await this.service.create({
       data: data,
@@ -6940,18 +6186,9 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
     return this.service.findMany({
@@ -6964,18 +6201,9 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
@@ -6995,18 +6223,9 @@ export class EmptyControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body() data: EmptyUpdateInput
@@ -7034,14 +6253,6 @@ export class EmptyControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
@@ -7076,20 +6287,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
+
 @Module({
-  imports: [
-    ACLModule,
-    AuthModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class EmptyModuleBase {}
 ",
@@ -7108,30 +6311,15 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { DeleteEmptyArgs } from \\"./DeleteEmptyArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyFindUniqueArgs } from \\"./EmptyFindUniqueArgs\\";
 import { Empty } from \\"./Empty\\";
 import { EmptyService } from \\"../empty.service\\";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Empty)
 export class EmptyResolverBase {
-  constructor(
-    protected readonly service: EmptyService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: EmptyService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _emptiesMeta(
     @graphql.Args() args: EmptyFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -7145,24 +6333,12 @@ export class EmptyResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Empty])
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async empties(@graphql.Args() args: EmptyFindManyArgs): Promise<Empty[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Empty, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async empty(
     @graphql.Args() args: EmptyFindUniqueArgs
   ): Promise<Empty | null> {
@@ -7174,11 +6350,6 @@ export class EmptyResolverBase {
   }
 
   @graphql.Mutation(() => Empty)
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteEmpty(
     @graphql.Args() args: DeleteEmptyArgs
   ): Promise<Empty | null> {
@@ -7247,23 +6418,18 @@ export class EmptyServiceBase {
 ",
   "server/src/empty/empty.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { EmptyService } from \\"./empty.service\\";
 import { EmptyControllerBase } from \\"./base/empty.controller.base\\";
 
 @swagger.ApiTags(\\"empties\\")
 @common.Controller(\\"empties\\")
 export class EmptyController extends EmptyControllerBase {
-  constructor(
-    protected readonly service: EmptyService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: EmptyService) {
+    super(service);
   }
 }
 ",
   "server/src/empty/empty.module.ts": "import { Module } from \\"@nestjs/common\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { EmptyModuleBase } from \\"./base/empty.module.base\\";
 import { EmptyService } from \\"./empty.service\\";
 import { EmptyController } from \\"./empty.controller\\";
@@ -7272,28 +6438,20 @@ import { EmptyResolver } from \\"./empty.resolver\\";
 @Module({
   imports: [EmptyModuleBase],
   controllers: [EmptyController],
-  providers: [nestAccessControl.RolesBuilder, EmptyService, EmptyResolver],
+  providers: [EmptyService, EmptyResolver],
   exports: [EmptyService],
 })
 export class EmptyModule {}
 ",
   "server/src/empty/empty.resolver.ts": "import * as graphql from \\"@nestjs/graphql\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
 import { EmptyResolverBase } from \\"./base/empty.resolver.base\\";
 import { Empty } from \\"./base/Empty\\";
 import { EmptyService } from \\"./empty.service\\";
 
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Empty)
 export class EmptyResolver extends EmptyResolverBase {
-  constructor(
-    protected readonly service: EmptyService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: EmptyService) {
+    super(service);
   }
 }
 ",
@@ -7418,459 +6576,6 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   }
 }
 ",
-  "server/src/grants.json": "[
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  }
-]
-",
   "server/src/health/base/health.controller.base.ts": "import { Get, HttpStatus, Res } from \\"@nestjs/common\\";
 import { Response } from \\"express\\";
 import { HealthService } from \\"../health.service\\";
@@ -7937,103 +6642,6 @@ import { HealthServiceBase } from \\"./base/health.service.base\\";
 export class HealthService extends HealthServiceBase {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
-  }
-}
-",
-  "server/src/interceptors/aclFilterResponse.interceptor.ts": "import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from \\"@nestjs/common\\";
-import { Observable } from \\"rxjs\\";
-import { map } from \\"rxjs/operators\\";
-import { InjectRolesBuilder, RolesBuilder } from \\"nest-access-control\\";
-import { Reflector } from \\"@nestjs/core\\";
-
-@Injectable()
-export class AclFilterResponseInterceptor implements NestInterceptor {
-  constructor(
-    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
-    private readonly reflector: Reflector
-  ) {}
-
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
-      \\"roles\\",
-      [context.getHandler(), context.getClass()]
-    );
-
-    const permission = this.rolesBuilder.permission({
-      role: permissionsRoles.role,
-      action: permissionsRoles.action,
-      possession: permissionsRoles.possession,
-      resource: permissionsRoles.resource,
-    });
-
-    return next.handle().pipe(
-      map((data) => {
-        if (Array.isArray(data)) {
-          return data.map((results: any) => permission.filter(results));
-        } else {
-          return permission.filter(data);
-        }
-      })
-    );
-  }
-}
-",
-  "server/src/interceptors/aclValidateRequest.interceptor.ts": "import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from \\"@nestjs/common\\";
-import { Observable } from \\"rxjs\\";
-import { InjectRolesBuilder, RolesBuilder } from \\"nest-access-control\\";
-import { Reflector } from \\"@nestjs/core\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { ForbiddenException } from \\"../errors\\";
-
-@Injectable()
-export class AclValidateRequestInterceptor implements NestInterceptor {
-  constructor(
-    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
-    private readonly reflector: Reflector
-  ) {}
-
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
-      \\"roles\\",
-      [context.getHandler(), context.getClass()]
-    );
-
-    const type = context.getType();
-
-    const inputDataToValidate =
-      type === \\"http\\"
-        ? context.switchToHttp().getRequest().body
-        : context.getArgByIndex(1).data;
-
-    const permission = this.rolesBuilder.permission({
-      role: permissionsRoles.role,
-      action: permissionsRoles.action,
-      possession: permissionsRoles.possession,
-      resource: permissionsRoles.resource,
-    });
-
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      inputDataToValidate
-    );
-
-    if (invalidAttributes.length) {
-      throw new ForbiddenException(
-        \\"Insufficient privileges to complete the operation\\"
-      );
-    }
-
-    return next.handle();
   }
 }
 ",
@@ -8732,9 +7340,20 @@ class UpdateOrderArgs {
 export { UpdateOrderArgs };
 ",
   "server/src/order/base/order.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { OrderController } from \\"../order.controller\\";
 import { OrderService } from \\"../order.service\\";
 
@@ -8778,6 +7397,38 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Order\\", () => {
   let app: INestApplication;
 
@@ -8790,8 +7441,17 @@ describe(\\"Order\\", () => {
         },
       ],
       controllers: [OrderController],
-      imports: [MorganModule.forRoot()],
-    }).compile();
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -8889,11 +7549,8 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { OrderService } from \\"../order.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
@@ -8901,24 +7558,11 @@ import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
 
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class OrderControllerBase {
-  constructor(
-    protected readonly service: OrderService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: OrderService) {}
+  @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(@common.Body() data: OrderCreateInput): Promise<Order> {
     return await this.service.create({
       data: {
@@ -8945,18 +7589,10 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @ApiNestedQuery(OrderFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
     return this.service.findMany({
@@ -8978,18 +7614,10 @@ export class OrderControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
@@ -9018,18 +7646,10 @@ export class OrderControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body() data: OrderUpdateInput
@@ -9069,17 +7689,10 @@ export class OrderControllerBase {
     }
   }
 
+  @Public()
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
@@ -9123,20 +7736,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
+
 @Module({
-  imports: [
-    ACLModule,
-    AuthModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class OrderModuleBase {}
 ",
@@ -9155,33 +7760,19 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { Public } from \\"../../decorators/public.decorator\\";
 import { CreateOrderArgs } from \\"./CreateOrderArgs\\";
 import { UpdateOrderArgs } from \\"./UpdateOrderArgs\\";
 import { DeleteOrderArgs } from \\"./DeleteOrderArgs\\";
 import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderFindUniqueArgs } from \\"./OrderFindUniqueArgs\\";
 import { Order } from \\"./Order\\";
+import { Customer } from \\"../../customer/base/Customer\\";
 import { OrderService } from \\"../order.service\\";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Order)
 export class OrderResolverBase {
-  constructor(
-    protected readonly service: OrderService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: OrderService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _ordersMeta(
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -9195,24 +7786,14 @@ export class OrderResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => [Order])
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
+  @Public()
   @graphql.Query(() => Order, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
@@ -9223,13 +7804,8 @@ export class OrderResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
     return await this.service.create({
       ...args,
@@ -9243,13 +7819,8 @@ export class OrderResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateOrder(
     @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
@@ -9274,12 +7845,8 @@ export class OrderResolverBase {
     }
   }
 
+  @Public()
   @graphql.Mutation(() => Order)
-  @nestAccessControl.UseRoles({
-    resource: \\"Order\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteOrder(
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
@@ -9293,6 +7860,16 @@ export class OrderResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => Customer, { nullable: true })
+  async customer(@graphql.Parent() parent: Order): Promise<Customer | null> {
+    const result = await this.service.getCustomer(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }
 ",
@@ -9356,23 +7933,18 @@ export class OrderServiceBase {
 ",
   "server/src/order/order.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderControllerBase } from \\"./base/order.controller.base\\";
 
 @swagger.ApiTags(\\"orders\\")
 @common.Controller(\\"orders\\")
 export class OrderController extends OrderControllerBase {
-  constructor(
-    protected readonly service: OrderService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: OrderService) {
+    super(service);
   }
 }
 ",
   "server/src/order/order.module.ts": "import { Module } from \\"@nestjs/common\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { OrderModuleBase } from \\"./base/order.module.base\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderController } from \\"./order.controller\\";
@@ -9381,28 +7953,20 @@ import { OrderResolver } from \\"./order.resolver\\";
 @Module({
   imports: [OrderModuleBase],
   controllers: [OrderController],
-  providers: [nestAccessControl.RolesBuilder, OrderService, OrderResolver],
+  providers: [OrderService, OrderResolver],
   exports: [OrderService],
 })
 export class OrderModule {}
 ",
   "server/src/order/order.resolver.ts": "import * as graphql from \\"@nestjs/graphql\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
 import { OrderResolverBase } from \\"./base/order.resolver.base\\";
 import { Order } from \\"./base/Order\\";
 import { OrderService } from \\"./order.service\\";
 
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Order)
 export class OrderResolver extends OrderResolverBase {
-  constructor(
-    protected readonly service: OrderService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: OrderService) {
+    super(service);
   }
 }
 ",
@@ -10183,9 +8747,20 @@ class UserUpdateManyWithoutOrganizationsInput {
 export { UserUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { OrganizationController } from \\"../organization.controller\\";
 import { OrganizationService } from \\"../organization.service\\";
 
@@ -10233,6 +8808,38 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Organization\\", () => {
   let app: INestApplication;
 
@@ -10245,8 +8852,17 @@ describe(\\"Organization\\", () => {
         },
       ],
       controllers: [OrganizationController],
-      imports: [MorganModule.forRoot()],
-    }).compile();
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -10344,36 +8960,24 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { OrganizationService } from \\"../organization.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
 import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
+import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
+import { User } from \\"../../user/base/User\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
+import { Customer } from \\"../../customer/base/Customer\\";
+import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
 
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class OrganizationControllerBase {
-  constructor(
-    protected readonly service: OrganizationService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: OrganizationService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
@@ -10388,18 +8992,9 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
     return this.service.findMany({
@@ -10413,18 +9008,9 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
@@ -10445,18 +9031,9 @@ export class OrganizationControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() data: OrganizationUpdateInput
@@ -10485,14 +9062,6 @@ export class OrganizationControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
@@ -10515,6 +9084,296 @@ export class OrganizationControllerBase {
       throw error;
     }
   }
+
+  @common.Get(\\"/:id/users\\")
+  @ApiNestedQuery(UserFindManyArgs)
+  async findManyUsers(
+    @common.Req() request: Request,
+    @common.Param() params: OrganizationWhereUniqueInput
+  ): Promise<User[]> {
+    const query = plainToClass(UserFindManyArgs, request.query);
+    const results = await this.service.findUsers(params.id, {
+      ...query,
+      select: {
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+        extendedProperties: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post(\\"/:id/users\\")
+  async connectUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch(\\"/:id/users\\")
+  async updateUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete(\\"/:id/users\\")
+  async disconnectUsers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      users: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Get(\\"/:id/customers\\")
+  @ApiNestedQuery(CustomerFindManyArgs)
+  async findManyCustomers(
+    @common.Req() request: Request,
+    @common.Param() params: OrganizationWhereUniqueInput
+  ): Promise<Customer[]> {
+    const query = plainToClass(CustomerFindManyArgs, request.query);
+    const results = await this.service.findCustomers(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post(\\"/:id/customers\\")
+  async connectCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch(\\"/:id/customers\\")
+  async updateCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete(\\"/:id/customers\\")
+  async disconnectCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      customers: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Get(\\"/:id/vipCustomers\\")
+  @ApiNestedQuery(CustomerFindManyArgs)
+  async findManyVipCustomers(
+    @common.Req() request: Request,
+    @common.Param() params: OrganizationWhereUniqueInput
+  ): Promise<Customer[]> {
+    const query = plainToClass(CustomerFindManyArgs, request.query);
+    const results = await this.service.findVipCustomers(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        isVip: true,
+        birthData: true,
+        averageSale: true,
+        favoriteNumber: true,
+        geoLocation: true,
+        comments: true,
+        favoriteColors: true,
+        customerType: true,
+
+        organization: {
+          select: {
+            id: true,
+          },
+        },
+
+        vipOrganization: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post(\\"/:id/vipCustomers\\")
+  async connectVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch(\\"/:id/vipCustomers\\")
+  async updateVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete(\\"/:id/vipCustomers\\")
+  async disconnectVipCustomers(
+    @common.Param() params: OrganizationWhereUniqueInput,
+    @common.Body() body: CustomerWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      vipCustomers: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
 }
 ",
   "server/src/organization/base/organization.module.base.ts": "/*
@@ -10528,20 +9387,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
+
 @Module({
-  imports: [
-    ACLModule,
-    AuthModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class OrganizationModuleBase {}
 ",
@@ -10560,33 +9411,21 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { CreateOrganizationArgs } from \\"./CreateOrganizationArgs\\";
 import { UpdateOrganizationArgs } from \\"./UpdateOrganizationArgs\\";
 import { DeleteOrganizationArgs } from \\"./DeleteOrganizationArgs\\";
 import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
 import { OrganizationFindUniqueArgs } from \\"./OrganizationFindUniqueArgs\\";
 import { Organization } from \\"./Organization\\";
+import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
+import { User } from \\"../../user/base/User\\";
+import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
+import { Customer } from \\"../../customer/base/Customer\\";
 import { OrganizationService } from \\"../organization.service\\";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Organization)
 export class OrganizationResolverBase {
-  constructor(
-    protected readonly service: OrganizationService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: OrganizationService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _organizationsMeta(
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -10600,26 +9439,14 @@ export class OrganizationResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Organization])
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async organizations(
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Organization, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async organization(
     @graphql.Args() args: OrganizationFindUniqueArgs
   ): Promise<Organization | null> {
@@ -10630,13 +9457,7 @@ export class OrganizationResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Organization)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createOrganization(
     @graphql.Args() args: CreateOrganizationArgs
   ): Promise<Organization> {
@@ -10646,13 +9467,7 @@ export class OrganizationResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Organization)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateOrganization(
     @graphql.Args() args: UpdateOrganizationArgs
   ): Promise<Organization | null> {
@@ -10672,11 +9487,6 @@ export class OrganizationResolverBase {
   }
 
   @graphql.Mutation(() => Organization)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteOrganization(
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
@@ -10690,6 +9500,48 @@ export class OrganizationResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [User])
+  async users(
+    @graphql.Parent() parent: Organization,
+    @graphql.Args() args: UserFindManyArgs
+  ): Promise<User[]> {
+    const results = await this.service.findUsers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => [Customer])
+  async customers(
+    @graphql.Parent() parent: Organization,
+    @graphql.Args() args: CustomerFindManyArgs
+  ): Promise<Customer[]> {
+    const results = await this.service.findCustomers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => [Customer])
+  async vipCustomers(
+    @graphql.Parent() parent: Organization,
+    @graphql.Args() args: CustomerFindManyArgs
+  ): Promise<Customer[]> {
+    const results = await this.service.findVipCustomers(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
   }
 }
 ",
@@ -10778,23 +9630,18 @@ export class OrganizationServiceBase {
 ",
   "server/src/organization/organization.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationControllerBase } from \\"./base/organization.controller.base\\";
 
 @swagger.ApiTags(\\"organizations\\")
 @common.Controller(\\"organizations\\")
 export class OrganizationController extends OrganizationControllerBase {
-  constructor(
-    protected readonly service: OrganizationService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: OrganizationService) {
+    super(service);
   }
 }
 ",
   "server/src/organization/organization.module.ts": "import { Module } from \\"@nestjs/common\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { OrganizationModuleBase } from \\"./base/organization.module.base\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationController } from \\"./organization.controller\\";
@@ -10803,32 +9650,20 @@ import { OrganizationResolver } from \\"./organization.resolver\\";
 @Module({
   imports: [OrganizationModuleBase],
   controllers: [OrganizationController],
-  providers: [
-    nestAccessControl.RolesBuilder,
-    OrganizationService,
-    OrganizationResolver,
-  ],
+  providers: [OrganizationService, OrganizationResolver],
   exports: [OrganizationService],
 })
 export class OrganizationModule {}
 ",
   "server/src/organization/organization.resolver.ts": "import * as graphql from \\"@nestjs/graphql\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
 import { OrganizationResolverBase } from \\"./base/organization.resolver.base\\";
 import { Organization } from \\"./base/Organization\\";
 import { OrganizationService } from \\"./organization.service\\";
 
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Organization)
 export class OrganizationResolver extends OrganizationResolverBase {
-  constructor(
-    protected readonly service: OrganizationService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: OrganizationService) {
+    super(service);
   }
 }
 ",
@@ -11460,9 +10295,20 @@ class UpdateProfileArgs {
 export { UpdateProfileArgs };
 ",
   "server/src/profile/base/profile.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { ProfileController } from \\"../profile.controller\\";
 import { ProfileService } from \\"../profile.service\\";
 
@@ -11510,6 +10356,38 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"Profile\\", () => {
   let app: INestApplication;
 
@@ -11522,8 +10400,17 @@ describe(\\"Profile\\", () => {
         },
       ],
       controllers: [ProfileController],
-      imports: [MorganModule.forRoot()],
-    }).compile();
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -11621,11 +10508,7 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { ProfileService } from \\"../profile.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
 import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
@@ -11633,24 +10516,10 @@ import { ProfileFindManyArgs } from \\"./ProfileFindManyArgs\\";
 import { ProfileUpdateInput } from \\"./ProfileUpdateInput\\";
 import { Profile } from \\"./Profile\\";
 
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class ProfileControllerBase {
-  constructor(
-    protected readonly service: ProfileService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: ProfileService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
     return await this.service.create({
       data: {
@@ -11677,18 +10546,9 @@ export class ProfileControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
     return this.service.findMany({
@@ -11708,18 +10568,9 @@ export class ProfileControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
@@ -11746,18 +10597,9 @@ export class ProfileControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: ProfileWhereUniqueInput,
     @common.Body() data: ProfileUpdateInput
@@ -11800,14 +10642,6 @@ export class ProfileControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
@@ -11849,20 +10683,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
+
 @Module({
-  imports: [
-    ACLModule,
-    AuthModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class ProfileModuleBase {}
 ",
@@ -11881,33 +10707,18 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { CreateProfileArgs } from \\"./CreateProfileArgs\\";
 import { UpdateProfileArgs } from \\"./UpdateProfileArgs\\";
 import { DeleteProfileArgs } from \\"./DeleteProfileArgs\\";
 import { ProfileFindManyArgs } from \\"./ProfileFindManyArgs\\";
 import { ProfileFindUniqueArgs } from \\"./ProfileFindUniqueArgs\\";
 import { Profile } from \\"./Profile\\";
+import { User } from \\"../../user/base/User\\";
 import { ProfileService } from \\"../profile.service\\";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Profile)
 export class ProfileResolverBase {
-  constructor(
-    protected readonly service: ProfileService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: ProfileService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _profilesMeta(
     @graphql.Args() args: ProfileFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -11921,26 +10732,14 @@ export class ProfileResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [Profile])
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async profiles(
     @graphql.Args() args: ProfileFindManyArgs
   ): Promise<Profile[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => Profile, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async profile(
     @graphql.Args() args: ProfileFindUniqueArgs
   ): Promise<Profile | null> {
@@ -11951,13 +10750,7 @@ export class ProfileResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Profile)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createProfile(
     @graphql.Args() args: CreateProfileArgs
   ): Promise<Profile> {
@@ -11975,13 +10768,7 @@ export class ProfileResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => Profile)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateProfile(
     @graphql.Args() args: UpdateProfileArgs
   ): Promise<Profile | null> {
@@ -12009,11 +10796,6 @@ export class ProfileResolverBase {
   }
 
   @graphql.Mutation(() => Profile)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteProfile(
     @graphql.Args() args: DeleteProfileArgs
   ): Promise<Profile | null> {
@@ -12027,6 +10809,16 @@ export class ProfileResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => User, { nullable: true })
+  async user(@graphql.Parent() parent: Profile): Promise<User | null> {
+    const result = await this.service.getUser(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }
 ",
@@ -12090,23 +10882,18 @@ export class ProfileServiceBase {
 ",
   "server/src/profile/profile.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { ProfileService } from \\"./profile.service\\";
 import { ProfileControllerBase } from \\"./base/profile.controller.base\\";
 
 @swagger.ApiTags(\\"profiles\\")
 @common.Controller(\\"profiles\\")
 export class ProfileController extends ProfileControllerBase {
-  constructor(
-    protected readonly service: ProfileService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: ProfileService) {
+    super(service);
   }
 }
 ",
   "server/src/profile/profile.module.ts": "import { Module } from \\"@nestjs/common\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { ProfileModuleBase } from \\"./base/profile.module.base\\";
 import { ProfileService } from \\"./profile.service\\";
 import { ProfileController } from \\"./profile.controller\\";
@@ -12115,28 +10902,20 @@ import { ProfileResolver } from \\"./profile.resolver\\";
 @Module({
   imports: [ProfileModuleBase],
   controllers: [ProfileController],
-  providers: [nestAccessControl.RolesBuilder, ProfileService, ProfileResolver],
+  providers: [ProfileService, ProfileResolver],
   exports: [ProfileService],
 })
 export class ProfileModule {}
 ",
   "server/src/profile/profile.resolver.ts": "import * as graphql from \\"@nestjs/graphql\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
 import { ProfileResolverBase } from \\"./base/profile.resolver.base\\";
 import { Profile } from \\"./base/Profile\\";
 import { ProfileService } from \\"./profile.service\\";
 
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Profile)
 export class ProfileResolver extends ProfileResolverBase {
-  constructor(
-    protected readonly service: ProfileService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: ProfileService) {
+    super(service);
   }
 }
 ",
@@ -12292,69 +11071,6 @@ export const swaggerSetupOptions: SwaggerCustomOptions = {
   customfavIcon: \\"../swagger/favicon.png\\",
   customSiteTitle: \\"Sample Application\\",
 };
-",
-  "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
-import { UserInfo } from \\"../../auth/UserInfo\\";
-
-export const VALID_ID = \\"1\\";
-
-export const TEST_USER: UserInfo = {
-  id: \\"cl7qmjh4h0000tothyjqapgj5\\",
-  roles: [\\"User\\"],
-  username: \\"ofek\\",
-};
-export const SIGN_TOKEN = \\"SIGN_TOKEN\\";
-export const VALID_CREDENTIALS: Credentials = {
-  username: \\"Valid User\\",
-  password: \\"Valid User Password\\",
-};
-export const INVALID_CREDENTIALS: Credentials = {
-  username: \\"Invalid User\\",
-  password: \\"Invalid User Password\\",
-};
-",
-  "server/src/tests/auth/token.service.spec.ts": "import { TokenServiceBase } from \\"/../../auth/base/token.service.base\\";
-import {
-  INVALID_USERNAME_ERROR,
-  INVALID_PASSWORD_ERROR,
-} from \\"../../auth/constants\\";
-import { SIGN_TOKEN, VALID_CREDENTIALS, VALID_ID } from \\"./constants\\";
-
-describe(\\"Testing the TokenServiceBase\\", () => {
-  let tokenServiceBase: TokenServiceBase;
-  beforeEach(() => {
-    tokenServiceBase = new TokenServiceBase();
-  });
-  describe(\\"Testing the BasicTokenService.createToken()\\", () => {
-    it(\\"should create valid token for given username and password\\", async () => {
-      expect(
-        await tokenServiceBase.createToken({
-          id: VALID_ID,
-          username: \\"admin\\",
-          password: \\"admin\\",
-        })
-      ).toBe(\\"YWRtaW46YWRtaW4=\\");
-    });
-    it(\\"should reject when username missing\\", () => {
-      const result = tokenServiceBase.createToken({
-        id: VALID_ID,
-        //@ts-ignore
-        username: null,
-        password: VALID_CREDENTIALS.password,
-      });
-      return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
-    });
-    it(\\"should reject when password missing\\", () => {
-      const result = tokenServiceBase.createToken({
-        id: VALID_ID,
-        username: VALID_CREDENTIALS.username,
-        //@ts-ignore
-        password: null,
-      });
-      return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
-    });
-  });
-});
 ",
   "server/src/tests/health/health.service.spec.ts": "import { mock } from \\"jest-mock-extended\\";
 import { PrismaService } from \\"nestjs-prisma\\";
@@ -12603,7 +11319,6 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
-  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
@@ -12611,33 +11326,19 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
+  IsJSON,
 } from \\"class-validator\\";
 
-import { GraphQLJSON } from \\"graphql-type-json\\";
-import { JsonValue } from \\"type-fest\\";
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { JsonValue } from \\"type-fest\\";
 import { Profile } from \\"../../profile/base/Profile\\";
 
 @ObjectType()
 class User {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSON()
-  @Field(() => GraphQLJSON)
-  roles!: JsonValue;
-
   @ApiProperty({
     required: true,
     type: String,
@@ -12796,7 +11497,6 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
-  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
@@ -12804,43 +11504,21 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
+  IsJSON,
 } from \\"class-validator\\";
 
-import { GraphQLJSON } from \\"graphql-type-json\\";
-import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 
 @InputType()
 class UserCreateInput {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  password!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSON()
-  @Field(() => GraphQLJSON)
-  roles!: InputJsonValue;
-
   @ApiProperty({
     required: true,
     type: String,
@@ -13174,33 +11852,6 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  username?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  password?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  roles?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
   id?: SortOrder;
 
   @ApiProperty({
@@ -13340,59 +11991,27 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
   IsOptional,
-  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
   ValidateNested,
   IsEnum,
   IsBoolean,
+  IsJSON,
 } from \\"class-validator\\";
 
-import { GraphQLJSON } from \\"graphql-type-json\\";
-import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 
 @InputType()
 class UserUpdateInput {
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  username?: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  password?: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsJSON()
-  @IsOptional()
-  @Field(() => GraphQLJSON, {
-    nullable: true,
-  })
-  roles?: InputJsonValue;
-
   @ApiProperty({
     required: false,
     type: String,
@@ -13808,17 +12427,26 @@ class UserWhereUniqueInput {
 export { UserWhereUniqueInput };
 ",
   "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
-import { INestApplication, HttpStatus } from \\"@nestjs/common\\";
+import {
+  INestApplication,
+  HttpStatus,
+  ExecutionContext,
+  CallHandler,
+} from \\"@nestjs/common\\";
 import request from \\"supertest\\";
 import { MorganModule } from \\"nest-morgan\\";
+import { ACGuard } from \\"nest-access-control\\";
+import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
+import { ACLModule } from \\"../../auth/acl.module\\";
+import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
+import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
+import { map } from \\"rxjs\\";
 import { UserController } from \\"../user.controller\\";
 import { UserService } from \\"../user.service\\";
 
 const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -13830,8 +12458,6 @@ const CREATE_INPUT = {
   location: \\"exampleLocation\\",
 };
 const CREATE_RESULT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -13844,8 +12470,6 @@ const CREATE_RESULT = {
 };
 const FIND_MANY_RESULT = [
   {
-    username: \\"exampleUsername\\",
-    password: \\"examplePassword\\",
     id: \\"exampleId\\",
     name: \\"exampleName\\",
     bio: \\"exampleBio\\",
@@ -13858,8 +12482,6 @@ const FIND_MANY_RESULT = [
   },
 ];
 const FIND_ONE_RESULT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -13886,6 +12508,38 @@ const service = {
   },
 };
 
+const basicAuthGuard = {
+  canActivate: (context: ExecutionContext) => {
+    const argumentHost = context.switchToHttp();
+    const request = argumentHost.getRequest();
+    request.user = {
+      roles: [\\"user\\"],
+    };
+    return true;
+  },
+};
+
+const acGuard = {
+  canActivate: () => {
+    return true;
+  },
+};
+
+const aclFilterResponseInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle().pipe(
+      map((data) => {
+        return data;
+      })
+    );
+  },
+};
+const aclValidateRequestInterceptor = {
+  intercept: (context: ExecutionContext, next: CallHandler) => {
+    return next.handle();
+  },
+};
+
 describe(\\"User\\", () => {
   let app: INestApplication;
 
@@ -13898,8 +12552,17 @@ describe(\\"User\\", () => {
         },
       ],
       controllers: [UserController],
-      imports: [MorganModule.forRoot()],
-    }).compile();
+      imports: [MorganModule.forRoot(), ACLModule],
+    })
+      .overrideGuard(DefaultAuthGuard)
+      .useValue(basicAuthGuard)
+      .overrideGuard(ACGuard)
+      .useValue(acGuard)
+      .overrideInterceptor(AclFilterResponseInterceptor)
+      .useValue(aclFilterResponseInterceptor)
+      .overrideInterceptor(AclValidateRequestInterceptor)
+      .useValue(aclValidateRequestInterceptor)
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -13993,36 +12656,21 @@ import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { UserService } from \\"../user.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
+import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
+import { Organization } from \\"../../organization/base/Organization\\";
+import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
 export class UserControllerBase {
-  constructor(
-    protected readonly service: UserService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
-  @common.UseInterceptors(AclValidateRequestInterceptor)
+  constructor(protected readonly service: UserService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async create(@common.Body() data: UserCreateInput): Promise<User> {
     return await this.service.create({
       data: {
@@ -14041,8 +12689,6 @@ export class UserControllerBase {
           : undefined,
       },
       select: {
-        username: true,
-        roles: true,
         id: true,
         name: true,
         bio: true,
@@ -14072,25 +12718,14 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findMany(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
       select: {
-        username: true,
-        roles: true,
         id: true,
         name: true,
         bio: true,
@@ -14120,26 +12755,15 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async findOne(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     const result = await this.service.findOne({
       where: params,
       select: {
-        username: true,
-        roles: true,
         id: true,
         name: true,
         bio: true,
@@ -14175,18 +12799,9 @@ export class UserControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async update(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() data: UserUpdateInput
@@ -14210,8 +12825,6 @@ export class UserControllerBase {
             : undefined,
         },
         select: {
-          username: true,
-          roles: true,
           id: true,
           name: true,
           bio: true,
@@ -14252,14 +12865,6 @@ export class UserControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async delete(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
@@ -14267,8 +12872,6 @@ export class UserControllerBase {
       return await this.service.delete({
         where: params,
         select: {
-          username: true,
-          roles: true,
           id: true,
           name: true,
           bio: true,
@@ -14305,6 +12908,177 @@ export class UserControllerBase {
       throw error;
     }
   }
+
+  @common.Get(\\"/:id/employees\\")
+  @ApiNestedQuery(UserFindManyArgs)
+  async findManyEmployees(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<User[]> {
+    const query = plainToClass(UserFindManyArgs, request.query);
+    const results = await this.service.findEmployees(params.id, {
+      ...query,
+      select: {
+        id: true,
+        name: true,
+        bio: true,
+        email: true,
+        age: true,
+        birthDate: true,
+        score: true,
+
+        manager: {
+          select: {
+            id: true,
+          },
+        },
+
+        interests: true,
+        priority: true,
+        isCurious: true,
+        location: true,
+        extendedProperties: true,
+
+        profile: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post(\\"/:id/employees\\")
+  async connectEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch(\\"/:id/employees\\")
+  async updateEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete(\\"/:id/employees\\")
+  async disconnectEmployees(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: UserWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      employees: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Get(\\"/:id/organizations\\")
+  @ApiNestedQuery(OrganizationFindManyArgs)
+  async findManyOrganizations(
+    @common.Req() request: Request,
+    @common.Param() params: UserWhereUniqueInput
+  ): Promise<Organization[]> {
+    const query = plainToClass(OrganizationFindManyArgs, request.query);
+    const results = await this.service.findOrganizations(params.id, {
+      ...query,
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+      },
+    });
+    if (results === null) {
+      throw new errors.NotFoundException(
+        \`No resource was found for \${JSON.stringify(params)}\`
+      );
+    }
+    return results;
+  }
+
+  @common.Post(\\"/:id/organizations\\")
+  async connectOrganizations(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      organizations: {
+        connect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Patch(\\"/:id/organizations\\")
+  async updateOrganizations(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      organizations: {
+        set: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
+
+  @common.Delete(\\"/:id/organizations\\")
+  async disconnectOrganizations(
+    @common.Param() params: UserWhereUniqueInput,
+    @common.Body() body: OrganizationWhereUniqueInput[]
+  ): Promise<void> {
+    const data = {
+      organizations: {
+        disconnect: body,
+      },
+    };
+    await this.service.update({
+      where: params,
+      data,
+      select: { id: true },
+    });
+  }
 }
 ",
   "server/src/user/base/user.module.base.ts": "/*
@@ -14318,20 +13092,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { PrismaModule } from \\"nestjs-prisma\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
+
 @Module({
-  imports: [
-    ACLModule,
-    AuthModule,
-    forwardRef(() => AuthModule),
-    MorganModule,
-    PrismaModule,
-  ],
-  exports: [ACLModule, AuthModule, MorganModule, PrismaModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class UserModuleBase {}
 ",
@@ -14350,33 +13116,20 @@ import * as graphql from \\"@nestjs/graphql\\";
 import * as apollo from \\"apollo-server-express\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
 import { CreateUserArgs } from \\"./CreateUserArgs\\";
 import { UpdateUserArgs } from \\"./UpdateUserArgs\\";
 import { DeleteUserArgs } from \\"./DeleteUserArgs\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
 import { UserFindUniqueArgs } from \\"./UserFindUniqueArgs\\";
 import { User } from \\"./User\\";
+import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
+import { Organization } from \\"../../organization/base/Organization\\";
+import { Profile } from \\"../../profile/base/Profile\\";
 import { UserService } from \\"../user.service\\";
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => User)
 export class UserResolverBase {
-  constructor(
-    protected readonly service: UserService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
+  constructor(protected readonly service: UserService) {}
 
-  @graphql.Query(() => MetaQueryPayload)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async _usersMeta(
     @graphql.Args() args: UserFindManyArgs
   ): Promise<MetaQueryPayload> {
@@ -14390,24 +13143,12 @@ export class UserResolverBase {
     };
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => [User])
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
     return this.service.findMany(args);
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
   @graphql.Query(() => User, { nullable: true })
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
     const result = await this.service.findOne(args);
     if (result === null) {
@@ -14416,13 +13157,7 @@ export class UserResolverBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => User)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
   async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
     return await this.service.create({
       ...args,
@@ -14444,13 +13179,7 @@ export class UserResolverBase {
     });
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
   @graphql.Mutation(() => User)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
     try {
       return await this.service.update({
@@ -14482,11 +13211,6 @@ export class UserResolverBase {
   }
 
   @graphql.Mutation(() => User)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
     try {
       return await this.service.delete(args);
@@ -14498,6 +13222,54 @@ export class UserResolverBase {
       }
       throw error;
     }
+  }
+
+  @graphql.ResolveField(() => [User])
+  async employees(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: UserFindManyArgs
+  ): Promise<User[]> {
+    const results = await this.service.findEmployees(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => [Organization])
+  async organizations(
+    @graphql.Parent() parent: User,
+    @graphql.Args() args: OrganizationFindManyArgs
+  ): Promise<Organization[]> {
+    const results = await this.service.findOrganizations(parent.id, args);
+
+    if (!results) {
+      return [];
+    }
+
+    return results;
+  }
+
+  @graphql.ResolveField(() => User, { nullable: true })
+  async manager(@graphql.Parent() parent: User): Promise<User | null> {
+    const result = await this.service.getManager(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
+  }
+
+  @graphql.ResolveField(() => Profile, { nullable: true })
+  async profile(@graphql.Parent() parent: User): Promise<Profile | null> {
+    const result = await this.service.getProfile(parent.id);
+
+    if (!result) {
+      return null;
+    }
+    return result;
   }
 }
 ",
@@ -14514,14 +13286,9 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
 import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
-import { PasswordService } from \\"../../auth/password.service\\";
-import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
 export class UserServiceBase {
-  constructor(
-    protected readonly prisma: PrismaService,
-    protected readonly passwordService: PasswordService
-  ) {}
+  constructor(protected readonly prisma: PrismaService) {}
 
   async count<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
@@ -14596,23 +13363,18 @@ export class UserServiceBase {
 ",
   "server/src/user/user.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { UserService } from \\"./user.service\\";
 import { UserControllerBase } from \\"./base/user.controller.base\\";
 
 @swagger.ApiTags(\\"users\\")
 @common.Controller(\\"users\\")
 export class UserController extends UserControllerBase {
-  constructor(
-    protected readonly service: UserService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: UserService) {
+    super(service);
   }
 }
 ",
   "server/src/user/user.module.ts": "import { Module } from \\"@nestjs/common\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { UserModuleBase } from \\"./base/user.module.base\\";
 import { UserService } from \\"./user.service\\";
 import { UserController } from \\"./user.controller\\";
@@ -14621,43 +13383,31 @@ import { UserResolver } from \\"./user.resolver\\";
 @Module({
   imports: [UserModuleBase],
   controllers: [UserController],
-  providers: [nestAccessControl.RolesBuilder, UserService, UserResolver],
+  providers: [UserService, UserResolver],
   exports: [UserService],
 })
 export class UserModule {}
 ",
   "server/src/user/user.resolver.ts": "import * as graphql from \\"@nestjs/graphql\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { GqlDefaultAuthGuard } from \\"../auth/gqlDefaultAuth.guard\\";
-import * as common from \\"@nestjs/common\\";
 import { UserResolverBase } from \\"./base/user.resolver.base\\";
 import { User } from \\"./base/User\\";
 import { UserService } from \\"./user.service\\";
 
-@common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => User)
 export class UserResolver extends UserResolverBase {
-  constructor(
-    protected readonly service: UserService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: UserService) {
+    super(service);
   }
 }
 ",
   "server/src/user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"../prisma/prisma.service\\";
-import { PasswordService } from \\"../auth/password.service\\";
 import { UserServiceBase } from \\"./base/user.service.base\\";
 
 @Injectable()
 export class UserService extends UserServiceBase {
-  constructor(
-    protected readonly prisma: PrismaService,
-    protected readonly passwordService: PasswordService
-  ) {
-    super(prisma, passwordService);
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
   }
 }
 ",
