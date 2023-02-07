@@ -2,6 +2,7 @@ import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useHistory } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import * as models from "../models";
 import {
   Button,
@@ -120,8 +121,13 @@ const PurchasePage = (props) => {
     [upgradeToPro, handleContactUsClick]
   );
 
+  const pageTitle = "Pricing & Plans";
+
   return (
     <Modal open fullScreen>
+      <Helmet>
+        <title>{`Amplication | ${pageTitle} : `}</title>
+      </Helmet>
       <div className={CLASS_NAME}>
         {isLoading && <PurchaseLoader />}
         <div className={`${CLASS_NAME}__layout`}>
