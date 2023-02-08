@@ -8,17 +8,18 @@ ARG gid=$uid
 WORKDIR /workspace/packages/${user}
 
 COPY ./dist/packages/amplication-${component}/package*.json .
+
 RUN npm install --omit-dev
 
 COPY ./dist/packages/amplication-${component} .
 
-RUN groupadd --gid ${gid} ${user}
-RUN useradd --uid ${uid} --gid ${gid} -m ${user}
-RUN chown -R ${uid}:${gid} /workspace/packages/
+RUN groupadd --gid ${gid} ${user} \
+    && useradd --uid ${uid} --gid ${gid} -m ${user} \
+    && chown -R ${uid}:${gid} /workspace/packages/
 
 USER ${user}
 
 ENV PORT=3333
 EXPOSE $PORT
 
-ENTRYPOINT ["node", "./main.js"]
+ENTRYPOINT [ "node", "./main.js" ]

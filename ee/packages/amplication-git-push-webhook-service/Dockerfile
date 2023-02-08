@@ -8,15 +8,16 @@ ARG gid=$uid
 WORKDIR /workspace/packages/${user}
 
 COPY ./dist/ee/packages/amplication-${component}/package*.json .
+
 RUN npm install --omit-dev
 
 COPY ./dist/ee/packages/amplication-${component} .
 
 COPY ./packages/amplication-prisma-db ./workspace/packages/amplication-prisma-db
 
-RUN groupadd --gid ${gid} ${user}
-RUN useradd --uid ${uid} --gid ${gid} -m ${user}
-RUN chown -R ${uid}:${gid} /workspace/packages/
+RUN groupadd --gid ${gid} ${user} \
+    && useradd --uid ${uid} --gid ${gid} -m ${user} \
+    && chown -R ${uid}:${gid} /workspace/packages/
 
 USER ${user}
 
