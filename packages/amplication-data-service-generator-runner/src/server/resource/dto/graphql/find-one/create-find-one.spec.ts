@@ -1,11 +1,11 @@
 import { print } from "@amplication/code-gen-utils";
 import { Entity } from "@amplication/code-gen-types";
+import { createWhereUniqueInput } from "../../create-where-unique-input";
+import { createFindOneArgs, createFindOneArgsId } from "./create-find-one-args";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
-} from "../../../utils/test-data";
-import { createWhereUniqueInput } from "../../create-where-unique-input";
-import { createFindOneArgs, createFindOneArgsId } from "./create-find-one-args";
+} from "../../../util/test-data";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
