@@ -63,6 +63,13 @@
         }
       }
     },
+    "refresh:plugins": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "curl -X POST -H \"Content-Type: application/json\" -H \"X-REQUEST-TYPE: GraphQL\" -d '{\"query\":\"query{pluginVersions{id pluginId version}githubPlugins{createdAt name}}\"}' http://localhost:$PORT/graphql",
+        "envFile": "packages/amplication-plugin-api/.env"
+      }
+    },
     "db:prisma:generate": {
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/prisma/generated-prisma-client"],
