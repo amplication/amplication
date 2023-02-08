@@ -1,4 +1,3 @@
-import { EnumEntityAction } from "./../../../models";
 import { print, readFile } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -11,6 +10,8 @@ import {
   EventNames,
   CreateEntityControllerParams,
   CreateEntityControllerBaseParams,
+  CreateEntityControllerToManyRelationMethodsParams,
+  EnumEntityAction,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 
@@ -34,7 +35,6 @@ import { getImportableDTOs } from "../dto/create-dto-module";
 import { createDataMapping } from "./create-data-mapping";
 import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
-import { setEndpointPermissions } from "../../../util/set-endpoint-permission";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
@@ -42,13 +42,13 @@ import {
   createFieldFindManyFunctionId,
   createServiceId,
 } from "../service/create-service";
+import { setEndpointPermissions } from "libs/data-service-generator/src/util/set-endpoint-permission";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
   action: EnumEntityAction;
   entity: Entity;
 };
-
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
 
@@ -345,10 +345,36 @@ async function createToManyRelationMethods(
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   };
 
+  const eventParams: CreateEntityControllerToManyRelationMethodsParams = {
+    field: field,
+    entity: entity,
+    entityType: entityType,
+    whereUniqueInput: whereUniqueInput,
+    serviceId: serviceId,
+    methods: [],
+    toManyFile: toManyFile,
+    toManyMapping: toManyMapping,
+  };
+
+  await pluginWrapper(
+    createToManyRelationMethodsInternal,
+    EventNames.CreateEntityControllerToManyRelationMethods,
+    eventParams
+  );
+
+  return eventParams.methods;
+}
+
+async function createToManyRelationMethodsInternal(
+  eventParams: CreateEntityControllerToManyRelationMethodsParams
+): Promise<Module[]> {
+  const { toManyFile, toManyMapping, entity, field } = eventParams;
+  const { relatedEntity } = field.properties;
+
   interpolate(toManyFile, toManyMapping);
 
   const classDeclaration = getClassDeclarationById(
-    toManyFile,
+    eventParams.toManyFile,
     TO_MANY_MIXIN_ID
   );
 
@@ -379,5 +405,7 @@ async function createToManyRelationMethods(
     setEndpointPermissions(classDeclaration, methodId, action, entity);
   });
 
-  return getMethods(classDeclaration);
+  eventParams.methods = await getMethods(classDeclaration);
+
+  return [];
 }

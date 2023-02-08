@@ -3,17 +3,16 @@ import { pascalCase } from "pascal-case";
 import { print, readFile } from "@amplication/code-gen-utils";
 import {
   Entity,
-  EntityField,
   EntityLookupField,
   Module,
   EventNames,
   CreateEntityServiceParams,
   CreateEntityServiceBaseParams,
   types,
+  EntityField,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
-  addIdentifierToConstructorSuperCall,
   addImports,
   awaitExpression,
   extractImportDeclarations,
@@ -34,9 +33,7 @@ import {
   isPasswordField,
   isToManyRelationField,
 } from "../../../util/field";
-
 import { relativeImportPath } from "../../../util/module";
-import { addInjectableDependency } from "../../../util/nestjs-code-generation";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../util/get-entity-id-type";
@@ -44,7 +41,6 @@ import { getEntityIdType } from "../../../util/get-entity-id-type";
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
 const DATA_ID = builders.identifier("data");
-const PASSWORD_SERVICE_ID = builders.identifier("PasswordService");
 const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
 const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
 const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
@@ -52,7 +48,6 @@ const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
 );
 const serviceTemplatePath = require.resolve("./service.template.ts");
 const serviceBaseTemplatePath = require.resolve("./service.base.template.ts");
-const PASSWORD_FIELD_ASYNC_METHODS = new Set(["create", "update"]);
 const toOneTemplatePath = require.resolve("./to-one.template.ts");
 const toManyTemplatePath = require.resolve("./to-many.template.ts");
 
@@ -64,9 +59,9 @@ export async function createServiceModules(
   serviceBaseId: namedTypes.Identifier,
   delegateId: namedTypes.Identifier
 ): Promise<Module[]> {
-  const passwordFields = entity.fields.filter(isPasswordField);
   const template = await readFile(serviceTemplatePath);
   const templateBase = await readFile(serviceBaseTemplatePath);
+  const passwordFields = entity.fields.filter(isPasswordField);
 
   const templateMapping = createTemplateMapping(
     entityType,
@@ -83,7 +78,6 @@ export async function createServiceModules(
       {
         entityName,
         templateMapping,
-        passwordFields,
         serviceId,
         serviceBaseId,
         template,
@@ -97,7 +91,6 @@ export async function createServiceModules(
         entityName,
         entity,
         templateMapping,
-        passwordFields,
         serviceId,
         serviceBaseId,
         delegateId,
@@ -110,7 +103,6 @@ export async function createServiceModules(
 async function createServiceModule({
   entityName,
   templateMapping,
-  passwordFields,
   serviceId,
   serviceBaseId,
   template,
@@ -130,40 +122,6 @@ async function createServiceModule({
     ),
   ]);
 
-  //if there are any password fields, add imports, injection, and pass service to super
-  if (passwordFields.length) {
-    const classDeclaration = getClassDeclarationById(template, serviceId);
-
-    addInjectableDependency(
-      classDeclaration,
-      PASSWORD_SERVICE_MEMBER_ID.name,
-      PASSWORD_SERVICE_ID,
-      "protected"
-    );
-
-    addIdentifierToConstructorSuperCall(template, PASSWORD_SERVICE_MEMBER_ID);
-
-    for (const member of classDeclaration.body.body) {
-      if (
-        namedTypes.ClassMethod.check(member) &&
-        namedTypes.Identifier.check(member.key) &&
-        PASSWORD_FIELD_ASYNC_METHODS.has(member.key.name)
-      ) {
-        member.async = true;
-      }
-    }
-    //add the password service
-    addImports(template, [
-      importNames(
-        [PASSWORD_SERVICE_ID],
-        relativeImportPath(
-          modulePath,
-          `${serverDirectories.srcDirectory}/auth/password.service.ts`
-        )
-      ),
-    ]);
-  }
-
   removeTSIgnoreComments(template);
   removeESLintComments(template);
   removeTSVariableDeclares(template);
@@ -181,7 +139,6 @@ async function createServiceBaseModule({
   entityName,
   entity,
   templateMapping,
-  passwordFields,
   serviceId,
   serviceBaseId,
   delegateId,
@@ -254,48 +211,6 @@ async function createServiceBaseModule({
   );
 
   removeTSClassDeclares(template);
-
-  if (passwordFields.length) {
-    const classDeclaration = getClassDeclarationById(template, serviceBaseId);
-
-    addInjectableDependency(
-      classDeclaration,
-      PASSWORD_SERVICE_MEMBER_ID.name,
-      PASSWORD_SERVICE_ID,
-      "protected"
-    );
-
-    for (const member of classDeclaration.body.body) {
-      if (
-        namedTypes.ClassMethod.check(member) &&
-        namedTypes.Identifier.check(member.key) &&
-        PASSWORD_FIELD_ASYNC_METHODS.has(member.key.name)
-      ) {
-        member.async = true;
-      }
-    }
-    //add the password service
-    addImports(template, [
-      importNames(
-        [PASSWORD_SERVICE_ID],
-        relativeImportPath(
-          moduleBasePath,
-          `${serverDirectories.srcDirectory}/auth/password.service.ts`
-        )
-      ),
-    ]);
-
-    addImports(template, [
-      importNames(
-        [TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID],
-        relativeImportPath(
-          moduleBasePath,
-          `${serverDirectories.srcDirectory}/prisma.util.ts`
-        )
-      ),
-    ]);
-  }
-
   removeTSIgnoreComments(template);
   removeESLintComments(template);
   removeTSVariableDeclares(template);
@@ -308,24 +223,6 @@ async function createServiceBaseModule({
       code: print(template).code,
     },
   ];
-}
-
-function createMutationDataMapping(
-  mappings: namedTypes.ObjectProperty[]
-): namedTypes.Identifier | namedTypes.ObjectExpression {
-  if (!mappings.length) {
-    return ARGS_ID;
-  }
-  return builders.objectExpression([
-    builders.spreadProperty(ARGS_ID),
-    builders.objectProperty(
-      DATA_ID,
-      builders.objectExpression([
-        builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
-        ...mappings,
-      ])
-    ),
-  ]);
 }
 
 export function createServiceId(entityType: string): namedTypes.Identifier {
@@ -444,4 +341,21 @@ function createTemplateMapping(
       })
     ),
   };
+}
+function createMutationDataMapping(
+  mappings: namedTypes.ObjectProperty[]
+): namedTypes.Identifier | namedTypes.ObjectExpression {
+  if (!mappings.length) {
+    return ARGS_ID;
+  }
+  return builders.objectExpression([
+    builders.spreadProperty(ARGS_ID),
+    builders.objectProperty(
+      DATA_ID,
+      builders.objectExpression([
+        builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
+        ...mappings,
+      ])
+    ),
+  ]);
 }

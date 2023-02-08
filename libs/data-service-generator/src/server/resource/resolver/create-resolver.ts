@@ -12,6 +12,8 @@ import {
   CreateEntityResolverBaseParams,
   DTOs,
   EventNames,
+  CreateEntityResolverToManyRelationMethodsParams,
+  CreateEntityResolverToOneRelationMethodsParams,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../util/module";
 
@@ -45,9 +47,9 @@ import {
   createFieldFindOneFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
-import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../util/identifiers-imports";
 import DsgContext from "../../../dsg-context";
+import { MethodsIdsActionEntityTriplet } from "../controller/create-controller";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const DATA_MEMBER_EXPRESSION = memberExpression`args.data`;
@@ -368,18 +370,44 @@ async function createToOneRelationMethods(
     ARGS: relatedEntityDTOs.findOneArgs.id,
   };
 
-  interpolate(toOneFile, toOneMapping);
+  const eventParams: CreateEntityResolverToOneRelationMethodsParams = {
+    field: field,
+    entityType: entityType,
+    serviceId: serviceId,
+    methods: [],
+    toOneFile: toOneFile,
+    toOneMapping: toOneMapping,
+  };
 
-  const classDeclaration = getClassDeclarationById(toOneFile, MIXIN_ID);
+  await pluginWrapper(
+    createToOneRelationMethodsInternal,
+    EventNames.CreateEntityResolverToOneRelationMethods,
+    eventParams
+  );
+
+  return eventParams.methods;
+}
+
+async function createToOneRelationMethodsInternal(
+  eventParams: CreateEntityResolverToOneRelationMethodsParams
+): Promise<Module[]> {
+  interpolate(eventParams.toOneFile, eventParams.toOneMapping);
+
+  const classDeclaration = getClassDeclarationById(
+    eventParams.toOneFile,
+    MIXIN_ID
+  );
+  const { relatedEntity } = eventParams.field.properties;
 
   setEndpointPermissions(
     classDeclaration,
-    toOneMapping["FIND_ONE"] as namedTypes.Identifier,
+    eventParams.toOneMapping["FIND_ONE"] as namedTypes.Identifier,
     EnumEntityAction.View,
     relatedEntity
   );
 
-  return getMethods(classDeclaration);
+  eventParams.methods = getMethods(classDeclaration);
+  return [];
 }
 
 async function createToManyRelationMethods(
@@ -404,16 +432,41 @@ async function createToManyRelationMethods(
     ARGS: relatedEntityDTOs.findManyArgs.id,
   };
 
-  interpolate(toManyFile, toManyMapping);
+  const eventParams: CreateEntityResolverToManyRelationMethodsParams = {
+    field: field,
+    entityType: entityType,
+    serviceId: serviceId,
+    methods: [],
+    toManyFile: toManyFile,
+    toManyMapping: toManyMapping,
+  };
 
-  const classDeclaration = getClassDeclarationById(toManyFile, MIXIN_ID);
+  await pluginWrapper(
+    createToManyRelationMethodsInternal,
+    EventNames.CreateEntityResolverToManyRelationMethods,
+    eventParams
+  );
+
+  return eventParams.methods;
+}
+
+async function createToManyRelationMethodsInternal(
+  eventParams: CreateEntityResolverToManyRelationMethodsParams
+): Promise<Module[]> {
+  interpolate(eventParams.toManyFile, eventParams.toManyMapping);
+  const { relatedEntity } = eventParams.field.properties;
+  const classDeclaration = getClassDeclarationById(
+    eventParams.toManyFile,
+    MIXIN_ID
+  );
 
   setEndpointPermissions(
     classDeclaration,
-    toManyMapping["FIND_MANY"] as namedTypes.Identifier,
+    eventParams.toManyMapping["FIND_MANY"] as namedTypes.Identifier,
     EnumEntityAction.Search,
     relatedEntity
   );
 
-  return getMethods(classDeclaration);
+  eventParams.methods = getMethods(classDeclaration);
+  return [];
 }

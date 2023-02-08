@@ -1,13 +1,10 @@
-import { Module, forwardRef } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { MorganModule } from "nest-morgan";
-// @ts-ignore
-import { ACLModule } from "../../auth/acl.module";
-// @ts-ignore
-import { AuthModule } from "../../auth/auth.module";
 
+declare class IMPORTS_ARRAY {}
+declare class EXPORT_ARRAY {}
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
-
-  exports: [ACLModule, AuthModule, MorganModule],
+  imports: IMPORTS_ARRAY,
+  exports: EXPORT_ARRAY,
 })
 export class MODULE_BASE {}

@@ -6,26 +6,22 @@ import {
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../util/read-static-modules";
 import { formatCode, formatJson } from "@amplication/code-gen-utils";
-import { createDTOModules } from "./resource/create-dtos";
+import { createDTOModules, createDTOs } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
 import { createPrismaSchemaModule } from "./prisma/create-prisma-schema-module";
-import { createGrantsModule } from "./create-grants";
 import { createDotEnvModule } from "./create-dotenv";
 import { createSeed } from "./seed/create-seed";
 import DsgContext from "../dsg-context";
 import { ENV_VARIABLES } from "./constants";
-import { createAuthModules } from "./auth/createAuth";
 import { createServerPackageJson } from "./package-json/create-package-json";
 import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
 import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
 import { createLog } from "../create-log";
-import { createUserInfo } from "./auth/user-info/create-user-info";
-import { createTokenPayloadInterface } from "./auth/token/create-token-payload-interface";
-import { createAuthConstants } from "./auth/create-constants/create-constants";
+import { createAuthModules } from "./auth/create-auth";
 import { createGitIgnore } from "./gitignore/create-gitignore";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
@@ -37,13 +33,15 @@ export function createServer(): Promise<Module[]> {
 async function createServerInternal(
   eventParams: CreateServerParams
 ): Promise<Module[]> {
-  const {
-    serverDirectories,
-    roles,
-    entities,
-    DTOs: dtos,
-    logger,
-  } = DsgContext.getInstance;
+  const { serverDirectories, entities, logger } = DsgContext.getInstance;
+
+  const context = DsgContext.getInstance;
+
+  await createLog({ level: "info", message: "Creating DTOs..." });
+  logger.info("Creating DTOs...");
+
+  const dtos = await createDTOs(context.entities);
+  context.DTOs = dtos;
 
   const dsgVersion = (await import("../../package.json")).version;
   logger.info(`Running DSG Version: ${dsgVersion}`);
@@ -78,24 +76,6 @@ async function createServerInternal(
   const dtoModules = createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
 
-  await createLog({ level: "info", message: "Creating User Info..." });
-  logger.info("Creating User Info...");
-  const userInfo = await createUserInfo();
-
-  await createLog({
-    level: "info",
-    message: "Creating Token Payload Interface...",
-  });
-  logger.info("Token Payload Interface...");
-  const tokenPayloadInterface = await createTokenPayloadInterface();
-
-  await createLog({
-    level: "info",
-    message: "Creating Auth Constants...",
-  });
-  logger.info("Creating Auth Constants...");
-  const authConstants = await createAuthConstants();
-
   await createLog({ level: "info", message: "Creating Auth module..." });
   logger.info("Creating Auth module...");
   const authModules = await createAuthModules();
@@ -117,9 +97,10 @@ async function createServerInternal(
 
   await createLog({ level: "info", message: "Creating application module..." });
   logger.info("Creating application module...");
-  const appModule = await createAppModule({
-    modulesFiles: [...resourcesModules, ...staticModules],
-  });
+  const appModule = await createAppModule([
+    ...resourcesModules,
+    ...staticModules,
+  ]);
 
   const createdModules = [
     ...resourcesModules,
@@ -127,9 +108,6 @@ async function createServerInternal(
     ...swagger,
     ...appModule,
     ...seedModule,
-    ...userInfo,
-    ...tokenPayloadInterface,
-    authConstants,
     ...authModules,
     ...messageBrokerModules,
   ];
@@ -151,10 +129,9 @@ async function createServerInternal(
 
   await createLog({
     level: "info",
-    message: "Creating access control grants...",
+    message: "Creating Dot Env...",
   });
-  logger.info("Creating access control grants...");
-  const grantsModule = createGrantsModule(entities, roles);
+
   const dotEnvModule = await createDotEnvModule({
     envVariables: ENV_VARIABLES,
   });
@@ -168,7 +145,6 @@ async function createServerInternal(
     ...formattedJsonFiles,
     ...formattedModules,
     ...prismaSchemaModule,
-    grantsModule,
     ...dotEnvModule,
     ...dockerComposeFile,
     ...dockerComposeDBFile,

@@ -9,7 +9,6 @@ import {
   Module,
   types,
 } from "@amplication/code-gen-types";
-
 import {
   addImports,
   awaitExpression,
