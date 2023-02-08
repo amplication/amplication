@@ -100,7 +100,7 @@ async function main() {
         data: {
           displayName: "Auth-core",
           enabled: true,
-          npm: "@amplication/plugin-auth",
+          npm: "@amplication/plugin-auth-core",
           pluginId: "auth-core",
           settings: {},
           version: "latest",
