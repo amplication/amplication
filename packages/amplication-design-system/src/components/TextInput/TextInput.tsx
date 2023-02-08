@@ -38,6 +38,7 @@ export function TextInput({
       className={classNames(`${CLASS_NAME}`, className, {
         [`${CLASS_NAME}--with-trailing-button`]: trailingButton,
         [`${CLASS_NAME}--has-error`]: hasError,
+        [`${CLASS_NAME}--input-field`]: !textarea,
       })}
     >
       <div className={`${CLASS_NAME}__inner-wrapper`}>
