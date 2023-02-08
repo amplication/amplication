@@ -1,11 +1,12 @@
-FROM node:18.13.0-slim AS base
+FROM node:18.13.0-slim AS production
 
 ARG component=server
 ARG user=${component}
 ARG uid=1001
 ARG gid=$uid
 
-# Required to run Prisma on ARM64 machine: https://github.com/prisma/prisma/issues/861#issuecomment-881992292
+# Required to run Prisma on ARM64 machine:
+# https://github.com/prisma/prisma/issues/861#issuecomment-881992292
 RUN apt-get update && apt-get install -y openssl
 
 WORKDIR /workspace/packages/${user}

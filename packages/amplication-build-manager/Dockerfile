@@ -1,4 +1,4 @@
-FROM node:18.13.0-slim AS base
+FROM node:18.13.0-slim AS production
 
 ARG component=build-manager
 ARG user=${component}
