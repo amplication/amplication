@@ -1,8 +1,9 @@
-import { EnumResourceType } from "@amplication/data-service-generator/models";
-import { appInfo } from "@amplication/data-service-generator/tests/appInfo";
-import { plugins } from "@amplication/data-service-generator/tests/constants/example-plugins";
-import entities from "@amplication/data-service-generator/tests/entities";
-import roles from "@amplication/data-service-generator/tests/roles";
+import fs from "fs";
+import path from "path";
+import { EnumResourceType } from "../src/models";
+import { appInfo } from "../src/tests/appInfo";
+import entities from "../src/tests/entities";
+import roles from "../src/tests/roles";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { format } from "prettier";
@@ -28,8 +29,24 @@ function createInputJsonFile() {
       },
     ],
   };
-  const fileName = "input.json";
-  const path = join(__dirname, `../${fileName}`);
-  writeFileSync(path, format(JSON.stringify(object), { parser: "json" }));
-  console.log(`Finish writing the ${fileName} file`);
+  const buildSpecPath = process.env.BUILD_SPEC_PATH;
+
+  if (!buildSpecPath) {
+    throw new Error("SOURCE is not defined");
+  }
+
+  const relativePath = join(process.cwd(), buildSpecPath);
+
+  fs.mkdir(path.dirname(relativePath), { recursive: true }, (err) => {
+    if (err) {
+      console.error;
+      throw err;
+    }
+  });
+
+  writeFileSync(
+    relativePath,
+    format(JSON.stringify(object), { parser: "json" })
+  );
+  console.log(`Finish writing the ${relativePath} file`);
 }

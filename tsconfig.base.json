@@ -23,9 +23,6 @@
         "packages/amplication-code-gen-types/src/*"
       ],
       "@amplication/code-gen-utils": ["libs/util/code-gen-utils/src/index.ts"],
-      "@amplication/data-service-generator": [
-        "libs/data-service-generator/src/index.ts"
-      ],
       "@amplication/design-system": [
         "packages/amplication-design-system/src/index.ts"
       ],
