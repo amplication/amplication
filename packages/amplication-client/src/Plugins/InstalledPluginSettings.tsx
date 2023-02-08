@@ -45,7 +45,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const { currentProject, currentWorkspace, currentResource } =
     useContext(AppContext);
   const editorRef: React.MutableRefObject<string | null> = useRef();
-  const [isValid, setIsValid] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(true);
   const [resetKey, setResetKey] = useState<string>();
 
   const {
@@ -89,10 +89,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
     (pluginVersion: PluginVersion) => {
       setSelectedVersion(pluginVersion.version);
       pluginInstallation?.PluginInstallation.version !==
-        pluginVersion.version &&
-        !isValid &&
-        setIsValid(true);
-      editorRef.current = JSON.stringify(pluginVersion.settings);
+        pluginVersion.version && setIsValid(false);
+      editorRef.current = pluginVersion.settings;
     },
     [setSelectedVersion, setIsValid]
   );
@@ -101,7 +99,6 @@ const InstalledPluginSettings: React.FC<Props> = ({
     if (!pluginInstallation) return;
 
     const { enabled, id } = pluginInstallation.PluginInstallation;
-
     updatePluginInstallation({
       variables: {
         data: {
@@ -114,7 +111,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
         },
       },
     }).catch(console.error);
-  }, [updatePluginInstallation, pluginInstallation]);
+  }, [updatePluginInstallation, pluginInstallation, selectedVersion]);
 
   const errorMessage = formatError(updateError);
 
@@ -143,7 +140,10 @@ const InstalledPluginSettings: React.FC<Props> = ({
                 <Label text="Plugin Version" />
               </div>
               <SelectMenu
-                title={pluginInstallation.PluginInstallation.version}
+                title={
+                  selectedVersion ||
+                  pluginInstallation.PluginInstallation.version
+                }
                 buttonStyle={EnumButtonStyle.Secondary}
                 className={`${moduleClass}__menu`}
                 icon="chevron_down"
