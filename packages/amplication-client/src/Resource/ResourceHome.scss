@@ -29,13 +29,11 @@ $circle-badge-border: 2px;
     justify-content: center;
   }
 
-  &__header-text:hover {
+  &__header__text:hover {
     cursor: pointer;
   }
-  &__header .amp-icon {
-    color: #31c587;
-  }
-  &__header-input-container {
+
+  &__header__input__container {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -43,13 +41,28 @@ $circle-badge-border: 2px;
     align-items: center;
   }
 
-  &__header-input {
+  &__header__input {
     text-align: center;
     outline: none;
     border: none;
     background: none;
     font-size: inherit;
     font-family: inherit;
+  }
+  &__header__saved {
+    color: #31c587;
+  }
+  &__invalid {
+    color: #f85b6e;
+  }
+  .__header__form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .amplication-label__error {
+    font-size: small;
+    display: float;
   }
 
   .circle-badge {
