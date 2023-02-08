@@ -117,6 +117,9 @@ export enum AnalyticsEventNames {
   UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
   ContactUsButtonClick = "ContactUsButtonClick",
 
+  // Billing
+  WorkspacePlanUpgradeCompleted = "WorkspacePlanUpgradeCompleted",
+
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",
   ChatWidgetView = "ChatWidgetView",

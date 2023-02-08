@@ -162,12 +162,8 @@ export class WorkspaceResolver {
     nullable: true,
   })
   async provisionSubscription(
-    @UserEntity() currentUser: User,
     @Args() args: ProvisionSubscriptionArgs
   ): Promise<ProvisionSubscriptionResult | null> {
-    return this.billingService.provisionSubscription({
-      ...args.data,
-      userId: currentUser.id,
-    });
+    return this.billingService.provisionSubscription(args.data);
   }
 }

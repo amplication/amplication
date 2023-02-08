@@ -17,10 +17,7 @@ import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStat
 import { Subscription } from "../subscription/dto/Subscription";
 import { BillingFeature } from "./BillingFeature";
 import { BillingPlan } from "./BillingPlan";
-import {
-  EnumEventType,
-  SegmentAnalyticsService,
-} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
 import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
@@ -189,13 +186,9 @@ export class BillingService {
     workspaceId,
     planId,
     billingPeriod,
-    intentionType,
     cancelUrl,
     successUrl,
-    userId,
-  }: ProvisionSubscriptionInput & {
-    userId: string;
-  }): Promise<ProvisionSubscriptionResult> {
+  }: ProvisionSubscriptionInput): Promise<ProvisionSubscriptionResult> {
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
       customerId: workspaceId,
@@ -207,16 +200,6 @@ export class BillingService {
         cancelUrl: new URL(successUrl, this.clientHost).href,
         successUrl: new URL(cancelUrl, this.clientHost).href,
       },
-    });
-    await this.analytics.track({
-      userId,
-      properties: {
-        workspaceId,
-      },
-      event:
-        intentionType === "DOWNGRADE_PLAN"
-          ? EnumEventType.WorkspacePlanDowngradeRequest
-          : EnumEventType.WorkspacePlanUpgradeRequest,
     });
 
     return {

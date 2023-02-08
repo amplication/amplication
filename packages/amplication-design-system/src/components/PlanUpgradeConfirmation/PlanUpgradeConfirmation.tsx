@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Dialog, Props as DialogProps } from "../Dialog/Dialog";
 import { Button, EnumButtonStyle } from "../Button/Button";
 
@@ -13,13 +13,19 @@ export type Props = DialogProps & {
   isOpen: boolean;
   onConfirm: () => void;
   onDismiss: () => void;
+  onFirstRender: () => void;
 };
 
 export const PlanUpgradeConfirmation = ({
   isOpen,
   onConfirm,
   onDismiss,
+  onFirstRender,
 }: Props) => {
+  useEffect(() => {
+    onFirstRender();
+  }, []);
+
   return (
     <Dialog
       title=""

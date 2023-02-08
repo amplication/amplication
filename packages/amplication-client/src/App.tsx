@@ -2,7 +2,12 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
-import { track, dispatch, init as initAnalytics } from "./util/analytics";
+import {
+  track,
+  dispatch,
+  init as initAnalytics,
+  useTracking,
+} from "./util/analytics";
 import { init as initPaddle } from "./util/paddle";
 import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
@@ -15,6 +20,7 @@ import {
 } from "@amplication/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
+import { AnalyticsEventNames } from "./util/analytics-events.types";
 
 declare global {
   interface Window {
@@ -97,6 +103,18 @@ function App() {
     ignoreTags: [],
   });
 
+  const closeConfirmation = useCallback(() => {
+    setWorkspaceUpgradeConfirmation(false);
+  }, []);
+
+  const { trackEvent } = useTracking();
+
+  const trackPurchaseCompleted = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.WorkspacePlanUpgradeCompleted,
+    });
+  }, []);
+
   const showLoadingAnimation = keepLoadingAnimation || currentWorkspaceLoading;
 
   return (
@@ -112,8 +130,9 @@ function App() {
       {workspaceUpgradeConfirmation && (
         <PlanUpgradeConfirmation
           isOpen={workspaceUpgradeConfirmation}
-          onConfirm={() => setWorkspaceUpgradeConfirmation(false)}
-          onDismiss={() => setWorkspaceUpgradeConfirmation(false)}
+          onConfirm={closeConfirmation}
+          onDismiss={closeConfirmation}
+          onFirstRender={trackPurchaseCompleted}
         />
       )}
     </ThemeProvider>
