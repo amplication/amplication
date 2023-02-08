@@ -4,7 +4,7 @@ import { createCreateInput } from "../../create-create-input";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
-} from "../../../util/test-data";
+} from "../../../utils/test-data";
 import { createCreateArgs, createCreateArgsId } from "./create-create-args";
 
 const EXAMPLE_ENTITY: Entity = {

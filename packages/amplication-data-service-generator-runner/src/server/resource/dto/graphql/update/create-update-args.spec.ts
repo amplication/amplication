@@ -3,7 +3,7 @@ import { Entity } from "@amplication/code-gen-types";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
-} from "../../../util/test-data";
+} from "../../../utils/test-data";
 import { createUpdateInput } from "../../create-update-input";
 import { createWhereUniqueInput } from "../../create-where-unique-input";
 import { createUpdateArgs, createUpdateArgsId } from "./create-update-args";

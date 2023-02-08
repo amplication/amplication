@@ -1,17 +1,10 @@
 import * as common from "@nestjs/common";
-import * as nestAccessControl from "nest-access-control";
-// @ts-ignore
-import * as defaultAuthGuard from "../auth/defaultAuth.guard";
-// @ts-ignore
-import * as abacUtil from "../auth/abac.util";
 import { Request } from "express";
 // @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { plainToClass } from "class-transformer";
 // @ts-ignore
 import * as errors from "../../errors";
-// @ts-ignore
-import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 
 declare interface WHERE_UNIQUE_INPUT {
   id: string;
@@ -54,12 +47,6 @@ declare const SELECT: Select;
 export class Mixin {
   constructor(private readonly service: SERVICE) {}
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: RELATED_ENTITY_NAME,
-    action: "read",
-    possession: "any",
-  })
   @common.Get(FIND_MANY_PATH)
   @ApiNestedQuery(RELATED_ENTITY_FIND_MANY_ARGS)
   async FIND_MANY(
@@ -79,11 +66,6 @@ export class Mixin {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "update",
-    possession: "any",
-  })
   @common.Post(CREATE_PATH)
   async CONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,
@@ -101,11 +83,6 @@ export class Mixin {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "update",
-    possession: "any",
-  })
   @common.Patch(UPDATE_PATH)
   async UPDATE(
     @common.Param() params: WHERE_UNIQUE_INPUT,
@@ -123,11 +100,6 @@ export class Mixin {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: ENTITY_NAME,
-    action: "update",
-    possession: "any",
-  })
   @common.Delete(DELETE_PATH)
   async DISCONNECT(
     @common.Param() params: WHERE_UNIQUE_INPUT,

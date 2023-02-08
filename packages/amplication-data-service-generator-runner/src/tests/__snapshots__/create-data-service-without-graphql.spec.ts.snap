@@ -982,13 +982,11 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { JsonValue } from \\"type-fest\\";
-import { Organization } from \\"../organization/Organization\\";
+  "admin-ui/src/api/user/User.ts": "import { Organization } from \\"../organization/Organization\\";
+import { JsonValue } from \\"type-fest\\";
 import { Profile } from \\"../profile/Profile\\";
 
 export type User = {
-  username: string;
-  roles: JsonValue;
   id: string;
   name: string;
   bio: string;
@@ -1007,16 +1005,13 @@ export type User = {
   profile?: Profile | null;
 };
 ",
-  "admin-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from \\"../../types\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
+import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserCreateInput = {
-  username: string;
-  password: string;
-  roles: InputJsonValue;
   name: string;
   bio: string;
   email: string;
@@ -1067,9 +1062,6 @@ export type UserListRelationFilter = {
   "admin-ui/src/api/user/UserOrderByInput.ts": "import { SortOrder } from \\"../../util/SortOrder\\";
 
 export type UserOrderByInput = {
-  username?: SortOrder;
-  password?: SortOrder;
-  roles?: SortOrder;
   id?: SortOrder;
   name?: SortOrder;
   bio?: SortOrder;
@@ -1086,16 +1078,13 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "admin-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from \\"../../types\\";
-import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
+import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../profile/ProfileWhereUniqueInput\\";
 
 export type UserUpdateInput = {
-  username?: string;
-  password?: string;
-  roles?: InputJsonValue;
   name?: string;
   bio?: string;
   email?: string;
@@ -2456,33 +2445,23 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
-  PasswordInput,
-  SelectArrayInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
+  SelectArrayInput,
   BooleanInput,
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ProfileTitle } from \\"../profile/ProfileTitle\\";
-import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
-        <TextInput label=\\"Username\\" source=\\"username\\" />
-        <PasswordInput label=\\"Password\\" source=\\"password\\" />
-        <SelectArrayInput
-          source=\\"roles\\"
-          choices={ROLES_OPTIONS}
-          optionText=\\"label\\"
-          optionValue=\\"value\\"
-        />
         <TextInput label=\\"Name\\" source=\\"name\\" />
         <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
         <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
@@ -2547,33 +2526,23 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
-  PasswordInput,
-  SelectArrayInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
+  SelectArrayInput,
   BooleanInput,
 } from \\"react-admin\\";
 
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ProfileTitle } from \\"../profile/ProfileTitle\\";
-import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
-        <TextInput label=\\"Username\\" source=\\"username\\" />
-        <PasswordInput label=\\"Password\\" source=\\"password\\" />
-        <SelectArrayInput
-          source=\\"roles\\"
-          choices={ROLES_OPTIONS}
-          optionText=\\"label\\"
-          optionValue=\\"value\\"
-        />
         <TextInput label=\\"Name\\" source=\\"name\\" />
         <TextInput label=\\"Bio\\" multiline source=\\"bio\\" />
         <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
@@ -2654,8 +2623,6 @@ export const UserList = (props: ListProps): React.ReactElement => {
       pagination={<Pagination />}
     >
       <Datagrid rowClick=\\"show\\">
-        <TextField label=\\"Username\\" source=\\"username\\" />
-        <TextField label=\\"Roles\\" source=\\"roles\\" />
         <TextField label=\\"Id\\" source=\\"id\\" />
         <TextField label=\\"Name\\" source=\\"name\\" />
         <TextField label=\\"Bio\\" source=\\"bio\\" />
@@ -2695,8 +2662,6 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
   return (
     <Show {...props}>
       <SimpleShowLayout>
-        <TextField label=\\"Username\\" source=\\"username\\" />
-        <TextField label=\\"Roles\\" source=\\"roles\\" />
         <TextField label=\\"Id\\" source=\\"id\\" />
         <TextField label=\\"Name\\" source=\\"name\\" />
         <TextField label=\\"Bio\\" source=\\"bio\\" />
@@ -2722,10 +2687,10 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 ",
   "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from \\"../api/user/User\\";
 
-export const USER_TITLE_FIELD = \\"username\\";
+export const USER_TITLE_FIELD = \\"name\\";
 
 export const UserTitle = (record: TUser): string => {
-  return record.username || String(record.id);
+  return record.name || String(record.id);
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
@@ -2902,9 +2867,11 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-JWT_SECRET_KEY=Change_ME!!!
-JWT_EXPIRATION=2d
-PORT=3000",
+PORT=3000
+DB_USER=testUsername
+DB_PASSWORD=1234
+DB_PORT=5433
+DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -2912,6 +2879,18 @@ PORT=3000",
 .DS_Store
 ",
   "server/docker-compose.db.yml": "version: \\"3\\"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
 ",
   "server/docker-compose.yml": "version: \\"3\\"
 services:
@@ -2926,6 +2905,7 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       - migrate
   migrate:
@@ -2937,9 +2917,33 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       db:
         condition: service_healthy
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -q
+        - -d
+        - \${DB_NAME}
+        - -U
+        - \${DB_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~
 ",
   "server/nest-cli.json": "{
   \\"sourceRoot\\": \\"src\\",
@@ -2974,8 +2978,6 @@ services:
     \\"@nestjs/config\\": \\"1.1.5\\",
     \\"@nestjs/core\\": \\"8.4.7\\",
     \\"@nestjs/graphql\\": \\"9.1.2\\",
-    \\"@nestjs/jwt\\": \\"8.0.0\\",
-    \\"@nestjs/passport\\": \\"8.2.2\\",
     \\"@nestjs/platform-express\\": \\"8.4.7\\",
     \\"@nestjs/serve-static\\": \\"2.2.2\\",
     \\"@nestjs/swagger\\": \\"5.1.5\\",
@@ -2990,9 +2992,6 @@ services:
     \\"nest-morgan\\": \\"1.0.1\\",
     \\"nestjs-prisma\\": \\"0.19.0\\",
     \\"npm-run-all\\": \\"4.1.5\\",
-    \\"passport\\": \\"0.6.0\\",
-    \\"passport-http\\": \\"0.3.0\\",
-    \\"passport-jwt\\": \\"4.0.0\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
     \\"ts-node\\": \\"9.1.1\\"
@@ -3005,8 +3004,6 @@ services:
     \\"@types/graphql-type-json\\": \\"0.3.2\\",
     \\"@types/jest\\": \\"26.0.19\\",
     \\"@types/normalize-path\\": \\"3.0.0\\",
-    \\"@types/passport-http\\": \\"0.3.9\\",
-    \\"@types/passport-jwt\\": \\"3.0.6\\",
     \\"@types/supertest\\": \\"2.0.11\\",
     \\"jest\\": \\"27.0.6\\",
     \\"jest-mock-extended\\": \\"^2.0.4\\",
@@ -3033,9 +3030,6 @@ generator client {
 }
 
 model User {
-  username           String              @unique
-  password           String
-  roles              Json
   id                 String              @id @default(cuid())
   name               String
   bio                String
@@ -3210,26 +3204,13 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
 
 export async function customSeed() {
   const client = new PrismaClient();
-  const username = \\"admin\\";
-
-  //replace this sample code to populate your database
-  //with data that is required for your service to start
-  await client.user.update({
-    where: { username: username },
-    data: {
-      username,
-    },
-  });
 
   client.$disconnect();
 }
 ",
   "server/scripts/seed.ts": "import * as dotenv from \\"dotenv\\";
 import { PrismaClient } from \\"@prisma/client\\";
-import { Salt, parseSalt } from \\"../src/auth/password.service\\";
-import { hash } from \\"bcrypt\\";
 import { customSeed } from \\"./customSeed\\";
-import { EnumUserPriority } from \\"../src/user/base/EnumUserPriority\\";
 
 if (require.main === module) {
   dotenv.config();
@@ -3239,43 +3220,12 @@ if (require.main === module) {
   if (!BCRYPT_SALT) {
     throw new Error(\\"BCRYPT_SALT environment variable must be defined\\");
   }
-
-  const salt = parseSalt(BCRYPT_SALT);
-
-  seed(salt).catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
 }
 
-async function seed(bcryptSalt: Salt) {
+async function seed() {
   console.info(\\"Seeding database...\\");
 
   const client = new PrismaClient();
-  const data = {
-    username: \\"admin\\",
-    password: await hash(\\"admin\\", bcryptSalt),
-    roles: [\\"user\\"],
-    name: \\"\\",
-    bio: \\"\\",
-    email: \\"example@example.com\\",
-    age: 0,
-    birthDate: new Date(),
-    score: 0,
-    interests: [],
-    priority: EnumUserPriority.High,
-    isCurious: false,
-    location: \\"(32.085300, 34.781769)\\",
-
-    extendedProperties: {
-      foo: \\"bar\\",
-    },
-  };
-  await client.user.upsert({
-    where: { username: data.username },
-    update: {},
-    create: data,
-  });
   void client.$disconnect();
 
   console.info(\\"Seeding database with custom seed...\\");
@@ -3293,8 +3243,6 @@ import { OrderModule } from \\"./order/order.module\\";
 import { OrganizationModule } from \\"./organization/organization.module\\";
 import { CustomerModule } from \\"./customer/customer.module\\";
 import { EmptyModule } from \\"./empty/empty.module\\";
-import { ACLModule } from \\"./auth/acl.module\\";
-import { AuthModule } from \\"./auth/auth.module\\";
 import { HealthModule } from \\"./health/health.module\\";
 import { PrismaModule } from \\"./prisma/prisma.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
@@ -3312,8 +3260,6 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
     OrganizationModule,
     CustomerModule,
     EmptyModule,
-    ACLModule,
-    AuthModule,
     HealthModule,
     PrismaModule,
     SecretsManagerModule,
@@ -3347,751 +3293,6 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
 })
 export class AppModule {}
 ",
-  "server/src/auth/Credentials.ts": "import { ApiProperty } from \\"@nestjs/swagger\\";
-import { InputType, Field } from \\"@nestjs/graphql\\";
-import { IsString } from \\"class-validator\\";
-
-@InputType()
-export class Credentials {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String, { nullable: false })
-  username!: string;
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String, { nullable: false })
-  password!: string;
-}
-",
-  "server/src/auth/IAuthStrategy.ts": "import { UserInfo } from \\"./UserInfo\\";
-
-export interface IAuthStrategy {
-  validate: (...any: any) => Promise<UserInfo>;
-}
-",
-  "server/src/auth/ITokenService.ts": "export interface ITokenPayload {
-  id: string;
-  username: string;
-  password: string;
-}
-
-export interface ITokenService {
-  createToken: ({ id, username, password }: ITokenPayload) => Promise<string>;
-}
-",
-  "server/src/auth/LoginArgs.ts": "import { ArgsType, Field } from \\"@nestjs/graphql\\";
-import { Credentials } from \\"./Credentials\\";
-
-@ArgsType()
-export class LoginArgs {
-  @Field(() => Credentials, { nullable: false })
-  credentials!: Credentials;
-}
-",
-  "server/src/auth/UserInfo.ts": "import { Field, ObjectType } from \\"@nestjs/graphql\\";
-import { User } from \\"../user/base/User\\";
-
-@ObjectType()
-export class UserInfo implements Partial<User> {
-  @Field(() => String)
-  id!: string;
-  @Field(() => String)
-  username!: string;
-  @Field(() => [String])
-  roles!: string[];
-  @Field(() => String, { nullable: true })
-  accessToken?: string;
-}
-",
-  "server/src/auth/abac.util.ts": "import { Permission } from \\"accesscontrol\\";
-
-/**
- * @returns attributes not allowed to appear on given data according to given
- * attributeMatchers
- */
-export function getInvalidAttributes(
-  permission: Permission,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  data: Object
-): string[] {
-  const filteredData = permission.filter(data);
-  return Object.keys(data).filter((key) => !(key in filteredData));
-}
-",
-  "server/src/auth/acl.module.ts": "import { AccessControlModule, RolesBuilder } from \\"nest-access-control\\";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
-import grants from \\"../grants.json\\";
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
-",
-  "server/src/auth/auth.controller.ts": "import { Body, Controller, Post } from \\"@nestjs/common\\";
-import { ApiTags } from \\"@nestjs/swagger\\";
-import { AuthService } from \\"./auth.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@ApiTags(\\"auth\\")
-@Controller()
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-  @Post(\\"login\\")
-  async login(@Body() body: Credentials): Promise<UserInfo> {
-    return this.authService.login(body);
-  }
-}
-",
-  "server/src/auth/auth.module.ts": "import { forwardRef, Module } from \\"@nestjs/common\\";
-import { ConfigService } from \\"@nestjs/config\\";
-import { JwtModule } from \\"@nestjs/jwt\\";
-import { PassportModule } from \\"@nestjs/passport\\";
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from \\"../constants\\";
-import { SecretsManagerModule } from \\"../providers/secrets/secretsManager.module\\";
-import { SecretsManagerService } from \\"../providers/secrets/secretsManager.service\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserModule } from \\"../user/user.module\\";
-import { AuthController } from \\"./auth.controller\\";
-import { AuthResolver } from \\"./auth.resolver\\";
-import { AuthService } from \\"./auth.service\\";
-import { BasicStrategy } from \\"./basic/basic.strategy\\";
-import { JwtStrategy } from \\"./jwt/jwt.strategy\\";
-import { jwtSecretFactory } from \\"./jwt/jwtSecretFactory\\";
-import { PasswordService } from \\"./password.service\\";
-//@ts-ignore
-import { TokenService } from \\"./token.service\\";
-
-@Module({
-  imports: [
-    forwardRef(() => UserModule),
-    PassportModule,
-    SecretsManagerModule,
-    JwtModule.registerAsync({
-      imports: [SecretsManagerModule],
-      inject: [SecretsManagerService, ConfigService],
-      useFactory: async (
-        secretsService: SecretsManagerService,
-        configService: ConfigService
-      ) => {
-        const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
-        const expiresIn = configService.get(JWT_EXPIRATION);
-        if (!secret) {
-          throw new Error(\\"Didn't get a valid jwt secret\\");
-        }
-        if (!expiresIn) {
-          throw new Error(\\"Jwt expire in value is not valid\\");
-        }
-        return {
-          secret: secret,
-          signOptions: { expiresIn },
-        };
-      },
-    }),
-  ],
-  providers: [
-    AuthService,
-    BasicStrategy,
-    PasswordService,
-    AuthResolver,
-    JwtStrategy,
-    jwtSecretFactory,
-    TokenService,
-  ],
-  controllers: [AuthController],
-  exports: [AuthService, PasswordService],
-})
-export class AuthModule {}
-",
-  "server/src/auth/auth.resolver.ts": "import * as common from \\"@nestjs/common\\";
-import { Args, Mutation, Query, Resolver } from \\"@nestjs/graphql\\";
-import * as gqlACGuard from \\"../auth/gqlAC.guard\\";
-import { AuthService } from \\"./auth.service\\";
-import { GqlDefaultAuthGuard } from \\"./gqlDefaultAuth.guard\\";
-import { UserData } from \\"./userData.decorator\\";
-import { LoginArgs } from \\"./LoginArgs\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@Resolver(UserInfo)
-export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
-  @Mutation(() => UserInfo)
-  async login(@Args() args: LoginArgs): Promise<UserInfo> {
-    return this.authService.login(args.credentials);
-  }
-
-  @Query(() => UserInfo)
-  @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-  async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
-    return userInfo;
-  }
-}
-",
-  "server/src/auth/auth.service.spec.ts": "import { Test, TestingModule } from \\"@nestjs/testing\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../user/user.service\\";
-import { AuthService } from \\"./auth.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { PasswordService } from \\"./password.service\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { TokenService } from \\"./token.service\\";
-import { VALID_ID } from \\"../tests/auth/constants\\";
-
-const VALID_CREDENTIALS: Credentials = {
-  username: \\"Valid User\\",
-  password: \\"Valid User Password\\",
-};
-const INVALID_CREDENTIALS: Credentials = {
-  username: \\"Invalid User\\",
-  password: \\"Invalid User Password\\",
-};
-const USER: any = {
-  ...VALID_CREDENTIALS,
-  createdAt: new Date(),
-  firstName: \\"ofek\\",
-  id: VALID_ID,
-  lastName: \\"gabay\\",
-  roles: [\\"admin\\"],
-  updatedAt: new Date(),
-};
-
-const SIGN_TOKEN = \\"SIGN_TOKEN\\";
-
-const userService = {
-  findOne(args: { where: { username: string } }): any | null {
-    if (args.where.username === VALID_CREDENTIALS.username) {
-      return USER;
-    }
-    return null;
-  },
-};
-
-const passwordService = {
-  compare(password: string, encrypted: string) {
-    return true;
-  },
-};
-
-const tokenService = {
-  createToken(username: string, password: string) {
-    return SIGN_TOKEN;
-  },
-};
-
-describe(\\"AuthService\\", () => {
-  //ARRANGE
-  let service: AuthService;
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: UserService,
-          useValue: userService,
-        },
-        {
-          provide: PasswordService,
-          useValue: passwordService,
-        },
-        {
-          provide: TokenService,
-          useValue: tokenService,
-        },
-        AuthService,
-      ],
-    }).compile();
-
-    service = module.get<AuthService>(AuthService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-
-  describe(\\"Testing the authService.validateUser()\\", () => {
-    it(\\"should validate a valid user\\", async () => {
-      await expect(
-        service.validateUser(
-          VALID_CREDENTIALS.username,
-          VALID_CREDENTIALS.password
-        )
-      ).resolves.toEqual({
-        username: USER.username,
-        roles: USER.roles,
-        id: USER.id,
-      });
-    });
-
-    it(\\"should not validate a invalid user\\", async () => {
-      await expect(
-        service.validateUser(
-          INVALID_CREDENTIALS.username,
-          INVALID_CREDENTIALS.password
-        )
-      ).resolves.toBe(null);
-    });
-  });
-
-  describe(\\"Testing the authService.login()\\", () => {
-    it(\\"should return userInfo object for correct username and password\\", async () => {
-      const loginResult = await service.login(VALID_CREDENTIALS);
-      expect(loginResult).toEqual({
-        username: USER.username,
-        roles: USER.roles,
-        accessToken: SIGN_TOKEN,
-        id: USER.id,
-      });
-    });
-  });
-});
-",
-  "server/src/auth/auth.service.ts": "import { Injectable, UnauthorizedException } from \\"@nestjs/common\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from \\"../user/user.service\\";
-import { Credentials } from \\"./Credentials\\";
-import { PasswordService } from \\"./password.service\\";
-import { TokenService } from \\"./token.service\\";
-import { UserInfo } from \\"./UserInfo\\";
-
-@Injectable()
-export class AuthService {
-  constructor(
-    private readonly userService: UserService,
-    private readonly passwordService: PasswordService,
-    private readonly tokenService: TokenService
-  ) {}
-
-  async validateUser(
-    username: string,
-    password: string
-  ): Promise<UserInfo | null> {
-    const user = await this.userService.findOne({
-      where: { username },
-    });
-    if (user && (await this.passwordService.compare(password, user.password))) {
-      const { id, roles } = user;
-      const roleList = roles as string[];
-      return { id, username, roles: roleList };
-    }
-    return null;
-  }
-  async login(credentials: Credentials): Promise<UserInfo> {
-    const { username, password } = credentials;
-    const user = await this.validateUser(
-      credentials.username,
-      credentials.password
-    );
-    if (!user) {
-      throw new UnauthorizedException(\\"The passed credentials are incorrect\\");
-    }
-    //@ts-ignore
-    const accessToken = await this.tokenService.createToken({
-      id: user.id,
-      username,
-      password,
-    });
-    return {
-      accessToken,
-      ...user,
-    };
-  }
-}
-",
-  "server/src/auth/base/token.service.base.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { INVALID_PASSWORD_ERROR, INVALID_USERNAME_ERROR } from \\"../constants\\";
-import { ITokenService, ITokenPayload } from \\"../ITokenService\\";
-/**
- * TokenServiceBase is a basic http implementation of ITokenService
- */
-@Injectable()
-export class TokenServiceBase implements ITokenService {
-  /**
-   *
-   * @object { username: String, password: String }
-   * @returns a base64 string of the username and password
-   */
-  createToken({ username, password }: ITokenPayload): Promise<string> {
-    if (!username) return Promise.reject(INVALID_USERNAME_ERROR);
-    if (!password) return Promise.reject(INVALID_PASSWORD_ERROR);
-    return Promise.resolve(
-      Buffer.from(\`\${username}:\${password}\`).toString(\\"base64\\")
-    );
-  }
-}
-",
-  "server/src/auth/basic/base/basic.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { BasicStrategy as Strategy } from \\"passport-http\\";
-import { AuthService } from \\"../../auth.service\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class BasicStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy
-{
-  constructor(protected readonly authService: AuthService) {
-    super();
-  }
-
-  async validate(username: string, password: string): Promise<UserInfo> {
-    const user = await this.authService.validateUser(username, password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    return user;
-  }
-}
-",
-  "server/src/auth/basic/basic.strategy.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { AuthService } from \\"../auth.service\\";
-import { BasicStrategyBase } from \\"./base/basic.strategy.base\\";
-
-@Injectable()
-export class BasicStrategy extends BasicStrategyBase {
-  constructor(protected readonly authService: AuthService) {
-    super(authService);
-  }
-}
-",
-  "server/src/auth/basic/basicAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class BasicAuthGuard extends AuthGuard(\\"basic\\") {}
-",
-  "server/src/auth/constants.ts": "export const INVALID_USERNAME_ERROR = \\"Invalid username\\";
-export const INVALID_PASSWORD_ERROR = \\"Invalid password\\";
-",
-  "server/src/auth/defaultAuth.guard.ts": "import { Observable } from \\"rxjs\\";
-import { ExecutionContext, Injectable } from \\"@nestjs/common\\";
-import { Reflector } from \\"@nestjs/core\\";
-import { IS_PUBLIC_KEY } from \\"../decorators/public.decorator\\";
-import { BasicAuthGuard } from \\"./basic/basicAuth.guard\\";
-
-@Injectable()
-export class DefaultAuthGuard extends BasicAuthGuard {
-  constructor(private readonly reflector: Reflector) {
-    super();
-  }
-
-  canActivate(
-    context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<any> {
-    const isPublic = this.reflector.get<boolean>(
-      IS_PUBLIC_KEY,
-      context.getHandler()
-    );
-
-    if (isPublic) {
-      return true;
-    }
-
-    return super.canActivate(context);
-  }
-}
-",
-  "server/src/auth/gqlAC.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import { ACGuard } from \\"nest-access-control\\";
-
-export class GqlACGuard<User extends any = any> extends ACGuard<User> {
-  async getUser(context: ExecutionContext): Promise<User> {
-    const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext<{ req: { user: User } }>().req;
-    return request.user;
-  }
-}
-",
-  "server/src/auth/gqlDefaultAuth.guard.ts": "import { ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-import type { Request } from \\"express\\";
-// @ts-ignore
-// eslint-disable-next-line
-import { DefaultAuthGuard } from \\"./defaultAuth.guard\\";
-
-export class GqlDefaultAuthGuard extends DefaultAuthGuard {
-  // This method is required for the interface - do not delete it.
-  getRequest(context: ExecutionContext): Request {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext<{ req: Request }>().req;
-  }
-}
-",
-  "server/src/auth/gqlUserRoles.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlExecutionContext } from \\"@nestjs/graphql\\";
-
-/**
- * Access the user roles from the request object i.e \`req.user.roles\`.
- *
- * You can pass an optional property key to the decorator to get it from the user object
- * e.g \`@UserRoles('permissions')\` will return the \`req.user.permissions\` instead.
- */
-export const UserRoles = createParamDecorator(
-  (data: string, context: ExecutionContext) => {
-    const ctx = GqlExecutionContext.create(context);
-    const request = ctx.getContext<{ req: { user: any } }>().req;
-    if (!request.user) {
-      return null;
-    }
-    return data ? request.user[data] : request.user.roles;
-  }
-);
-",
-  "server/src/auth/jwt/base/jwt.strategy.base.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { PassportStrategy } from \\"@nestjs/passport\\";
-import { ExtractJwt, Strategy } from \\"passport-jwt\\";
-import { IAuthStrategy } from \\"../../IAuthStrategy\\";
-import { UserService } from \\"../../../user/user.service\\";
-import { UserInfo } from \\"../../UserInfo\\";
-
-export class JwtStrategyBase
-  extends PassportStrategy(Strategy)
-  implements IAuthStrategy
-{
-  constructor(
-    protected readonly userService: UserService,
-    protected readonly secretOrKey: string
-  ) {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey,
-    });
-  }
-
-  async validate(payload: UserInfo): Promise<UserInfo> {
-    const { username } = payload;
-    const user = await this.userService.findOne({
-      where: { username },
-    });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    if (
-      !Array.isArray(user.roles) ||
-      typeof user.roles !== \\"object\\" ||
-      user.roles === null
-    ) {
-      throw new Error(\\"User roles is not a valid value\\");
-    }
-    return { ...user, roles: user.roles as string[] };
-  }
-}
-",
-  "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from \\"@nestjs/common\\";
-import { JWT_SECRET_KEY } from \\"../../constants\\";
-import { UserService } from \\"../../user/user.service\\";
-import { JwtStrategyBase } from \\"./base/jwt.strategy.base\\";
-@Injectable()
-export class JwtStrategy extends JwtStrategyBase {
-  constructor(
-    protected readonly userService: UserService,
-    @Inject(JWT_SECRET_KEY) secretOrKey: string
-  ) {
-    super(userService, secretOrKey);
-  }
-}
-",
-  "server/src/auth/jwt/jwtAuth.guard.ts": "import { AuthGuard } from \\"@nestjs/passport\\";
-
-export class JwtAuthGuard extends AuthGuard(\\"jwt\\") {}
-",
-  "server/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY } from \\"../../constants\\";
-import { SecretsManagerService } from \\"../../providers/secrets/secretsManager.service\\";
-
-export const jwtSecretFactory = {
-  provide: JWT_SECRET_KEY,
-  useFactory: async (
-    secretsService: SecretsManagerService
-  ): Promise<string> => {
-    const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
-    if (secret) {
-      return secret;
-    }
-    throw new Error(\\"jwtSecretFactory missing secret\\");
-  },
-  inject: [SecretsManagerService],
-};
-",
-  "server/src/auth/password.service.spec.ts": "import { ConfigService } from \\"@nestjs/config\\";
-import { Test, TestingModule } from \\"@nestjs/testing\\";
-import { PasswordService } from \\"./password.service\\";
-import * as bcrypt from \\"bcrypt\\";
-
-const EXAMPLE_PASSWORD = \\"examplePassword\\";
-const EXAMPLE_HASHED_PASSWORD = \\"exampleHashedPassword\\";
-
-const EXAMPLE_SALT_OR_ROUNDS = 1;
-
-const configServiceGetMock = jest.fn(() => {
-  return EXAMPLE_SALT_OR_ROUNDS;
-});
-
-jest.mock(\\"bcrypt\\");
-
-//@ts-ignore
-bcrypt.hash.mockImplementation(async () => EXAMPLE_HASHED_PASSWORD);
-
-//@ts-ignore
-bcrypt.compare.mockImplementation(async () => true);
-
-describe(\\"PasswordService\\", () => {
-  let service: PasswordService;
-
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PasswordService,
-        {
-          provide: ConfigService,
-          useClass: jest.fn(() => ({
-            get: configServiceGetMock,
-          })),
-        },
-      ],
-      imports: [],
-    }).compile();
-
-    service = module.get<PasswordService>(PasswordService);
-  });
-
-  it(\\"should be defined\\", () => {
-    expect(service).toBeDefined();
-  });
-
-  it(\\"should have salt defined\\", () => {
-    expect(service.salt).toEqual(EXAMPLE_SALT_OR_ROUNDS);
-  });
-
-  it(\\"should compare a password\\", async () => {
-    const args = {
-      password: EXAMPLE_PASSWORD,
-      hashedPassword: EXAMPLE_HASHED_PASSWORD,
-    };
-    await expect(
-      service.compare(args.password, args.hashedPassword)
-    ).resolves.toEqual(true);
-  });
-
-  it(\\"should hash a password\\", async () => {
-    await expect(service.hash(EXAMPLE_PASSWORD)).resolves.toEqual(
-      EXAMPLE_HASHED_PASSWORD
-    );
-  });
-});
-",
-  "server/src/auth/password.service.ts": "import { Injectable } from \\"@nestjs/common\\";
-import { hash, compare } from \\"bcrypt\\";
-import { ConfigService } from \\"@nestjs/config\\";
-
-/** Salt or number of rounds to generate a salt */
-export type Salt = string | number;
-
-const BCRYPT_SALT_VAR = \\"BCRYPT_SALT\\";
-const UNDEFINED_SALT_OR_ROUNDS_ERROR = \`\${BCRYPT_SALT_VAR} is not defined\`;
-const SALT_OR_ROUNDS_TYPE_ERROR = \`\${BCRYPT_SALT_VAR} must be a positive integer or text\`;
-
-@Injectable()
-export class PasswordService {
-  /**
-   * the salt to be used to hash the password. if specified as a number then a
-   * salt will be generated with the specified number of rounds and used
-   */
-  salt: Salt;
-
-  constructor(private configService: ConfigService) {
-    const saltOrRounds = this.configService.get(BCRYPT_SALT_VAR);
-    this.salt = parseSalt(saltOrRounds);
-  }
-
-  /**
-   *
-   * @param password the password to be encrypted.
-   * @param encrypted the encrypted password to be compared against.
-   * @returns whether the password match the encrypted password
-   */
-  compare(password: string, encrypted: string): Promise<boolean> {
-    return compare(password, encrypted);
-  }
-
-  /**
-   * @param password the password to be encrypted
-   * @return encrypted password
-   */
-  hash(password: string): Promise<string> {
-    return hash(password, this.salt);
-  }
-}
-
-/**
- * Parses a salt environment variable value.
- * If a number string value is given tries to parse it as a number of rounds to generate a salt
- * @param value salt environment variable value
- * @returns salt or number of rounds to generate a salt
- */
-export function parseSalt(value: string | undefined): Salt {
-  if (value === undefined) {
-    throw new Error(UNDEFINED_SALT_OR_ROUNDS_ERROR);
-  }
-
-  const rounds = Number(value);
-
-  if (Number.isNaN(rounds)) {
-    return value;
-  }
-  if (!Number.isInteger(rounds) || rounds < 0) {
-    throw new Error(SALT_OR_ROUNDS_TYPE_ERROR);
-  }
-  return rounds;
-}
-",
-  "server/src/auth/token.service.ts": "import { ITokenService } from \\"./ITokenService\\";
-//@ts-ignore
-// eslint-disable-next-line import/no-unresolved
-import { TokenServiceBase } from \\"./base/token.service.base\\";
-//@ts-ignore
-export class TokenService extends TokenServiceBase implements ITokenService {}
-",
-  "server/src/auth/userData.decorator.ts": "import { createParamDecorator, ExecutionContext } from \\"@nestjs/common\\";
-import { GqlContextType, GqlExecutionContext } from \\"@nestjs/graphql\\";
-//@ts-ignore
-import { User } from \\"@prisma/client\\";
-
-/**
- * Access the user data from the request object i.e \`req.user\`.
- */
-function userFactory(ctx: ExecutionContext): User {
-  const contextType = ctx.getType();
-  if (contextType === \\"http\\") {
-    // do something that is only important in the context of regular HTTP requests (REST)
-    const { user } = ctx.switchToHttp().getRequest();
-    return user;
-  } else if (contextType === \\"rpc\\") {
-    // do something that is only important in the context of Microservice requests
-    throw new Error(\\"Rpc context is not implemented yet\\");
-  } else if (contextType === \\"ws\\") {
-    // do something that is only important in the context of Websockets requests
-    throw new Error(\\"Websockets context is not implemented yet\\");
-  } else if (ctx.getType<GqlContextType>() === \\"graphql\\") {
-    // do something that is only important in the context of GraphQL requests
-    const gqlExecutionContext = GqlExecutionContext.create(ctx);
-    return gqlExecutionContext.getContext().req.user;
-  }
-  throw new Error(\\"Invalid context\\");
-}
-
-export const UserData = createParamDecorator<undefined, ExecutionContext, User>(
-  (data, ctx: ExecutionContext) => userFactory(ctx)
-);
-",
   "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
 ",
@@ -4115,7 +3316,7 @@ class CreateCustomerArgs {
   data!: CustomerCreateInput;
 }
 
-export { CreateCustomerArgs as CreateCustomerArgs };
+export { CreateCustomerArgs };
 ",
   "server/src/customer/base/Customer.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4323,7 +3524,7 @@ class Customer {
   orders?: Array<Order>;
 }
 
-export { Customer as Customer };
+export { Customer };
 ",
   "server/src/customer/base/CustomerCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4516,7 +3717,7 @@ class CustomerCreateInput {
   orders?: OrderCreateNestedManyWithoutCustomersInput;
 }
 
-export { CustomerCreateInput as CustomerCreateInput };
+export { CustomerCreateInput };
 ",
   "server/src/customer/base/CustomerFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4570,7 +3771,7 @@ class CustomerFindManyArgs {
   take?: number;
 }
 
-export { CustomerFindManyArgs as CustomerFindManyArgs };
+export { CustomerFindManyArgs };
 ",
   "server/src/customer/base/CustomerFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4592,7 +3793,7 @@ class CustomerFindUniqueArgs {
   where!: CustomerWhereUniqueInput;
 }
 
-export { CustomerFindUniqueArgs as CustomerFindUniqueArgs };
+export { CustomerFindUniqueArgs };
 ",
   "server/src/customer/base/CustomerListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4649,7 +3850,7 @@ class CustomerListRelationFilter {
   })
   none?: CustomerWhereInput;
 }
-export { CustomerListRelationFilter as CustomerListRelationFilter };
+export { CustomerListRelationFilter };
 ",
   "server/src/customer/base/CustomerOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -4816,7 +4017,7 @@ class CustomerOrderByInput {
   vipOrganizationId?: SortOrder;
 }
 
-export { CustomerOrderByInput as CustomerOrderByInput };
+export { CustomerOrderByInput };
 ",
   "server/src/customer/base/CustomerUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5012,7 +4213,7 @@ class CustomerUpdateInput {
   orders?: OrderUpdateManyWithoutCustomersInput;
 }
 
-export { CustomerUpdateInput as CustomerUpdateInput };
+export { CustomerUpdateInput };
 ",
   "server/src/customer/base/CustomerWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5223,7 +4424,7 @@ class CustomerWhereInput {
   orders?: OrderListRelationFilter;
 }
 
-export { CustomerWhereInput as CustomerWhereInput };
+export { CustomerWhereInput };
 ",
   "server/src/customer/base/CustomerWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5251,7 +4452,7 @@ class CustomerWhereUniqueInput {
   id!: number;
 }
 
-export { CustomerWhereUniqueInput as CustomerWhereUniqueInput };
+export { CustomerWhereUniqueInput };
 ",
   "server/src/customer/base/DeleteCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5273,7 +4474,7 @@ class DeleteCustomerArgs {
   where!: CustomerWhereUniqueInput;
 }
 
-export { DeleteCustomerArgs as DeleteCustomerArgs };
+export { DeleteCustomerArgs };
 ",
   "server/src/customer/base/EnumCustomerCustomerType.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5350,7 +4551,7 @@ class OrderCreateNestedManyWithoutCustomersInput {
   connect?: Array<OrderWhereUniqueInput>;
 }
 
-export { OrderCreateNestedManyWithoutCustomersInput as OrderCreateNestedManyWithoutCustomersInput };
+export { OrderCreateNestedManyWithoutCustomersInput };
 ",
   "server/src/customer/base/OrderUpdateManyWithoutCustomersInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5397,7 +4598,7 @@ class OrderUpdateManyWithoutCustomersInput {
   set?: Array<OrderWhereUniqueInput>;
 }
 
-export { OrderUpdateManyWithoutCustomersInput as OrderUpdateManyWithoutCustomersInput };
+export { OrderUpdateManyWithoutCustomersInput };
 ",
   "server/src/customer/base/UpdateCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -5422,7 +4623,7 @@ class UpdateCustomerArgs {
   data!: CustomerUpdateInput;
 }
 
-export { UpdateCustomerArgs as UpdateCustomerArgs };
+export { UpdateCustomerArgs };
 ",
   "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -5669,16 +4870,12 @@ https://docs.amplication.com/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { CustomerService } from \\"../customer.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { Public } from \\"../../decorators/public.decorator\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
@@ -5689,23 +4886,11 @@ import { Customer } from \\"./Customer\\";
 import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
 import { OrderWhereUniqueInput } from \\"../../order/base/OrderWhereUniqueInput\\";
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
-export class CustomerControllerBase {
-  constructor(
-    protected readonly service: CustomerService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
+export class CustomerControllerBase {
+  constructor(protected readonly service: CustomerService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
     return await this.service.create({
       data: {
@@ -5754,15 +4939,8 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(CustomerFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
@@ -5799,16 +4977,9 @@ export class CustomerControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
@@ -5851,16 +5022,9 @@ export class CustomerControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() data: CustomerUpdateInput
@@ -5922,15 +5086,9 @@ export class CustomerControllerBase {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
@@ -6009,11 +5167,6 @@ export class CustomerControllerBase {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Post(\\"/:id/orders\\")
   async connectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -6031,11 +5184,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id/orders\\")
   async updateOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -6053,11 +5201,6 @@ export class CustomerControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id/orders\\")
   async disconnectOrders(
     @common.Param() params: CustomerWhereUniqueInput,
@@ -6087,15 +5230,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
-
-  exports: [ACLModule, AuthModule, MorganModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class CustomerModuleBase {}
 ",
@@ -6178,19 +5318,14 @@ export class CustomerServiceBase {
 ",
   "server/src/customer/customer.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { CustomerService } from \\"./customer.service\\";
 import { CustomerControllerBase } from \\"./base/customer.controller.base\\";
 
 @swagger.ApiTags(\\"customers\\")
 @common.Controller(\\"customers\\")
 export class CustomerController extends CustomerControllerBase {
-  constructor(
-    protected readonly service: CustomerService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: CustomerService) {
+    super(service);
   }
 }
 ",
@@ -6330,7 +5465,7 @@ class DeleteEmptyArgs {
   where!: EmptyWhereUniqueInput;
 }
 
-export { DeleteEmptyArgs as DeleteEmptyArgs };
+export { DeleteEmptyArgs };
 ",
   "server/src/empty/base/Empty.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6375,7 +5510,7 @@ class Empty {
   updatedAt!: Date;
 }
 
-export { Empty as Empty };
+export { Empty };
 ",
   "server/src/empty/base/EmptyCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6389,7 +5524,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 class EmptyCreateInput {}
-export { EmptyCreateInput as EmptyCreateInput };
+export { EmptyCreateInput };
 ",
   "server/src/empty/base/EmptyFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6443,7 +5578,7 @@ class EmptyFindManyArgs {
   take?: number;
 }
 
-export { EmptyFindManyArgs as EmptyFindManyArgs };
+export { EmptyFindManyArgs };
 ",
   "server/src/empty/base/EmptyFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6465,7 +5600,7 @@ class EmptyFindUniqueArgs {
   where!: EmptyWhereUniqueInput;
 }
 
-export { EmptyFindUniqueArgs as EmptyFindUniqueArgs };
+export { EmptyFindUniqueArgs };
 ",
   "server/src/empty/base/EmptyListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6522,7 +5657,7 @@ class EmptyListRelationFilter {
   })
   none?: EmptyWhereInput;
 }
-export { EmptyListRelationFilter as EmptyListRelationFilter };
+export { EmptyListRelationFilter };
 ",
   "server/src/empty/base/EmptyOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6572,7 +5707,7 @@ class EmptyOrderByInput {
   updatedAt?: SortOrder;
 }
 
-export { EmptyOrderByInput as EmptyOrderByInput };
+export { EmptyOrderByInput };
 ",
   "server/src/empty/base/EmptyUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6586,7 +5721,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 class EmptyUpdateInput {}
-export { EmptyUpdateInput as EmptyUpdateInput };
+export { EmptyUpdateInput };
 ",
   "server/src/empty/base/EmptyWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6642,7 +5777,7 @@ class EmptyWhereInput {
   updatedAt?: DateTimeFilter;
 }
 
-export { EmptyWhereInput as EmptyWhereInput };
+export { EmptyWhereInput };
 ",
   "server/src/empty/base/EmptyWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -6670,7 +5805,7 @@ class EmptyWhereUniqueInput {
   id!: string;
 }
 
-export { EmptyWhereUniqueInput as EmptyWhereUniqueInput };
+export { EmptyWhereUniqueInput };
 ",
   "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -6877,39 +6012,23 @@ https://docs.amplication.com/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { EmptyService } from \\"../empty.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
 import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
-export class EmptyControllerBase {
-  constructor(
-    protected readonly service: EmptyService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
+export class EmptyControllerBase {
+  constructor(protected readonly service: EmptyService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
     return await this.service.create({
       data: data,
@@ -6921,15 +6040,8 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(EmptyFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
@@ -6943,16 +6055,9 @@ export class EmptyControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
@@ -6972,16 +6077,9 @@ export class EmptyControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body() data: EmptyUpdateInput
@@ -7006,15 +6104,9 @@ export class EmptyControllerBase {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Empty\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
@@ -7049,15 +6141,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
-
-  exports: [ACLModule, AuthModule, MorganModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class EmptyModuleBase {}
 ",
@@ -7113,19 +6202,14 @@ export class EmptyServiceBase {
 ",
   "server/src/empty/empty.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { EmptyService } from \\"./empty.service\\";
 import { EmptyControllerBase } from \\"./base/empty.controller.base\\";
 
 @swagger.ApiTags(\\"empties\\")
 @common.Controller(\\"empties\\")
 export class EmptyController extends EmptyControllerBase {
-  constructor(
-    protected readonly service: EmptyService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: EmptyService) {
+    super(service);
   }
 }
 ",
@@ -7263,458 +6347,6 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   }
 }
 ",
-  "server/src/grants.json": "[
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"User\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Profile\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Organization\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Customer\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"create:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"delete:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"update:any\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"user\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"admin\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  },
-  {
-    \\"role\\": \\"areaManager\\",
-    \\"resource\\": \\"Empty\\",
-    \\"action\\": \\"read:own\\",
-    \\"attributes\\": \\"*\\"
-  }
-]",
   "server/src/health/base/health.controller.base.ts": "import { Get, HttpStatus, Res } from \\"@nestjs/common\\";
 import { Response } from \\"express\\";
 import { HealthService } from \\"../health.service\\";
@@ -7781,103 +6413,6 @@ import { HealthServiceBase } from \\"./base/health.service.base\\";
 export class HealthService extends HealthServiceBase {
   constructor(protected readonly prisma: PrismaService) {
     super(prisma);
-  }
-}
-",
-  "server/src/interceptors/aclFilterResponse.interceptor.ts": "import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from \\"@nestjs/common\\";
-import { Observable } from \\"rxjs\\";
-import { map } from \\"rxjs/operators\\";
-import { InjectRolesBuilder, RolesBuilder } from \\"nest-access-control\\";
-import { Reflector } from \\"@nestjs/core\\";
-
-@Injectable()
-export class AclFilterResponseInterceptor implements NestInterceptor {
-  constructor(
-    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
-    private readonly reflector: Reflector
-  ) {}
-
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
-      \\"roles\\",
-      [context.getHandler(), context.getClass()]
-    );
-
-    const permission = this.rolesBuilder.permission({
-      role: permissionsRoles.role,
-      action: permissionsRoles.action,
-      possession: permissionsRoles.possession,
-      resource: permissionsRoles.resource,
-    });
-
-    return next.handle().pipe(
-      map((data) => {
-        if (Array.isArray(data)) {
-          return data.map((results: any) => permission.filter(results));
-        } else {
-          return permission.filter(data);
-        }
-      })
-    );
-  }
-}
-",
-  "server/src/interceptors/aclValidateRequest.interceptor.ts": "import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-} from \\"@nestjs/common\\";
-import { Observable } from \\"rxjs\\";
-import { InjectRolesBuilder, RolesBuilder } from \\"nest-access-control\\";
-import { Reflector } from \\"@nestjs/core\\";
-import * as abacUtil from \\"../auth/abac.util\\";
-import { ForbiddenException } from \\"../errors\\";
-
-@Injectable()
-export class AclValidateRequestInterceptor implements NestInterceptor {
-  constructor(
-    @InjectRolesBuilder() private readonly rolesBuilder: RolesBuilder,
-    private readonly reflector: Reflector
-  ) {}
-
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const [permissionsRoles]: any = this.reflector.getAllAndMerge<string[]>(
-      \\"roles\\",
-      [context.getHandler(), context.getClass()]
-    );
-
-    const type = context.getType();
-
-    const inputDataToValidate =
-      type === \\"http\\"
-        ? context.switchToHttp().getRequest().body
-        : context.getArgByIndex(1).data;
-
-    const permission = this.rolesBuilder.permission({
-      role: permissionsRoles.role,
-      action: permissionsRoles.action,
-      possession: permissionsRoles.possession,
-      resource: permissionsRoles.resource,
-    });
-
-    const invalidAttributes = abacUtil.getInvalidAttributes(
-      permission,
-      inputDataToValidate
-    );
-
-    if (invalidAttributes.length) {
-      throw new ForbiddenException(
-        \\"Insufficient privileges to complete the operation\\"
-      );
-    }
-
-    return next.handle();
   }
 }
 ",
@@ -7954,7 +6489,7 @@ class CreateOrderArgs {
   data!: OrderCreateInput;
 }
 
-export { CreateOrderArgs as CreateOrderArgs };
+export { CreateOrderArgs };
 ",
   "server/src/order/base/DeleteOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -7976,7 +6511,7 @@ class DeleteOrderArgs {
   where!: OrderWhereUniqueInput;
 }
 
-export { DeleteOrderArgs as DeleteOrderArgs };
+export { DeleteOrderArgs };
 ",
   "server/src/order/base/EnumOrderLabel.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8103,7 +6638,7 @@ class Order {
   label?: \\"fragile\\" | null;
 }
 
-export { Order as Order };
+export { Order };
 ",
   "server/src/order/base/OrderCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8155,7 +6690,7 @@ class OrderCreateInput {
   label?: \\"fragile\\" | null;
 }
 
-export { OrderCreateInput as OrderCreateInput };
+export { OrderCreateInput };
 ",
   "server/src/order/base/OrderFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8209,7 +6744,7 @@ class OrderFindManyArgs {
   take?: number;
 }
 
-export { OrderFindManyArgs as OrderFindManyArgs };
+export { OrderFindManyArgs };
 ",
   "server/src/order/base/OrderFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8231,7 +6766,7 @@ class OrderFindUniqueArgs {
   where!: OrderWhereUniqueInput;
 }
 
-export { OrderFindUniqueArgs as OrderFindUniqueArgs };
+export { OrderFindUniqueArgs };
 ",
   "server/src/order/base/OrderListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8288,7 +6823,7 @@ class OrderListRelationFilter {
   })
   none?: OrderWhereInput;
 }
-export { OrderListRelationFilter as OrderListRelationFilter };
+export { OrderListRelationFilter };
 ",
   "server/src/order/base/OrderOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8365,7 +6900,7 @@ class OrderOrderByInput {
   label?: SortOrder;
 }
 
-export { OrderOrderByInput as OrderOrderByInput };
+export { OrderOrderByInput };
 ",
   "server/src/order/base/OrderUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8423,7 +6958,7 @@ class OrderUpdateInput {
   label?: \\"fragile\\" | null;
 }
 
-export { OrderUpdateInput as OrderUpdateInput };
+export { OrderUpdateInput };
 ",
   "server/src/order/base/OrderWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8516,7 +7051,7 @@ class OrderWhereInput {
   label?: \\"fragile\\";
 }
 
-export { OrderWhereInput as OrderWhereInput };
+export { OrderWhereInput };
 ",
   "server/src/order/base/OrderWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8544,7 +7079,7 @@ class OrderWhereUniqueInput {
   id!: string;
 }
 
-export { OrderWhereUniqueInput as OrderWhereUniqueInput };
+export { OrderWhereUniqueInput };
 ",
   "server/src/order/base/UpdateOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -8569,7 +7104,7 @@ class UpdateOrderArgs {
   data!: OrderUpdateInput;
 }
 
-export { UpdateOrderArgs as UpdateOrderArgs };
+export { UpdateOrderArgs };
 ",
   "server/src/order/base/order.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -8776,8 +7311,6 @@ https://docs.amplication.com/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
@@ -8791,18 +7324,12 @@ import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
 import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
-export class OrderControllerBase {
-  constructor(
-    protected readonly service: OrderService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
 
+export class OrderControllerBase {
+  constructor(protected readonly service: OrderService) {}
   @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: OrderCreateInput): Promise<Order> {
     return await this.service.create({
       data: {
@@ -8832,7 +7359,6 @@ export class OrderControllerBase {
   @Public()
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrderFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
@@ -8859,7 +7385,6 @@ export class OrderControllerBase {
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
@@ -8892,7 +7417,6 @@ export class OrderControllerBase {
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body() data: OrderUpdateInput
@@ -8936,7 +7460,6 @@ export class OrderControllerBase {
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
@@ -8980,15 +7503,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
-
-  exports: [ACLModule, AuthModule, MorganModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class OrderModuleBase {}
 ",
@@ -9052,19 +7572,14 @@ export class OrderServiceBase {
 ",
   "server/src/order/order.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { OrderService } from \\"./order.service\\";
 import { OrderControllerBase } from \\"./base/order.controller.base\\";
 
 @swagger.ApiTags(\\"orders\\")
 @common.Controller(\\"orders\\")
 export class OrderController extends OrderControllerBase {
-  constructor(
-    protected readonly service: OrderService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: OrderService) {
+    super(service);
   }
 }
 ",
@@ -9112,7 +7627,7 @@ class CreateOrganizationArgs {
   data!: OrganizationCreateInput;
 }
 
-export { CreateOrganizationArgs as CreateOrganizationArgs };
+export { CreateOrganizationArgs };
 ",
   "server/src/organization/base/CustomerCreateNestedManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9141,7 +7656,7 @@ class CustomerCreateNestedManyWithoutOrganizationsInput {
   connect?: Array<CustomerWhereUniqueInput>;
 }
 
-export { CustomerCreateNestedManyWithoutOrganizationsInput as CustomerCreateNestedManyWithoutOrganizationsInput };
+export { CustomerCreateNestedManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/CustomerUpdateManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9188,7 +7703,7 @@ class CustomerUpdateManyWithoutOrganizationsInput {
   set?: Array<CustomerWhereUniqueInput>;
 }
 
-export { CustomerUpdateManyWithoutOrganizationsInput as CustomerUpdateManyWithoutOrganizationsInput };
+export { CustomerUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/DeleteOrganizationArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9210,7 +7725,7 @@ class DeleteOrganizationArgs {
   where!: OrganizationWhereUniqueInput;
 }
 
-export { DeleteOrganizationArgs as DeleteOrganizationArgs };
+export { DeleteOrganizationArgs };
 ",
   "server/src/organization/base/Organization.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9292,7 +7807,7 @@ class Organization {
   vipCustomers?: Array<Customer>;
 }
 
-export { Organization as Organization };
+export { Organization };
 ",
   "server/src/organization/base/OrganizationCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9359,7 +7874,7 @@ class OrganizationCreateInput {
   vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
 }
 
-export { OrganizationCreateInput as OrganizationCreateInput };
+export { OrganizationCreateInput };
 ",
   "server/src/organization/base/OrganizationFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9413,7 +7928,7 @@ class OrganizationFindManyArgs {
   take?: number;
 }
 
-export { OrganizationFindManyArgs as OrganizationFindManyArgs };
+export { OrganizationFindManyArgs };
 ",
   "server/src/organization/base/OrganizationFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9435,7 +7950,7 @@ class OrganizationFindUniqueArgs {
   where!: OrganizationWhereUniqueInput;
 }
 
-export { OrganizationFindUniqueArgs as OrganizationFindUniqueArgs };
+export { OrganizationFindUniqueArgs };
 ",
   "server/src/organization/base/OrganizationListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9492,7 +8007,7 @@ class OrganizationListRelationFilter {
   })
   none?: OrganizationWhereInput;
 }
-export { OrganizationListRelationFilter as OrganizationListRelationFilter };
+export { OrganizationListRelationFilter };
 ",
   "server/src/organization/base/OrganizationOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9551,7 +8066,7 @@ class OrganizationOrderByInput {
   name?: SortOrder;
 }
 
-export { OrganizationOrderByInput as OrganizationOrderByInput };
+export { OrganizationOrderByInput };
 ",
   "server/src/organization/base/OrganizationUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9621,7 +8136,7 @@ class OrganizationUpdateInput {
   vipCustomers?: CustomerUpdateManyWithoutOrganizationsInput;
 }
 
-export { OrganizationUpdateInput as OrganizationUpdateInput };
+export { OrganizationUpdateInput };
 ",
   "server/src/organization/base/OrganizationWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9726,7 +8241,7 @@ class OrganizationWhereInput {
   vipCustomers?: CustomerListRelationFilter;
 }
 
-export { OrganizationWhereInput as OrganizationWhereInput };
+export { OrganizationWhereInput };
 ",
   "server/src/organization/base/OrganizationWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9754,7 +8269,7 @@ class OrganizationWhereUniqueInput {
   id!: string;
 }
 
-export { OrganizationWhereUniqueInput as OrganizationWhereUniqueInput };
+export { OrganizationWhereUniqueInput };
 ",
   "server/src/organization/base/UpdateOrganizationArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9779,7 +8294,7 @@ class UpdateOrganizationArgs {
   data!: OrganizationUpdateInput;
 }
 
-export { UpdateOrganizationArgs as UpdateOrganizationArgs };
+export { UpdateOrganizationArgs };
 ",
   "server/src/organization/base/UserCreateNestedManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9808,7 +8323,7 @@ class UserCreateNestedManyWithoutOrganizationsInput {
   connect?: Array<UserWhereUniqueInput>;
 }
 
-export { UserCreateNestedManyWithoutOrganizationsInput as UserCreateNestedManyWithoutOrganizationsInput };
+export { UserCreateNestedManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/UserUpdateManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9855,7 +8370,7 @@ class UserUpdateManyWithoutOrganizationsInput {
   set?: Array<UserWhereUniqueInput>;
 }
 
-export { UserUpdateManyWithoutOrganizationsInput as UserUpdateManyWithoutOrganizationsInput };
+export { UserUpdateManyWithoutOrganizationsInput };
 ",
   "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -10066,16 +8581,12 @@ https://docs.amplication.com/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { OrganizationService } from \\"../organization.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
@@ -10088,23 +8599,11 @@ import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 import { CustomerFindManyArgs } from \\"../../customer/base/CustomerFindManyArgs\\";
 import { Customer } from \\"../../customer/base/Customer\\";
 import { CustomerWhereUniqueInput } from \\"../../customer/base/CustomerWhereUniqueInput\\";
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
-export class OrganizationControllerBase {
-  constructor(
-    protected readonly service: OrganizationService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
+export class OrganizationControllerBase {
+  constructor(protected readonly service: OrganizationService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
@@ -10119,15 +8618,8 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(OrganizationFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
@@ -10142,16 +8634,9 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
@@ -10172,16 +8657,9 @@ export class OrganizationControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() data: OrganizationUpdateInput
@@ -10207,15 +8685,9 @@ export class OrganizationControllerBase {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
@@ -10239,12 +8711,6 @@ export class OrganizationControllerBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get(\\"/:id/users\\")
   @ApiNestedQuery(UserFindManyArgs)
   async findManyUsers(
@@ -10255,8 +8721,6 @@ export class OrganizationControllerBase {
     const results = await this.service.findUsers(params.id, {
       ...query,
       select: {
-        username: true,
-        roles: true,
         id: true,
         name: true,
         bio: true,
@@ -10292,11 +8756,6 @@ export class OrganizationControllerBase {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Post(\\"/:id/users\\")
   async connectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10314,11 +8773,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id/users\\")
   async updateUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10336,11 +8790,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id/users\\")
   async disconnectUsers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10358,12 +8807,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get(\\"/:id/customers\\")
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyCustomers(
@@ -10410,11 +8853,6 @@ export class OrganizationControllerBase {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Post(\\"/:id/customers\\")
   async connectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10432,11 +8870,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id/customers\\")
   async updateCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10454,11 +8887,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id/customers\\")
   async disconnectCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10476,12 +8904,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Customer\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get(\\"/:id/vipCustomers\\")
   @ApiNestedQuery(CustomerFindManyArgs)
   async findManyVipCustomers(
@@ -10528,11 +8950,6 @@ export class OrganizationControllerBase {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Post(\\"/:id/vipCustomers\\")
   async connectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10550,11 +8967,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id/vipCustomers\\")
   async updateVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10572,11 +8984,6 @@ export class OrganizationControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id/vipCustomers\\")
   async disconnectVipCustomers(
     @common.Param() params: OrganizationWhereUniqueInput,
@@ -10606,15 +9013,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
-
-  exports: [ACLModule, AuthModule, MorganModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class OrganizationModuleBase {}
 ",
@@ -10703,19 +9107,14 @@ export class OrganizationServiceBase {
 ",
   "server/src/organization/organization.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { OrganizationService } from \\"./organization.service\\";
 import { OrganizationControllerBase } from \\"./base/organization.controller.base\\";
 
 @swagger.ApiTags(\\"organizations\\")
 @common.Controller(\\"organizations\\")
 export class OrganizationController extends OrganizationControllerBase {
-  constructor(
-    protected readonly service: OrganizationService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: OrganizationService) {
+    super(service);
   }
 }
 ",
@@ -10844,7 +9243,7 @@ class CreateProfileArgs {
   data!: ProfileCreateInput;
 }
 
-export { CreateProfileArgs as CreateProfileArgs };
+export { CreateProfileArgs };
 ",
   "server/src/profile/base/DeleteProfileArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10866,7 +9265,7 @@ class DeleteProfileArgs {
   where!: ProfileWhereUniqueInput;
 }
 
-export { DeleteProfileArgs as DeleteProfileArgs };
+export { DeleteProfileArgs };
 ",
   "server/src/profile/base/Profile.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10935,7 +9334,7 @@ class Profile {
   user?: User | null;
 }
 
-export { Profile as Profile };
+export { Profile };
 ",
   "server/src/profile/base/ProfileCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -10977,7 +9376,7 @@ class ProfileCreateInput {
   user?: UserWhereUniqueInput | null;
 }
 
-export { ProfileCreateInput as ProfileCreateInput };
+export { ProfileCreateInput };
 ",
   "server/src/profile/base/ProfileFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11031,7 +9430,7 @@ class ProfileFindManyArgs {
   take?: number;
 }
 
-export { ProfileFindManyArgs as ProfileFindManyArgs };
+export { ProfileFindManyArgs };
 ",
   "server/src/profile/base/ProfileFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11053,7 +9452,7 @@ class ProfileFindUniqueArgs {
   where!: ProfileWhereUniqueInput;
 }
 
-export { ProfileFindUniqueArgs as ProfileFindUniqueArgs };
+export { ProfileFindUniqueArgs };
 ",
   "server/src/profile/base/ProfileListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11110,7 +9509,7 @@ class ProfileListRelationFilter {
   })
   none?: ProfileWhereInput;
 }
-export { ProfileListRelationFilter as ProfileListRelationFilter };
+export { ProfileListRelationFilter };
 ",
   "server/src/profile/base/ProfileOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11178,7 +9577,7 @@ class ProfileOrderByInput {
   userId?: SortOrder;
 }
 
-export { ProfileOrderByInput as ProfileOrderByInput };
+export { ProfileOrderByInput };
 ",
   "server/src/profile/base/ProfileUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11223,7 +9622,7 @@ class ProfileUpdateInput {
   user?: UserWhereUniqueInput | null;
 }
 
-export { ProfileUpdateInput as ProfileUpdateInput };
+export { ProfileUpdateInput };
 ",
   "server/src/profile/base/ProfileWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11304,7 +9703,7 @@ class ProfileWhereInput {
   user?: UserWhereUniqueInput;
 }
 
-export { ProfileWhereInput as ProfileWhereInput };
+export { ProfileWhereInput };
 ",
   "server/src/profile/base/ProfileWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11332,7 +9731,7 @@ class ProfileWhereUniqueInput {
   id!: number;
 }
 
-export { ProfileWhereUniqueInput as ProfileWhereUniqueInput };
+export { ProfileWhereUniqueInput };
 ",
   "server/src/profile/base/UpdateProfileArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11357,7 +9756,7 @@ class UpdateProfileArgs {
   data!: ProfileUpdateInput;
 }
 
-export { UpdateProfileArgs as UpdateProfileArgs };
+export { UpdateProfileArgs };
 ",
   "server/src/profile/base/profile.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -11568,39 +9967,23 @@ https://docs.amplication.com/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { ProfileService } from \\"../profile.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
 import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
 import { ProfileFindManyArgs } from \\"./ProfileFindManyArgs\\";
 import { ProfileUpdateInput } from \\"./ProfileUpdateInput\\";
 import { Profile } from \\"./Profile\\";
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
-export class ProfileControllerBase {
-  constructor(
-    protected readonly service: ProfileService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
+export class ProfileControllerBase {
+  constructor(protected readonly service: ProfileService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
     return await this.service.create({
       data: {
@@ -11627,15 +10010,8 @@ export class ProfileControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(ProfileFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
@@ -11656,16 +10032,9 @@ export class ProfileControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
@@ -11692,16 +10061,9 @@ export class ProfileControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: ProfileWhereUniqueInput,
     @common.Body() data: ProfileUpdateInput
@@ -11741,15 +10103,9 @@ export class ProfileControllerBase {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"Profile\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
@@ -11791,15 +10147,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
-
-  exports: [ACLModule, AuthModule, MorganModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class ProfileModuleBase {}
 ",
@@ -11863,19 +10216,14 @@ export class ProfileServiceBase {
 ",
   "server/src/profile/profile.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { ProfileService } from \\"./profile.service\\";
 import { ProfileControllerBase } from \\"./base/profile.controller.base\\";
 
 @swagger.ApiTags(\\"profiles\\")
 @common.Controller(\\"profiles\\")
 export class ProfileController extends ProfileControllerBase {
-  constructor(
-    protected readonly service: ProfileService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: ProfileService) {
+    super(service);
   }
 }
 ",
@@ -12045,135 +10393,6 @@ export const swaggerSetupOptions: SwaggerCustomOptions = {
   customSiteTitle: \\"Sample Application\\",
 };
 ",
-  "server/src/tests/auth/basic/basic.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { mock } from \\"jest-mock-extended\\";
-import { AuthService } from \\"../../../auth/auth.service\\";
-import { BasicStrategyBase } from \\"../../../auth/basic/base/basic.strategy.base\\";
-import { TEST_USER } from \\"../constants\\";
-
-describe(\\"Testing the basicStrategyBase.validate()\\", () => {
-  const TEST_PASSWORD = \\"gabay\\";
-  const authService = mock<AuthService>();
-  const basicStrategy = new BasicStrategyBase(authService);
-  beforeEach(() => {
-    authService.validateUser.mockClear();
-  });
-  beforeAll(() => {
-    //ARRANGE
-    authService.validateUser
-      .calledWith(TEST_USER.username, TEST_PASSWORD)
-      .mockReturnValue(Promise.resolve(TEST_USER));
-  });
-  it(\\"should return the user\\", async () => {
-    //ACT
-    const result = await basicStrategy.validate(
-      TEST_USER.username,
-      TEST_PASSWORD
-    );
-    //ASSERT
-    expect(result).toBe(TEST_USER);
-  });
-  it(\\"should throw error if there is not valid user\\", async () => {
-    //ARRANGE
-    authService.validateUser.mockReturnValue(Promise.resolve(null));
-    //ACT
-    const result = basicStrategy.validate(\\"noUsername\\", TEST_PASSWORD);
-    //ASSERT
-    return expect(result).rejects.toThrowError(UnauthorizedException);
-  });
-});
-",
-  "server/src/tests/auth/constants.ts": "import { Credentials } from \\"../../auth/Credentials\\";
-import { UserInfo } from \\"../../auth/UserInfo\\";
-
-export const VALID_ID = \\"1\\";
-
-export const TEST_USER: UserInfo = {
-  id: \\"cl7qmjh4h0000tothyjqapgj5\\",
-  roles: [\\"User\\"],
-  username: \\"ofek\\",
-};
-export const SIGN_TOKEN = \\"SIGN_TOKEN\\";
-export const VALID_CREDENTIALS: Credentials = {
-  username: \\"Valid User\\",
-  password: \\"Valid User Password\\",
-};
-export const INVALID_CREDENTIALS: Credentials = {
-  username: \\"Invalid User\\",
-  password: \\"Invalid User Password\\",
-};
-",
-  "server/src/tests/auth/jwt/jwt.strategy.spec.ts": "import { UnauthorizedException } from \\"@nestjs/common\\";
-import { mock } from \\"jest-mock-extended\\";
-import { JwtStrategyBase } from \\"../../../auth/jwt/base/jwt.strategy.base\\";
-import { UserService } from \\"../../../user/user.service\\";
-import { TEST_USER } from \\"../constants\\";
-
-describe(\\"Testing the jwtStrategyBase.validate()\\", () => {
-  const userService = mock<UserService>();
-  const jwtStrategy = new JwtStrategyBase(userService, \\"Secrete\\");
-  beforeEach(() => {
-    userService.findOne.mockClear();
-  });
-  it(\\"should throw UnauthorizedException where there is no user\\", async () => {
-    //ARRANGE
-    userService.findOne
-      .calledWith({ where: { username: TEST_USER.username } })
-      .mockReturnValue(Promise.resolve(null));
-    //ACT
-    const result = jwtStrategy.validate({
-      id: TEST_USER.id,
-      username: TEST_USER.username,
-      roles: TEST_USER.roles,
-    });
-    //ASSERT
-    return expect(result).rejects.toThrowError(UnauthorizedException);
-  });
-});
-",
-  "server/src/tests/auth/token.service.spec.ts": "import { TokenServiceBase } from \\"../../auth/base/token.service.base\\";
-import {
-  INVALID_USERNAME_ERROR,
-  INVALID_PASSWORD_ERROR,
-} from \\"../../auth/constants\\";
-import { SIGN_TOKEN, VALID_CREDENTIALS, VALID_ID } from \\"./constants\\";
-
-describe(\\"Testing the TokenServiceBase\\", () => {
-  let tokenServiceBase: TokenServiceBase;
-  beforeEach(() => {
-    tokenServiceBase = new TokenServiceBase();
-  });
-  describe(\\"Testing the BasicTokenService.createToken()\\", () => {
-    it(\\"should create valid token for given username and password\\", async () => {
-      expect(
-        await tokenServiceBase.createToken({
-          id: VALID_ID,
-          username: \\"admin\\",
-          password: \\"admin\\",
-        })
-      ).toBe(\\"YWRtaW46YWRtaW4=\\");
-    });
-    it(\\"should reject when username missing\\", () => {
-      const result = tokenServiceBase.createToken({
-        id: VALID_ID,
-        //@ts-ignore
-        username: null,
-        password: VALID_CREDENTIALS.password,
-      });
-      return expect(result).rejects.toBe(INVALID_USERNAME_ERROR);
-    });
-    it(\\"should reject when password missing\\", () => {
-      const result = tokenServiceBase.createToken({
-        id: VALID_ID,
-        username: VALID_CREDENTIALS.username,
-        //@ts-ignore
-        password: null,
-      });
-      return expect(result).rejects.toBe(INVALID_PASSWORD_ERROR);
-    });
-  });
-});
-",
   "server/src/tests/health/health.service.spec.ts": "import { mock } from \\"jest-mock-extended\\";
 import { PrismaService } from \\"nestjs-prisma\\";
 import { HealthServiceBase } from \\"../../health/base/health.service.base\\";
@@ -12235,7 +10454,7 @@ class CreateUserArgs {
   data!: UserCreateInput;
 }
 
-export { CreateUserArgs as CreateUserArgs };
+export { CreateUserArgs };
 ",
   "server/src/user/base/DeleteUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12257,7 +10476,7 @@ class DeleteUserArgs {
   where!: UserWhereUniqueInput;
 }
 
-export { DeleteUserArgs as DeleteUserArgs };
+export { DeleteUserArgs };
 ",
   "server/src/user/base/EnumUserInterests.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12331,7 +10550,7 @@ class OrganizationCreateNestedManyWithoutUsersInput {
   connect?: Array<OrganizationWhereUniqueInput>;
 }
 
-export { OrganizationCreateNestedManyWithoutUsersInput as OrganizationCreateNestedManyWithoutUsersInput };
+export { OrganizationCreateNestedManyWithoutUsersInput };
 ",
   "server/src/user/base/OrganizationUpdateManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12378,7 +10597,7 @@ class OrganizationUpdateManyWithoutUsersInput {
   set?: Array<OrganizationWhereUniqueInput>;
 }
 
-export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithoutUsersInput };
+export { OrganizationUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/UpdateUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12403,7 +10622,7 @@ class UpdateUserArgs {
   data!: UserUpdateInput;
 }
 
-export { UpdateUserArgs as UpdateUserArgs };
+export { UpdateUserArgs };
 ",
   "server/src/user/base/User.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12421,7 +10640,6 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
-  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
@@ -12429,33 +10647,19 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
+  IsJSON,
 } from \\"class-validator\\";
 
-import { GraphQLJSON } from \\"graphql-type-json\\";
-import { JsonValue } from \\"type-fest\\";
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { JsonValue } from \\"type-fest\\";
 import { Profile } from \\"../../profile/base/Profile\\";
 
 @ObjectType()
 class User {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSON()
-  @Field(() => GraphQLJSON)
-  roles!: JsonValue;
-
   @ApiProperty({
     required: true,
     type: String,
@@ -12596,7 +10800,7 @@ class User {
   profile?: Profile | null;
 }
 
-export { User as User };
+export { User };
 ",
   "server/src/user/base/UserCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12614,7 +10818,6 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
   IsString,
-  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
@@ -12622,43 +10825,21 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
+  IsJSON,
 } from \\"class-validator\\";
 
-import { GraphQLJSON } from \\"graphql-type-json\\";
-import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyWithoutUsersInput\\";
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 
 @InputType()
 class UserCreateInput {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  password!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSON()
-  @Field(() => GraphQLJSON)
-  roles!: InputJsonValue;
-
   @ApiProperty({
     required: true,
     type: String,
@@ -12801,7 +10982,7 @@ class UserCreateInput {
   profile?: ProfileWhereUniqueInput | null;
 }
 
-export { UserCreateInput as UserCreateInput };
+export { UserCreateInput };
 ",
   "server/src/user/base/UserCreateNestedManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12830,7 +11011,7 @@ class UserCreateNestedManyWithoutUsersInput {
   connect?: Array<UserWhereUniqueInput>;
 }
 
-export { UserCreateNestedManyWithoutUsersInput as UserCreateNestedManyWithoutUsersInput };
+export { UserCreateNestedManyWithoutUsersInput };
 ",
   "server/src/user/base/UserFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12884,7 +11065,7 @@ class UserFindManyArgs {
   take?: number;
 }
 
-export { UserFindManyArgs as UserFindManyArgs };
+export { UserFindManyArgs };
 ",
   "server/src/user/base/UserFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12906,7 +11087,7 @@ class UserFindUniqueArgs {
   where!: UserWhereUniqueInput;
 }
 
-export { UserFindUniqueArgs as UserFindUniqueArgs };
+export { UserFindUniqueArgs };
 ",
   "server/src/user/base/UserListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12963,7 +11144,7 @@ class UserListRelationFilter {
   })
   none?: UserWhereInput;
 }
-export { UserListRelationFilter as UserListRelationFilter };
+export { UserListRelationFilter };
 ",
   "server/src/user/base/UserOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12985,33 +11166,6 @@ import { SortOrder } from \\"../../util/SortOrder\\";
   description: undefined,
 })
 class UserOrderByInput {
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  username?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  password?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  roles?: SortOrder;
-
   @ApiProperty({
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
@@ -13139,7 +11293,7 @@ class UserOrderByInput {
   profileId?: SortOrder;
 }
 
-export { UserOrderByInput as UserOrderByInput };
+export { UserOrderByInput };
 ",
   "server/src/user/base/UserUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13158,59 +11312,27 @@ import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsString,
   IsOptional,
-  IsJSON,
   IsInt,
   IsDate,
   IsNumber,
   ValidateNested,
   IsEnum,
   IsBoolean,
+  IsJSON,
 } from \\"class-validator\\";
 
-import { GraphQLJSON } from \\"graphql-type-json\\";
-import { InputJsonValue } from \\"../../types\\";
 import { Type } from \\"class-transformer\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
 import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersInput\\";
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { GraphQLJSON } from \\"graphql-type-json\\";
+import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
 
 @InputType()
 class UserUpdateInput {
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  username?: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  password?: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsJSON()
-  @IsOptional()
-  @Field(() => GraphQLJSON, {
-    nullable: true,
-  })
-  roles?: InputJsonValue;
-
   @ApiProperty({
     required: false,
     type: String,
@@ -13383,7 +11505,7 @@ class UserUpdateInput {
   profile?: ProfileWhereUniqueInput | null;
 }
 
-export { UserUpdateInput as UserUpdateInput };
+export { UserUpdateInput };
 ",
   "server/src/user/base/UserUpdateManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13430,7 +11552,7 @@ class UserUpdateManyWithoutUsersInput {
   set?: Array<UserWhereUniqueInput>;
 }
 
-export { UserUpdateManyWithoutUsersInput as UserUpdateManyWithoutUsersInput };
+export { UserUpdateManyWithoutUsersInput };
 ",
   "server/src/user/base/UserWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13595,7 +11717,7 @@ class UserWhereInput {
   profile?: ProfileWhereUniqueInput;
 }
 
-export { UserWhereInput as UserWhereInput };
+export { UserWhereInput };
 ",
   "server/src/user/base/UserWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -13623,7 +11745,7 @@ class UserWhereUniqueInput {
   id!: string;
 }
 
-export { UserWhereUniqueInput as UserWhereUniqueInput };
+export { UserWhereUniqueInput };
 ",
   "server/src/user/base/user.controller.base.spec.ts": "import { Test } from \\"@nestjs/testing\\";
 import {
@@ -13646,8 +11768,6 @@ import { UserService } from \\"../user.service\\";
 const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -13659,8 +11779,6 @@ const CREATE_INPUT = {
   location: \\"exampleLocation\\",
 };
 const CREATE_RESULT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -13673,8 +11791,6 @@ const CREATE_RESULT = {
 };
 const FIND_MANY_RESULT = [
   {
-    username: \\"exampleUsername\\",
-    password: \\"examplePassword\\",
     id: \\"exampleId\\",
     name: \\"exampleName\\",
     bio: \\"exampleBio\\",
@@ -13687,8 +11803,6 @@ const FIND_MANY_RESULT = [
   },
 ];
 const FIND_ONE_RESULT = {
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
   id: \\"exampleId\\",
   name: \\"exampleName\\",
   bio: \\"exampleBio\\",
@@ -13858,16 +11972,12 @@ https://docs.amplication.com/how-to/custom-code
   */
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
-import * as defaultAuthGuard from \\"../../auth/defaultAuth.guard\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
 import { ApiNestedQuery } from \\"../../decorators/api-nested-query.decorator\\";
 import { UserService } from \\"../user.service\\";
-import { AclValidateRequestInterceptor } from \\"../../interceptors/aclValidateRequest.interceptor\\";
-import { AclFilterResponseInterceptor } from \\"../../interceptors/aclFilterResponse.interceptor\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -13877,23 +11987,11 @@ import { User } from \\"./User\\";
 import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
-@swagger.ApiBasicAuth()
-@common.UseGuards(defaultAuthGuard.DefaultAuthGuard, nestAccessControl.ACGuard)
-export class UserControllerBase {
-  constructor(
-    protected readonly service: UserService,
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {}
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"create\\",
-    possession: \\"any\\",
-  })
+export class UserControllerBase {
+  constructor(protected readonly service: UserService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async create(@common.Body() data: UserCreateInput): Promise<User> {
     return await this.service.create({
       data: {
@@ -13912,8 +12010,6 @@ export class UserControllerBase {
           : undefined,
       },
       select: {
-        username: true,
-        roles: true,
         id: true,
         name: true,
         bio: true,
@@ -13943,23 +12039,14 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
-  @swagger.ApiForbiddenResponse()
   @ApiNestedQuery(UserFindManyArgs)
   async findMany(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
       select: {
-        username: true,
-        roles: true,
         id: true,
         name: true,
         bio: true,
@@ -13989,24 +12076,15 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"own\\",
-  })
   @common.Get(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async findOne(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     const result = await this.service.findOne({
       where: params,
       select: {
-        username: true,
-        roles: true,
         id: true,
         name: true,
         bio: true,
@@ -14042,16 +12120,9 @@ export class UserControllerBase {
     return result;
   }
 
-  @common.UseInterceptors(AclValidateRequestInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async update(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() data: UserUpdateInput
@@ -14075,8 +12146,6 @@ export class UserControllerBase {
             : undefined,
         },
         select: {
-          username: true,
-          roles: true,
           id: true,
           name: true,
           bio: true,
@@ -14114,15 +12183,9 @@ export class UserControllerBase {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"delete\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id\\")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async delete(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
@@ -14130,8 +12193,6 @@ export class UserControllerBase {
       return await this.service.delete({
         where: params,
         select: {
-          username: true,
-          roles: true,
           id: true,
           name: true,
           bio: true,
@@ -14169,12 +12230,6 @@ export class UserControllerBase {
     }
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get(\\"/:id/employees\\")
   @ApiNestedQuery(UserFindManyArgs)
   async findManyEmployees(
@@ -14185,8 +12240,6 @@ export class UserControllerBase {
     const results = await this.service.findEmployees(params.id, {
       ...query,
       select: {
-        username: true,
-        roles: true,
         id: true,
         name: true,
         bio: true,
@@ -14222,11 +12275,6 @@ export class UserControllerBase {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Post(\\"/:id/employees\\")
   async connectEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -14244,11 +12292,6 @@ export class UserControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id/employees\\")
   async updateEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -14266,11 +12309,6 @@ export class UserControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id/employees\\")
   async disconnectEmployees(
     @common.Param() params: UserWhereUniqueInput,
@@ -14288,12 +12326,6 @@ export class UserControllerBase {
     });
   }
 
-  @common.UseInterceptors(AclFilterResponseInterceptor)
-  @nestAccessControl.UseRoles({
-    resource: \\"Organization\\",
-    action: \\"read\\",
-    possession: \\"any\\",
-  })
   @common.Get(\\"/:id/organizations\\")
   @ApiNestedQuery(OrganizationFindManyArgs)
   async findManyOrganizations(
@@ -14318,11 +12350,6 @@ export class UserControllerBase {
     return results;
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Post(\\"/:id/organizations\\")
   async connectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
@@ -14340,11 +12367,6 @@ export class UserControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Patch(\\"/:id/organizations\\")
   async updateOrganizations(
     @common.Param() params: UserWhereUniqueInput,
@@ -14362,11 +12384,6 @@ export class UserControllerBase {
     });
   }
 
-  @nestAccessControl.UseRoles({
-    resource: \\"User\\",
-    action: \\"update\\",
-    possession: \\"any\\",
-  })
   @common.Delete(\\"/:id/organizations\\")
   async disconnectOrganizations(
     @common.Param() params: UserWhereUniqueInput,
@@ -14396,15 +12413,12 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { Module, forwardRef } from \\"@nestjs/common\\";
+import { Module } from \\"@nestjs/common\\";
 import { MorganModule } from \\"nest-morgan\\";
-import { ACLModule } from \\"../../auth/acl.module\\";
-import { AuthModule } from \\"../../auth/auth.module\\";
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), MorganModule],
-
-  exports: [ACLModule, AuthModule, MorganModule],
+  imports: [MorganModule],
+  exports: [MorganModule],
 })
 export class UserModuleBase {}
 ",
@@ -14421,14 +12435,9 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { PrismaService } from \\"../../prisma/prisma.service\\";
 import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
-import { PasswordService } from \\"../../auth/password.service\\";
-import { transformStringFieldUpdateInput } from \\"../../prisma.util\\";
 
 export class UserServiceBase {
-  constructor(
-    protected readonly prisma: PrismaService,
-    protected readonly passwordService: PasswordService
-  ) {}
+  constructor(protected readonly prisma: PrismaService) {}
 
   async count<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
@@ -14449,32 +12458,12 @@ export class UserServiceBase {
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<User> {
-    return this.prisma.user.create<T>({
-      ...args,
-
-      data: {
-        ...args.data,
-        password: await this.passwordService.hash(args.data.password),
-      },
-    });
+    return this.prisma.user.create<T>(args);
   }
   async update<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
-    return this.prisma.user.update<T>({
-      ...args,
-
-      data: {
-        ...args.data,
-
-        password:
-          args.data.password &&
-          (await transformStringFieldUpdateInput(
-            args.data.password,
-            (password) => this.passwordService.hash(password)
-          )),
-      },
-    });
+    return this.prisma.user.update<T>(args);
   }
   async delete<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
@@ -14523,19 +12512,14 @@ export class UserServiceBase {
 ",
   "server/src/user/user.controller.ts": "import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
-import * as nestAccessControl from \\"nest-access-control\\";
 import { UserService } from \\"./user.service\\";
 import { UserControllerBase } from \\"./base/user.controller.base\\";
 
 @swagger.ApiTags(\\"users\\")
 @common.Controller(\\"users\\")
 export class UserController extends UserControllerBase {
-  constructor(
-    protected readonly service: UserService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
-  ) {
-    super(service, rolesBuilder);
+  constructor(protected readonly service: UserService) {
+    super(service);
   }
 }
 ",
@@ -14555,15 +12539,11 @@ export class UserModule {}
   "server/src/user/user.service.ts": "import { Injectable } from \\"@nestjs/common\\";
 import { PrismaService } from \\"../prisma/prisma.service\\";
 import { UserServiceBase } from \\"./base/user.service.base\\";
-import { PasswordService } from \\"../auth/password.service\\";
 
 @Injectable()
 export class UserService extends UserServiceBase {
-  constructor(
-    protected readonly prisma: PrismaService,
-    protected readonly passwordService: PasswordService
-  ) {
-    super(prisma, passwordService);
+  constructor(protected readonly prisma: PrismaService) {
+    super(prisma);
   }
 }
 ",

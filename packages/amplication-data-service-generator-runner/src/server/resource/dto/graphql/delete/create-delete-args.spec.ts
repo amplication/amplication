@@ -4,7 +4,7 @@ import { createWhereUniqueInput } from "../../create-where-unique-input";
 import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
-} from "../../../util/test-data";
+} from "../../../utils/test-data";
 import { createDeleteArgs, createDeleteArgsId } from "./create-delete-args";
 
 const EXAMPLE_ENTITY: Entity = {

@@ -47,11 +47,7 @@ export async function prepareContext(
     pluginInstallationPath
   );
 
-  const [entitiesWithUserEntity] = createUserEntityIfNotExist(entities);
-
-  const entitiesWithPluralName = prepareEntityPluralName(
-    entitiesWithUserEntity
-  );
+  const entitiesWithPluralName = prepareEntityPluralName(entities);
 
   const normalizedEntities = resolveLookupFields(entitiesWithPluralName);
 

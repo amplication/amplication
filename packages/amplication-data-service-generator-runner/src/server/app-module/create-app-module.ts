@@ -34,17 +34,64 @@ const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
 const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
 export async function createAppModule(
-  eventParams: CreateServerAppModuleParams
+  modulesFiles: Module[]
 ): Promise<Module[]> {
+  const template = await readFile(appModuleTemplatePath);
+  const nestModules = modulesFiles.filter((module) =>
+    module.path.match(MODULE_PATTERN)
+  );
+
+  const nestModulesWithExports = nestModules.map((module) => ({
+    module,
+    exports: getExportedNames(module.code),
+  }));
+
+  const nestModulesIds = nestModulesWithExports.flatMap(
+    /** @todo explicitly check for "@Module" decorated classes */
+    ({ exports }) => exports
+  );
+
+  //@TODO: allow some env variable to override the autoSchemaFile: "schema.graphql" (e.g. GQL_SCHEMA_EXPORT_PATH)
+  const templateMapping = {
+    MODULES: builders.arrayExpression([
+      ...nestModulesIds,
+      MORGAN_MODULE_ID,
+      callExpression`${CONFIG_MODULE_ID}.forRoot({ isGlobal: true })`,
+      callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
+      useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
+    })`,
+      callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
+      useFactory: (configService) => {
+        const playground = configService.get("GRAPHQL_PLAYGROUND");
+        const introspection = configService.get("GRAPHQL_INTROSPECTION");
+        return {
+          autoSchemaFile: "schema.graphql",
+          sortSchema: true,
+          playground,
+          introspection: playground || introspection
+        }
+      },
+      inject: [${CONFIG_SERVICE_ID}],
+      imports: [${CONFIG_MODULE_ID}],
+    })`,
+    ]),
+  };
+
   return pluginWrapper(
     createAppModuleInternal,
     EventNames.CreateServerAppModule,
-    eventParams
+    {
+      modulesFiles,
+      template,
+      templateMapping,
+    }
   );
 }
 
 export async function createAppModuleInternal({
   modulesFiles,
+  template,
+  templateMapping,
 }: CreateServerAppModuleParams): Promise<Module[]> {
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
@@ -66,41 +113,9 @@ export async function createAppModuleInternal({
     );
   });
 
-  const nestModulesIds = nestModulesWithExports.flatMap(
-    /** @todo explicitly check for "@Module" decorated classes */
-    ({ exports }) => exports
-  );
-  //@TODO: allow some env variable to override the autoSchemaFile: "schema.graphql" (e.g. GQL_SCHEMA_EXPORT_PATH)
-  const modules = builders.arrayExpression([
-    ...nestModulesIds,
-    MORGAN_MODULE_ID,
-    callExpression`${CONFIG_MODULE_ID}.forRoot({ isGlobal: true })`,
-    callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
-      useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
-    })`,
-    callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
-      useFactory: (configService) => {
-        const playground = configService.get("GRAPHQL_PLAYGROUND");
-        const introspection = configService.get("GRAPHQL_INTROSPECTION");
-        return {
-          autoSchemaFile: "schema.graphql",
-          sortSchema: true,
-          playground,
-          introspection: playground || introspection
-        }
-      },
-      inject: [${CONFIG_SERVICE_ID}],
-      imports: [${CONFIG_MODULE_ID}],
-    })`,
-  ]);
+  interpolate(template, templateMapping);
 
-  const file = await readFile(appModuleTemplatePath);
-
-  interpolate(file, {
-    MODULES: modules,
-  });
-
-  addImports(file, [
+  addImports(template, [
     ...moduleImports,
     importDeclaration`import { ${PRISMA_MODULE_ID} } from "./prisma/prisma.module"`,
     importDeclaration`import { ${MORGAN_MODULE_ID} } from "nest-morgan"`,
@@ -109,14 +124,14 @@ export async function createAppModuleInternal({
     importDeclaration`import { ${SERVE_STATIC_OPTIONS_SERVICE_ID} } from "./serveStaticOptions.service"`,
     importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`,
   ]);
-  removeTSIgnoreComments(file);
-  removeESLintComments(file);
-  removeTSVariableDeclares(file);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
 
   return [
     {
       path: MODULE_PATH,
-      code: print(file).code,
+      code: print(template).code,
     },
   ];
 }

@@ -18,7 +18,16 @@ function createInputJsonFile() {
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    pluginInstallations: [],
+    pluginInstallations: [
+      plugins.postgresPlugin,
+      {
+        id: "auth-api",
+        enabled: true,
+        version: "0.0.1",
+        pluginId: "pluginId",
+        npm: "@amplication/plugin-auth",
+      },
+    ],
   };
   const buildSpecPath = process.env.BUILD_SPEC_PATH;
 
