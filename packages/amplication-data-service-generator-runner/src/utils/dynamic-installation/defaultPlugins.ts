@@ -2,8 +2,6 @@ import { PluginInstallation } from "@amplication/code-gen-types";
 export const POSTGRESQL_PLUGIN_ID = "db-postgres";
 export const MYSQL_PLUGIN_ID = "db-mysql";
 export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
-export const AUTH_PLUGIN_ID = "auth-service";
-export const AUTH_NPM = "@amplication/plugin-auth";
 
 type DefaultPlugin = {
   categoryPluginIds: string[];
@@ -17,16 +15,6 @@ const defaultPlugins: DefaultPlugin[] = [
       id: "placeholder-id",
       pluginId: POSTGRESQL_PLUGIN_ID,
       npm: POSTGRESQL_NPM,
-      enabled: true,
-      version: "latest",
-    },
-  },
-  {
-    categoryPluginIds: [AUTH_PLUGIN_ID],
-    defaultCategoryPlugin: {
-      id: "placeholder-id",
-      pluginId: AUTH_PLUGIN_ID,
-      npm: AUTH_NPM,
       enabled: true,
       version: "latest",
     },
