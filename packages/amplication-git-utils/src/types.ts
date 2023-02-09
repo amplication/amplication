@@ -152,3 +152,8 @@ export interface CreateBranchArgs {
 export interface Commit {
   sha: string;
 }
+
+export interface GitUser {
+  id: string;
+  login: string;
+}

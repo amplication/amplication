@@ -1,11 +1,11 @@
 import { GitProvider } from "../git-provider.interface.ts";
 import {
+  Branch,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
   EnumPullRequestMode,
   GetBranchArgs,
   GetRepositoriesArgs,
-  GetRepositoryArgs,
   GitProviderArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
@@ -25,12 +25,6 @@ export class GitClientService {
 
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
-  }
-
-  async getRepository(
-    getRepositoryArgs: GetRepositoryArgs
-  ): Promise<RemoteGitRepository> {
-    return this.provider.getRepository(getRepositoryArgs);
   }
 
   async getRepositories(
@@ -94,14 +88,14 @@ export class GitClientService {
         owner,
         repositoryName,
         branchName,
-      }),
-        await this.provider.createCommit({
-          owner,
-          repositoryName,
-          commitMessage,
-          branchName,
-          files: preparedFiles,
-        });
+      });
+      await this.provider.createCommit({
+        owner,
+        repositoryName,
+        commitMessage,
+        branchName,
+        files: preparedFiles,
+      });
       const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
@@ -125,15 +119,21 @@ export class GitClientService {
     }
   }
 
-  private async createBranchIfNotExists(args: GetBranchArgs) {
+  private async createBranchIfNotExists(args: GetBranchArgs): Promise<Branch> {
     const branch = await this.provider.getBranch(args);
     if (!branch) {
-      const { defaultBranch } = await this.getRepository(args);
+      const { defaultBranch } = await this.provider.getRepository(args);
       const { sha } = await this.provider.getFirstCommitOnBranch({
         ...args,
         branchName: defaultBranch,
       });
-      return this.provider.createBranch({ ...args, pointingSha: sha });
+      const branch = this.provider.createBranch({ ...args, pointingSha: sha });
+      const amplicationCommits = await this.provider.getCurrentUserCommitList({
+        ...args,
+        branchName: defaultBranch,
+      });
+
+      return branch;
     }
     return branch;
   }

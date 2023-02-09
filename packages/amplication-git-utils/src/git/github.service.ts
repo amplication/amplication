@@ -10,7 +10,9 @@ import {
 } from "octokit-plugin-create-pull-request/dist-types/types";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
+  GitUser,
   Branch,
+  Commit,
   CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestForBranchArgs,
@@ -59,6 +61,121 @@ export class GithubService implements GitProvider {
       appId: this.appId,
       privateKey,
     });
+  }
+  async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
+    const { branchName, owner, repositoryName } = args;
+    const currentUserData = await this.getCurrentUser();
+
+    let moreCommitsPagination = true;
+    let commitsList: Commit[] = [];
+    let cursor: string | undefined = undefined;
+
+    do {
+      const { commits, hasNextPage, endCursor } =
+        await this.paginatedCommitsList({
+          botData: currentUserData,
+          branchName,
+          owner,
+          repositoryName,
+          cursor,
+        });
+      moreCommitsPagination = hasNextPage;
+      commitsList = commitsList.concat(commits); // The list is in ascending order ( newest commits are first )
+      cursor = endCursor;
+    } while (moreCommitsPagination);
+
+    return commitsList;
+  }
+
+  private async paginatedCommitsList(
+    args: GetBranchArgs & {
+      cursor: string | undefined;
+      botData: GitUser;
+    }
+  ): Promise<{ commits: Commit[]; hasNextPage: boolean; endCursor: string }> {
+    const { branchName, owner, repositoryName, cursor, botData } = args;
+
+    const data: {
+      repository: {
+        ref: {
+          target: {
+            history: {
+              nodes: {
+                oid: string;
+              }[];
+              pageInfo: {
+                hasNextPage: boolean;
+                endCursor: string;
+              };
+            };
+          };
+        };
+      };
+    } = await this.octokit.graphql(
+      `query ($owner: String!, $repo: String!, $branch: String!, $author: ID!) {
+        repository(name: $repo, owner: $owner) {
+          ref(qualifiedName: $branch) {
+            target {
+              ... on Commit {
+                history(author:{id: $author},first:100 ${
+                  cursor ? `,after:"${cursor}"` : ""
+                }) {
+                  nodes {
+                    oid
+                  }
+                  pageInfo {
+                    hasNextPage
+                    endCursor
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`,
+      {
+        owner,
+        repo: repositoryName,
+        branch: branchName,
+        author: botData.id,
+      }
+    );
+    const {
+      repository: {
+        ref: {
+          target: {
+            history: {
+              nodes,
+              pageInfo: { endCursor, hasNextPage },
+            },
+          },
+        },
+      },
+    } = data;
+    return {
+      commits: nodes.map(({ oid }) => ({
+        sha: oid,
+      })),
+      hasNextPage,
+      endCursor,
+    };
+  }
+
+  async getCurrentUser(): Promise<GitUser> {
+    const data: { viewer: { id: string; login: string } } = await this.octokit
+      .graphql(`{
+      viewer{
+        id
+        login
+      }
+    }`);
+    const {
+      viewer: { id, login },
+    } = data;
+    return {
+      login,
+      id,
+    };
   }
 
   async init(): Promise<void> {

@@ -45,4 +45,5 @@ export interface GitProvider {
   getBranch: (args: GetBranchArgs) => Promise<Branch>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
   getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
+  getCurrentUserCommitList: (args: GetBranchArgs) => Promise<Commit[]>;
 }
