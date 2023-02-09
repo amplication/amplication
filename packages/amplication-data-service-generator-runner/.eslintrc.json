@@ -12,7 +12,7 @@
     "src/admin/public-files"
   ],
   "parserOptions": {
-    "project": "packages/data-service-generator/tsconfig.*?.json",
+    "project": "packages/amplication-data-service-generator-runner/tsconfig.*?.json",
     "sourceType": "module"
   },
   "overrides": [

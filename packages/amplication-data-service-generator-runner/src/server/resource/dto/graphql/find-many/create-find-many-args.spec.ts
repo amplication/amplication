@@ -5,7 +5,7 @@ import {
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../../../util/test-data";
 import { createWhereInput } from "../../create-where-input";
-import { createOrderByInput } from "../order-by-input/order-by-input";
+import { createOrderByInput } from "../../graphql/order-by-input/order-by-input";
 import {
   createFindManyArgs,
   createFindManyArgsId,
