@@ -5,8 +5,8 @@ import { CodeGenerationRequest } from "./types";
 function generateCode(req: Request, res: Response) {
   const { resourceId, buildId } = req.body as CodeGenerationRequest;
 
-  const imageName = "amplication/data-service-generator-runner";
-  const containerName = `dsg-runner-${buildId}`;
+  const imageName = "amplication/data-service-generator";
+  const containerName = `dsg-controller-${buildId}`;
 
   const {
     DSG_JOBS_BASE_FOLDER: dsgJogsBaseFolder,

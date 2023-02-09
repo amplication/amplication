@@ -1,4 +1,4 @@
-import { EnumEntityAction } from "./../../../models";
+import { EnumEntityAction } from "../../../models";
 import { print, readFile } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
