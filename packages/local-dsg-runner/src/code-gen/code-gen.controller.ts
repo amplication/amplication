@@ -27,7 +27,7 @@ function generateCode(req: Request, res: Response) {
       name: containerName,
       HostConfig: {
         Binds: [`${hostMachineDsgFolder}:${dockerDsgFolder}`],
-        AutoRemove: Boolean(autoRemove),
+        AutoRemove: Boolean(autoRemove === "true"),
       },
       Cmd: ["node", "./src/main.js"],
       Env: [
