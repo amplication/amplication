@@ -10,7 +10,7 @@ import {
 } from "octokit-plugin-create-pull-request/dist-types/types";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
-  AmplicationBotData,
+  GitUser,
   Branch,
   Commit,
   CreateBranchArgs,
@@ -64,7 +64,7 @@ export class GithubService implements GitProvider {
   }
   async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
     const { branchName, owner, repositoryName } = args;
-    const botData = await this.getAmplicationBotData();
+    const currentUserData = await this.getCurrentUser();
 
     let moreCommitsPagination = true;
     let commitsList: Commit[] = [];
@@ -73,7 +73,7 @@ export class GithubService implements GitProvider {
     do {
       const { commits, hasNextPage, endCursor } =
         await this.paginatedCommitsList({
-          botData,
+          botData: currentUserData,
           branchName,
           owner,
           repositoryName,
@@ -90,7 +90,7 @@ export class GithubService implements GitProvider {
   private async paginatedCommitsList(
     args: GetBranchArgs & {
       cursor: string | undefined;
-      botData: AmplicationBotData;
+      botData: GitUser;
     }
   ): Promise<{ commits: Commit[]; hasNextPage: boolean; endCursor: string }> {
     const { branchName, owner, repositoryName, cursor, botData } = args;
@@ -161,7 +161,7 @@ export class GithubService implements GitProvider {
     };
   }
 
-  async getAmplicationBotData(): Promise<AmplicationBotData> {
+  async getCurrentUser(): Promise<GitUser> {
     const data: { viewer: { id: string; login: string } } = await this.octokit
       .graphql(`{
       viewer{
