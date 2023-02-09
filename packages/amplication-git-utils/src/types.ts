@@ -153,7 +153,7 @@ export interface Commit {
   sha: string;
 }
 
-export interface AmplicationBotData {
+export interface GitUser {
   id: string;
   login: string;
 }

@@ -131,7 +131,7 @@ export class GitClientService {
         branchName: defaultBranch,
       });
       const branch = this.provider.createBranch({ ...args, pointingSha: sha });
-      const amplicationCommits = await this.provider.getMyCommitsList({
+      const amplicationCommits = await this.provider.getCurrentUserCommitList({
         ...args,
         branchName: defaultBranch,
       });
