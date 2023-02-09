@@ -41,7 +41,7 @@ export default async function generateCode(
     await dynamicPackagesInstallations(allPlugins, defaultLogger);
 
     const modules = await createDataService(
-      resourceData,
+      { ...resourceData, pluginInstallations: allPlugins },
       defaultLogger,
       join(__dirname, "..", AMPLICATION_MODULES)
     );
