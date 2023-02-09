@@ -62,7 +62,7 @@ export class GithubService implements GitProvider {
       privateKey,
     });
   }
-  async getMyCommitsList(args: GetBranchArgs): Promise<Commit[]> {
+  async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
     const { branchName, owner, repositoryName } = args;
     const botData = await this.getAmplicationBotData();
 
