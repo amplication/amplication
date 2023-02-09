@@ -128,6 +128,64 @@ $select-menu-max-width: 300px;
     }
   }
 
+  &__help_popover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .select-menu__summary.amp-button.amp-button--text {
+      color: var(--black80);
+      &.highlight,
+      &:hover,
+      &:focus,
+      &:active {
+        color: var(--black100);
+      }
+    }
+
+    .select-menu {
+      position: relative;
+    }
+    .select-menu__modal {
+      width: auto;
+      background-color: var(--black2);
+      border: $border-black30;
+      box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
+      border-radius: var(--default-border-radius);
+    }
+    .select-menu__modal > div {
+      width: auto;
+      border: none;
+      margin: 0;
+    }
+    .select-menu__list {
+      width: auto;
+    }
+    .select-menu__item {
+      width: auto;
+      flex-direction: row;
+      padding: 0;
+      &:hover {
+        .workspace-header__help_popover__name {
+          color: var(--black100);
+        }
+      }
+      &:first-child {
+        margin-top: var(--default-spacing-small);
+      }
+      margin-bottom: var(--default-spacing-small);
+      svg {
+        display: none !important;
+      }
+    }
+
+    &__name {
+      @include regular-12();
+      color: var(--black80);
+      white-space: nowrap;
+      padding: 2px var(--default-spacing-small);
+    }
+  }
+
   &__right {
     @include flexFullRowWithSpacingBothSides;
     padding: var(--default-spacing);
@@ -145,29 +203,12 @@ $select-menu-max-width: 300px;
 
   &__links {
     @include flexFullRowWithSpacingBothSides;
-    &__link {
-      @include regular-12();
-      color: var(--black80);
-      &:hover {
-        color: var(--black100);
-      }
-    }
   }
 
   &__upgrade__btn {
     &.amp-button--outline {
       border-radius: 5px !important;
     }
-  }
-
-  &__contact__btn {
-    color: var(--black80) !important;
-    margin: 0px;
-    padding: 0px;
-  }
-  &__contact__btn:hover {
-    background-color: transparent !important;
-    color: var(--black100) !important;
   }
 
   &__vertical_border {

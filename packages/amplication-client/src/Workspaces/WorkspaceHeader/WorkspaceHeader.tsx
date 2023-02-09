@@ -27,6 +27,20 @@ const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
+type HelpMenuItem = {
+  name: string;
+  url: string | null;
+};
+
+const HELP_MENU_LIST: HelpMenuItem[] = [
+  { name: "Docs", url: "https://docs.amplication.com" },
+  {
+    name: "Technical Support",
+    url: "https://discord.com/channels/757179260417867879/1063337571184279582",
+  },
+  { name: "Contact Us", url: null },
+];
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 const WorkspaceHeader: React.FC<{}> = () => {
   const {
@@ -243,21 +257,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
           >
             Upgrade
           </Button>
-          <Button
-            className={`${CLASS_NAME}__contact__btn`}
-            buttonStyle={EnumButtonStyle.Clear}
-            onClick={handleContactUsClick}
-          >
-            Contact Us
-          </Button>
-          <a
-            className={`${CLASS_NAME}__links__link`}
-            rel="noopener noreferrer"
-            href="https://docs.amplication.com"
-            target="_blank"
-          >
-            Docs
-          </a>
         </div>
         <hr className={`${CLASS_NAME}__vertical_border`} />
 
@@ -277,6 +276,40 @@ const WorkspaceHeader: React.FC<{}> = () => {
             </Tooltip>
           }
         />
+        <hr className={`${CLASS_NAME}__vertical_border`} />
+        <div className={`${CLASS_NAME}__help_popover`}>
+          <SelectMenu
+            title={"Help"}
+            buttonStyle={EnumButtonStyle.Text}
+            icon="chevron_down"
+            openIcon="chevron_up"
+            className={`${CLASS_NAME}__help_popover__menu`}
+          >
+            <SelectMenuModal align="right">
+              <SelectMenuList>
+                {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
+                  <SelectMenuItem
+                    closeAfterSelectionChange
+                    key={index}
+                    onSelectionChange={() => {
+                      route.url
+                        ? window.open(
+                            route.url,
+                            "_blank",
+                            "noopener noreferrer"
+                          )
+                        : handleContactUsClick();
+                    }}
+                  >
+                    <div className={`${CLASS_NAME}__help_popover__name`}>
+                      {route.name}
+                    </div>
+                  </SelectMenuItem>
+                ))}
+              </SelectMenuList>
+            </SelectMenuModal>
+          </SelectMenu>
+        </div>
         <hr className={`${CLASS_NAME}__vertical_border`} />
 
         <a className={`${CLASS_NAME}__user_badge_wrapper`} href="/user/profile">
