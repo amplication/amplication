@@ -1,17 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
-
-interface NpmVersion {
-  [versionNumber: string]: {
-    version: string;
-    name: string;
-    description: string;
-    dist: {
-      tarball: string;
-    };
-  };
-}
+import { NpmPackage, NpmVersion } from "./npm-response.types";
 
 @Injectable()
 export class NpmPluginVersionService {
@@ -21,7 +11,7 @@ export class NpmPluginVersionService {
    * @param pluginId
    * @returns
    */
-  structurePluginVersion(
+  private structurePluginVersion(
     npmVersions: NpmVersion,
     pluginId: string
   ): (PluginVersion & { tarballUrl: string })[] {
@@ -44,6 +34,16 @@ export class NpmPluginVersionService {
 
     return pluginVersions;
   }
+
+  private filterOutDeprecatedVersions(npmVersions: NpmVersion): NpmVersion {
+    return Object.entries(npmVersions).reduce((result, [key, value]) => {
+      if (!value.deprecated) {
+        result[key] = value;
+      }
+      return result;
+    }, {} as NpmVersion);
+  }
+
   /**
    * generator to fetch npm data for each plugin
    * @param plugins
@@ -64,12 +64,12 @@ export class NpmPluginVersionService {
         const npmResponse = await fetch(
           `https://registry.npmjs.org/${pluginNpmName}`
         );
-        const pluginNpmData = await npmResponse.json();
+        const pluginNpmData: NpmPackage = await npmResponse.json();
         if (!pluginNpmData.versions)
           throw `Plugin ${plugins[index].name} doesn't have npm versions`;
 
         const pluginVersionArr = this.structurePluginVersion(
-          pluginNpmData.versions,
+          this.filterOutDeprecatedVersions(pluginNpmData.versions),
           plugins[index].pluginId
         );
 
@@ -81,6 +81,7 @@ export class NpmPluginVersionService {
       // TODO add error handling
     }
   }
+
   /**
    * main service function trigger generator in for await loop for each plugin
    * @param plugins
