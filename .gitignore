@@ -54,8 +54,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-infra/tilt/.temp/**
-!infra/tilt/.temp/.gitkeep
 .temp
 
 # Next.js
@@ -66,4 +64,4 @@ src/schema.graphql
 **/prisma/generated-prisma-client
 .tsbuildinfo
 
-.nx-container
+.nx-container/
