@@ -22,7 +22,7 @@ RUN apt-get update \
 
 WORKDIR /workspace/packages/${user}
 
-COPY ./dist/packages/amplication-${component} .
+COPY ./dist/packages/${component} .
 
 RUN npm install --omit-dev
 
