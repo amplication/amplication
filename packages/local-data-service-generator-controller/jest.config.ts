@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: "local-dsg-runner",
+  displayName: "local-data-service-generator-controller",
   preset: "../../jest.preset.js",
   globals: {
     "ts-jest": {
@@ -12,5 +12,6 @@ export default {
     "^.+\\.[tj]s$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "html"],
-  coverageDirectory: "../../coverage/packages/local-dsg-runner",
+  coverageDirectory:
+    "../../coverage/packages/local-data-service-generator-controller",
 };
