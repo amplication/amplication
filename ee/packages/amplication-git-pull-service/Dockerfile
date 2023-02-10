@@ -33,4 +33,4 @@ USER ${user}
 ENV PORT=3333
 EXPOSE $PORT
 
-ENTRYPOINT ["node", "./main.js"]
+ENTRYPOINT [ "node", "./main.js" ]
