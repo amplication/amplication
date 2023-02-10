@@ -15,6 +15,9 @@ export default {
     "!**/*.e2e-spec.{ts,tsx}",
     "!**/node_modules/**",
   ],
+  fakeTimers: {
+    doNotFake: ["fast-glob"],
+  },
   modulePathIgnorePatterns: [
     "lint",
     "generated",

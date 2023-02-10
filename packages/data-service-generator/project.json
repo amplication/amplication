@@ -61,8 +61,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/data-service-generator"],
       "options": {
-        "jestConfig": "packages/data-service-generator/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "packages/data-service-generator/jest.config.ts"
       }
     },
     "e2e": {
