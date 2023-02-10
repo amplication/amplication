@@ -1,0 +1,113 @@
+{
+  "name": "data-service-generator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/data-service-generator/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/data-service-generator",
+        "main": "packages/data-service-generator/src/main.ts",
+        "tsConfig": "packages/data-service-generator/tsconfig.app.json",
+        "assets": [
+          "**/*.template.env",
+          {
+            "glob": "**/*.template.(ts|env|json|yml)",
+            "input": "packages/data-service-generator/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "**/*.db.template.(yml)",
+            "input": "packages/data-service-generator/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "static/**",
+            "input": "packages/data-service-generator/src/server",
+            "output": "src/server"
+          },
+          {
+            "glob": "**/*.template.(ts|tsx|html|env|json)",
+            "input": "packages/data-service-generator/src/admin",
+            "output": "src/admin"
+          },
+          {
+            "glob": "static/**",
+            "input": "packages/data-service-generator/src/admin",
+            "output": "src/admin"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/data-service-generator/src/**/*"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/data-service-generator"],
+      "options": {
+        "jestConfig": "packages/data-service-generator/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "e2e": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/data-service-generator"],
+      "options": {
+        "jestConfig": "packages/data-service-generator/test/jest-e2e.config.ts",
+        "passWithNoTests": false
+      }
+    },
+    "generate-example-input-json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./scripts/create-input-json.ts",
+        "cwd": "packages/data-service-generator",
+        "envFile": "packages/data-service-generator/.env"
+      }
+    },
+    "generate-local-code": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts ",
+        "cwd": "packages/data-service-generator",
+        "envFile": "packages/data-service-generator/.env"
+      },
+      "dependsOn": ["generate-example-input-json"]
+    },
+    "update-snapshot": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/tests/__snapshots__"],
+      "options": {
+        "commands": ["jest -u src/tests/*.spec.ts", "jest -u src/tests/server"],
+        "parallel": false,
+        "cwd": "packages/data-service-generator"
+      }
+    },
+    "docker:build": {
+      "executor": "@nx-tools/nx-docker:build",
+      "dependsOn": ["build"],
+      "options": {
+        "push": false,
+        "tags": ["amplication/data-service-generator-runner:latest"],
+        "build-args": ["GIT_REF=latest-local-unicorn-🦄"]
+      }
+    }
+  },
+  "tags": []
+}
