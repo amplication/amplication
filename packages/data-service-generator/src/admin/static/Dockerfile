@@ -28,7 +28,7 @@ FROM nginx:1.22-alpine AS production
 
 # copy over the bundled code from the build stage
 COPY --from=base /app/build /usr/share/nginx/html
-COPY --from=base /app/config/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=base /app/configuration/nginx.conf /etc/nginx/conf.d/default.conf
 
 # create a new process indication file
 RUN touch /var/run/nginx.pid
