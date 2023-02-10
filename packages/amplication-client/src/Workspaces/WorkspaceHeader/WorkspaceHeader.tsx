@@ -290,16 +290,17 @@ const WorkspaceHeader: React.FC<{}> = () => {
                 {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
                   <SelectMenuItem
                     closeAfterSelectionChange
-                    key={index}
                     onSelectionChange={() => {
-                      route.url
-                        ? window.open(
-                            route.url,
-                            "_blank",
-                            "noopener noreferrer"
-                          )
-                        : handleContactUsClick();
+                      !route.url && handleContactUsClick();
                     }}
+                    key={index}
+                    {...(route.url
+                      ? {
+                          rel: "noopener noreferrer",
+                          href: route.url,
+                          target: "_blank",
+                        }
+                      : {})}
                   >
                     <div className={`${CLASS_NAME}__help_popover__name`}>
                       {route.name}
