@@ -65,3 +65,5 @@ infra/tilt/.temp/**
 src/schema.graphql
 **/prisma/generated-prisma-client
 .tsbuildinfo
+
+.nx-container
