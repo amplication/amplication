@@ -39,6 +39,7 @@ const CreateResourceButtonItem = ({ item }: props) => {
     <SelectMenuItem
       closeAfterSelectionChange
       onSelectionChange={handleSelectItem}
+      as="span"
     >
       <Link
         onClick={handleClick}
