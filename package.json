@@ -175,7 +175,7 @@
     "@nrwl/web": "15.3.3",
     "@nrwl/webpack": "15.3.3",
     "@nrwl/workspace": "15.3.3",
-    "@nx-tools/nx-docker": "^3.0.4",
+    "@nx-tools/nx-container": "^4.0.3",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@svgr/webpack": "^6.1.2",
     "@testing-library/react": "13.3.0",

@@ -43,12 +43,12 @@ async function createServerInternal(
   const dtos = await createDTOs(context.entities);
   context.DTOs = dtos;
 
-  const { DSG_VERSION: dsgVersion } = process.env;
+  const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
 
-  logger.info(`Running DSG Version: ${dsgVersion}`);
+  logger.info(`Running DSG Version: ${gitRefName} <${gitSha}>`);
   await createLog({
     level: "info",
-    message: `Running DSG Version: ${dsgVersion}`,
+    message: `Running DSG Version: ${gitRefName} <${gitSha.substring(0, 6)}>`,
   });
 
   await createLog({

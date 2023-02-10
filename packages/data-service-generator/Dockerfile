@@ -11,5 +11,7 @@ WORKDIR /workspace/packages/data-service-generator
 COPY ./dist/packages/data-service-generator .
 RUN npm i --omit-dev
 
-ENV DSG_VERSION="${GIT_REF_NAME}, ${GIT_SHA}"
-RUN echo "branch: ${GIT_REF_NAME}, sha: ${GIT_SHA}"
+ENV GIT_REF_NAME=${GIT_REF_NAME}
+ENV GIT_SHA=${GIT_SHA}
+
+RUN echo "GIT_REF_NAME: ${GIT_REF_NAME}, GIT_SHA: ${GIT_SHA}"
