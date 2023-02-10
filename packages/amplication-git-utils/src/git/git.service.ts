@@ -1,3 +1,4 @@
+import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
@@ -35,7 +36,7 @@ export class GitClientService {
 
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
-  ): Promise<RemoteGitRepository> {
+  ): Promise<RemoteGitRepository | null> {
     return this.provider.createRepository(createRepositoryArgs);
   }
 
@@ -117,6 +118,8 @@ export class GitClientService {
       }
       return existingPullRequest.url;
     }
+
+    throw new InvalidPullRequestMode();
   }
 
   private async createBranchIfNotExists(args: GetBranchArgs): Promise<Branch> {
@@ -146,8 +149,10 @@ export class GitClientService {
           owner,
           repositoryName,
           path: fileName,
-          baseBranchName: undefined, // take the default branch
         });
+        if (!file) {
+          return "";
+        }
         const { content, htmlUrl, name } = file;
         console.log(`Got ${name} file ${htmlUrl}`);
         return content;

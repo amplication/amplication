@@ -51,8 +51,17 @@ export class GithubService implements GitProvider {
       GITHUB_APP_APP_ID,
       GITHUB_APP_PRIVATE_KEY,
     } = process.env;
+    if (!GITHUB_APP_INSTALLATION_URL) {
+      throw new Error("GITHUB_APP_INSTALLATION_URL is not defined");
+    }
     this.gitInstallationUrl = GITHUB_APP_INSTALLATION_URL;
+    if (!GITHUB_APP_APP_ID) {
+      throw new Error("GITHUB_APP_APP_ID is not defined");
+    }
     this.appId = GITHUB_APP_APP_ID;
+    if (!GITHUB_APP_PRIVATE_KEY) {
+      throw new Error("GITHUB_APP_PRIVATE_KEY is not defined");
+    }
     this.privateKey = GITHUB_APP_PRIVATE_KEY;
 
     const privateKey = this.getFormattedPrivateKey(this.privateKey);
@@ -266,20 +275,29 @@ export class GithubService implements GitProvider {
     getRepositoriesArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
     const { owner, repositoryName } = getRepositoriesArgs;
-    const {
-      data: {
-        permissions: { admin },
-        url,
-        private: isPrivate,
-        name,
-        full_name: fullName,
-        default_branch: defaultBranch,
-      },
-    } = await this.octokit.rest.repos.get({
+    const { data } = await this.octokit.rest.repos.get({
       owner,
       repo: repositoryName,
     });
-
+    const {
+      permissions,
+      url,
+      private: isPrivate,
+      name,
+      full_name: fullName,
+      default_branch: defaultBranch,
+    } = data;
+    const baseRepository = {
+      defaultBranch,
+      fullName,
+      name,
+      private: isPrivate,
+      url,
+    };
+    if (!permissions) {
+      return { ...baseRepository, admin: false };
+    }
+    const { admin } = permissions;
     return {
       admin,
       defaultBranch,
@@ -299,7 +317,7 @@ export class GithubService implements GitProvider {
 
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
-  ): Promise<RemoteGitRepository> {
+  ): Promise<RemoteGitRepository | null> {
     const { gitOrganization, owner, repositoryName, isPrivateRepository } =
       createRepositoryArgs;
 
@@ -356,14 +374,24 @@ export class GithubService implements GitProvider {
       ),
     });
     const { data: gitRemoteOrgs } = gitRemoteOrganization;
-
+    const { account } = gitRemoteOrgs;
+    if (!account) {
+      throw new Error("Account not found");
+    }
+    const { login, type } = account;
+    if (!type) {
+      throw new Error("Account type not found");
+    }
+    if (!login) {
+      throw new Error("Account login not found");
+    }
     return {
-      name: gitRemoteOrgs.account.login,
-      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type],
+      name: login,
+      type: EnumGitOrganizationType[type],
     };
   }
 
-  async getFile(file: GetFileArgs): Promise<GitFile> {
+  async getFile(file: GetFileArgs): Promise<GitFile | null> {
     const { owner, repositoryName, path, baseBranchName } = file;
 
     const content = await this.octokit.rest.repos.getContent({
@@ -375,7 +403,9 @@ export class GithubService implements GitProvider {
 
     if (!Array.isArray(content)) {
       const item = content.data as DirectoryItem;
-
+      if (!item.content) {
+        return null;
+      }
       if (item.type === GITHUB_FILE_TYPE) {
         // Convert base64 results to UTF-8 string
         const buff = Buffer.from(item.content, "base64");
@@ -429,6 +459,9 @@ export class GithubService implements GitProvider {
         },
       ],
     });
+    if (pr === null) {
+      throw new Error("We had a problem creating the pull request");
+    }
     return pr.data.html_url;
   }
 
@@ -459,6 +492,10 @@ export class GithubService implements GitProvider {
       lastCommit.commit.tree.sha,
       gitHubFils
     );
+
+    if (lastTreeSha === null) {
+      throw new Error("Missing tree sha");
+    }
 
     console.info(`Created tree for for ${owner}/${repositoryName}`);
 
@@ -691,6 +728,10 @@ export class GithubService implements GitProvider {
   ) {
     const branch = await this.getBranch({ owner, repositoryName, branchName });
 
+    if (!branch) {
+      throw new Error("Branch not found");
+    }
+
     console.log(
       `Got branch ${owner}/${repositoryName}/${branch.name} with sha ${branch.sha}`
     );
@@ -713,6 +754,9 @@ export class GithubService implements GitProvider {
     latestCommitTreeSha: string,
     changes: Required<Changes["files"]>
   ): Promise<string | null> {
+    if (changes === undefined) {
+      throw new Error("Missing changes");
+    }
     const tree = (
       await Promise.all(
         Object.keys(changes).map(async (path) => {
@@ -844,7 +888,7 @@ export class GithubService implements GitProvider {
     return files.reduce((acc, file) => {
       acc[file.path] = file.content;
       return acc;
-    }, {} as Required<Changes["files"]>);
+    }, {} as Omit<Required<Changes["files"]>, "undefined">);
   }
 }
 
