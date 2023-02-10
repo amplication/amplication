@@ -10,7 +10,6 @@ import { DataConflictError } from "../../errors/DataConflictError";
 import { Prisma, PrismaService } from "../../prisma";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { camelCase } from "camel-case";
-import difference from "@extra-set/difference";
 import { isEmpty, pick, last, head, omit, isEqual } from "lodash";
 import {
   Entity,
@@ -1201,7 +1200,7 @@ export class EntityService {
 
     const matchingNames = new Set(matchingFields.map(({ name }) => name));
 
-    return difference(uniqueNames, matchingNames);
+    return new Set([...uniqueNames].filter((x) => !matchingNames.has(x)));
   }
 
   async updateEntityPermission(

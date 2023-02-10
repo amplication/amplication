@@ -1,18 +1,20 @@
-import { EnumPullRequestMode, GitService } from "@amplication/git-utils";
+import {
+  EnumPullRequestMode,
+  GitClientService,
+  File,
+} from "@amplication/git-utils";
 import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
 import { Inject, Injectable } from "@nestjs/common";
 import { DiffService } from "../diff/diff.service";
-import { PrModule } from "../types";
 import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 
 @Injectable()
 export class PullRequestService {
   constructor(
     private readonly diffService: DiffService,
-    protected readonly gitService: GitService,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
     private readonly logger: AmplicationLogger
   ) {}
@@ -21,11 +23,11 @@ export class PullRequestService {
     resourceId,
     oldBuildId,
     newBuildId,
+    installationId,
+    gitProvider,
     gitOrganizationName: owner,
     gitRepositoryName: repo,
-    installationId,
     commit,
-    gitProvider,
     gitResourceMeta,
     pullRequestMode,
   }: CreatePullRequestArgs): Promise<string> {
@@ -44,27 +46,26 @@ export class PullRequestService {
       "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
-
-    const prUrl = await this.gitService.createPullRequest(
-      pullRequestMode,
-      gitProvider,
-      owner,
-      repo,
-      PullRequestService.removeFirstSlashFromPath(changedFiles),
-      head,
-      title,
-      body,
+    const gitClientService = await new GitClientService().create({
+      provider: gitProvider,
       installationId,
-      head,
-      gitResourceMeta
-    );
+    });
+    const prUrl = await gitClientService.createPullRequest({
+      owner,
+      repositoryName: repo,
+      branchName: head,
+      commitMessage: commit.body,
+      pullRequestTitle: title,
+      pullRequestBody: body,
+      pullRequestMode,
+      gitResourceMeta,
+      files: PullRequestService.removeFirstSlashFromPath(changedFiles),
+    });
     this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
 
-  private static removeFirstSlashFromPath(
-    changedFiles: PrModule[]
-  ): PrModule[] {
+  private static removeFirstSlashFromPath(changedFiles: File[]): File[] {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });

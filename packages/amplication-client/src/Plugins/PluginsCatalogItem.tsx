@@ -56,7 +56,8 @@ function PluginsCatalogItem({
   }, [onOrderChange, order, pluginInstallation]);
 
   const handleInstall = useCallback(() => {
-    onInstall && onInstall(plugin, plugin.versions[0]);
+    const lastVersion = plugin.versions[plugin.versions.length - 1];
+    onInstall && onInstall(plugin, lastVersion);
   }, [onInstall, plugin]);
 
   const handleEnableStateChange = useCallback(() => {
@@ -96,7 +97,6 @@ function PluginsCatalogItem({
               <Button
                 className={`${CLASS_NAME}__install`}
                 buttonStyle={EnumButtonStyle.Secondary}
-                disabled
               >
                 Settings
               </Button>

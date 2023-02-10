@@ -29,13 +29,13 @@ export class BuildRunnerController {
         dto.resourceId,
         dto.buildId
       );
-      this.queueService.emitMessage(
+      await this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
         JSON.stringify({ buildId: dto.buildId })
       );
     } catch (error) {
       console.error(error);
-      this.queueService.emitMessage(
+      await this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
         JSON.stringify({ buildId: dto.buildId, error })
       );
@@ -47,7 +47,7 @@ export class BuildRunnerController {
     @Payload() dto: CodeGenerationFailure
   ): Promise<void> {
     try {
-      this.queueService.emitMessage(
+      await this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
         JSON.stringify({ buildId: dto.buildId, error: dto.error })
       );
@@ -76,7 +76,7 @@ export class BuildRunnerController {
       });
     } catch (error) {
       console.error(error);
-      this.queueService.emitMessage(
+      await this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
         JSON.stringify({ buildId: args?.buildId, error })
       );
