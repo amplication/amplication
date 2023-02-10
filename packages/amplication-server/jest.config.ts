@@ -11,6 +11,7 @@ export default {
   transform: {
     "^.+\\.[tj]s$": "ts-jest",
   },
+  timers: "fake",
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/amplication-server",
 };
