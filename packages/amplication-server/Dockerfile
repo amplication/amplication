@@ -1,4 +1,15 @@
+ARG GIT_REF_NAME
+ARG GIT_SHA
+
 FROM node:18.13.0-slim AS production
+
+ARG GIT_REF_NAME
+ARG GIT_SHA
+
+ENV GIT_REF_NAME=${GIT_REF_NAME}
+ENV GIT_SHA=${GIT_SHA}
+
+RUN echo "GIT_REF_NAME: ${GIT_REF_NAME}, GIT_SHA: ${GIT_SHA}"
 
 ARG component=server
 ARG user=${component}
