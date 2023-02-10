@@ -105,7 +105,7 @@
       "options": {
         "push": false,
         "tags": ["amplication/data-service-generator:latest"],
-        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=🦄-sha"]
       },
       "configurations": {
         "production": {
