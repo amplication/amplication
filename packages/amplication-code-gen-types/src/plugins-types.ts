@@ -96,6 +96,9 @@ export enum EventNames {
   CreateEntityResolverBase = "CreateEntityResolverBase",
   CreateSwagger = "CreateSwagger",
   CreateSeed = "CreateSeed",
+  CreateEntityControllerToManyRelationMethods = "CreateEntityControllerToManyRelationMethods",
+  CreateEntityResolverToManyRelationMethods = "CreateEntityResolverToManyRelationMethods",
+  CreateEntityResolverToOneRelationMethods = "CreateEntityResolverToOneRelationMethods",
 }
 
 export interface AmplicationPlugin {
