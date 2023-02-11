@@ -26,6 +26,10 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
+  async createConsumerApp(): Promise<string> {
+    return this.provider.createConsumerApp();
+  }
+
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {

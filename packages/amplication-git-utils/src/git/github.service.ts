@@ -68,6 +68,12 @@ export class GithubService implements GitProvider {
     }
   }
 
+  async createConsumerApp(): Promise<string> {
+    return Promise.resolve(
+      `Not implemented for ${this.gitProviderArgs.provider} provider`
+    );
+  }
+
   private getFormattedPrivateKey(privateKey: string): string {
     return privateKey.replace(/\\n/g, "\n");
   }

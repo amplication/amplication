@@ -16,6 +16,7 @@ export enum EnumGitProvider {
 export interface GitProviderArgs {
   provider: EnumGitProvider;
   installationId: string | null;
+  code?: string | null;
 }
 
 export interface RemoteGitOrganization {
@@ -145,6 +146,7 @@ export interface CreateCommitArgs {
 
 export interface GitProvider {
   init(): Promise<void>;
+  createConsumerApp(): Promise<string>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
