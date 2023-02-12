@@ -1,7 +1,7 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
-import { CircleBadge, Label } from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
-import React, { useCallback, useContext, useState } from "react";
+import { CircleBadge } from "@amplication/design-system";
+import { gql } from "@apollo/client";
+import React, { useContext } from "react";
 import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
@@ -19,15 +19,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { TopicsTile } from "./TopicsTile";
 import { ServicesTile } from "./ServicesTile";
-import { Field, Form, Formik } from "formik";
-import FormikAutoSave from "../util/formikAutoSave";
-import { useTracking } from "../util/analytics";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
-import * as models from "../models";
-import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
-import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
-import { Icon } from "@amplication/design-system";
-import { validate } from "../util/formikValidateJsonSchema";
+import ResourceNameField from "./ResourceNameField";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -37,66 +29,11 @@ type Props = AppRouteProps & {
   }>;
 };
 
-type TData = {
-  updateResource: models.Resource;
-};
-
-const SYMBOL_REGEX = "^[a-zA-Z0-9\\s]+$";
-const FORM_SCHEMA = {
-  required: ["name"],
-  properties: {
-    name: {
-      type: "string",
-      minLength: 2,
-      pattern: SYMBOL_REGEX,
-    },
-  },
-};
-
 const CLASS_NAME = "resource-home";
 
 const ResourceHome = ({ match, innerRoutes }: Props) => {
   const resourceId = match.params.resource;
   const { currentResource } = useContext(AppContext);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showTick, setShowTick] = useState(false);
-
-  const { trackEvent } = useTracking();
-  const [updateResource] = useMutation<TData>(UPDATE_RESOURCE, {
-    refetchQueries: [
-      {
-        query: GET_PROJECTS,
-      },
-    ],
-  });
-  const handleBlur = (isValid: boolean) => {
-    if (isValid) {
-      setIsEditing(false);
-      setShowTick(false);
-    }
-  };
-
-  const handleSubmit = useCallback(
-    (data) => {
-      const { name } = data;
-      trackEvent({
-        eventName: AnalyticsEventNames.ResourceInfoUpdate,
-      });
-      updateResource({
-        variables: {
-          data: {
-            name,
-          },
-          resourceId: resourceId,
-        },
-      }).catch(console.error);
-      setShowTick(true);
-      setTimeout(() => {
-        setShowTick(false);
-      }, 3000);
-    },
-    [updateResource, resourceId, trackEvent]
-  );
 
   return (
     <>
@@ -114,60 +51,10 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
           >
-            <div className={`${CLASS_NAME}__header__input__container`}>
-              <Formik
-                initialValues={{ name: currentResource?.name }}
-                validate={(values: models.Resource) =>
-                  validate(values, FORM_SCHEMA)
-                }
-                enableReinitialize
-                onSubmit={handleSubmit}
-              >
-                {({ errors, isValid }) => {
-                  return (
-                    <div className={`${CLASS_NAME}__header__form`}>
-                      {isEditing ? (
-                        <Form>
-                          <FormikAutoSave debounceMS={1000} />
-                          <Field
-                            autoFocus={true}
-                            className={`${CLASS_NAME}__header__input`}
-                            name="name"
-                            as="input"
-                            onBlur={() => handleBlur(isValid)}
-                          />
-                          {isValid ? (
-                            showTick && (
-                              <Icon
-                                className={`${CLASS_NAME}__header__saved`}
-                                icon={"check"}
-                                size="medium"
-                              />
-                            )
-                          ) : (
-                            <Icon
-                              icon="info_circle"
-                              size="small"
-                              className={`${CLASS_NAME}__invalid`}
-                            />
-                          )}
-                        </Form>
-                      ) : (
-                        <span
-                          className={`${CLASS_NAME}__header__text`}
-                          onClick={() => setIsEditing(true)}
-                        >
-                          {currentResource?.name}
-                        </span>
-                      )}
-                      {!isValid && (
-                        <Label text={errors.name.toString()} type="error" />
-                      )}
-                    </div>
-                  );
-                }}
-              </Formik>
-            </div>
+            <ResourceNameField
+              currentResource={currentResource}
+              resourceId={resourceId}
+            />
             <CircleBadge
               name={currentResource?.name || ""}
               color={
