@@ -13,6 +13,8 @@ import { EnumBlockType } from "../src/enums/EnumBlockType";
 import { PluginOrder } from "../src/core/pluginInstallation/dto/PluginOrder";
 import { PluginOrderItem } from "../src/core/pluginInstallation/dto/PluginOrderItem";
 import { PluginInstallation } from "../src/core/pluginInstallation/dto/PluginInstallation";
+import { ServiceSettings } from "../src/core/serviceSettings/dto";
+import { EnumAuthProviderType } from "../src/core/serviceSettings/dto/EnumAuthenticationProviderType";
 
 const CURRENT_VERSION_NUMBER = 0;
 const client = new PrismaClient();
@@ -82,6 +84,32 @@ async function main() {
     await migrateChunk(chunk);
   }
 
+  function isPluginExist(
+    plugins: PluginInstallation[],
+    authProvider: string
+  ): boolean {
+    const plugin = plugins.find(
+      (plugin) => plugin.pluginId.trim() == authProvider
+    );
+
+    if (plugin) return true;
+    return false;
+  }
+
+  function isAuthStrategyPluginExist(
+    plugins: PluginInstallation[],
+    authPluginNames: string[]
+  ): boolean {
+    const results = plugins.filter((plugin) => {
+      return (
+        plugin.pluginId ===
+        authPluginNames.find((name) => name === plugin.pluginId)
+      );
+    });
+
+    if (results.length > 0) return true;
+    return false;
+  }
   async function migrateChunk(chunk: Resource[]) {
     const promises = chunk.map(async (resource) => {
       const resourceInstallations =
@@ -90,31 +118,69 @@ async function main() {
           EnumBlockType.PluginInstallation
         );
 
-      const isAuthPluginExist = resourceInstallations.find(
-        (plugin) => plugin.pluginId.trim() == "auth-core"
+      const isAuthPluginExist = isPluginExist(
+        resourceInstallations,
+        "auth-core"
       );
 
-      if (isAuthPluginExist) return;
+      const isAuthStrategyPluginInstalled = isAuthStrategyPluginExist(
+        resourceInstallations,
+        ["auth-basic", "auth-jwt"]
+      );
 
-      const newPlugin = await createPluginInstallation({
-        data: {
-          displayName: "Auth-core",
-          enabled: true,
-          npm: "@amplication/plugin-auth-core",
-          pluginId: "auth-core",
-          settings: {},
-          version: "latest",
-          resource: {
-            connect: {
-              id: resource.id,
+      if (isAuthPluginExist && isAuthStrategyPluginInstalled) return;
+
+      if (!isAuthPluginExist) {
+        const newPlugin = await createPluginInstallation({
+          data: {
+            displayName: "Auth-core",
+            enabled: true,
+            npm: "@amplication/plugin-auth-core",
+            pluginId: "auth-core",
+            settings: {},
+            version: "latest",
+            resource: {
+              connect: {
+                id: resource.id,
+              },
             },
           },
-        },
-      });
+        });
+        console.log({ newPlugin });
 
-      console.log({ newPlugin });
+        await setOrder(newPlugin.id);
+      }
 
-      await setOrder(newPlugin.id);
+      if (!isAuthStrategyPluginInstalled) {
+        const [serviceSettings] = await findManyByBlockType<ServiceSettings>(
+          resource.id,
+          EnumBlockType.ServiceSettings
+        );
+
+        const pluginName =
+          serviceSettings.authProvider === EnumAuthProviderType.Http
+            ? "basic"
+            : "jwt";
+
+        const AuthStrategyPlugin = await createPluginInstallation({
+          data: {
+            displayName: `Auth-${pluginName}`,
+            enabled: true,
+            npm: `@amplication/plugin-auth-${pluginName}`,
+            pluginId: `auth-${pluginName}`,
+            settings: {},
+            version: "latest",
+            resource: {
+              connect: {
+                id: resource.id,
+              },
+            },
+          },
+        });
+        console.log({ AuthStrategyPlugin });
+
+        await setOrder(AuthStrategyPlugin.id);
+      }
     });
 
     await Promise.all(promises);
