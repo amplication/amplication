@@ -16,7 +16,6 @@ export enum EnumGitProvider {
 export interface GitProviderArgs {
   provider: EnumGitProvider;
   installationId: string | null;
-  code?: string | null;
 }
 
 export interface RemoteGitOrganization {
