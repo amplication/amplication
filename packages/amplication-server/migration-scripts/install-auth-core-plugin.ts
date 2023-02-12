@@ -531,5 +531,3 @@ main().catch(console.error);
 
 // Execute from bash
 // $ POSTGRESQL_URL=postgres://[user]:[password]@127.0.0.1:5432/app-database npx ts-node install-auth-core-plugin.ts
-
-// $ POSTGRESQL_URL=postgresql://admin:admin@localhost:5432/amplication npx ts-node migration-scripts/install-auth-core-plugin.ts
