@@ -1,3 +1,5 @@
+import { RepositoryClone } from "./git/RepositoryClone";
+
 export enum EnumPullRequestMode {
   Basic = "Basic",
   Accumulative = "Accumulative",
@@ -142,6 +144,13 @@ export interface GetBranchArgs {
   branchName: string;
 }
 
+export interface CreateBranchIfNotExistsArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+  clone: RepositoryClone;
+}
+
 export interface CreateBranchArgs {
   owner: string;
   repositoryName: string;
@@ -156,4 +165,11 @@ export interface Commit {
 export interface GitUser {
   id: string;
   login: string;
+}
+
+export interface CherryPickCommitsArgs {
+  commits: Commit[];
+  clone: RepositoryClone;
+  branchName: string;
+  firstCommitOnDefaultBranch: Commit;
 }

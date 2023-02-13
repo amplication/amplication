@@ -2,10 +2,12 @@ import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
+  CherryPickCommitsArgs,
+  CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
+  EnumGitProvider,
   EnumPullRequestMode,
-  GetBranchArgs,
   GetRepositoriesArgs,
   GitProviderArgs,
   RemoteGitOrganization,
@@ -15,12 +17,14 @@ import {
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitFactory } from "./git-factory";
+import { RepositoryClone } from "./RepositoryClone";
 
 export class GitClientService {
   private provider: GitProvider;
-
+  private providerName: EnumGitProvider;
   async create(gitProviderArgs: GitProviderArgs): Promise<GitClientService> {
     this.provider = await GitFactory.getProvider(gitProviderArgs);
+    this.providerName = gitProviderArgs.provider;
     return this;
   }
 
@@ -85,10 +89,17 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
+      const localRepository = new RepositoryClone({
+        owner,
+        provider: this.providerName,
+        repo: repositoryName,
+      });
+      await localRepository.init();
       await this.createBranchIfNotExists({
         owner,
         repositoryName,
         branchName,
+        clone: localRepository,
       });
       await this.provider.createCommit({
         owner,
@@ -122,23 +133,64 @@ export class GitClientService {
     throw new InvalidPullRequestMode();
   }
 
-  private async createBranchIfNotExists(args: GetBranchArgs): Promise<Branch> {
+  private async createBranchIfNotExists(
+    args: CreateBranchIfNotExistsArgs
+  ): Promise<Branch> {
+    const { branchName, owner, repositoryName, clone } = args;
     const branch = await this.provider.getBranch(args);
     if (!branch) {
       const { defaultBranch } = await this.provider.getRepository(args);
-      const { sha } = await this.provider.getFirstCommitOnBranch({
-        ...args,
-        branchName: defaultBranch,
+      const firstCommitOnDefaultBranch =
+        await this.provider.getFirstCommitOnBranch({
+          owner,
+          repositoryName,
+          branchName: defaultBranch,
+        });
+      const branch = await this.provider.createBranch({
+        owner,
+        branchName,
+        repositoryName,
+        pointingSha: firstCommitOnDefaultBranch.sha,
       });
-      const branch = this.provider.createBranch({ ...args, pointingSha: sha });
       const amplicationCommits = await this.provider.getCurrentUserCommitList({
-        ...args,
+        owner,
+        repositoryName,
         branchName: defaultBranch,
       });
-
+      await this.cherryPickCommits({
+        commits: amplicationCommits,
+        clone,
+        branchName,
+        firstCommitOnDefaultBranch,
+      });
       return branch;
     }
     return branch;
+  }
+
+  private async cherryPickCommits(args: CherryPickCommitsArgs) {
+    const { clone, commits, branchName, firstCommitOnDefaultBranch } = args;
+    await clone.git.fetch(["--all"]);
+    await clone.git.pull();
+    await clone.git.reset();
+    await clone.git.checkout(branchName);
+
+    for (let index = commits.length - 1; index >= 0; index--) {
+      const commit = commits[index];
+      if (firstCommitOnDefaultBranch.sha === commit.sha) {
+        continue;
+      }
+      await clone.git.raw([
+        `cherry-pick`,
+        "-m 1",
+        "--strategy=recursive",
+        "-X",
+        "theirs",
+        commit.sha,
+      ]);
+    }
+
+    await clone.git.push();
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {
