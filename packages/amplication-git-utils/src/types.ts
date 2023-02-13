@@ -145,7 +145,7 @@ export interface CreateCommitArgs {
 
 export interface GitProvider {
   init(): Promise<void>;
-  createConsumerApp(): Promise<string>;
+  getAuthByTemporaryCode(code: string): Promise<unknown>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs

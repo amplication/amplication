@@ -26,8 +26,8 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async createConsumerApp(): Promise<string> {
-    return this.provider.createConsumerApp();
+  async getAuthByTemporaryCode(code: string): Promise<unknown> {
+    return this.provider.getAuthByTemporaryCode(code);
   }
 
   async getRepository(

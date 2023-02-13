@@ -23,6 +23,7 @@ export class BitBucketService implements GitProvider {
   private clientSecret: string;
   private callbackUrl: string;
   private accessToken: string;
+  private refreshToken: string;
 
   constructor(private readonly gitProviderArgs: GitProviderArgs) {
     // TODO: move env variables to the server config
@@ -43,30 +44,31 @@ export class BitBucketService implements GitProvider {
   }
 
   async init(): Promise<void> {
-    this.accessToken = await this.createConsumerApp();
+    // this.accessToken = await this.createConsumerApp();
   }
 
-  async createConsumerApp(): Promise<string> {
-    const accessTokenUrl = "https://bitbucket.org/site/oauth2/access_token";
-    const authenticationUrl = `https://bitbucket.org/site/oauth2/authorize?client_id=${this.clientId}&response_type=code`;
-
+  async getAuthByTemporaryCode(code: string): Promise<unknown> {
+    const accessTokenUrl = " https://bitbucket.org/site/oauth2/access_token";
+    console.log("code", code);
     try {
-      const authResponse = await fetch(authenticationUrl);
-      const code = await authResponse.text();
-
       const request = await fetch(accessTokenUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${Buffer.from(
+            `${this.clientId}:${this.clientSecret}`
+          ).toString("base64")}`,
         },
-        body: `grant_type=authorization_code&code=${code}&redirect_uri=${this.callbackUrl}`,
+        body: `grant_type=authorization_code&code=${code}`,
       });
 
       const response = await request.json();
       // const accessToken = response.data.access_token;
-      console.log("accessToken", response);
-      // return accessToken;
-      return "accessToken";
+      console.log("accessToken", { response });
+
+      const { access_token, refreshToken } = response;
+
+      return { access_token, refreshToken };
     } catch (error) {
       // TODO: handle error
       console.log(error);
