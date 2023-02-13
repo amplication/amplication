@@ -11,9 +11,11 @@ body:
        Each new or updated feature must be accompanied by a Document Feature Request. 
        
        The information will be used by the technical writer to edit and curate the information for inclusion in the docs.
-       
+       <br/>
+       <br/>
+       <b>
        Important: Please provide raw data. You are not expected to provide a polished text. The tech writer will write and edit the content as required. 
-       
+       </b>
         <br clear='left'/>"
   - type: textarea
     attributes:
@@ -32,15 +34,15 @@ body:
         [Example:](https://docs.amplication.com/how-to/custom-code/#the-vision)"        
     validations:
       required: true
-  - type: textarea
+  - type: input
     attributes:
-      label: GitHub Issue  
+      label: Issue URL
       description: Link to the related issue.
     validations:
       required: true
-  - type: textarea
+  - type: input
     attributes:
-      label: GitHub Pull Request  
+      label: Pull Request URL
       description: Link to the related PR.
     validations:
       required: false
@@ -65,9 +67,9 @@ body:
       description: Add any code samples that are relevant to the user. If not relevant, write N/A.
     validations:
       required: true
-  - type: textarea
+  - type: input
     attributes:
-      label: Figma
+      label: Figma URL
       description: Add a link to any Figma diagrams that relate to the feature. If not relevant, write N/A.
     validations:
       required: true
