@@ -60,7 +60,8 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     {
       onCompleted: (data) => {
         openSignInWindow(
-          data.getGitResourceInstallationUrl.url,
+          data.getGitResourceInstallationUrl.url ||
+            "http://localhost:3001/amplication-test",
           "auth with git"
         );
       },
@@ -70,16 +71,30 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   const handleSelectRepoDialogOpen = useCallback(() => {
     setSelectRepoOpen(true);
   }, []);
-  const handleAuthWithGitClick = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.GitHubAuthResourceStart,
-    });
-    authWithGit({
-      variables: {
-        gitProvider: "Github",
-      },
-    }).catch(console.error);
-  }, [authWithGit, trackEvent]);
+
+  const handleAuthWithGitClick = (provider: EnumGitProvider) => {
+    if (provider === EnumGitProvider.Github) {
+      trackEvent({
+        eventName: AnalyticsEventNames.GitHubAuthResourceStart,
+      });
+      authWithGit({
+        variables: {
+          gitProvider: provider,
+        },
+      }).catch(console.error);
+    }
+
+    if (provider === EnumGitProvider.Bitbucket) {
+      trackEvent({
+        eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
+      });
+      authWithGit({
+        variables: {
+          gitProvider: provider,
+        },
+      }).catch(console.error);
+    }
+  };
 
   triggerOnDone = () => {
     onDone();
@@ -122,7 +137,9 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
               setGitOrganization(organization);
             }}
             selectedGitOrganization={gitOrganization}
-            onAddGitOrganization={handleAuthWithGitClick}
+            onAddGitOrganization={(provider: EnumGitProvider) =>
+              handleAuthWithGitClick(provider)
+            }
           />
         )}
 
