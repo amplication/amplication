@@ -1,6 +1,6 @@
-name: Docs Feature Request
+name: Documentation Request
 description: Provide information for a new or updated documentation
-labels: ["type: docs feature request"]
+labels: ["type: docs"]
 body:
   - type: markdown
     attributes:
