@@ -1,3 +1,7 @@
+import { rm } from "fs/promises";
+import { join } from "path";
+import tempDir from "temp-dir";
+import { v4 } from "uuid";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
@@ -15,8 +19,8 @@ import {
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
-import { GitFactory } from "./git-factory";
 import { GitClient } from "./git-client";
+import { GitFactory } from "./git-factory";
 
 export class GitClientService {
   private provider: GitProvider;
@@ -86,12 +90,19 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      const localRepository = new GitClient({
+      const localRepository = new GitClient();
+      const cloneUrl = `https://${this.provider.domain}/${owner}/${repositoryName}.git`;
+
+      const cloneDir = join(
+        tempDir,
+        this.provider.name,
         owner,
-        provider: this.provider.name,
-        repo: repositoryName,
-      });
-      await localRepository.init();
+        repositoryName,
+        v4()
+      );
+
+      await localRepository.clone(cloneUrl, cloneDir);
+
       await this.restoreAmplicationBranchIfNotExists({
         owner,
         repositoryName,
@@ -114,6 +125,9 @@ export class GitClientService {
         repositoryName,
         branchName,
       });
+
+      await rm(cloneDir, { recursive: true, force: true });
+
       if (!existingPullRequest) {
         return this.provider.createPullRequestForBranch({
           owner,

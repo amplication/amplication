@@ -20,6 +20,7 @@ import {
 
 export interface GitProvider {
   readonly name: EnumGitProvider;
+  readonly domain: string;
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(

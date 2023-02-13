@@ -46,6 +46,7 @@ export class GithubService implements GitProvider {
   private gitInstallationUrl: string;
   private octokit: Octokit;
   public readonly name: EnumGitProvider;
+  public readonly domain = "github.com";
   constructor(private readonly gitProviderArgs: GitProviderArgs) {
     const {
       GITHUB_APP_INSTALLATION_URL,
