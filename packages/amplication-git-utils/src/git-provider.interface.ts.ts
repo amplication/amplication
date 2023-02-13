@@ -6,18 +6,20 @@ import {
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
+  EnumGitProvider,
+  GetBranchArgs,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  GetBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
 } from "./types";
 
 export interface GitProvider {
+  readonly name: EnumGitProvider;
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(

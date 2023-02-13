@@ -10,7 +10,6 @@ import {
 } from "octokit-plugin-create-pull-request/dist-types/types";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
-  GitUser,
   Branch,
   Commit,
   CreateBranchArgs,
@@ -19,6 +18,7 @@ import {
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   EnumGitOrganizationType,
+  EnumGitProvider,
   GetBranchArgs,
   GetFileArgs,
   GetPullRequestForBranchArgs,
@@ -26,6 +26,7 @@ import {
   GetRepositoryArgs,
   GitFile,
   GitProviderArgs,
+  GitUser,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -44,7 +45,7 @@ export class GithubService implements GitProvider {
   private privateKey: string;
   private gitInstallationUrl: string;
   private octokit: Octokit;
-
+  public readonly name: EnumGitProvider;
   constructor(private readonly gitProviderArgs: GitProviderArgs) {
     const {
       GITHUB_APP_INSTALLATION_URL,
@@ -65,7 +66,7 @@ export class GithubService implements GitProvider {
     this.privateKey = GITHUB_APP_PRIVATE_KEY;
 
     const privateKey = this.getFormattedPrivateKey(this.privateKey);
-
+    this.name = gitProviderArgs.provider;
     this.app = new App({
       appId: this.appId,
       privateKey,

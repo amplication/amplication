@@ -6,7 +6,6 @@ import {
   CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
-  EnumGitProvider,
   EnumPullRequestMode,
   GetRepositoriesArgs,
   GitProviderArgs,
@@ -21,10 +20,8 @@ import { RepositoryClone } from "./RepositoryClone";
 
 export class GitClientService {
   private provider: GitProvider;
-  private providerName: EnumGitProvider;
   async create(gitProviderArgs: GitProviderArgs): Promise<GitClientService> {
     this.provider = await GitFactory.getProvider(gitProviderArgs);
-    this.providerName = gitProviderArgs.provider;
     return this;
   }
 
@@ -91,7 +88,7 @@ export class GitClientService {
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
       const localRepository = new RepositoryClone({
         owner,
-        provider: this.providerName,
+        provider: this.provider.name,
         repo: repositoryName,
       });
       await localRepository.init();
