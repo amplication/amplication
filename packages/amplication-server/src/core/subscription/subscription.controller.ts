@@ -1,4 +1,6 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, Headers } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 import { BillingService } from "../billing/billing.service";
 import { CreateSubscriptionInput } from "./dto/CreateSubscriptionInput";
 import { SubscriptionData } from "./dto/SubscriptionData";
@@ -8,13 +10,27 @@ import { SubscriptionService } from "./subscription.service";
 
 @Controller("subscriptions")
 export class SubscriptionController {
+  private readonly stiggWebhooksSecret: string;
+
   constructor(
     private readonly subscriptionService: SubscriptionService,
-    private readonly billingService: BillingService
-  ) {}
+    private readonly billingService: BillingService,
+    private readonly configService: ConfigService
+  ) {
+    this.stiggWebhooksSecret = this.configService.get(
+      Env.STIGG_WEBHOOKS_SECRET
+    );
+  }
 
   @Post("updateStatus")
-  async updateStatus(@Body() updateStatusDto: UpdateStatusDto): Promise<void> {
+  async updateStatus(
+    @Headers("stigg-webhooks-secret") stiggWebhooksSecret,
+    @Body() updateStatusDto: UpdateStatusDto
+  ): Promise<void> {
+    if (stiggWebhooksSecret !== this.stiggWebhooksSecret) {
+      throw new Error("Invalid stigg-webhooks-secret");
+    }
+
     switch (updateStatusDto.type) {
       case "subscription.created": {
         const createSubscriptionInput =
