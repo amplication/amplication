@@ -171,7 +171,7 @@
     "@nrwl/nest": "15.6.3",
     "@nrwl/node": "15.6.3",
     "@nrwl/nx-cloud": "15.0.3",
-    "@nrwl/react": "15.6.3",
+    "@nrwl/react": "15.7.0-beta.5",
     "@nrwl/web": "15.6.3",
     "@nrwl/webpack": "15.6.3",
     "@nrwl/workspace": "15.6.3",
