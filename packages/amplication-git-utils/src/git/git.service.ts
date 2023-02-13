@@ -92,7 +92,7 @@ export class GitClientService {
         repo: repositoryName,
       });
       await localRepository.init();
-      await this.createBranchIfNotExists({
+      await this.restoreAmplicationBranchIfNotExists({
         owner,
         repositoryName,
         branchName,
@@ -130,7 +130,7 @@ export class GitClientService {
     throw new InvalidPullRequestMode();
   }
 
-  private async createBranchIfNotExists(
+  private async restoreAmplicationBranchIfNotExists(
     args: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
     const { branchName, owner, repositoryName, clone } = args;
