@@ -16,7 +16,7 @@ import {
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitFactory } from "./git-factory";
-import { RepositoryClone } from "./RepositoryClone";
+import { GitClient } from "./git-client";
 
 export class GitClientService {
   private provider: GitProvider;
@@ -86,7 +86,7 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      const localRepository = new RepositoryClone({
+      const localRepository = new GitClient({
         owner,
         provider: this.provider.name,
         repo: repositoryName,

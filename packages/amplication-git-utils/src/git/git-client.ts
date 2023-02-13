@@ -18,7 +18,7 @@ async function clearRepositoryClone(dir: string) {
 
 const folderRemoval = new FinalizationRegistry(clearRepositoryClone);
 
-export class RepositoryClone {
+export class GitClient {
   git: SimpleGit;
   private cloneDir: string;
   private cloneUrl: string;

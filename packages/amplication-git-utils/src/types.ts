@@ -1,4 +1,4 @@
-import { RepositoryClone } from "./git/RepositoryClone";
+import { GitClient } from "./git/git-client";
 
 export enum EnumPullRequestMode {
   Basic = "Basic",
@@ -148,7 +148,7 @@ export interface CreateBranchIfNotExistsArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
-  clone: RepositoryClone;
+  clone: GitClient;
 }
 
 export interface CreateBranchArgs {
@@ -169,7 +169,7 @@ export interface GitUser {
 
 export interface CherryPickCommitsArgs {
   commits: Commit[];
-  clone: RepositoryClone;
+  clone: GitClient;
   branchName: string;
   firstCommitOnDefaultBranch: Commit;
 }
