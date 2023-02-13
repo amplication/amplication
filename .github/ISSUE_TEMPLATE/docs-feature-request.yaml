@@ -18,9 +18,10 @@ body:
   - type: textarea
     attributes:
       label: Description (What is it?)
-      description: Use this section to provide an overview of the feature or process being described.
-      If it is an update to an existing feature, describe what has changed.
-      [Example:] (https://docs.amplication.com/how-to/create-message-broker/#overview)
+      description: "
+        Use this section to provide an overview of the feature or process being described.
+        If it is an update to an existing feature, describe what has changed.
+        [Example:] (https://docs.amplication.com/how-to/create-message-broker/#overview)"
     validations:
       required: true
   - type: textarea
