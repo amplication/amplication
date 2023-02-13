@@ -22,6 +22,7 @@ import {
   INVALID_RESOURCE_ID,
   ResourceService,
 } from "../resource/resource.service";
+import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -312,7 +313,22 @@ export class GitProviderService {
       provider: gitProvider,
       installationId: null,
     });
-    return await gitClientService.getGitInstallationUrl(workspaceId);
+    if (gitProvider === EnumGitProvider.Github) {
+      console.log("github");
+      return await gitClientService.getGitInstallationUrl(workspaceId);
+    }
+
+    if (gitProvider === EnumGitProvider.Bitbucket) {
+      return "https://bitbucket.org/site/oauth2/authorize?client_id=6jQn5F38QpCLKCCwvW&response_type=code";
+    }
+  }
+
+  async getAuthByTemporaryCode(code: string): Promise<unknown> {
+    const gitClientService = await new GitClientService().create({
+      provider: EnumGitProvider.Bitbucket,
+      installationId: null,
+    });
+    return await gitClientService.getAuthByTemporaryCode(code);
   }
 
   async deleteGitOrganization(
