@@ -15,8 +15,12 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { omit } from "lodash";
-import generateTestDataService from "../scripts/generate-test-data-service";
+import { generateCodeByResourceData } from "../src/generate-code";
 import { appInfo } from "../src/tests/appInfo";
+import entities from "../src/tests/entities";
+import roles from "../src/tests/roles";
+import { EnumResourceType } from "../src/models";
+import { installedPlugins } from "./pluginInstallation";
 
 // Use when running the E2E multiple times to shorten build time
 const { NO_DELETE_IMAGE } = process.env;
@@ -53,6 +57,7 @@ describe("Data Service Generator", () => {
   let host: string;
   let customer: { id: string };
   let apolloClient: ApolloClient<any>;
+
   beforeAll(async () => {
     const directory = path.join(os.tmpdir(), "test-data-service");
 
@@ -63,10 +68,19 @@ describe("Data Service Generator", () => {
     await fs.promises.mkdir(directory);
 
     // Generate the test data service
-    await generateTestDataService(directory, appInfo);
+    const testResourceData = {
+      entities,
+      roles,
+      resourceInfo: appInfo,
+      resourceType: EnumResourceType.Service,
+      pluginInstallations: installedPlugins,
+    };
+
+    await generateCodeByResourceData(testResourceData, directory);
 
     port = await getPort();
     const dbPort = await getPort();
+
     host = `http://0.0.0.0:${port}`;
 
     const authLink = setContext((_, { headers }) => ({
@@ -119,6 +133,7 @@ describe("Data Service Generator", () => {
     // Cleanup Docker Compose before run
     await down(dockerComposeOptions);
 
+    console.log("HERE");
     await compose.upAll({
       ...dockerComposeOptions,
       commandOptions: ["--build", "--force-recreate"],
@@ -133,21 +148,22 @@ describe("Data Service Generator", () => {
   afterAll(async () => {
     await down(dockerComposeOptions);
   });
-  test("check /api/health/live endpoint", async () => {
+
+  it("check /api/health/live endpoint", async () => {
     const res = await fetch(`${host}/api/health/live`, {
       method: "GET",
     });
     expect(res.status === STATUS_OK);
   });
 
-  test("check api/health/ready endpoint", async () => {
+  it("check api/health/ready endpoint", async () => {
     const res = await fetch(`${host}/api/health/ready`, {
       method: "GET",
     });
     expect(res.status === STATUS_OK);
   });
 
-  test("creates POST /api/login endpoint", async () => {
+  it("creates POST /api/login endpoint", async () => {
     const res = await fetch(`${host}/api/login`, {
       method: "POST",
       headers: {
@@ -167,7 +183,7 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates POST /api/customers endpoint", async () => {
+  it("creates POST /api/customers endpoint", async () => {
     const res = await fetch(`${host}/api/customers`, {
       method: "POST",
       headers: {
@@ -188,7 +204,7 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates PATCH /api/customers/:id endpoint", async () => {
+  it("creates PATCH /api/customers/:id endpoint", async () => {
     const customer = await (
       await fetch(`${host}/api/customers`, {
         method: "POST",
@@ -210,7 +226,7 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
   });
 
-  test("handles PATCH /api/customers/:id for a non-existing id", async () => {
+  it("handles PATCH /api/customers/:id for a non-existing id", async () => {
     const id = "nonExistingId";
     const res = await fetch(`${host}/api/customers/${id}`, {
       method: "PATCH",
@@ -223,7 +239,7 @@ describe("Data Service Generator", () => {
     expect(res.status === NOT_FOUND);
   });
 
-  test("creates DELETE /api/customers/:id endpoint", async () => {
+  it("creates DELETE /api/customers/:id endpoint", async () => {
     const customer = await (
       await fetch(`${host}/api/customers`, {
         method: "POST",
@@ -244,7 +260,7 @@ describe("Data Service Generator", () => {
     expect(res.status === STATUS_OK);
   });
 
-  test("handles DELETE /api/customers/:id for a non-existing id", async () => {
+  it("handles DELETE /api/customers/:id for a non-existing id", async () => {
     const id = "nonExistingId";
     const res = await fetch(`${host}/api/customers/${id}`, {
       method: "DELETE",
@@ -256,7 +272,7 @@ describe("Data Service Generator", () => {
     expect(res.status === NOT_FOUND);
   });
 
-  test("creates GET /api/customers endpoint", async () => {
+  it("creates GET /api/customers endpoint", async () => {
     const res = await fetch(`${host}/api/customers`, {
       headers: {
         Authorization: APP_BASIC_AUTHORIZATION,
@@ -276,7 +292,7 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates GET /api/customers/:id endpoint", async () => {
+  it("creates GET /api/customers/:id endpoint", async () => {
     const res = await fetch(`${host}/api/customers/${customer.id}`, {
       headers: {
         Authorization: APP_BASIC_AUTHORIZATION,
@@ -294,7 +310,7 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("creates POST /api/organizations/:id/customers endpoint", async () => {
+  it("creates POST /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
       await fetch(`${host}/api/customers`, {
         method: "POST",
@@ -337,7 +353,7 @@ describe("Data Service Generator", () => {
     expect(data).toBe("");
   });
 
-  test("creates DELETE /api/organizations/:id/customers endpoint", async () => {
+  it("creates DELETE /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
       await fetch(`${host}/api/customers`, {
         method: "POST",
@@ -392,7 +408,7 @@ describe("Data Service Generator", () => {
     expect(data).toBe("");
   });
 
-  test("creates GET /api/organizations/:id/customers endpoint", async () => {
+  it("creates GET /api/organizations/:id/customers endpoint", async () => {
     const customer = await (
       await fetch(`${host}/api/customers`, {
         method: "POST",
@@ -454,7 +470,7 @@ describe("Data Service Generator", () => {
     );
   });
 
-  test("adds customers to root query", async () => {
+  it("adds customers to root query", async () => {
     expect(
       await apolloClient.query({
         query: gql`

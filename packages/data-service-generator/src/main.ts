@@ -1,13 +1,8 @@
-import { DSGResourceData, Module } from "@amplication/code-gen-types";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import { dirname, join } from "path";
-import { createDataService } from "./create-data-service";
-import { dynamicPackagesInstallations } from "./dynamic-package-installation";
-import { defaultLogger } from "./server/logging";
+import { DSGResourceData } from "@amplication/code-gen-types";
+import { readFile } from "fs/promises";
 import { httpClient } from "./utils/http-client";
-import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
+import { generateCodeByResourceData } from "./generate-code";
 
-export const AMPLICATION_MODULES = "amplication_modules";
 const buildSpecPath = process.env.BUILD_SPEC_PATH;
 const buildOutputPath = process.env.BUILD_OUTPUT_PATH;
 
@@ -19,7 +14,7 @@ if (!buildOutputPath) {
 }
 
 generateCode(buildSpecPath, buildOutputPath).catch((err) => {
-  console.error(err);
+  logger.error(err);
   process.exit(1);
 });
 
@@ -28,26 +23,14 @@ async function readInputJson(filePath: string): Promise<DSGResourceData> {
   const resourceData: DSGResourceData = JSON.parse(file);
   return resourceData;
 }
+
 export default async function generateCode(
   source: string,
   destination: string
 ): Promise<void> {
   try {
     const resourceData = await readInputJson(source);
-    const { pluginInstallations } = resourceData;
-
-    const allPlugins = prepareDefaultPlugins(pluginInstallations);
-
-    await dynamicPackagesInstallations(allPlugins, defaultLogger);
-
-    const modules = await createDataService(
-      { ...resourceData, pluginInstallations: allPlugins },
-      defaultLogger,
-      join(__dirname, "..", AMPLICATION_MODULES)
-    );
-
-    await writeModules(modules, destination);
-    console.log("Code generation completed successfully");
+    await generateCodeByResourceData(resourceData, destination);
     await httpClient.post(
       new URL(
         "build-runner/code-generation-success",
@@ -59,7 +42,7 @@ export default async function generateCode(
       }
     );
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     await httpClient.post(
       new URL(
         "build-runner/code-generation-failure",
@@ -71,21 +54,4 @@ export default async function generateCode(
       }
     );
   }
-}
-
-async function writeModules(
-  modules: Module[],
-  destination: string
-): Promise<void> {
-  console.log("Creating base directory");
-  await mkdir(destination, { recursive: true });
-  console.info(`Writing modules to ${destination} ...`);
-  await Promise.all(
-    modules.map(async (module) => {
-      const filePath = join(destination, module.path);
-      await mkdir(dirname(filePath), { recursive: true });
-      await writeFile(filePath, module.code);
-    })
-  );
-  console.info(`Successfully wrote modules to ${destination}`);
 }
