@@ -9,19 +9,15 @@ import {
   CreateEntityServiceParams,
   CreateEntityServiceBaseParams,
   types,
-  EntityField,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
   addImports,
-  awaitExpression,
   extractImportDeclarations,
   getClassDeclarationById,
   getMethods,
   importNames,
   interpolate,
-  logicalExpression,
-  memberExpression,
   removeESLintComments,
   removeTSClassDeclares,
   removeTSIgnoreComments,
@@ -30,7 +26,6 @@ import {
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,
-  isPasswordField,
   isToManyRelationField,
 } from "../../../utils/field";
 import { relativeImportPath } from "../../../utils/module";
@@ -40,12 +35,6 @@ import { getEntityIdType } from "../../../utils/get-entity-id-type";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
-const DATA_ID = builders.identifier("data");
-const PASSWORD_SERVICE_MEMBER_ID = builders.identifier("passwordService");
-const HASH_MEMBER_EXPRESSION = memberExpression`this.${PASSWORD_SERVICE_MEMBER_ID}.hash`;
-const TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID = builders.identifier(
-  "transformStringFieldUpdateInput"
-);
 const serviceTemplatePath = require.resolve("./service.template.ts");
 const serviceBaseTemplatePath = require.resolve("./service.base.template.ts");
 const toOneTemplatePath = require.resolve("./to-one.template.ts");
@@ -61,14 +50,12 @@ export async function createServiceModules(
 ): Promise<Module[]> {
   const template = await readFile(serviceTemplatePath);
   const templateBase = await readFile(serviceBaseTemplatePath);
-  const passwordFields = entity.fields.filter(isPasswordField);
 
   const templateMapping = createTemplateMapping(
     entityType,
     serviceId,
     serviceBaseId,
-    delegateId,
-    passwordFields
+    delegateId
   );
 
   return [
@@ -305,8 +292,7 @@ function createTemplateMapping(
   entityType: string,
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
-  delegateId: namedTypes.Identifier,
-  passwordFields: EntityField[]
+  delegateId: namedTypes.Identifier
 ): { [key: string]: any } {
   return {
     SERVICE: serviceId,
@@ -318,44 +304,7 @@ function createTemplateMapping(
     UPDATE_ARGS: builders.identifier(`${entityType}UpdateArgs`),
     DELETE_ARGS: builders.identifier(`${entityType}DeleteArgs`),
     DELEGATE: delegateId,
-    CREATE_ARGS_MAPPING: createMutationDataMapping(
-      passwordFields.map((field) => {
-        const fieldId = builders.identifier(field.name);
-        return builders.objectProperty(
-          fieldId,
-          awaitExpression`await ${HASH_MEMBER_EXPRESSION}(${ARGS_ID}.${DATA_ID}.${fieldId})`
-        );
-      })
-    ),
-    UPDATE_ARGS_MAPPING: createMutationDataMapping(
-      passwordFields.map((field) => {
-        const fieldId = builders.identifier(field.name);
-        const valueMemberExpression = memberExpression`${ARGS_ID}.${DATA_ID}.${fieldId}`;
-        return builders.objectProperty(
-          fieldId,
-          logicalExpression`${valueMemberExpression} && await ${TRANSFORM_STRING_FIELD_UPDATE_INPUT_ID}(
-            ${ARGS_ID}.${DATA_ID}.${fieldId},
-            (password) => ${HASH_MEMBER_EXPRESSION}(password)
-          )`
-        );
-      })
-    ),
+    CREATE_ARGS_MAPPING: ARGS_ID,
+    UPDATE_ARGS_MAPPING: ARGS_ID,
   };
-}
-function createMutationDataMapping(
-  mappings: namedTypes.ObjectProperty[]
-): namedTypes.Identifier | namedTypes.ObjectExpression {
-  if (!mappings.length) {
-    return ARGS_ID;
-  }
-  return builders.objectExpression([
-    builders.spreadProperty(ARGS_ID),
-    builders.objectProperty(
-      DATA_ID,
-      builders.objectExpression([
-        builders.spreadProperty(memberExpression`${ARGS_ID}.${DATA_ID}`),
-        ...mappings,
-      ])
-    ),
-  ]);
 }
