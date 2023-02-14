@@ -314,7 +314,6 @@ export class GitProviderService {
       installationId: null,
     });
     if (gitProvider === EnumGitProvider.Github) {
-      console.log("github");
       return await gitClientService.getGitInstallationUrl(workspaceId);
     }
 
@@ -328,7 +327,10 @@ export class GitProviderService {
       provider: EnumGitProvider.Bitbucket,
       installationId: null,
     });
-    return await gitClientService.getAuthByTemporaryCode(code);
+    const { refreshToken } = await gitClientService.getAuthByTemporaryCode(
+      code
+    );
+    return refreshToken;
   }
 
   async deleteGitOrganization(

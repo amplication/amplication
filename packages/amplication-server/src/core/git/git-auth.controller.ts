@@ -17,7 +17,6 @@ export class GitAuthController {
   @Get("/bitbucket/callback")
   @Redirect(host, 301)
   async bitbucketCallback(@Query() query: Record<string, string>) {
-    // console.log(query);
     await this.gitProviderService.getAuthByTemporaryCode(query.code);
   }
 }
