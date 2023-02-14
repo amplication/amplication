@@ -18,6 +18,12 @@ ARG gid=$uid
 
 WORKDIR /workspace/packages/${user}
 
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        git=1:2.30.2-1 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY ./dist/packages/amplication-${component}/package*.json .
 
 RUN npm install --omit-dev
