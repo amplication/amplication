@@ -170,7 +170,7 @@ export class GitClientService {
       });
       await this.cherryPickCommits({
         commits: amplicationCommits,
-        clone,
+        gitClient: clone,
         branchName,
         firstCommitOnDefaultBranch,
       });
@@ -180,28 +180,19 @@ export class GitClientService {
   }
 
   private async cherryPickCommits(args: CherryPickCommitsArgs) {
-    const { clone, commits, branchName, firstCommitOnDefaultBranch } = args;
-    await clone.git.fetch(["--all"]);
-    await clone.git.pull();
-    await clone.git.reset();
-    await clone.git.checkout(branchName);
+    const { gitClient, commits, branchName, firstCommitOnDefaultBranch } = args;
+    await gitClient.resetState();
+    await gitClient.checkout(branchName);
 
     for (let index = commits.length - 1; index >= 0; index--) {
       const commit = commits[index];
       if (firstCommitOnDefaultBranch.sha === commit.sha) {
         continue;
       }
-      await clone.git.raw([
-        `cherry-pick`,
-        "-m 1",
-        "--strategy=recursive",
-        "-X",
-        "theirs",
-        commit.sha,
-      ]);
+      await gitClient.cherryPick(commit.sha);
     }
 
-    await clone.git.push();
+    await gitClient.git.push();
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {

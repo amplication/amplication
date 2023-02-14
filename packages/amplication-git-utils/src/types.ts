@@ -169,7 +169,7 @@ export interface GitUser {
 
 export interface CherryPickCommitsArgs {
   commits: Commit[];
-  clone: GitClient;
+  gitClient: GitClient;
   branchName: string;
   firstCommitOnDefaultBranch: Commit;
 }

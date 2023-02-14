@@ -12,4 +12,25 @@ export class GitClient {
     await this.git.cwd(cloneDir);
     return;
   }
+
+  async cherryPick(sha: string) {
+    await this.git.raw([
+      `cherry-pick`,
+      "-m 1",
+      "--strategy=recursive",
+      "-X",
+      "theirs",
+      sha,
+    ]);
+  }
+
+  async checkout(branchName: string) {
+    await this.git.checkout(branchName);
+  }
+
+  async resetState() {
+    await this.git.fetch(["--all"]);
+    await this.git.pull();
+    await this.git.reset();
+  }
 }
