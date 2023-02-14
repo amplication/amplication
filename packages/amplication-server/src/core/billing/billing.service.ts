@@ -235,10 +235,6 @@ export class BillingService {
           return subscription.status === SubscriptionStatus.Active;
         });
 
-        if (activeSub.plan.id === BillingPlan.Free) {
-          return null;
-        }
-
         const amplicationSub = {
           id: activeSub.id,
           status: this.mapSubscriptionStatus(activeSub.status),
@@ -360,6 +356,8 @@ export class BillingService {
 
   mapSubscriptionPlan(planId: BillingPlan): EnumSubscriptionPlan {
     switch (planId) {
+      case BillingPlan.Free:
+        return EnumSubscriptionPlan.Free;
       case BillingPlan.Pro:
         return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:
