@@ -1,10 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {
-  Plugin,
-  PluginVersion,
-  Prisma,
-} from "../../prisma/generated-prisma-client";
-import { PluginVersionService } from "../pluginVersion/pluginVersion.service";
+import { Plugin, Prisma } from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginServiceBase } from "./base/plugin.service.base";
 import { GitPluginService } from "./github-plugin.service";
@@ -13,8 +8,7 @@ import { GitPluginService } from "./github-plugin.service";
 export class PluginService extends PluginServiceBase {
   constructor(
     protected readonly prisma: PrismaService,
-    private gitPluginService: GitPluginService,
-    private pluginVersionService: PluginVersionService
+    private gitPluginService: GitPluginService
   ) {
     super(prisma);
   }
@@ -23,14 +17,6 @@ export class PluginService extends PluginServiceBase {
     args: Prisma.SelectSubset<T, Prisma.PluginUpsertArgs>
   ): Promise<Plugin> {
     return this.prisma.plugin.upsert(args);
-  }
-
-  async pluginVersions(plugin: Plugin): Promise<PluginVersion[]> {
-    return this.pluginVersionService.findMany({
-      where: {
-        pluginId: plugin.pluginId,
-      },
-    });
   }
 
   /**

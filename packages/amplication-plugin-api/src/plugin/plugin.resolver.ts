@@ -63,7 +63,18 @@ export class PluginResolver extends PluginResolverBase {
 
   @Public()
   @graphql.ResolveField(() => [PluginVersion], { nullable: true })
-  async versions(@graphql.Parent() parent: Plugin): Promise<PluginVersion[]> {
-    return this.service.pluginVersions(parent);
+  async versions(
+    @graphql.Parent() parent: Plugin,
+    @graphql.Args() args: PluginVersionFindManyArgs
+  ): Promise<PluginVersion[]> {
+    return this.pluginVersionService.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        pluginId: {
+          equals: parent.pluginId,
+        },
+      },
+    });
   }
 }
