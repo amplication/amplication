@@ -33,6 +33,7 @@ model Plugin {
 
 model PluginVersion {
   createdAt       DateTime @default(now())
+  deprecated      String?
   id              String   @id @default(auto()) @map("_id") @mongo.ObjectId
   pluginId        String?
   pluginIdVersion String   @unique
