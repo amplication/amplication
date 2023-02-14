@@ -143,9 +143,14 @@ export interface CreateCommitArgs {
   files: UpdateFile[];
 }
 
+export interface GetAuthByTemporaryCodeResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface GitProvider {
   init(): Promise<void>;
-  getAuthByTemporaryCode(code: string): Promise<unknown>;
+  getAuthByTemporaryCode(code: string): Promise<GetAuthByTemporaryCodeResponse>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs

@@ -5,6 +5,7 @@ import {
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
+  GetAuthByTemporaryCodeResponse,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
@@ -47,9 +48,10 @@ export class BitBucketService implements GitProvider {
     // this.accessToken = await this.createConsumerApp();
   }
 
-  async getAuthByTemporaryCode(code: string): Promise<unknown> {
+  async getAuthByTemporaryCode(
+    code: string
+  ): Promise<GetAuthByTemporaryCodeResponse> {
     const accessTokenUrl = "https://bitbucket.org/site/oauth2/access_token";
-    console.log("code", code);
     try {
       const request = await fetch(accessTokenUrl, {
         method: "POST",
@@ -67,8 +69,9 @@ export class BitBucketService implements GitProvider {
       console.log("accessToken", { response });
 
       const { access_token, refreshToken } = response;
-
-      return { access_token, refreshToken };
+      this.accessToken = access_token;
+      this.refreshToken = refreshToken;
+      return { accessToken: access_token, refreshToken };
     } catch (error) {
       // TODO: handle error
       console.log(error);
