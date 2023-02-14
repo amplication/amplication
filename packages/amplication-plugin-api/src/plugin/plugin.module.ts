@@ -6,7 +6,11 @@ import { GitPluginService } from "./github-plugin.service";
 import { PluginVersionModule } from "../pluginVersion/pluginVersion.module";
 
 @Module({
-  imports: [PluginModuleBase, forwardRef(() => PluginVersionModule)],
+  imports: [
+    PluginModuleBase,
+    forwardRef(() => PluginVersionModule),
+    PluginVersionModule,
+  ],
   providers: [PluginService, PluginResolver, GitPluginService],
   exports: [PluginService],
 })

@@ -82,11 +82,8 @@ export class PluginVersionService extends PluginVersionServiceBase {
    * main service function.upsert all plugins versions into DB
    * @returns Plugin[]
    */
-  async npmPluginsVersions() {
+  async npmPluginsVersions(plugins: Plugin[]) {
     try {
-      const plugins = await this.getPlugins();
-      if (!plugins || !plugins.length) throw "There are no plugins to get";
-
       const pluginsVersions =
         await this.npmPluginVersionService.updatePluginsVersion(plugins);
       if (!pluginsVersions.length) throw "Failed to fetch versions for plugin";
@@ -95,6 +92,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
       for await (const versionData of pluginsVersions) {
         const {
           createdAt,
+          deprecated,
           pluginId,
           updatedAt,
           version,

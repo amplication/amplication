@@ -37,7 +37,7 @@ export class PluginService extends PluginServiceBase {
    * main service that trigger gitPluginService and return plugin list. It upsert the plugins to DB
    * @returns Plugin[]
    */
-  async githubCatalogPlugins() {
+  async githubCatalogPlugins(): Promise<Plugin[]> {
     try {
       const pluginsList = await this.gitPluginService.getPlugins();
       if (

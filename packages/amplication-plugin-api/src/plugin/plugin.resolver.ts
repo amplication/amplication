@@ -9,6 +9,9 @@ import { PluginService } from "./plugin.service";
 import { Public } from "../decorators/public.decorator";
 import { GraphQLError } from "graphql";
 import { PluginVersion } from "../pluginVersion/base/PluginVersion";
+import { PluginVersionService } from "../pluginVersion/pluginVersion.service";
+import { ProcessedPluginVersions } from "./plugin.types";
+import { PluginVersionFindManyArgs } from "../pluginVersion/base/PluginVersionFindManyArgs";
 
 @graphql.Resolver(() => Plugin)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -16,22 +19,36 @@ export class PluginResolver extends PluginResolverBase {
   constructor(
     protected readonly service: PluginService,
     @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder
+    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly pluginVersionService: PluginVersionService
   ) {
     super(service, rolesBuilder);
   }
 
   @Public()
-  @graphql.Query(() => [Plugin], { nullable: true })
-  async githubPlugins(): Promise<Plugin[]> {
+  @graphql.Mutation(() => [Plugin], { nullable: true })
+  async processPluginCatalog(): Promise<ProcessedPluginVersions[]> {
     try {
       const amplicationPlugins = await this.service.githubCatalogPlugins();
       if (
         Object.prototype.toString.call(amplicationPlugins) === "[object String]"
-      )
+      ) {
         throw amplicationPlugins;
+      }
 
-      return amplicationPlugins;
+      const npmPluginsVersions =
+        await this.pluginVersionService.npmPluginsVersions(amplicationPlugins);
+      if (!npmPluginsVersions) throw "Failed to update plugins versions";
+
+      return amplicationPlugins.map((plugin) => {
+        const versions = npmPluginsVersions.filter(
+          (version) => version.pluginId === plugin.id
+        );
+        return {
+          ...plugin,
+          versions,
+        };
+      });
     } catch (error) {
       throw new GraphQLError(error.message, null, null, null, null, null, {
         extensions: {
