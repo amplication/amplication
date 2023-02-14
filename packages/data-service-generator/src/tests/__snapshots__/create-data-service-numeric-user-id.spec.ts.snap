@@ -1003,6 +1003,9 @@ export type User = {
   location: string;
   extendedProperties: JsonValue;
   profile?: Profile | null;
+  username: string;
+  password: string;
+  roles: JsonValue;
 };
 ",
   "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1027,6 +1030,9 @@ export type UserCreateInput = {
   location: string;
   extendedProperties: InputJsonValue;
   profile?: ProfileWhereUniqueInput | null;
+  username: string;
+  password: string;
+  roles: InputJsonValue;
 };
 ",
   "admin-ui/src/api/user/UserCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1076,6 +1082,9 @@ export type UserOrderByInput = {
   location?: SortOrder;
   extendedProperties?: SortOrder;
   profileId?: SortOrder;
+  username?: SortOrder;
+  password?: SortOrder;
+  roles?: SortOrder;
 };
 ",
   "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1100,6 +1109,9 @@ export type UserUpdateInput = {
   location?: string;
   extendedProperties?: InputJsonValue;
   profile?: ProfileWhereUniqueInput | null;
+  username?: string;
+  password?: string;
+  roles?: InputJsonValue;
 };
 ",
   "admin-ui/src/api/user/UserUpdateManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1132,6 +1144,8 @@ export type UserWhereInput = {
   location?: StringFilter;
   extendedProperties?: JsonFilter;
   profile?: ProfileWhereUniqueInput;
+  username?: StringFilter;
+  password?: StringFilter;
 };
 ",
   "admin-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
@@ -2457,6 +2471,7 @@ import {
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ProfileTitle } from \\"../profile/ProfileTitle\\";
+import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -2514,6 +2529,14 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <ReferenceInput source=\\"profile.id\\" reference=\\"Profile\\" label=\\"Profile\\">
           <SelectInput optionText={ProfileTitle} />
         </ReferenceInput>
+        <TextInput label=\\"Username\\" multiline source=\\"username\\" />
+        <TextInput label=\\"Password\\" multiline source=\\"password\\" />
+        <SelectArrayInput
+          source=\\"roles\\"
+          choices={ROLES_OPTIONS}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
       </SimpleForm>
     </Create>
   );
@@ -2538,6 +2561,7 @@ import {
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ProfileTitle } from \\"../profile/ProfileTitle\\";
+import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -2595,6 +2619,14 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <ReferenceInput source=\\"profile.id\\" reference=\\"Profile\\" label=\\"Profile\\">
           <SelectInput optionText={ProfileTitle} />
         </ReferenceInput>
+        <TextInput label=\\"Username\\" multiline source=\\"username\\" />
+        <TextInput label=\\"Password\\" multiline source=\\"password\\" />
+        <SelectArrayInput
+          source=\\"roles\\"
+          choices={ROLES_OPTIONS}
+          optionText=\\"label\\"
+          optionValue=\\"value\\"
+        />
       </SimpleForm>
     </Edit>
   );
@@ -2641,6 +2673,9 @@ export const UserList = (props: ListProps): React.ReactElement => {
         <ReferenceField label=\\"Profile\\" source=\\"profile.id\\" reference=\\"Profile\\">
           <TextField source={PROFILE_TITLE_FIELD} />
         </ReferenceField>
+        <TextField label=\\"Username\\" source=\\"username\\" />
+        <TextField label=\\"Password\\" source=\\"password\\" />
+        <TextField label=\\"Roles\\" source=\\"roles\\" />
       </Datagrid>
     </List>
   );
@@ -2680,6 +2715,9 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
         <ReferenceField label=\\"Profile\\" source=\\"profile.id\\" reference=\\"Profile\\">
           <TextField source={PROFILE_TITLE_FIELD} />
         </ReferenceField>
+        <TextField label=\\"Username\\" source=\\"username\\" />
+        <TextField label=\\"Password\\" source=\\"password\\" />
+        <TextField label=\\"Roles\\" source=\\"roles\\" />
       </SimpleShowLayout>
     </Show>
   );
@@ -2867,7 +2905,11 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000",
+PORT=3000
+DB_USER=testUsername
+DB_PASSWORD=1234
+DB_PORT=5433
+DB_URL=postgres://testUsername:1234@localhost:5433/db-name",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -2875,6 +2917,18 @@ PORT=3000",
 .DS_Store
 ",
   "server/docker-compose.db.yml": "version: \\"3\\"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
 ",
   "server/docker-compose.yml": "version: \\"3\\"
 services:
@@ -2889,6 +2943,7 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       - migrate
   migrate:
@@ -2900,9 +2955,33 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:\${DB_PORT}
     depends_on:
       db:
         condition: service_healthy
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -q
+        - -d
+        - \${DB_NAME}
+        - -U
+        - \${DB_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~
 ",
   "server/nest-cli.json": "{
   \\"sourceRoot\\": \\"src\\",
@@ -3007,6 +3086,9 @@ model User {
   extendedProperties Json
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
+  username           String
+  password           String
+  roles              Json
 }
 
 model Profile {
@@ -9116,6 +9198,10 @@ export class OrganizationControllerBase {
             id: true,
           },
         },
+
+        username: true,
+        password: true,
+        roles: true,
       },
     });
     if (results === null) {
@@ -11473,6 +11559,29 @@ class User {
   @Type(() => Profile)
   @IsOptional()
   profile?: Profile | null;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  password!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSON()
+  @Field(() => GraphQLJSON)
+  roles!: JsonValue;
 }
 
 export { User as User };
@@ -11655,6 +11764,29 @@ class UserCreateInput {
     nullable: true,
   })
   profile?: ProfileWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  password!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSON()
+  @Field(() => GraphQLJSON)
+  roles!: InputJsonValue;
 }
 
 export { UserCreateInput as UserCreateInput };
@@ -11966,6 +12098,33 @@ class UserOrderByInput {
     nullable: true,
   })
   profileId?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  username?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  password?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  roles?: SortOrder;
 }
 
 export { UserOrderByInput as UserOrderByInput };
@@ -12178,6 +12337,38 @@ class UserUpdateInput {
     nullable: true,
   })
   profile?: ProfileWhereUniqueInput | null;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  username?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  password?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSON()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  roles?: InputJsonValue;
 }
 
 export { UserUpdateInput as UserUpdateInput };
@@ -12390,6 +12581,28 @@ class UserWhereInput {
     nullable: true,
   })
   profile?: ProfileWhereUniqueInput;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  username?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  password?: StringFilter;
 }
 
 export { UserWhereInput as UserWhereInput };
@@ -12452,6 +12665,8 @@ const CREATE_INPUT = {
   score: 42.42,
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
 };
 const CREATE_RESULT = {
   id: 42,
@@ -12463,6 +12678,8 @@ const CREATE_RESULT = {
   score: 42.42,
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
 };
 const FIND_MANY_RESULT = [
   {
@@ -12475,6 +12692,8 @@ const FIND_MANY_RESULT = [
     score: 42.42,
     isCurious: \\"true\\",
     location: \\"exampleLocation\\",
+    username: \\"exampleUsername\\",
+    password: \\"examplePassword\\",
   },
 ];
 const FIND_ONE_RESULT = {
@@ -12487,6 +12706,8 @@ const FIND_ONE_RESULT = {
   score: 42.42,
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
+  username: \\"exampleUsername\\",
+  password: \\"examplePassword\\",
 };
 
 const service = {
@@ -12710,6 +12931,10 @@ export class UserControllerBase {
             id: true,
           },
         },
+
+        username: true,
+        password: true,
+        roles: true,
       },
     });
   }
@@ -12747,6 +12972,10 @@ export class UserControllerBase {
             id: true,
           },
         },
+
+        username: true,
+        password: true,
+        roles: true,
       },
     });
   }
@@ -12785,6 +13014,10 @@ export class UserControllerBase {
             id: true,
           },
         },
+
+        username: true,
+        password: true,
+        roles: true,
       },
     });
     if (result === null) {
@@ -12846,6 +13079,10 @@ export class UserControllerBase {
               id: true,
             },
           },
+
+          username: true,
+          password: true,
+          roles: true,
         },
       });
     } catch (error) {
@@ -12893,6 +13130,10 @@ export class UserControllerBase {
               id: true,
             },
           },
+
+          username: true,
+          password: true,
+          roles: true,
         },
       });
     } catch (error) {
@@ -12940,6 +13181,10 @@ export class UserControllerBase {
             id: true,
           },
         },
+
+        username: true,
+        password: true,
+        roles: true,
       },
     });
     if (results === null) {
