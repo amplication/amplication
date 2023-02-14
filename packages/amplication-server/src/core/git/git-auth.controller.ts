@@ -11,9 +11,7 @@ import { GitProviderService } from "./git.provider.service";
 const host = process.env.CLIENT_HOST || "http://localhost:3001";
 @Controller()
 export class GitAuthController {
-  constructor(private readonly gitProviderService: GitProviderService) {
-    console.log("host", host);
-  }
+  constructor(private readonly gitProviderService: GitProviderService) {}
 
   @UseInterceptors(MorganInterceptor("combined"))
   @Get("/bitbucket/callback")
