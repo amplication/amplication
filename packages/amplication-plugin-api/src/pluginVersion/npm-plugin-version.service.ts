@@ -1,16 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
+import type { AbbreviatedManifest } from "pacote";
 
 interface NpmVersion {
-  [versionNumber: string]: {
-    version: string;
-    name: string;
-    description: string;
-    dist: {
-      tarball: string;
-    };
-  };
+  [versionNumber: string]: AbbreviatedManifest;
 }
 
 @Injectable()
@@ -32,6 +26,7 @@ export class NpmPluginVersionService {
     for (const [key, value] of Object.entries(npmVersions)) {
       pluginVersions.push({
         createdAt: now,
+        deprecated: value.deprecated?.toString(),
         id: "",
         pluginId: pluginId,
         pluginIdVersion: `${pluginId}_${value.version}`,

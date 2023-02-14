@@ -107,7 +107,11 @@ export class PluginVersionService extends PluginVersionServiceBase {
             pluginIdVersion,
           },
         });
-        if (isPluginVersionExist) continue;
+        if (
+          isPluginVersionExist &&
+          isPluginVersionExist.deprecated === deprecated
+        )
+          continue;
 
         const pluginSettings = await this.getPluginSettings(tarballUrl);
         const upsertPluginVersion = await this.upsert({
@@ -116,12 +120,14 @@ export class PluginVersionService extends PluginVersionServiceBase {
           },
           update: {
             settings: pluginSettings,
+            deprecated,
             updatedAt,
           },
           create: {
             pluginId,
             pluginIdVersion,
             settings: pluginSettings,
+            deprecated,
             version,
             createdAt,
             updatedAt,
