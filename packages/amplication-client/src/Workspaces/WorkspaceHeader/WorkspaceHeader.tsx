@@ -27,18 +27,28 @@ const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
 
+enum ItemDataCommand {
+  COMMAND_CONTACT_US = "command_contact_us",
+}
+
 type HelpMenuItem = {
   name: string;
   url: string | null;
+  itemData: ItemDataCommand | null;
 };
 
 const HELP_MENU_LIST: HelpMenuItem[] = [
-  { name: "Docs", url: "https://docs.amplication.com" },
+  { name: "Docs", url: "https://docs.amplication.com", itemData: null },
   {
     name: "Technical Support",
-    url: "https://discord.com/channels/757179260417867879/1063337571184279582",
+    url: "https://amplication.com/discord",
+    itemData: null,
   },
-  { name: "Contact Us", url: null },
+  {
+    name: "Contact Us",
+    url: null,
+    itemData: ItemDataCommand.COMMAND_CONTACT_US,
+  },
 ];
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -122,6 +132,17 @@ const WorkspaceHeader: React.FC<{}> = () => {
       workspaceId: currentWorkspace.id,
     });
   }, [openHubSpotChat]);
+
+  const handleItemDataClicked = useCallback(
+    (itemData: ItemDataCommand) => {
+      switch (itemData) {
+        case ItemDataCommand.COMMAND_CONTACT_US:
+          handleContactUsClick();
+          return;
+      }
+    },
+    [handleContactUsClick]
+  );
 
   return (
     <div className={CLASS_NAME}>
@@ -291,7 +312,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
                   <SelectMenuItem
                     closeAfterSelectionChange
                     onSelectionChange={() => {
-                      !route.url && handleContactUsClick();
+                      !route.url && handleItemDataClicked(route.itemData);
                     }}
                     key={index}
                     {...(route.url
