@@ -13,6 +13,8 @@ import {
   EnumPullRequestMode,
   GetRepositoriesArgs,
   GitProviderArgs,
+  PreCommitProcessArgs,
+  PreCommitProcessResult,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -109,6 +111,14 @@ export class GitClientService {
         branchName,
         clone: localRepository,
       });
+
+      const diffContent = await this.preCommitProcess({
+        branchName,
+        gitClient: localRepository,
+        owner,
+        repositoryName,
+      });
+
       await this.provider.createCommit({
         owner,
         repositoryName,
@@ -142,6 +152,34 @@ export class GitClientService {
     }
 
     throw new InvalidPullRequestMode();
+  }
+
+  private async preCommitProcess({
+    gitClient,
+    branchName,
+    owner,
+    repositoryName,
+  }: PreCommitProcessArgs): PreCommitProcessResult {
+    await gitClient.git.checkout(branchName);
+    await gitClient.resetState();
+
+    const commitsList = await this.provider.getCurrentUserCommitList({
+      branchName,
+      owner,
+      repositoryName,
+    });
+
+    const latestCommit = commitsList[0];
+
+    if (!latestCommit) {
+      throw new Error(
+        "Didn't found a commit that has been created by amplication"
+      );
+    }
+    const { sha } = latestCommit;
+    const diff = await gitClient.git.diff([sha]);
+
+    return { diff };
   }
 
   private async restoreAmplicationBranchIfNotExists(
