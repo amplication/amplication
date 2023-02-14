@@ -89,7 +89,7 @@ export class PluginService extends PluginServiceBase {
 
       return insertedPluginArr;
     } catch (error) {
-      console.log("githubCatalogPlugins", error);
+      console.error("githubCatalogPlugins", error);
       return error.message;
     }
   }

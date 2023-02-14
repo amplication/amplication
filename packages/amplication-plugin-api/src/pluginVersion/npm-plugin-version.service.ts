@@ -36,7 +36,6 @@ export class NpmPluginVersionService {
         tarballUrl: value.dist.tarball,
       });
     }
-
     return pluginVersions;
   }
   /**
@@ -73,7 +72,7 @@ export class NpmPluginVersionService {
         yield pluginVersionArr;
       } while (pluginLength > index);
     } catch (error) {
-      // TODO add error handling
+      console.error;
     }
   }
   /**
@@ -93,7 +92,7 @@ export class NpmPluginVersionService {
 
       return pluginsVersions;
     } catch (error) {
-      // TODO add error handling
+      console.error;
     }
   }
 }

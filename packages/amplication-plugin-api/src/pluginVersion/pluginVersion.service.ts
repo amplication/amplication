@@ -73,7 +73,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
         const res = await fetch(tarBallUrl);
         res.body.pipe(zlib.createGunzip()).pipe(extract);
       } catch (error) {
-        console.log("getPluginSettings", error);
+        console.error("getPluginSettings", error);
         reject(error);
       }
     });
@@ -138,7 +138,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
 
       return insertedPluginVersionArr;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 }
