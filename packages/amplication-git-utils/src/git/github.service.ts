@@ -68,7 +68,7 @@ export class GithubService implements GitProvider {
     }
   }
 
-  async createConsumerApp(): Promise<string> {
+  async getAuthByTemporaryCode(): Promise<string> {
     return Promise.resolve(
       `Not implemented for ${this.gitProviderArgs.provider} provider`
     );

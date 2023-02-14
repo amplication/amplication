@@ -48,7 +48,7 @@ export class BitBucketService implements GitProvider {
   }
 
   async getAuthByTemporaryCode(code: string): Promise<unknown> {
-    const accessTokenUrl = " https://bitbucket.org/site/oauth2/access_token";
+    const accessTokenUrl = "https://bitbucket.org/site/oauth2/access_token";
     console.log("code", code);
     try {
       const request = await fetch(accessTokenUrl, {
