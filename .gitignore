@@ -65,3 +65,5 @@ src/schema.graphql
 .tsbuildinfo
 
 .nx-container/
+
+**/prisma/migrations/dev/
