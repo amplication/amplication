@@ -652,8 +652,8 @@ type Subscription {
 }
 
 enum EnumSubscriptionPlan {
+  Free
   Pro
-  Business
   Enterprise
 }
 
