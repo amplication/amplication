@@ -73,6 +73,13 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     context: {
       clientName: "pluginApiHttpLink",
     },
+    variables: {
+      where: {
+        deprecated: {
+          equals: null,
+        },
+      },
+    },
   });
   const {
     addBlock,
