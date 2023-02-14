@@ -8,16 +8,17 @@ import {
 import { MorganInterceptor } from "nest-morgan";
 import { GitProviderService } from "./git.provider.service";
 
+const host = process.env.CLIENT_HOST || "http://localhost:3001";
 @Controller()
 export class GitAuthController {
-  constructor(private readonly gitProviderService: GitProviderService) {}
+  constructor(private readonly gitProviderService: GitProviderService) {
+    console.log("host", host);
+  }
 
   @UseInterceptors(MorganInterceptor("combined"))
   @Get("/bitbucket/callback")
-  @Redirect("localhost:3000", 301)
+  @Redirect(host, 301)
   async bitbucketCallback(@Query() code: string) {
     await this.gitProviderService.getAuthByTemporaryCode(code);
-
-    // refresh token (workspace) --> db
   }
 }
