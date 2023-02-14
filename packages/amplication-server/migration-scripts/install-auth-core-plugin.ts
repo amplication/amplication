@@ -111,79 +111,81 @@ async function main() {
     return false;
   }
   async function migrateChunk(chunk: Resource[]) {
-    const promises = chunk.map(async (resource) => {
-      const resourceInstallations =
-        await findManyByBlockType<PluginInstallation>(
-          resource.id,
-          EnumBlockType.PluginInstallation
+    try {
+      const promises = chunk.map(async (resource) => {
+        const resourceInstallations =
+          await findManyByBlockType<PluginInstallation>(
+            resource.id,
+            EnumBlockType.PluginInstallation
+          );
+
+        const isAuthPluginExist = isPluginExist(
+          resourceInstallations,
+          "auth-core"
         );
 
-      const isAuthPluginExist = isPluginExist(
-        resourceInstallations,
-        "auth-core"
-      );
-
-      const isAuthStrategyPluginInstalled = isAuthStrategyPluginExist(
-        resourceInstallations,
-        ["auth-basic", "auth-jwt"]
-      );
-
-      if (isAuthPluginExist && isAuthStrategyPluginInstalled) return;
-
-      if (!isAuthPluginExist) {
-        const newPlugin = await createPluginInstallation({
-          data: {
-            displayName: "Auth-core",
-            enabled: true,
-            npm: "@amplication/plugin-auth-core",
-            pluginId: "auth-core",
-            settings: {},
-            version: "latest",
-            resource: {
-              connect: {
-                id: resource.id,
-              },
-            },
-          },
-        });
-        console.log({ newPlugin });
-
-        await setOrder(newPlugin.id);
-      }
-
-      if (!isAuthStrategyPluginInstalled) {
-        const [serviceSettings] = await findManyByBlockType<ServiceSettings>(
-          resource.id,
-          EnumBlockType.ServiceSettings
+        const isAuthStrategyPluginInstalled = isAuthStrategyPluginExist(
+          resourceInstallations,
+          ["auth-basic", "auth-jwt"]
         );
 
-        const pluginName =
-          serviceSettings.authProvider === EnumAuthProviderType.Http
-            ? "basic"
-            : "jwt";
+        if (isAuthPluginExist && isAuthStrategyPluginInstalled) return;
 
-        const AuthStrategyPlugin = await createPluginInstallation({
-          data: {
-            displayName: `Auth-${pluginName}`,
-            enabled: true,
-            npm: `@amplication/plugin-auth-${pluginName}`,
-            pluginId: `auth-${pluginName}`,
-            settings: {},
-            version: "latest",
-            resource: {
-              connect: {
-                id: resource.id,
+        if (!isAuthPluginExist) {
+          const newPlugin = await createPluginInstallation({
+            data: {
+              displayName: "Auth-core",
+              enabled: true,
+              npm: "@amplication/plugin-auth-core",
+              pluginId: "auth-core",
+              settings: {},
+              version: "latest",
+              resource: {
+                connect: {
+                  id: resource.id,
+                },
               },
             },
-          },
-        });
-        console.log({ AuthStrategyPlugin });
+          });
 
-        await setOrder(AuthStrategyPlugin.id);
-      }
-    });
+          await setOrder(newPlugin.id);
+        }
 
-    await Promise.all(promises);
+        if (!isAuthStrategyPluginInstalled) {
+          const [serviceSettings] = await findManyByBlockType<ServiceSettings>(
+            resource.id,
+            EnumBlockType.ServiceSettings
+          );
+
+          const pluginName =
+            serviceSettings.authProvider === EnumAuthProviderType.Http
+              ? "basic"
+              : "jwt";
+
+          const AuthStrategyPlugin = await createPluginInstallation({
+            data: {
+              displayName: `Auth-${pluginName}`,
+              enabled: true,
+              npm: `@amplication/plugin-auth-${pluginName}`,
+              pluginId: `auth-${pluginName}`,
+              settings: {},
+              version: "latest",
+              resource: {
+                connect: {
+                  id: resource.id,
+                },
+              },
+            },
+          });
+
+          await setOrder(AuthStrategyPlugin.id);
+        }
+      });
+
+      await Promise.all(promises);
+    } catch (error) {
+      console.log(`Failed to run migrateChunk, error: ${error}`);
+    }
   }
 
   await client.$disconnect();
