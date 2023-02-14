@@ -1003,9 +1003,6 @@ export type User = {
   location: string;
   extendedProperties: JsonValue;
   profile?: Profile | null;
-  username: string;
-  password: string;
-  roles: JsonValue;
 };
 ",
   "test-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1030,9 +1027,6 @@ export type UserCreateInput = {
   location: string;
   extendedProperties: InputJsonValue;
   profile?: ProfileWhereUniqueInput | null;
-  username: string;
-  password: string;
-  roles: InputJsonValue;
 };
 ",
   "test-ui/src/api/user/UserCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1082,9 +1076,6 @@ export type UserOrderByInput = {
   location?: SortOrder;
   extendedProperties?: SortOrder;
   profileId?: SortOrder;
-  username?: SortOrder;
-  password?: SortOrder;
-  roles?: SortOrder;
 };
 ",
   "test-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1109,9 +1100,6 @@ export type UserUpdateInput = {
   location?: string;
   extendedProperties?: InputJsonValue;
   profile?: ProfileWhereUniqueInput | null;
-  username?: string;
-  password?: string;
-  roles?: InputJsonValue;
 };
 ",
   "test-ui/src/api/user/UserUpdateManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1144,8 +1132,6 @@ export type UserWhereInput = {
   location?: StringFilter;
   extendedProperties?: JsonFilter;
   profile?: ProfileWhereUniqueInput;
-  username?: StringFilter;
-  password?: StringFilter;
 };
 ",
   "test-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
@@ -2471,7 +2457,6 @@ import {
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ProfileTitle } from \\"../profile/ProfileTitle\\";
-import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -2529,14 +2514,6 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <ReferenceInput source=\\"profile.id\\" reference=\\"Profile\\" label=\\"Profile\\">
           <SelectInput optionText={ProfileTitle} />
         </ReferenceInput>
-        <TextInput label=\\"Username\\" multiline source=\\"username\\" />
-        <TextInput label=\\"Password\\" multiline source=\\"password\\" />
-        <SelectArrayInput
-          source=\\"roles\\"
-          choices={ROLES_OPTIONS}
-          optionText=\\"label\\"
-          optionValue=\\"value\\"
-        />
       </SimpleForm>
     </Create>
   );
@@ -2561,7 +2538,6 @@ import {
 import { UserTitle } from \\"./UserTitle\\";
 import { OrganizationTitle } from \\"../organization/OrganizationTitle\\";
 import { ProfileTitle } from \\"../profile/ProfileTitle\\";
-import { ROLES_OPTIONS } from \\"../user/RolesOptions\\";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -2619,14 +2595,6 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <ReferenceInput source=\\"profile.id\\" reference=\\"Profile\\" label=\\"Profile\\">
           <SelectInput optionText={ProfileTitle} />
         </ReferenceInput>
-        <TextInput label=\\"Username\\" multiline source=\\"username\\" />
-        <TextInput label=\\"Password\\" multiline source=\\"password\\" />
-        <SelectArrayInput
-          source=\\"roles\\"
-          choices={ROLES_OPTIONS}
-          optionText=\\"label\\"
-          optionValue=\\"value\\"
-        />
       </SimpleForm>
     </Edit>
   );
@@ -2673,9 +2641,6 @@ export const UserList = (props: ListProps): React.ReactElement => {
         <ReferenceField label=\\"Profile\\" source=\\"profile.id\\" reference=\\"Profile\\">
           <TextField source={PROFILE_TITLE_FIELD} />
         </ReferenceField>
-        <TextField label=\\"Username\\" source=\\"username\\" />
-        <TextField label=\\"Password\\" source=\\"password\\" />
-        <TextField label=\\"Roles\\" source=\\"roles\\" />
       </Datagrid>
     </List>
   );
@@ -2715,9 +2680,6 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
         <ReferenceField label=\\"Profile\\" source=\\"profile.id\\" reference=\\"Profile\\">
           <TextField source={PROFILE_TITLE_FIELD} />
         </ReferenceField>
-        <TextField label=\\"Username\\" source=\\"username\\" />
-        <TextField label=\\"Password\\" source=\\"password\\" />
-        <TextField label=\\"Roles\\" source=\\"roles\\" />
       </SimpleShowLayout>
     </Show>
   );
@@ -3086,9 +3048,6 @@ model User {
   extendedProperties Json
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
-  username           String
-  password           String
-  roles              Json
 }
 
 model Profile {
@@ -9198,10 +9157,6 @@ export class OrganizationControllerBase {
             id: true,
           },
         },
-
-        username: true,
-        password: true,
-        roles: true,
       },
     });
     if (results === null) {
@@ -11559,29 +11514,6 @@ class User {
   @Type(() => Profile)
   @IsOptional()
   profile?: Profile | null;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  password!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSON()
-  @Field(() => GraphQLJSON)
-  roles!: JsonValue;
 }
 
 export { User as User };
@@ -11764,29 +11696,6 @@ class UserCreateInput {
     nullable: true,
   })
   profile?: ProfileWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  password!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSON()
-  @Field(() => GraphQLJSON)
-  roles!: InputJsonValue;
 }
 
 export { UserCreateInput as UserCreateInput };
@@ -12098,33 +12007,6 @@ class UserOrderByInput {
     nullable: true,
   })
   profileId?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  username?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  password?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: [\\"asc\\", \\"desc\\"],
-  })
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  roles?: SortOrder;
 }
 
 export { UserOrderByInput as UserOrderByInput };
@@ -12337,38 +12219,6 @@ class UserUpdateInput {
     nullable: true,
   })
   profile?: ProfileWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  username?: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  password?: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsJSON()
-  @IsOptional()
-  @Field(() => GraphQLJSON, {
-    nullable: true,
-  })
-  roles?: InputJsonValue;
 }
 
 export { UserUpdateInput as UserUpdateInput };
@@ -12581,28 +12431,6 @@ class UserWhereInput {
     nullable: true,
   })
   profile?: ProfileWhereUniqueInput;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  username?: StringFilter;
-
-  @ApiProperty({
-    required: false,
-    type: StringFilter,
-  })
-  @Type(() => StringFilter)
-  @IsOptional()
-  @Field(() => StringFilter, {
-    nullable: true,
-  })
-  password?: StringFilter;
 }
 
 export { UserWhereInput as UserWhereInput };
@@ -12665,8 +12493,6 @@ const CREATE_INPUT = {
   score: 42.42,
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
 };
 const CREATE_RESULT = {
   id: \\"exampleId\\",
@@ -12678,8 +12504,6 @@ const CREATE_RESULT = {
   score: 42.42,
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
 };
 const FIND_MANY_RESULT = [
   {
@@ -12692,8 +12516,6 @@ const FIND_MANY_RESULT = [
     score: 42.42,
     isCurious: \\"true\\",
     location: \\"exampleLocation\\",
-    username: \\"exampleUsername\\",
-    password: \\"examplePassword\\",
   },
 ];
 const FIND_ONE_RESULT = {
@@ -12706,8 +12528,6 @@ const FIND_ONE_RESULT = {
   score: 42.42,
   isCurious: \\"true\\",
   location: \\"exampleLocation\\",
-  username: \\"exampleUsername\\",
-  password: \\"examplePassword\\",
 };
 
 const service = {
@@ -12931,10 +12751,6 @@ export class UserControllerBase {
             id: true,
           },
         },
-
-        username: true,
-        password: true,
-        roles: true,
       },
     });
   }
@@ -12972,10 +12788,6 @@ export class UserControllerBase {
             id: true,
           },
         },
-
-        username: true,
-        password: true,
-        roles: true,
       },
     });
   }
@@ -13014,10 +12826,6 @@ export class UserControllerBase {
             id: true,
           },
         },
-
-        username: true,
-        password: true,
-        roles: true,
       },
     });
     if (result === null) {
@@ -13079,10 +12887,6 @@ export class UserControllerBase {
               id: true,
             },
           },
-
-          username: true,
-          password: true,
-          roles: true,
         },
       });
     } catch (error) {
@@ -13130,10 +12934,6 @@ export class UserControllerBase {
               id: true,
             },
           },
-
-          username: true,
-          password: true,
-          roles: true,
         },
       });
     } catch (error) {
@@ -13181,10 +12981,6 @@ export class UserControllerBase {
             id: true,
           },
         },
-
-        username: true,
-        password: true,
-        roles: true,
       },
     });
     if (results === null) {
