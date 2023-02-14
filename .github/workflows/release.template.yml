@@ -111,7 +111,7 @@ jobs:
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
-        run: npx nx docker:build ${{ matrix.project }} --production
+        run: npx nx docker:build ${{ matrix.project }} --prod
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true

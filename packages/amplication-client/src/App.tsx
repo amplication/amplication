@@ -63,11 +63,6 @@ function App() {
     undefined
   );
 
-  window.hsConversationsSettings = {
-    loadImmediately: false,
-    inlineEmbedSelector: "#amplication-chat",
-  };
-
   useEffect(() => {
     const params = queryString.parse(location.search);
     if (params.invitation) {

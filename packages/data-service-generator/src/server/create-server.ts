@@ -48,7 +48,7 @@ async function createServerInternal(
   logger.info(`Running DSG Version: ${gitRefName} <${gitSha}>`);
   await createLog({
     level: "info",
-    message: `Running DSG Version: ${gitRefName} <${gitSha.substring(0, 6)}>`,
+    message: `Running DSG Version: ${gitRefName} <${gitSha?.substring(0, 6)}>`,
   });
 
   await createLog({
