@@ -16,7 +16,8 @@ export class GitAuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @Get("/bitbucket/callback")
   @Redirect(host, 301)
-  async bitbucketCallback(@Query() code: string) {
-    await this.gitProviderService.getAuthByTemporaryCode(code);
+  async bitbucketCallback(@Query() query: Record<string, string>) {
+    // console.log(query);
+    await this.gitProviderService.getAuthByTemporaryCode(query.code);
   }
 }
