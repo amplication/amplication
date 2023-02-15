@@ -182,5 +182,5 @@ export interface PreCommitProcessArgs {
 }
 
 export type PreCommitProcessResult = Promise<{
-  diff: string;
+  diff: string | null;
 }>;

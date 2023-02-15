@@ -1,5 +1,5 @@
-import { rm } from "fs/promises";
-import { join } from "path";
+import { mkdir, rm, writeFile } from "fs/promises";
+import { join, normalize, resolve } from "path";
 import tempDir from "temp-dir";
 import { v4 } from "uuid";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
@@ -94,13 +94,13 @@ export class GitClientService {
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
       const localRepository = new GitClient();
       const cloneUrl = `https://${this.provider.domain}/${owner}/${repositoryName}.git`;
-
+      const randomUUID = v4();
       const cloneDir = join(
         tempDir,
         this.provider.name,
         owner,
         repositoryName,
-        v4()
+        randomUUID
       );
 
       await localRepository.clone(cloneUrl, cloneDir);
@@ -112,12 +112,30 @@ export class GitClientService {
         clone: localRepository,
       });
 
-      const diffContent = await this.preCommitProcess({
+      const diffFolder = normalize(
+        join(
+          `.amplication/diffs`,
+          this.provider.name,
+          owner,
+
+          repositoryName,
+          randomUUID
+        )
+      );
+
+      const { diff } = await this.preCommitProcess({
         branchName,
         gitClient: localRepository,
         owner,
         repositoryName,
       });
+      let fullDiffPath = "";
+      if (diff) {
+        await mkdir(diffFolder, { recursive: true });
+        const diffPath = join(diffFolder, "diff.patch");
+        await writeFile(diffPath, diff);
+        fullDiffPath = resolve(diffPath);
+      }
 
       await this.provider.createCommit({
         owner,
@@ -161,7 +179,6 @@ export class GitClientService {
     repositoryName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
     await gitClient.git.checkout(branchName);
-    await gitClient.resetState();
 
     const commitsList = await this.provider.getCurrentUserCommitList({
       branchName,
@@ -176,8 +193,16 @@ export class GitClientService {
         "Didn't found a commit that has been created by amplication"
       );
     }
+
     const { sha } = latestCommit;
     const diff = await gitClient.git.diff([sha]);
+    if (diff.length === 0) {
+      return { diff: null };
+    }
+    // Reset the branch to the latest commit
+    await gitClient.git.reset([sha]);
+    await gitClient.git.push(["--force"]);
+    await gitClient.resetState();
 
     return { diff };
   }
