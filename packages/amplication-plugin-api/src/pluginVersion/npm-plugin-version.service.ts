@@ -26,7 +26,7 @@ export class NpmPluginVersionService {
     for (const [key, value] of Object.entries(npmVersions)) {
       pluginVersions.push({
         createdAt: now,
-        deprecated: value.deprecated?.toString(),
+        deprecated: `${value.deprecated}`,
         id: "",
         pluginId: pluginId,
         pluginIdVersion: `${pluginId}_${value.version}`,
