@@ -137,6 +137,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
       return insertedPluginVersionArr;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   }
 }

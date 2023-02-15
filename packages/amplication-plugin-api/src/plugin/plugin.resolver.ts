@@ -38,7 +38,6 @@ export class PluginResolver extends PluginResolverBase {
 
       const npmPluginsVersions =
         await this.pluginVersionService.npmPluginsVersions(amplicationPlugins);
-      if (!npmPluginsVersions) throw "Failed to update plugins versions";
 
       return amplicationPlugins.map((plugin) => {
         const versions = npmPluginsVersions.filter(
