@@ -72,7 +72,7 @@ export class NpmPluginVersionService {
         yield pluginVersionArr;
       } while (pluginLength > index);
     } catch (error) {
-      console.error;
+      console.error(error);
     }
   }
   /**
@@ -92,7 +92,7 @@ export class NpmPluginVersionService {
 
       return pluginsVersions;
     } catch (error) {
-      console.error;
+      console.error(error);
     }
   }
 }
