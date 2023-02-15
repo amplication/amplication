@@ -39,13 +39,23 @@ export class PluginResolver extends PluginResolverBase {
       const npmPluginsVersions =
         await this.pluginVersionService.npmPluginsVersions(amplicationPlugins);
 
+      const npmPluginsVersionsMap = npmPluginsVersions.reduce(
+        (acc, version) => {
+          const key = version.pluginId;
+          if (acc[key]) {
+            acc[key].push(version);
+          } else {
+            acc[key] = [version];
+          }
+          return acc;
+        },
+        {} as Record<string, PluginVersion[]>
+      );
+
       return amplicationPlugins.map((plugin) => {
-        const versions = npmPluginsVersions.filter(
-          (version) => version.pluginId === plugin.id
-        );
         return {
           ...plugin,
-          versions,
+          versions: npmPluginsVersionsMap[plugin.id],
         };
       });
     } catch (error) {
