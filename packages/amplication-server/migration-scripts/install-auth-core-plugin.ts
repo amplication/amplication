@@ -88,12 +88,7 @@ async function main() {
     plugins: PluginInstallation[],
     authProvider: string
   ): boolean {
-    const plugin = plugins.find(
-      (plugin) => plugin.pluginId.trim() == authProvider
-    );
-
-    if (plugin) return true;
-    return false;
+    return plugins.some((plugin) => plugin.pluginId.trim() == authProvider);
   }
 
   function isAuthStrategyPluginExist(
