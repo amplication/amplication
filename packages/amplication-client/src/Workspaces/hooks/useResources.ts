@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
+import usePlugins from "../../Plugins/hooks/usePlugins";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import {
@@ -53,6 +54,7 @@ const useResources = (
   );
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
+
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [projectConfigurationResource, setProjectConfigurationResource] =
     useState<models.Resource | undefined>(undefined);
@@ -60,6 +62,9 @@ const useResources = (
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(currentResource?.gitRepository)
   );
+
+  const { createPluginInstallations } = usePlugins(currentResource?.id);
+
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
   const {
@@ -79,10 +84,11 @@ const useResources = (
   });
 
   const resourceRedirect = useCallback(
-    (resourceId: string) =>
+    (resourceId: string) => {
       history.push({
         pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`,
-      }),
+      });
+    },
     [currentWorkspace, history, currentProject]
   );
 
@@ -99,12 +105,13 @@ const useResources = (
       eventName: eventName,
     });
     createServiceWithEntities({ variables: { data: data } }).then((result) => {
-      result.data?.createServiceWithEntities.id &&
-        addEntity(result.data?.createServiceWithEntities.id);
-      result.data?.createServiceWithEntities.id &&
-        refetch().then(() =>
-          resourceRedirect(result.data?.createServiceWithEntities.id as string)
-        );
+      if (!result.data?.createServiceWithEntities.id) return;
+
+      const currentResourceId = result.data?.createServiceWithEntities.id;
+      addEntity(currentResourceId);
+      createResourcePlugins(currentResourceId);
+
+      refetch().then(() => resourceRedirect(currentResourceId as string));
     });
   };
 
@@ -129,6 +136,40 @@ const useResources = (
         });
     });
   };
+
+  const createResourcePlugins = useCallback((resourceId: string) => {
+    //create auth-core and auth-jwt as default plugins
+    const data: models.PluginInstallationsCreateInput = {
+      plugins: [
+        {
+          displayName: "Auth-core",
+          pluginId: "auth-core",
+          enabled: true,
+          npm: "@amplication/plugin-auth-core",
+          version: "latest",
+          resource: { connect: { id: resourceId } },
+        },
+        {
+          displayName: "Auth-jwt",
+          pluginId: "auth-jwt",
+          enabled: true,
+          npm: "@amplication/plugin-auth-jwt",
+          version: "latest",
+          resource: { connect: { id: resourceId } },
+        },
+      ],
+    };
+
+    createPluginInstallations({
+      variables: {
+        data: data,
+        where: {
+          id: resourceId,
+        },
+      },
+    }).catch(console.error);
+  }, []);
+
   useEffect(() => {
     if (resourceMatch) return;
 

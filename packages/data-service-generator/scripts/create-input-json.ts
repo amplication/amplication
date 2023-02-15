@@ -7,6 +7,7 @@ import roles from "../src/tests/roles";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { format } from "prettier";
+import { plugins } from "../src/tests/constants/example-plugins";
 
 if (require.main === module) {
   createInputJsonFile();
@@ -18,17 +19,9 @@ function createInputJsonFile() {
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    pluginInstallations: [
-      plugins.postgresPlugin,
-      {
-        id: "auth-api",
-        enabled: true,
-        version: "0.0.1",
-        pluginId: "pluginId",
-        npm: "@amplication/plugin-auth",
-      },
-    ],
+    pluginInstallations: [plugins.postgresPlugin],
   };
+
   const buildSpecPath = process.env.BUILD_SPEC_PATH;
 
   if (!buildSpecPath) {
@@ -48,5 +41,6 @@ function createInputJsonFile() {
     relativePath,
     format(JSON.stringify(object), { parser: "json" })
   );
+
   console.log(`Finish writing the ${relativePath} file`);
 }

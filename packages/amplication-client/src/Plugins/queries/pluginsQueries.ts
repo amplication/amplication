@@ -58,6 +58,22 @@ export const CREATE_PLUGIN_INSTALLATION = gql`
   }
 `;
 
+export const CREATE_PLUGINS_INSTALLATION = gql`
+  mutation createPluginInstallations(
+    $data: PluginInstallationsCreateInput!
+    $where: WhereUniqueInput!
+  ) {
+    createPluginInstallations(data: $data, where: $where) {
+      id
+      displayName
+      pluginId
+      enabled
+      version
+      settings
+    }
+  }
+`;
+
 export const GET_PLUGIN_ORDER = gql`
   query pluginOrder($resourceId: String!) {
     pluginOrder(where: { id: $resourceId }) {
