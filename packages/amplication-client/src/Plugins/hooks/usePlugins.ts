@@ -228,20 +228,6 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
         addBlock(plugin.id);
       });
     },
-    refetchQueries: [
-      {
-        query: GET_PLUGIN_INSTALLATIONS,
-        variables: {
-          resourceId: resourceId,
-        },
-      },
-      {
-        query: GET_PLUGIN_ORDER,
-        variables: {
-          resourceId: resourceId,
-        },
-      },
-    ],
   });
 
   const [createPluginInstallation, { error: createError }] = useMutation<{
