@@ -6,7 +6,7 @@
     "format:check": "npx nx format:check --all",
     "format:write": "npx nx format:write --all",
     "build": "nx run-many --target=build",
-    "setup:dev": "ts-node ./script/setup.ts",
+    "setup:dev": "ts-node ./scripts/setup.ts",
     "clean": "nx clear-cache",
     "graphql-codegen": "graphql-codegen",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
