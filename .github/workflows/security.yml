@@ -2,14 +2,10 @@ name: Security
 
 on:
   workflow_dispatch:
-  pull_request:
-    types: [opened, reopened, synchronize]
-    paths-ignore:
-      - "**/*.md"
-      - ".all-contributorsrc"
   push:
     branches: 
       - master
+      - next
     paths-ignore:
       - "**/*.md"
       - ".all-contributorsrc"
