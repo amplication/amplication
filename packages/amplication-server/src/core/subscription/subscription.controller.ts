@@ -1,7 +1,12 @@
 import { Body, Controller, Post, Headers } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
+import { EnumSubscriptionPlan } from "./dto";
 import { CreateSubscriptionInput } from "./dto/CreateSubscriptionInput";
 import { SubscriptionData } from "./dto/SubscriptionData";
 import { UpdateStatusDto } from "./dto/UpdateStatusDto";
@@ -13,6 +18,7 @@ export class SubscriptionController {
   private readonly stiggWebhooksSecret: string;
 
   constructor(
+    private readonly analyticsService: SegmentAnalyticsService,
     private readonly subscriptionService: SubscriptionService,
     private readonly billingService: BillingService,
     private readonly configService: ConfigService
@@ -39,6 +45,15 @@ export class SubscriptionController {
           updateStatusDto.id,
           createSubscriptionInput
         );
+        if (createSubscriptionInput.plan === EnumSubscriptionPlan.Pro) {
+          await this.analyticsService.track({
+            userId: null,
+            properties: {
+              workspaceId: updateStatusDto.customer.id,
+            },
+            event: EnumEventType.WorkspacePlanUpgradeCompleted,
+          });
+        }
         break;
       }
       case "subscription.updated":
