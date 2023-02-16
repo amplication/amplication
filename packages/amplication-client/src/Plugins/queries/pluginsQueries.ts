@@ -101,7 +101,7 @@ export const UPDATE_PLUGIN_ORDER = gql`
 `;
 
 export const GET_PLUGIN_VERSIONS_CATALOG = gql`
-  query {
+  query Plugins($where: PluginVersionWhereInput) {
     plugins {
       id
       pluginId
@@ -111,9 +111,10 @@ export const GET_PLUGIN_VERSIONS_CATALOG = gql`
       npm
       github
       website
-      versions {
+      versions(where: $where) {
         id
         pluginId
+        deprecated
         version
         settings
       }
