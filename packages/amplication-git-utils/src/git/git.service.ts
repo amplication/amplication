@@ -190,7 +190,7 @@ export class GitClientService {
 
     if (!latestCommit) {
       throw new Error(
-        "Didn't found a commit that has been created by amplication"
+        "Didn't find a commit that has been created by Amplication"
       );
     }
 
