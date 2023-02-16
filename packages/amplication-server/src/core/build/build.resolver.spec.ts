@@ -19,7 +19,7 @@ import { EnumBuildStatus } from "./dto/EnumBuildStatus";
 import { CommitService } from "../commit/commit.service";
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { ResourceService } from "../resource/resource.service";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";

@@ -4,7 +4,7 @@ import { KafkaTopics } from './queue.types';
 import { CreateRepositoryPush } from './dto/create-repository-push.dto';
 import { CreateEventRepositoryPush } from './dto/create-event-repository-push.dto';
 import { ConfigService } from '@nestjs/config';
-import { AmplicationLogger } from '@amplication/nest-logger-module';
+import { AmplicationLogger } from '@amplication/util/nestjs/logging';
 
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
 

@@ -1,4 +1,4 @@
-import { AmplicationLoggerModule } from "@amplication/nest-logger-module";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { Module, OnApplicationShutdown } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { DiffModule } from "./diff/diff.module";

@@ -12,7 +12,7 @@ import { ConfigService } from "@nestjs/config";
 import { ResourceRoleService } from "./resourceRole.service";
 import { ResourceRoleResolver } from "./resourceRole.resolver";
 import { ResourceRole } from "../../models";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_RESOURCE_ROLE_ID = "EXAMPLE_APP_ROLE_ID";
 const EXAMPLE_NAME = "EXAMPLE_NAME";

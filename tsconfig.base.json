@@ -32,9 +32,6 @@
       "@amplication/git-utils": ["packages/amplication-git-utils/src/index.ts"],
       "@amplication/git-utils/*": ["packages/amplication-git-utils/src/*"],
       "@amplication/kafka/*": ["packages/amplication-kafka/src/*"],
-      "@amplication/nest-logger-module": [
-        "packages/amplication-nest-logger-module/src/index.ts"
-      ],
       "@amplication/nest-logger-module/*": [
         "packages/amplication-nest-logger-module/src/*"
       ],
@@ -46,6 +43,9 @@
       "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],
       "@amplication/util/logging": ["libs/util/logging/src/index.ts"],
       "@amplication/util/nestjs/kafka": ["libs/util/nestjs/kafka/src/index.ts"],
+      "@amplication/util/nestjs/logging": [
+        "libs/util/nestjs/logging/src/index.ts"
+      ],
       "@primer/react/deprecated": ["node_modules/@primer/react/lib/deprecated"]
     }
   },

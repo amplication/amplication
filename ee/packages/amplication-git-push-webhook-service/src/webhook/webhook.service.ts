@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { GitOrganizationRepository } from '../git-organization/git-organization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
 import { EnumProvider } from '../git-organization/git-organization.types';
-import { AmplicationLogger } from '@amplication/nest-logger-module';
+import { AmplicationLogger } from '@amplication/util/nestjs/logging';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 

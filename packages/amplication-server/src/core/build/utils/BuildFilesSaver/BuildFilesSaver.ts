@@ -1,5 +1,5 @@
 import { Module } from "@amplication/code-gen-types";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { outputFile, remove } from "fs-extra";

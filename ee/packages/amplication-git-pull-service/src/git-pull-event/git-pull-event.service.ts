@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
 import { DEFAULT_GITHUB_PULL_FOLDER } from "./git-pull-event.constants";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { GitHostProviderFactory } from "./git-host-provider-factory";
 import { GitPullEventRepository } from "./git-pull-event.repository";
 import { GitClientService } from "./git-client.service";

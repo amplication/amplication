@@ -8,7 +8,7 @@ import {
   swaggerDocumentOptions,
   swaggerSetupOptions,
 } from "./swagger";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const { PORT = 3005 } = process.env;
 

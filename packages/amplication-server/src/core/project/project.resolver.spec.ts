@@ -21,7 +21,7 @@ import {
 import { PendingChange } from "../resource/dto/PendingChange";
 import { ResourceService } from "../resource/resource.service";
 import { ConfigService } from "@nestjs/config";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";

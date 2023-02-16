@@ -8,6 +8,7 @@ import {
   UseFilters,
   Inject,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { MorganInterceptor } from "nest-morgan";
 import { Response } from "express";
 import { AuthService, AuthUser } from "./auth.service";
@@ -15,9 +16,8 @@ import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.f
 import { GitHubAuthGuard } from "./github.guard";
 import { GitHubRequest } from "./types";
 import { stringifyUrl } from "query-string";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
-import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Controller("/")
 export class AuthController {

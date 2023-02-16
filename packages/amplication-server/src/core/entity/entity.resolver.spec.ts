@@ -24,7 +24,7 @@ import { EntityPermission } from "../../models/EntityPermission";
 import { EntityVersion } from "../../models/EntityVersion";
 import { Commit, EntityPermissionField } from "../../models";
 import { EntityVersionResolver } from "./entityVersion.resolver";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_ID = "exampleId";
 const EXAMPLE_USER_ID = "exampleUserId";

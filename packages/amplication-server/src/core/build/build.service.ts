@@ -33,7 +33,7 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { EnumPullRequestMode } from "@amplication/git-utils";
 import { SendPullRequestArgs } from "./dto/sendPullRequest";

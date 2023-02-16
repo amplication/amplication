@@ -14,7 +14,7 @@ import { UserService } from "../user/user.service";
 import { BuildService } from "../build/build.service";
 
 import { CommitResolver } from "./commit.resolver";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 const EXAMPLE_USER_ID = "exampleUserId";

@@ -28,7 +28,7 @@ import {
   FindPendingChangesArgs,
   PendingChange,
 } from "../resource/dto";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)
