@@ -1,5 +1,6 @@
 import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
+import { groupBy } from "lodash";
 import * as nestAccessControl from "nest-access-control";
 import { GqlDefaultAuthGuard } from "../auth/gqlDefaultAuth.guard";
 import * as gqlACGuard from "../auth/gqlAC.guard";
@@ -39,17 +40,9 @@ export class PluginResolver extends PluginResolverBase {
       const npmPluginsVersions =
         await this.pluginVersionService.npmPluginsVersions(amplicationPlugins);
 
-      const npmPluginsVersionsMap = npmPluginsVersions.reduce(
-        (acc, version) => {
-          const key = version.pluginId;
-          if (acc[key]) {
-            acc[key].push(version);
-          } else {
-            acc[key] = [version];
-          }
-          return acc;
-        },
-        {} as Record<string, PluginVersion[]>
+      const npmPluginsVersionsMap = groupBy(
+        npmPluginsVersions,
+        (version) => version.pluginId
       );
 
       return amplicationPlugins.map((plugin) => {
