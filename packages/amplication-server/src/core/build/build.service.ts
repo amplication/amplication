@@ -458,13 +458,15 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          const pullRequestMode =
-            (await this.billingService.getBooleanEntitlement(
+          const smartGitSyncEntitlement =
+            await this.billingService.getBooleanEntitlement(
               project.workspaceId,
               BillingFeature.SmartGitSync
-            ))
-              ? EnumPullRequestMode.Accumulative
-              : EnumPullRequestMode.Basic;
+            );
+
+          const pullRequestMode = smartGitSyncEntitlement.hasAccess
+            ? EnumPullRequestMode.Accumulative
+            : EnumPullRequestMode.Basic;
 
           const createPullRequestArgs: SendPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
