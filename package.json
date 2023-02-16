@@ -105,7 +105,7 @@
     "nestjs-paginate": "^2.6.0",
     "nestjs-prisma": "^0.19.0",
     "node-fetch": "^2.6.7",
-    "node-jose": "^2.1.1",
+    "node-jose": "^2.2.0",
     "octokit": "^1.8.1",
     "octokit-plugin-create-pull-request": "^3.13.1",
     "ora": "5.4.0",
