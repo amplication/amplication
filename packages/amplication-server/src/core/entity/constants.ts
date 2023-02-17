@@ -136,6 +136,42 @@ export const DEFAULT_ENTITIES: EntityData[] = [
           maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
         },
       },
+      {
+        dataType: EnumDataType.Username,
+        name: "username",
+        displayName: "Username",
+        description:
+          "An automatically created field of the username of the user",
+        unique: false,
+        required: true,
+        searchable: true,
+        properties: {
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
+        },
+      },
+      {
+        dataType: EnumDataType.Password,
+        name: "password",
+        displayName: "Password",
+        description:
+          "An automatically created field of the password of the user",
+        unique: false,
+        required: true,
+        searchable: false,
+        properties: {
+          maxLength: DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH,
+        },
+      },
+      {
+        dataType: EnumDataType.Roles,
+        name: "roles",
+        displayName: "Roles",
+        description: "An automatically created field of the roles of the user",
+        unique: false,
+        required: true,
+        searchable: false,
+        properties: {},
+      },
     ],
   },
 ];

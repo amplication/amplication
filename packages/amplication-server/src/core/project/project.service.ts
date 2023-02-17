@@ -17,8 +17,8 @@ import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/BillingFeature";
 import { FeatureUsageReport } from "./FeatureUsageReport";
+import { BillingFeature } from "../billing/billing.types";
 
 @Injectable()
 export class ProjectService {

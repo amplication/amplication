@@ -73,7 +73,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
         const res = await fetch(tarBallUrl);
         res.body.pipe(zlib.createGunzip()).pipe(extract);
       } catch (error) {
-        console.log("getPluginSettings", error);
+        console.error("getPluginSettings", error);
         reject(error);
       }
     });
@@ -82,11 +82,8 @@ export class PluginVersionService extends PluginVersionServiceBase {
    * main service function.upsert all plugins versions into DB
    * @returns Plugin[]
    */
-  async npmPluginsVersions() {
+  async npmPluginsVersions(plugins: Plugin[]) {
     try {
-      const plugins = await this.getPlugins();
-      if (!plugins || !plugins.length) throw "There are no plugins to get";
-
       const pluginsVersions =
         await this.npmPluginVersionService.updatePluginsVersion(plugins);
       if (!pluginsVersions.length) throw "Failed to fetch versions for plugin";
@@ -95,6 +92,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
       for await (const versionData of pluginsVersions) {
         const {
           createdAt,
+          deprecated,
           pluginId,
           updatedAt,
           version,
@@ -107,7 +105,11 @@ export class PluginVersionService extends PluginVersionServiceBase {
             pluginIdVersion,
           },
         });
-        if (isPluginVersionExist) continue;
+        if (
+          isPluginVersionExist &&
+          isPluginVersionExist.deprecated === deprecated
+        )
+          continue;
 
         const pluginSettings = await this.getPluginSettings(tarballUrl);
         const upsertPluginVersion = await this.upsert({
@@ -116,12 +118,14 @@ export class PluginVersionService extends PluginVersionServiceBase {
           },
           update: {
             settings: pluginSettings,
+            deprecated,
             updatedAt,
           },
           create: {
             pluginId,
             pluginIdVersion,
             settings: pluginSettings,
+            deprecated,
             version,
             createdAt,
             updatedAt,
@@ -132,7 +136,8 @@ export class PluginVersionService extends PluginVersionServiceBase {
 
       return insertedPluginVersionArr;
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      throw error;
     }
   }
 }
