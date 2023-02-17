@@ -3,7 +3,7 @@ generates:
   packages/amplication-client/src/models.ts:
     plugins:
       - "typescript"
-  libs/data-service-generator/src/models.ts:
+  packages/data-service-generator/src/models.ts:
     plugins:
       - "typescript"
   packages/amplication-code-gen-types/src/models.ts:

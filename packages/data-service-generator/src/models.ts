@@ -706,8 +706,8 @@ export type EnumResourceTypeFilter = {
 };
 
 export enum EnumSubscriptionPlan {
-  Business = 'Business',
   Enterprise = 'Enterprise',
+  Free = 'Free',
   Pro = 'Pro'
 }
 
@@ -845,6 +845,7 @@ export type Mutation = {
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
+  createPluginInstallations?: Maybe<Array<PluginInstallation>>;
   createProject: Project;
   createResourceRole: ResourceRole;
   createService: Resource;
@@ -976,6 +977,12 @@ export type MutationCreateOrganizationArgs = {
 
 export type MutationCreatePluginInstallationArgs = {
   data: PluginInstallationCreateInput;
+};
+
+
+export type MutationCreatePluginInstallationsArgs = {
+  data: PluginInstallationsCreateInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1312,6 +1319,10 @@ export type PluginInstallationWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type PluginInstallationsCreateInput = {
+  plugins?: InputMaybe<Array<PluginInstallationCreateInput>>;
+};
+
 export type PluginOrder = IBlock & {
   __typename?: 'PluginOrder';
   blockType: EnumBlockType;
@@ -1407,10 +1418,10 @@ export type PropertySelectorInput = {
 
 export type ProvisionSubscriptionInput = {
   billingPeriod: Scalars['String'];
-  cancelUrl: Scalars['String'];
+  cancelUrl?: InputMaybe<Scalars['String']>;
   intentionType: Scalars['String'];
   planId: Scalars['String'];
-  successUrl: Scalars['String'];
+  successUrl?: InputMaybe<Scalars['String']>;
   workspaceId: Scalars['String'];
 };
 
