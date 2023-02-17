@@ -41,7 +41,6 @@
       "@amplication/plugin-api": [
         "packages/amplication-plugin-api/src/index.ts"
       ],
-      "@amplication/plugin-api/*": ["packages/amplication-plugin-api/src/*"],
       "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
       "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
       "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],

@@ -93,7 +93,7 @@ Follow these simple instructions to set up a local development environment.
   npm install
   ```
 
-2. Run the [setup script](https://github.com/amplication/amplication/blob/master/script/setup.ts), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
+2. Run the [setup script](https://github.com/amplication/amplication/blob/master/scripts/setup.ts), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
 
   ```bash
   npm run setup:dev

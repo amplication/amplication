@@ -15,8 +15,7 @@ import { Env } from "../../env";
 import { EnumSubscriptionPlan, SubscriptionData } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
-import { BillingFeature } from "./BillingFeature";
-import { BillingPlan } from "./BillingPlan";
+import { BillingFeature, BillingPlan } from "./billing.types";
 import {
   EnumEventType,
   SegmentAnalyticsService,

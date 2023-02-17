@@ -1,5 +1,6 @@
 import downloadHelper from "download";
 import { packument } from "pacote";
+import { createLog } from "../../create-log";
 import { PackageInstallation } from "./DynamicPackageInstallationManager";
 
 export class Tarball {
@@ -34,11 +35,16 @@ export class Tarball {
     }
     const requestedVersion = response.versions[version];
     if (!requestedVersion) {
-      const latestTag = response["dist-tags"].latest;
-      const latestVersion = response.versions[latestTag];
       throw new Error(
         `Could not find version ${version} for ${name}, please try to install another version, or the latest version: ${latestVersion}`
       );
+    }
+
+    if (requestedVersion.deprecated) {
+      await createLog({
+        level: "warn",
+        message: `${name}@${version} is deprecated, update it to avoid issues in the code generation.`,
+      });
     }
 
     return requestedVersion.dist.tarball;

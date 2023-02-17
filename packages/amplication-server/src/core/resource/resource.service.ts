@@ -44,7 +44,7 @@ import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/BillingFeature";
+import { BillingFeature } from "../billing/billing.types";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";

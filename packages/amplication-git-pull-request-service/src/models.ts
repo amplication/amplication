@@ -846,6 +846,7 @@ export type Mutation = {
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
+  createPluginInstallations?: Maybe<Array<PluginInstallation>>;
   createProject: Project;
   createResourceRole: ResourceRole;
   createService: Resource;
@@ -977,6 +978,12 @@ export type MutationCreateOrganizationArgs = {
 
 export type MutationCreatePluginInstallationArgs = {
   data: PluginInstallationCreateInput;
+};
+
+
+export type MutationCreatePluginInstallationsArgs = {
+  data: PluginInstallationsCreateInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1311,6 +1318,10 @@ export type PluginInstallationWhereInput = {
   parentBlock?: InputMaybe<WhereUniqueInput>;
   resource?: InputMaybe<ResourceWhereInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type PluginInstallationsCreateInput = {
+  plugins?: InputMaybe<Array<PluginInstallationCreateInput>>;
 };
 
 export type PluginOrder = IBlock & {

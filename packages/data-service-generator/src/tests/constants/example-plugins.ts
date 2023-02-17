@@ -21,7 +21,7 @@ export const plugins: Record<string, PluginInstallation> = Object.freeze({
     id: "clb3p3ov800cplc01a8f6uwje",
     npm: "@amplication/plugin-db-postgres",
     enabled: true,
-    version: "0.0.1",
+    version: "latest",
     pluginId: "db-postgres",
     settings: {
       defaultPort: "5432",

@@ -13,6 +13,8 @@ import { EnumBlockType } from "../src/enums/EnumBlockType";
 import { PluginOrder } from "../src/core/pluginInstallation/dto/PluginOrder";
 import { PluginOrderItem } from "../src/core/pluginInstallation/dto/PluginOrderItem";
 import { PluginInstallation } from "../src/core/pluginInstallation/dto/PluginInstallation";
+import { ServiceSettings } from "../src/core/serviceSettings/dto";
+import { EnumAuthProviderType } from "../src/core/serviceSettings/dto/EnumAuthenticationProviderType";
 
 const CURRENT_VERSION_NUMBER = 0;
 const client = new PrismaClient();
@@ -82,42 +84,103 @@ async function main() {
     await migrateChunk(chunk);
   }
 
-  async function migrateChunk(chunk: Resource[]) {
-    const promises = chunk.map(async (resource) => {
-      const resourceInstallations =
-        await findManyByBlockType<PluginInstallation>(
-          resource.id,
-          EnumBlockType.PluginInstallation
-        );
+  function isPluginExist(
+    plugins: PluginInstallation[],
+    authProvider: string
+  ): boolean {
+    return plugins.some((plugin) => plugin.pluginId.trim() == authProvider);
+  }
 
-      const isAuthPluginExist = resourceInstallations.find(
-        (plugin) => plugin.pluginId.trim() == "auth-core"
+  function isAuthStrategyPluginExist(
+    plugins: PluginInstallation[],
+    authPluginNames: string[]
+  ): boolean {
+    const results = plugins.filter((plugin) => {
+      return (
+        plugin.pluginId ===
+        authPluginNames.find((name) => name === plugin.pluginId)
       );
-
-      if (isAuthPluginExist) return;
-
-      const newPlugin = await createPluginInstallation({
-        data: {
-          displayName: "Auth-core",
-          enabled: true,
-          npm: "@amplication/plugin-auth-core",
-          pluginId: "auth-core",
-          settings: {},
-          version: "latest",
-          resource: {
-            connect: {
-              id: resource.id,
-            },
-          },
-        },
-      });
-
-      console.log({ newPlugin });
-
-      await setOrder(newPlugin.id);
     });
 
-    await Promise.all(promises);
+    if (results.length > 0) return true;
+    return false;
+  }
+  async function migrateChunk(chunk: Resource[]) {
+    try {
+      const promises = chunk.map(async (resource) => {
+        const resourceInstallations =
+          await findManyByBlockType<PluginInstallation>(
+            resource.id,
+            EnumBlockType.PluginInstallation
+          );
+
+        const isAuthPluginExist = isPluginExist(
+          resourceInstallations,
+          "auth-core"
+        );
+
+        const isAuthStrategyPluginInstalled = isAuthStrategyPluginExist(
+          resourceInstallations,
+          ["auth-basic", "auth-jwt"]
+        );
+
+        if (isAuthPluginExist && isAuthStrategyPluginInstalled) return;
+
+        if (!isAuthPluginExist) {
+          const newPlugin = await createPluginInstallation({
+            data: {
+              displayName: "Auth-core",
+              enabled: true,
+              npm: "@amplication/plugin-auth-core",
+              pluginId: "auth-core",
+              settings: {},
+              version: "latest",
+              resource: {
+                connect: {
+                  id: resource.id,
+                },
+              },
+            },
+          });
+
+          await setOrder(newPlugin.id);
+        }
+
+        if (!isAuthStrategyPluginInstalled) {
+          const [serviceSettings] = await findManyByBlockType<ServiceSettings>(
+            resource.id,
+            EnumBlockType.ServiceSettings
+          );
+
+          const pluginName =
+            serviceSettings.authProvider === EnumAuthProviderType.Http
+              ? "basic"
+              : "jwt";
+
+          const AuthStrategyPlugin = await createPluginInstallation({
+            data: {
+              displayName: `Auth-${pluginName}`,
+              enabled: true,
+              npm: `@amplication/plugin-auth-${pluginName}`,
+              pluginId: `auth-${pluginName}`,
+              settings: {},
+              version: "latest",
+              resource: {
+                connect: {
+                  id: resource.id,
+                },
+              },
+            },
+          });
+
+          await setOrder(AuthStrategyPlugin.id);
+        }
+      });
+
+      await Promise.all(promises);
+    } catch (error) {
+      console.log(`Failed to run migrateChunk, error: ${error}`);
+    }
   }
 
   await client.$disconnect();
@@ -465,5 +528,3 @@ main().catch(console.error);
 
 // Execute from bash
 // $ POSTGRESQL_URL=postgres://[user]:[password]@127.0.0.1:5432/app-database npx ts-node install-auth-core-plugin.ts
-
-// $ POSTGRESQL_URL=postgresql://admin:admin@localhost:5432/amplication npx ts-node migration-scripts/install-auth-core-plugin.ts
