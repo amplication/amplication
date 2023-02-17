@@ -95,6 +95,8 @@ function ResourceList() {
   const subscription =
     getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
 
+  const isFreePlane = subscription === models.EnumSubscriptionPlan.Free;
+
   const { stigg } = useStiggContext();
   const hideNotifications = stigg.getBooleanEntitlement({
     featureId: BillingFeature.HideNotifications,
@@ -129,7 +131,7 @@ function ResourceList() {
       </div>
       {loadingResources && <CircularProgress centerToParent />}
 
-      {!subscription && !hideNotifications.hasAccess && (
+      {isFreePlane && !hideNotifications.hasAccess && (
         <LimitationNotification
           description="With the current plan, you can use up to 3 services."
           link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
