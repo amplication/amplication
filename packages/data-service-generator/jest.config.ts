@@ -6,18 +6,10 @@ export default {
       tsconfig: "<rootDir>/tsconfig.spec.json",
     },
   },
-  testEnvironment: "node",
-  coverageProvider: "v8",
-  collectCoverageFrom: [
-    "**/*.{ts,tsx}",
-    "!**/*.template.{ts,tsx}",
-    "!**/*.spec.{ts,tsx}",
-    "!**/*.e2e-spec.{ts,tsx}",
-    "!**/node_modules/**",
-  ],
   fakeTimers: {
     doNotFake: ["fast-glob"],
   },
+  testEnvironment: "node",
   modulePathIgnorePatterns: [
     "lint",
     "generated",
@@ -29,4 +21,5 @@ export default {
     "^axios$": require.resolve("axios"),
   },
   transformIgnorePatterns: ["node_modules/(?!axios)"],
+  coverageDirectory: "../../coverage/packages/data-service-generator",
 };
