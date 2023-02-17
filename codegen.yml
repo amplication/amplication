@@ -1,20 +1,22 @@
 schema: "packages/amplication-server/src/schema.graphql"
+config:
+  skipTypename: true
 generates:
   packages/amplication-client/src/models.ts:
     plugins:
-      - "typescript"
+      - typescript
   packages/data-service-generator/src/models.ts:
     plugins:
-      - "typescript"
+      - typescript
   packages/amplication-code-gen-types/src/models.ts:
     plugins:
-      - "typescript"
+      - typescript
   packages/amplication-cli/src/models.ts:
     plugins:
-      - "typescript"
+      - typescript
   packages/amplication-git-pull-request-service/src/models.ts:
     plugins:
-      - "typescript"
+      - typescript
 hooks:
   afterAllFileWrite:
     - prettier --write

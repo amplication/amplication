@@ -4,6 +4,10 @@
   "sourceRoot": "packages/amplication-server/src",
   "projectType": "application",
   "implicitDependencies": ["amplication-prisma-db"],
+  "namedInputs": {
+    "codegen-config": ["{workspaceRoot}/codegen.yml"],
+    "default": ["{projectRoot}/**/*", "codegen-config"]
+  },
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -15,6 +19,7 @@
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
+      "dependsOn": ["graphql:schema:check"],
       "options": {
         "jestConfig": "packages/amplication-server/jest.config.ts",
         "passWithNoTests": true
@@ -32,7 +37,7 @@
     "build": {
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": ["graphql:schema:generate", "graphql:schema:check"],
+      "dependsOn": ["graphql:schema:generate", "graphql:models:generate"],
       "options": {
         "webpackConfig": "packages/amplication-server/webpack.config.js",
         "outputPath": "dist/packages/amplication-server",
@@ -83,6 +88,14 @@
       "options": {
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/generate-graphql-schema.ts",
         "cwd": "packages/amplication-server"
+      }
+    },
+    "graphql:models:generate": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/schema.graphql"],
+      "dependsOn": ["graphql:schema:generate"],
+      "options": {
+        "command": "graphql-codegen"
       }
     },
     "graphql:schema:check": {

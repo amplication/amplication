@@ -8,7 +8,6 @@
     "build": "nx run-many --target=build",
     "setup:dev": "ts-node ./scripts/setup.ts",
     "clean": "nx clear-cache",
-    "graphql-codegen": "graphql-codegen",
     "docker:dev": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose up",
     "docker:dev:cleanup": "docker-compose -f docker-compose.dev.yml --env-file .env.docker-compose down",
     "db:migrate:deploy": "nx run-many --target=db:migrate:deploy",
