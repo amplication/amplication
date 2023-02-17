@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
+  <img src="https://github.com/amplication/amplication/actions/workflows/ci.yml/badge.svg" alt="Node.js CI">
   <a href="https://amplication.com/discord">
     <img src="https://img.shields.io/discord/757179260417867879?label=discord" alt="Discord">
   </a>
