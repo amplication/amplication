@@ -706,8 +706,8 @@ export type EnumResourceTypeFilter = {
 };
 
 export enum EnumSubscriptionPlan {
-  Business = 'Business',
   Enterprise = 'Enterprise',
+  Free = 'Free',
   Pro = 'Pro'
 }
 
