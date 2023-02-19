@@ -1,8 +1,8 @@
 import { rm } from "fs/promises";
-import { join } from "path";
-import tempDir from "temp-dir";
+import { join, normalize } from "path";
 import { v4 } from "uuid";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
+import { MissingEnvParam } from "../errors/MissingEnvParam";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
@@ -90,24 +90,28 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      const localRepository = new GitClient();
+      const gitClient = new GitClient();
       const cloneUrl = `https://${this.provider.domain}/${owner}/${repositoryName}.git`;
 
-      const cloneDir = join(
-        tempDir,
-        this.provider.name,
-        owner,
-        repositoryName,
-        v4()
+      const cloneFolder = process.env.CLONES_FOLDER;
+
+      if (!cloneFolder) {
+        throw new MissingEnvParam("CLONES_FOLDER");
+      }
+
+      const randomUUID = v4();
+
+      const cloneDir = normalize(
+        join(cloneFolder, this.provider.name, owner, repositoryName, randomUUID)
       );
 
-      await localRepository.clone(cloneUrl, cloneDir);
+      await gitClient.clone(cloneUrl, cloneDir);
 
       await this.restoreAmplicationBranchIfNotExists({
         owner,
         repositoryName,
         branchName,
-        clone: localRepository,
+        gitClient,
       });
       await this.provider.createCommit({
         owner,
@@ -147,7 +151,7 @@ export class GitClientService {
   private async restoreAmplicationBranchIfNotExists(
     args: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
-    const { branchName, owner, repositoryName, clone } = args;
+    const { branchName, owner, repositoryName, gitClient } = args;
     const branch = await this.provider.getBranch(args);
     if (!branch) {
       const { defaultBranch } = await this.provider.getRepository(args);
@@ -170,7 +174,7 @@ export class GitClientService {
       });
       await this.cherryPickCommits({
         commits: amplicationCommits,
-        gitClient: clone,
+        gitClient,
         branchName,
         firstCommitOnDefaultBranch,
       });
