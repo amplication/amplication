@@ -148,7 +148,7 @@ export interface CreateBranchIfNotExistsArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
-  clone: GitClient;
+  gitClient: GitClient;
 }
 
 export interface CreateBranchArgs {
