@@ -14,6 +14,8 @@
   margin-bottom: var(--default-spacing-small);
   padding: var(--default-spacing-small);
   border-radius: var(--small-border-radius);
+  gap: var(--user-badge-spacing);
+
   .amp-icon {
     font-size: var(--title3-font-size);
   }
