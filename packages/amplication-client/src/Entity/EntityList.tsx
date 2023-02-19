@@ -103,6 +103,11 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     GET_CURRENT_WORKSPACE
   );
 
+  const subscription =
+    getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
+
+  const isFreePlan = subscription === models.EnumSubscriptionPlan.Free;
+
   const { stigg } = useStiggContext();
   const hideNotifications = stigg.getBooleanEntitlement({
     featureId: BillingFeature.HideNotifications,
@@ -146,7 +151,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         </div>
         {loading && <CircularProgress centerToParent />}
 
-        {!hideNotifications.hasAccess && (
+        {isFreePlan && !hideNotifications.hasAccess && (
           <LimitationNotification
             description="With the current plan, you can use to 7 entities per service."
             link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
