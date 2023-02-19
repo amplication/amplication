@@ -128,7 +128,7 @@ export class GitClientService {
 
       const { diff } = await this.preCommitProcess({
         branchName,
-        gitClient: localRepository,
+        gitClient,
         owner,
         repositoryName,
       });
