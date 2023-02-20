@@ -32,7 +32,7 @@
     "publish": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "node tools/scripts/publish.mjs util-code-gen-utils {args.ver} {args.tag}"
+        "command": "node scripts/publish.mjs util-code-gen-utils {args.ver} {args.tag}"
       },
       "dependsOn": [
         {

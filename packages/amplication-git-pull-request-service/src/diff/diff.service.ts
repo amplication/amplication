@@ -8,10 +8,11 @@ import { compare } from "dir-compare";
 import { sync } from "fast-glob";
 import { existsSync, readFileSync } from "fs";
 import { normalize } from "path";
-import { PrModule } from "../types";
+import { File } from "@amplication/git-utils";
 import { mapDiffSetToPrModule } from "./diffset-mapper";
 import { BuildPathFactory } from "./build-path-factory";
 import { deleteFilesVisitor } from "./delete-files";
+import { MissingBuildFiles } from "../errors/MissingBuildFiles";
 
 @Injectable()
 export class DiffService {
@@ -24,11 +25,14 @@ export class DiffService {
     resourceId: string,
     previousAmplicationBuildId: string | undefined,
     newAmplicationBuildId: string
-  ): Promise<PrModule[]> {
+  ): Promise<File[]> {
     const newBuildPath = this.buildsPathFactory.get(
       resourceId,
       newAmplicationBuildId
     );
+
+    DiffService.validateIfBuildExist(newBuildPath, newAmplicationBuildId);
+
     // If an old build folder does not exist, we return all new files
     if (!previousAmplicationBuildId) {
       return this.getAllModulesForPath(newBuildPath);
@@ -37,6 +41,15 @@ export class DiffService {
       resourceId,
       previousAmplicationBuildId
     );
+
+    if (!existsSync(oldBuildPath)) {
+      this.logger.warn("Got a old build id but the folder does not exist", {
+        resourceId,
+        oldBuildPath,
+      });
+      return this.getAllModulesForPath(newBuildPath);
+    }
+
     this.logger.info("List of the paths", {
       resourceId,
       previousAmplicationBuildId,
@@ -48,8 +61,7 @@ export class DiffService {
       "Cant get the same build id"
     );
 
-    DiffService.assertBuildExist(oldBuildPath);
-    DiffService.assertBuildExist(newBuildPath);
+    DiffService.validateIfBuildExist(oldBuildPath, previousAmplicationBuildId);
 
     const res = await compare(oldBuildPath, newBuildPath, {
       compareContent: true,
@@ -82,14 +94,21 @@ export class DiffService {
         const code = await readFileSync(fullPath).toString("utf8");
         return {
           path,
-          code,
+          content: code,
         };
       }
     );
     return await Promise.all(files);
   }
 
-  private static assertBuildExist(buildPath) {
-    assert(existsSync(buildPath));
+  private static validateIfBuildExist(
+    buildPath: string,
+    buildId: string
+  ): void {
+    const isExisting = existsSync(buildPath);
+    if (isExisting === false) {
+      throw new MissingBuildFiles(buildId);
+    }
+    return;
   }
 }

@@ -499,8 +499,8 @@ model Invitation {
 }
 
 enum EnumSubscriptionPlan {
+  Free
   Pro
-  Business
   Enterprise
 }
 

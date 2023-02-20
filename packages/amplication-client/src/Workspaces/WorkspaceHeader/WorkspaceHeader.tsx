@@ -5,9 +5,10 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
+  Dialog,
 } from "@amplication/design-system";
 import { useApolloClient } from "@apollo/client";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { unsetToken } from "../../authentication/authentication";
@@ -22,6 +23,12 @@ import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import "./WorkspaceHeader.scss";
 import { useTracking } from "../../util/analytics";
+import ProfileForm from "../../Profile/ProfileForm";
+import { version } from "../../util/version";
+import {
+  AMPLICATION_DISCORD_URL,
+  AMPLICATION_DOC_URL,
+} from "../../util/constants";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -38,10 +45,10 @@ type HelpMenuItem = {
 };
 
 const HELP_MENU_LIST: HelpMenuItem[] = [
-  { name: "Docs", url: "https://docs.amplication.com", itemData: null },
+  { name: "Docs", url: AMPLICATION_DOC_URL, itemData: null },
   {
     name: "Technical Support",
-    url: "https://amplication.com/discord",
+    url: AMPLICATION_DISCORD_URL,
     itemData: null,
   },
   {
@@ -99,12 +106,8 @@ const WorkspaceHeader: React.FC<{}> = () => {
     currentProjectConfiguration,
   ]);
 
-  const [version, setVersion] = useState("");
-  useEffect(() => {
-    import("../../util/version").then(({ version }) => {
-      setVersion(version);
-    });
-  }, []);
+  const [showProfileFormDialog, setShowProfileFormDialog] =
+    useState<boolean>(false);
 
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
@@ -135,218 +138,232 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
   const handleItemDataClicked = useCallback(
     (itemData: ItemDataCommand) => {
-      switch (itemData) {
-        case ItemDataCommand.COMMAND_CONTACT_US:
-          handleContactUsClick();
-          return;
+      if (itemData === ItemDataCommand.COMMAND_CONTACT_US) {
+        handleContactUsClick();
       }
+      return;
     },
     [handleContactUsClick]
   );
+  const handleShowProfileForm = useCallback(() => {
+    setShowProfileFormDialog(!showProfileFormDialog);
+  }, [showProfileFormDialog, setShowProfileFormDialog]);
 
   return (
-    <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__left`}>
-        <div className={`${CLASS_NAME}__logo`}>
-          <MenuItem
-            title="Home"
-            icon="logo"
-            to={`/${currentWorkspace?.id}/${currentProject?.id}`}
-            disableHover
-          />
-        </div>
-        <Tooltip
-          aria-label="Version number copied successfully"
-          direction="e"
-          noDelay
-          show={versionAlert}
-        >
-          <Button
-            className={`${CLASS_NAME}__version`}
-            buttonStyle={EnumButtonStyle.Clear}
-            onClick={async () => {
-              setVersionAlert(true);
-              await navigator.clipboard.writeText(version);
-            }}
-            onMouseLeave={() => {
-              setVersionAlert(false);
-            }}
+    <>
+      <Dialog
+        className="new-entity-dialog"
+        isOpen={showProfileFormDialog}
+        onDismiss={handleShowProfileForm}
+        title="User Profile"
+      >
+        <ProfileForm />
+      </Dialog>
+      <div className={CLASS_NAME}>
+        <div className={`${CLASS_NAME}__left`}>
+          <div className={`${CLASS_NAME}__logo`}>
+            <MenuItem
+              title="Home"
+              icon="logo"
+              to={`/${currentWorkspace?.id}/${currentProject?.id}`}
+              disableHover
+            />
+          </div>
+          <Tooltip
+            aria-label="Version number copied successfully"
+            direction="e"
+            noDelay
+            show={versionAlert}
           >
-            <span>v{version}</span>
-          </Button>
-        </Tooltip>
-      </div>
-      <div className={`${CLASS_NAME}__center`}>
-        <div className={`${CLASS_NAME}__breadcrumbs`}>
-          {currentProject && (
-            <>
-              <div
-                className={`${CLASS_NAME}__breadcrumbs__project ${
-                  isProjectRoute ? "highlight" : ""
-                }`}
-              >
-                <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
-                  {currentProject?.name}
-                </Link>
-              </div>
-              <div>
-                <hr className={`${CLASS_NAME}__vertical_border`} />
-              </div>
-              <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
-                <SelectMenu
-                  title={
-                    <p
-                      className={`${CLASS_NAME}__breadcrumbs__resource__title`}
-                    >
-                      {getSelectedEntities() || "Resource List"}
-                    </p>
-                  }
-                  buttonStyle={EnumButtonStyle.Text}
-                  buttonClassName={isResourceRoute ? "highlight" : ""}
-                  icon="chevron_down"
-                  openIcon="chevron_up"
-                  className={`${CLASS_NAME}__breadcrumbs__menu`}
+            <Button
+              className={`${CLASS_NAME}__version`}
+              buttonStyle={EnumButtonStyle.Clear}
+              onClick={async () => {
+                setVersionAlert(true);
+                await navigator.clipboard.writeText(version);
+              }}
+              onMouseLeave={() => {
+                setVersionAlert(false);
+              }}
+            >
+              <span>v{version}</span>
+            </Button>
+          </Tooltip>
+        </div>
+        <div className={`${CLASS_NAME}__center`}>
+          <div className={`${CLASS_NAME}__breadcrumbs`}>
+            {currentProject && (
+              <>
+                <div
+                  className={`${CLASS_NAME}__breadcrumbs__project ${
+                    isProjectRoute ? "highlight" : ""
+                  }`}
                 >
-                  <SelectMenuModal align="right">
-                    <SelectMenuList>
-                      {resources.length > 0 && (
-                        <>
-                          {resources.length &&
-                            resources.map((resource: models.Resource) => (
-                              <SelectMenuItem
-                                closeAfterSelectionChange
-                                selected={currentResource?.id === resource.id}
-                                key={resource.id}
-                                onSelectionChange={() => {
-                                  setResource(resource);
-                                }}
-                              >
-                                <div
-                                  className={`${CLASS_NAME}__breadcrumbs__resource__item`}
+                  <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
+                    {currentProject?.name}
+                  </Link>
+                </div>
+                <div>
+                  <hr className={`${CLASS_NAME}__vertical_border`} />
+                </div>
+                <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
+                  <SelectMenu
+                    title={
+                      <p
+                        className={`${CLASS_NAME}__breadcrumbs__resource__title`}
+                      >
+                        {getSelectedEntities() || "Resource List"}
+                      </p>
+                    }
+                    buttonStyle={EnumButtonStyle.Text}
+                    buttonClassName={isResourceRoute ? "highlight" : ""}
+                    icon="chevron_down"
+                    openIcon="chevron_up"
+                    className={`${CLASS_NAME}__breadcrumbs__menu`}
+                  >
+                    <SelectMenuModal align="right">
+                      <SelectMenuList>
+                        {resources.length > 0 && (
+                          <>
+                            {resources.length &&
+                              resources.map((resource: models.Resource) => (
+                                <SelectMenuItem
+                                  closeAfterSelectionChange
+                                  selected={currentResource?.id === resource.id}
+                                  key={resource.id}
+                                  onSelectionChange={() => {
+                                    setResource(resource);
+                                  }}
                                 >
-                                  <ResourceCircleBadge
-                                    type={
-                                      resource.resourceType as models.EnumResourceType
-                                    }
-                                    size="xsmall"
-                                  />
                                   <div
-                                    className={`${CLASS_NAME}__breadcrumbs__resource__text`}
+                                    className={`${CLASS_NAME}__breadcrumbs__resource__item`}
                                   >
+                                    <ResourceCircleBadge
+                                      type={
+                                        resource.resourceType as models.EnumResourceType
+                                      }
+                                      size="xsmall"
+                                    />
                                     <div
-                                      className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                                      className={`${CLASS_NAME}__breadcrumbs__resource__text`}
                                     >
-                                      {resource.name}
-                                    </div>
-                                    <div
-                                      className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
-                                    >
-                                      {resource.description}
+                                      <div
+                                        className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
+                                      >
+                                        {resource.name}
+                                      </div>
+                                      <div
+                                        className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
+                                      >
+                                        {resource.description}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </SelectMenuItem>
-                            ))}
+                                </SelectMenuItem>
+                              ))}
 
-                          <HorizontalRule />
-                        </>
-                      )}
+                            <HorizontalRule />
+                          </>
+                        )}
 
-                      <HeaderMenuStaticOptions
-                        currentProjectConfigurationId={
-                          currentProjectConfiguration?.id
-                        }
-                        currentProjectId={currentProject.id}
-                        currentWorkspaceId={currentWorkspace?.id}
-                        history={history}
-                        path={isCommitsRoute?.url}
-                      />
-                    </SelectMenuList>
-                  </SelectMenuModal>
-                </SelectMenu>
-              </div>
-            </>
-          )}
+                        <HeaderMenuStaticOptions
+                          currentProjectConfigurationId={
+                            currentProjectConfiguration?.id
+                          }
+                          currentProjectId={currentProject.id}
+                          currentWorkspaceId={currentWorkspace?.id}
+                          history={history}
+                          path={isCommitsRoute?.url}
+                        />
+                      </SelectMenuList>
+                    </SelectMenuModal>
+                  </SelectMenu>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-      <div className={`${CLASS_NAME}__right`}>
-        <div className={`${CLASS_NAME}__links`}>
-          <Button
-            className={`${CLASS_NAME}__upgrade__btn`}
-            buttonStyle={EnumButtonStyle.Outline}
-            onClick={handleUpgradeClick}
-          >
-            Upgrade
-          </Button>
-        </div>
-        <hr className={`${CLASS_NAME}__vertical_border`} />
-
-        <CommandPalette
-          trigger={
-            <Tooltip
-              className="amp-menu-item__tooltip"
-              aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
-              direction="sw"
-              noDelay
+        <div className={`${CLASS_NAME}__right`}>
+          <div className={`${CLASS_NAME}__links`}>
+            <Button
+              className={`${CLASS_NAME}__upgrade__btn`}
+              buttonStyle={EnumButtonStyle.Outline}
+              onClick={handleUpgradeClick}
             >
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="search"
-                iconSize="small"
-              />
-            </Tooltip>
-          }
-        />
-        <hr className={`${CLASS_NAME}__vertical_border`} />
-        <div className={`${CLASS_NAME}__help_popover`}>
-          <SelectMenu
-            title={"Help"}
-            buttonStyle={EnumButtonStyle.Text}
-            icon="chevron_down"
-            openIcon="chevron_up"
-            className={`${CLASS_NAME}__help_popover__menu`}
+              Upgrade
+            </Button>
+          </div>
+          <hr className={`${CLASS_NAME}__vertical_border`} />
+
+          <CommandPalette
+            trigger={
+              <Tooltip
+                className="amp-menu-item__tooltip"
+                aria-label={`Search (${isMacOs ? "⌘" : "Ctrl"}+Shift+K)`}
+                direction="sw"
+                noDelay
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  icon="search"
+                  iconSize="small"
+                />
+              </Tooltip>
+            }
+          />
+          <hr className={`${CLASS_NAME}__vertical_border`} />
+          <div className={`${CLASS_NAME}__help_popover`}>
+            <SelectMenu
+              title="Help"
+              buttonStyle={EnumButtonStyle.Text}
+              icon="chevron_down"
+              openIcon="chevron_up"
+              className={`${CLASS_NAME}__help_popover__menu`}
+            >
+              <SelectMenuModal align="right">
+                <SelectMenuList>
+                  {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
+                    <SelectMenuItem
+                      closeAfterSelectionChange
+                      onSelectionChange={() => {
+                        !route.url && handleItemDataClicked(route.itemData);
+                      }}
+                      key={index}
+                      {...(route.url
+                        ? {
+                            rel: "noopener noreferrer",
+                            href: route.url,
+                            target: "_blank",
+                          }
+                        : {})}
+                    >
+                      <div className={`${CLASS_NAME}__help_popover__name`}>
+                        {route.name}
+                      </div>
+                    </SelectMenuItem>
+                  ))}
+                </SelectMenuList>
+              </SelectMenuModal>
+            </SelectMenu>
+          </div>
+          <hr className={`${CLASS_NAME}__vertical_border`} />
+          <div
+            className={`${CLASS_NAME}__user_badge_wrapper`}
+            onClick={handleShowProfileForm}
           >
-            <SelectMenuModal align="right">
-              <SelectMenuList>
-                {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
-                  <SelectMenuItem
-                    closeAfterSelectionChange
-                    onSelectionChange={() => {
-                      !route.url && handleItemDataClicked(route.itemData);
-                    }}
-                    key={index}
-                    {...(route.url
-                      ? {
-                          rel: "noopener noreferrer",
-                          href: route.url,
-                          target: "_blank",
-                        }
-                      : {})}
-                  >
-                    <div className={`${CLASS_NAME}__help_popover__name`}>
-                      {route.name}
-                    </div>
-                  </SelectMenuItem>
-                ))}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
+            <UserBadge />
+          </div>
+
+          <hr className={`${CLASS_NAME}__vertical_border`} />
+
+          <Button
+            buttonStyle={EnumButtonStyle.Text}
+            icon="log_out"
+            onClick={handleSignOut}
+          />
         </div>
-        <hr className={`${CLASS_NAME}__vertical_border`} />
-
-        <a className={`${CLASS_NAME}__user_badge_wrapper`} href="/user/profile">
-          <UserBadge />
-        </a>
-
-        <hr className={`${CLASS_NAME}__vertical_border`} />
-
-        <Button
-          buttonStyle={EnumButtonStyle.Text}
-          icon="log_out"
-          onClick={handleSignOut}
-        />
       </div>
-    </div>
+    </>
   );
 };
 

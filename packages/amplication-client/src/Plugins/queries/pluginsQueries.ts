@@ -58,6 +58,22 @@ export const CREATE_PLUGIN_INSTALLATION = gql`
   }
 `;
 
+export const CREATE_PLUGINS_INSTALLATION = gql`
+  mutation createPluginInstallations(
+    $data: PluginInstallationsCreateInput!
+    $where: WhereUniqueInput!
+  ) {
+    createPluginInstallations(data: $data, where: $where) {
+      id
+      displayName
+      pluginId
+      enabled
+      version
+      settings
+    }
+  }
+`;
+
 export const GET_PLUGIN_ORDER = gql`
   query pluginOrder($resourceId: String!) {
     pluginOrder(where: { id: $resourceId }) {
@@ -80,6 +96,28 @@ export const UPDATE_PLUGIN_ORDER = gql`
         order
       }
       id
+    }
+  }
+`;
+
+export const GET_PLUGIN_VERSIONS_CATALOG = gql`
+  query Plugins($where: PluginVersionWhereInput) {
+    plugins {
+      id
+      pluginId
+      name
+      icon
+      description
+      npm
+      github
+      website
+      versions(where: $where) {
+        id
+        pluginId
+        deprecated
+        version
+        settings
+      }
     }
   }
 `;
