@@ -23,9 +23,6 @@
         "packages/amplication-code-gen-types/src/*"
       ],
       "@amplication/code-gen-utils": ["libs/util/code-gen-utils/src/index.ts"],
-      "@amplication/data-service-generator": [
-        "libs/data-service-generator/src/index.ts"
-      ],
       "@amplication/design-system": [
         "packages/amplication-design-system/src/index.ts"
       ],
@@ -44,7 +41,6 @@
       "@amplication/plugin-api": [
         "packages/amplication-plugin-api/src/index.ts"
       ],
-      "@amplication/plugin-api/*": ["packages/amplication-plugin-api/src/*"],
       "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
       "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
       "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],

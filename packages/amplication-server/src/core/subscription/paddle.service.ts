@@ -26,9 +26,9 @@ const PADDLE_PLAN_ID_TO_SUBSCRIPTION_PLAN: {
   [key: string]: EnumSubscriptionPlan;
 } = {
   ["658633"]: EnumSubscriptionPlan.Pro, //prod
-  ["658632"]: EnumSubscriptionPlan.Business, //prod
+  ["658632"]: EnumSubscriptionPlan.Free, //prod
   ["13780"]: EnumSubscriptionPlan.Pro, //sandbox
-  ["13781"]: EnumSubscriptionPlan.Business, //sandbox
+  ["13781"]: EnumSubscriptionPlan.Free, //sandbox
 };
 @Injectable()
 export class PaddleService {

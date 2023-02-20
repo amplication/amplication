@@ -63,6 +63,18 @@
         }
       }
     },
+    "refresh:plugins": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "curl --location --request POST 'http://localhost:3005/graphql' --header 'Content-Type: application/json' --data-raw '{\"query\":\"mutation ProcessPluginCatalog {processPluginCatalog {  name  npm  versions {    version    updatedAt    deprecated  }}}\"}'",
+        "envFile": "packages/amplication-plugin-api/.env"
+      },
+      "configurations": {
+        "production": {
+          "command": "curl --location --request POST 'https://plugin-api.amplication.com/graphql' --header 'Content-Type: application/json' --data-raw '{\"query\":\"mutation ProcessPluginCatalog {processPluginCatalog {  name  npm  versions {    version    updatedAt    deprecated  }}}\"}'"
+        }
+      }
+    },
     "db:prisma:generate": {
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/prisma/generated-prisma-client"],
@@ -126,10 +138,16 @@
       }
     },
     "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
+      "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/git-pull-service:latest"]
+        "tags": ["amplication/git-pull-service:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
       }
     },
     "deploy": { "executor": "nx:run-commands" }
