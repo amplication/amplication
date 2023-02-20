@@ -1,5 +1,5 @@
-import { rm } from "fs/promises";
-import { join, normalize } from "path";
+import { mkdir, rm, writeFile } from "fs/promises";
+import { join, normalize, resolve } from "path";
 import { v4 } from "uuid";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
 import { MissingEnvParam } from "../errors/MissingEnvParam";
@@ -13,6 +13,8 @@ import {
   EnumPullRequestMode,
   GetRepositoriesArgs,
   GitProviderArgs,
+  PreCommitProcessArgs,
+  PreCommitProcessResult,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -91,18 +93,17 @@ export class GitClientService {
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
       const gitClient = new GitClient();
-      const cloneUrl = this.provider.getCloneUrl({
-        owner,
-        repositoryName,
-      });
-
       const cloneFolder = process.env.CLONES_FOLDER;
-
       if (!cloneFolder) {
         throw new MissingEnvParam("CLONES_FOLDER");
       }
 
       const randomUUID = v4();
+
+      const cloneUrl = this.provider.getCloneUrl({
+        owner,
+        repositoryName,
+      });
 
       const cloneDir = normalize(
         join(cloneFolder, this.provider.name, owner, repositoryName, randomUUID)
@@ -116,6 +117,32 @@ export class GitClientService {
         branchName,
         gitClient,
       });
+
+      const diffFolder = normalize(
+        join(
+          `.amplication/diffs`,
+          this.provider.name,
+          owner,
+
+          repositoryName,
+          randomUUID
+        )
+      );
+
+      const { diff } = await this.preCommitProcess({
+        branchName,
+        gitClient,
+        owner,
+        repositoryName,
+      });
+      let fullDiffPath = "";
+      if (diff) {
+        await mkdir(diffFolder, { recursive: true });
+        const diffPath = join(diffFolder, "diff.patch");
+        await writeFile(diffPath, diff);
+        fullDiffPath = resolve(diffPath);
+      }
+
       await this.provider.createCommit({
         owner,
         repositoryName,
@@ -149,6 +176,41 @@ export class GitClientService {
     }
 
     throw new InvalidPullRequestMode();
+  }
+
+  private async preCommitProcess({
+    gitClient,
+    branchName,
+    owner,
+    repositoryName,
+  }: PreCommitProcessArgs): PreCommitProcessResult {
+    await gitClient.git.checkout(branchName);
+
+    const commitsList = await this.provider.getCurrentUserCommitList({
+      branchName,
+      owner,
+      repositoryName,
+    });
+
+    const latestCommit = commitsList[0];
+
+    if (!latestCommit) {
+      throw new Error(
+        "Didn't find a commit that has been created by Amplication"
+      );
+    }
+
+    const { sha } = latestCommit;
+    const diff = await gitClient.git.diff([sha]);
+    if (diff.length === 0) {
+      return { diff: null };
+    }
+    // Reset the branch to the latest commit
+    await gitClient.git.reset([sha]);
+    await gitClient.git.push(["--force"]);
+    await gitClient.resetState();
+
+    return { diff };
   }
 
   private async restoreAmplicationBranchIfNotExists(

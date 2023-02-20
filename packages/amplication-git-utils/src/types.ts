@@ -175,3 +175,14 @@ export interface CloneUrlArgs {
   owner: string;
   repositoryName: string;
 }
+
+export interface PreCommitProcessArgs {
+  gitClient: GitClient;
+  branchName: string;
+  owner: string;
+  repositoryName: string;
+}
+
+export type PreCommitProcessResult = Promise<{
+  diff: string | null;
+}>;

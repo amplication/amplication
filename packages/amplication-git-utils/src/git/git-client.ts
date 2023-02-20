@@ -31,6 +31,6 @@ export class GitClient {
   async resetState() {
     await this.git.fetch(["--all"]);
     await this.git.pull();
-    await this.git.reset();
+    await this.git.reset(["--hard"]);
   }
 }
