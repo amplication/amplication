@@ -30,7 +30,7 @@ export interface Customer {
 }
 
 export interface Metadata {
-  testKey: string;
+  userId: string;
 }
 
 export interface ExperimentInfo {

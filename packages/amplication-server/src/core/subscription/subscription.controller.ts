@@ -45,9 +45,13 @@ export class SubscriptionController {
           updateStatusDto.id,
           createSubscriptionInput
         );
-        if (createSubscriptionInput.plan === EnumSubscriptionPlan.Pro) {
+        const userId = updateStatusDto.metadata?.userId;
+        if (
+          createSubscriptionInput.plan === EnumSubscriptionPlan.Pro &&
+          userId
+        ) {
           await this.analyticsService.track({
-            userId: "unknown",
+            userId: userId,
             properties: {
               workspaceId: updateStatusDto.customer.id,
             },
