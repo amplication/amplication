@@ -171,13 +171,6 @@ export interface GitUser {
   login: string;
 }
 
-export interface CherryPickCommitsArgs {
-  commits: Commit[];
-  gitClient: GitClient;
-  branchName: string;
-  firstCommitOnDefaultBranch: Commit;
-}
-
 export interface CloneUrlArgs {
   owner: string;
   repositoryName: string;

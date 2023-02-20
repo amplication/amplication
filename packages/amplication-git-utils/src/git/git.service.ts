@@ -6,7 +6,7 @@ import { MissingEnvParam } from "../errors/MissingEnvParam";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
-  CherryPickCommitsArgs,
+  Commit,
   CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
@@ -175,19 +175,23 @@ export class GitClientService {
         repositoryName,
         branchName: defaultBranch,
       });
-      await this.cherryPickCommits({
-        commits: amplicationCommits,
+      await this.cherryPickCommits(
+        amplicationCommits,
         gitClient,
         branchName,
-        firstCommitOnDefaultBranch,
-      });
+        firstCommitOnDefaultBranch
+      );
       return branch;
     }
     return branch;
   }
 
-  private async cherryPickCommits(args: CherryPickCommitsArgs) {
-    const { gitClient, commits, branchName, firstCommitOnDefaultBranch } = args;
+  private async cherryPickCommits(
+    commits: Commit[],
+    gitClient: GitClient,
+    branchName: string,
+    firstCommitOnDefaultBranch: Commit
+  ) {
     await gitClient.resetState();
     await gitClient.checkout(branchName);
 
