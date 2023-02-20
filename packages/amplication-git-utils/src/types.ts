@@ -19,6 +19,10 @@ export interface GitProviderArgs {
   installationId: string;
 }
 
+export interface GitProviderConstructorArgs {
+  installationId: string;
+}
+
 export interface RemoteGitOrganization {
   name: string;
   type: EnumGitOrganizationType;
